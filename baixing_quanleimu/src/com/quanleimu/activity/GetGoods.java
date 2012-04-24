@@ -179,7 +179,7 @@ public class GetGoods extends BaseActivity implements OnScrollListener{
 		if (temp != null && !temp.equals("")) {
 			mUrl = "query="
 					+ "cityEnglishName:"+myApp.getCityEnglishName()+" AND categoryEnglishName:"
-					+ categoryEnglishName + temp;
+					+ categoryEnglishName + " " + temp;
 		} else {
 			mUrl = "query="
 					+ "cityEnglishName:"+myApp.getCityEnglishName()+" AND categoryEnglishName:"
