@@ -1,0 +1,41 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:gravity="center"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/tvmetatxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上海"
+       
+        android:textSize="18dip" >
+    </TextView>
+
+    <TextView
+        android:id="@+id/tvmeta"
+         android:textColor="#595959"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上海"
+        android:textSize="16dip" >
+    </TextView>
+
+    <ImageView
+        android:id="@+id/tvimage"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/icon" />
+
+    <EditText
+        android:id="@+id/tved"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:hint="请输入"
+        android:maxLength="6"
+        android:maxLines="1"
+        android:singleLine="true" />
+
+</LinearLayout>

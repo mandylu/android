@@ -1,0 +1,87 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+ 	 xmlns:android="http://schemas.android.com/apk/res/android"
+  	 android:layout_width="fill_parent"
+  	 android:layout_height="fill_parent">
+  	 <RelativeLayout 
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:id="@+id/rlTitle"
+    	android:background="@drawable/bg_header">
+    	<RelativeLayout 
+	    	android:layout_width="wrap_content"
+	    	android:layout_height="wrap_content"
+	    	android:id="@+id/rlSearch"
+	    	android:background="@drawable/bgsearch" 
+	    	android:layout_centerVertical="true" 
+	    	android:layout_marginLeft="10dip"
+	    	android:layout_toLeftOf="@+id/btnSearch"
+	    	android:layout_alignParentLeft="true">
+	    	<ImageView 
+		    	android:id="@+id/ivSearch" 
+		    	android:layout_width="wrap_content" 
+		    	android:background="@drawable/iconsearch" 
+		    	android:layout_height="wrap_content" 
+		    	android:layout_centerVertical="true" 
+		    	android:layout_marginLeft="10dip"></ImageView>
+	    	
+		  	     <EditText
+		  	         android:id="@+id/etSearch"
+		  	         android:layout_width="fill_parent"
+		  	         android:layout_height="wrap_content"
+		  	         android:layout_centerVertical="true"
+		  	         android:layout_marginRight="10dip"
+		  	         android:layout_toRightOf="@+id/ivSearch"
+		  	         android:background="#ffffff"
+		  	         android:hint="输入您想要的物品"
+		  	         android:singleLine="true" >
+
+</EditText>
+  	     </RelativeLayout>
+  	     <Button 
+	  	     	android:layout_width="wrap_content" 
+	  	     	android:layout_height="wrap_content" 
+	  	     	android:layout_alignParentRight="true" 
+	  	     	android:text="取消" 
+	  	     	android:textColor="#ffffff"
+	  	     	android:id="@+id/btnCancel"
+	  	     	android:background="@drawable/btn_cancel"
+	  	     	android:layout_centerVertical="true"
+	  	     	android:layout_marginRight="10dip"></Button>
+	  	     <Button 
+	  	     	android:layout_width="wrap_content" 
+	  	     	android:layout_height="wrap_content" 
+	  	     	android:text="搜索" 
+	  	     	android:textColor="#ffffff"
+	  	     	android:id="@+id/btnSearch" 
+	  	     	android:layout_toLeftOf="@+id/btnCancel"
+	  	     	android:background="@drawable/btn_search" 
+	  	     	android:layout_centerVertical="true" 
+	  	     	android:layout_marginRight="5dip"></Button>
+	</RelativeLayout>
+  	 <ImageView 
+  	 	android:layout_width="wrap_content" 
+  	 	android:layout_height="wrap_content" 
+  	 	android:src="@drawable/pic_search_tips" 
+  	 	android:layout_marginTop="150dip" 
+  	 	android:id="@+id/ivBgSearch" android:layout_centerInParent="true"></ImageView>
+  	 <ListView 
+  	 	android:layout_height="fill_parent" 
+  	 	android:layout_width="fill_parent" 
+  	 	android:id="@+id/lvSearchHistory" 
+  	 	android:layout_below="@+id/rlTitle"
+  	 	android:background="#ffffff"></ListView>
+  	 
+  	 <!-- <LinearLayout 
+    	android:layout_alignParentLeft="true" 
+    	android:layout_height="wrap_content" 
+    	android:layout_width="fill_parent" 
+    	android:id="@+id/linearBottom" 
+    	android:layout_alignParentBottom="true">
+    	<include
+    		android:layout_height="wrap_content" 
+    		android:layout_width="fill_parent" 
+    		android:id="@+id/linearBottom"
+    		layout="@layout/common_bottom"></include>
+     </LinearLayout> -->
+</RelativeLayout>

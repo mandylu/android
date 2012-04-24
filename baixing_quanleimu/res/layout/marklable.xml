@@ -1,0 +1,63 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rlTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header" >
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:text="签名档"
+            android:textColor="#fff"
+            android:textSize="22dip" >
+        </TextView>
+
+        <Button
+            android:id="@+id/ivBack"
+            android:textColor="#fff"
+            android:text="返回"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+             android:paddingLeft="15dip"
+                android:paddingTop="5dip"
+                android:paddingBottom="5dip"
+            android:background="@drawable/btn_jj" >
+        </Button>
+
+        <Button
+            android:id="@+id/btnFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:background="@drawable/btn_editx"
+            android:text="完成"
+            android:textColor="#ffffff" >
+        </Button>
+    </RelativeLayout>
+
+    <EditText
+        android:id="@+id/etMark"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dip"
+        android:cursorVisible="true"
+        android:focusableInTouchMode="true"
+        android:gravity="top"
+        android:marqueeRepeatLimit="marquee_forever"
+        android:minLines="6"
+        android:text=""
+        android:typeface="monospace" >
+    </EditText>
+
+</LinearLayout>

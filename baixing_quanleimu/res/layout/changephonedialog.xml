@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  android:layout_width="fill_parent"
+  android:layout_height="wrap_content"
+  android:orientation="vertical" 
+  android:paddingTop="10dip" 
+  android:paddingBottom="10dip">
+  	<LinearLayout
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		android:gravity="center"
+  		android:id="@+id/linear1"
+  		android:padding="5dip"
+  		android:orientation="vertical">
+  		<TextView 
+	    	android:text="查看最近信息" 
+	    	android:id="@+id/tvTelNum" 
+	    	android:textSize="15dip"
+	    	android:textColor="#ffffff"
+	    	android:layout_width="wrap_content" 
+	    	android:layout_height="wrap_content"></TextView>
+  	</LinearLayout>
+    <LinearLayout
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		android:gravity="center"
+  		android:id="@+id/linear4" android:layout_marginTop="10dip">
+  		<Button 
+	    	android:text="修改" 
+	    	android:textSize="20dip"
+	    	android:id="@+id/btnChange" 
+	    	android:layout_height="wrap_content" 
+	    	android:layout_width="fill_parent"
+	    	android:layout_marginTop="10dip"></Button>
+  	</LinearLayout>
+    <LinearLayout
+  		android:layout_width="fill_parent"
+  		android:layout_height="wrap_content"
+  		android:gravity="center"
+  		android:id="@+id/linear5" android:layout_marginTop="10dip">
+  		<Button 
+	    	android:text="取消" 
+	    	android:textSize="20dip"
+	    	android:id="@+id/btnCancel" 
+	    	android:layout_height="wrap_content" 
+	    	android:layout_width="fill_parent"
+	    	android:layout_marginTop="10dip"></Button>
+  	</LinearLayout>
+    
+</LinearLayout>

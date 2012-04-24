@@ -1,0 +1,199 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/bg_home">
+    <RelativeLayout 
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:id="@+id/rlTitle"
+    	android:background="@drawable/bg_header">
+        <TextView 
+        	android:text="详细信息"
+        	android:textSize="22dip"
+        	android:textColor="#fff"
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/tvTitle" 
+        	android:layout_width="wrap_content" 
+        	android:layout_centerInParent="true"></TextView>
+        <Button 
+        	android:layout_width="wrap_content" 
+        	android:layout_alignParentLeft="true" 
+        	android:text="" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/btnBack"></Button>
+        <Button 
+        	android:layout_width="wrap_content" 
+        	android:layout_alignParentRight="true" 
+        	android:text="编辑" 
+        	android:layout_height="wrap_content" android:id="@+id/btnStore"></Button>
+        
+	</RelativeLayout>
+        <ScrollView 
+       		android:layout_below="@+id/rlTitle"
+	        android:layout_height="fill_parent" 
+	        android:layout_width="fill_parent" 
+	        android:id="@+id/svDetail" 
+	        android:layout_above="@+id/rlFoot">
+	            <LinearLayout 
+	            	android:orientation="vertical"
+		            android:id="@+id/llDetail" 
+		            android:layout_width="fill_parent" 
+		            android:layout_height="fill_parent">
+		            <RelativeLayout 
+		            	android:orientation="vertical"
+			            android:id="@+id/llgl" 
+			            android:layout_width="fill_parent" 
+			            android:layout_height="fill_parent"
+			            android:background="@drawable/bg_viewad_top">
+			            <Gallery 
+			            	android:layout_width="fill_parent" 
+			            	android:id="@+id/glDetail" 
+			            	android:layout_height="wrap_content" 
+			            	android:layout_centerInParent="true">
+			            </Gallery></RelativeLayout>
+	            	
+		            
+		             <LinearLayout 
+		            	android:id="@+id/llcontent" 
+		           	 	android:layout_width="fill_parent" 
+		           	 	android:layout_height="fill_parent"
+		           	 	android:orientation="vertical"
+		           	 	android:layout_margin="10dip">
+		           	 	<TextView 
+				        	android:text="标题"
+				        	android:textSize="18dip"
+				        	android:textColor="#000"
+				        	android:singleLine="true"
+				        	android:layout_height="wrap_content" 
+				        	android:id="@+id/tvContentTitle" 
+				        	android:layout_width="wrap_content"></TextView>
+		           	 	<TextView 
+				        	android:text="描述"
+				        	android:textColor="#000"
+				        	android:layout_height="wrap_content" 
+				        	android:id="@+id/tvContentDesc" 
+				        	android:layout_width="wrap_content" 
+				        	></TextView>
+				        
+	            	<LinearLayout 
+		            	android:id="@+id/llPrice" 
+		            	android:layout_width="fill_parent" 
+		            	android:layout_height="fill_parent">
+		            		<ImageView android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:src="@drawable/icon_viewad_price"></ImageView>
+		            		<TextView 
+		            			android:id="@+id/tvPrice"
+		            			android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:text="188元"
+		            			android:textSize="16dip"></TextView>
+		            </LinearLayout>
+	            	<LinearLayout 
+		            	android:id="@+id/llPhone" 
+		            	android:layout_width="fill_parent" 
+		            	android:layout_height="fill_parent">
+		            		<ImageView 
+		            			android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:src="@drawable/icon_viewad_call"></ImageView>
+		            		<TextView 
+		            			android:id="@+id/tvPhone"
+		            			android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:text="13701723698"
+		            			android:textSize="16dip"></TextView>
+		            </LinearLayout>
+	            	<LinearLayout 
+		            	android:id="@+id/llAddress" 
+		            	android:layout_width="fill_parent" 
+		            	android:layout_height="fill_parent">
+		            		<ImageView android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:src="@drawable/icon_viewad_position"></ImageView>
+		            		<TextView 
+		            			android:id="@+id/tvAddress"
+		            			android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:text="上海,虹口,鲁迅公园"
+		            			android:textSize="16dip"></TextView>
+		            </LinearLayout>
+	            	<!-- 这个地方增加mapview布局 -->
+	            	<LinearLayout 
+		            	android:id="@+id/linearMapView" 
+		            	android:layout_width="fill_parent" 
+		            	android:layout_height="fill_parent"
+		            	android:background="@drawable/linearbg"
+		            	android:padding="5dip">
+		            		<ImageView 	
+		            			android:layout_width="wrap_content" 
+		            			android:layout_height="wrap_content" 
+		            			android:id="@+id/ivMapView"
+		            			android:src="@drawable/google"></ImageView>
+		            </LinearLayout>
+	            	
+	            	</LinearLayout>
+	            	
+	            </LinearLayout>
+        </ScrollView>
+
+    <LinearLayout 
+    	android:layout_width="fill_parent"
+    	android:layout_height="wrap_content"
+    	android:id="@+id/rlFoot"
+    	android:background="@drawable/bg_toolbar"
+    	android:layout_alignParentBottom="true">
+        <Button  
+        	android:layout_width="wrap_content" 
+        	android:text="联系" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/btnGetCon"></Button>
+        <Button 
+        	android:layout_width="wrap_content" 
+        	android:text="还价" 
+        	android:layout_height="wrap_content" 
+        	android:id="@+id/btnBackPrice"></Button>
+        <Button 
+        	android:text="分享" 
+        	android:id="@+id/button1" 
+        	android:layout_width="wrap_content" 
+        	android:layout_height="wrap_content"></Button>
+        <Button android:text="往前" android:id="@+id/button2" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+        <Button android:text="往后 " android:id="@+id/button3" android:layout_width="wrap_content" android:layout_height="wrap_content"></Button>
+        
+	</LinearLayout>
+	 <!-- <com.mapabc.mapapi.MapView
+		android:id="@+id/myMapView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:enabled ="true"
+        android:clickable="true"
+        android:apiKey="c2b0f58a6f09cafd1503c06ef08ac7aeb7ddb91a216d48ff61c671eb450cac1563331ef9e9dea13b" 
+        /> -->
+     <!-- <com.baidu.mapapi.MapView 
+    	android:id="@+id/myMapView"
+		android:layout_width="fill_parent" 
+		android:layout_height="fill_parent"
+		android:clickable="true"/> -->
+    <ImageView 
+        android:visibility="gone"
+    	android:layout_width="wrap_content" 
+    	android:id="@+id/ivCancel" 
+    	android:src="@drawable/btn_viewad_close" 
+    	android:layout_height="wrap_content" 
+    	android:layout_marginTop="30dip" 
+    	android:layout_marginLeft="30dip"></ImageView>
+    <LinearLayout 
+	    	android:layout_alignParentLeft="true" 
+	    	android:layout_height="wrap_content" 
+	    	android:layout_width="fill_parent" 
+	    	android:id="@+id/linearBottom" 
+	    	android:layout_alignParentBottom="true">
+	    	<include
+	    		android:layout_height="wrap_content" 
+	    		android:layout_width="fill_parent" 
+	    		android:id="@+id/linearBottom"
+	    		layout="@layout/common_bottom"></include>
+	     </LinearLayout>
+</RelativeLayout>

@@ -1,0 +1,137 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+
+    <RelativeLayout
+        android:id="@+id/rlTitle"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bg_header"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/tvTitle"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text="个人中心"
+            android:textColor="#ffffff"
+            android:textSize="22dip" >
+        </TextView>
+
+        <Button
+            android:id="@+id/btnRefresh"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_marginLeft="5dip"
+            android:background="@drawable/btn_search"
+            android:padding="5dip"
+            android:text="刷新"
+            android:textColor="#ffffff" >
+        </Button>
+
+        <Button
+            android:id="@+id/btnEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dip"
+            android:background="@drawable/btn_search"
+            android:padding="5dip"
+            android:text="编辑"
+            android:textColor="#ffffff" >
+        </Button>
+
+        <Button
+            android:id="@+id/btnFinish"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="5dip"
+            android:background="@drawable/btn_clearall"
+            android:padding="5dip"
+            android:text="完成"
+            android:textColor="#ffffff" >
+        </Button>
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/linearBottom"
+        android:layout_below="@+id/rlTitle"
+        android:background="@drawable/bg" >
+
+        <LinearLayout
+            android:id="@+id/linearType"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
+            android:padding="5dip" >
+
+            <ImageView
+                android:id="@+id/ivMyads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_mypost_xml" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/ivMyfav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_store_xml" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/ivMyhistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_history_xml" >
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearListView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/linearBottom"
+            android:layout_below="@+id/linearType"
+            android:orientation="vertical"
+            android:paddingBottom="5dip"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <ListView
+                android:id="@+id/lvGoodsList"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:listSelector="#00000000"
+                android:scrollingCache="false" >
+            </ListView>
+        </LinearLayout>
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/linearBottom"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <include
+            android:id="@+id/linearBottom"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            layout="@layout/common_bottom" >
+        </include>
+    </LinearLayout>
+
+</RelativeLayout>
