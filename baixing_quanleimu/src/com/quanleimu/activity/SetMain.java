@@ -20,7 +20,7 @@ public class SetMain extends BaseActivity {
 
 	// 定义控件
 	public TextView tvTitle, tvPhoneNum, personMark;
-	public RelativeLayout rlMark, rlTelNum, rlClearCache, rlBack;
+	public RelativeLayout rlMark, rlTelNum, rlClearCache, rlBack, rlAbout;
 	public ImageView ivHomePage,ivCateMain,ivPostGoods,ivMyCenter,ivSetMain;
 	
 	public Dialog changePhoneDialog;
@@ -55,7 +55,7 @@ public class SetMain extends BaseActivity {
 		rlMark = (RelativeLayout) findViewById(R.id.rlMark);
 		rlTelNum = (RelativeLayout) findViewById(R.id.rlTelNum);
 		rlClearCache = (RelativeLayout) findViewById(R.id.rlClearCache);
-//		rlAbout = (RelativeLayout) findViewById(R.id.rlAbout);
+		rlAbout = (RelativeLayout) findViewById(R.id.rlAbout);
 		rlBack = (RelativeLayout) findViewById(R.id.rlBack);
 
 		tvPhoneNum = (TextView) findViewById(R.id.tvPhoneNum);
@@ -75,7 +75,7 @@ public class SetMain extends BaseActivity {
 		ivMyCenter.setOnClickListener(this);
 		ivSetMain.setOnClickListener(this);
 		rlClearCache.setOnClickListener(this);
-//		rlAbout.setOnClickListener(this);
+		rlAbout.setOnClickListener(this);
 		rlBack.setOnClickListener(this);
 		rlMark.setOnClickListener(this);
 		
@@ -170,11 +170,11 @@ public class SetMain extends BaseActivity {
 		}
 
 		// 关于
-//		if (v.getId() == rlAbout.getId()) {
-//			intent.setClass(SetMain.this, AboutUs.class);
-//			intent.putExtras(bundle);
-//			startActivity(intent);
-//		}
+		if (v.getId() == rlAbout.getId()) {
+			intent.setClass(SetMain.this, AboutUs.class);
+			intent.putExtras(bundle);
+			startActivity(intent);
+		}
 
 		// 反馈
 		if (v.getId() == rlBack.getId()) {

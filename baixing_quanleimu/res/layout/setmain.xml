@@ -267,7 +267,7 @@
                     </TextView>
                 </RelativeLayout>
 
-                <!-- <RelativeLayout
+                <RelativeLayout
                     android:id="@+id/rlAbout"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -294,14 +294,13 @@
                         android:focusable="false"
                         android:src="@drawable/btn_viewad_right" >
                     </ImageView>
-                </RelativeLayout> -->
+                </RelativeLayout>
 
                 <RelativeLayout
-                    android:layout_marginTop="10dip"
                     android:id="@+id/rlBack"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/btn_s_bg" >
+                    android:background="@drawable/btn_down_bg" >
 
                     <TextView
                         android:id="@+id/tvBack"

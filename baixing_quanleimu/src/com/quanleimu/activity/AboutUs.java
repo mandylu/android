@@ -6,12 +6,15 @@ import android.view.WindowManager;
 import android.webkit.WebView;
 import android.widget.Button;
 import android.widget.TextView;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageInfo;
+import java.text.SimpleDateFormat;
 
 public class AboutUs extends BaseActivity {
 
 	private Button backBtn; 
-	private WebView web;
-	public TextView tvTitle;
+	
+	public TextView tvTitle, rlVersion;
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.aboutus);
@@ -23,8 +26,13 @@ public class AboutUs extends BaseActivity {
 		tvTitle = (TextView) findViewById(R.id.tvTitle);
 		tvTitle.setText("关于我们");
 		
-		web = (WebView) findViewById(R.id.web);
-		web.loadUrl("http://shanghai.baixing.com/iphone/about/v1/?app=baixing");
+		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+		rlVersion = (TextView) findViewById(R.id.rlVersion);
+		try {
+			rlVersion.setText("版本信息：v" + this.getVersionName() + " " + sDateFormat.format(new java.util.Date()));
+		} catch (Exception ex) {
+			rlVersion.setText("版本信息：v1.01 " + sDateFormat.format(new java.util.Date()));
+		}
 		
 		
 		backBtn = (Button)findViewById(R.id.backBtn);
@@ -37,4 +45,14 @@ public class AboutUs extends BaseActivity {
 			}
 		});
 	}
+	
+	private String getVersionName() throws Exception
+	   {
+	           // 获取PackageManager的实例
+	           PackageManager packageManager = getPackageManager();
+	           // getPackageName()是你当前类的包名，0代表是获取版本信息
+	           PackageInfo packInfo = packageManager.getPackageInfo(getPackageName(),0);
+	           String version = packInfo.versionName;
+	           return version;
+	   }
 }
