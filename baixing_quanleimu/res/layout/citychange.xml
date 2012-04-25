@@ -75,12 +75,12 @@
             	</LinearLayout>
 
             	<RelativeLayout
-            	    android:id="@+id/linearGpsCity"
+            	    android:id="@+id/linearGpsCityItem"
             	    android:layout_width="fill_parent"
             	    android:layout_height="wrap_content"
-            	    android:background="@drawable/btn_s_bg"
             	    android:layout_marginLeft="10dip"
             	    android:layout_marginRight="10dip"
+            	    android:background="@drawable/btn_s_bg"
             	    android:padding="10dip" >
 
              		<TextView 

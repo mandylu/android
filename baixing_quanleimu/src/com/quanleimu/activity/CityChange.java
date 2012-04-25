@@ -23,6 +23,7 @@ public class CityChange extends BaseActivity {
 	public Button btnBack;
 	public LinearLayout linearHotCities;
 	public RelativeLayout linear2Other;
+	public RelativeLayout linearGpsCity;
 	public ImageView ivGPSChoose;
 	public List<ImageView> listImageViews = new ArrayList<ImageView>();
 
@@ -62,8 +63,39 @@ public class CityChange extends BaseActivity {
 
 		linearHotCities = (LinearLayout) findViewById(R.id.linearHotCities);
 		linear2Other = (RelativeLayout) findViewById(R.id.linear2Other);
+		linearGpsCity = (RelativeLayout) findViewById(R.id.linearGpsCityItem);
 		btnBack = (Button) findViewById(R.id.btnBack);
 		ivGPSChoose = (ImageView) findViewById(R.id.ivGPSChoose);
+		
+		//ivGPSChoose.setClickable(true); 
+		//linearGpsCity.setVisibility(View.INVISIBLE);
+		linearGpsCity.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				intent.setClass(CityChange.this, HomePage.class);
+				bundle.putString("backPageName", "");
+				bundle.putString("cityName", tvGPSCityName.getText().toString());
+				intent.putExtras(bundle);
+				startActivity(intent);
+
+				for(int i=0;i<myApp.getListCityDetails().size();i++)
+				{
+					if(tvGPSCityName.getText().toString().equals(myApp.getListCityDetails().get(i).getName()))
+					{
+						myApp.setCityEnglishName(myApp.getListCityDetails().get(i).getEnglishName());
+//						System.out.println("CityChange cityName1----->" +cityName1);
+						break;
+					}
+				}
+				myApp.setCityName(tvGPSCityName.getText().toString());
+				Helper.saveDataToLocate(CityChange.this, "cityName", tvGPSCityName.getText().toString());
+
+				CityChange.this.finish();
+				
+			}
+		});
+		//ivGPSChoose.setOnClickListener
 		
 		
 		if(myApp.getGpsCityName() == null || myApp.getGpsCityName().equals(""))
