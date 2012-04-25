@@ -30,8 +30,8 @@ public class Communication {
 	public static String apiKey = "api_mobile_android";
 	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";
 
-//	public static String apiUrl = "http://www.liuweili.baixing.com/api/Mobile.";
-	public static String apiUrl = "http://www.baixing.com/api/Mobile.";
+	//public static String apiUrl = "http://www.liuweili.baixing.com/api/mobile.";
+	public static String apiUrl = "http://www.baixing.com/api/mobile.";
 
 	public static String getApiUrl(String apiName, ArrayList<String> parameters) {
 
@@ -66,10 +66,10 @@ public class Communication {
 	
 	// 业务逻辑API URL
 	public static String getPostParameters(ArrayList<String> list) {
-		if(MyApplication.udid.equals("") || MyApplication.version.equals("")){
+		/*if(MyApplication.udid.equals("") || MyApplication.version.equals("")){
 			getudid();
 			getversion();
-		}
+		}*/
 		
 		list.add("udid=" + MyApplication.udid);
 		list.add("version=" + MyApplication.version);
