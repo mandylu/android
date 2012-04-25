@@ -121,8 +121,8 @@ public class GetGoods extends BaseActivity implements OnScrollListener{
 		
 		// 自定义底部按钮
 		btnMore = new Button(this);
-		btnMore.setTextSize(22);
-		btnMore.setText("点  击  获  取  更  多");
+		btnMore.setTextSize(15);
+		btnMore.setText("获  取  更  多");
 		btnMore.setGravity(Gravity.CENTER);
 		loadingLayout = new LinearLayout(this);
 		loadingLayout.addView(btnMore, FFlayoutParams);
