@@ -60,6 +60,7 @@ public class CityChange extends BaseActivity {
 		// 通过或ID获取控件
 		tvTitle = (TextView) findViewById(R.id.tvTitle);
 		tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
+		tvGPSCityName.setText(myApp.getGpsCityName());
 
 		linearHotCities = (LinearLayout) findViewById(R.id.linearHotCities);
 		linear2Other = (RelativeLayout) findViewById(R.id.linear2Other);
@@ -68,33 +69,40 @@ public class CityChange extends BaseActivity {
 		ivGPSChoose = (ImageView) findViewById(R.id.ivGPSChoose);
 		
 		//ivGPSChoose.setClickable(true); 
-		//linearGpsCity.setVisibility(View.INVISIBLE);
-		linearGpsCity.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				intent.setClass(CityChange.this, HomePage.class);
-				bundle.putString("backPageName", "");
-				bundle.putString("cityName", tvGPSCityName.getText().toString());
-				intent.putExtras(bundle);
-				startActivity(intent);
-
-				for(int i=0;i<myApp.getListCityDetails().size();i++)
-				{
-					if(tvGPSCityName.getText().toString().equals(myApp.getListCityDetails().get(i).getName()))
-					{
-						myApp.setCityEnglishName(myApp.getListCityDetails().get(i).getEnglishName());
-//						System.out.println("CityChange cityName1----->" +cityName1);
-						break;
-					}
-				}
-				myApp.setCityName(tvGPSCityName.getText().toString());
-				Helper.saveDataToLocate(CityChange.this, "cityName", tvGPSCityName.getText().toString());
-
-				CityChange.this.finish();
+		boolean isLocated = !tvGPSCityName.getText().toString().equals("");
+		if(!isLocated){
+			tvGPSCityName.setText("定位中...");
+		}
+		ivGPSChoose.setVisibility(isLocated ? View.VISIBLE : View.INVISIBLE);
+//		linearGpsCity.setClickable(false);
+		if(isLocated){
+			linearGpsCity.setOnClickListener(new View.OnClickListener() {
 				
-			}
-		});
+				@Override
+				public void onClick(View v) {
+					intent.setClass(CityChange.this, HomePage.class);
+					bundle.putString("backPageName", "");
+					bundle.putString("cityName", tvGPSCityName.getText().toString());
+					intent.putExtras(bundle);
+					startActivity(intent);
+	
+					for(int i=0;i<myApp.getListCityDetails().size();i++)
+					{
+						if(tvGPSCityName.getText().toString().equals(myApp.getListCityDetails().get(i).getName()))
+						{
+							myApp.setCityEnglishName(myApp.getListCityDetails().get(i).getEnglishName());
+	//						System.out.println("CityChange cityName1----->" +cityName1);
+							break;
+						}
+					}
+					myApp.setCityName(tvGPSCityName.getText().toString());
+					Helper.saveDataToLocate(CityChange.this, "cityName", tvGPSCityName.getText().toString());
+	
+					CityChange.this.finish();
+					
+				}
+			});
+		}
 		//ivGPSChoose.setOnClickListener
 		
 		
@@ -111,7 +119,6 @@ public class CityChange extends BaseActivity {
 
 		// 设置标题
 		tvTitle.setText("切换城市");
-		tvGPSCityName.setText(myApp.getGpsCityName());
 		btnBack.setText(backPageName);
 
 		LayoutInflater inflater = LayoutInflater.from(this);
