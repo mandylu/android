@@ -31,10 +31,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
-import com.quanleimu.activity.GoodDetail;
 import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
@@ -63,11 +60,13 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	UserBean user;
 	private int currentPage = -1;//-1:mypost, 0:myfav, 1:history
 	private Bundle bundle;
+	private BaseActivity baseActivity;
 	private int buttonStatus = -1;//-1:edit 0:finish
 	
 	public PersonalCenterView(BaseActivity context, Bundle bundle){
 		super(context, bundle);
 		this.bundle = bundle;
+		baseActivity = context;
 		init();
 	}
 
@@ -128,16 +127,18 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
+				GoodsDetail detail = null;
 				if(currentPage == -1){
-					bundle.putSerializable("currentGoodsDetail", listMyPost.get(arg2));
+					detail = listMyPost.get(arg2);
 				}
 				else if(0 == currentPage || 1 == currentPage){
-					bundle.putSerializable("currentGoodsDetail", goodsList.get(arg2));
+					detail = goodsList.get(arg2);
 				}
-//				intent.setClass(MyCenter.this, GoodDetail.class);
-//				bundle.putString("backPageName", "个人中心");
-//				intent.putExtras(bundle);
-//				startActivity(intent);
+				if(null != detail){
+					GoodDetailView detailView = new GoodDetailView(detail, baseActivity, bundle);
+					detailView.setInfoChangeListener(m_viewInfoListener);
+					m_viewInfoListener.onNewView(detailView);
+				}
 			}
 
 		});
