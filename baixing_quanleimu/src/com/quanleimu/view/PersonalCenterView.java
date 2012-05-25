@@ -472,6 +472,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
 		tab.m_visible = true;
+		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
 		return tab;
 	}
 	

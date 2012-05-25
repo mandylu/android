@@ -51,7 +51,7 @@ public class BaseView extends LinearLayout{
 	public void onDestroy(){}//called before destruction
 	public void onPause(){}//called before put into stack
 	
-	public boolean onBack(){return false;}//called when back button/key pressed
+	public boolean onBack(){if(null != m_viewInfoListener) m_viewInfoListener.onBack(); return false;}//called when back button/key pressed
 	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
 	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
