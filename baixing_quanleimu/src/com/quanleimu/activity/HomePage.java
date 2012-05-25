@@ -22,6 +22,21 @@ import android.widget.Button;
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
+
+	@Override
+	public void onBack(){
+		
+	}
+	
+	@Override
+	public void onNewView(BaseView newView){
+		MyApplication.getApplication().getViewStack().push(currentView);
+		currentView = newView;
+		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+		scroll.removeAllViews();
+		scroll.addView(currentView);
+	}
+
 	@Override
 	public void onTitleChanged(String newTitle){
 		TextView title = (TextView)this.findViewById(R.id.tvTitle);
@@ -110,7 +125,9 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 //			startActivity(intent);
 			break;
 		case R.id.btnLeft:
-			currentView.onLeftActionPressed();
+			if(!currentView.onLeftActionPressed()){
+				this.onBack();
+			}
 //			intent.setClass(HomePage.this, CityChange.class);
 //			bundle.putString("backPageName", "首页");
 ////			bundle.putString("cityName", cityName);
