@@ -28,6 +28,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
+import com.quanleimu.view.SetMain;
 
 public class PostGoodsCateMain extends BaseActivity implements CategorySelectionView.ICateSelectionListener{
 

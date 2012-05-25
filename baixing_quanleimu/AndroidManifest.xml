@@ -95,7 +95,7 @@
         <activity
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
-            android:name="SetMain"
+            android:name="com.quanleimu.view.SetMain"
             android:screenOrientation="portrait" >
         </activity>
         <activity
@@ -270,7 +270,7 @@
         <activity
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
-            android:name="AboutUs"
+            android:name="com.quanleimu.view.AboutUs"
             android:screenOrientation="portrait" >
         </activity>
         <activity

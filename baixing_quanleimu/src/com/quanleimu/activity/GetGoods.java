@@ -41,6 +41,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.SetMain;
 import com.quanleimu.adapter.GoodsListAdapter;
 public class GetGoods extends BaseActivity implements OnScrollListener{
 

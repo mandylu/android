@@ -21,6 +21,7 @@ import android.widget.Toast;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.SetMain;
 
 public class Login extends BaseActivity {
 

@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
@@ -13,10 +13,11 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageInfo;
 import java.text.SimpleDateFormat;
 
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.BaseView.ViewInfoListener;
+import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 
 public class AboutUs extends BaseView {
 

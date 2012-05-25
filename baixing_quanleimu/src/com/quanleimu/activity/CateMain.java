@@ -35,6 +35,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
+import com.quanleimu.view.SetMain;
 
 public class CateMain extends BaseActivity implements CategorySelectionView.ICateSelectionListener{
 

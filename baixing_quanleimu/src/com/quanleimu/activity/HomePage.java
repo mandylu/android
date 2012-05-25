@@ -14,6 +14,8 @@ import com.mobclick.android.MobclickAgent;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.SetMain;
+
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;

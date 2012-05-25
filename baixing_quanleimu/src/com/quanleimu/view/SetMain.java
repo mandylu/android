@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -12,12 +12,14 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 public class SetMain extends BaseView implements View.OnClickListener{
 

@@ -29,6 +29,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.SetMain;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.activity.GoodDetail;
 
