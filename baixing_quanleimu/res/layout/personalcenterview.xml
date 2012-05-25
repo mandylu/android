@@ -41,7 +41,7 @@
         <LinearLayout
             android:id="@+id/linearListView"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_below="@+id/linearType"
             android:orientation="vertical"
             android:paddingBottom="5dip"
