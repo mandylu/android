@@ -10,6 +10,8 @@ public class BaseView extends LinearLayout{
 	
 	public interface ViewInfoListener{
 		public void onTitleChanged(String newTitle);
+		public void onBack();
+		public void onNewView(BaseView view);
 	};
 	
 	public class TitleDef{
