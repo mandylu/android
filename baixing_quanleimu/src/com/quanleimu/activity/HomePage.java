@@ -18,6 +18,7 @@ import com.quanleimu.view.BaseView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
+import com.quanleimu.view.PersonalCenterView;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
@@ -72,6 +73,18 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		left.setOnClickListener(this);
 		Button right = (Button)findViewById(R.id.btnRight);
 		right.setOnClickListener(this);
+		
+		ivHomePage = (ImageView)findViewById(R.id.ivHomePage);
+		ivHomePage.setOnClickListener(this);
+		ivCateMain = (ImageView)findViewById(R.id.ivCateMain);
+		ivCateMain.setOnClickListener(this);
+		ivPostGoods = (ImageView)findViewById(R.id.ivPostGoods);
+		ivPostGoods.setOnClickListener(this);
+		ivMyCenter = (ImageView)findViewById(R.id.ivMyCenter);
+		ivMyCenter.setOnClickListener(this);
+		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
+		ivSetMain.setOnClickListener(this);
+
 		super.onCreate(savedInstanceState);
 		if(!MyApplication.update){
 			MyApplication.update = true;
@@ -134,8 +147,15 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 //			intent.putExtras(bundle);
 //			startActivity(intent);
 			break;
-		case R.id.ivHomePage:
+		case R.id.ivHomePage:{
+			if(currentView instanceof HomePageView)break;
+			BaseView home = new HomePageView(this, bundle);
+			ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+			scroll.removeAllViews();
+			scroll.addView(home);
+			currentView = home;
 			break;
+		}
 		case R.id.ivCateMain:
 			///////////set currentview here
 			///currentView = ???
@@ -155,12 +175,13 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			break;
 		case R.id.ivMyCenter:
 			///////////set currentview here
-			///currentView = ???
-	
-			intent.setClass(this, MyCenter.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
+			///currentView = ???ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
+			if(currentView instanceof PersonalCenterView)break;
+			BaseView personal = new PersonalCenterView(this, bundle);
+			ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+			scroll.removeAllViews();
+			scroll.addView(personal);
+			currentView = personal;
 			break;
 		case R.id.ivSetMain:
 			///////////set currentview here
