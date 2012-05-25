@@ -8,7 +8,8 @@ public class BaseView extends LinearLayout{
 	
 	public interface ViewInfoListener{
 		public void onTitleChanged(String newTitle);
-	}
+	};
+	
 	public class TitleDef{
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
@@ -21,7 +22,8 @@ public class BaseView extends LinearLayout{
 		public String m_tabSelected = "首页";
 	};
 	
-	public void setInfoChangeListener(ViewInfoListener listener){};
+	protected ViewInfoListener m_viewInfoListener = null;	
+	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
 	
 	public BaseView(Context context){super(context); this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
 	public BaseView(Context context, Bundle bundle){super(context);this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
