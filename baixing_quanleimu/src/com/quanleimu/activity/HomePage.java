@@ -15,6 +15,9 @@ import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import android.widget.ScrollView;
 import com.quanleimu.view.BaseView;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.Button;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
@@ -43,6 +46,9 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		setContentView(R.layout.homepage);
 		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
 		BaseView childView = new HomePageView(this, bundle);
+		setBaseLayout(childView);
+		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
+		vHomePage.setImageResource(R.drawable.iv_homepage_press);
 		childView.setInfoChangeListener(this);
 		scroll.addView(childView);
 		super.onCreate(savedInstanceState);
@@ -51,6 +57,40 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			MobclickAgent.setUpdateOnlyWifi(false);
 			MobclickAgent.update(this);
 		}
+	}
+	
+	private void setBaseLayout(BaseView view){
+		if(view == null) return;
+		BaseView.TabDef tab = view.getTabDef();
+		if(null == tab) return;
+		LinearLayout bottom = (LinearLayout)findViewById(R.id.linearBottom);
+		if(tab.m_visible){
+			bottom.setVisibility(View.VISIBLE);
+		}
+		else{
+			bottom.setVisibility(View.GONE);
+		}
+		
+		BaseView.TitleDef title = view.getTitleDef();
+		if(null == title) return;
+		LinearLayout top = (LinearLayout)findViewById(R.id.linearTop);
+		if(title.m_visible){
+			top.setVisibility(View.VISIBLE);
+			TextView tTitle = (TextView)findViewById(R.id.tvTitle);
+			tTitle.setText(title.m_title);
+			if(!title.m_leftActionHint.equals("")){
+				Button left = (Button)findViewById(R.id.btnLeft);
+				left.setText(title.m_leftActionHint);
+			}
+			if(!title.m_rightActionHint.equals("")){
+				Button right = (Button)findViewById(R.id.btnRight);
+				right.setText(title.m_rightActionHint);
+			}
+		}
+		else{
+			top.setVisibility(View.GONE);
+		}
+	
 	}
 
 	@Override
