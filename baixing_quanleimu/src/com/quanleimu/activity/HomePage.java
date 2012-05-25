@@ -27,7 +27,68 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 
 	@Override
 	public void onBack(){
-		
+    	if(!currentView.onBack() && MyApplication.getApplication().getViewStack().size() > 0){
+    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+    		scroll.removeAllViews();
+    		
+    		currentView.onDestroy();
+    		currentView = MyApplication.getApplication().getViewStack().pop();
+    		setBaseLayout(currentView);            		
+
+    		scroll.addView(currentView);
+    		
+    	}else{
+
+            SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+            String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
+
+            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+            LayoutInflater adbInflater = LayoutInflater.from(HomePage.this);
+            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
+
+            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
+            final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
+            if (needShowShortcut)
+            {
+                builder.setView(shortcutLayout);
+            }
+
+            builder.setTitle("提示:").setMessage("是否退出?").setNegativeButton("否", null).setPositiveButton("是", new DialogInterface.OnClickListener()
+            {
+
+                @Override
+                public void onClick(DialogInterface dialog, int which)
+                {
+
+                    if (needShowShortcut && shortcutCheckBox.isChecked())
+                    {
+                        ShortcutUtil.addShortcut(HomePage.this);
+                    }
+
+                    if (MyApplication.list != null && MyApplication.list.size() != 0)
+                    {
+                        for (String s : MyApplication.list)
+                        {
+                            deleteFile(s);
+                        }
+                        for (int i = 0; i < fileList().length; i++)
+                        {
+                            System.out.println("fileList()[i]----------->" + fileList()[i]);
+                        }
+                    }
+
+                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+                    SharedPreferences.Editor editor = settings.edit();
+                    editor.putString("hasShowShortcut", "yes");
+                    // Commit the edits!
+                    editor.commit();
+
+                    System.exit(0);
+                }
+            });
+            builder.create().show();
+    	}		
 	}
 	
 	@Override
@@ -255,68 +316,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
     {
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
-        	if(!currentView.onBack() && MyApplication.getApplication().getViewStack().size() > 0){
-        		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-        		scroll.removeAllViews();
-        		
-        		currentView.onDestroy();
-        		currentView = MyApplication.getApplication().getViewStack().pop();
-        		setBaseLayout(currentView);            		
-
-        		scroll.addView(currentView);
-        		
-        	}else{
-
-	            SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-	            String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
-	
-	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	
-	            LayoutInflater adbInflater = LayoutInflater.from(HomePage.this);
-	            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
-	
-	            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
-	            final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
-	            if (needShowShortcut)
-	            {
-	                builder.setView(shortcutLayout);
-	            }
-	
-	            builder.setTitle("提示:").setMessage("是否退出?").setNegativeButton("否", null).setPositiveButton("是", new DialogInterface.OnClickListener()
-	            {
-	
-	                @Override
-	                public void onClick(DialogInterface dialog, int which)
-	                {
-	
-	                    if (needShowShortcut && shortcutCheckBox.isChecked())
-	                    {
-	                        ShortcutUtil.addShortcut(HomePage.this);
-	                    }
-	
-	                    if (MyApplication.list != null && MyApplication.list.size() != 0)
-	                    {
-	                        for (String s : MyApplication.list)
-	                        {
-	                            deleteFile(s);
-	                        }
-	                        for (int i = 0; i < fileList().length; i++)
-	                        {
-	                            System.out.println("fileList()[i]----------->" + fileList()[i]);
-	                        }
-	                    }
-	
-	                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-	                    SharedPreferences.Editor editor = settings.edit();
-	                    editor.putString("hasShowShortcut", "yes");
-	                    // Commit the edits!
-	                    editor.commit();
-	
-	                    System.exit(0);
-	                }
-	            });
-	            builder.create().show();
-        	}
+        	onBack();
         }
         
         else{

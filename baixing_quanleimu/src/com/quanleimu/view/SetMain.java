@@ -39,13 +39,27 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		((RelativeLayout) findViewById(R.id.rlMark)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlTextImage)).setOnClickListener(this);
 		
-		TextView textImg = (TextView)findViewById(R.id.textView3);
+		final TextView textImg = (TextView)findViewById(R.id.textView3);
 		if(MyApplication.isTextMode()){
 			textImg.setText("文字");
 		}
 		else{
 			textImg.setText("图片");
-		}		
+		}
+		textImg.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				if(textImg.getText().equals("图片")){
+					textImg.setText("文字");
+					MyApplication.setTextMode(true);
+				}
+				else{
+					textImg.setText("图片");
+					MyApplication.setTextMode(false);
+				}				
+			}
+		});
 		
 		((TextView)setmain.findViewById(R.id.personMark)).setText(MyApplication.getApplication().getPersonMark());
 		
@@ -72,6 +86,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = "设置";
+		title.m_leftActionHint = "首页";
 		
 		return title;
 		}
@@ -177,6 +192,13 @@ public class SetMain extends BaseView implements View.OnClickListener{
 			if(null != m_viewInfoListener){
 				m_viewInfoListener.onNewView(new AboutUs((BaseActivity)getContext()));
 			}
+		}
+		
+		// 反馈
+		else if (v.getId() ==((RelativeLayout) findViewById(R.id.rlBack)).getId()) {
+//			intent.setClass(SetMain.this, OpinionBack.class);
+//			intent.putExtras(bundle);
+//			startActivity(intent);
 		}
 	}
 
