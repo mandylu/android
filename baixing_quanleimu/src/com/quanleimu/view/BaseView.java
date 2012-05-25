@@ -24,9 +24,18 @@ public class BaseView extends LinearLayout{
 		public String m_rightActionHint = null;
 	};
 	
+	public enum ETAB_TYPE{
+		ETAB_TYPE_MAINPAGE,
+		ETAB_TYPE_CATEGORY,
+		ETAB_TYPE_PUBLISH,
+		ETAB_TYPE_MINE,
+		ETAB_TYPE_SETTING
+	};
+	
 	public class TabDef{
+		
 		public boolean m_visible = true;
-		public String m_tabSelected = "首页";
+		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	};
 	
 	protected ProgressDialog pd;

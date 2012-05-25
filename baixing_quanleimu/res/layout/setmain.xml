@@ -4,23 +4,6 @@
     android:layout_height="fill_parent"
     android:background="@drawable/bg_home" >
 
-    <RelativeLayout
-        android:id="@+id/rlTitle"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:background="@drawable/bg_header" >
-
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="设置"
-            android:textColor="#ffffff"
-            android:textSize="24dip" >
-        </TextView>
-    </RelativeLayout>
-
     <ScrollView
         android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
@@ -422,20 +405,5 @@
             </LinearLayout>
         </LinearLayout>
     </ScrollView>
-
-    <LinearLayout
-        android:id="@+id/linearBottom"
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
-
-        <include
-            android:id="@+id/linearBottom"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            layout="@layout/common_bottom" >
-        </include>
-    </LinearLayout>
 
 </RelativeLayout>

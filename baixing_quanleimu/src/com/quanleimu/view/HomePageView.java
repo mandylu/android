@@ -58,6 +58,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.ViewInfoListener;
 import com.quanleimu.activity.BaseActivity;
 
@@ -655,6 +656,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
 		tab.m_visible = true;
+		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 		return tab;
 	}
 	

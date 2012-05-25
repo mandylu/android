@@ -15,71 +15,27 @@ import android.widget.TextView;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 
-public class SetMain extends BaseActivity {
+public class SetMain extends BaseView implements View.OnClickListener{
 
 	// 定义控件
-	public TextView tvTitle, tvPhoneNum, personMark;
-	public RelativeLayout rlMark, rlTelNum, rlClearCache, rlBack, rlAbout, rlTextImage;
-	public ImageView ivHomePage,ivCateMain,ivPostGoods,ivMyCenter,ivSetMain;
-	
 	public Dialog changePhoneDialog;
 	private UserBean user;
-
-	// 定义变量
- 
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		myApp.setActivity_type("setmain");
-		user = (UserBean) Util.loadDataFromLocate(SetMain.this, "user");
-		if (user != null) {
-			tvPhoneNum.setText(user.getPhone());
-		}
-		personMark.setText(myApp.getPersonMark());
-		super.onResume();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.setmain);
-		super.onCreate(savedInstanceState);
-		String mark = (String) Helper.loadDataFromLocate(this, "personMark");
-		myApp.setPersonMark(mark);
-		// 设置标题
-		rlMark = (RelativeLayout) findViewById(R.id.rlMark);
-		rlTelNum = (RelativeLayout) findViewById(R.id.rlTelNum);
-		rlClearCache = (RelativeLayout) findViewById(R.id.rlClearCache);
-		rlAbout = (RelativeLayout) findViewById(R.id.rlAbout);
-		rlBack = (RelativeLayout) findViewById(R.id.rlBack);
-		rlTextImage = (RelativeLayout) findViewById(R.id.rlTextImage);
-
-		tvPhoneNum = (TextView) findViewById(R.id.tvPhoneNum);
-		personMark = (TextView) findViewById(R.id.personMark);
+	
+	
+	protected void Init(){
+		LayoutInflater inflator = LayoutInflater.from(getContext());
+		View setmain = inflator.inflate(R.layout.setmain, null);
+		this.addView(setmain);
 		
-		ivHomePage = (ImageView)findViewById(R.id.ivHomePage);
-		ivCateMain = (ImageView)findViewById(R.id.ivCateMain);
-		ivPostGoods = (ImageView)findViewById(R.id.ivPostGoods);
-		ivMyCenter = (ImageView)findViewById(R.id.ivMyCenter);
-		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
-		ivSetMain.setImageResource(R.drawable.iv_setmain_press);
-		
-		rlTelNum.setOnClickListener(this);
-		ivHomePage.setOnClickListener(this);
-		ivCateMain.setOnClickListener(this);
-		ivPostGoods.setOnClickListener(this);
-		ivMyCenter.setOnClickListener(this);
-		ivSetMain.setOnClickListener(this);
-		rlClearCache.setOnClickListener(this);
-		rlAbout.setOnClickListener(this);
-		rlBack.setOnClickListener(this);
-		rlMark.setOnClickListener(this);
-		rlTextImage.setOnClickListener(this);
+		((RelativeLayout) findViewById(R.id.rlTelNum)).setOnClickListener(this);
+		((RelativeLayout) findViewById(R.id.rlClearCache)).setOnClickListener(this);
+		( (RelativeLayout) findViewById(R.id.rlAbout)).setOnClickListener(this);
+		((RelativeLayout) findViewById(R.id.rlMark)).setOnClickListener(this);
+		((RelativeLayout) findViewById(R.id.rlTextImage)).setOnClickListener(this);
 		
 		TextView textImg = (TextView)findViewById(R.id.textView3);
 		if(MyApplication.isTextMode()){
@@ -87,30 +43,66 @@ public class SetMain extends BaseActivity {
 		}
 		else{
 			textImg.setText("图片");
+		}		
+		
+		((TextView)setmain.findViewById(R.id.personMark)).setText(MyApplication.getApplication().getPersonMark());
+		
+		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+		if (user != null) {
+			((TextView)setmain.findViewById(R.id.tvPhoneNum)).setText(user.getPhone());
 		}
-
+	}
+	
+	public SetMain(BaseActivity context){
+		super(context);		
+		
+		Init();
+	}
+	
+	public SetMain(BaseActivity context, Bundle bundle){
+		super(context, bundle);
+		
+		Init();
+	}
+	
+	@Override
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_title = "设置";
+		
+		return title;
+		}
+	
+	@Override	
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = true;		
+		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_SETTING;
+		
+		return tab;
 	}
 
 	@Override
 	public void onClick(View v) {
 		// 手机号码
-		if (v.getId() == rlTelNum.getId()) {
-			if (tvPhoneNum.getText().equals("")) {
+		if (v.getId() == ((RelativeLayout) findViewById(R.id.rlTelNum)).getId()) {
+			if (((TextView)findViewById(R.id.tvPhoneNum)).getText().equals("")) {
 				// 跳转登录界面
-				bundle.putString("back", "设置");
-				intent.putExtras(bundle);
-				intent.setClass(SetMain.this, Login.class);
-				intent.putExtras(bundle);
-				startActivityForResult(intent, 1);
+//				bundle.putString("back", "设置");
+//				intent.putExtras(bundle);
+//				intent.setClass(SetMain.this, Login.class);
+//				intent.putExtras(bundle);
+//				startActivityForResult(intent, 1);
 			} else {
 				// 修改对话框
 
-				LayoutInflater inflater = getLayoutInflater();
+				LayoutInflater inflater = LayoutInflater.from(getContext());
 				View linearlayout = inflater.inflate(
 						R.layout.changephonedialog, null);
 				TextView tvTelNum = (TextView) linearlayout
 						.findViewById(R.id.tvTelNum);
-				tvTelNum.setText("您已经绑定" + tvPhoneNum.getText().toString()
+				tvTelNum.setText("您已经绑定" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString()
 						+ ",确定要修改吗？");
 				Button btnChange = (Button) linearlayout
 						.findViewById(R.id.btnChange);
@@ -123,11 +115,11 @@ public class SetMain extends BaseActivity {
 					public void onClick(View v) {
 						// 点击换号码，重新跳转到登录
 						changePhoneDialog.dismiss();
-						bundle.putString("back", "设置");
-						intent.putExtras(bundle);
-						intent.setClass(SetMain.this, Login.class);
-						intent.putExtras(bundle);
-						startActivity(intent);
+//						bundle.putString("back", "设置");
+//						intent.putExtras(bundle);
+//						intent.setClass(SetMain.this, Login.class);
+//						intent.putExtras(bundle);
+//						startActivity(intent);
 					}
 				});
 
@@ -138,23 +130,23 @@ public class SetMain extends BaseActivity {
 						changePhoneDialog.dismiss();
 					}
 				});
-				changePhoneDialog = new AlertDialog.Builder(this).setView(
-						linearlayout).create();
+				
+				changePhoneDialog = new AlertDialog.Builder(getContext()).setView(linearlayout).create();
 				changePhoneDialog.show();
 			}
 		}
 
 		// 签名档
-		if (v.getId() == rlMark.getId()) {
-			intent.setClass(SetMain.this, MarkLable.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
+		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
+//			intent.setClass(SetMain.this, MarkLable.class);
+//			intent.putExtras(bundle);
+//			startActivity(intent);
 		}
 
 		// 清空缓存
-		if (v.getId() == rlClearCache.getId()) {
+		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlClearCache)).getId()) {
 
-			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 			builder.setTitle("提示:")
 					.setMessage("是否清空缓存？")
 					.setNegativeButton("否", null)
@@ -164,76 +156,26 @@ public class SetMain extends BaseActivity {
 								@Override
 								public void onClick(DialogInterface dialog,
 										int which) {
-									String[] files = fileList();
+									String[] files = getContext().fileList();
 									for(int i=0;i<files.length;i++){
 										String file_path = files[i];
-										deleteFile(file_path);
+										getContext().deleteFile(file_path);
 									}
 									//清空手机号码
-									tvPhoneNum.setText("");
+									((TextView)findViewById(R.id.tvPhoneNum)).setText("");
 									//清空签名档
-									personMark.setText("");
+									((TextView)findViewById(R.id.personMark)).setText("");
 								}
 							});
 			builder.create().show();
 		}
-
-		// 关于
-		if (v.getId() == rlAbout.getId()) {
-			intent.setClass(SetMain.this, AboutUs.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-		}
-
-		// 反馈
-		if (v.getId() == rlBack.getId()) {
-			intent.setClass(SetMain.this, OpinionBack.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-		}
-		switch (v.getId()) {
-		case R.id.ivHomePage:
-			intent.setClass(this, HomePage.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivCateMain:
-			intent.setClass(this, CateMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivPostGoods:
-			intent.setClass(this, PostGoodsCateMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivMyCenter:
-			intent.setClass(this, MyCenter.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivSetMain:
-			break;
-		case R.id.rlTextImage:{
-			TextView textImg = (TextView)v.findViewById(R.id.textView3);
-			if(textImg.getText().equals("图片")){
-				textImg.setText("文字");
-				MyApplication.setTextMode(true);
+		
+		//aboutus
+		else if(v.getId() == ((RelativeLayout) findViewById(R.id.rlAbout)).getId()){
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onNewView(new AboutUs((BaseActivity)getContext()));
 			}
-			else{
-				textImg.setText("图片");
-				MyApplication.setTextMode(false);
-			}
-			break;
 		}
-		default:
-			break;
-		}
-		super.onClick(v);
 	}
 
 }

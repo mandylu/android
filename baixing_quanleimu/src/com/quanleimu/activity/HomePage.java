@@ -93,13 +93,9 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	protected void onCreate(Bundle savedInstanceState) { 
 		setContentView(R.layout.homepage);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-		BaseView childView = new HomePageView(this, bundle);
-		setBaseLayout(childView);
-		currentView = childView;
+		
 		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
 		vHomePage.setImageResource(R.drawable.iv_homepage_press);
-		childView.setInfoChangeListener(this);
-		scroll.addView(childView);
 		
 		Button left = (Button)findViewById(R.id.btnLeft);
 		left.setOnClickListener(this);
@@ -116,21 +112,27 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		ivMyCenter.setOnClickListener(this);
 		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
 		ivSetMain.setOnClickListener(this);
-
-		super.onCreate(savedInstanceState);
+		
 		if(!MyApplication.update){
 			MyApplication.update = true;
 			MobclickAgent.setUpdateOnlyWifi(false);
 			MobclickAgent.update(this);
 		}
+				
+		BaseView childView = new HomePageView(this, bundle);		
+		currentView = childView;
+		childView.setInfoChangeListener(this);		
+		setBaseLayout(childView);
+		scroll.addView(childView);
 		
-		
-		ImageView ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
-		ivSetMain.setOnClickListener(this);
+		super.onCreate(savedInstanceState);
 	}
 	
 	private void setBaseLayout(BaseView view){
+		
 		if(view == null) return;
+		
+		
 		BaseView.TabDef tab = view.getTabDef();
 		if(null == tab) return;
 		LinearLayout bottom = (LinearLayout)findViewById(R.id.linearBottom);
@@ -140,6 +142,13 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		else{
 			bottom.setVisibility(View.GONE);
 		}
+		
+		ivHomePage.setImageResource((tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE) ? R.drawable.iv_homepage_press : R.drawable.iv_homepage);
+		ivCateMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY ? R.drawable.iv_cate_press : R.drawable.iv_cate);
+		ivPostGoods.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH ? R.drawable.iv_postgoods_press : R.drawable.iv_postgoods);
+		ivMyCenter.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE ? R.drawable.iv_mycenter_press : R.drawable.iv_mycenter);
+		ivSetMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING ? R.drawable.iv_setmain_press : R.drawable.iv_setmain);		
+		
 		
 		BaseView.TitleDef title = view.getTitleDef();
 		if(null == title) return;
@@ -151,6 +160,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				Button left = (Button)findViewById(R.id.btnLeft);
 				left.setText(title.m_leftActionHint);
+				left.setVisibility(View.VISIBLE);
 			}else{
 				Button left = (Button)findViewById(R.id.btnLeft);
 				left.setVisibility(View.GONE);
@@ -159,6 +169,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			if(null != title.m_rightActionHint && !title.m_rightActionHint.equals("")){
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setText(title.m_rightActionHint);
+				right.setVisibility(View.VISIBLE);
 			}else{
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setVisibility(View.GONE);
@@ -225,7 +236,10 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 //			startActivity(intent);
 //			overridePendingTransition(0, 0);
 			
-			onNewView(new AboutUs(this));
+			BaseView view = new SetMain(this);
+			view.setInfoChangeListener(this);
+			onNewView(view);
+			
 			
 			break;
 		}
