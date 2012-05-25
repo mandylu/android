@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+        android:id="@+id/relativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/linearBottom"
+        android:layout_below="@+id/rlTitle"
+        android:background="@drawable/bg" >
+
+        <LinearLayout
+            android:id="@+id/linearType"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:gravity="center_vertical"
+            android:padding="5dip" >
+
+            <ImageView
+                android:id="@+id/ivMyads"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_mypost_xml" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/ivMyfav"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_store_xml" >
+            </ImageView>
+
+            <ImageView
+                android:id="@+id/ivMyhistory"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@drawable/btn_history_xml" >
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:id="@+id/linearListView"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_above="@+id/linearBottom"
+            android:layout_below="@+id/linearType"
+            android:orientation="vertical"
+            android:paddingBottom="5dip"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <!-- <ListView
+            android:id="@+id/lvGoodsList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:fastScrollEnabled="true"
+        	android:scrollbars="none"
+        	android:focusable="true" 
+            android:listSelector="#00000000"
+            android:scrollingCache="false" >
+        </ListView> -->
+        <ListView
+         android:listSelector="#00000000"
+         android:scrollingCache="false"
+         android:id="@+id/lvGoodsList"
+         android:layout_width="fill_parent"
+         android:fastScrollEnabled="true"
+         android:scrollbars="none"
+         android:focusable="true" 
+         android:layout_height="fill_parent" >
+    </ListView>
+    </LinearLayout>
+</RelativeLayout>
