@@ -300,6 +300,9 @@ public class MyApplication extends Application {
 		this.activity_type = activity_type;
 	}
 
+	static public MyApplication getApplication(){
+		return mDemoApp;
+	}
 	static MyApplication mDemoApp;
 	
 	protected ViewStack viewStack;
