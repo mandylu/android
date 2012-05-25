@@ -220,7 +220,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
         	if(!currentView.onBack() && MyApplication.getApplication().getViewStack().size() > 0){
-        		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+        		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
         		scroll.removeAllViews();
         		
         		currentView.onDestroy();
