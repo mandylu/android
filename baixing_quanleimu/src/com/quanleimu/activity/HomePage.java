@@ -31,11 +31,14 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	
 	@Override
 	public void onNewView(BaseView newView){
+		currentView.onPause();
 		MyApplication.getApplication().getViewStack().push(currentView);
 		currentView = newView;
 		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
 		scroll.removeAllViews();
 		scroll.addView(currentView);
+		
+		setBaseLayout(newView);
 	}
 
 	@Override
@@ -91,6 +94,10 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			MobclickAgent.setUpdateOnlyWifi(false);
 			MobclickAgent.update(this);
 		}
+		
+		
+		ImageView ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
+		ivSetMain.setOnClickListener(this);
 	}
 	
 	private void setBaseLayout(BaseView view){
@@ -112,13 +119,20 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			top.setVisibility(View.VISIBLE);
 			TextView tTitle = (TextView)findViewById(R.id.tvTitle);
 			tTitle.setText(title.m_title);
-			if(!title.m_leftActionHint.equals("")){
+			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				Button left = (Button)findViewById(R.id.btnLeft);
 				left.setText(title.m_leftActionHint);
+			}else{
+				Button left = (Button)findViewById(R.id.btnLeft);
+				left.setVisibility(View.GONE);
 			}
-			if(!title.m_rightActionHint.equals("")){
+			
+			if(null != title.m_rightActionHint && !title.m_rightActionHint.equals("")){
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setText(title.m_rightActionHint);
+			}else{
+				Button right = (Button)findViewById(R.id.btnRight);
+				right.setVisibility(View.GONE);
 			}
 		}
 		else{
@@ -187,21 +201,26 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			///////////set currentview here
 			///currentView = ???
 	
-			intent.setClass(this, SetMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
+//			intent.setClass(this, SetMain.class);
+//			intent.putExtras(bundle);
+//			startActivity(intent);
+//			overridePendingTransition(0, 0);
+			
+			onNewView(new AboutUs(this));
+			
 			break;
 		}
 		super.onClick(v);
 	}
 
 	private final static String SHARE_PREFS_NAME = "baixing_shortcut_app";
+	
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
+        	
 
             SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
             String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");

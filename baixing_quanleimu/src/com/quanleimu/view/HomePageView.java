@@ -40,6 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.CateMain;
 import com.quanleimu.activity.GetGoods;
 import com.quanleimu.activity.HomePage;
@@ -72,15 +73,17 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
 	private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
 	static private String locationAddr = "";
-	private ViewInfoListener infoListener = null;
+
 	
-	@Override
-	public void setInfoChangeListener(ViewInfoListener listener){
-		infoListener = listener;
+	public HomePageView(BaseActivity context){
+		super(context);
+		
+		init();
 	}
 	
 	public HomePageView(BaseActivity activity, Bundle bundle){
 		super(activity, bundle);
+
 		init();
 	}
 	
