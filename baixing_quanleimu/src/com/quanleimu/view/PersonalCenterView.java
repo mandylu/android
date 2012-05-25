@@ -33,6 +33,8 @@ import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.activity.GoodDetail;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
@@ -61,6 +63,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	UserBean user;
 	private int currentPage = -1;//-1:mypost, 0:myfav, 1:history
 	private Bundle bundle;
+	private int buttonStatus = -1;//-1:edit 0:finish
 	
 	public PersonalCenterView(BaseActivity context, Bundle bundle){
 		super(context, bundle);
@@ -383,33 +386,45 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			}
 		}
 	}
+	
+	@Override
+	public boolean onLeftActionPressed(){
+		pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
+		pd.setCancelable(true);
+		new Thread(new UpdateThread(currentPage)).start();
+		return true;
+	}
 
+	@Override
+	public boolean onRightActionPressed(){
+		if(-1 == buttonStatus){
+//		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
+			if(this.m_viewInfoListener != null){
+				m_viewInfoListener.onRightBtnTextChanged("完成");
+			}
+			if(adapter != null){
+				adapter.setHasDelBtn(true);
+			}
+			buttonStatus = 0;
+		}
+		else{
+//			btnEdit.setBackgroundResource(R.drawable.btn_search);
+			if(this.m_viewInfoListener != null){
+				m_viewInfoListener.onRightBtnTextChanged("编辑");
+			}
+			adapter.setHasDelBtn(false);
+			buttonStatus = -1;
+		}
+		if(adapter != null)
+		{
+			adapter.notifyDataSetChanged();
+		}		
+		return true;
+	}
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btnEdit:
-//			if(btnEdit.getText().equals("编辑")){
-//				btnEdit.setBackgroundResource(R.drawable.btn_clearall);
-//				btnEdit.setText("完成");
-//				if(adapter != null){
-//					adapter.setHasDelBtn(true);
-//				}
-//			}
-//			else{
-//				btnEdit.setBackgroundResource(R.drawable.btn_search);
-//				btnEdit.setText("编辑");
-//				adapter.setHasDelBtn(false);
-//			}
-			if(adapter != null)
-			{
-				adapter.notifyDataSetChanged();
-			}
-			break;
-		case R.id.btnRefresh:
-			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
-			new Thread(new UpdateThread(currentPage)).start();
-			break;
 		case R.id.ivMyads:
 			this.currentPage = -1;
 			rebuildPage();
@@ -442,4 +457,21 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		}
 		
 	}
+	@Override
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_leftActionHint = "更新";
+		title.m_rightActionHint = "编辑";
+		title.m_title = "个人中心";
+		title.m_visible = true;
+		return title;
+	}
+	
+	@Override
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = true;
+		return tab;
+	}
+	
 }

@@ -39,6 +39,12 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		
 		setBaseLayout(newView);
 	}
+	
+	@Override
+	public void onRightBtnTextChanged(String newText){
+		Button right = (Button)this.findViewById(R.id.btnRight);
+		right.setText(newText);
+	}
 
 	@Override
 	public void onTitleChanged(String newTitle){
@@ -59,6 +65,30 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		super.onResume();
 	} 
 
+	private void changeTabView(BaseView view){
+		view.setInfoChangeListener(this);
+		if(currentView instanceof HomePageView){
+			ivHomePage.setImageResource(R.drawable.iv_homepage);
+		}
+		else if(currentView instanceof PersonalCenterView){
+			ivMyCenter.setImageResource(R.drawable.iv_mycenter);
+		}
+		
+		
+		if(view instanceof HomePageView){
+			ivHomePage.setImageResource(R.drawable.iv_homepage_press);
+		}
+		else if(view instanceof PersonalCenterView){
+			ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
+		}
+		
+		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+		scroll.removeAllViews();
+		scroll.addView(view);
+		currentView = view;
+		setBaseLayout(view);
+	}
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
 		setContentView(R.layout.homepage);
@@ -162,11 +192,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			break;
 		case R.id.ivHomePage:{
 			if(currentView instanceof HomePageView)break;
-			BaseView home = new HomePageView(this, bundle);
-			LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-			scroll.removeAllViews();
-			scroll.addView(home);
-			currentView = home;
+			changeTabView(new HomePageView(this, bundle));
 			break;
 		}
 		case R.id.ivCateMain:
@@ -187,14 +213,8 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivMyCenter:
-			///////////set currentview here
-			///currentView = ???ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
 			if(currentView instanceof PersonalCenterView)break;
-			BaseView personal = new PersonalCenterView(this, bundle);
-			LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-			scroll.removeAllViews();
-			scroll.addView(personal);
-			currentView = personal;
+			changeTabView(new PersonalCenterView(this, bundle));
 			break;
 		case R.id.ivSetMain:
 			///////////set currentview here
