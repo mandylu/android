@@ -21,7 +21,7 @@ import android.widget.Button;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
-	
+	private BaseView currentView;
 	@Override
 	public void onTitleChanged(String newTitle){
 		TextView title = (TextView)this.findViewById(R.id.tvTitle);
@@ -47,10 +47,16 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
 		BaseView childView = new HomePageView(this, bundle);
 		setBaseLayout(childView);
+		currentView = childView;
 		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
 		vHomePage.setImageResource(R.drawable.iv_homepage_press);
 		childView.setInfoChangeListener(this);
 		scroll.addView(childView);
+		
+		Button left = (Button)findViewById(R.id.btnLeft);
+		left.setOnClickListener(this);
+		Button right = (Button)findViewById(R.id.btnRight);
+		right.setOnClickListener(this);
 		super.onCreate(savedInstanceState);
 		if(!MyApplication.update){
 			MyApplication.update = true;
@@ -97,39 +103,52 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.btnRight:
-			intent.setClass(HomePage.this, Search.class);
-			bundle.putString("searchType", "homePage");
-			intent.putExtras(bundle);
-			startActivity(intent);
+			currentView.onRightActionPressed();
+//			intent.setClass(HomePage.this, Search.class);
+//			bundle.putString("searchType", "homePage");
+//			intent.putExtras(bundle);
+//			startActivity(intent);
 			break;
 		case R.id.btnLeft:
-			intent.setClass(HomePage.this, CityChange.class);
-			bundle.putString("backPageName", "首页");
-//			bundle.putString("cityName", cityName);
-			intent.putExtras(bundle);
-			startActivity(intent);
+			currentView.onLeftActionPressed();
+//			intent.setClass(HomePage.this, CityChange.class);
+//			bundle.putString("backPageName", "首页");
+////			bundle.putString("cityName", cityName);
+//			intent.putExtras(bundle);
+//			startActivity(intent);
 			break;
 		case R.id.ivHomePage:
 			break;
 		case R.id.ivCateMain:
+			///////////set currentview here
+			///currentView = ???
 			intent.setClass(this, CateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
 			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivPostGoods:
+			///////////set currentview here
+			///currentView = ???
+			
 			intent.setClass(this, PostGoodsCateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
 			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivMyCenter:
+			///////////set currentview here
+			///currentView = ???
+	
 			intent.setClass(this, MyCenter.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
 			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivSetMain:
+			///////////set currentview here
+			///currentView = ???
+	
 			intent.setClass(this, SetMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);

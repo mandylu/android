@@ -637,7 +637,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "切换城市";
 		title.m_rightActionHint = "搜索";
-		title.m_title = "xxx";
+		title.m_title = "百姓网";
 		title.m_visible = true;
 		return title;
 	}
