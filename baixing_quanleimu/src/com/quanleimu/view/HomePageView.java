@@ -1,6 +1,7 @@
 package com.quanleimu.view;
 
 import java.io.BufferedInputStream;
+
 import java.io.BufferedOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -57,6 +58,7 @@ import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.ViewInfoListener;
+import com.quanleimu.activity.BaseActivity;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
 	private Gallery glDetail;
@@ -77,8 +79,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		infoListener = listener;
 	}
 	
-	public HomePageView(Context context, Bundle bundle){
-		super(context, bundle);
+	public HomePageView(BaseActivity activity, Bundle bundle){
+		super(activity, bundle);
 		init();
 	}
 	
@@ -624,10 +626,14 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	public void onPause(){}//called before put into stack
 	
 	@Override
-	public boolean onBack(){return false;}//called when back button/key pressed
+	public boolean onBack(){
+		return false;
+	}
 	
 	@Override
-	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
+	public boolean onLeftActionPressed(){
+		return false;
+	}
 	
 	@Override
 	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
