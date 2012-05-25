@@ -13,7 +13,6 @@ import android.widget.TextView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
-import android.widget.ScrollView;
 import com.quanleimu.view.BaseView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -34,7 +33,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		currentView.onPause();
 		MyApplication.getApplication().getViewStack().push(currentView);
 		currentView = newView;
-		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		scroll.removeAllViews();
 		scroll.addView(currentView);
 		
@@ -63,7 +62,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
 		setContentView(R.layout.homepage);
-		ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		BaseView childView = new HomePageView(this, bundle);
 		setBaseLayout(childView);
 		currentView = childView;
@@ -164,7 +163,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		case R.id.ivHomePage:{
 			if(currentView instanceof HomePageView)break;
 			BaseView home = new HomePageView(this, bundle);
-			ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+			LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 			scroll.removeAllViews();
 			scroll.addView(home);
 			currentView = home;
@@ -192,7 +191,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			///currentView = ???ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
 			if(currentView instanceof PersonalCenterView)break;
 			BaseView personal = new PersonalCenterView(this, bundle);
-			ScrollView scroll = (ScrollView)this.findViewById(R.id.scrollView1);
+			LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 			scroll.removeAllViews();
 			scroll.addView(personal);
 			currentView = personal;

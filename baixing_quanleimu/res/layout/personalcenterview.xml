@@ -3,8 +3,6 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/linearBottom"
-        android:layout_below="@+id/rlTitle"
         android:background="@drawable/bg" >
 
         <LinearLayout
@@ -43,24 +41,12 @@
         <LinearLayout
             android:id="@+id/linearListView"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_above="@+id/linearBottom"
+            android:layout_height="wrap_content"
             android:layout_below="@+id/linearType"
             android:orientation="vertical"
             android:paddingBottom="5dip"
             android:paddingLeft="5dip"
             android:paddingRight="5dip" >
-
-            <!-- <ListView
-            android:id="@+id/lvGoodsList"
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:fastScrollEnabled="true"
-        	android:scrollbars="none"
-        	android:focusable="true" 
-            android:listSelector="#00000000"
-            android:scrollingCache="false" >
-        </ListView> -->
         <ListView
          android:listSelector="#00000000"
          android:scrollingCache="false"

@@ -56,14 +56,14 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <ScrollView
-        android:id="@+id/scrollView1"
+    <LinearLayout
+        android:id="@+id/contentLayout"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/linearBottom"
         android:layout_below="@+id/linearTop"
         android:background="@drawable/bg" >
-    </ScrollView>
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/linearBottom"
