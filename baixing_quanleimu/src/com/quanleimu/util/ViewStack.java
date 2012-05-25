@@ -68,7 +68,7 @@ public class ViewStack {
 	
 	public BaseView pop(){
 		if(m_viewList.size() > 0){
-			StackItem item = m_viewList.remove(0);
+			StackItem item = m_viewList.remove(m_viewList.size() - 1);
 			if(null != item){
 				return item.getBaseView(m_context);
 			}
