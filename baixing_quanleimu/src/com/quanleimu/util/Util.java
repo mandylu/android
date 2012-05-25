@@ -37,6 +37,8 @@ import android.graphics.BitmapFactory;
 import android.graphics.Matrix;
 import android.graphics.Point;
 import android.graphics.Bitmap.CompressFormat;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo.State;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
@@ -767,6 +769,26 @@ System.out.println("没找到文件");
 		 return null;  
 		}  
 		return addr;  
+	}
+	
+	static public boolean JadgeConnection (Context context)throws Exception
+	{
+		
+		boolean a = false;
+		ConnectivityManager connManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		State mobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+		
+		State wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
+		
+		if(mobile.toString().equals("CONNECTED") || wifi.toString().equals("CONNECTED"))
+		{
+			a = true;
+		}
+		else 
+		{
+			a = false;
+		}
+		return a;
 	}
 	
 	//GSM和CDMA手机定位

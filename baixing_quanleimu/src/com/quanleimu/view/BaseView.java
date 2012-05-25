@@ -2,6 +2,7 @@ package com.quanleimu.view;
 
 import com.quanleimu.activity.BaseActivity;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -25,6 +26,8 @@ public class BaseView extends LinearLayout{
 		public boolean m_visible = true;
 		public String m_tabSelected = "首页";
 	};
+	
+	protected ProgressDialog pd;
 	
 	protected ViewInfoListener m_viewInfoListener = null;	
 	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
