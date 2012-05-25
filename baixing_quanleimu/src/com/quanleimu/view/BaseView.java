@@ -1,5 +1,7 @@
 package com.quanleimu.view;
 
+import com.quanleimu.activity.BaseActivity;
+
 import android.content.Context;
 import android.os.Bundle;
 import android.widget.LinearLayout;
@@ -25,8 +27,8 @@ public class BaseView extends LinearLayout{
 	protected ViewInfoListener m_viewInfoListener = null;	
 	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
 	
-	public BaseView(Context context){super(context); this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
-	public BaseView(Context context, Bundle bundle){super(context);this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
+	public BaseView(BaseActivity context){super(context); this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
+	public BaseView(BaseActivity context, Bundle bundle){super(context);this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
 	
 	public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
 	
