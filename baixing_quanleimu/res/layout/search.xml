@@ -33,7 +33,6 @@
 		  	         android:layout_marginRight="10dip"
 		  	         android:layout_toRightOf="@+id/ivSearch"
 		  	         android:background="#ffffff"
-		  	         android:hint="输入您想要的物品"
 		  	         android:singleLine="true" >
 
 </EditText>

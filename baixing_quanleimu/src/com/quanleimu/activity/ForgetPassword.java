@@ -104,8 +104,10 @@ public class ForgetPassword extends BaseActivity {
 					myHandler.sendEmptyMessage(2);
 				}
 			} catch (UnsupportedEncodingException e) {
+				myHandler.sendEmptyMessage(3);
 				e.printStackTrace();
 			} catch (Exception e) {
+				myHandler.sendEmptyMessage(3);
 				e.printStackTrace();
 			}
 		}
@@ -141,8 +143,11 @@ public class ForgetPassword extends BaseActivity {
 				}
 				break;
 			case 2:
-				Toast.makeText(ForgetPassword.this, "未获取到数据", 3).show();
+				Toast.makeText(ForgetPassword.this, "登陆未成功，请稍后重试！", 3).show();
 				break;
+			case 3:
+				Toast.makeText(ForgetPassword.this, "网络连接失败，请检查设置！", 3).show();
+				break;				
 			}
 			super.handleMessage(msg);
 		}

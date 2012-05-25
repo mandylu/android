@@ -5,40 +5,47 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.DialogInterface;
+import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.KeyEvent;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
+import android.widget.Button;
+import android.widget.CheckBox;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.adapter.AllCatesAdapter;
+import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.PostMu;
+import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.CategorySelectionView;
 
-public class CateMain extends BaseActivity {
+public class CateMain extends BaseActivity implements CategorySelectionView.ICateSelectionListener{
 
 	// 定义控件
 	public TextView tvTitle; 
-	public ListView lvAllCates;
-	public ProgressDialog pd;
+	public LinearLayout lvCateArea;
 	public ImageView ivHomePage, ivCateMain, ivPostGoods, ivMyCenter,
 			ivSetMain; 
+	protected Button btBack;
+	protected CategorySelectionView selectionView;
 
-	// 定义变量
-	public AllCatesAdapter adapter;
-	public List<String> listAllCatesName = new ArrayList<String>();
-	public List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
-	public AllCates allCates = new AllCates();
-	public String json = "";
 
 	@Override
 	protected void onPause() { 
@@ -57,8 +64,22 @@ public class CateMain extends BaseActivity {
 		super.onCreate(savedInstanceState);
 
 		// findViewById
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		lvAllCates = (ListView) findViewById(R.id.lvAllCates);
+		tvTitle = (TextView) findViewById(R.id.tvTitle);		
+
+		selectionView = new CategorySelectionView(this);
+		selectionView.setSelectionListener(this);
+		lvCateArea = (LinearLayout) findViewById(R.id.linearListView);		
+		lvCateArea.addView(selectionView);
+		
+		btBack = (Button) findViewById(R.id.btnBack);
+		btBack.setVisibility(View.GONE);
+		btBack.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				CateMain.this.onBackPressed();
+			}
+		});
 
 		ivHomePage = (ImageView) findViewById(R.id.ivHomePage);
 		ivCateMain = (ImageView) findViewById(R.id.ivCateMain);
@@ -75,38 +96,6 @@ public class CateMain extends BaseActivity {
 		ivPostGoods.setOnClickListener(this);
 		ivMyCenter.setOnClickListener(this);
 		ivSetMain.setOnClickListener(this);
-
-		lvAllCates
-				.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						intent.setClass(CateMain.this, SecondCate.class);
-						bundle.putString("firstCateName", listFirst.get(arg2)
-								.getName());
-						bundle.putInt("firstCatePos", arg2);
-						bundle.putString("backPageName", "选择类目");
-						intent.putExtras(bundle);
-						startActivity(intent);
-					}
-				});
-
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(this, "saveFirstStepCate");
-
-		if (postMu != null && !postMu.getJson().equals("")) {
-			json = postMu.getJson();
-			long time = postMu.getTime();
-			if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
-				myHandler.sendEmptyMessage(1);
-				new Thread(new AllCateThread(false)).start();
-			} else {
-				myHandler.sendEmptyMessage(1);
-			}
-		} else {
-			pd = ProgressDialog.show(CateMain.this, "提示", "请稍候...");
-			pd.setCancelable(true);
-			new Thread(new AllCateThread(true)).start();
-		}
 	}
 
 	@Override
@@ -116,6 +105,7 @@ public class CateMain extends BaseActivity {
 			intent.setClass(this, HomePage.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivCateMain:
 			break;
@@ -123,92 +113,64 @@ public class CateMain extends BaseActivity {
 			intent.setClass(this, PostGoodsCateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivMyCenter:
 			intent.setClass(this, MyCenter.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivSetMain:
 			intent.setClass(this, SetMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		}
 		super.onClick(v);
 	}
-
-	// 管理线程的Handler
-	Handler myHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			switch (msg.what) {
-			case 1:
-				if (pd != null) {
-					pd.dismiss();
-				}
-				allCates = JsonUtil.getAllCatesFromJson(Communication
-						.decodeUnicode(json));
-				listFirst = allCates.getChildren();
-				if (listFirst == null || listFirst.size() == 0) {
-					Toast.makeText(CateMain.this, "未获取到类目数据", 3).show();
-				} else {
-					myApp.setListFirst(listFirst);
-					adapter = new AllCatesAdapter(CateMain.this, listFirst);
-					lvAllCates.setAdapter(adapter);
-				}
-				break;
-			case 2:
-				if (pd != null) {
-					pd.dismiss();
-				}
-				Toast.makeText(CateMain.this, "未获取到数据", 3).show();
-				break;
-			case 3:
-				if (pd != null) {
-					pd.dismiss();
-				}
-				Toast.makeText(CateMain.this, "网络连接异常", 3).show();
-				break;
-			}
-			super.handleMessage(msg);
-		}
-	};
-
-	class AllCateThread implements Runnable {
-		private boolean isUpdate;
-
-		public AllCateThread(boolean isUpdate) {
-			this.isUpdate = isUpdate;
-		}
-
-		@Override
-		public void run() {
-			String apiName = "category_list";
-			ArrayList<String> list = new ArrayList<String>();
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
-
-				if (json != null) {
-					PostMu postMu = new PostMu();
-					postMu.setJson(json);
-					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(CateMain.this, "saveFirstStepCate",
-							postMu);
-					if (isUpdate) {
-						myHandler.sendEmptyMessage(1);
-					}
-				} else {
-					myHandler.sendEmptyMessage(2);
-				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				myHandler.sendEmptyMessage(3);
-				e.printStackTrace();
-			}
-
+	
+	@Override
+	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
+		btBack.setText("选择类目");
+		btBack.setVisibility(View.VISIBLE);
+		
+		tvTitle.setText(selectedMainCate.getName());
+	}
+	
+	@Override
+	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
+		//btBack.setText(tvTitle.getText().toString());
+		
+		tvTitle.setText(selectedSubCate.getName());
+		
+		intent.setClass(this, GetGoods.class);
+		bundle.putString("name", selectedSubCate.getName());
+		bundle.putString("categoryEnglishName",	selectedSubCate.getEnglishName());
+		bundle.putString("siftresult", "");
+		bundle.putString("backPageName", "选择类目");
+		intent.putExtras(bundle);
+		startActivity(intent);
+	}
+	
+//	@Override
+//    public boolean onKeyDown(int keyCode, KeyEvent event)
+//    {
+//        if (keyCode == KeyEvent.KEYCODE_BACK)
+//        {
+//        	
+//        }
+//        return super.onKeyDown(keyCode, event);
+//    }
+	
+	@Override 
+	public void onBackPressed(){
+		if(CateMain.this.selectionView == null || !CateMain.this.selectionView.OnBack()){
+			CateMain.this.finish();
+		}else
+		{
+			btBack.setVisibility(View.GONE);
 		}
 	}
 }

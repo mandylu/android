@@ -16,9 +16,8 @@ import android.widget.TextView;
 public class SecondCatesAdapter extends BaseAdapter {
 
 	public Context context;
-	public TextView tvCateName;
 	public List<SecondStepCate> list = new ArrayList<SecondStepCate>();
-	
+	public String cateName;
 	
 
 	public SecondCatesAdapter() {
@@ -27,12 +26,21 @@ public class SecondCatesAdapter extends BaseAdapter {
 	}
 	
 
-	public SecondCatesAdapter(Context context,List<SecondStepCate> list) {
+	public SecondCatesAdapter(Context context, String cateName_, List<SecondStepCate> list) {
 		super();
 		this.context = context;
 		this.list = list;
+		this.cateName = cateName_;
+	}
+	
+	public void SetCateName(String cateName_){
+		this.cateName = cateName_;
 	}
 
+	public void SetSubCateList( List<SecondStepCate> listSubCate){
+		this.list = listSubCate;
+		notifyDataSetChanged();
+	}
 
 	@Override
 	public int getCount() {
@@ -70,7 +78,8 @@ public class SecondCatesAdapter extends BaseAdapter {
 		}else{
 			v.setBackgroundResource(R.drawable.btn_m_bg);
 		}
-		tvCateName = (TextView)v.findViewById(R.id.tvCateName);
+		
+		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
 		tvCateName.setText(list.get(position).getName());
 		
 		return v;

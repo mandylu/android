@@ -30,11 +30,13 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.quanleimu.activity.GetGoods.GetGoodsListThread;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
@@ -56,7 +58,7 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 	/**
 	 * 设置布局显示目标最大化
 	 */
-	private LayoutParams FFlayoutParams = new LinearLayout.LayoutParams(
+	public LayoutParams FFlayoutParams = new LinearLayout.LayoutParams(
 			LinearLayout.LayoutParams.FILL_PARENT,
 			LinearLayout.LayoutParams.FILL_PARENT);
 
@@ -113,27 +115,43 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 		ivSetMain = (ImageView) findViewById(R.id.ivSetMain);
 		// ivCateMain.setImageResource(R.drawable.iv_cate_press);
 
-		// 自定义底部按钮
-		btnMore = new Button(this);
-		btnMore.setTextSize(22);
-		btnMore.setText("点  击  获  取  更  多");
-		btnMore.setGravity(Gravity.CENTER);
-		loadingLayout = new LinearLayout(this);
-		loadingLayout.addView(btnMore, FFlayoutParams);
-		loadingLayout.setGravity(Gravity.CENTER);
-
-		btnMore.setOnClickListener(new OnClickListener() {
-
+		//线性布局  
+        LinearLayout layout = new LinearLayout(this);  
+        //设置布局 水平方向  
+        layout.setOrientation(LinearLayout.HORIZONTAL);  
+         //进度条  
+        progressBar = new ProgressBar(this, null, android.R.attr.progressBarStyleSmall);
+         //进度条显示位置  
+        progressBar.setVisibility(View.GONE);
+        
+        layout.addView(progressBar, WClayoutParams);  
+        tvAddMore = new TextView(this);  
+        tvAddMore.setTextSize(18);
+        tvAddMore.setText("更多...");  
+        tvAddMore.setGravity(Gravity.CENTER_VERTICAL);  
+        layout.addView(tvAddMore, WClayoutParams);  
+        layout.setGravity(Gravity.CENTER);  
+        loadingLayout = new LinearLayout(this);  
+        loadingLayout.setBackgroundResource(R.drawable.alpha_bg);
+//        loadingLayout.setBackgroundColor(R.color.white);
+        loadingLayout.addView(layout, WClayoutParams);  
+        loadingLayout.setGravity(Gravity.CENTER); 
+        
+        tvAddMore.setOnClickListener(new View.OnClickListener() {
+			
 			@Override
 			public void onClick(View v) {
-				// 点击获取更多 按钮布局消失
-				loadingLayout.setVisibility(View.GONE);
+				progressBar.setVisibility(View.VISIBLE);
+				tvAddMore.setText("加载中...");
+				
+				//点击获取更多 按钮布局消失
 				isFirst = -1;
 				startRow = listSearchGoods.size();
 				new Thread(new GetGoodsListThread()).start();
 			}
 		});
 
+        lvSearchResult.setDivider(null);
 		lvSearchResult.addFooterView(loadingLayout);
 
 		listSearchGoods = myApp.getListSearchGoods();
@@ -167,13 +185,26 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
-						intent.setClass(SearchGoods.this, GetGoodsDetail2.class);
-						bundle.putString("backPageName", title);
-						bundle.putString("detail_type", "searchgoods");
-						bundle.putInt("detail_pos", arg2);
-						intent.putExtras(bundle);
-						startActivity(intent);
-
+						if(arg2 == listSearchGoods.size())
+						{
+							progressBar.setVisibility(View.VISIBLE);
+							tvAddMore.setText("加载中...");
+							
+							//点击获取更多 按钮布局消失
+							isFirst = -1;
+							startRow = listSearchGoods.size();
+							new Thread(new GetGoodsListThread()).start();
+						}
+						else
+						{
+							intent.setClass(SearchGoods.this, GoodDetail.class);
+							bundle.putString("backPageName", title);
+							bundle.putSerializable("currentGoodsDetail", listSearchGoods.get(arg2));
+							bundle.putString("detail_type", "searchgoods");
+//							bundle.putInt("detail_pos", arg2);
+							intent.putExtras(bundle);
+							startActivity(intent);
+						}
 					}
 				});
 
@@ -199,21 +230,25 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 			intent.setClass(this, CateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivPostGoods:
 			intent.setClass(this, PostGoodsCateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivMyCenter:
 			intent.setClass(this, MyCenter.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivSetMain:
 			intent.setClass(this, SetMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		}
 		super.onClick(v);
@@ -225,14 +260,14 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case 1:
-				if (pd != null) {
-					pd.dismiss();
-				}
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				totalCount = goodsList.getCount();
 
 				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(SearchGoods.this, "无对应信息", 3).show();
+					if (pd != null) {
+						pd.dismiss();
+					}
+					Toast.makeText(SearchGoods.this, "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
 					listSearchGoods = goodsList.getData();
 
@@ -248,6 +283,9 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 					adapter = new CommonAdapter(SearchGoods.this,
 							listSearchGoods);
 					lvSearchResult.setAdapter(adapter);
+					if (pd != null) {
+						pd.dismiss();
+					}
 				}
 
 				break;
@@ -255,13 +293,28 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(SearchGoods.this, "未获取到数据", 3).show();
+				progressBar.setVisibility(View.GONE);
+				tvAddMore.setText("更多...");
+				loadingLayout.setVisibility(View.GONE);
+				Toast.makeText(SearchGoods.this, "没有符合条件的结果，请重新输入！", 3).show();
+				// 判断总数是不是已经超出当前集合长度
+				if (goodsList.getCount() > listSearchGoods.size()) {
+					loadingLayout.setVisibility(View.VISIBLE);
+				} else {
+					loadingLayout.setVisibility(View.GONE);
+				}
 				break;
 			case 3:
+				if (pd != null) {
+					pd.dismiss();
+				}
+				progressBar.setVisibility(View.GONE);
+				tvAddMore.setText("更多...");
+				loadingLayout.setVisibility(View.GONE);
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 
 				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(SearchGoods.this, "无对应信息", 3).show();
+					Toast.makeText(SearchGoods.this, "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
 					listCommonSearchGoods = goodsList.getData();
 					for (int i = 0; i < listCommonSearchGoods.size(); i++) {
@@ -271,11 +324,27 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 
 					adapter.setList(listSearchGoods);
 					adapter.notifyDataSetChanged();
-					if (totalCount > listSearchGoods.size()) {
-						loadingLayout.setVisibility(View.VISIBLE);
-					} else {
-						loadingLayout.setVisibility(View.GONE);
-					}
+					
+				}
+				if (totalCount > listSearchGoods.size()) {
+					loadingLayout.setVisibility(View.VISIBLE);
+				} else {
+					loadingLayout.setVisibility(View.GONE);
+				}
+				break;
+			case 10:
+				if (pd != null) {
+					pd.dismiss();
+				}
+				progressBar.setVisibility(View.GONE);
+				tvAddMore.setText("更多...");
+				loadingLayout.setVisibility(View.GONE);
+				Toast.makeText(SearchGoods.this, "网络连接失败，请检查设置！", 3).show();
+				// 判断总数是不是已经超出当前集合长度
+				if (goodsList.getCount() > listSearchGoods.size()) {
+					loadingLayout.setVisibility(View.VISIBLE);
+				} else {
+					loadingLayout.setVisibility(View.GONE);
 				}
 				break;
 			}
@@ -315,9 +384,8 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 					myHandler.sendEmptyMessage(2);
 				}
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
 			} catch (IOException e) {
-				e.printStackTrace();
+				myHandler.sendEmptyMessage(10);
 			}
 
 		}
@@ -395,11 +463,15 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 			tvDateAndAddress.setTextColor(R.color.hui);
 
 			ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
-			Bitmap mb = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren1);
-			mb= Helper.toRoundCorner(mb, 20);
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+			Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren1, o);
+			Bitmap mb= Helper.toRoundCorner(tmb, 20);
+			tmb.recycle();
 			
-			Bitmap mb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren);
-			mb1= Helper.toRoundCorner(mb1, 20);
+			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren, o);
+			Bitmap mb1= Helper.toRoundCorner(tmb1, 20);
+			tmb1.recycle();
 			
 			ivInfo.setImageBitmap(mb);
 
@@ -451,7 +523,7 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 						ivInfo.setTag(c[0]);
 						LoadImage.addTask(c[0], ivInfo);
 
-						if (position <= 5) {
+						if (position <= 3) {
 							LoadImage.doTask();
 						}
 
@@ -464,7 +536,7 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 						ivInfo.setTag(b);
 						LoadImage.addTask(b, ivInfo);
 
-						if (position <= 5) {
+						if (position <= 3) {
 							LoadImage.doTask();
 						}
 						// SimpleImageLoader.showImg(ivInfo, b,context);
@@ -477,7 +549,7 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 
 			String price = "";
 			try {
-				price = list.get(position).getMetaData().get("价格") + "";
+				price = list.get(position).getMetaValueByKey("价格") + "";
 			} catch (Exception e) {
 				price = "";
 			}
@@ -486,25 +558,27 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 			} else {
 				tvPrice.setText(price);
 			}
-			tvDes.setText(list.get(position).getTitle());
+			tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
 
-			if (list.get(position).getDate() != null
-					&& !list.get(position).getDate().equals("")) {
-				Date date = new Date(list.get(position).getDate() * 1000);
+			String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
+			if (dateV != null && !dateV.equals("")) {
+				Date date = new Date(Long.parseLong(dateV) * 1000);
 				SimpleDateFormat df = new SimpleDateFormat("MM月dd日",
 						Locale.SIMPLIFIED_CHINESE);
 
-				if (list.get(position).getAreaNames() != null
-						&& !list.get(position).getAreaNames().equals("")) {
+				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if (areaV != null
+						&& !areaV.equals("")) {
 					tvDateAndAddress.setText(df.format(date) + " "
-							+ list.get(position).getAreaNames());
+							+ areaV);
 				} else {
 					tvDateAndAddress.setText(df.format(date));
 				}
 			} else {
-				if (list.get(position).getAreaNames() != null
-						&& !list.get(position).getAreaNames().equals("")) {
-					tvDateAndAddress.setText(list.get(position).getAreaNames());
+				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if (areaV != null
+						&& !areaV.equals("")) {
+					tvDateAndAddress.setText(areaV);
 				} else {
 					tvDateAndAddress.setVisibility(View.GONE);
 				}
@@ -518,8 +592,6 @@ public class SearchGoods extends BaseActivity implements OnScrollListener {
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		// TODO Auto-generated method stub
-
 	}
 
 	@Override

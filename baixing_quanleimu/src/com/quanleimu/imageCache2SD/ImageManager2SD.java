@@ -13,6 +13,9 @@ import java.util.HashMap;
 import java.util.Map;
 
 import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -22,6 +25,7 @@ import android.graphics.drawable.Drawable;
 import android.util.Log;
 
 import com.quanleimu.activity.R;
+import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.Util;
 
 public class ImageManager2SD
@@ -79,7 +83,10 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		{
 			is=context.openFileInput(fileName);
 			
-			return BitmapFactory.decodeStream(is);
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+            
+			return BitmapFactory.decodeStream(is, null, o);
 		} 
 		catch (FileNotFoundException e)
 		{
@@ -138,12 +145,21 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		
 		try
 		{
-			URL url = new URL(urlStr);
-			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
+//			URL url = new URL(urlStr);
+//			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
 			
-			String fileName=writerToFile(getMd5(urlStr),connection.getInputStream());
+		    HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+            
+            HttpPost httpPost = new HttpPost(urlStr); 
+            HttpResponse response = httpClient.execute(httpPost);
+            
+			String fileName=writerToFile(getMd5(urlStr),response.getEntity().getContent());
 			
-			return BitmapFactory.decodeFile(fileName);
+			httpClient.getConnectionManager().shutdown();
+			
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+			return BitmapFactory.decodeFile(fileName, o);
 			
 		} 
 		catch (IOException e)

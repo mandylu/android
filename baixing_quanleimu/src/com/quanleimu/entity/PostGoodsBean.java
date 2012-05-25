@@ -1,6 +1,8 @@
 package com.quanleimu.entity;
 
 import java.io.Serializable;
+import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 public class PostGoodsBean implements Serializable{
@@ -17,7 +19,7 @@ public class PostGoodsBean implements Serializable{
 	private String name;
 	private List<String> labels;
 	private List<String> values;
-	
+	private HashMap<String, String> lvmap;
 	
 	public String getUnit() {
 		return unit;
@@ -67,12 +69,24 @@ public class PostGoodsBean implements Serializable{
 	public void setValues(List<String> values) {
 		this.values = values;
 	}
+	
+	public HashMap<String, String> getLvmap() {
+		this.lvmap = new LinkedHashMap<String, String>();
+		if(labels!=null && labels.size()!=0){
+			for(int i=0;i<labels.size();i++){
+				this.lvmap.put(labels.get(i), values.get(i));
+			}
+		}
+		return this.lvmap;
+	}
+	
 	@Override
 	public String toString() {
 		return "PostGoodsBean [unit=" + unit + ", controlType=" + controlType
 				+ ", numeric=" + numeric + ", required=" + required
 				+ ", displayName=" + displayName + ", name=" + name
-				+ ", labels=" + labels + ", values=" + values + "]";
+				+ ", labels=" + labels + ", values=" + values + ", lvmap="
+				+ getLvmap() + "]";
 	}
 	
 	

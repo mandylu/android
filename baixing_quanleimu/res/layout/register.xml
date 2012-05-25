@@ -15,14 +15,13 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:background="@drawable/bg_header"
-            android:gravity="center_vertical"
             android:padding="5dip" >
 
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:text="注册"
                 android:textColor="#ffffff"
                 android:textSize="22dip" >
@@ -37,6 +36,7 @@
                 android:layout_alignParentTop="true"
                 android:background="@drawable/btn_search"
                 android:padding="5dip"
+                android:layout_centerVertical="true"
                 android:text="注册" />
 
             <Button
@@ -46,10 +46,12 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/btn_jj"
-                 android:paddingLeft="15dip"
+                 android:paddingLeft="12dip"
                 android:paddingTop="5dip"
                 android:paddingBottom="5dip"
+                android:paddingRight="12dip"
                 android:text="登录"
+                android:layout_centerVertical="true"
                 android:textColor="#ffffff" />
 
         </RelativeLayout>
@@ -77,25 +79,27 @@
                 android:layout_marginTop="10dip"
                 android:background="@drawable/btn_top_bg"
                 android:orientation="horizontal"
-                android:padding="15dip" >
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip" >
 
                 <TextView
                     android:id="@+id/textView1"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
-                    android:text="手 机 号："
-                    android:textSize="16dip" />
+                    android:text="手机号："
+                    android:textColor="#000000"
+                    android:textSize="16dip"/>
 
                 <EditText
                     android:id="@+id/accountEt"
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
+                     android:textColor="#000000"
                     android:background="@null"
                     android:inputType="number"
-                    android:padding="5dip" >
-
+                    android:padding="5dip">
                     <requestFocus />
                 </EditText>
             </LinearLayout>
@@ -105,15 +109,18 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_m_bg"
-                android:padding="15dip" >
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip" >
 
                 <TextView
                     android:id="@+id/textView2"
                     android:layout_width="wrap_content"
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
-                    android:text="密\t\t码："
-                    android:textSize="16dip" />
+                    android:text="密码："
+                     android:textColor="#000000"
+                    android:textSize="16dip"
+                    />
 
                 <EditText
                     android:id="@+id/passwordEt"
@@ -121,6 +128,7 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@null"
+                    android:textColor="#000000"
                     android:inputType="textPassword"
                     android:padding="5dip" />
             </LinearLayout>
@@ -130,7 +138,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_down_bg"
-                android:padding="15dip" >
+                android:paddingLeft="15dip"
+                android:paddingRight="15dip" >
 
                 <TextView
                     android:id="@+id/textView4"
@@ -138,6 +147,7 @@
                     android:layout_height="fill_parent"
                     android:gravity="center_vertical"
                     android:text="确认密码："
+                     android:textColor="#000000"
                     android:textSize="16dip" />
 
                 <EditText
@@ -146,6 +156,7 @@
                     android:layout_height="fill_parent"
                     android:layout_weight="1"
                     android:background="@null"
+                     android:textColor="#000000"
                     android:inputType="textPassword"
                     android:padding="5dip" />
             </LinearLayout>
@@ -165,6 +176,7 @@
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_weight="1"
+                     android:textColor="#000000"
                     android:text="忘记密码" />
 
                 <ImageView

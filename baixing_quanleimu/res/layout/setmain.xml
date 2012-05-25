@@ -56,6 +56,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="个人设置"
+                         android:textColor="#000000"
                         android:textSize="18dip" >
                     </TextView>
                 </RelativeLayout>
@@ -74,6 +75,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="手机号码"
+                         android:textColor="#000000"
                         android:textSize="16dip" >
                     </TextView>
 
@@ -116,6 +118,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="签名档"
+                         android:textColor="#000000"
                         android:textSize="16dip" >
                     </TextView>
 
@@ -208,6 +211,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="系统设置"
+                        android:textColor="#000000"
                         android:textSize="18dip" >
                     </TextView>
                 </RelativeLayout>
@@ -226,6 +230,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="清空所有缓存"
+                        android:textColor="#000000"
                         android:textSize="16dip" >
                     </TextView>
 
@@ -251,9 +256,69 @@
                 android:paddingRight="10dip"
                 android:paddingTop="10dip" >
 
+                <LinearLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:orientation="vertical" >
+
+                    <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_weight="2.18"
+                        android:orientation="vertical" >
+
+                        <TextView
+                            android:id="@+id/textView1"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:text="列表模式"
+                            android:layout_marginLeft="15dip"
+                            android:textColor="#000000"
+                            android:textSize="18dip" />
+
+                        <RelativeLayout
+                            android:id="@+id/rlTextImage"
+                            android:layout_width="fill_parent"
+                            android:layout_height="wrap_content"
+                            android:layout_marginTop="10dip"
+                            android:background="@drawable/btn_s_bg" >
+
+                            <TextView
+                                android:id="@+id/textView2"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentLeft="true"
+                                android:layout_centerVertical="true"
+                                android:layout_marginLeft="18dp"
+                                android:text="图片／纯文本"
+                                android:textColor="#000000"
+                                android:textSize="16dip" />
+
+                            <TextView
+                                android:id="@+id/textView3"
+                                android:layout_width="wrap_content"
+                                android:layout_height="wrap_content"
+                                android:layout_alignParentRight="true"
+                                android:layout_marginRight="26dp"
+                                android:layout_centerVertical="true"                                
+                                android:text="图片"
+                                android:textSize="16dip" />
+
+                        </RelativeLayout>
+
+                    </LinearLayout>
+
+                </LinearLayout>
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content" >
+                </RelativeLayout>
+
                 <RelativeLayout
                     android:id="@+id/rlOther"
                     android:layout_width="fill_parent"
+                    android:layout_marginTop="10dip"
                     android:layout_height="wrap_content" >
 
                     <TextView
@@ -263,6 +328,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="其他"
+                        android:textColor="#000000"
                         android:textSize="18dip" >
                     </TextView>
                 </RelativeLayout>
@@ -281,6 +347,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="关于"
+                        android:textColor="#000000"
                         android:textSize="16dip" >
                     </TextView>
 
@@ -309,6 +376,7 @@
                         android:layout_centerVertical="true"
                         android:layout_marginLeft="15dip"
                         android:text="反馈"
+                        android:textColor="#000000"
                         android:textSize="16dip" >
                     </TextView>
 

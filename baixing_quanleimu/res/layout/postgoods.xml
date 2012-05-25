@@ -15,14 +15,13 @@
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:background="@drawable/bg_header"
-            android:gravity="center_vertical"
             android:padding="5dip" >
 
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerHorizontal="true"
+                android:layout_centerInParent="true"
                 android:text="选择类目"
                 android:textColor="#ffffff"
                 android:textSize="22dip" >
@@ -36,8 +35,10 @@
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/btn_search"
-                android:padding="5dip"
-                android:text="发布" />
+                android:paddingLeft="12dip"
+                android:paddingRight="12dip"
+                android:layout_centerVertical="true"
+                android:text="立即发布" />
 
             <Button
                 android:id="@+id/backBtn"
@@ -46,9 +47,11 @@
                 android:layout_alignParentLeft="true"
                 android:layout_alignParentTop="true"
                 android:background="@drawable/btn_jj"
-                android:paddingLeft="15dip"
+                android:paddingLeft="12dip"
                 android:paddingTop="5dip"
                 android:paddingBottom="5dip"
+                android:paddingRight="15dip"
+                android:layout_centerVertical="true"
                 android:text=""
                 android:textColor="#ffffff" />
 
@@ -77,7 +80,16 @@
 
             </LinearLayout>
 
+            <TextView
+            android:id="@+id/emptynullfield"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerHorizontal="true"
+            android:text=""
+            android:textSize="22dip">
+         	</TextView>
         </LinearLayout>
+
     </ScrollView>
 
 </RelativeLayout>

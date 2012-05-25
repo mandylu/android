@@ -23,6 +23,12 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -136,6 +142,9 @@ public class Util {
 	//将数据保存到手机内存中
 	public static String saveDataToLocate(Context context, String file,
 			Object object) {
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+			file = "_" + file;
+		}
 		String res = null;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
@@ -166,6 +175,9 @@ public class Util {
 
 	//将数据从手机内存中读出来
 	public static Object loadDataFromLocate(Context context,String file) {
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+			file = "_" + file;
+		}
 		Object obj = null;
 		FileInputStream fis = null;
 		ObjectInputStream ois = null;
@@ -271,30 +283,44 @@ public class Util {
 	
 	public static String getJsonDataFromURLByPost(String path,String params) throws SocketTimeoutException, UnknownHostException {
 		//����һ��URL����
-		HttpURLConnection urlCon = null;
+//		HttpURLConnection urlCon = null;
 		BufferedReader reader = null ;
 		String str = "";
 		try {
-			URL url = new URL(path);
-			urlCon = (HttpURLConnection) url.openConnection();
-			urlCon.setDoOutput(true);
-			urlCon.setDoInput(true);
-			urlCon.setRequestMethod("POST");
-			urlCon.setUseCaches(false);
-			urlCon.setInstanceFollowRedirects(true);
-			urlCon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-			urlCon.connect();
-			DataOutputStream out = new DataOutputStream(urlCon.getOutputStream());
+//			URL url = new URL(path);
+//			urlCon = (HttpURLConnection) url.openConnection();
+//			urlCon.setDoOutput(true);
+//			urlCon.setDoInput(true);
+//			urlCon.setRequestMethod("POST");
+//			urlCon.setUseCaches(false);
+//			urlCon.setInstanceFollowRedirects(true);
+//			urlCon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
+//			urlCon.connect();
 			
-			out.writeBytes(params);
 			
-			out.flush();
-			out.close();
-			reader = new BufferedReader(new InputStreamReader(urlCon.getInputStream()));
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+            
+            HttpPost httpPost = new HttpPost(path); 
+            
+            ByteArrayEntity stringEntity = new ByteArrayEntity(params.getBytes());
+            stringEntity.setContentType("application/x-www-form-urlencoded");
+            httpPost.setEntity(stringEntity);
+            
+            HttpResponse response = httpClient.execute(httpPost);
+            
+//			DataOutputStream out = new DataOutputStream(urlCon.getOutputStream());
+//			
+//			out.writeBytes(params);
+//			
+//			out.flush();
+//			out.close();
+			reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
 			String temp = "";
 			while((temp=reader.readLine())!=null){
 				str += (temp + "\n");
 			}
+			
+			httpClient.getConnectionManager().shutdown();
 		}catch(SocketTimeoutException ste){
 			Log.e("��ʱ", "��ʱ��");
 				throw ste; 
@@ -313,7 +339,7 @@ public class Util {
 			} catch (IOException e) {
 				e.printStackTrace();
 			}
-			urlCon.disconnect();
+//			urlCon.disconnect();
 		}
 		Log.d("json", "activityjson--->" + str);
 		return str;
@@ -324,18 +350,31 @@ public class Util {
 		DataInputStream dis = null;
 		String readUrl = "";
 		try {
-			URL url = new URL(urlString);
-			HttpURLConnection urlConn = (HttpURLConnection) url
-					.openConnection();
-			urlConn.setRequestMethod("POST");
-			urlConn.setDoOutput(true);
-			urlConn.setDoInput(true);
-			OutputStream os = urlConn.getOutputStream();
-			os.write(str.getBytes());
-			dis = new DataInputStream(urlConn.getInputStream());
+//			URL url = new URL(urlString);
+//			HttpURLConnection urlConn = (HttpURLConnection) url
+//					.openConnection();
+//			urlConn.setRequestMethod("POST");
+//			urlConn.setDoOutput(true);
+//			urlConn.setDoInput(true);
+//			OutputStream os = urlConn.getOutputStream();
+//			os.write(str.getBytes());
+			
+			
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+            
+            HttpPost httpPost = new HttpPost(urlString); 
+            
+            StringEntity stringEntity = new StringEntity(str, "UTF-8");
+            httpPost.setEntity(stringEntity);
+            
+            HttpResponse response = httpClient.execute(httpPost);
+            
+			dis = new DataInputStream(response.getEntity().getContent());
 			readUrl = dis.readLine();
 			dis.close();
-			os.close();
+//			os.close();
+			
+			httpClient.getConnectionManager().shutdown();
 		} catch (MalformedURLException e) {
 			e.printStackTrace();
 		}
@@ -385,7 +424,9 @@ public class Util {
 			if (files != null) {
 				for (File f : files) {
 					if(f.getAbsolutePath().contains(name)){
-						b.add(BitmapFactory.decodeFile(f.getPath()));
+					    BitmapFactory.Options o =  new BitmapFactory.Options();
+	                    o.inPurgeable = true;
+						b.add(BitmapFactory.decodeFile(f.getPath(), o));
 					}
 				}
 			}
@@ -411,8 +452,9 @@ public class Util {
 					URL url = new URL(strURL);
 					conn = (URLConnection) url.openConnection();
 					BitmapFactory.Options o =  new BitmapFactory.Options();
+					o.inPurgeable = true;
 					Log.e("o", o.toString());
-					img = BitmapFactory.decodeStream(conn.getInputStream());
+					img = BitmapFactory.decodeStream(conn.getInputStream(), null, o);
 				}
 				catch (Exception e) { 
 					img = null;
@@ -468,7 +510,9 @@ System.out.println("没找到文件");
 		else
 		{
 //			bmp = BitmapFactory.decodeStream(fis);
-			bmp = BitmapFactory.decodeByteArray(aa, 0, aa.length);
+		    BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+			bmp = BitmapFactory.decodeByteArray(aa, 0, aa.length, o);
 		}
 		return bmp;
 	}
@@ -568,15 +612,40 @@ System.out.println("没找到文件");
 		return new Point(display.getWidth(), display.getHeight());
 	}
 	
-	public static Bitmap newBitmap(Bitmap b, int w, int h) {
-		int width = b.getWidth();
-		int height = b.getHeight();
-		float scaleWidth = ((float) w) / width;
-		float scaleHeight = ((float) h) / height;
-		Matrix matrix = new Matrix();
-		matrix.postScale(scaleWidth, scaleHeight);//����
-		return Bitmap.createBitmap(b, 0, 0, width, height, matrix, true);
-	}
+    public static Bitmap newBitmap(Bitmap b, int w, int h)
+    {
+        float scaleWidth = 0;
+        float scaleHeight = h;
+        int width = b.getWidth();
+        int height = b.getHeight();
+        
+        if (w == h)
+        {
+            int minValue = Math.min(b.getWidth(), b.getHeight());
+            if (minValue >= w)
+            {
+                float ratio = (float) w / (float) minValue;
+                scaleWidth = ratio;
+                scaleHeight = ratio;
+            }
+            else
+            {
+                minValue = Math.max(b.getWidth(), b.getHeight());
+                float ratio = (float) w / (float) minValue;
+                scaleWidth = ratio;
+                scaleHeight = ratio;
+            }
+        }
+        else
+        {
+            scaleWidth = ((float) w) / width;
+            scaleHeight = ((float) h) / height;
+        }
+        
+        Matrix matrix = new Matrix();
+        matrix.postScale(scaleWidth, scaleHeight);// ����
+        return Bitmap.createBitmap(b, 0, 0, width, height, matrix, true);
+    }
 	
 	//图片旋转
 	public static Bitmap rotate(Bitmap b, int degrees) {

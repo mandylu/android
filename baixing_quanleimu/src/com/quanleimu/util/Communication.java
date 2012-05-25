@@ -1,5 +1,4 @@
 package com.quanleimu.util;
-
 import java.io.BufferedReader;
 import java.io.BufferedWriter;
 import java.io.ByteArrayOutputStream;
@@ -13,7 +12,14 @@ import java.net.URL;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Comparator;
 
+import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
+import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
 import com.quanleimu.activity.MyApplication;
@@ -24,14 +30,32 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.provider.Settings.Secure;
 
+import android.net.ConnectivityManager;
+import android.content.Context; 
+import android.net.NetworkInfo;
 
-public class Communication {
+public class Communication implements Comparator<String> {
 
-	public static String apiKey = "api_mobile_android";
+    private final static Communication COMPARATOR = new Communication();
+    
+    public static String apiKey = "api_mobile_android";
+	//public static String apiKey = "baixing_ios";
 	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";
+	//public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
-	//public static String apiUrl = "http://www.liuweili.baixing.com/api/mobile.";
 	public static String apiUrl = "http://www.baixing.com/api/mobile.";
+	//public static String apiUrl = "http://www.xumengyi.baixing.com/api/mobile.";
+	
+	private static boolean isWifi() {  
+	    ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.context  
+	            .getSystemService(Context.CONNECTIVITY_SERVICE);  
+	    NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();  
+	    if (activeNetInfo != null  
+	            && activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {  
+	        return true;  
+	    }  
+	    return false;  
+	}  
 
 	public static String getApiUrl(String apiName, ArrayList<String> parameters) {
 
@@ -76,7 +100,7 @@ public class Communication {
 		list.add("api_key=" + apiKey);
 		list.add("timestamp=" + getTimeStamp());
 
-		Collections.sort(list);
+		Collections.sort(list, COMPARATOR);
 
 		String queryString = "";
 		for (Object s : list) {
@@ -94,7 +118,7 @@ public class Communication {
 	public static String urlEncode(String str) {
 		return str.replaceAll(":", "%3A").replaceAll(" ", "%20")
 				.replaceAll("\\(", "%28").replaceAll("\\)", "%29")
-				.replaceAll("/", "%2F").replaceAll("\\+", "%20");
+				.replaceAll("/", "%2F").replaceAll("\\+", "%20").replaceAll("\\*", "%2A");
 	}
 	
 	//Url编码
@@ -234,16 +258,27 @@ public class Communication {
 	public static String getDataByUrl(String url)
 			throws UnsupportedEncodingException, IOException {
 
-		URL getUrl = new URL(url);
+//		URL getUrl = new URL(url);
 
-		HttpURLConnection connection = (HttpURLConnection) getUrl
-				.openConnection();
+		
+		HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+		
+		HttpPost httpPost = new HttpPost(url); 
+		HttpResponse response = httpClient.execute(httpPost);
+		
+		/*StatusLine statusLine = response.getStatusLine(); 
+	   if(statusLine.getStatusCode() == 200)
+	   {
+	       
+	   }*/
+//		HttpURLConnection connection = (HttpURLConnection) getUrl
+//				.openConnection();
 		// 进行连接，但是实际上get request要在下一句的connection.getInputStream()函数中才会真正发到
 		// 服务器
-		connection.connect();
+//		connection.connect();
 		// 取得输入流，并使用Reader读取
 		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				connection.getInputStream(), "utf-8"));// 设置编码,否则中文乱码
+		    response.getEntity().getContent(), "utf-8"));// 设置编码,否则中文乱码
 
 		String lines = "";
 		String temp = "";
@@ -252,40 +287,54 @@ public class Communication {
 		}
 		reader.close();
 		// 断开连接
-		connection.disconnect();
+		
+		httpClient.getConnectionManager().shutdown();
+		
 		return temp;
 	}
 
 	//Post提交数据方法
 	public static String PostDataByUrl(String Url, ArrayList<String> list) {
 		String word = Communication.getPostParameters(list);
-		BufferedWriter out;
+//		BufferedWriter out;
 		String line = "";
 		try {
-			URL url = new URL(Url); 
-			HttpURLConnection httpURLConnection = (HttpURLConnection) url
-					.openConnection();
-			httpURLConnection.setDoOutput(true);
-			httpURLConnection.setDoInput(true);
-			httpURLConnection.setRequestMethod("POST");
-			httpURLConnection.setConnectTimeout(100000);
-			httpURLConnection.setReadTimeout(100000);
-			httpURLConnection.connect();
-
-			out = new BufferedWriter(new OutputStreamWriter(
-					httpURLConnection.getOutputStream(), "utf-8"));
-
-			out.write(word);
-			out.flush();
-			out.close();
+//			URL url = new URL(Url); 
+//			HttpURLConnection httpURLConnection = (HttpURLConnection) url
+//					.openConnection();
+//			httpURLConnection.setDoOutput(true);
+//			httpURLConnection.setDoInput(true);
+//			httpURLConnection.setRequestMethod("POST");
+//			httpURLConnection.setConnectTimeout(100000);
+//			httpURLConnection.setReadTimeout(100000);
+//			httpURLConnection.connect();
+			
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+	        
+	        HttpPost httpPost = new HttpPost(Url); 
+	        
+	        StringEntity stringEntity = new StringEntity(word, "UTF-8");
+	        httpPost.setEntity(stringEntity);
+	        
+	        HttpResponse response = httpClient.execute(httpPost);
+//	        HttpResponse response = httpClient.execute(httpPost);
+//
+//			out = new BufferedWriter(new OutputStreamWriter(
+//					httpURLConnection.getOutputStream(), "utf-8"));
+//
+//			out.write(word);
+//			out.flush();
+//			out.close();
 
 			BufferedReader rd = new BufferedReader(new InputStreamReader(
-					httpURLConnection.getInputStream()));
+			    response.getEntity().getContent()));
 
 			while ((line = rd.readLine()) != null) {
 				word = line;
 
 			}
+			
+			httpClient.getConnectionManager().shutdown();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
@@ -319,43 +368,56 @@ public class Communication {
 			byte[] end_data = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
 
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
-			bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
+			bmp.compress(Bitmap.CompressFormat.JPEG, (Communication.isWifi() ? 100:50), bos);
 			byte[] file = bos.toByteArray();
+			System.out.println(data.toString());
+			System.out.println("[Image upload] " + file.length + " bytes");
+			
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+            
+            HttpPost httpPost = new HttpPost(UPLOAD_PIC_URL); 
+            
+            ByteArrayOutputStream out = new ByteArrayOutputStream();
+            out.write(data);
+            out.write(file);
+            out.write(end_data);
+            out.flush();
+            
+            ByteArrayEntity stringEntity = new ByteArrayEntity(out.toByteArray());
+            stringEntity.setContentType("multipart/form-data; boundary=" + BOUNDARY);
+            httpPost.setEntity(stringEntity);
+            
+            HttpResponse response = httpClient.execute(httpPost);
+            
+//			URL url = new URL(UPLOAD_PIC_URL);
+//			HttpURLConnection connection = (HttpURLConnection) url
+//					.openConnection();
+//			connection.setConnectTimeout(5000);
+//			connection.setDoOutput(true);
+//			connection.setRequestMethod("POST");
+//			connection.setRequestProperty("Content-Type",
+//			    "multipart/form-data; boundary=" + BOUNDARY);
+//			connection
+//					.setRequestProperty(
+//							"Content-Length",
+//							String.valueOf(data.length + file.length
+//									+ end_data.length));
+//			connection.setUseCaches(false);
+//			connection.connect();
 
-			URL url = new URL(UPLOAD_PIC_URL);
-			HttpURLConnection connection = (HttpURLConnection) url
-					.openConnection();
-			connection.setConnectTimeout(5000);
-			connection.setDoOutput(true);
-			connection.setRequestMethod("POST");
-			connection.setRequestProperty("Content-Type",
-					"multipart/form-data; boundary=" + BOUNDARY);
-			connection
-					.setRequestProperty(
-							"Content-Length",
-							String.valueOf(data.length + file.length
-									+ end_data.length));
-			connection.setUseCaches(false);
-			connection.connect();
-
-			DataOutputStream out = new DataOutputStream(
-					connection.getOutputStream());
-			out.write(data);
-			out.write(file);
-			out.write(end_data);
-			out.flush();
+			
 			out.close();
 
 			InputStreamReader reader = new InputStreamReader(
-					connection.getInputStream());
+			    response.getEntity().getContent());
 			BufferedReader buffer = new BufferedReader(reader);
 			String content = "", line = null;
 			while ((line = buffer.readLine()) != null) {
 				content += line;
 			}
-			// System.out.println("upload content: " + content);
+			System.out.println("uploaded image response: " + content);
 			reader.close();
-			connection.disconnect();
+			httpClient.getConnectionManager().shutdown();
 			String retUrl = null;
 			JSONObject obj = new JSONObject(content);
 			retUrl = obj.getString("url");
@@ -367,6 +429,32 @@ public class Communication {
 		}
 		return null;
 	}
+	
+	@Override
+    public int compare(String o1, String o2)
+    {
+        int key1Index = o1.indexOf("=");
+        int key2Index = o2.indexOf("=");
+        if(key1Index != -1 && key2Index != -1)
+        {
+            String key1 = o1.substring(0, key1Index);
+            String key2 = o2.substring(0, key2Index);
+            
+            if(key1.equals(key2))
+            {
+                String value1 = key1Index == o1.length() - 1 ? "" : o1.substring(key1Index + 1);
+                String value2 = key2Index == o2.length() - 1 ? "" : o2.substring(key2Index + 1);
+                
+                return value1.compareTo(value2);
+            }
+            else
+            {
+                return key1.compareTo(key2);
+            }
+        }
+        
+        return o1.compareTo(o2);
+    }
 //	
 //	private static String[] sortUrl(String[] urls) {
 //		Vector<String> vector = new Vector<String>();

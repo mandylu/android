@@ -23,7 +23,7 @@
                 android:layout_centerInParent="true"
                 android:text="详细信息"
                 android:textColor="#ffffff"
-                android:textSize="22dip" >
+                android:textSize="20dip" >
             </TextView>
 
             <Button
@@ -33,9 +33,8 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/btn_changecity_xml"
-                 android:paddingLeft="15dip"
-                android:paddingTop="5dip"
-                android:paddingBottom="5dip"
+                android:paddingLeft="12dip"
+                android:paddingRight="12dip"
                 android:text=""
                 android:textColor="#ffffff" >
             </Button>
@@ -85,12 +84,12 @@
                     android:id="@+id/goods_tittle"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_centerHorizontal="true"
+                    android:layout_alignParentLeft="true"
                     android:layout_marginTop="5dip"
-                    android:gravity="center_horizontal"
-                    android:text="转Coach钱包白色大拖尾婚纱蓬蓬纱"
-                    android:textSize="18dip" 
-                    android:padding="5dip"/>
+                    android:gravity="left"
+                    android:textColor="#000000"
+                    android:textSize="17dip" 
+                    android:padding="10dip"/>
 
                 <LinearLayout
                     android:id="@+id/meta"
@@ -112,9 +111,10 @@
                         android:id="@+id/sendmess1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:text="2011年的新年当时千辛万苦...........全新转让"
                         android:textSize="15dip" 
-                    	android:padding="5dip"/>
+                        android:textColor="#000000"
+                        android:lineSpacingExtra="2dip" 
+                     	android:padding="5dip"/>
                 </RelativeLayout>
 
                 <RelativeLayout
@@ -129,8 +129,8 @@
                     android:id="@+id/showphone"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="30dip"
-                    android:layout_marginRight="30dip"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
                     android:background="@drawable/btn_s_bg2"
                     android:padding="10dip" >
 
@@ -145,10 +145,11 @@
                         android:id="@+id/address1"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="5dip"
-                        android:text="13112314169" />
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="25dip"
+                        android:textColor="#000000"
+                        android:text="" />
 
                     <ImageView
                         android:layout_width="wrap_content"
@@ -164,8 +165,8 @@
                     android:layout_height="wrap_content"
                     android:layout_below="@+id/showphone"
                     android:layout_marginBottom="20dip"
-                    android:layout_marginLeft="30dip"
-                    android:layout_marginRight="30dip"
+                    android:layout_marginLeft="10dip"
+                    android:layout_marginRight="10dip"
                     android:layout_marginTop="10dip"
                     android:background="@drawable/btn_s_bg2"
                     android:padding="10dip" >
@@ -181,11 +182,10 @@
                         android:id="@+id/address2"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_centerHorizontal="true"
                         android:layout_centerVertical="true"
-                        android:layout_marginLeft="5dip"
-                        android:text="浦东～北蔡～动物园" />
-
+                        android:layout_alignParentLeft="true" 
+                        android:textColor="#000000"
+                        android:layout_marginLeft="25dip"/>
                     <ImageView
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
@@ -196,63 +196,6 @@
             </LinearLayout>
         </ScrollView>
 
-
-
-        <!--
-        <LinearLayout
-            android:id="@+id/linearBottom"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_alignParentLeft="true" >
-
-            <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/bg_bottom" >
-
-                <ImageView
-                    android:id="@+id/ivHomePage"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:background="@drawable/iv_homepage_xml" />
-
-                <ImageView
-                    android:id="@+id/ivCateMain"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:background="@drawable/iv_catemain_xml" />
-
-                <ImageView
-                    android:id="@+id/ivPostGoods"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:background="@drawable/iv_postgoods_xml" />
-
-                <ImageView
-                    android:id="@+id/ivMyCenter"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:background="@drawable/iv_mycenter_xml" />
-
-                <ImageView
-                    android:id="@+id/ivSetMain"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_gravity="bottom"
-                    android:layout_weight="3"
-                    android:background="@drawable/iv_setmain_xml" />
-            </LinearLayout>
-        </LinearLayout>
-        -->
     </RelativeLayout>
      <com.baidu.mapapi.MapView
         android:id="@+id/mymap"

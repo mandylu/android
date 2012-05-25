@@ -119,6 +119,9 @@ public class Helper {
 	// 将数据保存到手机内存中
 	public static String saveDataToLocate(Context context, String file,
 			Object object) {
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+			file = "_" + file;
+		}
 		String res = null;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
@@ -151,6 +154,9 @@ public class Helper {
 
 	// 将数据从手机内存中读出来
 	public static Object loadDataFromLocate(Context context, String file) {
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+			file = "_" + file;
+		}
 		Object obj = null;
 		FileInputStream fis = null;
 		ObjectInputStream ois = null;
@@ -194,7 +200,7 @@ public class Helper {
 		if(bitmap!=null){
 			try {
 				output = Bitmap.createBitmap(bitmap.getWidth(),
-						bitmap.getHeight(), Config.ARGB_8888);
+						bitmap.getHeight(), Config.ARGB_4444);
 			} catch (Exception e) {
 				return null;
 			}

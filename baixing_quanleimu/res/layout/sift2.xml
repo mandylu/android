@@ -22,7 +22,7 @@
         </TextView>
 
         <Button
-             android:paddingLeft="15dip"
+             android:paddingLeft="5dip"
                 android:paddingTop="5dip"
                 android:paddingBottom="5dip"
             android:textColor="#ffffff"

@@ -2,11 +2,14 @@ package com.quanleimu.jsonutil;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.util.Log;
 
 import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.CityDetail;
@@ -23,7 +26,7 @@ import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.entity.labels;
 import com.quanleimu.entity.values;
-
+import java.util.Iterator;
 public class JsonUtil {
 
 	// 获取所有城市列表
@@ -171,6 +174,7 @@ public class JsonUtil {
 		GoodsList goodsList = new GoodsList();
 		JSONObject jsonObj;
 		try {
+			System.out.println("jsonData------------------->"+jsonData);
 			jsonObj = new JSONObject(jsonData);
 			System.out.println("jsonObj------------------->"+jsonObj);
 			goodsList.setCount(jsonObj.getInt("count"));
@@ -179,9 +183,32 @@ public class JsonUtil {
 			try {
 				jsonArray = jsonObj.getJSONArray("data");
 				for (int i = 0; i < jsonArray.length(); i++) {
+					
 					JSONObject jsonGoods = jsonArray.optJSONObject(i);
 					GoodsDetail goodsDetail = new GoodsDetail();
 
+					JSONArray names = jsonGoods.names();
+					for(int j = 0; j < names.length(); ++ j){
+						Object subObj = jsonGoods.get(names.getString(j));
+						if(subObj != null){
+							String value = null;
+							if(subObj.getClass().equals(String.class) && ((String)subObj).length() > 0){
+								value = (String)subObj;								
+							}
+							else if(subObj.getClass().equals(Integer.class)){
+								value = ((Integer)subObj).toString();
+							}else if(subObj.getClass().equals(Double.class)){
+								value = ((Double)subObj).toString();
+							}else if(subObj.getClass().equals(Float.class)){
+								value = ((Float)subObj).toString();
+							}else{
+								Log.println(0, "in JsonUtil ", "unknown jason value type!!!!!");
+							}
+								
+							goodsDetail.setValueByKey(names.getString(j), value);
+						}						
+					}
+/*					
 					try {
 						goodsDetail.setId(jsonGoods.getString("id"));
 					} catch (Exception e1) {
@@ -193,24 +220,13 @@ public class JsonUtil {
 					} catch (Exception e1) {
 						goodsDetail.setLink("");
 					}
-
+					
 					try {
 						goodsDetail.setMobile(jsonGoods.getString("mobile"));
-					} catch (Exception e1) {
+					} catch (JSONException e1) {
 						goodsDetail.setMobile("无");
 					}
 
-					try {
-						goodsDetail.setTitle(jsonGoods.getString("title"));
-					} catch (Exception e1) {
-						goodsDetail.setTitle("");
-					}
-					try {
-						goodsDetail.setDescription(jsonGoods
-								.getString("description"));
-					} catch (Exception e1) {
-						goodsDetail.setDescription("无");
-					}
 					try {
 						goodsDetail.setDate(Long.parseLong(jsonGoods.getString("createdTime")));
 					} catch (Exception e1) {
@@ -238,6 +254,7 @@ public class JsonUtil {
 					} catch (Exception e1) {
 						goodsDetail.setAreaNames("无");
 					}
+					*/
 					// 为ImageList赋值
 					JSONObject jsonImages = null;
 					ImageList imageList = new ImageList();
@@ -264,7 +281,7 @@ public class JsonUtil {
 
 					goodsDetail.setImageList(imageList);
 
-					HashMap<String, String> map = new HashMap<String, String>();
+					ArrayList<String> metas = new ArrayList<String>();
 					JSONArray jsonMeta;
 					try {
 						jsonMeta = jsonGoods.getJSONArray("metaData");
@@ -272,15 +289,16 @@ public class JsonUtil {
 						jsonMeta = null;
 					}
 					if (jsonMeta == null || jsonMeta.length() == 0) {
-						map = null;
+						metas = null;
 					} else {
 						for (int j = 0; j < jsonMeta.length(); j++) {
 							String meta = jsonMeta.get(j).toString();
-							String a[] = meta.split(" ");
-							map.put(a[0], a[1]);
+							//String a[] = meta.split(" ");
+							metas.add(meta);
+							//map.put(a[0], a[1]);
 						}
 					}
-					goodsDetail.setMetaData(map);
+					goodsDetail.setMetaData(metas);
 					list.add(goodsDetail);
 
 				}
@@ -391,8 +409,8 @@ public class JsonUtil {
 
 	}
 
-	public static List<PostGoodsBean> getPostGoodsBean(String jsonData) {
-		List<PostGoodsBean> postList = new ArrayList<PostGoodsBean>();
+	public static LinkedHashMap<String,PostGoodsBean> getPostGoodsBean(String jsonData) {
+		LinkedHashMap<String,PostGoodsBean> postList = new LinkedHashMap<String,PostGoodsBean>();
 		try {
 			JSONArray jsonArray = new JSONArray(jsonData);
 			for (int i = 0; i < jsonArray.length(); i++) {
@@ -478,7 +496,7 @@ public class JsonUtil {
 					postGoods.setLabels(llist);
 				}
 
-				postList.add(postGoods);
+				postList.put(postGoods.getDisplayName(), postGoods);
 				// filters.setFilterssList(list);
 			}
 		} catch (JSONException e) {

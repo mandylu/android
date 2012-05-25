@@ -2,8 +2,14 @@ package com.quanleimu.activity;
 
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.InputStreamReader;
+import java.io.BufferedReader;
+
 import java.util.ArrayList;
 import java.util.List;
+import java.net.URL;
+import java.net.URLConnection;
+import java.net.MalformedURLException;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -11,34 +17,31 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
+import android.os.Message;
 import android.provider.Settings.Secure;
 import android.view.View;
 import android.widget.Toast;
 
-import com.baidu.mapapi.BMapManager;
-import com.baidu.mapapi.GeoPoint;
-import com.baidu.mapapi.LocationListener;
-import com.baidu.mapapi.MKAddrInfo;
-import com.baidu.mapapi.MKDrivingRouteResult;
-import com.baidu.mapapi.MKLocationManager;
-import com.baidu.mapapi.MKPoiResult;
-import com.baidu.mapapi.MKSearch;
-import com.baidu.mapapi.MKSearchListener;
-import com.baidu.mapapi.MKTransitRouteResult;
-import com.baidu.mapapi.MKWalkingRouteResult;
-import com.baidu.mapapi.MapView;
+import android.location.*;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+import org.json.JSONArray;
+
+import android.content.Context;
+
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.NetworkProtocols;
+import com.quanleimu.util.LocationService;
 
-public class Loading2 extends BaseActivity {
+public class Loading2 extends BaseActivity implements LocationService.BXLocationServiceListener{
 
-	private BMapManager bMapManager;// 百度地图
-	private MKLocationManager mkLocationManager;// 百度地图管理
-	private MKSearch mkSearch;// 百度搜索
-	private LocationListener locationListener;// 定位监听
-	private GeoPoint gp;
+	private LocationListener listener;
+	private LocationListener locationListener;
+	private LocationManager locationMgr;
 
 	// 定义经纬度
 	public double Lat = 0;
@@ -55,8 +58,11 @@ public class Loading2 extends BaseActivity {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+	    
+	    NetworkProtocols.getInstance().init(this);
+	    
 		setContentView(R.layout.main2);
-		initMap();
+		//LocationService.getInstance().start(this, this);
 		super.onCreate(savedInstanceState);
 
 		MyApplication.udid = Secure.getString(this.getContentResolver(),
@@ -81,7 +87,7 @@ public class Loading2 extends BaseActivity {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-
+/*
 		myHandler.postDelayed(new Runnable() {
 
 			@Override
@@ -92,7 +98,7 @@ public class Loading2 extends BaseActivity {
 				startActivity(intent);
 				Loading2.this.finish();
 			}
-		}, 3000);
+		}, 3000);*/
 		new Thread(new ReadCityListThread()).start();
 		new Thread(new ReadInfoThread()).start();
 
@@ -118,114 +124,74 @@ public class Loading2 extends BaseActivity {
 					}
 				}
 			}
+			myHandler.sendEmptyMessage(1);
 		}
 
 	}
-
-	public void initMap() {
-		bMapManager = new BMapManager(getApplication());
-		bMapManager.init("736C4435847CB7D20DD1131064E35E8941C934F5", null);
-		MapView mapView = (MapView) findViewById(R.id.mymap);
-		mapView.setVisibility(View.GONE);
-		super.initMapActivity(bMapManager);
-		mkSearch = new MKSearch();
-		mkLocationManager = bMapManager.getLocationManager();
-		mkSearch.init(bMapManager, new MKSearchListener() {
-
-			@Override
-			public void onGetWalkingRouteResult(MKWalkingRouteResult res,
-					int error) {
-			}
-
-			@Override
-			public void onGetTransitRouteResult(MKTransitRouteResult arg0,
-					int arg1) {
-			}
-
-			@Override
-			public void onGetPoiResult(MKPoiResult arg0, int arg1, int arg2) {
-			}
-
-			@Override
-			public void onGetDrivingRouteResult(MKDrivingRouteResult arg0,
-					int arg1) {
-			}
-
-			@Override
-			public void onGetAddrResult(MKAddrInfo mkAdd, int error) {
-				if (error != 0) {
-					String str = String.format("错误号：%d", error);
-					// Toast.makeText(Loading2.this, str,
-					// Toast.LENGTH_LONG).show();
-					return;
-				}
-
-				if (mkAdd.strAddr == null || mkAdd.strAddr.equals("")) {
-//					Toast.makeText(Loading2.this, "mkAdd.strAddr 为空", 3).show();
-					cityName = "上海";
-					myApp.setCityName(cityName);
-					myApp.setGpsCityName(cityName);
-					myApp.setCityEnglishName("shanghai");
-				} else {
-					// tag == 0 是本地没有城市名保存
-//					Toast.makeText(Loading2.this, "mkAdd.strAddr不为空", 3).show();
-					if (tag == 0) {
-						cityName = mkAdd.strAddr.substring(0,
-								mkAdd.strAddr.indexOf("市"));
-						
-						for(int i=0;i<myApp.getListCityDetails().size();i++)
-						{
-							if(cityName.equals(myApp.getListCityDetails().get(i).getName()))
-							{
-								cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-								myApp.setCityEnglishName(cityName1);
-								System.out.println("Location cityName1----->" +cityName1);
-								break;
-							}
-						}
-						myApp.setCityName(cityName);
-						myApp.setGpsCityName(cityName);
-					} else if (tag == 1) {
-						myApp.setGpsCityName(cityName);
-					}
-				}
-			}
-		});
-
-		locationListener = new LocationListener() {
-
-			@Override
-			public void onLocationChanged(Location location) {
-				if (location != null) {
-					location = mkLocationManager.getLocationInfo();
-					gp = new GeoPoint((int) (location.getLatitude() * 1e6),
-							(int) (location.getLongitude() * 1e6));
-					// 搜查我的定位位置
-					mkSearch.reverseGeocode(gp);
-				}
-			}
-		};
-	}
-
-	@Override
-	protected void onPause() {
-		// 移除listener
-		bMapManager.getLocationManager().removeUpdates(locationListener);
-		bMapManager.stop();
+	
+	public void onPause(){
+		LocationService.getInstance().stop();
 		super.onPause();
 	}
-
-	@Override
-	protected void onResume() {
-		// 注册Listener
-		bMapManager.getLocationManager().requestLocationUpdates(
-				locationListener);
-		bMapManager.start();
-		super.onResume();
+	
+	public void onLocationUpdated(Location location){
+		String add = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
+		if(null == add) return;
+		int index = add.indexOf("市");
+		String cityName = (-1 == index ? add : add.substring(0, index));
+		boolean found = false;
+		for(int i=0;i<myApp.getListCityDetails().size();i++)
+		{
+			if(cityName.equals(myApp.getListCityDetails().get(i).getName()))
+			{
+				found = true;
+				cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+				myApp.setCityEnglishName(cityName1);
+				LocationService.getInstance().stop();
+				break;
+			}
+		}
+		if(!found){
+			for(int i=0;i<myApp.getListCityDetails().size();i++)
+			{
+				if(cityName.contains(myApp.getListCityDetails().get(i).getName()))
+				{
+					cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+					myApp.setCityEnglishName(cityName1);
+					LocationService.getInstance().stop();
+					break;
+				}
+			}
+			
+		}
+		myApp.setCityName(cityName);
+		myApp.setGpsCityName(cityName);
+		
 	}
 
 	Handler myHandler = new Handler() {
-
+		private int record1 = 0;
+		private int record2 = 0;
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case 1:
+				record1 = 1;
+				break;
+			case 2:
+				record2 = 1;
+				break;
+			default:
+				break;
+			}
+			if(1 == record1 && 1 == record2){
+				LocationService.getInstance().start(Loading2.this, Loading2.this);
+				intent.setClass(Loading2.this, HomePage.class);
+				// bundle.putString("cityName", cityName);
+				intent.putExtras(bundle);
+				startActivity(intent);
+				Loading2.this.finish();
+			}
+		}
 	};
 
 	class ReadCityListThread implements Runnable {
@@ -250,6 +216,7 @@ public class Loading2 extends BaseActivity {
 					} else {
 						myApp.setListCityDetails(cityList.getListDetails());
 						new Thread(new CityThread()).start();
+						return;
 					}
 				}
 
@@ -257,6 +224,7 @@ public class Loading2 extends BaseActivity {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			myHandler.sendEmptyMessage(1);
 		}
 	}
 
@@ -301,7 +269,7 @@ public class Loading2 extends BaseActivity {
 				listMyStore = null;
 			}
 			myApp.setListMyStore(listMyStore);
-			
+			myHandler.sendEmptyMessage(2);
 		}
 
 	}

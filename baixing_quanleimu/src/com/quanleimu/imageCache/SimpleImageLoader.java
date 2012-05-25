@@ -30,17 +30,19 @@ public class SimpleImageLoader
 	
 	public static void showImg(ImageView view,String url,Context con)
 	{
-		
 		view.setTag(url);	
 		Bitmap bitmap = MyApplication.lazyImageLoader.get(url, getCallback(url,view));
 		bitmap = Helper.toRoundCorner(bitmap, 10);
 	
 		if(bitmap==null){
-			Bitmap mb = BitmapFactory.decodeResource(con.getResources(), R.drawable.moren);
-			mb= Helper.toRoundCorner(mb, 20);
-			view.setImageBitmap(mb);
-//			view.setVisibility(View.GONE);
-			
+		    
+//		    BitmapFactory.Options o =  new BitmapFactory.Options();
+//            o.inPurgeable = true;
+//            
+//			Bitmap tmb = BitmapFactory.decodeResource(con.getResources(), R.drawable.moren, o);
+//			Bitmap mb= Helper.toRoundCorner(tmb, 20);
+//			tmb.recycle();
+//			view.setImageBitmap(mb);			
 		}else{
 		view.setImageBitmap(bitmap);
 		}
@@ -65,7 +67,7 @@ public class SimpleImageLoader
 					}
 					else
 					{
-						view.setImageResource(R.drawable.moren);
+//						view.setImageResource(R.drawable.moren);
 					}
 				
 			}
@@ -102,7 +104,7 @@ public class SimpleImageLoader
 				}
 				else
 				{
-					imageView.setImageResource(R.drawable.moren);
+//					imageView.setImageResource(R.drawable.moren);
 				}
 			}
 		};

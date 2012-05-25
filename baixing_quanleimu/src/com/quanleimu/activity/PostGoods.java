@@ -1,6 +1,5 @@
 package com.quanleimu.activity;
 
-import java.io.ByteArrayOutputStream;
 import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
@@ -8,6 +7,7 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -29,9 +29,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
-import android.text.InputType;
 import android.util.Log;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -44,6 +44,7 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
@@ -51,7 +52,10 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-
+import com.quanleimu.util.BXDecorateImageView;
+import android.os.Environment;
+import java.util.Set;
+import java.io.Serializable;
 public class PostGoods extends BaseActivity {
 
 	private Button post, backBtn;
@@ -61,27 +65,105 @@ public class PostGoods extends BaseActivity {
 	public String json = "";
 	public TextView tvTitle;
 	public LinearLayout layout_txt;
-	public List<PostGoodsBean> postList;
+	public LinkedHashMap<String, PostGoodsBean> postList;		//发布模板每一项的集合
 	public static final int NONE = 0;
 	public static final int PHOTOHRAPH = 1;
-	public static final int PHOTOZOOM = 2;
+	public static final int PHOTOZOOM = 2; 
 	public static final int PHOTORESOULT = 3;
 	public static final int POST_LIST = 4;
 	public static final String IMAGEUNSPECIFIED = "image/*";
-	private List<TextView> tvlist;
-	private int selId;
-	private LinkedHashMap<Integer, String> postMap;
+
+	private LinkedHashMap<String, TextView> tvlist;
+	// private int selId;
+	private String displayname;
+	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合	
+	private LinkedHashMap<String, String> initialValueMap;
 	// private LinkedHashMap<Integer, TextView> textViewMap;
 	// private LinkedHashMap<Integer, List<CheckBox>> checkBoxMap;
-	private LinkedHashMap<Integer, Object> btMap;
+	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
+	private LinkedHashMap<String, Object> editMap;				
 	private EditText descriptionEt, titleEt;
-	private AlertDialog ad;
+	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
-	private LinkedHashMap<String, Bitmap> bitmap_url; // 上传成功后图片路径
+	//private LinkedHashMap<String, Bitmap> bitmap_url; // 上传成功后图片路径
+	private ArrayList<String>bitmap_url;
 	private ImageView[] imgs;
 	private String mobile, password;
 	private UserBean user;
+	private GoodsDetail goodsDetail;
+	public List<String> listUrl;
+	private int currentImgView = -1;
+	private int uploadCount = 0;
+	
+	@Override
+	protected void onDestroy() {
+		// TODO Auto-generated method stub
+		for(int i = 0; i < 3; ++ i){
+			File file = new File(Environment.getExternalStorageDirectory(), "temp" + i + ".jpg");
+			if(file.exists()){
+				file.delete();
+			}
+			file = null;
+		}
+		super.onDestroy();
+	}
+	
+	private String getEditMapKeyDisplayName(String keyName){
+		if(null == editMap) return null;
+		Set<String>keySet = editMap.keySet();
+		if(null == keySet) return null;
+		Object[] keys = (Object[])keySet.toArray();
+		for(int i = 0; i < keys.length; ++ i){
+			String[] subKeys = ((String)keys[i]).split(" ");
+			if(subKeys.length != 2) continue;
+			if(subKeys[1].equals(keyName)) return subKeys[0];
+		}
+		return null;	
+	}
+	
+	private Object getEditMapValue(String key){
+		if(null == editMap) return null;
+		Set<String>keySet = editMap.keySet();
+		if(null == keySet) return null;
+		Object[] keys = (Object[])keySet.toArray();
+		for(int i = 0; i < keys.length; ++ i){
+			String[] subKeys = ((String)keys[i]).split(" ");
+			for(int j = 0; j < subKeys.length; ++ j){
+				if(subKeys[j].equals(key)){
+					return editMap.get(keys[i]);
+				}
+			}
+		}
+		return null;
+	}
 
+	private void ConfirmAbortAlert(){
+			AlertDialog.Builder builder = new AlertDialog.Builder(this);
+			builder.setTitle("提示:")
+					.setMessage("您所填写的数据将会丢失,放弃发布？")
+					.setNegativeButton("否", null)
+					.setPositiveButton("是",
+							new DialogInterface.OnClickListener() {
+	
+								@Override
+								public void onClick(DialogInterface dialog,
+										int which) {
+									finish();
+								}
+							});
+			builder.create().show();
+	}
+	
+	@Override
+	public boolean onKeyDown(int keyCode, KeyEvent event){
+		if(keyCode == KeyEvent.KEYCODE_BACK && filled()){
+			ConfirmAbortAlert();
+			return true;
+		}
+		
+		return super.onKeyDown(keyCode, event);			
+	}
+	
 	@Override
 	protected void onPause() {
 		// TODO Auto-generated method stub
@@ -102,33 +184,267 @@ public class PostGoods extends BaseActivity {
 		// 解决自动弹出输入法
 		getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-		tvlist = new ArrayList<TextView>();
-		postList = new ArrayList<PostGoodsBean>();
-		postMap = new LinkedHashMap<Integer, String>();
-		// textViewMap = new LinkedHashMap<Integer, TextView>();
-		// checkBoxMap = new LinkedHashMap<Integer, List<CheckBox>>();
-		bitmap_url = new LinkedHashMap<String, Bitmap>();
-		btMap = new LinkedHashMap<Integer, Object>();
-		categoryEnglishName = intent.getExtras().getString(
-				"categoryEnglishName");
-		backPageName = intent.getExtras().getString("backPageName");
-
-		post = (Button) findViewById(R.id.post);
-		backBtn = (Button) findViewById(R.id.backBtn);
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		tvTitle.setText("发布");
-		backBtn.setText(backPageName);
-		layout_txt = (LinearLayout) findViewById(R.id.layout_txt);
-
-		post.setOnClickListener(this);
-		backBtn.setOnClickListener(this);
+		
+		initial();
 
 		pd = new ProgressDialog(this);
 		pd.setTitle("提示");
 		pd.setMessage("请稍候...");
 		pd.setCancelable(true);
 
+		usercheck();
+
+	}
+
+	/**
+	 * 编辑发布
+	 */
+	private void editpostUI() {
+		// TODO Auto-generated method stub
+		//有goodsDetail，显示goodsDetail内容，编辑发布。
+		if (goodsDetail != null) {
+			System.out.println("editMap--->" + editMap.toString());
+			System.out.println("goodsDetail--->"
+					+ goodsDetail.getMetaData().toString());
+			// metaData里的参数
+			ArrayList<String> metas = goodsDetail.getMetaData();
+			for (int i = 0; i < metas.size(); i++) {
+				String[] curMeta = metas.get(i).split(" ");
+				String key = curMeta[0];
+				Object obj = this.getEditMapValue(key);
+				System.out.println("obj--->" + obj);
+				PostGoodsBean bean = postList.get(key);
+				if(bean != null && !bean.getUnit().equals("")){
+					if(curMeta[1] != null){
+						int pos = curMeta[1].indexOf(bean.getUnit());
+						if(pos != -1){
+							curMeta[1] = curMeta[1].substring(0, pos);
+						}
+					}
+				}
+				if (obj != null) {
+					if (obj instanceof TextView) {
+						((TextView) obj).setText(curMeta[1]);
+					} else if (obj instanceof EditText) {
+						((EditText) obj).setText(curMeta[1]);
+					} else if (obj instanceof List<?>) {
+						String value = curMeta[1];
+						List<CheckBox> list = ((List<CheckBox>) obj);
+						for (int j = 0; j < list.size(); j++) {
+							CheckBox c = list.get(j);
+							String v = (String) c.getTag();
+							if (value.contains(v)) {
+								c.setChecked(true);
+							} else {
+								c.setChecked(false);
+							}
+						}
+					}
+				}
+				postMap.put(curMeta[0], curMeta[1]);
+				
+				//PostGoodsBean bean = postList.get(key);
+				if(null == bean) continue;
+				HashMap<String, String>map = bean.getLvmap();
+				String value = null;
+				if(map.containsKey(curMeta[1])){
+					value = map.get(curMeta[1]);
+				}
+				if (value != null && value.length() > 0) {
+					postMap.put(key, value);
+				} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
+					postMap.put(key, "");
+				}
+			}
+			Set<String>keySet = goodsDetail.getKeys();
+			Object[] keys = null;
+			if(keySet != null){
+				keys = keySet.toArray();
+			}
+			Object objArea = this.getEditMapValue("地区");
+			if(objArea != null){
+				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				String[] areas = strArea.split(",");
+				if(areas.length >= 2){
+					if(objArea instanceof TextView){
+						((TextView)objArea).setText(areas[1]);
+					}
+					else if(objArea instanceof EditText){
+						((EditText)objArea).setText(areas[1]);
+					}
+					PostGoodsBean areaBean = postList.get("地区");
+					if(areaBean != null && areaBean.getValues() != null && areaBean.getLabels() != null){
+						List<String> areaLabels = areaBean.getLabels();
+						for(int i = 0; i < areaLabels.size(); ++ i){
+							if(areaLabels.get(i).equals(areas[1])){
+								postMap.put("地区", areaBean.getValues().get(i));
+								break;
+							}
+						}
+					}
+				}
+			}
+			for(int i = 0; i < keys.length; ++ i){
+				Object obj = this.getEditMapValue((String)keys[i]);
+				PostGoodsBean bean = postList.get(this.getEditMapKeyDisplayName((String)keys[i]));
+				String labelValue = goodsDetail.getValueByKey((String)keys[i]);
+				if(null != bean && null != bean.getValues() && null != bean.getLabels()){
+					for(int j = 0; j < bean.getValues().size(); ++ j){
+						if(labelValue.equals(bean.getValues().get(j))){
+							labelValue = bean.getLabels().get(j).toString();
+							break;
+						}
+					}
+				}
+				if (obj != null) {
+					if (obj instanceof TextView) {
+						String text = ((TextView)obj).getText().toString();
+						if(((TextView)obj).getText() != null 
+								&& !((TextView)obj).getText().toString().equals("")
+								&& !((TextView)obj).getText().toString().equals("请选择")
+								&& !((TextView)obj).getText().toString().equals("请输入")
+								&& !((TextView)obj).getText().toString().equals("请填写"))
+							continue;
+						((TextView) obj).setText(labelValue);
+					} else if (obj instanceof EditText) {
+						if(((EditText)obj).getText() != null 
+								&& !((EditText)obj).getText().toString().equals("")
+								&& !((EditText)obj).getText().toString().equals("")
+								&& !((EditText)obj).getText().toString().equals("请选择")
+								&& !((EditText)obj).getText().toString().equals("请输入")
+								&& !((EditText)obj).getText().toString().equals("请填写"))
+							continue;
+						((EditText) obj).setText(labelValue);
+					} else if (obj instanceof List<?>) {
+						String value = goodsDetail.getValueByKey((String)keys[i]);
+						List<CheckBox> list = ((List<CheckBox>) obj);
+						for (int j = 0; j < list.size(); j++) {
+							CheckBox c = list.get(j);
+							String v = (String) c.getTag();
+							if (value.contains(v)) {
+								c.setChecked(true);
+							} else {
+								c.setChecked(false);
+							}
+						}
+					}
+					postMap.put(getEditMapKeyDisplayName((String)keys[i]), goodsDetail.getValueByKey((String)keys[i]));
+					
+				}
+					
+			}
+			/*
+			// 不在metaData里的参数
+			EditText title = (EditText) editMap.get("标题");
+			String titleContent = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
+			if (title != null) {
+				title.setText(titleContent);
+			}
+			postMap.put("标题", titleContent);
+			
+			
+			TextView area = (TextView) editMap.get("地区");
+			if (area != null) {
+				String areaV = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if(areaV.contains(",")){
+					area.setText(areaV.split(",")[1]);
+					postMap.put("地区", postList.get("地区").getLvmap().get(areaV.split(",")[1]));
+				}else{
+					area.setText(areaV);
+					postMap.put("地区","");
+				}				
+			}
+			
+			TextView wanted = (TextView) editMap.get("供求");
+			if (wanted != null) {
+				String wan = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_WANTED);
+				if(wan.equals("1")){
+					String s = (String) postList.get("供求").getLvmap().keySet().toArray()[0];
+					wanted.setText(s); 
+					postMap.put("供求", "1");
+				}else if(wan.equals("0")){
+					String s = (String) postList.get("供求").getLvmap().keySet().toArray()[1];
+					wanted.setText(s);
+					postMap.put("供求", "0");
+				}
+			}
+			
+			EditText des = (EditText) editMap.get("补充说明");
+			if (des != null) {
+				String txt = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION);
+				
+				String realText = "";
+				if (txt.contains("\n")) {
+					realText = txt.split("\n")[0];
+					des.setText(realText);
+				} else {
+					des.setText("");
+				}
+				
+				postMap.put("补充说明", realText);
+			}			
+	*/
+			// 添加照片
+			System.out.println("goodsDetail.getImageList()--->"
+					+ goodsDetail.getImageList());
+			if (goodsDetail.getImageList() != null) {
+				String b = (goodsDetail.getImageList().getResize180())
+						.substring(1, (goodsDetail.getImageList()
+								.getResize180()).length() - 1);
+				b = Communication.replace(b);
+				if (b.contains(",")) {
+					String[] c = b.split(",");
+					for (int k = 0; k < c.length; k++) {
+						listUrl.add(c[k]);
+					}
+				}else{
+					listUrl.add(b);
+				}
+				
+				String big = (goodsDetail.getImageList().getBig())
+						.substring(1, (goodsDetail.getImageList()
+								.getBig()).length() - 1);
+				big = Communication.replace(big);
+				String[] cbig = big.split(",");
+
+				//System.out.println("listUrl.size--->" + listUrl.size());
+				for (int j = 0; j < listUrl.size(); j++) {
+					//System.out.println(listUrl.get(j) + "   " + imgs[j]);
+					String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+					new Thread(new Imagethread(listUrl.get(j), bigUrl)).start();
+//					imgs[j].setTag(listUrl.get(j));
+//					LoadImage.addTask(listUrl.get(j), imgs[j]);
+//					LoadImage.doTask();
+				}
+			}
+			
+			System.out.println("postMap---？"+postMap);
+			if(intent != null){
+				Bundle b = intent.getExtras();
+				if(b != null){
+					bundle.putSerializable("goodsDetail", null);
+				}
+			}
+		}
+		
+		//copy to initial value map
+		for(int j = 0; j < postMap.size(); ++j)
+		{
+			String key = (String) postMap.keySet().toArray()[j];
+			initialValueMap.put(key, postMap.get(key).toString());
+		}
+		
+		for(int i = 0; i < listUrl.size(); ++i){
+			if(listUrl.get(i) != null && listUrl.get(i).length() > 0){
+				initialValueMap.put(listUrl.get(i), "existingTag");
+			}
+		}
+	}
+
+	/**
+	 * 用户登陆进发布页、否则进登陆页
+	 */
+	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this, "user");
 		if (user == null) {
 			bundle.putInt("type", 2);
@@ -140,58 +456,168 @@ public class PostGoods extends BaseActivity {
 		} else {
 			mobile = user.getPhone();
 			password = user.getPassword();
-
+			
+			//获取发布模板
+			String cityEnglishName = myApp.cityEnglishName;
+			if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
+				cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
+			}
 			PostMu postMu = (PostMu) Util.loadDataFromLocate(this,
-					categoryEnglishName + myApp.cityEnglishName);
+					categoryEnglishName + cityEnglishName);
 			if (postMu != null && !postMu.getJson().equals("")) {
 				json = postMu.getJson();
 				Long time = postMu.getTime();
 				if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
+					//更新界面
 					myHandler.sendEmptyMessage(1);
-					new Thread(new GetGoodsListThread(false)).start();
+					//下载新数据	false-不更新界面
+					new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 				} else {
+					//更新界面
 					myHandler.sendEmptyMessage(1);
 				}
 			} else {
+				//下载新数据	true--更新界面
 				pd.show();
-				new Thread(new GetGoodsListThread(true)).start();
+				new Thread(new GetCategoryMetaThread(true,cityEnglishName)).start();
 			}
 
 		}
+	}
 
+	/**
+	 * 初始化
+	 */
+	private void initial() {
+		tvlist = new LinkedHashMap<String, TextView>();
+		postList = new LinkedHashMap<String, PostGoodsBean>();
+		postMap = new LinkedHashMap<String, String>();
+		initialValueMap = new LinkedHashMap<String, String>();
+		
+		listUrl = new ArrayList<String>();
+		// textViewMap = new LinkedHashMap<Integer, TextView>();
+		// checkBoxMap = new LinkedHashMap<Integer, List<CheckBox>>();
+		bitmap_url = new ArrayList<String>();
+		bitmap_url.add(null);
+		bitmap_url.add(null);
+		bitmap_url.add(null);
+		btMap = new LinkedHashMap<Integer, Object>();
+		editMap = new LinkedHashMap<String, Object>();
+		categoryEnglishName = intent.getExtras().getString(
+				"categoryEnglishName");
+		backPageName = intent.getExtras().getString("backPageName");
+		Bundle b = intent.getExtras();
+		Serializable sgoodsDetail = b.getSerializable("goodsDetail");
+		if(sgoodsDetail != null)
+			goodsDetail = (GoodsDetail)sgoodsDetail;
+
+		post = (Button) findViewById(R.id.post);
+		backBtn = (Button) findViewById(R.id.backBtn);
+		tvTitle = (TextView) findViewById(R.id.tvTitle);
+		tvTitle.setText("发布");
+		backBtn.setText(backPageName);
+		layout_txt = (LinearLayout) findViewById(R.id.layout_txt);
+
+		post.setOnClickListener(this);
+		backBtn.setOnClickListener(this);
+	}
+	
+	enum ImageStatus{
+		ImageStatus_Normal,
+		ImageStatus_Unset,
+		ImageStatus_Failed
+	}
+	private ImageStatus getCurrentImageStatus(int index){
+		if(bitmap_url.get(index) == null)return ImageStatus.ImageStatus_Unset;
+		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
+		return ImageStatus.ImageStatus_Failed;
 	}
 
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
+
 		if (v == img1 || v == img2 || v == img3) {
+			// 3张图片点击事件
 			for (int i = 0; i < imgs.length; i++) {
 				if (imgs[i].equals(v)) {
-					Object[] keys;
-					try {
-						keys = bitmap_url.keySet().toArray();
-						if (keys[i] != null) {
-							bitmap_url.remove(keys[i]);
-							for (int j = 0; j < imgs.length; j++) {
-								try {
-									keys = bitmap_url.keySet().toArray();
-									imgs[j].setImageBitmap(bitmap_url
-											.get(keys[j]));
-								} catch (Exception e) {
-									imgs[j].setImageResource(R.drawable.btn_camera);
-								}
-							}
-						} else {
-							showDialog();
-						}
-					} catch (Exception e) {
+					currentImgView = i;
+					ImageStatus status = getCurrentImageStatus(i);
+					if(ImageStatus.ImageStatus_Unset == status){
 						showDialog();
 					}
-
+					else if(ImageStatus.ImageStatus_Failed == status){
+						String[] items = {"重试", "换一张"};
+						new AlertDialog.Builder(this)
+						.setTitle("选择操作")
+						.setItems(items, new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								if(0 == which){
+									new Thread(new UpLoadThread(bitmap_url.get(currentImgView), currentImgView)).start();
+								}
+								else{
+									bitmap_url.set(currentImgView, null);
+									imgs[currentImgView].setImageResource(R.drawable.d);
+									showDialog();
+									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
+								}
+								
+							}
+						})
+						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								dialog.dismiss();
+							}
+						}).show();
+					}
+					else{
+						//String[] items = {"删除"};
+						new AlertDialog.Builder(this)
+						.setMessage("删除当前图片?")
+						.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								bitmap_url.set(currentImgView, null);
+								imgs[currentImgView].setImageResource(R.drawable.d);
+//								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
+							}
+						})
+						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								// TODO Auto-generated method stub
+								dialog.dismiss();
+							}
+						}).show();
+					}
+/*
+					if (keys[i] != null && keys[i] != "1" ) {
+						bitmap_url.remove(keys[i]);
+						for (int j = 0; j < imgs.length; j++) {
+							try {
+								keys = bitmap_url.keySet().toArray();
+								imgs[j].setImageBitmap(bitmap_url
+										.get(keys[j]));
+							} catch (Exception e) {
+								imgs[j].setImageResource(R.drawable.btn_camera);
+							}
+						}
+					} else {
+						showDialog();
+					}*/
 				}
 			}
-
 		} else if (v == photoalbum) {
+			// 相册
 			if (ad.isShowing()) {
 				ad.dismiss();
 			}
@@ -207,6 +633,7 @@ public class PostGoods extends BaseActivity {
 					PHOTOZOOM);
 
 		} else if (v == photomake) {
+			// 拍照
 			if (ad.isShowing()) {
 				ad.dismiss();
 			}
@@ -216,41 +643,27 @@ public class PostGoods extends BaseActivity {
 			// startActivityForResult(intent2, PHOTOHRAPH);
 			Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 			intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(new File("/sdcard/", "temp.jpg")));
+					Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg")));
 			startActivityForResult(intent2, PHOTOHRAPH);
 
 		} else if (v == photocancle) {
 			ad.dismiss();
 		} else if (v == backBtn) {
-			finish();
+			if(filled())
+				ConfirmAbortAlert();
+			else
+				finish();
 		}
 
 		else if (v == post) {
-			if (check2()) {
-				for (int i = 0; i < postList.size(); i++) {
-					PostGoodsBean postGoodsBean = postList.get(i);
-					if (postGoodsBean.getControlType().equals("input")
-							|| postGoodsBean.getControlType()
-									.equals("textarea")) {
-						EditText et = (EditText) btMap.get(i);
-						postMap.put(i, et.getText().toString());
-					} else if (postGoodsBean.getControlType()
-							.equals("checkbox")) {
-						String value = "";
-						@SuppressWarnings("unchecked")
-						List<CheckBox> l = (List<CheckBox>) btMap.get(i);
-						for (int j = 0; j < l.size(); j++) {
-							CheckBox c = l.get(j);
-							if (c.isChecked()) {
-								value = value
-										+ postGoodsBean.getValues().get(j);
-							}
-						}
-						postMap.put(i, value);
-					}
-
-				}
-
+			if(uploadCount > 0){
+				Toast.makeText(PostGoods.this,"图片正在上传" + "!", 0).show();
+			}
+			// 提交
+			else if (check2()) {
+				//循环发布需提交的数据集合
+				extractInputData();
+				System.out.println("postMap---？"+postMap);
 				pd = ProgressDialog.show(PostGoods.this, "提示", "请稍候...");
 				pd.setCancelable(true);
 				new Thread(new UpdateThread()).start();
@@ -260,25 +673,94 @@ public class PostGoods extends BaseActivity {
 		super.onClick(v);
 	}
 
+	private void extractInputData() {
+		for (int i = 0; i < postList.size(); i++) {
+			String key = (String) postList.keySet().toArray()[i];
+			PostGoodsBean postGoodsBean = postList.get(key);
+			if (postGoodsBean.getControlType().equals("input")
+					|| postGoodsBean.getControlType()
+							.equals("textarea")) {
+				//文本框
+				EditText et = (EditText) btMap.get(i);
+				postMap.put(postGoodsBean.getDisplayName(), et
+						.getText().toString() + postGoodsBean.getUnit());
+			} else if (postGoodsBean.getControlType()
+					.equals("checkbox")) {
+				//多选选择
+				String value = "";
+				@SuppressWarnings("unchecked")
+				List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+				for (int j = 0; j < l.size(); j++) {
+					CheckBox c = l.get(j);
+					if (c.isChecked()) {
+						value = value
+								+ postGoodsBean.getValues().get(j);
+					}
+				}
+				postMap.put(postGoodsBean.getDisplayName(), value);
+			}
+		}
+	}
+	
+	/**
+	 * check whether any content has been filled
+	 * 
+	 * @return
+	 */
+	private boolean filled() {
+		boolean bRet = false;
+		
+		for(int i = 0; i < bitmap_url.size(); ++i){
+			if(bitmap_url.get(i) != null && bitmap_url.get(i).length() > 0 && initialValueMap.get(bitmap_url.get(i)) == null)
+				return true;
+		}
+		
+		extractInputData();
+		
+		for (int i = 0; i < postList.size(); i++) {
+			String key = (String) postList.keySet().toArray()[i];
+			PostGoodsBean postGoodsBean = postList.get(key);
+			
+			String displayName = postGoodsBean.getDisplayName();
+			
+			String value = postMap.get(displayName);
+			String initialValue = initialValueMap.get(displayName)+postGoodsBean.getUnit();
+			
+			if(initialValue == null || !initialValue.equals(value)){
+				bRet = true;
+				break;
+			}
+		}			
+			
+		return bRet;
+	}
+
+	/**
+	 * 检查必填内容是否填写
+	 * 
+	 * @return
+	 */
 	private boolean check2() {
 		for (int i = 0; i < postList.size(); i++) {
-			PostGoodsBean postGoodsBean = postList.get(i);
+			String key = (String) postList.keySet().toArray()[i];
+			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getRequired().endsWith("required")) {
 				if (postGoodsBean.getControlType().equals("select")) {
 					TextView obj = (TextView) btMap.get(i);
-					if (obj.getText().toString().trim().length() == 0 || obj.getText().toString().trim().equals("请选择")) {
+					if (obj.getText().toString().trim().length() == 0
+							|| obj.getText().toString().trim().equals("请选择")) {
 						
 						Toast.makeText(PostGoods.this,
-								"请填写" + postGoodsBean.getDisplayName() + "!",
-								0).show();
+								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
+								.show();
 						return false;
 					}
 				} else if (postGoodsBean.getControlType().equals("input")) {
 					EditText obj = (EditText) btMap.get(i);
 					if (obj.getText().toString().trim().length() == 0) {
 						Toast.makeText(PostGoods.this,
-								"请填写" + postGoodsBean.getDisplayName() + "!",
-								0).show();
+								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
+								.show();
 						return false;
 					}
 				}
@@ -287,6 +769,9 @@ public class PostGoods extends BaseActivity {
 		return true;
 	}
 
+	/**
+	 * 显示拍照相册对话框
+	 */
 	private void showDialog() {
 		View view = LinearLayout.inflate(this, R.layout.upload_head, null);
 		Builder builder = new AlertDialog.Builder(this);
@@ -306,11 +791,71 @@ public class PostGoods extends BaseActivity {
 		photocancle.setOnClickListener(this);
 	}
 
+	/**
+	 * 发布线程
+	 * 
+	 * @author Administrator
+	 * 
+	 */
 	class UpdateThread implements Runnable {
 		public void run() {
-
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
+
+			String city = PostGoods.this.myApp.cityName;
+			if(goodsDetail != null){
+				String goodsCity = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if(null != goodsCity){
+					String[]cities = goodsCity.split(",");
+					if(cities != null && cities.length > 0){
+						city = cities[0];
+					}
+				}
+			}
+			if(editMap != null && PostGoods.this.getEditMapValue("地区") != null){
+				Object objArea = PostGoods.this.getEditMapValue("地区");
+				String tvText = null;
+				if(objArea instanceof TextView){
+					tvText = ((TextView)objArea).getText().toString();
+				}
+				else if(objArea instanceof EditText){
+					tvText = ((EditText)objArea).getText().toString();
+				}
+				if(tvText != null && !tvText.equals("")){
+					city = city + "," + tvText;
+				}
+			}
+			if(editMap != null && PostGoods.this.getEditMapValue("具体地区") != null){
+				Object objArea = PostGoods.this.getEditMapValue("具体地区");
+				String tvText = null;
+				if(objArea instanceof TextView){
+					tvText = ((TextView)objArea).getText().toString();
+				}
+				else if(objArea instanceof EditText){
+					tvText = ((EditText)objArea).getText().toString();
+				}
+				if(tvText != null && !tvText.equals("")){
+					city = city + "," + tvText;
+				}
+			}
+			if(!city.equals("")){
+				String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+				try{
+					String googleJsn = Communication.getDataByUrl(googleUrl);
+					String[] info = googleJsn.split(",");
+					if(info != null && info.length == 4){
+						//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT, info[2]);
+						//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON, info[3]);
+						list.add("lat=" + info[2]);
+						list.add("lng=" + info[3]);
+					}
+				}catch(UnsupportedEncodingException e){
+					e.printStackTrace();
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}	
+
 
 			list.add("mobile=" + mobile);
 			String password1 = Communication.getMD5(password);
@@ -319,28 +864,32 @@ public class PostGoods extends BaseActivity {
 			list.add("userToken=" + userToken);
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + myApp.cityEnglishName);
-
+			list.add("rt=1");
+			//根据goodsDetail判断是发布还是修改发布
+			if (goodsDetail != null) {
+				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+			}
+			//发布发布集合
 			for (int i = 0; i < postMap.size(); i++) {
-				int key = (Integer) postMap.keySet().toArray()[i];
+				String key = (String) postMap.keySet().toArray()[i];
 
 				String values = postMap.get(key);
-				if (!values.equals("") && values != null) {
+				if (values != null && values.length() > 0 && postList.get(key) != null) {
 					list.add(URLEncoder.encode(postList.get(key).getName())
 							+ "=" + URLEncoder.encode(values));
 				}
 			}
-
+			//发布图片
 			for (int i = 0; i < bitmap_url.size(); i++) {
-				try {
-					list.add("image=" + bitmap_url.keySet().toArray()[i]);
-				} catch (Exception e) {
-
+					//System.out.println("bitmap_url.keySet().toArray()[i]--?:"+bitmap_url.keySet().toArray()[i]);
+				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
+					list.add("image=" + bitmap_url.get(i));
 				}
 			}
 			// list.add("title=" + "111");
 			// list.add("description=" +
 			// URLEncoder.encode(descriptionEt.getText().toString()));
-
+			
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url);
@@ -350,16 +899,14 @@ public class PostGoods extends BaseActivity {
 					JSONObject json = jsonObject.getJSONObject("error");
 					code = json.getInt("code");
 					message = json.getString("message");
-					if(code == 0)
-					{
+					if (code == 0) {
 						// 发布成功
 						myHandler.sendEmptyMessageDelayed(3, 3000);
-					}
-					else {
-						
+					} else {
+
 						myHandler.sendEmptyMessage(2);
 					}
-				} 
+				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
@@ -367,24 +914,35 @@ public class PostGoods extends BaseActivity {
 			}
 		}
 	}
+
+	/**
+	 * 获取模板线程
+	 */
 	public int code = -1;
 	public String message = "";
-	class GetGoodsListThread implements Runnable {
+
+	class GetCategoryMetaThread implements Runnable {
 
 		private boolean isUpdate;
+		private String cityEnglishName = null;
 
-		public GetGoodsListThread(boolean isUpdate) {
+		public GetCategoryMetaThread(boolean isUpdate, String cityEnglishName) {
+			this.cityEnglishName = cityEnglishName;
 			this.isUpdate = isUpdate;
 		}
+		public GetCategoryMetaThread(boolean isUpdate) {
+			this.isUpdate = isUpdate;
+		}
+		
 
 		@Override
 		public void run() {
 
 			String apiName = "category_meta_post";
 			ArrayList<String> list = new ArrayList<String>();
-
+			this.cityEnglishName = (this.cityEnglishName == null ? myApp.cityEnglishName : this.cityEnglishName);
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + myApp.cityEnglishName);
+			list.add("cityEnglishName=" + this.cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
@@ -394,13 +952,14 @@ public class PostGoods extends BaseActivity {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
+					//保存模板
 					Helper.saveDataToLocate(PostGoods.this, categoryEnglishName
-							+ myApp.cityEnglishName, postMu);
+							+ this.cityEnglishName, postMu);
 					if (isUpdate) {
 						myHandler.sendEmptyMessage(1);
 					}
 				} else {
-					//{"error":{"code":0,"message":"\u66f4\u65b0\u4fe1\u606f\u6210\u529f"},"id":"191285466"}
+					// {"error":{"code":0,"message":"\u66f4\u65b0\u4fe1\u606f\u6210\u529f"},"id":"191285466"}
 					myHandler.sendEmptyMessage(2);
 				}
 			} catch (UnsupportedEncodingException e) {
@@ -415,6 +974,9 @@ public class PostGoods extends BaseActivity {
 
 	private Uri uri = null;
 
+	/**
+	 * 回调
+	 */
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 
 		if (resultCode == NONE) {
@@ -423,10 +985,10 @@ public class PostGoods extends BaseActivity {
 		// 拍照
 		if (requestCode == PHOTOHRAPH) {
 			// 设置文件保存路径这里放在跟目录下
-			File picture = new File("/sdcard/" + "/temp.jpg");
+			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg");
 			uri = Uri.fromFile(picture);
 			getBitmap(uri, PHOTOHRAPH); // 直接返回图片
-			// startPhotoZoom(uri); //截取图片尺寸
+			//startPhotoZoom(uri); //截取图片尺寸
 		}
 
 		if (data == null) {
@@ -436,34 +998,55 @@ public class PostGoods extends BaseActivity {
 		// 读取相册缩放图片
 		if (requestCode == PHOTOZOOM) {
 			uri = data.getData();
-			// startPhotoZoom(uri);
+			//startPhotoZoom(uri);
 			getBitmap(uri, PHOTOZOOM);
 		}
 		// 处理结果
 		if (requestCode == PHOTORESOULT) {
+			File picture = new File("/sdcard/cropped.jpg");
+			
+			uri = Uri.fromFile(picture);
+			getBitmap(uri, PHOTOHRAPH);
+			File file = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + "jpg");
+			try {
+				if(file.isFile() && file.exists()){
+					file.delete();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+/*
 			Bundle extras = data.getExtras();
 			if (extras != null) {
-				Bitmap photo = extras.getParcelable("data");
+				Bitmap tphoto = extras.getParcelable("data");
 				ByteArrayOutputStream stream = new ByteArrayOutputStream();
-				photo.compress(Bitmap.CompressFormat.JPEG, 75, stream); // (0 -
+				tphoto.compress(Bitmap.CompressFormat.JPEG, 100, stream); // (0 -
 				// 100)压缩文件
 				// saveSDCard(photo);
-				photo = Util.newBitmap(photo, 135, 135);
-				imgs[bitmap_url.size()].setImageBitmap(photo);
+				Bitmap photo = Util.newBitmap(tphoto, 480, 480);
+				imgs[this.currentImgView].setImageBitmap(photo);
+				imgs[this.currentImgView].setFocusable(true);				
+				
+				tphoto.recycle();
+//				imgs[bitmap_url.size()].setImageBitmap(photo);
 
 				new Thread(new UpLoadThread(photo)).start();
 
-			}
+			}*/
 		}
-
+		
 		if (requestCode == POST_LIST) {
 			Bundle extras = data.getExtras();
 			if (extras != null) {
 				int id = extras.getInt("id");
-				TextView tv = tvlist.get(selId);
-				String txt = postList.get(selId).getLabels().get(id);
-				String txtValue = postList.get(selId).getValues().get(id);
-				postMap.put(selId, txtValue);
+				TextView tv = tvlist.get(displayname);
+				String txt = postList.get(displayname).getLabels().get(id);
+				String txtValue = postList.get(displayname).getValues().get(id);
+//				if(displayname.equals("供求")){
+//					txtValue = postList.get(displayname).getValues().get((id+1)%2);
+//				}
+				System.out.println(id+" "+txt+" "+txtValue);
+				postMap.put(displayname, txtValue);
 				tv.setText(txt);
 			}
 
@@ -471,34 +1054,39 @@ public class PostGoods extends BaseActivity {
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
+	
 	private void getBitmap(Uri uri, int id) {
-		String path = "";
-		Bitmap photo = null;
+		String path = uri == null ? "" : uri.toString();
+//		Bitmap photo = null;
 
-		path = getRealPathFromURI(uri); // from Gallery
+//		path = getRealPathFromURI(uri); // from Gallery
 
-		if (path == null) {
-			path = uri.getPath(); // from File Manager
-		}
-		if (path != null) {
-			try {
-				photo = BitmapFactory.decodeFile(path);
-				photo = Util.newBitmap(photo, 135, 135);
-				imgs[bitmap_url.size()].setImageBitmap(photo);
+//		if (path == null) {
+//			path = uri.getPath(); // from File Manager
+//		}
+		if (uri != null) {
+//			try {
+//			    BitmapFactory.Options o =  new BitmapFactory.Options();
+//                o.inPurgeable = true;
+//                o.inSampleSize = 2;
+//				Bitmap tphoto = BitmapFactory.decodeFile(path, o);
+				//photo = Util.newBitmap(tphoto, 480, 480);
+				//tphoto.recycle();
+				//imgs[this.currentImgView].setImageBitmap(photo);
 				// imgs[bitmap_url.size()].setPadding(5, 5, 5, 5);
 				// imgs[bitmap_url.size()].setBackgroundResource(R.drawable.btn_camera);
-				imgs[bitmap_url.size()].setFocusable(true);
+				imgs[this.currentImgView].setFocusable(true);
 
-				new Thread(new UpLoadThread(photo)).start();
-			} catch (Exception e) {
+				new Thread(new UpLoadThread(path, currentImgView)).start();
+//			} catch (Exception e) {
 				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
+//				e.printStackTrace();
+//			}
 		}
-		
 
 	}
 
+	
 	public String getRealPathFromURI(Uri contentUri) {
 		String[] proj = { MediaStore.Images.Media.DATA };
 		Cursor cursor = managedQuery(contentUri, proj, null, null, null);
@@ -522,9 +1110,11 @@ public class PostGoods extends BaseActivity {
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		intent.putExtra("outputX", 64);
-		intent.putExtra("outputY", 64);
-		intent.putExtra("return-data", true);
+		int width = PostGoods.this.getWindowManager().getDefaultDisplay().getWidth();
+		//intent.putExtra("outputX", width);
+		//intent.putExtra("outputY", width);
+		intent.putExtra("return-data", false);
+		intent.putExtra("output",Uri.fromFile(new File("/sdcard/cropped.jpg")));
 		startActivityForResult(intent, PHOTORESOULT);
 	}
 
@@ -533,7 +1123,7 @@ public class PostGoods extends BaseActivity {
 			String filepath = "/sdcard/baixing";
 			File files = new File(filepath);
 			files.mkdir();
-			File file = new File(filepath, "temp.jpg");
+			File file = new File(filepath, "temp" + this.currentImgView + ".jpg");
 			FileOutputStream outStream = new FileOutputStream(file);
 			String path = file.getAbsolutePath();
 			Log.i(path, path);
@@ -557,25 +1147,33 @@ public class PostGoods extends BaseActivity {
 			}
 			switch (msg.what) {
 			case 1:
-
+				//根据模板显示
 				layout_txt.setOrientation(LinearLayout.VERTICAL);
-				postList = JsonUtil.getPostGoodsBean(json);
+				postList = JsonUtil.getPostGoodsBean(json); 
 				for (int i = 0; i < postList.size(); i++) {
 					final int position = i;
-					PostGoodsBean postBean = postList.get(i);
+					String key = (String) postList.keySet().toArray()[i];
+					PostGoodsBean postBean = postList.get(key);
+					System.out.println("postList--->" + postList);
 					LinearLayout layout = new LinearLayout(PostGoods.this);
 					TextView tvshow = new TextView(PostGoods.this);
+					tvshow.setTextColor(Color.BLACK);
 					TextView tvcontent = new TextView(PostGoods.this);
+					tvcontent.setTextColor(Color.BLACK);
 					ImageView ivforward = new ImageView(PostGoods.this);
 					EditText etcontent = new EditText(PostGoods.this);
+//					etcontent.setTextColor(Color.BLACK);
 
-					img1 = new ImageView(PostGoods.this);
-					img2 = new ImageView(PostGoods.this);
-					img3 = new ImageView(PostGoods.this);
+					img1 = new BXDecorateImageView(PostGoods.this);
+					//((BXDecorateImageView)img1).setDecorateDResource(R.drawable.gou, BXDecorateImageView.ImagePos.ImagePos_RightTop);
+					img2 = new BXDecorateImageView(PostGoods.this);
+					img3 = new BXDecorateImageView(PostGoods.this);
 					imgs = new ImageView[] { img1, img2, img3 };
 					TextView tvlastunit = new TextView(PostGoods.this);
-					// ImageView xx = new ImageView(PostGoods.this);
+					tvlastunit.setTextColor(Color.BLACK);
+
 					TextView ttxx = new TextView(PostGoods.this);
+//					ttxx.setTextColor(Color.BLACK);
 
 					if (i == 0) {
 						layout.setBackgroundResource(R.drawable.btn_top_bg);
@@ -598,51 +1196,41 @@ public class PostGoods extends BaseActivity {
 					}
 
 					if (postBean.getControlType().equals("input")) {
+						// 输入框
 						tvshow.setText(postBean.getDisplayName());
 						tvshow.setTextSize(18);
 						layout.addView(tvshow);
-						if (postBean.getName().equals("title")) {
-							titleEt = new EditText(PostGoods.this);
-							titleEt.setTextSize(16);
-							titleEt.setTextColor(0xff595959);
-							titleEt.setLayoutParams(new LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.WRAP_CONTENT, 1));
-							titleEt.setBackgroundDrawable(null);
-							titleEt.setGravity(Gravity.RIGHT);
-							titleEt.setHint("请输入");
-							// textViewMap.put(position, titleEt);
-							btMap.put(position, titleEt);
-							layout.addView(titleEt);
-						} else {
-							if (postBean.getName().equals("contact")) {
-								etcontent.setText(user.getPhone());
-							} else {
-								etcontent.setText("");
-							}
-							etcontent.setTextSize(16);
-							etcontent.setTextColor(0xff595959);
-							etcontent.setLayoutParams(new LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.WRAP_CONTENT, 1));
-							// 设置输入类型；注：设置之后hint属性会消失
-							// etcontent.setHint("请输入");
-							if (postBean.getNumeric() == 1) {
-								etcontent
-										.setInputType(InputType.TYPE_CLASS_NUMBER);
-							} else {
-								etcontent
-										.setInputType(InputType.TYPE_CLASS_TEXT);
-							}
+						layout.setOrientation(LinearLayout.HORIZONTAL);
+						
+						etcontent.setTextSize(16);
+						etcontent.setTextColor(0xff595959);
+						etcontent.setLayoutParams(new LayoutParams(
+								LayoutParams.FILL_PARENT,
+								LayoutParams.WRAP_CONTENT, 1));
+						
 
-							etcontent.setBackgroundDrawable(null);
-							etcontent.setGravity(Gravity.RIGHT);
-							etcontent.setHint("请输入");
-
-							// textViewMap.put(position, etcontent);
-							btMap.put(position, etcontent);
-							layout.addView(etcontent);
+						etcontent.setBackgroundDrawable(null);						
+						etcontent.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);	
+						
+						if(postBean.getName().equals("contact")){
+							etcontent.setText(user.getPhone());
+							postMap.put(postBean.getDisplayName(), user.getPhone());
 						}
+						else
+						{
+							etcontent.setText("");
+						}						
+						etcontent.setHint("请输入");
+						etcontent.setHintTextColor(0xff595959);
+
+
+						// textViewMap.put(position, etcontent);
+						btMap.put(position, etcontent);
+						// 联系方式已添加
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), etcontent);
+
+						layout.addView(etcontent);
+						
 						if (!postBean.getUnit().equals("")) {
 							tvlastunit.setTextSize(18);
 							tvlastunit.setLayoutParams(new LayoutParams(
@@ -650,6 +1238,7 @@ public class PostGoods extends BaseActivity {
 									LayoutParams.WRAP_CONTENT));
 							tvlastunit.setText(postBean.getUnit());
 						}
+						
 						layout.addView(tvlastunit);
 					} else if (postBean.getControlType().equals("select")) {
 						tvshow.setText(postBean.getDisplayName());
@@ -667,6 +1256,7 @@ public class PostGoods extends BaseActivity {
 						tvcontent.setGravity(Gravity.RIGHT);
 						tvcontent.setText("请选择");
 						btMap.put(position, tvcontent);
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
 						ivforward.setLayoutParams(new LayoutParams(
 								LayoutParams.WRAP_CONTENT,
 								LayoutParams.WRAP_CONTENT));
@@ -692,6 +1282,7 @@ public class PostGoods extends BaseActivity {
 						tvcontent.setGravity(Gravity.RIGHT);
 						tvcontent.setText("请选择");
 						btMap.put(position, tvcontent);
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
 						ivforward.setLayoutParams(new LayoutParams(
 								LayoutParams.WRAP_CONTENT,
 								LayoutParams.WRAP_CONTENT));
@@ -702,14 +1293,29 @@ public class PostGoods extends BaseActivity {
 						layout.addView(ivforward);
 
 					} else if (postBean.getControlType().equals("checkbox")) {
-						layout.setGravity(Gravity.TOP);
+						layout.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
 						tvshow.setText(postBean.getDisplayName());
+						//try not to display left side label if it 's same with label of checkbox
+						List<String> rightLabels = postBean.getLabels();
+						if(rightLabels.size() > 0){
+							if(((String)(rightLabels.get(0))).equals(postBean.getDisplayName())){
+								tvshow.setText("");
+							}
+						}
+						
 						tvshow.setTextSize(18);
+						tvshow.setPadding(3, 0, 3, 0);
+						tvshow.setWidth(100);
 						layout.addView(tvshow);
 						LinearLayout checkbox_layout = new LinearLayout(
 								PostGoods.this);
-						checkbox_layout.setGravity(Gravity.TOP);
+						
+						checkbox_layout.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
+						checkbox_layout.setLayoutParams(new LayoutParams(
+								LayoutParams.WRAP_CONTENT,
+								LayoutParams.WRAP_CONTENT));
 						checkbox_layout.setOrientation(LinearLayout.VERTICAL);
+						checkbox_layout.setPadding(0, 0, 15, 0);
 						List<String> boxes = postBean.getLabels();
 						List<CheckBox> boxeslist = new ArrayList<CheckBox>();
 						for (int j = 0; j < boxes.size(); j++) {
@@ -718,6 +1324,7 @@ public class PostGoods extends BaseActivity {
 							checkbox.setLayoutParams(new LayoutParams(
 									LayoutParams.WRAP_CONTENT,
 									LayoutParams.WRAP_CONTENT));
+							checkbox.setTag(postBean.getLabels().get(j));
 							checkbox.setTextSize(16);
 							checkbox.setText(ss);
 							boxeslist.add(checkbox);
@@ -726,6 +1333,7 @@ public class PostGoods extends BaseActivity {
 						layout.addView(checkbox_layout);
 						// checkBoxMap.put(position, boxeslist);
 						btMap.put(position, boxeslist);
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), boxeslist);
 					} else if (postBean.getControlType().equals("textarea")) {
 						descriptionEt = new EditText(PostGoods.this);
 						descriptionEt.setTextSize(16);
@@ -733,45 +1341,75 @@ public class PostGoods extends BaseActivity {
 						tvshow.setText(postBean.getDisplayName());
 						tvshow.setTextSize(18);
 						descriptionEt.setHint("请输入");
+						descriptionEt.setHintTextColor(0xff595959);
 						descriptionEt.setGravity(Gravity.TOP);
 						descriptionEt.setLines(5);
 						descriptionEt.setText(myApp.getPersonMark());
 						// textViewMap.put(position, descriptionEt);
 						btMap.put(position, descriptionEt);
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
 						layout.setOrientation(LinearLayout.VERTICAL);
 						layout.addView(tvshow);
 						layout.addView(descriptionEt);
 					} else if (postBean.getControlType().equals("image")) {
-						img1.setLayoutParams(new LinearLayout.LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						img2.setLayoutParams(new LinearLayout.LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						img3.setLayoutParams(new LinearLayout.LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						img1.setImageResource(R.drawable.btn_camera);
-						img2.setImageResource(R.drawable.btn_camera);
-						img3.setImageResource(R.drawable.btn_camera);
+					    
+					    int height = PostGoods.this.getWindowManager().getDefaultDisplay().getHeight();
+			            int fixHotHeight = height * 15 / 100;
+			            if(fixHotHeight < 50)
+			            {
+			                fixHotHeight = 50;
+			            }
+			            //fixHotHeight = layout.getHeight() - 5 * 2;
+                        img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                        img1.setAdjustViewBounds(true);                       
+                        img1.setMaxHeight(fixHotHeight);
+                        img1.setMaxWidth(fixHotHeight);
+                        LinearLayout l1 = new LinearLayout(PostGoods.this);
+			            l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+			            l1.addView(img1);
+                        
+                        img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+                        img2.setAdjustViewBounds(true);
+                        img2.setMaxHeight(fixHotHeight);
+                        img2.setMaxWidth(fixHotHeight);
+                        LinearLayout l2 = new LinearLayout(PostGoods.this);
+			            l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+			            l2.addView(img2);
+                        
+                        img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+                        img3.setAdjustViewBounds(true);
+                        img3.setMaxHeight(fixHotHeight);
+                        img3.setMaxWidth(fixHotHeight);
+                        LinearLayout l3 = new LinearLayout(PostGoods.this);
+			            l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+			            l3.addView(img3);
+                        
+						img1.setImageResource(R.drawable.d);
+						img2.setImageResource(R.drawable.d);
+						img3.setImageResource(R.drawable.d);
 						img1.setOnClickListener(PostGoods.this);
 						img2.setOnClickListener(PostGoods.this);
 						img3.setOnClickListener(PostGoods.this);
-						layout.addView(img1);
-						layout.addView(img2);
-						layout.addView(img3);
+						layout.addView(l1);
+						layout.addView(l2);
+						layout.addView(l3);
+						
 						btMap.put(position, imgs);
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), imgs);
 					}
 
-					postMap.put(position, "");
-					tvlist.add(tvcontent);
+					if(postMap.get(postBean.getDisplayName()) == null)
+						postMap.put(postBean.getDisplayName(), "");
+					
+					tvlist.put(postBean.getDisplayName(), tvcontent);
 
 					layout.setTag(postBean);
 					layout.setOnClickListener(new OnClickListener() {
 						public void onClick(View v) {
 							PostGoodsBean postBean = (PostGoodsBean) v.getTag();
 							if (postBean.getControlType().equals("select")) {
-								selId = position;
+								// selId = position;
+								displayname = postBean.getDisplayName();
 								bundle.putSerializable("postBean", postBean);
 								bundle.putString("title",
 										postBean.getDisplayName());
@@ -782,7 +1420,8 @@ public class PostGoods extends BaseActivity {
 								startActivityForResult(intent, POST_LIST);
 							} else if (postBean.getControlType().equals(
 									"tableSelect")) {
-								selId = position;
+								// selId = position;
+								displayname = postBean.getDisplayName();
 								bundle.putSerializable("postBean", postBean);
 								bundle.putString("title",
 										postBean.getDisplayName());
@@ -796,24 +1435,27 @@ public class PostGoods extends BaseActivity {
 					});
 					layout_txt.addView(layout);
 				}
-
+				editpostUI();
 				break;
 
 			case 2:
 				if (pd != null) {
 					pd.dismiss();
 				}
-				AlertDialog.Builder builder = new AlertDialog.Builder(PostGoods.this);
-				builder.setTitle("提示:").setMessage(message)
-				.setPositiveButton("确定", new DialogInterface.OnClickListener() {
-					
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-					}
-				});
+				AlertDialog.Builder builder = new AlertDialog.Builder(
+						PostGoods.this);
+				builder.setTitle("提示:")
+						.setMessage(message)
+						.setPositiveButton("确定",
+								new DialogInterface.OnClickListener() {
+
+									@Override
+									public void onClick(DialogInterface dialog,
+											int which) {
+										dialog.dismiss();
+									}
+								});
 				builder.create().show();
-				
 				break;
 			case 3:
 				try {
@@ -850,41 +1492,192 @@ public class PostGoods extends BaseActivity {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(PostGoods.this, "网络连接异常", 3).show();
+				Toast.makeText(PostGoods.this, "网络连接失败，请检查设置！", 3).show();
 				break;
 			}
 			super.handleMessage(msg);
 		}
 	};
 
+	/**
+	 * 上传头像
+	 * 
+	 * @author Administrator
+	 * 
+	 */
 	class UpLoadThread implements Runnable {
-		private Bitmap b;
+		private String bmpPath;
+		private int currentIndex = -1;
+		private Bitmap thumbnailBmp = null;
 
-		public UpLoadThread() {
+		public UpLoadThread(String path, int index) {
 			super();
-		}
-
-		public UpLoadThread(Bitmap b) {
-			super();
-			this.b = b;
+			this.bmpPath = path;
+			currentIndex = index;
 		}
 
 		public void run() {
-			try {
-				String result = Communication.uploadPicture(b);
-				while (true) {
-					if (result != null) {
-						bitmap_url.put(result, b);
-						break;
-					} else {
-						Toast.makeText(PostGoods.this, "上传图片失败", 5).show();
-						break;
-					}
+
+			PostGoods.this.runOnUiThread(new Runnable(){
+				public void run(){
+					//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_orange, BXDecorateImageView.ImagePos.ImagePos_Center);
+					imgs[currentIndex].setImageResource(R.drawable.u);
+					imgs[currentIndex].setClickable(false);
+					imgs[currentIndex].invalidate();
 				}
+			});	
+			synchronized(PostGoods.this){
+//			try{
+			//	uploadMutex.wait();
+//			}catch(InterruptedException e){
+				//e.printStackTrace();
+//			}
+			++ uploadCount;
+			if(bmpPath == null || bmpPath.equals("")) return;
+
+			Uri uri = Uri.parse(bmpPath);
+			String path = getRealPathFromURI(uri); // from Gallery
+			if (path == null) {
+				path = uri.getPath(); // from File Manager
+			}
+			Bitmap currentBmp = null;
+			if (path != null) {
+				try {
+				    
+				    BitmapFactory.Options bfo = new BitmapFactory.Options();
+			        bfo.inJustDecodeBounds = true;
+			        BitmapFactory.decodeFile(path, bfo);
+			        
+				    BitmapFactory.Options o =  new BitmapFactory.Options();
+	                o.inPurgeable = true;
+	                
+	                
+	                int maxDim = 600;
+	                
+	                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
+	                
+	                
+	                currentBmp = BitmapFactory.decodeFile(path, o);
+					//photo = Util.newBitmap(tphoto, 480, 480);
+					//tphoto.recycle();
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+			}			
+			if(currentBmp == null) {
+				-- uploadCount;
+				return;
+			}
+				
+			String result = Communication.uploadPicture(currentBmp);	
+			-- uploadCount;
+			thumbnailBmp = PostGoods.createThumbnail(currentBmp, imgs[currentIndex].getHeight());
+			currentBmp.recycle();
+			currentBmp = null;
+	
+			if (result != null) {
+				bitmap_url.set(currentIndex, result);
+
+                PostGoods.this.runOnUiThread(new Runnable(){
+					public void run(){
+						imgs[currentIndex].setImageBitmap(thumbnailBmp);
+						imgs[currentIndex].setClickable(true);
+						imgs[currentIndex].invalidate();
+						Toast.makeText(PostGoods.this, "上传图片成功", 5).show();
+					}
+				});	                
+			} else {
+//				PostGoods.BXImageAndUrl imgAn dUrl = new PostGoods.BXImageAndUrl();
+				PostGoods.this.runOnUiThread(new Runnable(){
+					public void run(){
+						imgs[currentIndex].setImageResource(R.drawable.f);
+						imgs[currentIndex].setClickable(true);
+						bitmap_url.set(currentIndex, bmpPath);
+						//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_red, BXDecorateImageView.ImagePos.ImagePos_RightTop);
+						imgs[currentIndex].invalidate();
+						Toast.makeText(PostGoods.this, "上传图片失败", 5).show();
+					}
+				});						
+			}
+//			uploadMutex.notifyAll();
+			}
+		}
+	}
+	
+	private static int getClosestResampleSize(int cx, int cy, int maxDim)
+    {
+        int max = Math.max(cx, cy);
+        
+        int resample = 1;
+        for (resample = 1; resample < Integer.MAX_VALUE; resample++)
+        {
+            if (resample * maxDim > max)
+            {
+                resample--;
+                break;
+            }
+        }
+        
+        if (resample > 0)
+        {
+            return resample;
+        }
+        return 1;
+    }
+
+	static private Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
+	{
+		Float width  = new Float(srcBmp.getWidth());
+		Float height = new Float(srcBmp.getHeight());
+		Float ratio = width/height;
+		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
+
+//		int padding = (THUMBNAIL_WIDTH - imageBitmap.getWidth())/2;
+//		imageView.setPadding(padding, 0, padding, 0);
+//		imageView.setImageBitmap(imageBitmap);
+		return thumbnail;
+	}
+	// 开启线程下载图片
+	class Imagethread implements Runnable {
+		private String url;
+		private String urlBig;
+		private Bitmap bitmap = null;
+		private int currentIndex = -1;
+		public Imagethread(String url, String urlBig){
+			this.url = url;
+			this.urlBig = urlBig;
+		}
+		@Override
+		public void run() {
+			try {
+				Bitmap tbitmap = Util.getImage(url);
+				
+				//Bitmap bitmap = Util.newBitmap(tbitmap, 480, 480);
+				for(int i = 0; i < PostGoods.this.bitmap_url.size(); ++ i){
+					if(null != PostGoods.this.bitmap_url.get(i) 
+							&& null != PostGoods.this.bitmap_url.get(i)
+							&& PostGoods.this.bitmap_url.get(i).contains("http:")){
+						continue;						
+					}
+					PostGoods.this.bitmap_url.set(i, urlBig);
+					currentIndex = i;
+					this.bitmap = tbitmap;
+	                PostGoods.this.runOnUiThread(new Runnable(){
+						public void run(){
+							if(currentIndex >= 0 && bitmap != null){
+								PostGoods.this.imgs[currentIndex].setImageBitmap(bitmap);
+							}
+						}
+					});
+					//PostGoods.this.imgs[i].setImageBitmap(tbitmap);
+					break;					
+				}
+				//tbitmap.recycle();
+				//new Thread(new UpLoadThread(bitmap)).start();
+				
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
 		}
-
 	}
 }

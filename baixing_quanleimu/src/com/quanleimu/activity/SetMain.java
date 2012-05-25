@@ -20,7 +20,7 @@ public class SetMain extends BaseActivity {
 
 	// 定义控件
 	public TextView tvTitle, tvPhoneNum, personMark;
-	public RelativeLayout rlMark, rlTelNum, rlClearCache, rlBack, rlAbout;
+	public RelativeLayout rlMark, rlTelNum, rlClearCache, rlBack, rlAbout, rlTextImage;
 	public ImageView ivHomePage,ivCateMain,ivPostGoods,ivMyCenter,ivSetMain;
 	
 	public Dialog changePhoneDialog;
@@ -57,6 +57,7 @@ public class SetMain extends BaseActivity {
 		rlClearCache = (RelativeLayout) findViewById(R.id.rlClearCache);
 		rlAbout = (RelativeLayout) findViewById(R.id.rlAbout);
 		rlBack = (RelativeLayout) findViewById(R.id.rlBack);
+		rlTextImage = (RelativeLayout) findViewById(R.id.rlTextImage);
 
 		tvPhoneNum = (TextView) findViewById(R.id.tvPhoneNum);
 		personMark = (TextView) findViewById(R.id.personMark);
@@ -78,7 +79,15 @@ public class SetMain extends BaseActivity {
 		rlAbout.setOnClickListener(this);
 		rlBack.setOnClickListener(this);
 		rlMark.setOnClickListener(this);
+		rlTextImage.setOnClickListener(this);
 		
+		TextView textImg = (TextView)findViewById(R.id.textView3);
+		if(MyApplication.isTextMode()){
+			textImg.setText("文字");
+		}
+		else{
+			textImg.setText("图片");
+		}
 
 	}
 
@@ -187,23 +196,41 @@ public class SetMain extends BaseActivity {
 			intent.setClass(this, HomePage.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivCateMain:
 			intent.setClass(this, CateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivPostGoods:
 			intent.setClass(this, PostGoodsCateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivMyCenter:
 			intent.setClass(this, MyCenter.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
+			overridePendingTransition(0, 0);
 			break;
 		case R.id.ivSetMain:
+			break;
+		case R.id.rlTextImage:{
+			TextView textImg = (TextView)v.findViewById(R.id.textView3);
+			if(textImg.getText().equals("图片")){
+				textImg.setText("文字");
+				MyApplication.setTextMode(true);
+			}
+			else{
+				textImg.setText("图片");
+				MyApplication.setTextMode(false);
+			}
+			break;
+		}
+		default:
 			break;
 		}
 		super.onClick(v);

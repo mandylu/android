@@ -16,7 +16,6 @@ import android.widget.TextView;
 public class AllCatesAdapter extends BaseAdapter {
 
 	public Context context;
-	public TextView tvCateName;
 	public List<FirstStepCate> list = new ArrayList<FirstStepCate>();
 	
 	 
@@ -31,6 +30,11 @@ public class AllCatesAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
+	}
+	
+	public void setAllCatesList(List<FirstStepCate> list_){
+		this.list = list_;
+		this.notifyDataSetChanged();
 	}
 
 
@@ -71,7 +75,7 @@ public class AllCatesAdapter extends BaseAdapter {
 			v.setBackgroundResource(R.drawable.btn_m_bg);
 		}
 		
-		tvCateName = (TextView)v.findViewById(R.id.tvCateName);
+		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
 		tvCateName.setText(list.get(position).getName());
 		
 		return v;

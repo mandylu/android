@@ -28,9 +28,10 @@
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:background="@drawable/btn_jj"
-             android:paddingLeft="15dip"
-                android:paddingTop="5dip"
-                android:paddingBottom="5dip"
+            android:paddingLeft="12dip"
+            android:paddingTop="5dip"
+            android:paddingBottom="5dip"
+            android:paddingRight="12dip"
             android:text="返回"
             android:textColor="#ffffff" >
         </Button>

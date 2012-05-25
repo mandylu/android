@@ -15,6 +15,9 @@ import java.util.List;
 import java.util.Map;
 
 import org.apache.http.HttpException;
+import org.apache.http.HttpResponse;
+import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpPost;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -25,6 +28,7 @@ import android.util.Log;
 
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.Util;
 
 public class ImageManager
@@ -82,12 +86,23 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		{
 			is=context.openFileInput(fileName);
 			
-			return BitmapFactory.decodeStream(is);
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+            
+			return BitmapFactory.decodeStream(is, null, o);
 		} 
 		catch (FileNotFoundException e)
 		{
-			Log.e("Bitmap", "file not found exception:" + url);
-			return null;
+			try{
+				is = context.getAssets().openFd(fileName).createInputStream();
+				BitmapFactory.Options o =  new BitmapFactory.Options();
+	            o.inPurgeable = true;
+	            return BitmapFactory.decodeStream(is, null, o);
+			}catch(FileNotFoundException ee){
+				return null;
+			}catch(IOException eee){
+				return null;
+			}
 		}
 		finally
 		{
@@ -120,6 +135,21 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	
 	
 	
+	public Bitmap safeGetFromFile(String url)
+	{
+		Bitmap bitmap = this.getFromFile(url);
+		if(null != bitmap)
+		{
+			synchronized (this)
+			{
+				imgCache.put(url, new SoftReference<Bitmap>(bitmap));
+			}			
+		}
+		
+		return bitmap;
+	}
+	
+	
 	public Bitmap safeGet(String url) throws HttpException
 	{
 		Bitmap bitmap = this.getFromFile(url);
@@ -141,12 +171,23 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		
 		try
 		{
-			URL url = new URL(urlStr);
-			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
+//			URL url = new URL(urlStr);
+//			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
 			
-			String fileName=writerToFile(getMd5(urlStr),connection.getInputStream());
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+	        
+	        HttpPost httpPost = new HttpPost(urlStr); 
+	        HttpResponse response = httpClient.execute(httpPost);
+	        
+			String fileName=writerToFile(getMd5(urlStr),response.getEntity().getContent());
 			
-			return BitmapFactory.decodeFile(fileName);
+			
+			httpClient.getConnectionManager().shutdown();
+			
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+            
+			return BitmapFactory.decodeFile(fileName, o);
 			
 		} 
 		catch (IOException e)
@@ -185,17 +226,17 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 			{
 				bos.write(buffer, 0, length);
 			}
-			listNames = MyApplication.list;
-			if(listNames == null || listNames.size() == 0)
-			{
-				listNames = new ArrayList<String>();
-				listNames.add(fileName);
-			}
-			else if(!listNames.contains(fileName))
-			{
-				listNames.add(fileName);
-			}
-			MyApplication.list = listNames;
+//			listNames = MyApplication.list;
+//			if(listNames == null || listNames.size() == 0)
+//			{
+//				listNames = new ArrayList<String>();
+//				listNames.add(fileName);
+//			}
+//			else if(!listNames.contains(fileName))
+//			{
+//				listNames.add(fileName);
+//			}
+//			MyApplication.list = listNames;
 			
 			
 		} catch (Exception e)

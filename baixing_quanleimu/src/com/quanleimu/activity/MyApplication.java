@@ -21,7 +21,7 @@ import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache2SD.LazyImageLoader2SD;
-import com.quanleimu.util.MyUncaughtExceptionHandler;
+import com.quanleimu.util.ViewStack;
 
 public class MyApplication extends Application {
 	
@@ -34,6 +34,15 @@ public class MyApplication extends Application {
 	public static List<HotList> listHot;
 	public static List<Bitmap> listBm;
 	public static boolean update = false;
+	public static boolean textMode = false;
+	
+	public static void setTextMode(boolean tMode){
+		MyApplication.textMode = tMode;
+	}
+	
+	public static boolean isTextMode(){
+		return MyApplication.textMode;
+	}
 	
 	public static List<SecondStepCate> listUsualCates;
 	
@@ -292,7 +301,15 @@ public class MyApplication extends Application {
 	}
 
 	static MyApplication mDemoApp;
-	public MyUncaughtExceptionHandler handler = null;
+	
+	protected ViewStack viewStack;
+	public ViewStack getViewStack(){
+		if(null == viewStack){
+			viewStack = new ViewStack(this.getApplicationContext());
+		}
+		
+		return viewStack;
+	}
 
 	// 百度MapAPI的管理类
 	BMapManager mBMapMan = null;
@@ -331,9 +348,6 @@ public class MyApplication extends Application {
 		mBMapMan = new BMapManager(this);
 		mBMapMan.init(this.mStrKey, new MyGeneralListener());
 
-		// handler = MyUncaughtExceptionHandler.getInstance();
-		// handler.init(getApplicationContext());
-		// handler.sendPreviousReportsToServer();
 		context = this.getApplicationContext();
 		lazyImageLoader = new LazyImageLoader();
 		super.onCreate();

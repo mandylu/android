@@ -17,6 +17,8 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 
+
+
 public class LazyImageLoader
 {
 
@@ -33,13 +35,12 @@ public class LazyImageLoader
 	private DownloadImageThread downloadImgThread = new DownloadImageThread();
 	
 	private CallbackManager callbackManager = new CallbackManager();
-	
-	
-	
+
 	public Bitmap get(String url,ImageLoaderCallback callback)
 	{
 		
-Bitmap bitmap = ImageManager.userDefualtHead;
+		Bitmap bitmap = null;//ImageManager.userDefualtHead;
+		
 		if(imgManger.contains(url))
 		{
 			bitmap = imgManger.getFromCache(url);
@@ -54,6 +55,40 @@ Bitmap bitmap = ImageManager.userDefualtHead;
 	    }
 
 		return bitmap;
+	}
+	
+	
+	public boolean checkWithImmediateIO(String url){
+		
+		Bitmap result = null;
+		
+		if(imgManger.contains(url)){
+			result = imgManger.getFromCache(url); 			
+		}		
+		else{
+			result = imgManger.safeGetFromFile(url);
+	    }
+
+		return (result != null);		
+	}
+	
+	public Bitmap getWithImmediateIO(String url,ImageLoaderCallback callback){
+		
+		Bitmap result = null;
+		
+		if(imgManger.contains(url)){
+			result = imgManger.getFromCache(url); 			
+		}		
+		else{
+			result = imgManger.safeGetFromFile(url);
+			
+			if(result == null){
+				callbackManager.put(url, callback);			
+				startDownLoadTread(url);
+			}
+	    }
+
+		return result;		
 	}
 	
 	

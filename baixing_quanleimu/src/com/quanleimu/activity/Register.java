@@ -176,7 +176,7 @@ public class Register extends BaseActivity {
 				}
 				break;
 			case 2:
-				Toast.makeText(Register.this, "未获取到数据", 3).show();
+				Toast.makeText(Register.this, "注册未成功，请稍后重试！", 3).show();
 				break;
 			}
 			super.handleMessage(msg);

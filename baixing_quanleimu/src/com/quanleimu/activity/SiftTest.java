@@ -2,6 +2,7 @@ package com.quanleimu.activity;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLDecoder;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -9,6 +10,7 @@ import java.util.List;
 import java.util.Map;
 import java.util.Vector;
 
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -31,7 +33,7 @@ import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-
+import com.quanleimu.entity.values;
 public class SiftTest extends BaseActivity {
 	public List<String> listsize = new ArrayList<String>();
 
@@ -47,14 +49,14 @@ public class SiftTest extends BaseActivity {
 	public int idselected;
 	TextView tvmeta = null;
 
-	private Vector<TextView> selector = new Vector<TextView>();
+	private Map<Integer, TextView> selector = new HashMap<Integer, TextView>();
+	private Map<String, EditText> editors = new HashMap<String, EditText>();
 
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
-	public Map<Integer, String> savemap = new HashMap<Integer, String>();
+	private Map<Integer, String> savemap = new HashMap<Integer, String>();
 
-	public Vector<String> name = new Vector<String>();
-	public Map<Integer, String> valuemap = new HashMap<Integer, String>();
+	public Map<String, String> valuemap = new HashMap<String, String>();
 
 	// ------------------------------------
 	// ListView lv_test;
@@ -92,38 +94,59 @@ public class SiftTest extends BaseActivity {
 			@Override
 			public void onClick(View v) {
 				String result = "";
-				// "query="
-				// + "cityEnglishName:shanghai AND categoryEnglishName:"
-				// + categoryEnglishName;
+
 				String str = ed_sift.getText().toString().trim();
-				if(name != null && name.size() != 0)
+				if( valuemap != null && valuemap.size() != 0)
 				{
-					for (int i = 0; i < name.size(); i++) {
-						// if (!valuemap.get(i).equals("") && !str.equals("")) {
-						// System.out.println("看打印------------->"
-						// + name.elementAt(i) + "=" + valuemap.get(i)
-						// + "key=" + str);
-						//
-						// } else if (!valuemap.get(i).equals("")) {
-						// System.out.println("看打印------------->"
-						// + name.elementAt(i) + "=" + valuemap.get(i));
-						// }
-						if (valuemap != null && valuemap.size() != 0 && valuemap.get(i) != null && !valuemap.get(i).equals("")) {
+					for (int i = 0; i < listFilterss.size(); i++) {
+
+						String key = listFilterss.get(i).getName();
+						if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
 							result += " AND "
-									+ URLEncoder.encode(name.elementAt(i)) + ":"
-									+ URLEncoder.encode(valuemap.get(i));
+									+ URLEncoder.encode(key) + ":"
+									+ URLEncoder.encode(valuemap.get(key));
 						}
 					}
-					if (!str.equals("")) {
-						result += URLEncoder.encode(str);
-					}
-					intent.setClass(SiftTest.this, GetGoods.class);
-					bundle.putString("siftresult", result);
-					intent.putExtras(bundle);
-					startActivity(intent);
 				}
 				
+				for(int i = 0; i < editors.size(); ++i){
+					String key = editors.keySet().toArray()[i].toString();
+					
+					EditText txtEditor = (EditText)editors.get(key);
+					String textInput = txtEditor.getText().toString();
+					if(textInput.length() > 0){
+						result += " AND "
+								+ URLEncoder.encode(key) + ":"
+								+ URLEncoder.encode(textInput);
+					}
+				}
 
+				
+				if (!str.equals("")) {
+					result += " " + URLEncoder.encode(str);
+				}
+				
+				if(result.length() > 0)
+				{
+					bundle.putString("siftresult", result);
+					intent.putExtras(bundle);
+					intent.setClass(SiftTest.this, GetGoods.class);
+					startActivity(intent);
+				}else{
+					if(bundle.getString("siftresult") != null && !bundle.getString("siftresult").equals("")){
+						bundle.putString("siftresult", "");
+						intent.putExtras(bundle);
+						intent.setClass(SiftTest.this, GetGoods.class);
+						startActivity(intent);
+					}
+					else{
+						Context context = MyApplication.context;
+						CharSequence text = "请输入或选择筛选条件。";
+						int duration = Toast.LENGTH_SHORT;
+						Toast toast = Toast.makeText(context, text, duration);
+						toast.show();
+					}
+				}
 			}
 		});
 		// AND 地区_s:m7259
@@ -143,10 +166,8 @@ public class SiftTest extends BaseActivity {
 				myHandler.sendEmptyMessage(1);
 			}
 		}
-
-		// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~//
-
 	}
+
 
 	@Override
 	public void onClick(View v) {
@@ -164,12 +185,21 @@ public class SiftTest extends BaseActivity {
 			if(s==null || s.equals("")){
 				res = datas.getString("label");
 				value_resl = datas.getString("value");
-				valuemap.put(temp, value_resl);
-				selector.elementAt(temp).setText(res);
+				
+				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
+					valuemap.put(listFilterss.get(temp).getName(), value_resl);
+				}
+				selector.get(temp).setText(res);
 				savemap.put(temp, res);
 			}else{
+				//res = datas.getString("label");
+				//value_resl = datas.getString("value");
 				
-				selector.elementAt(temp).setText(s);
+				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
+					valuemap.remove(listFilterss.get(temp).getName());
+				}
+				//savemap.put(temp, res);				
+				selector.get(temp).setText(s);
 			}
 			
 
@@ -231,8 +261,27 @@ public class SiftTest extends BaseActivity {
 				if (listFilterss == null) {
 					ll_meta.setVisibility(View.GONE);
 				} else {
+
+					HashMap<String, String> preValues = null;
+					if(bundle != null){
+						String preEncResult = bundle.getString("siftresult");
+						if(null != preEncResult){
+							String decResult = URLDecoder.decode(preEncResult);
+							String[] pairs = decResult.split("AND ");
+							if(pairs != null){
+								preValues = new HashMap<String, String>();
+							}
+							for(int x = 0; x < pairs.length; ++ x){
+								String[] subPairs = pairs[x].split(":");
+								if(subPairs.length != 2)continue;
+								subPairs[0] = subPairs[0].trim();
+								subPairs[1] = subPairs[1].trim();
+								preValues.put(subPairs[0], subPairs[1]);
+							}
+						}
+					}
 					
-					for (int i = 0; i < listFilterss.size(); i++) {
+					for (int i = 0; i < listFilterss.size();++i) {
 						View v = null;
 						ImageView tvim = null;
 						EditText tved = null;
@@ -257,8 +306,7 @@ public class SiftTest extends BaseActivity {
 
 						if (listFilterss.get(i).getControlType().equals("select")) {
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-							name.add(listFilterss.get(i).getName());
-							valuemap.put(i, "");
+							valuemap.put(listFilterss.get(i).getName(), "");
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							savemap.put(i, "");
 							tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
@@ -272,7 +320,21 @@ public class SiftTest extends BaseActivity {
 							tvmeta.setLayoutParams(new LinearLayout.LayoutParams(
 									LayoutParams.FILL_PARENT,
 									LayoutParams.WRAP_CONTENT, 1));
-							tvmeta.setText("请选择");
+							if(preValues != null && preValues.containsKey(listFilterss.get(i).getName())){
+								String preValue = preValues.get(listFilterss.get(i).getName());
+								List<values>values = listFilterss.get(i).getValuesList();
+								for(int z = 0; z < values.size(); ++ z){
+									if(values.get(z).getValue().equals(preValue)){
+										tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
+										valuemap.put(listFilterss.get(i).getName(), preValue);
+										break;
+									}
+								}
+								
+							}
+							else{
+								tvmeta.setText("请选择");
+							}
 
 							tvim = (ImageView) v.findViewById(R.id.tvimage);
 							tvim.setLayoutParams(new LinearLayout.LayoutParams(
@@ -283,39 +345,62 @@ public class SiftTest extends BaseActivity {
 
 							tved = (EditText) v.findViewById(R.id.tved);
 							tved.setVisibility(View.GONE);
-							selector.add(tvmeta);
+							selector.put(i, tvmeta);
+							
+							v.setTag(i);
+
+							v.setOnClickListener(new OnClickListener() {
+								@Override
+								public void onClick(View v) {
+									temp = Integer.parseInt(v.getTag().toString());
+									System.out.println("Result------>" + v.getTag());
+									bundle.putInt("temp", temp);
+									bundle.putString("title", listFilterss.get(temp).getDisplayName());
+									bundle.putString("back", "筛选");
+									intent.putExtras(bundle);
+									intent.setClass(SiftTest.this, Test001.class);
+									
+									startActivityForResult(intent, 1234);
+
+								}
+							});
+							
 						}
 						// else
 						// if(listFilterss.get(i).getControlType().equals(""))
 						else {
 							tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
 							tvmetatxt.setText(listFilterss.get(i).getDisplayName());
-							tvmeta = (TextView) v.findViewById(R.id.tvmeta);
+							tvmetatxt.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
+							tvmetatxt.setLayoutParams(new LinearLayout.LayoutParams(
+									LayoutParams.WRAP_CONTENT,
+									LayoutParams.FILL_PARENT));
+							tvmetatxt.setPadding(0, 0, 10, 0);
+							
+							if(null != preValues && preValues.containsKey(listFilterss.get(i).getName())){
+								String preValue = preValues.get(listFilterss.get(i).getName());
+								List<values>values = listFilterss.get(i).getValuesList();
+								for(int z = 0; z < values.size(); ++ z){
+									if(values.get(z).getValue().equals(preValue)){
+										tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
+										valuemap.put(listFilterss.get(i).getName(), preValue);
+										break;
+									}
+								}
+								
+							}							tvmeta = (TextView) v.findViewById(R.id.tvmeta);
+							tvmeta.setVisibility(View.GONE);
+							
 							tvim = (ImageView) v.findViewById(R.id.tvimage);
+							tvim.setVisibility(View.GONE);
+							
 							tved = (EditText) v.findViewById(R.id.tved);
 							tved.clearFocus();
-							tvmeta.setVisibility(View.GONE);
-							tvim.setVisibility(View.GONE);
-							// selector.add(tvmeta);
+							tved.setLayoutParams(new LinearLayout.LayoutParams(
+									LayoutParams.FILL_PARENT,
+									LayoutParams.WRAP_CONTENT, 1));
 						}
-
-						v.setTag(i);
-
-						v.setOnClickListener(new OnClickListener() {
-							@Override
-							public void onClick(View v) {
-								temp = Integer.parseInt(v.getTag().toString());
-								System.out.println("Result------>" + v.getTag());
-								bundle.putInt("temp", temp);
-								bundle.putString("title", listFilterss.get(temp).getDisplayName());
-								bundle.putString("back", "筛选");
-								intent.putExtras(bundle);
-								intent.setClass(SiftTest.this, Test001.class);
-								
-								startActivityForResult(intent, 1234);
-
-							}
-						});
+						
 						ll_meta.addView(v);
 					}
 
@@ -326,7 +411,7 @@ public class SiftTest extends BaseActivity {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(SiftTest.this, "未获取到数据", 3).show();
+				Toast.makeText(SiftTest.this, "服务当前不可用，请稍后重试！", 3).show();
 				break;
 
 			}
@@ -363,8 +448,7 @@ public class SiftTest extends BaseActivity {
 
 				if (listFilterss.get(i).getControlType().equals("select")) {
 					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-					name.add(listFilterss.get(i).getName());
-					valuemap.put(i, "");
+					valuemap.put(listFilterss.get(i).getName(), "");
 					// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 					savemap.put(i, "");
 					tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
@@ -389,36 +473,50 @@ public class SiftTest extends BaseActivity {
 
 					tved = (EditText) v.findViewById(R.id.tved);
 					tved.setVisibility(View.GONE);
-					selector.add(tvmeta);
+					selector.put(i, tvmeta);
+					
+					v.setTag(i);
+
+					v.setOnClickListener(new OnClickListener() {
+						@Override
+						public void onClick(View v) {
+							temp = Integer.parseInt(v.getTag().toString());
+							System.out.println("Result------>" + v.getTag());
+							bundle.putInt("temp", temp);
+							intent.setClass(SiftTest.this, Test001.class);
+							intent.putExtras(bundle);
+							startActivityForResult(intent, 1234);
+
+						}
+					});
+					
 				}
 				// else
 				// if(listFilterss.get(i).getControlType().equals(""))
 				else {
 					tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
+					tvmetatxt.setGravity(Gravity.LEFT);
+					tvmetatxt.setLayoutParams(new LinearLayout.LayoutParams(
+							LayoutParams.WRAP_CONTENT,
+							LayoutParams.WRAP_CONTENT, 1));
+					
 					tvmeta = (TextView) v.findViewById(R.id.tvmeta);
+					tvmeta.setVisibility(View.GONE);
+					
 					tvim = (ImageView) v.findViewById(R.id.tvimage);
+					tvim.setVisibility(View.GONE);
+					
 					tved = (EditText) v.findViewById(R.id.tved);
 					tved.clearFocus();
-					tvmeta.setVisibility(View.GONE);
-					tvim.setVisibility(View.GONE);
-					// selector.add(tvmeta);
+					tved.setLayoutParams(new LinearLayout.LayoutParams(
+							LayoutParams.FILL_PARENT,
+							LayoutParams.WRAP_CONTENT, 1));
+					
+					
+					editors.put(listFilterss.get(i).getName(), tved);
 				}
-
-				v.setTag(i);
-
-				v.setOnClickListener(new OnClickListener() {
-					@Override
-					public void onClick(View v) {
-						temp = Integer.parseInt(v.getTag().toString());
-						System.out.println("Result------>" + v.getTag());
-						bundle.putInt("temp", temp);
-						intent.setClass(SiftTest.this, Test001.class);
-						intent.putExtras(bundle);
-						startActivityForResult(intent, 1234);
-
-					}
-				});
+				
 				ll_meta.addView(v);
 			}
 

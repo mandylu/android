@@ -6,6 +6,5 @@
 	  <ImageView 
 	  	android:layout_height="fill_parent" 
 	  	android:id="@+id/ivBig" 
-	  	android:src="@drawable/moren2"
 	  	android:layout_width="fill_parent"></ImageView>
 </RelativeLayout>

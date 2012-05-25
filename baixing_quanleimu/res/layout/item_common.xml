@@ -27,10 +27,10 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvPrice"
             android:layout_marginLeft="10dip"
-            android:layout_toLeftOf="@+id/ivTurn2Detail"
+
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:text="850元 实体单间，住户XXXX"
+            android:textColor="#000000"
             android:textSize="16dip" >
         </TextView>
 
@@ -41,7 +41,6 @@
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:text="850元 "
             android:textSize="14dip" >
         </TextView>
 
@@ -51,10 +50,9 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDes"
             android:layout_marginLeft="10dip"
-            android:layout_toLeftOf="@+id/ivTurn2Detail"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:text="02月13日  | 上海，闵行，古美罗阳"
+            android:textColor="#595959"
             android:textSize="14dip" >
         </TextView>
 

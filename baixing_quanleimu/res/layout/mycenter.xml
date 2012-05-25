@@ -7,14 +7,13 @@
         android:id="@+id/rlTitle"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="@drawable/bg_header"
-        android:gravity="center_vertical" >
+        android:background="@drawable/bg_header">
 
         <TextView
             android:id="@+id/tvTitle"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_centerInParent="true"
             android:text="个人中心"
             android:textColor="#ffffff"
             android:textSize="22dip" >
@@ -28,7 +27,8 @@
             android:layout_marginLeft="5dip"
             android:background="@drawable/btn_search"
             android:padding="5dip"
-            android:text="刷新"
+            android:layout_centerVertical="true"
+            android:text="更新"
             android:textColor="#ffffff" >
         </Button>
 
@@ -40,19 +40,8 @@
             android:layout_marginRight="5dip"
             android:background="@drawable/btn_search"
             android:padding="5dip"
+            android:layout_centerVertical="true"
             android:text="编辑"
-            android:textColor="#ffffff" >
-        </Button>
-
-        <Button
-            android:id="@+id/btnFinish"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_marginRight="5dip"
-            android:background="@drawable/btn_clearall"
-            android:padding="5dip"
-            android:text="完成"
             android:textColor="#ffffff" >
         </Button>
     </RelativeLayout>
@@ -109,13 +98,26 @@
             android:paddingLeft="5dip"
             android:paddingRight="5dip" >
 
-            <ListView
+            <!-- <ListView
                 android:id="@+id/lvGoodsList"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:fastScrollEnabled="true"
+            	android:scrollbars="none"
+            	android:focusable="true" 
                 android:listSelector="#00000000"
                 android:scrollingCache="false" >
-            </ListView>
+            </ListView> -->
+            <ListView
+	            android:listSelector="#00000000"
+	            android:scrollingCache="false"
+	            android:id="@+id/lvGoodsList"
+	            android:layout_width="fill_parent"
+	            android:fastScrollEnabled="true"
+	            android:scrollbars="none"
+	            android:focusable="true" 
+	            android:layout_height="fill_parent" >
+        </ListView>
         </LinearLayout>
     </RelativeLayout>
 

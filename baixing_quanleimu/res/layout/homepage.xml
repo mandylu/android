@@ -16,7 +16,7 @@
             android:layout_height="fill_parent"
             android:background="@drawable/bg_header"
             android:gravity="center_vertical"
-            android:padding="5dip" >
+            android:padding="0dip" >
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -35,9 +35,9 @@
                 android:layout_alignParentLeft="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/btn_search"
-                android:paddingLeft="5dip"
-                android:paddingRight="5dip"
-                android:text="切换城市"
+                android:paddingLeft="12dip"
+                android:paddingRight="12dip"
+                android:text="@string/ChangeCity"
                 android:textColor="#ffffff" >
             </Button>
 
@@ -48,10 +48,11 @@
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
                 android:background="@drawable/btn_back_xml"
-                android:padding="5dip"
-                android:text="搜索"
+                android:padding="0dip"
+                android:text="@string/Search"
                 android:textColor="#ffffff" >
             </Button>
+
         </RelativeLayout>
     </LinearLayout>
 

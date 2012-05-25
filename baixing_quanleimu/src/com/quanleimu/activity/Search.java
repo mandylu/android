@@ -231,7 +231,7 @@ public class Search extends BaseActivity {
 				
 				int totalCount = goodsList.getCount();
 				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(Search.this, "无对应信息", 3).show();
+					Toast.makeText(Search.this, "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
 					
 					//总数存入全局
@@ -248,7 +248,7 @@ public class Search extends BaseActivity {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(Search.this, "未获取到数据", 3).show();
+				Toast.makeText(Search.this, "没有符合条件的结果，请重新输入！", 3).show();
 				break;
 			}
 			

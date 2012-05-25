@@ -121,6 +121,7 @@ public class Login extends BaseActivity {
 			String apiName = "user_login";
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("mobile=" + accoutnEt.getText().toString().trim());
+			list.add("nickname=" + accoutnEt.getText().toString().trim());
 			list.add("password=" + passwordEt.getText().toString().trim());
 
 			String url = Communication.getApiUrl(apiName, list);
@@ -168,7 +169,8 @@ public class Login extends BaseActivity {
 						UserBean user = new UserBean();
 						JSONObject jb = jsonObject.getJSONObject("id");
 						user.setId(jb.getString("userId"));
-						user.setPhone(accoutnEt.getText().toString());
+						user.setPhone(jb.getString("mobile"));
+						//user.setPhone(accoutnEt.getText().toString());
 						user.setPassword(passwordEt.getText().toString());
 						myApp.setMobile(user.getPhone());
 						Util.saveDataToLocate(Login.this, "user", user);
@@ -191,13 +193,13 @@ public class Login extends BaseActivity {
 				}
 				break;
 			case 2:
-				Toast.makeText(Login.this, "未获取到数据", 3).show();
+				Toast.makeText(Login.this, "登陆未成功，请稍后重试！", 3).show();
 				break;
 			case 10:
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(Login.this, "网络连接异常", 3).show();
+				Toast.makeText(Login.this, "网络连接失败，请检查设置！", 3).show();
 				break;
 			}
 			super.handleMessage(msg);
