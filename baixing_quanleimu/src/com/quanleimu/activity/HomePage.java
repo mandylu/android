@@ -7,6 +7,7 @@ import android.os.Bundle;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -14,11 +15,14 @@ import com.mobclick.android.MobclickAgent;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.SetMain;
 
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
+import android.widget.RelativeLayout;
+
 import com.quanleimu.view.PersonalCenterView;
 
 import com.quanleimu.view.HomePageView;
@@ -222,8 +226,17 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			tTitle.setText(title.m_title);
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				Button left = (Button)findViewById(R.id.btnLeft);
-				left.setText(title.m_leftActionHint);
-				left.setVisibility(View.VISIBLE);
+
+				if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){					
+					left.setBackgroundResource(R.drawable.btn_jj);
+				}
+				else //if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
+				{
+					left.setBackgroundResource(R.drawable.btn_back_xml);
+				}
+				
+				left.setText(title.m_leftActionHint);				
+				left.setVisibility(View.VISIBLE);				
 			}else{
 				Button left = (Button)findViewById(R.id.btnLeft);
 				left.setVisibility(View.GONE);
@@ -233,6 +246,14 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
+				
+				if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){
+					right.setBackgroundResource( R.drawable.btn_jj);
+				}
+				else //if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
+				{
+					right.setBackgroundResource(R.drawable.btn_search);
+				}
 			}else{
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setVisibility(View.GONE);

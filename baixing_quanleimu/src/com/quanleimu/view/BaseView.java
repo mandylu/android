@@ -16,12 +16,20 @@ public class BaseView extends LinearLayout{
 		public void onBack();
 		public void onNewView(BaseView view);
 	};
+
+	public enum EBUTT_STYLE{
+		EBUTT_STYLE_BACK,
+		EBUTT_STYLE_NORMAL,
+		//EBUTT_STYLE_FORWARD
+	};
 	
-	public class TitleDef{
+	public class TitleDef{		
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
+		public EBUTT_STYLE m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		public String m_title = null;
 		public String m_rightActionHint = null;
+		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 	};
 	
 	public enum ETAB_TYPE{

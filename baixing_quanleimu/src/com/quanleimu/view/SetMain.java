@@ -46,7 +46,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		else{
 			textImg.setText("图片");
 		}
-		textImg.setOnClickListener(new View.OnClickListener() {
+		((RelativeLayout)findViewById(R.id.rlTextImage)).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
