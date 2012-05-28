@@ -15,18 +15,18 @@ import android.widget.ProgressBar;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
-import com.baidu.mapapi.MapActivity;
 import com.mobclick.android.MobclickAgent;
 import com.yx.imageUtils.LoadImage;
 import java.util.ArrayList;
 import com.quanleimu.entity.CityDetail;
 import java.util.List;
+import android.app.Activity;
 /**
  * 父类Activity
  * @author henry_yang
  *
  */
-public class BaseActivity extends MapActivity implements OnClickListener{
+public class BaseActivity extends Activity implements OnClickListener{
 
 	//定义Intent和Bundle
 	protected Intent intent = null;
@@ -276,12 +276,6 @@ public class BaseActivity extends MapActivity implements OnClickListener{
 		pd.dismiss();
 	}
 
-	@Override
-	protected boolean isRouteDisplayed() {
-		// TODO Auto-generated method stub
-		return false;
-	}
-	
 //	public static String cn2Spell(String chinese) {
 //		StringBuffer pybf = new StringBuffer();
 //		char[] arr = chinese.toCharArray();

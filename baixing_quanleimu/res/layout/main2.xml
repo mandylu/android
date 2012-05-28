@@ -3,12 +3,4 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/mainer" >
-
-    <com.baidu.mapapi.MapView
-        android:id="@+id/mymap"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:clickable="true"
-        android:visibility="gone" />
-
 </RelativeLayout>

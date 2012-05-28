@@ -83,6 +83,12 @@
         <activity
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
+            android:name="BaiduMapActivity"
+            android:screenOrientation="portrait" >
+        </activity>
+        <activity
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:label="@string/app_name"
             android:name="SiftTest"
             android:screenOrientation="portrait" >
         </activity>

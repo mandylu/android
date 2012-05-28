@@ -210,21 +210,12 @@ public class GoodDetail extends BaseActivity implements DialogInterface.OnClickL
 		im_x = (ImageView) findViewById(R.id.ivCancel);
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
-
-		mapview = (MapView) findViewById(R.id.mymap);
-		if (bMapManager == null) 
-		{
-			bMapManager = new BMapManager(getApplication());
-		    bMapManager.init(myApp.mStrKey, new MyApplication.MyGeneralListener());
-		}
 		
-        super.initMapActivity(bMapManager);
-		
-		mapController = mapview.getController();
-		mapview.setBuiltInZoomControls(true);
-		
-		overlays = mapview.getOverlays();
-		projection = mapview.getProjection();
+//		mapController = mapview.getController();
+//		mapview.setBuiltInZoomControls(true);
+//		
+//		overlays = mapview.getOverlays();
+//		projection = mapview.getProjection();
 
 		if(isMyAd()){
 			btnStore.setText(strManager);

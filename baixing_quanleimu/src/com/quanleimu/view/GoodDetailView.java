@@ -35,15 +35,6 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
-import com.baidu.mapapi.BMapManager;
-import com.baidu.mapapi.GeoPoint;
-import com.baidu.mapapi.LocationListener;
-import com.baidu.mapapi.MKSearch;
-import com.baidu.mapapi.MapController;
-import com.baidu.mapapi.MapView;
-import com.baidu.mapapi.Overlay;
-import com.baidu.mapapi.Projection;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
@@ -58,6 +49,12 @@ import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.BaiduMapActivity;
+
+import android.net.Uri;
+import android.content.Intent;
+
+import android.view.InflateException;
 
 public class GoodDetailView extends BaseView implements DialogInterface.OnClickListener, View.OnClickListener{
 	final private String strCollect = "收藏";
@@ -80,19 +77,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	private TextView txt_phone, txt_address;
 	private ImageView im_x;
 
-	private BMapManager bMapManager;
-
-	private MapView mapview;
-	private List<Overlay> overlays = new ArrayList<Overlay>();
-	private MapController mapController;
-	private Projection projection;
-	private GeoPoint endGeoPoint;
 	private BaseActivity baseActivity;
-
-
-	MKSearch mSearch = null;
-
-	public LocationListener mLocationListener = null;
 
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
@@ -114,13 +99,41 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		baseActivity = content;
 		init();
 	}
+	
+	@Override
+	public void onDestroy(){
+		super.onDestroy();
+	}
 
 	@Override
 	public void onPause() {
-		if(bMapManager!=null){
-			bMapManager.stop();
-		}
 		super.onPause();
+	}
+	
+	@Override
+	protected void onAttachedToWindow(){
+		this.saveToHistory();
+		super.onAttachedToWindow();
+	}
+	
+	private void saveToHistory(){
+		List<GoodsDetail> listLookHistory = MyApplication.getApplication().getListLookHistory();
+		if(listLookHistory != null){
+			for(int i=0;i<listLookHistory.size();i++)
+			{
+				if(listLookHistory.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+						.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)))
+				{
+					return;
+				}
+			}
+		}
+		if(null == listLookHistory){
+			listLookHistory = new ArrayList<GoodsDetail>();
+		}
+		listLookHistory.add(detail);
+		MyApplication.getApplication().setListLookHistory(listLookHistory);
+		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
 	}
 
 	private boolean isMyAd(){
@@ -151,11 +164,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
 		this.addView(v);
-//		WindowManager wm = 
-//				(WindowManager)MyApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//		int height = wm.getDefaultDisplay().getHeight();
-
-//		type = Util.getWidth(this);
 		
 		if(detail.getImageList() != null){
 			String b = (detail.getImageList().getResize180()).substring(1, (detail.getImageList().getResize180()).length()-1);
@@ -207,21 +215,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
 
-		mapview = (MapView) findViewById(R.id.mymap);
-		if (bMapManager == null) 
-		{
-			bMapManager = new BMapManager(MyApplication.getApplication());
-		    bMapManager.init(MyApplication.getApplication().mStrKey, new MyApplication.MyGeneralListener());
-		}
-		
-        baseActivity.initMapActivity(bMapManager);
-		
-		mapController = mapview.getController();
-		mapview.setBuiltInZoomControls(true);
-		
-		overlays = mapview.getOverlays();
-		projection = mapview.getProjection();
-
 		if(isMyAd()){
 			if(this.m_viewInfoListener != null){
 				m_viewInfoListener.onRightBtnTextChanged(strManager);
@@ -247,13 +240,11 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
 		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
 
-		//判断当前是否有地域内容
 		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 		if (areaNamesV != null && !areaNamesV.equals("")) 
 		{
 			txt_address.setText(areaNamesV);
 			
-			//判断当前的物品是否有经纬度
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
@@ -386,26 +377,22 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
 			{
-				bMapManager.start();
 				double lat = Double.valueOf(latV);
 				double lon = Double.valueOf(lonV);
-				rl_address.setOnClickListener(this);
+				String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
+				Bundle bundle = new Bundle();
+				bundle.putString("detailPosition", positions);
+				baseActivity.getIntent().putExtras(bundle);
 				
-				endGeoPoint = new GeoPoint((int)(lat*1E6),(int)(lon*1E6));
-				overlays.add(new MyLocationOverlays(endGeoPoint));
-				mapController.animateTo(endGeoPoint);
-				mapController.setZoom(15);
+				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+				baseActivity.startActivity(baseActivity.getIntent());
 			}
 			else
 			{
 				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 			}
-			myHandler.sendEmptyMessage(msgShowMap);
 			break;
 		case R.id.ivCancel:
-			if(bMapManager != null){
-				bMapManager.stop();
-			}
 			myHandler.sendEmptyMessage(msgCancelMap);
 			break;
 		}
@@ -443,14 +430,14 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	@Override
 	public void onClick(DialogInterface dialog, int which){
 		if(0 == which){
-//			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
-//			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-//			startActivity(intent);
+			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+			this.getContext().startActivity(intent);
 		}
 		else if(1 == which){
-//			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-//			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-//			startActivity(intent);
+			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+			this.getContext().startActivity(intent);
 		}
 	}
 
@@ -458,16 +445,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case msgShowMap:
-				mapview.setVisibility(View.VISIBLE);
-				im_x.setVisibility(View.VISIBLE);
-				rl_test.setVisibility(View.GONE);
-				break;
-			case msgCancelMap:
-				mapview.setVisibility(View.GONE);
-				im_x.setVisibility(View.GONE);
-				rl_test.setVisibility(View.VISIBLE);
-				break;
 			case msgRefresh:
 				if(json == null){
 					Toast.makeText(GoodDetailView.this.getContext(), "刷新失败，请稍后重试！", 0).show();
@@ -554,29 +531,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		}
 	};
 
-	class MyLocationOverlays extends Overlay {
-		GeoPoint geoPoint;
-
-		public MyLocationOverlays(GeoPoint geoPoint) {
-			super();
-			this.geoPoint = geoPoint;
-		}
-
-		@Override
-		public void draw(Canvas canvas, MapView mapView, boolean shadow) {
-			super.draw(canvas, mapView, shadow);
-			Point point = new Point();
-			projection.toPixels(geoPoint, point);
-			Paint paint = new Paint();
-			BitmapFactory.Options o =  new BitmapFactory.Options();
-            o.inPurgeable = true;
-			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
-					R.drawable.red, o);
-			canvas.drawBitmap(bmp, point.x, point.y, paint);
-			bmp.recycle();
-		}
-	}
-	
 	class RequestThread implements Runnable{
 		private REQUEST_TYPE type;
 		private int pay = 0;
