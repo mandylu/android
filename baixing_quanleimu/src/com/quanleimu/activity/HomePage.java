@@ -29,7 +29,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.quanleimu.view.PersonalCenterView;
-import com.quanleimu.view.PostGoodsCateMainView;
+//import com.quanleimu.view.PostGoodsCateMainView;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
@@ -51,7 +51,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			break;
 		case ETAB_TYPE_PUBLISH:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
-			onNewView(new PostGoodsCateMainView(this, bundle));
+			//onNewView(new PostGoodsCateMainView(this, bundle));
 			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_MINE:
@@ -69,14 +69,6 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			
 		}
 
-	}
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		if(currentView != null){
-			currentView.onActivityResult(requestCode, resultCode, data);
-		}
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	@Override
@@ -271,6 +263,22 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		ivPostGoods.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH ? R.drawable.iv_postgoods_press : R.drawable.iv_postgoods);
 		ivMyCenter.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE ? R.drawable.iv_mycenter_press : R.drawable.iv_mycenter);
 		ivSetMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING ? R.drawable.iv_setmain_press : R.drawable.iv_setmain);
+	}
+	
+	public void onPopView(String viewClassName_){
+		String viewClassName = MyApplication.getApplication().getViewStack().peerClassName();
+		
+		if(null != viewClassName && null != viewClassName_ && viewClassName.equals(viewClassName_) ){
+			MyApplication.getApplication().getViewStack().pop();
+		}
+	}
+	
+	public void onSetResult(int requestCode, int resultCode, Bundle data){
+		BaseView view = MyApplication.getApplication().getViewStack().peer(); 
+		
+		if(null != view){
+			view.onSetResult(requestCode, resultCode, data);
+		}
 	}
 	
 	@Override

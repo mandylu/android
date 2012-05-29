@@ -44,6 +44,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.GoodDetailView;
 import com.quanleimu.view.SetMain;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
@@ -161,13 +162,13 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 						}
 						else
 						{
-//							intent.setClass(SearchGoods.this, GoodDetail.class);
-//							bundle.putString("backPageName", title);
-//							bundle.putSerializable("currentGoodsDetail", listSearchGoods.get(arg2));
-//							bundle.putString("detail_type", "searchgoods");
-////							bundle.putInt("detail_pos", arg2);
-//							intent.putExtras(bundle);
-//							startActivity(intent);
+							if(null != m_viewInfoListener){
+								Bundle bundle = new Bundle();
+//								bundle.putString("backPageName", title);
+//								bundle.putString("detail_type", "searchgoods");
+//								bundle.putInt("detail_pos", arg2);
+								m_viewInfoListener.onNewView(new GoodDetailView(listSearchGoods.get(arg2), getContext(), bundle));
+							}
 						}
 					}
 				});

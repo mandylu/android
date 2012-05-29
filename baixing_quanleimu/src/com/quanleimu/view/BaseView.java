@@ -20,6 +20,8 @@ public class BaseView extends LinearLayout{
 		public void onNewView(BaseView view);
 		public void onExit(BaseView view);
 		public void onSwitchToTab(ETAB_TYPE tabType);
+		public void onPopView(String viewClassName);
+		public void onSetResult(int requestCode, int resultCode, Bundle data);
 	};
 
 	public enum EBUTT_STYLE{
@@ -51,8 +53,6 @@ public class BaseView extends LinearLayout{
 		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	};
 	
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {}
-	
 	protected ProgressDialog pd;
 	
 	protected ViewInfoListener m_viewInfoListener = null;	
@@ -66,6 +66,8 @@ public class BaseView extends LinearLayout{
 	public void onDestroy(){}//called before destruction
 	public void onPause(){}//called before put into stack
 	public void onResume(){}
+	
+	public void onSetResult(int requestCode, int resultCode, Bundle data){}
 	
 	public boolean onBack(){return false;}//called when back button/key pressed
 	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise

@@ -68,6 +68,28 @@ public class ViewStack {
 		m_context = context;
 	}
 	
+	public BaseView peer(){
+		if(m_viewList.size() > 0){
+			StackItem item = m_viewList.get(m_viewList.size() - 1);
+			if(null != item){
+				return item.getBaseView(m_context);
+			}
+		}
+		
+		return null;		
+	}
+	
+	public String peerClassName(){
+		if(m_viewList.size() > 0){
+			StackItem item = m_viewList.get(m_viewList.size() - 1);
+			if(null != item){
+				return item.m_baseViewVClassName;
+			}
+		}
+		
+		return null;		
+	}	
+	
 	public BaseView pop(){
 		if(m_viewList.size() > 0){
 			StackItem item = m_viewList.remove(m_viewList.size() - 1);

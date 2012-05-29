@@ -33,14 +33,16 @@ import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
+import com.quanleimu.view.GetGoodsView;
 import com.quanleimu.entity.values;
-public class SiftTest extends BaseActivity {
+public class SiftTest extends BaseView {
 	public List<String> listsize = new ArrayList<String>();
 
 	// 定义变量
 	public String backPageName = "";
-	public TextView tvTitle;
-	public Button btnBack, btnStore;
 	private EditText ed_sift;
 
 	public int temp;
@@ -58,100 +60,20 @@ public class SiftTest extends BaseActivity {
 
 	public Map<String, String> valuemap = new HashMap<String, String>();
 
-	// ------------------------------------
-	// ListView lv_test;
-	// MyAdapter myAdapter;
-
 	public String categoryEnglishName = "";
 	public String json = "";
 
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.sift2);
-		super.onCreate(savedInstanceState);
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-		categoryEnglishName = intent.getExtras().getString(
-				"categoryEnglishName");
-		backPageName = intent.getExtras().getString("backPageName");
-
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		tvTitle.setText("筛选");
-
+	Bundle bundle = null;
+	
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		this.addView(inflater.inflate(R.layout.sifttest, null));
+		
 		ed_sift = (EditText) findViewById(R.id.edsift);
 		ed_sift.clearFocus();
-
-		btnStore = (Button) findViewById(R.id.btnStore);
-
-		btnBack = (Button) findViewById(R.id.btnBack);
-		btnBack.setText(backPageName);
-		btnBack.setOnClickListener(this);
 		
-
-		btnStore.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				String result = "";
-
-				String str = ed_sift.getText().toString().trim();
-				if( valuemap != null && valuemap.size() != 0)
-				{
-					for (int i = 0; i < listFilterss.size(); i++) {
-
-						String key = listFilterss.get(i).getName();
-						if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
-							result += " AND "
-									+ URLEncoder.encode(key) + ":"
-									+ URLEncoder.encode(valuemap.get(key));
-						}
-					}
-				}
-				
-				for(int i = 0; i < editors.size(); ++i){
-					String key = editors.keySet().toArray()[i].toString();
-					
-					EditText txtEditor = (EditText)editors.get(key);
-					String textInput = txtEditor.getText().toString();
-					if(textInput.length() > 0){
-						result += " AND "
-								+ URLEncoder.encode(key) + ":"
-								+ URLEncoder.encode(textInput);
-					}
-				}
-
-				
-				if (!str.equals("")) {
-					result += " " + URLEncoder.encode(str);
-				}
-				
-				if(result.length() > 0)
-				{
-//					bundle.putString("siftresult", result);
-//					intent.putExtras(bundle);
-//					intent.setClass(SiftTest.this, GetGoods.class);
-//					startActivity(intent);
-				}else{
-					if(bundle.getString("siftresult") != null && !bundle.getString("siftresult").equals("")){
-//						bundle.putString("siftresult", "");
-//						intent.putExtras(bundle);
-//						intent.setClass(SiftTest.this, GetGoods.class);
-//						startActivity(intent);
-					}
-					else{
-						Context context = MyApplication.context;
-						CharSequence text = "请输入或选择筛选条件。";
-						int duration = Toast.LENGTH_SHORT;
-						Toast toast = Toast.makeText(context, text, duration);
-						toast.show();
-					}
-				}
-			}
-		});
 		// AND 地区_s:m7259
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(
-				this, "saveFilterss"+categoryEnglishName+myApp.cityEnglishName);
+		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), "saveFilterss"+categoryEnglishName+MyApplication.getApplication().cityEnglishName);
 		if (postMu == null || postMu.getJson().equals("")) {
 			System.out.println("下载");
 			new Thread(new GetGoodsListThread(true)).start();
@@ -167,24 +89,122 @@ public class SiftTest extends BaseActivity {
 			}
 		}
 	}
+	
+//	public SiftTest(Context context){
+//		super(context); 
+//		
+//		categoryEnglishName = bundle.getString(
+//				"categoryEnglishName");
+//		backPageName = bundle.getString("backPageName");
+//		
+//		Init();
+//	}
+	
+	
+	public SiftTest(Context context, Bundle bundle_){
+		super(context);
+		
+		categoryEnglishName = bundle_.getString("categoryEnglishName");
+		backPageName = bundle_.getString("backPageName");		
+		this.bundle = bundle_;
+		
+		Init();
+	}
+	
+	//public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
+//	
+//	public void onDestroy(){}//called before destruction
+//	public void onPause(){}//called before put into stack
+//	public void onResume(){}
+	
+//	public boolean onBack(){return false;}//called when back button/key pressed
+//	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
+	public boolean onRightActionPressed(){
+		if(null != m_viewInfoListener){
+			//pop last GetGoodsView
+			m_viewInfoListener.onPopView(GetGoodsView.class.getName());
+			
+			//compose the sift result
+			String result = "";
 
+			String str = ed_sift.getText().toString().trim();
+			if( valuemap != null && valuemap.size() != 0)
+			{
+				for (int i = 0; i < listFilterss.size(); i++) {
 
-	@Override
-	public void onClick(View v) {
-		if (v.getId() == btnBack.getId()) {
-			this.finish();
-		}
-		super.onClick(v);
+					String key = listFilterss.get(i).getName();
+					if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
+						result += " AND "
+								+ URLEncoder.encode(key) + ":"
+								+ URLEncoder.encode(valuemap.get(key));
+					}
+				}
+			}
+			
+			for(int i = 0; i < editors.size(); ++i){
+				String key = editors.keySet().toArray()[i].toString();
+				
+				EditText txtEditor = (EditText)editors.get(key);
+				String textInput = txtEditor.getText().toString();
+				if(textInput.length() > 0){
+					result += " AND "
+							+ URLEncoder.encode(key) + ":"
+							+ URLEncoder.encode(textInput);
+				}
+			}
+
+			
+			if (!str.equals("")) {
+				result += URLEncoder.encode(str);
+			}
+			
+			if (!str.equals("")) {
+				result += URLEncoder.encode(str);
+			}
+			
+			if(bundle.getString("siftresult") != null)
+			{
+				bundle.putString("siftresult", result);
+				bundle.putString("backPageName", "选择类目");
+				
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onExit(this);
+					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
+				}				
+			}else{
+				CharSequence text = "请输入或选择筛选条件。";
+				int duration = Toast.LENGTH_SHORT;
+				Toast toast = Toast.makeText(getContext(), text, duration);
+				toast.show();
+			}
+		}		
+		
+		
+		
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_title = "筛选";
+		title.m_leftActionHint = "后退";
+		title.m_rightActionHint = "确定";
+		return title;
+	}
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
 	}
 
 	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onSetResult(int requestCode, int resultCode, Bundle data) {
 		if (resultCode == 1234) {
-			Bundle datas = data.getExtras();
-			String s = datas.getString("all"); 
+			String s = data.getString("all"); 
 			if(s==null || s.equals("")){
-				res = datas.getString("label");
-				value_resl = datas.getString("value");
+				res = data.getString("label");
+				value_resl = data.getString("value");
 				
 				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
 					valuemap.put(listFilterss.get(temp).getName(), value_resl);
@@ -201,10 +221,7 @@ public class SiftTest extends BaseActivity {
 				//savemap.put(temp, res);				
 				selector.get(temp).setText(s);
 			}
-			
-
 		}
-		super.onActivityResult(requestCode, resultCode, data);
 	}
 
 	class GetGoodsListThread implements Runnable {
@@ -218,7 +235,7 @@ public class SiftTest extends BaseActivity {
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + myApp.cityEnglishName);
+			list.add("cityEnglishName=" + MyApplication.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			System.out.println("url ------ >" + url);
@@ -228,7 +245,7 @@ public class SiftTest extends BaseActivity {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(SiftTest.this, "saveFilterss"+categoryEnglishName+myApp.cityEnglishName, postMu);
+					Util.saveDataToLocate(SiftTest.this.getContext(), "saveFilterss"+categoryEnglishName+MyApplication.getApplication().cityEnglishName, postMu);
 					if(isUpdate){
 						myHandler.sendEmptyMessage(1);
 					}
@@ -255,9 +272,9 @@ public class SiftTest extends BaseActivity {
 				}
 
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
-				myApp.setListFilterss(listFilterss);
+				MyApplication.getApplication().setListFilterss(listFilterss);
 				LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
-				LayoutInflater inflater = LayoutInflater.from(SiftTest.this);
+				LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
 				if (listFilterss == null) {
 					ll_meta.setVisibility(View.GONE);
 				} else {
@@ -353,15 +370,14 @@ public class SiftTest extends BaseActivity {
 								@Override
 								public void onClick(View v) {
 									temp = Integer.parseInt(v.getTag().toString());
-									System.out.println("Result------>" + v.getTag());
+
 									bundle.putInt("temp", temp);
 									bundle.putString("title", listFilterss.get(temp).getDisplayName());
 									bundle.putString("back", "筛选");
-									intent.putExtras(bundle);
-									intent.setClass(SiftTest.this, Test001.class);
 									
-									startActivityForResult(intent, 1234);
-
+									if(null != m_viewInfoListener){
+										m_viewInfoListener.onNewView(new Test001(getContext(), bundle));
+									}
 								}
 							});
 							
@@ -411,7 +427,7 @@ public class SiftTest extends BaseActivity {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(SiftTest.this, "服务当前不可用，请稍后重试！", 3).show();
+				Toast.makeText(getContext(), "服务当前不可用，请稍后重试！", 3).show();
 				break;
 
 			}
@@ -420,9 +436,9 @@ public class SiftTest extends BaseActivity {
 	};
 
 	private void updateUI() {
-		myApp.setListFilterss(listFilterss);
+		MyApplication.getApplication().setListFilterss(listFilterss);
 		LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
-		LayoutInflater inflater = LayoutInflater.from(SiftTest.this);
+		LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
 		if (listFilterss == null) {
 			ll_meta.setVisibility(View.GONE);
 		} else {
@@ -481,12 +497,10 @@ public class SiftTest extends BaseActivity {
 						@Override
 						public void onClick(View v) {
 							temp = Integer.parseInt(v.getTag().toString());
-							System.out.println("Result------>" + v.getTag());
-							bundle.putInt("temp", temp);
-							intent.setClass(SiftTest.this, Test001.class);
-							intent.putExtras(bundle);
-							startActivityForResult(intent, 1234);
-
+							bundle.putInt("temp", temp);							
+							if(null != m_viewInfoListener){
+								m_viewInfoListener.onNewView(new Test001(getContext(), bundle));
+							}
 						}
 					});
 					

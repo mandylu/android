@@ -48,6 +48,7 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.BigGallery;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
 
@@ -187,11 +188,13 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
-//						bundle.putInt("postIndex", arg2);
-//						bundle.putSerializable("goodsDetail", detail);
-//						intent.setClass(GoodDetail.this, BigGallery.class);
-//						intent.putExtras(bundle);
-//						startActivity(intent);
+						Bundle bundle = new Bundle();
+						bundle.putInt("postIndex", arg2);
+						bundle.putSerializable("goodsDetail", detail);
+						
+						if(null != m_viewInfoListener){
+							m_viewInfoListener.onNewView(new BigGallery(getContext(), bundle));
+						}
 					}
 				});
 			}

@@ -228,15 +228,18 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 
 				@Override
 				public void onClick(View v) {
-//					int a = Integer.valueOf(v.getTag().toString());
-//					intent.setClass(HomePage.this, GetGoods.class);
-//					bundle.putString("name", (listUsualCates.get(a).getName()));
-//					bundle.putString("categoryEnglishName",
-//							(listUsualCates.get(a).getEnglishName()));
-//					bundle.putString("siftresult", "");
-//					bundle.putString("backPageName", "首页");
-//					intent.putExtras(bundle);
-//					startActivity(intent);
+					int a = Integer.valueOf(v.getTag().toString());
+					
+					Bundle bundle = new Bundle();
+					bundle.putString("name", (listUsualCates.get(a).getName()));
+					bundle.putString("categoryEnglishName",
+							(listUsualCates.get(a).getEnglishName()));
+					bundle.putString("siftresult", "");
+					bundle.putString("backPageName", "首页");
+
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, listUsualCates.get(a).getEnglishName()));
+					}
 				}
 			});
 			linearUseualCates.addView(v);

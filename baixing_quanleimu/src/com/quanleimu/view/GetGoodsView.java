@@ -44,6 +44,8 @@ import com.quanleimu.util.Util;
 import com.quanleimu.view.SetMain;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.SiftTest;
+import com.quanleimu.activity.Test001;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TabDef;
@@ -93,7 +95,18 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 		init();
 	}
 	
-	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
+	public boolean onRightActionPressed(){
+	
+		bundle.putString("backPageName", bundle.getString("backPageName"));
+		bundle.putString("searchType", "goodslist");
+		bundle.putString("categoryEnglishName", categoryEnglishName);
+
+		if(null != m_viewInfoListener){
+			m_viewInfoListener.onNewView(new SiftTest(getContext(), bundle));
+		}
+		
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
@@ -171,14 +184,10 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				else
 				{
 					if(GetGoodsView.this.m_viewInfoListener != null){
+						bundle.putSerializable("currentGoodsDetail", listGoods.get(arg2));
+						bundle.putString("detail_type", "getgoods");
 						m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(arg2), getContext(), bundle));
 					}
-//					intent.setClass(GetGoods.this, GoodDetail.class);
-//					bundle.putSerializable("currentGoodsDetail", listGoods.get(arg2));
-//					bundle.putString("backPageName", name);
-//					bundle.putString("detail_type", "getgoods");
-//					intent.putExtras(bundle);
-//					startActivity(intent);
 				}
 				
 			}

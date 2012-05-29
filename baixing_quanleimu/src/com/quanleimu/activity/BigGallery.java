@@ -40,6 +40,7 @@ import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ViewFlipper;
@@ -48,70 +49,32 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 
-public class BigGallery extends BaseActivity implements OnItemSelectedListener{
+public class BigGallery extends BaseView implements OnItemSelectedListener{
 
 	int index = 0;
-	private TextView tvCount;
-	private Button btnClose;
 	private int postIndex = -1;
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
 	private Bitmap mb;
 	private HashMap<String, byte[]> imageData;
 	
-	@Override
-	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Auto-generated method stub
-		super.onConfigurationChanged(newConfig);
-	}
-	
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
-	@Override
-	protected void onResume() {
-		super.onResume();
-	}
-	
-    protected void onDestroy()
-    {
-        super.onDestroy();
-        if(mb != null)
-        {
-            mb.recycle();
-        }
-        
-        imageData = null;
-        goodsDetail = null;
-    }
-    
-    public void onClick(View v) {
-        if(v.getId() == btnClose.getId())
-        {
-            BigGallery.this.finish();
-        }
-    }
-	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.biggallery);
-		super.onCreate(savedInstanceState);
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		this.addView(inflater.inflate(R.layout.biggallery, null));
 		
 		try {
-			postIndex = bundle.getInt("postIndex");
-			goodsDetail = (GoodsDetail) bundle.getSerializable("goodsDetail");
-			
-			tvCount = (TextView)findViewById(R.id.tvCount);
-			
-			btnClose = (Button)findViewById(R.id.btnClose);
-			btnClose.setOnClickListener(this);
-			
 			if(goodsDetail.getImageList().getBig() == null || goodsDetail.getImageList().getBig().equals(""))
 			{
-				tvCount.setText("0/0");
-				Toast.makeText(BigGallery.this, "图片未加载成功，请稍后重试", 3).show();
+				if(null != m_viewInfoListener){
+					TitleDef title = getTitleDef();
+					title.m_title = "0/0";
+					m_viewInfoListener.onTitleChanged(title);
+				}
+				Toast.makeText(getContext(), "图片未加载成功，请稍后重试", 3).show();
 			}
 			else
 			{
@@ -131,24 +94,56 @@ public class BigGallery extends BaseActivity implements OnItemSelectedListener{
 				}
 				
 				Gallery vfCoupon = (Gallery)findViewById(R.id.vfCoupon);
-				vfCoupon.setAdapter(new GalleryImageAdapter(this,listUrl));
+				vfCoupon.setAdapter(new GalleryImageAdapter(getContext(), listUrl));
 				vfCoupon.setOnItemSelectedListener(this);
 				vfCoupon.setSelection(postIndex);
-//				vfCoupon.setSpacing(20);
-				//tvCountNum.setText((vfCoupon.getCurrentView().getId()+1)+"/"+listCup.size());
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
 				Bitmap tmb = BitmapFactory.decodeResource(BigGallery.this.getResources(),R.drawable.loading_210_black, o);
 				mb= Helper.toRoundCorner(tmb, 20);
-				tmb.recycle();
-				
-				tvCount.setText((postIndex+1)+"/"+listUrl.size());
-				
+				tmb.recycle();				
 			}
 		} catch (Exception e) {
 			
 		}
 	}
+	
+	public BigGallery(Context context, Bundle bundle){
+		super(context);
+		
+		postIndex = bundle.getInt("postIndex");
+		goodsDetail = (GoodsDetail) bundle.getSerializable("goodsDetail");
+		
+		Init();
+	}
+
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_title = (postIndex+1)+"/"+listUrl.size();
+		title.m_leftActionHint = "返回";
+		return title;
+	}
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
+	}
+	
+    @Override
+    public void onDestroy()
+    {
+        super.onDestroy();
+        
+        if(mb != null)
+        {
+            mb.recycle();
+        }
+        
+        imageData = null;
+        goodsDetail = null;
+    }
 
     class GalleryImageAdapter extends BaseAdapter
     {
@@ -289,7 +284,11 @@ public class BigGallery extends BaseActivity implements OnItemSelectedListener{
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
     {
-        tvCount.setText((position + 1)+"/"+listUrl.size());
+		if(null != m_viewInfoListener){
+			TitleDef title = getTitleDef();
+			title.m_title = (position + 1)+"/"+listUrl.size();
+			m_viewInfoListener.onTitleChanged(title);
+		}
     }
 
     @Override
