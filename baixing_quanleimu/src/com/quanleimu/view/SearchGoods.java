@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -36,6 +36,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.color;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -43,11 +49,6 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.GoodDetailView;
-import com.quanleimu.view.SetMain;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 public class SearchGoods extends BaseView implements OnScrollListener {
 
@@ -139,8 +140,8 @@ public class SearchGoods extends BaseView implements OnScrollListener {
         lvSearchResult.setDivider(null);
 		lvSearchResult.addFooterView(loadingLayout);
 
-		listSearchGoods = MyApplication.getApplication().getListSearchGoods();
-		totalCount = MyApplication.getApplication().getSearchCount();
+		listSearchGoods = QuanleimuApplication.getApplication().getListSearchGoods();
+		totalCount = QuanleimuApplication.getApplication().getSearchCount();
 
 		lvSearchResult.setOnScrollListener(this);
 
@@ -238,9 +239,9 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 				} else {
 					listSearchGoods = goodsList.getData();
 
-					MyApplication.getApplication().setSearchCount(totalCount);
+					QuanleimuApplication.getApplication().setSearchCount(totalCount);
 
-					MyApplication.getApplication().setListSearchGoods(listSearchGoods);
+					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
 					if (totalCount > listSearchGoods.size()) {
 						loadingLayout.setVisibility(View.VISIBLE);
@@ -286,7 +287,7 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 					for (int i = 0; i < listCommonSearchGoods.size(); i++) {
 						listSearchGoods.add(listCommonSearchGoods.get(i));
 					}
-					MyApplication.getApplication().setListSearchGoods(listSearchGoods);
+					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
 					adapter.setList(listSearchGoods);
 					adapter.notifyDataSetChanged();
@@ -329,7 +330,7 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 			list.add("query="
 					+ Communication.urlEncode(URLEncoder
 							.encode("cityEnglishName:"
-									+ MyApplication.getApplication().getCityEnglishName() + " AND "
+									+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
 									+ searchContent)));
 			list.add("start=" + startRow);
 			list.add("rows=" + 30);

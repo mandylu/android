@@ -35,7 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
@@ -48,7 +48,6 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BigGallery;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
 
@@ -115,7 +114,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	}
 	
 	private void saveToHistory(){
-		List<GoodsDetail> listLookHistory = MyApplication.getApplication().getListLookHistory();
+		List<GoodsDetail> listLookHistory = QuanleimuApplication.getApplication().getListLookHistory();
 		if(listLookHistory != null){
 			for(int i=0;i<listLookHistory.size();i++)
 			{
@@ -130,13 +129,13 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			listLookHistory = new ArrayList<GoodsDetail>();
 		}
 		listLookHistory.add(detail);
-		MyApplication.getApplication().setListLookHistory(listLookHistory);
+		QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
 		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
 	}
 
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		List<GoodsDetail> myPost = MyApplication.getApplication().getListMyPost();
+		List<GoodsDetail> myPost = QuanleimuApplication.getApplication().getListMyPost();
 		for(int i = 0; i < myPost.size(); ++ i){
 			if(myPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
 					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
@@ -147,7 +146,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	}
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		List<GoodsDetail> myStore = MyApplication.getApplication().getListMyStore();
+		List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 		if(myStore == null) return false;
 		for(int i = 0; i < myStore.size(); ++ i){
 			if(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -284,7 +283,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	private void handleStoreBtnClicked(){
 		if(-1 == btnStatus){
 			btnStatus = 0;
-			List<GoodsDetail> myStore = MyApplication.getApplication().getListMyStore();
+			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			
 			TitleDef title = getTitleDef();
 			title.m_rightActionHint = strCancelCollect;
@@ -299,13 +298,13 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				}
 				myStore.add(detail);
 			}		
-			MyApplication.getApplication().setListMyStore(myStore);
+			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getContext(), "listMyStore", myStore);
 			Toast.makeText(this.getContext(), "收藏成功", 3).show();
 		}
 		else if (0 == btnStatus) {
 			btnStatus = -1;
-			List<GoodsDetail> myStore = MyApplication.getApplication().getListMyStore();
+			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			for (int i = 0; i < myStore.size(); i++) {
 				if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
 						.equals(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
@@ -313,7 +312,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 					break;
 				}
 			}
-			MyApplication.getApplication().setListMyStore(myStore);
+			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getContext(), "listMyStore", myStore);
 			TitleDef title = getTitleDef();
 			title.m_rightActionHint = strCollect;
@@ -524,7 +523,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 							break;
 						}
 					}
-					List<GoodsDetail>listMyPost = MyApplication.getApplication().getListMyPost();
+					List<GoodsDetail>listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 					if(listMyPost != null){
 						for(int i = 0; i < listMyPost.size(); ++ i){
 							if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -534,7 +533,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 							}
 						}
 					}
-					MyApplication.getApplication().setListMyPost(listMyPost);
+					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 				}
 
 				setMetaObject();
@@ -702,7 +701,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			iv.setImageBitmap(mb);
 			
 			WindowManager wm = 
-					(WindowManager)MyApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			int type = wm.getDefaultDisplay().getWidth();
 
 			if (type == 240) {

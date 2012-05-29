@@ -65,7 +65,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 		//LocationService.getInstance().start(this, this);
 		super.onCreate(savedInstanceState);
 
-		MyApplication.udid = Secure.getString(this.getContentResolver(),
+		QuanleimuApplication.udid = Secure.getString(this.getContentResolver(),
 				Secure.ANDROID_ID);
 
 		PackageManager packageManager = getPackageManager();
@@ -73,7 +73,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 		PackageInfo packInfo;
 		try {
 			packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-			MyApplication.version = packInfo.versionName;
+			QuanleimuApplication.version = packInfo.versionName;
 		} catch (NameNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -185,7 +185,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 			}
 			if(1 == record1 && 1 == record2){
 				LocationService.getInstance().start(Loading2.this, Loading2.this);
-				intent.setClass(Loading2.this, HomePage.class);
+				intent.setClass(Loading2.this, QuanleimuMainActivity.class);
 				// bundle.putString("cityName", cityName);
 				intent.putExtras(bundle);
 				startActivity(intent);

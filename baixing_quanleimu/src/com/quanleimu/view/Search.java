@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -6,14 +6,15 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -94,7 +95,7 @@ public class Search extends BaseView implements View.OnClickListener{
 		//获得searchType
 		
 		
-		listRemark = MyApplication.getApplication().getListRemark();
+		listRemark = QuanleimuApplication.getApplication().getListRemark();
 		
 		//添加自定义布局
 		 LinearLayout layout = new LinearLayout(getContext());  
@@ -120,7 +121,7 @@ public class Search extends BaseView implements View.OnClickListener{
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				listRemark.clear();
-				MyApplication.getApplication().setListRemark(listRemark);
+				QuanleimuApplication.getApplication().setListRemark(listRemark);
 				lvSearchHistory.setVisibility(View.GONE);
 				v.setVisibility(View.GONE);
 				
@@ -160,7 +161,7 @@ public class Search extends BaseView implements View.OnClickListener{
 						else
 						{
 							listRemark.clear();
-							MyApplication.getApplication().setListRemark(listRemark);
+							QuanleimuApplication.getApplication().setListRemark(listRemark);
 							lvSearchHistory.setVisibility(View.GONE);
 							tvClear.setVisibility(View.GONE);
 						}
@@ -184,7 +185,7 @@ public class Search extends BaseView implements View.OnClickListener{
 	//public void onDestroy(){}//called before destruction
 	//public void onPause(){}//called before put into stack
 	public void onResume(){
-		MyApplication.getApplication().setActivity_type("search");
+		QuanleimuApplication.getApplication().setActivity_type("search");
 	}
 	
 	public boolean onBack(){return false;}//called when back button/key pressed
@@ -224,7 +225,7 @@ public class Search extends BaseView implements View.OnClickListener{
 					{
 						listRemark.add(searchContent);
 					}
-					MyApplication.getApplication().setListRemark(listRemark);
+					QuanleimuApplication.getApplication().setListRemark(listRemark);
 					//将搜索记录保存本地
 					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
 					
@@ -268,10 +269,10 @@ public class Search extends BaseView implements View.OnClickListener{
 				} else {
 					
 					//总数存入全局
-					MyApplication.getApplication().setSearchCount(totalCount);
+					QuanleimuApplication.getApplication().setSearchCount(totalCount);
 					
 					listSearchGoods = goodsList.getData();
-					MyApplication.getApplication().setListSearchGoods(listSearchGoods);
+					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 					
 					
 				}
@@ -296,7 +297,7 @@ public class Search extends BaseView implements View.OnClickListener{
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("fields=" + URLEncoder.encode(fields));
-			list.add("query="+"cityEnglishName:"+MyApplication.getApplication().getCityEnglishName()+" AND "+ URLEncoder.encode(searchContent));
+			list.add("query="+"cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND "+ URLEncoder.encode(searchContent));
 			list.add("start=" + startRow);
 			list.add("rows=" + 30);
 

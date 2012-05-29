@@ -62,9 +62,8 @@ import android.os.Environment;
 import java.util.Set;
 import java.io.Serializable;
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.Login;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
@@ -412,7 +411,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			password = user.getPassword();
 			
 			//获取发布模板
-			String cityEnglishName = MyApplication.getApplication().cityEnglishName;
+			String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 			if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 				cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 			}
@@ -723,7 +722,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
 
-			String city = MyApplication.getApplication().cityName;
+			String city = QuanleimuApplication.getApplication().cityName;
 			if(goodsDetail != null){
 				String goodsCity = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				if(null != goodsCity){
@@ -784,7 +783,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + MyApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
 			list.add("rt=1");
 			//根据goodsDetail判断是发布还是修改发布
 			if (goodsDetail != null) {
@@ -861,7 +860,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 			String apiName = "category_meta_post";
 			ArrayList<String> list = new ArrayList<String>();
-			this.cityEnglishName = (this.cityEnglishName == null ? MyApplication.getApplication().cityEnglishName : this.cityEnglishName);
+			this.cityEnglishName = (this.cityEnglishName == null ? QuanleimuApplication.getApplication().cityEnglishName : this.cityEnglishName);
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + this.cityEnglishName);
 
@@ -1259,7 +1258,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						descriptionEt.setHintTextColor(0xff595959);
 						descriptionEt.setGravity(Gravity.TOP);
 						descriptionEt.setLines(5);
-						descriptionEt.setText(MyApplication.getApplication().getPersonMark());
+						descriptionEt.setText(QuanleimuApplication.getApplication().getPersonMark());
 						// textViewMap.put(position, descriptionEt);
 						btMap.put(position, descriptionEt);
 						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);

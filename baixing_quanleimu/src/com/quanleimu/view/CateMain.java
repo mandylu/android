@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -27,6 +27,9 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.adapter.AllCatesAdapter;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.entity.AllCates;
@@ -37,12 +40,6 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.CategorySelectionView;
-import com.quanleimu.view.GetGoodsView;
-import com.quanleimu.view.SetMain;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 public class CateMain extends BaseView implements CategorySelectionView.ICateSelectionListener{
 

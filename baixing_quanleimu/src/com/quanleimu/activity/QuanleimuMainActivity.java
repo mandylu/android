@@ -28,11 +28,12 @@ import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
+import com.quanleimu.view.CateMain;
 import com.quanleimu.view.PersonalCenterView;
 import com.quanleimu.view.PostGoodsCateMainView;
 
 import com.quanleimu.view.HomePageView;
-public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
+public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
 	
 	public void onSwitchToTab(ETAB_TYPE tabType){
@@ -41,29 +42,29 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE)break;
 			onNewView(new HomePageView(this, bundle));
 			
-			MyApplication.getApplication().getViewStack().clear();
+			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_CATEGORY:				
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY)break;
 			onNewView(new CateMain(this));
 			
-			MyApplication.getApplication().getViewStack().clear();
+			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_PUBLISH:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
 			onNewView(new PostGoodsCateMainView(this, bundle));
-			MyApplication.getApplication().getViewStack().clear();
+			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_MINE:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE)break;
 			onNewView(new PersonalCenterView(this, bundle));
-			MyApplication.getApplication().getViewStack().clear();
+			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_SETTING:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
 			onNewView(new SetMain(this));
 			
-			MyApplication.getApplication().getViewStack().clear();
+			QuanleimuApplication.getApplication().getViewStack().clear();
 			
 			break;
 			
@@ -93,12 +94,12 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	@Override
 	public void onBack(){
 		if(!currentView.onBack()){
-	    	if(MyApplication.getApplication().getViewStack().size() > 0){
+	    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
 	    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 	    		scroll.removeAllViews();
 	    		
 	    		currentView.onDestroy();
-	    		currentView = MyApplication.getApplication().getViewStack().pop();
+	    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
 	    		setBaseLayout(currentView);            		
 	
 	    		scroll.addView(currentView);
@@ -110,7 +111,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	
 	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
 	
-	            LayoutInflater adbInflater = LayoutInflater.from(HomePage.this);
+	            LayoutInflater adbInflater = LayoutInflater.from(QuanleimuMainActivity.this);
 	            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
 	
 	            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
@@ -129,12 +130,12 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	
 	                    if (needShowShortcut && shortcutCheckBox.isChecked())
 	                    {
-	                        ShortcutUtil.addShortcut(HomePage.this);
+	                        ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
 	                    }
 	
-	                    if (MyApplication.list != null && MyApplication.list.size() != 0)
+	                    if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
 	                    {
-	                        for (String s : MyApplication.list)
+	                        for (String s : QuanleimuApplication.list)
 	                        {
 	                            deleteFile(s);
 	                        }
@@ -160,12 +161,12 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	
 	@Override
 	public void onExit(BaseView view){
-    	if(view == currentView && MyApplication.getApplication().getViewStack().size() > 0){
+    	if(view == currentView && QuanleimuApplication.getApplication().getViewStack().size() > 0){
     		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
     		scroll.removeAllViews();
     		
     		currentView.onDestroy();
-    		currentView = MyApplication.getApplication().getViewStack().pop();
+    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
     		setBaseLayout(currentView);            		
 
     		scroll.addView(currentView);
@@ -178,7 +179,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
 		
 		currentView.onPause();
-		MyApplication.getApplication().getViewStack().push(currentView);
+		QuanleimuApplication.getApplication().getViewStack().push(currentView);
 		
 		currentView = newView;
 		newView.setInfoChangeListener(this);//NOTE: MUST be called before addView is called, coz addView will call View.onAttatchedToWindow which could then call methods that will use ViewInfoListener
@@ -286,10 +287,10 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	}
 	
 	public void onPopView(String viewClassName_){
-		String viewClassName = MyApplication.getApplication().getViewStack().peerClassName();
+		String viewClassName = QuanleimuApplication.getApplication().getViewStack().peerClassName();
 		
 		if(null != viewClassName && null != viewClassName_ && viewClassName.equals(viewClassName_) ){
-			MyApplication.getApplication().getViewStack().pop();
+			QuanleimuApplication.getApplication().getViewStack().pop();
 		}
 	}
 	
@@ -355,8 +356,8 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
 		ivSetMain.setOnClickListener(this);
 		
-		if(!MyApplication.update){
-			MyApplication.update = true;
+		if(!QuanleimuApplication.update){
+			QuanleimuApplication.update = true;
 			MobclickAgent.setUpdateOnlyWifi(false);
 			MobclickAgent.update(this);
 		}

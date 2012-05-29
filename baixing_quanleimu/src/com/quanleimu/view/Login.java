@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
@@ -19,11 +19,13 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.AboutUs;
-import com.quanleimu.view.BaseView;
 
 
 public class Login extends BaseView implements OnClickListener{
@@ -180,7 +182,7 @@ public class Login extends BaseView implements OnClickListener{
 				user.setPhone(jb.getString("mobile"));
 				//user.setPhone(accoutnEt.getText().toString());
 				user.setPassword(passwordEt.getText().toString());
-				MyApplication.getApplication().setMobile(user.getPhone());
+				QuanleimuApplication.getApplication().setMobile(user.getPhone());
 				Util.saveDataToLocate(getContext(), "user", user);
 			}
 			

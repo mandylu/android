@@ -23,7 +23,7 @@ import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache2SD.LazyImageLoader2SD;
 import com.quanleimu.util.ViewStack;
 
-public class MyApplication extends Application {
+public class QuanleimuApplication extends Application {
 	
 	public static String udid="";
 	public static String version="";
@@ -37,11 +37,11 @@ public class MyApplication extends Application {
 	public static boolean textMode = false;
 	
 	public static void setTextMode(boolean tMode){
-		MyApplication.textMode = tMode;
+		QuanleimuApplication.textMode = tMode;
 	}
 	
 	public static boolean isTextMode(){
-		return MyApplication.textMode;
+		return QuanleimuApplication.textMode;
 	}
 	
 	public static List<SecondStepCate> listUsualCates;
@@ -300,10 +300,10 @@ public class MyApplication extends Application {
 		this.activity_type = activity_type;
 	}
 
-	static public MyApplication getApplication(){
+	static public QuanleimuApplication getApplication(){
 		return mDemoApp;
 	}
-	static MyApplication mDemoApp;
+	static QuanleimuApplication mDemoApp;
 	
 	protected ViewStack viewStack;
 	public ViewStack getViewStack(){
@@ -328,7 +328,7 @@ public class MyApplication extends Application {
 	public static class MyGeneralListener implements MKGeneralListener {
 		@Override
 		public void onGetNetworkState(int iError) {
-			Toast.makeText(MyApplication.mDemoApp.getApplicationContext(),
+			Toast.makeText(QuanleimuApplication.mDemoApp.getApplicationContext(),
 					"您的网络出错啦！", Toast.LENGTH_LONG).show();
 		}
 
@@ -336,10 +336,10 @@ public class MyApplication extends Application {
 		public void onGetPermissionState(int iError) {
 			if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
 				// 授权Key错误：
-				Toast.makeText(MyApplication.mDemoApp.getApplicationContext(),
+				Toast.makeText(QuanleimuApplication.mDemoApp.getApplicationContext(),
 						"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
 						.show();
-				MyApplication.mDemoApp.m_bKeyRight = false;
+				QuanleimuApplication.mDemoApp.m_bKeyRight = false;
 			}
 		}
 

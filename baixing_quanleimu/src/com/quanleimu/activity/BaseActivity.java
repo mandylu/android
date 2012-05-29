@@ -31,7 +31,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
-	protected MyApplication myApp; 
+	protected QuanleimuApplication myApp; 
 	protected ImageView ivHomePage,ivCateMain,ivPostGoods,ivMyCenter,ivSetMain;
 	protected View v = null; 
 	protected ProgressDialog pd;
@@ -139,7 +139,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 		super.onCreate(savedInstanceState);
 //		v =findViewById(R.id.linearBottom);
 		MobclickAgent.onError(this);
-		myApp = (MyApplication) getApplication();
+		myApp = (QuanleimuApplication) getApplication();
 		LoadImage = new LoadImage();
 		//判断Intent和Bundle
 		intent = getIntent();

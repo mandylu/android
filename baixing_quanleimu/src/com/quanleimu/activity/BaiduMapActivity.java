@@ -75,8 +75,8 @@ public class BaiduMapActivity extends MapActivity{
 		this.setContentView(R.layout.baidumaplayout);
 		if (mBMapMan == null) 
 		{
-			mBMapMan = new BMapManager(MyApplication.getApplication());
-			mBMapMan.init(MyApplication.getApplication().mStrKey, new MyApplication.MyGeneralListener());
+			mBMapMan = new BMapManager(QuanleimuApplication.getApplication());
+			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
 		}
 		
         super.initMapActivity(mBMapMan);

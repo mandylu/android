@@ -14,7 +14,7 @@ import android.content.pm.PackageInfo;
 import java.text.SimpleDateFormat;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.id;
 import com.quanleimu.activity.R.layout;
@@ -103,9 +103,9 @@ public class AboutUs extends BaseView {
 	private String getVersionName() throws Exception
 	   {
 	           // 获取PackageManager的实例
-	           PackageManager packageManager = MyApplication.getApplication().getPackageManager();
+	           PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
 	           // getPackageName()是你当前类的包名，0代表是获取版本信息
-	           PackageInfo packInfo = packageManager.getPackageInfo( MyApplication.getApplication().getPackageName(),0);
+	           PackageInfo packInfo = packageManager.getPackageInfo( QuanleimuApplication.getApplication().getPackageName(),0);
 	           String version = packInfo.versionName;
 	           return version;
 	   }

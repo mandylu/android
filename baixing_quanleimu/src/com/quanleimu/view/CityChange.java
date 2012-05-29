@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -6,12 +6,14 @@ import java.util.List;
 import java.util.Set;
 import java.util.Stack;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 import android.content.Context;
 import android.os.Bundle;
@@ -58,9 +60,9 @@ public class CityChange extends BaseView {
 		
 		// 获取热门城市列表数据
 		listHotCity = LocateJsonData.hotCityList();
-		MyApplication.getApplication().setListHotCity(listHotCity);
+		QuanleimuApplication.getApplication().setListHotCity(listHotCity);
  
-		cityName = MyApplication.getApplication().getCityName();
+		cityName = QuanleimuApplication.getApplication().getCityName();
 		
 		// 通过或ID获取控件
 		parentView = (ScrollView)findViewById(R.id.llParentView);
@@ -72,7 +74,7 @@ public class CityChange extends BaseView {
 		
 		//ivGPSChoose.setClickable(true); 
 		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
-		tvGPSCityName.setText(MyApplication.getApplication().getGpsCityName());
+		tvGPSCityName.setText(QuanleimuApplication.getApplication().getGpsCityName());
 		boolean isLocated = !tvGPSCityName.getText().toString().equals("");
 		if(!isLocated){
 			tvGPSCityName.setText("定位中...");
@@ -86,16 +88,16 @@ public class CityChange extends BaseView {
 				@Override
 				public void onClick(View v) {
 
-					for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
+					for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 					{
-						if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
+						if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 						{
-							MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
+							QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
 	//						System.out.println("CityChange cityName1----->" +cityName1);
 							break;
 						}
 					}
-					MyApplication.getApplication().setCityName(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
+					QuanleimuApplication.getApplication().setCityName(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
 					Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
 					
 					if(null != m_viewInfoListener){
@@ -107,12 +109,12 @@ public class CityChange extends BaseView {
 		//ivGPSChoose.setOnClickListener
 		
 		
-		if(MyApplication.getApplication().getGpsCityName() == null || MyApplication.getApplication().getGpsCityName().equals(""))
+		if(QuanleimuApplication.getApplication().getGpsCityName() == null || QuanleimuApplication.getApplication().getGpsCityName().equals(""))
 		{
-			MyApplication.getApplication().setGpsCityName("上海");
+			QuanleimuApplication.getApplication().setGpsCityName("上海");
 		}
 		
-		if (!cityName.equals(MyApplication.getApplication().getGpsCityName())) {
+		if (!cityName.equals(QuanleimuApplication.getApplication().getGpsCityName())) {
 			ivGPSChoose.setVisibility(View.INVISIBLE);
 		} else {
 			ivGPSChoose.setVisibility(View.VISIBLE);
@@ -158,18 +160,18 @@ public class CityChange extends BaseView {
 							ivGPSChoose.setVisibility(View.INVISIBLE);
 						}
 
-						for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
+						for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 						{
-							if(listHotCity.get(a).getName().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
+							if(listHotCity.get(a).getName().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 							{
-								cityName1 = MyApplication.getApplication().getListCityDetails().get(i).getEnglishName();
-								MyApplication.getApplication().setCityEnglishName(cityName1);
+								cityName1 = QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName();
+								QuanleimuApplication.getApplication().setCityEnglishName(cityName1);
 								break;
 							}
 						}
 						
-						MyApplication.getApplication().setCityEnglishName(cityName1);
-						MyApplication.getApplication().setCityName(listHotCity.get(a).getName());
+						QuanleimuApplication.getApplication().setCityEnglishName(cityName1);
+						QuanleimuApplication.getApplication().setCityName(listHotCity.get(a).getName());
 						Helper.saveDataToLocate(getContext(), "cityName", listHotCity.get(a).getName());
 
 					}
@@ -216,21 +218,21 @@ public class CityChange extends BaseView {
 					linearProvinces.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 					linearProvinces.setOrientation(LinearLayout.VERTICAL);
 					
-					if(null == MyApplication.getApplication().getShengMap() || MyApplication.getApplication().getShengMap().size() == 0){
+					if(null == QuanleimuApplication.getApplication().getShengMap() || QuanleimuApplication.getApplication().getShengMap().size() == 0){
 						
 						List<String> listShengName = new ArrayList<String>();
 						HashMap<String, List<CityDetail>> shengMap = new HashMap<String, List<CityDetail>>();
 						
 						// 获取所有省份列表
-						for (int i = 0; i < MyApplication.getApplication().getListCityDetails().size(); i++) {
-							if (!(MyApplication.getApplication().getListCityDetails().get(i).getSheng().equals("直辖市"))) {
+						for (int i = 0; i < QuanleimuApplication.getApplication().getListCityDetails().size(); i++) {
+							if (!(QuanleimuApplication.getApplication().getListCityDetails().get(i).getSheng().equals("直辖市"))) {
 								if (listShengName == null || listShengName.size() == 0) {
-									listShengName.add(MyApplication.getApplication().getListCityDetails().get(i)
+									listShengName.add(QuanleimuApplication.getApplication().getListCityDetails().get(i)
 											.getSheng());
 								} else {
-									if (!listShengName.contains(MyApplication.getApplication().getListCityDetails()
+									if (!listShengName.contains(QuanleimuApplication.getApplication().getListCityDetails()
 											.get(i).getSheng())) {
-										listShengName.add(MyApplication.getApplication().getListCityDetails().get(i)
+										listShengName.add(QuanleimuApplication.getApplication().getListCityDetails().get(i)
 												.getSheng());
 									}
 								}
@@ -240,28 +242,28 @@ public class CityChange extends BaseView {
 						// 将对应城市添加到对应的省里面去 shengMap
 						for (int j = 0; j < listShengName.size(); j++) {
 							List<CityDetail> listCD = new ArrayList<CityDetail>();
-							for (int i = 0; i < MyApplication.getApplication().getListCityDetails().size(); i++) {
-								if (MyApplication.getApplication().getListCityDetails().get(i).getSheng()
+							for (int i = 0; i < QuanleimuApplication.getApplication().getListCityDetails().size(); i++) {
+								if (QuanleimuApplication.getApplication().getListCityDetails().get(i).getSheng()
 										.equals(listShengName.get(j))) {
-									listCD.add(MyApplication.getApplication().getListCityDetails().get(i));
+									listCD.add(QuanleimuApplication.getApplication().getListCityDetails().get(i));
 								}
 							}
 							shengMap.put(listShengName.get(j), listCD);
 						}
 	
-						MyApplication.getApplication().setShengMap(shengMap);
+						QuanleimuApplication.getApplication().setShengMap(shengMap);
 					}
 					
 					LayoutInflater inflater = LayoutInflater.from(getContext());
-					Object[] keyArray= MyApplication.getApplication().getShengMap().keySet().toArray();
-					for (int i = 0; i < MyApplication.getApplication().getShengMap().size(); i++) {
+					Object[] keyArray= QuanleimuApplication.getApplication().getShengMap().keySet().toArray();
+					for (int i = 0; i < QuanleimuApplication.getApplication().getShengMap().size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
 						View vTemp = null;
 						vTemp = inflater.inflate(R.layout.item_hotcity, null);
 						
 						if (i == 0) {
 							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
-						} else if (i == MyApplication.getApplication().getShengMap().size() - 1) {
+						} else if (i == QuanleimuApplication.getApplication().getShengMap().size() - 1) {
 							vTemp.setBackgroundResource(R.drawable.btn_down_bg);
 						} else {
 							vTemp.setBackgroundResource(R.drawable.btn_m_bg);
@@ -303,7 +305,7 @@ public class CityChange extends BaseView {
 																
 								LayoutInflater inflater = LayoutInflater.from(getContext());
 								String province = v.getTag().toString();
-								final List<CityDetail> list2Sheng = MyApplication.getApplication().getShengMap().get(province);
+								final List<CityDetail> list2Sheng = QuanleimuApplication.getApplication().getShengMap().get(province);
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									// 添加新的视图，循环添加到ScrollView中
 									View vCity = null;
@@ -333,18 +335,18 @@ public class CityChange extends BaseView {
 											int a = Integer.valueOf(v.getTag().toString());
 											
 //											String cityName1 = cn2Spell(list2Sheng.get(a).getName());
-											for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
+											for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 											{
-												if(list2Sheng.get(a).getName().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
+												if(list2Sheng.get(a).getName().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 												{
-													cityName1 = MyApplication.getApplication().getListCityDetails().get(i).getEnglishName();
-													MyApplication.getApplication().setCityEnglishName(cityName1);
+													cityName1 = QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName();
+													QuanleimuApplication.getApplication().setCityEnglishName(cityName1);
 													break;
 												}
 											}
 											
-											MyApplication.getApplication().setCityEnglishName(cityName1);
-											MyApplication.getApplication().setCityName(list2Sheng.get(a).getName());
+											QuanleimuApplication.getApplication().setCityEnglishName(cityName1);
+											QuanleimuApplication.getApplication().setCityName(list2Sheng.get(a).getName());
 											
 											Helper.saveDataToLocate(getContext(), "cityName", list2Sheng.get(a).getName());
 											

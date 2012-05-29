@@ -22,7 +22,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -47,7 +47,7 @@ public class Communication implements Comparator<String> {
 	//public static String apiUrl = "http://www.xumengyi.baixing.com/api/mobile.";
 	
 	private static boolean isWifi() {  
-	    ConnectivityManager connectivityManager = (ConnectivityManager) MyApplication.context  
+	    ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context  
 	            .getSystemService(Context.CONNECTIVITY_SERVICE);  
 	    NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();  
 	    if (activeNetInfo != null  
@@ -68,19 +68,19 @@ public class Communication implements Comparator<String> {
 	}
 	
 	public static String getudid(){
-		return Secure.getString(MyApplication.context.getContentResolver(),
+		return Secure.getString(QuanleimuApplication.context.getContentResolver(),
 				Secure.ANDROID_ID);
 	}
 	
 	public static String getversion(){
 		String version = "";
-		PackageManager packageManager = MyApplication.context.getPackageManager();
+		PackageManager packageManager = QuanleimuApplication.context.getPackageManager();
 		// getPackageName()是你当前类的包名，0代表是获取版本信息
 		PackageInfo packInfo;
 		try {
-			packInfo = packageManager.getPackageInfo(MyApplication.context.getPackageName(), 0);
-			MyApplication.version = packInfo.versionName;
-			System.out.println("version--->" + MyApplication.version);
+			packInfo = packageManager.getPackageInfo(QuanleimuApplication.context.getPackageName(), 0);
+			QuanleimuApplication.version = packInfo.versionName;
+			System.out.println("version--->" + QuanleimuApplication.version);
 		} catch (NameNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -95,8 +95,8 @@ public class Communication implements Comparator<String> {
 			getversion();
 		}*/
 		
-		list.add("udid=" + MyApplication.udid);
-		list.add("version=" + MyApplication.version);
+		list.add("udid=" + QuanleimuApplication.udid);
+		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
 		list.add("timestamp=" + getTimeStamp());
 

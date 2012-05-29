@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -18,10 +18,12 @@ import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.Filterss;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 
 public class Test001 extends BaseView {
 
@@ -71,7 +73,7 @@ public class Test001 extends BaseView {
 		
 		bundle = bundle_;
 		
-		listFilterss = MyApplication.getApplication().getListFilterss();
+		listFilterss = QuanleimuApplication.getApplication().getListFilterss();
 		
 		Init();
 	}

@@ -10,7 +10,7 @@ import java.lang.Thread.State;
 import java.util.concurrent.ArrayBlockingQueue;
 import java.util.concurrent.BlockingQueue;
 
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -28,7 +28,7 @@ public class LazyImageLoader
 	
 	
 	
-	private ImageManager imgManger = new ImageManager(MyApplication.context);
+	private ImageManager imgManger = new ImageManager(QuanleimuApplication.context);
 	
 	private BlockingQueue<String> urlQueue = new ArrayBlockingQueue<String>(50);
 	

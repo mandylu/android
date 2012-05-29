@@ -6,7 +6,7 @@
  */
 package com.quanleimu.imageCache2SD;
 
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 import android.graphics.Bitmap;
@@ -29,7 +29,7 @@ public class SimpleImageLoader2SD
 	{
 		
 		view.setTag(url);	
-		Bitmap bitmap = MyApplication.lazyImageLoader2SD.get(url, getCallback(url,view));
+		Bitmap bitmap = QuanleimuApplication.lazyImageLoader2SD.get(url, getCallback(url,view));
 		if(bitmap==null){
 			view.setImageResource(R.drawable.moren);
 //			view.setVisibility(View.GONE);
@@ -70,7 +70,7 @@ public class SimpleImageLoader2SD
 	{
 		
 		imageView.setTag(url);
-		Bitmap bmp = MyApplication.lazyImageLoader2SD.get(url,createCallback(url, imageView,pb,btnBig));
+		Bitmap bmp = QuanleimuApplication.lazyImageLoader2SD.get(url,createCallback(url, imageView,pb,btnBig));
 		imageView.setImageBitmap(bmp);
 	}
 	

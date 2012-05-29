@@ -35,8 +35,7 @@ import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.Login;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
@@ -108,7 +107,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				title.m_rightActionHint = "我的收藏";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			goodsList = MyApplication.getApplication().getListMyStore();
+			goodsList = QuanleimuApplication.getApplication().getListMyStore();
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
 		}
@@ -121,7 +120,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				title.m_rightActionHint = "我的历史";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			goodsList = MyApplication.getApplication().getListLookHistory();
+			goodsList = QuanleimuApplication.getApplication().getListLookHistory();
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
 		}
@@ -212,12 +211,12 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			else{
 				List<GoodsDetail> details = null;
 				if(currentPage == 0){
-					details = MyApplication.getApplication().getListMyStore();
+					details = QuanleimuApplication.getApplication().getListMyStore();
 					msgToSend = MCMESSAGE_MYFAV_UPDATE_SUCCESS;
 					msgToSendOnFail = MCMESSAGE_MYFAV_UPDATE_FAIL;
 				}
 				else if(currentPage == 1){
-					details = MyApplication.getApplication().getListLookHistory();
+					details = QuanleimuApplication.getApplication().getListLookHistory();
 					msgToSend = MCMESSAGE_MYHISTORY_UPDATE_SUCCESS;
 					msgToSendOnFail = MCMESSAGE_MYHISTORY_UPDATE_FAIL;					
 				}
@@ -260,7 +259,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show();
 				} else {
 					listMyPost = gl.getData();
-					MyApplication.getApplication().setListMyPost(listMyPost);
+					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 					rebuildPage();
 				}
 				break;
@@ -270,7 +269,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				GoodsList glFav = JsonUtil.getGoodsListFromJson(json); 
 				if (glFav != null && glFav.getCount() > 0) {
-					MyApplication.getApplication().setListMyStore(glFav.getData());
+					QuanleimuApplication.getApplication().setListMyStore(glFav.getData());
 					rebuildPage();
 				}
 				break;
@@ -280,7 +279,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				GoodsList glHistory = JsonUtil.getGoodsListFromJson(json); 
 				if (glHistory != null && glHistory.getCount() > 0) {
-					MyApplication.getApplication().setListLookHistory(glHistory.getData());
+					QuanleimuApplication.getApplication().setListLookHistory(glHistory.getData());
 					rebuildPage();
 				}				
 				break;
@@ -299,14 +298,14 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				else if(0 == PersonalCenterView.this.currentPage){
 					goodsList.remove(pos);
-					MyApplication.getApplication().setListMyStore(goodsList);
+					QuanleimuApplication.getApplication().setListMyStore(goodsList);
 					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
 					adapter.setList(goodsList);
 					adapter.notifyDataSetChanged();
 				}
 				else if(1 == PersonalCenterView.this.currentPage){
 					goodsList.remove(pos);
-					MyApplication.getApplication().setListLookHistory(goodsList);
+					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
 					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
 					adapter.setList(goodsList);
 					adapter.notifyDataSetChanged();					
@@ -325,7 +324,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					if (code == 0) {
 						// 删除成功
 						listMyPost.remove(pos2);
-						MyApplication.getApplication().setListMyPost(listMyPost);
+						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 						adapter.setList(listMyPost);
 						adapter.notifyDataSetChanged();
 						Toast.makeText(PersonalCenterView.this.getContext(), message, 0).show();

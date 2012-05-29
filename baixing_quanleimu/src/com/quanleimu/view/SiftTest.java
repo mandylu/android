@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
@@ -28,15 +28,16 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.GetGoodsView;
 import com.quanleimu.entity.values;
 public class SiftTest extends BaseView {
 	public List<String> listsize = new ArrayList<String>();
@@ -73,7 +74,7 @@ public class SiftTest extends BaseView {
 		ed_sift.clearFocus();
 		
 		// AND 地区_s:m7259
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), "saveFilterss"+categoryEnglishName+MyApplication.getApplication().cityEnglishName);
+		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName);
 		if (postMu == null || postMu.getJson().equals("")) {
 			System.out.println("下载");
 			new Thread(new GetGoodsListThread(true)).start();
@@ -237,7 +238,7 @@ public class SiftTest extends BaseView {
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + MyApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			System.out.println("url ------ >" + url);
@@ -247,7 +248,7 @@ public class SiftTest extends BaseView {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(SiftTest.this.getContext(), "saveFilterss"+categoryEnglishName+MyApplication.getApplication().cityEnglishName, postMu);
+					Util.saveDataToLocate(SiftTest.this.getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
 					if(isUpdate){
 						myHandler.sendEmptyMessage(1);
 					}
@@ -274,7 +275,7 @@ public class SiftTest extends BaseView {
 				}
 
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
-				MyApplication.getApplication().setListFilterss(listFilterss);
+				QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 				LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
 				LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
 				if (listFilterss == null) {
@@ -438,7 +439,7 @@ public class SiftTest extends BaseView {
 	};
 
 	private void updateUI() {
-		MyApplication.getApplication().setListFilterss(listFilterss);
+		QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 		LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
 		LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
 		if (listFilterss == null) {

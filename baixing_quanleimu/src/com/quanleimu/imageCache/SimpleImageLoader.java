@@ -14,7 +14,7 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Helper;
 
@@ -31,7 +31,7 @@ public class SimpleImageLoader
 	public static void showImg(ImageView view,String url,Context con)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = MyApplication.lazyImageLoader.get(url, getCallback(url,view));
+		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,view));
 		bitmap = Helper.toRoundCorner(bitmap, 10);
 	
 		if(bitmap==null){
@@ -80,7 +80,7 @@ public class SimpleImageLoader
 	{
 		
 		imageView.setTag(url);
-		Bitmap bmp = MyApplication.lazyImageLoader.get(url,createCallback(url, imageView,pb,btnBig));
+		Bitmap bmp = QuanleimuApplication.lazyImageLoader.get(url,createCallback(url, imageView,pb,btnBig));
 		bmp = Helper.toRoundCorner(bmp, 10);
 		imageView.setImageBitmap(bmp);
 	}

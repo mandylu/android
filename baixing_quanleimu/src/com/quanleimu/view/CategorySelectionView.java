@@ -6,7 +6,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.adapter.AllCatesAdapter;
 import com.quanleimu.adapter.SecondCatesAdapter;
 import com.quanleimu.entity.AllCates;
@@ -142,7 +142,7 @@ public class CategorySelectionView extends ListView {
 		if (mainCate == null || mainCate.getChildren().size() == 0) {
 			ErrorHandler.instance().sendEmptyMessage(3);
 		} else {
-			((MyApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
+			((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
 			if(allCateAdapter == null){
 				allCateAdapter = new AllCatesAdapter(getContext(), mainCate.getChildren());
 				this.setAdapter(allCateAdapter);	

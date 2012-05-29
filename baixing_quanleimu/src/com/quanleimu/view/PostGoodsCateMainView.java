@@ -35,7 +35,6 @@ import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.CateMain;
 import com.quanleimu.activity.R;
 
 public class PostGoodsCateMainView extends BaseView implements CategorySelectionView.ICateSelectionListener{

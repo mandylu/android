@@ -42,10 +42,8 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.SetMain;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.SiftTest;
-import com.quanleimu.activity.Test001;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TabDef;
@@ -198,11 +196,11 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 
 		if (siftResult != null && !siftResult.equals("")) {
 			mUrl = "query="
-					+ "cityEnglishName:"+MyApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
+					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " " + siftResult;
 		} else {
 			mUrl = "query="
-					+ "cityEnglishName:"+MyApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
+					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " AND status:0";
 		}
 
@@ -225,7 +223,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					Toast.makeText(GetGoodsView.this.getContext(), "没有符合的结果，请更改条件并重试！", 3).show();
 				} else {
 					listGoods = goodsList.getData();
-					MyApplication.getApplication().setListGoods(listGoods);
+					QuanleimuApplication.getApplication().setListGoods(listGoods);
 					// 判断总数是不是已经超出当前集合长度
 					if (goodsList.getCount() > listGoods.size()) {
 						loadingLayout.setVisibility(View.VISIBLE);
@@ -270,7 +268,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					{
 						listGoods.add(listCommonGoods.get(i));
 					}
-					MyApplication.getApplication().setListGoods(listGoods);
+					QuanleimuApplication.getApplication().setListGoods(listGoods);
 					
 					adapter.setList(listGoods);
 					adapter.notifyDataSetChanged();

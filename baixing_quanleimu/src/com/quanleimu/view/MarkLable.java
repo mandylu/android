@@ -1,11 +1,11 @@
-package com.quanleimu.activity;
+package com.quanleimu.view;
 
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.BaseView.ViewInfoListener;
 
 import android.content.Context;
 import android.content.Intent;
@@ -41,7 +41,7 @@ public class MarkLable extends BaseView{
 		etMark.findFocus();
 		
 		//键盘弹出
-		personMark = MyApplication.getApplication().getPersonMark();
+		personMark = QuanleimuApplication.getApplication().getPersonMark();
 		if(personMark != null && !personMark.equals(""))
 		{
 			etMark.setText(personMark);
@@ -69,7 +69,7 @@ public class MarkLable extends BaseView{
 		else
 		{
 			personMark = etMark.getText().toString();
-			MyApplication.getApplication().setPersonMark(personMark);
+			QuanleimuApplication.getApplication().setPersonMark(personMark);
 			(new AsyncTask<Boolean, Boolean, Boolean>() { 
 				protected Boolean doInBackground(Boolean... bs) {   
 					Util.saveDataToLocate(MarkLable.this.getContext(), "personMark", personMark);

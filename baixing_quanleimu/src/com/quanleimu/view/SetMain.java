@@ -14,8 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.MarkLable;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.id;
 import com.quanleimu.activity.R.layout;
@@ -23,7 +22,6 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 
-import com.quanleimu.activity.Login;
 
 public class SetMain extends BaseView implements View.OnClickListener{
 
@@ -44,7 +42,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		((RelativeLayout) findViewById(R.id.rlTextImage)).setOnClickListener(this);
 		
 		final TextView textImg = (TextView)findViewById(R.id.textView3);
-		if(MyApplication.isTextMode()){
+		if(QuanleimuApplication.isTextMode()){
 			textImg.setText("文字");
 		}
 		else{
@@ -56,16 +54,16 @@ public class SetMain extends BaseView implements View.OnClickListener{
 			public void onClick(View v) {
 				if(textImg.getText().equals("图片")){
 					textImg.setText("文字");
-					MyApplication.setTextMode(true);
+					QuanleimuApplication.setTextMode(true);
 				}
 				else{
 					textImg.setText("图片");
-					MyApplication.setTextMode(false);
+					QuanleimuApplication.setTextMode(false);
 				}				
 			}
 		});
 		
-		((TextView)setmain.findViewById(R.id.personMark)).setText(MyApplication.getApplication().getPersonMark());
+		((TextView)setmain.findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
 		
 		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
 		if (user != null) {
@@ -86,7 +84,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 	}
 	
 	public void onResume(){
-		((TextView)findViewById(R.id.personMark)).setText(MyApplication.getApplication().getPersonMark());
+		((TextView)findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
 		
 		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
 		if (user != null) {

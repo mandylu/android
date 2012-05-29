@@ -41,13 +41,9 @@ import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.CateMain;
-import com.quanleimu.activity.CityChange;
-import com.quanleimu.activity.HomePage;
-import com.quanleimu.activity.MyApplication;
+import com.quanleimu.activity.QuanleimuMainActivity;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.Search;
-import com.quanleimu.activity.SearchGoods;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.ImageLoaderCallback;
@@ -91,31 +87,31 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	
 	@Override
 	public void onResume(){
-		cityName = MyApplication.getApplication().getCityName();
+		cityName = QuanleimuApplication.getApplication().getCityName();
 	}
 	
 	@Override
 	public void onClick(DialogInterface dialog, int id) {    
 		cityName = locationAddr;
-		MyApplication.getApplication().setCityName(cityName);
+		QuanleimuApplication.getApplication().setCityName(cityName);
 		
 		boolean found = false;
-		for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
+		for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 		{
-			if(cityName.equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
+			if(cityName.equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 			{
 				found = true; 
-				MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
+				QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
 				Helper.saveDataToLocate(getContext(), "cityName", cityName);
 				break;
 			}
 		}
 		if(!found){
-			for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
+			for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 			{
-				if(cityName.contains(MyApplication.getApplication().getListCityDetails().get(i).getName()))
+				if(cityName.contains(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 				{
-					MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
+					QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
 					Helper.saveDataToLocate(getContext(), "cityName", cityName);
 					break;
 				}
@@ -137,10 +133,10 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				int index = locationAddr.indexOf("市");
 				locationAddr = (-1 == index ? locationAddr : locationAddr.substring(0, index));
 				System.out.println("onLocationUpdated of HomePage, set gpscityname " + locationAddr);
-				MyApplication.getApplication().setGpsCityName(locationAddr);
+				QuanleimuApplication.getApplication().setGpsCityName(locationAddr);
 				LocationService.getInstance().stop();
-				if(HomePageView.this.cityName != null && !MyApplication.getApplication().cityName.equals(locationAddr)){
-					AlertDialog.Builder builder = new AlertDialog.Builder(MyApplication.getApplication());  
+				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
+					AlertDialog.Builder builder = new AlertDialog.Builder(QuanleimuApplication.getApplication());  
 					builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
 					.setCancelable(false)  
 					.setPositiveButton("是", HomePageView.this)  
@@ -159,18 +155,18 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	
 	@Override
 	protected void onAttachedToWindow(){
-		if (MyApplication.listUsualCates == null) {
+		if (QuanleimuApplication.listUsualCates == null) {
 			listUsualCates = (List<SecondStepCate>) Util.loadDataFromLocate(getContext(), "listUsualCates");
 			if (listUsualCates == null) {
 				// 常用类目赋值
 				listUsualCates = LocateJsonData.getUsualCatesJson();
-				MyApplication.listUsualCates = listUsualCates;
+				QuanleimuApplication.listUsualCates = listUsualCates;
 				Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
 			} else {
-				MyApplication.listUsualCates = listUsualCates;
+				QuanleimuApplication.listUsualCates = listUsualCates;
 			}
 		} else {
-			listUsualCates = MyApplication.listUsualCates;
+			listUsualCates = QuanleimuApplication.listUsualCates;
 			Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
 		}
 		addUsualCate();
@@ -302,15 +298,15 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			}
 		});
 
-		if (MyApplication.getApplication().getCityName() == null || MyApplication.getApplication().getCityName().equals("")) {
+		if (QuanleimuApplication.getApplication().getCityName() == null || QuanleimuApplication.getApplication().getCityName().equals("")) {
 			cityName = "上海";
-			MyApplication.getApplication().setCityName(cityName);
-			MyApplication.getApplication().setCityEnglishName("shanghai");
+			QuanleimuApplication.getApplication().setCityName(cityName);
+			QuanleimuApplication.getApplication().setCityEnglishName("shanghai");
 		} else {
-			cityName = MyApplication.getApplication().getCityName();
+			cityName = QuanleimuApplication.getApplication().getCityName();
 		}
 		
-		listHot = MyApplication.listHot;
+		listHot = QuanleimuApplication.listHot;
 		if(listHot == null){	
 			//try to load from last-saved hot-list file
 			boolean lastSavedValid = true;
@@ -325,7 +321,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				listHot = JsonUtil.parseCityHotFromJson(jsonDecoded);
 				
 				for(int i = 0; i < listHot.size(); ++i){
-					if(!MyApplication.lazyImageLoader.checkWithImmediateIO(listHot.get(i).imgUrl)){
+					if(!QuanleimuApplication.lazyImageLoader.checkWithImmediateIO(listHot.get(i).imgUrl)){
 						lastSavedValid = false;
 					}
 				}
@@ -364,7 +360,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		adapter = new HotListAdapter(getContext(), 
 				listHot, 
 				tempListHot, 
-				MyApplication.lazyImageLoader);
+				QuanleimuApplication.lazyImageLoader);
 		glDetail.setAdapter(adapter);		
 	}
 	
@@ -407,7 +403,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					}
 	
 					if(adapter != null)	adapter.SetLoadingHotList(tempListHot);
-					MyApplication.listHot = tempListHot;
+					QuanleimuApplication.listHot = tempListHot;
 					
 					//save to context data
 					getContext().deleteFile("hotlist.json");
