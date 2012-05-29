@@ -41,7 +41,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
 
-public class CateMain extends BaseView implements CategorySelectionView.ICateSelectionListener{
+public class CateMainView extends BaseView implements CategorySelectionView.ICateSelectionListener{
 
 	// 定义控件
 	protected CategorySelectionView selectionView;
@@ -56,12 +56,12 @@ public class CateMain extends BaseView implements CategorySelectionView.ICateSel
 		((LinearLayout)findViewById(R.id.linearListView)).addView(selectionView);
 	}
 	
-	public CateMain(Context context){
+	public CateMainView(Context context){
 		super(context);
 		
 		Init();
 	}
-	public CateMain(Context context, Bundle bundle){
+	public CateMainView(Context context, Bundle bundle){
 		super(context);
 		
 		Init();
@@ -69,7 +69,7 @@ public class CateMain extends BaseView implements CategorySelectionView.ICateSel
 	
 	@Override
 	public boolean onBack(){
-		if(CateMain.this.selectionView == null || !CateMain.this.selectionView.OnBack()){
+		if(CateMainView.this.selectionView == null || !CateMainView.this.selectionView.OnBack()){
 			return false;
 		}else
 		{

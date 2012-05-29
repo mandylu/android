@@ -218,7 +218,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 						bundle.putSerializable("goodsDetail", detail);
 						
 						if(null != m_viewInfoListener){
-							m_viewInfoListener.onNewView(new BigGallery(getContext(), bundle));
+							m_viewInfoListener.onNewView(new BigGalleryView(getContext(), bundle));
 						}
 					}
 				});

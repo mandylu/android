@@ -36,7 +36,7 @@ import com.quanleimu.activity.R.id;
 import com.quanleimu.activity.R.layout;
 import com.quanleimu.adapter.GoodsListAdapter;
 
-public class MyCenter extends BaseActivity implements OnScrollListener{
+public class MyCenterView extends BaseActivity implements OnScrollListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
 	private final int MCMESSAGE_MYPOST_FAIL = 1;
 	private final int MCMESSAGE_DELETE = 2;
@@ -77,7 +77,7 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 				if (user != null) {
 					mobile = user.getPhone();
 					password = user.getPassword();
-					pd = ProgressDialog.show(MyCenter.this, "提示", "请稍候...");
+					pd = ProgressDialog.show(MyCenterView.this, "提示", "请稍候...");
 					pd.setCancelable(true);
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
@@ -150,10 +150,10 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		setContentView(R.layout.mycenter);
 		super.onCreate(savedInstanceState);
-		user = (UserBean) Util.loadDataFromLocate(MyCenter.this, "user");
+		user = (UserBean) Util.loadDataFromLocate(MyCenterView.this, "user");
 		try {
 			if (JadgeConnection() == false) {
-				Toast.makeText(MyCenter.this, "网络连接异常", 3).show();
+				Toast.makeText(MyCenterView.this, "网络连接异常", 3).show();
 //				isConnect = 0;
 				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
 			}
@@ -194,7 +194,7 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 		ivMyCenter.setOnClickListener(this);
 		ivSetMain.setOnClickListener(this);
 		
-		adapter = new GoodsListAdapter(MyCenter.this, this.listMyPost);
+		adapter = new GoodsListAdapter(MyCenterView.this, this.listMyPost);
 		adapter.setMessageOutOnDelete(myHandler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
 	}
@@ -267,7 +267,7 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 				}
 				GoodsList gl = JsonUtil.getGoodsListFromJson(json); 
 				if (gl == null || gl.getCount() == 0) {
-					Toast.makeText(MyCenter.this, "您尚未发布信息，", 0).show();
+					Toast.makeText(MyCenterView.this, "您尚未发布信息，", 0).show();
 				} else {
 					listMyPost = gl.getData();
 					myApp.setListMyPost(listMyPost);
@@ -300,24 +300,24 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(MyCenter.this, "未获取到数据", 3).show();
+				Toast.makeText(MyCenterView.this, "未获取到数据", 3).show();
 				break;
 			case MCMESSAGE_DELETE:
 				int pos = msg.arg2;
-				if(MyCenter.this.currentPage == -1){
+				if(MyCenterView.this.currentPage == -1){
 					new Thread(new MyMessageDeleteThread(pos)).start();
 				}
-				else if(0 == MyCenter.this.currentPage){
+				else if(0 == MyCenterView.this.currentPage){
 					goodsList.remove(pos);
 					myApp.setListMyStore(goodsList);
-					Helper.saveDataToLocate(MyCenter.this, "listMyStore", goodsList);
+					Helper.saveDataToLocate(MyCenterView.this, "listMyStore", goodsList);
 					adapter.setList(goodsList);
 					adapter.notifyDataSetChanged();
 				}
-				else if(1 == MyCenter.this.currentPage){
+				else if(1 == MyCenterView.this.currentPage){
 					goodsList.remove(pos);
 					myApp.setListLookHistory(goodsList);
-					Helper.saveDataToLocate(MyCenter.this, "listLookHistory", goodsList);
+					Helper.saveDataToLocate(MyCenterView.this, "listLookHistory", goodsList);
 					adapter.setList(goodsList);
 					adapter.notifyDataSetChanged();					
 				}
@@ -338,10 +338,10 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 						myApp.setListMyPost(listMyPost);
 						adapter.setList(listMyPost);
 						adapter.notifyDataSetChanged();
-						Toast.makeText(MyCenter.this, message, 0).show();
+						Toast.makeText(MyCenterView.this, message, 0).show();
 					} else {
 						// 删除失败
-						Toast.makeText(MyCenter.this, "删除失败,请稍后重试！", 0).show();
+						Toast.makeText(MyCenterView.this, "删除失败,请稍后重试！", 0).show();
 					}
 				} catch (JSONException e) {
 					// TODO Auto-generated catch block
@@ -349,13 +349,13 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 				}
 				break;
 			case MCMESSAGE_DELETE_FAIL:
-				Toast.makeText(MyCenter.this, "删除失败，请稍后重试！", 0).show();
+				Toast.makeText(MyCenterView.this, "删除失败，请稍后重试！", 0).show();
 				break;
 			case MCMESSAGE_NETWORKERROR:
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(MyCenter.this, "网络连接失败，请检查设置！", 3).show();
+				Toast.makeText(MyCenterView.this, "网络连接失败，请检查设置！", 3).show();
 				break;
 			}
 			super.handleMessage(msg);
@@ -429,7 +429,7 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 			}
 			break;
 		case R.id.btnRefresh:
-			pd = ProgressDialog.show(MyCenter.this, "提示", "请稍候...");
+			pd = ProgressDialog.show(MyCenterView.this, "提示", "请稍候...");
 			pd.setCancelable(true);
 			new Thread(new UpdateThread(currentPage)).start();
 			break;

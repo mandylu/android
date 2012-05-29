@@ -28,7 +28,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
-public class CityChange extends BaseView {
+public class CityChangeView extends BaseView {
 
 	// 定义控件名
 	public ScrollView parentView;
@@ -101,7 +101,7 @@ public class CityChange extends BaseView {
 					Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
 					
 					if(null != m_viewInfoListener){
-						m_viewInfoListener.onExit(CityChange.this);
+						m_viewInfoListener.onExit(CityChangeView.this);
 					}		
 				}
 			});
@@ -177,7 +177,7 @@ public class CityChange extends BaseView {
 					}
 					
 					if(null != m_viewInfoListener){
-						m_viewInfoListener.onExit(CityChange.this);
+						m_viewInfoListener.onExit(CityChangeView.this);
 					}
 				}
 			});
@@ -295,7 +295,7 @@ public class CityChange extends BaseView {
 								if(null != m_viewInfoListener){
 									TitleDef title = getTitleDef();
 									title.m_leftActionHint = backPageName;
-									title.m_title = CityChange.this.title;
+									title.m_title = CityChangeView.this.title;
 									m_viewInfoListener.onTitleChanged(title);
 								}
 								
@@ -351,7 +351,7 @@ public class CityChange extends BaseView {
 											Helper.saveDataToLocate(getContext(), "cityName", list2Sheng.get(a).getName());
 											
 											if(null != m_viewInfoListener){
-												m_viewInfoListener.onExit(CityChange.this);
+												m_viewInfoListener.onExit(CityChangeView.this);
 											}
 										}
 									});
@@ -373,7 +373,7 @@ public class CityChange extends BaseView {
 		});
 	}
 	
-	public CityChange(Context context, String backPageName_){
+	public CityChangeView(Context context, String backPageName_){
 		super(context); 
 		
 		this.backPageName = backPageName_;
@@ -381,7 +381,7 @@ public class CityChange extends BaseView {
 		
 		Init();
 	}
-	public CityChange(Context context, Bundle bundle){
+	public CityChangeView(Context context, Bundle bundle){
 		super(context);
 		
 		Init();
@@ -405,7 +405,7 @@ public class CityChange extends BaseView {
 			if(null != m_viewInfoListener){
 				TitleDef title = getTitleDef();
 				title.m_leftActionHint = backPageName;
-				title.m_title = CityChange.this.title;
+				title.m_title = CityChangeView.this.title;
 				m_viewInfoListener.onTitleChanged(title);
 			}
 		}

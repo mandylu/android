@@ -39,7 +39,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.entity.values;
-public class SiftTest extends BaseView {
+public class SiftView extends BaseView {
 	public List<String> listsize = new ArrayList<String>();
 
 	// 定义变量
@@ -102,7 +102,7 @@ public class SiftTest extends BaseView {
 //	}
 	
 	
-	public SiftTest(Context context, Bundle bundle_){
+	public SiftView(Context context, Bundle bundle_){
 		super(context);
 		
 		categoryEnglishName = bundle_.getString("categoryEnglishName");
@@ -248,7 +248,7 @@ public class SiftTest extends BaseView {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(SiftTest.this.getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					Util.saveDataToLocate(SiftView.this.getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
 					if(isUpdate){
 						myHandler.sendEmptyMessage(1);
 					}
@@ -277,7 +277,7 @@ public class SiftTest extends BaseView {
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
 				QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 				LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
-				LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
+				LayoutInflater inflater = LayoutInflater.from(SiftView.this.getContext());
 				if (listFilterss == null) {
 					ll_meta.setVisibility(View.GONE);
 				} else {
@@ -379,7 +379,7 @@ public class SiftTest extends BaseView {
 									bundle.putString("back", "筛选");
 									
 									if(null != m_viewInfoListener){
-										m_viewInfoListener.onNewView(new Test001(getContext(), bundle));
+										m_viewInfoListener.onNewView(new SiftOptionListView(getContext(), bundle));
 									}
 								}
 							});
@@ -441,7 +441,7 @@ public class SiftTest extends BaseView {
 	private void updateUI() {
 		QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 		LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
-		LayoutInflater inflater = LayoutInflater.from(SiftTest.this.getContext());
+		LayoutInflater inflater = LayoutInflater.from(SiftView.this.getContext());
 		if (listFilterss == null) {
 			ll_meta.setVisibility(View.GONE);
 		} else {
@@ -502,7 +502,7 @@ public class SiftTest extends BaseView {
 							temp = Integer.parseInt(v.getTag().toString());
 							bundle.putInt("temp", temp);							
 							if(null != m_viewInfoListener){
-								m_viewInfoListener.onNewView(new Test001(getContext(), bundle));
+								m_viewInfoListener.onNewView(new SiftOptionListView(getContext(), bundle));
 							}
 						}
 					});

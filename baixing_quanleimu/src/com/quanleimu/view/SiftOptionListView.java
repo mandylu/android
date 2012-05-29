@@ -25,7 +25,7 @@ import com.quanleimu.activity.R.id;
 import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.Filterss;
 
-public class Test001 extends BaseView {
+public class SiftOptionListView extends BaseView {
 
 	public int temp = -1;
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
@@ -68,7 +68,7 @@ public class Test001 extends BaseView {
 		});
 	}
 	
-	public Test001(Context context, Bundle bundle_){
+	public SiftOptionListView(Context context, Bundle bundle_){
 		super(context);
 		
 		bundle = bundle_;

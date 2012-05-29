@@ -21,14 +21,14 @@ import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.SetMain;
+import com.quanleimu.view.SetMainView;
 
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 
-import com.quanleimu.view.CateMain;
+import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.PersonalCenterView;
 import com.quanleimu.view.PostGoodsCateMainView;
 
@@ -46,7 +46,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			break;
 		case ETAB_TYPE_CATEGORY:				
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY)break;
-			onNewView(new CateMain(this));
+			onNewView(new CateMainView(this));
 			
 			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
@@ -62,7 +62,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			break;
 		case ETAB_TYPE_SETTING:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
-			onNewView(new SetMain(this));
+			onNewView(new SetMainView(this));
 			
 			QuanleimuApplication.getApplication().getViewStack().clear();
 			

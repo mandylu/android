@@ -403,7 +403,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		if (user == null) {
 			if(this.m_viewInfoListener != null){
-				m_viewInfoListener.onNewView(new Login(baseActivity, bundle));
+				m_viewInfoListener.onNewView(new LoginView(baseActivity, bundle));
 			}
 		} else {
 			firsttime = false;

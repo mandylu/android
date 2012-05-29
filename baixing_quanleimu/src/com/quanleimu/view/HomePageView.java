@@ -642,7 +642,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	public boolean onLeftActionPressed(){
 		if(null != m_viewInfoListener){
-			m_viewInfoListener.onNewView(new CityChange(getContext(), "首页"));
+			m_viewInfoListener.onNewView(new CityChangeView(getContext(), "首页"));
 		}
 		return true;
 	}
@@ -650,7 +650,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	public boolean onRightActionPressed(){
 		if(null != m_viewInfoListener){
-			m_viewInfoListener.onNewView(new Search(getContext(), "homePage"));
+			m_viewInfoListener.onNewView(new SearchView(getContext(), "homePage"));
 		}
 		return true;
 	}//called when right button on title bar pressed, return true if handled already, false otherwise

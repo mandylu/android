@@ -2,7 +2,7 @@ package com.quanleimu.util;
 
 import com.quanleimu.adapter.AllCatesAdapter;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.view.CateMain;
+import com.quanleimu.view.CateMainView;
 
 import android.app.ProgressDialog;
 import android.os.Handler;

@@ -93,7 +93,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
 					bundle.putInt("type", 1);
-					m_viewInfoListener.onNewView(new Login(getContext(), bundle));
+					m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
 				}
 			}
 		}

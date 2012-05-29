@@ -23,7 +23,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 
 
-public class SetMain extends BaseView implements View.OnClickListener{
+public class SetMainView extends BaseView implements View.OnClickListener{
 
 	// 定义控件
 	public Dialog changePhoneDialog;
@@ -71,13 +71,13 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		}
 	}
 	
-	public SetMain(Context context){
+	public SetMainView(Context context){
 		super(context);		
 		
 		Init();
 	}
 	
-	public SetMain(Context context, Bundle bundle){
+	public SetMainView(Context context, Bundle bundle){
 		super(context, bundle);
 		
 		Init();
@@ -118,7 +118,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 			if (((TextView)findViewById(R.id.tvPhoneNum)).getText().equals("")) {
 				// 跳转登录界面
 				if(null != m_viewInfoListener){
-					m_viewInfoListener.onNewView(new Login(getContext(), "设置"));
+					m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
 				}
 			} else {
 				// 修改对话框
@@ -143,7 +143,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 						changePhoneDialog.dismiss();
 						
 						if(null != m_viewInfoListener){
-							m_viewInfoListener.onNewView(new Login(getContext(), "设置"));
+							m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
 						}
 					}
 				});
@@ -164,7 +164,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		// 签名档
 		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
 			if(null != m_viewInfoListener){
-				m_viewInfoListener.onNewView(new MarkLable(getContext()));
+				m_viewInfoListener.onNewView(new MarkLableView(getContext()));
 			}
 		}
 

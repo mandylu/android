@@ -28,7 +28,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
 
-public class Login extends BaseView implements OnClickListener{
+public class LoginView extends BaseView implements OnClickListener{
 
 	private EditText accoutnEt, passwordEt;
 	public String backPageName = "";
@@ -51,13 +51,13 @@ public class Login extends BaseView implements OnClickListener{
 		register_layout.setOnClickListener(this);
 	}
 	
-	public Login(Context context, String backPageName_){
+	public LoginView(Context context, String backPageName_){
 		super(context);
 		this.backPageName = backPageName_;
 		
 		Init();
 		}
-	public Login(Context context, Bundle bundle){
+	public LoginView(Context context, Bundle bundle){
 		super(context);
 		
 		this.backPageName = bundle.getString("backPageName");
@@ -94,7 +94,7 @@ public class Login extends BaseView implements OnClickListener{
 		
 		title.m_visible = true;
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-		title.m_rightActionHint = "登陆";
+		title.m_rightActionHint = "确定";
 		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登陆";
 		
@@ -113,12 +113,12 @@ public class Login extends BaseView implements OnClickListener{
 		if (v == forget_layout) {
 			// 忘记密码
 			if(null != m_viewInfoListener){
-				m_viewInfoListener.onNewView(new ForgetPassword(getContext(), null));
+				m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
 			}
 		}else if (v == register_layout) {
 			// 注册
 			if(null != m_viewInfoListener){
-				m_viewInfoListener.onNewView(new Register(getContext()));
+				m_viewInfoListener.onNewView(new RegisterView(getContext()));
 			}
 		} 
 	}

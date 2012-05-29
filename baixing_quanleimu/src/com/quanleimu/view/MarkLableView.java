@@ -21,7 +21,7 @@ import android.widget.ImageButton;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
-public class MarkLable extends BaseView{
+public class MarkLableView extends BaseView{
 
 	private EditText etMark;
 	private String personMark = "";
@@ -50,12 +50,12 @@ public class MarkLable extends BaseView{
 		this.addView(markMain);
 	}
 	
-	public MarkLable(Context context){
+	public MarkLableView(Context context){
 		super(context); 
 		
 		Init();
 	}
-	public MarkLable(Context context, Bundle bundle){
+	public MarkLableView(Context context, Bundle bundle){
 		super(context);
 		
 		Init();
@@ -72,7 +72,7 @@ public class MarkLable extends BaseView{
 			QuanleimuApplication.getApplication().setPersonMark(personMark);
 			(new AsyncTask<Boolean, Boolean, Boolean>() { 
 				protected Boolean doInBackground(Boolean... bs) {   
-					Util.saveDataToLocate(MarkLable.this.getContext(), "personMark", personMark);
+					Util.saveDataToLocate(MarkLableView.this.getContext(), "personMark", personMark);
 					return true;
 				}
 				

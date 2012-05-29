@@ -38,7 +38,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
-public class Search extends BaseView implements View.OnClickListener{
+public class SearchView extends BaseView implements View.OnClickListener{
 	
 	//定义控件
 	public Button btnSearch,btnCancel;
@@ -170,12 +170,12 @@ public class Search extends BaseView implements View.OnClickListener{
 		 }
 	}
 	
-	public Search(Context context, String searchType_){
+	public SearchView(Context context, String searchType_){
 		super(context);
 		searchType = searchType_;
 		Init();
 	}
-	public Search(Context context, Bundle bundle){
+	public SearchView(Context context, Bundle bundle){
 		super(context);
 		Init();
 	}
@@ -282,7 +282,7 @@ public class Search extends BaseView implements View.OnClickListener{
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(Search.this.getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+				Toast.makeText(SearchView.this.getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				break;
 			}
 			

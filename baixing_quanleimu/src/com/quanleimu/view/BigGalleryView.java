@@ -54,7 +54,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 
-public class BigGallery extends BaseView implements OnItemSelectedListener{
+public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 
 	int index = 0;
 	private int postIndex = -1;
@@ -100,7 +100,7 @@ public class BigGallery extends BaseView implements OnItemSelectedListener{
 				vfCoupon.setSelection(postIndex);
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
-				Bitmap tmb = BitmapFactory.decodeResource(BigGallery.this.getResources(),R.drawable.loading_210_black, o);
+				Bitmap tmb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);
 				mb= Helper.toRoundCorner(tmb, 20);
 				tmb.recycle();				
 			}
@@ -109,7 +109,7 @@ public class BigGallery extends BaseView implements OnItemSelectedListener{
 		}
 	}
 	
-	public BigGallery(Context context, Bundle bundle){
+	public BigGalleryView(Context context, Bundle bundle){
 		super(context);
 		
 		postIndex = bundle.getInt("postIndex");

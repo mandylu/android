@@ -29,7 +29,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
-import com.quanleimu.view.SetMain;
+import com.quanleimu.view.SetMainView;
 import com.quanleimu.view.PostGoodsCateMainView;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;

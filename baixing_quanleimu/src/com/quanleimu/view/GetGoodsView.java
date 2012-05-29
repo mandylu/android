@@ -41,7 +41,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.SetMain;
+import com.quanleimu.view.SetMainView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -100,7 +100,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 		bundle.putString("categoryEnglishName", categoryEnglishName);
 
 		if(null != m_viewInfoListener){
-			m_viewInfoListener.onNewView(new SiftTest(getContext(), bundle));
+			m_viewInfoListener.onNewView(new SiftView(getContext(), bundle));
 		}
 		
 		return true;
