@@ -17,11 +17,12 @@ public class BaseView extends LinearLayout{
 		public void onTitleChanged(TitleDef title);
 		public void onTabChanged(TabDef tab);
 		public void onBack();
+		public void onBack(int message, Object obj);
 		public void onNewView(BaseView view);
 		public void onExit(BaseView view);
 		public void onSwitchToTab(ETAB_TYPE tabType);
 		public void onPopView(String viewClassName);
-		public void onSetResult(int requestCode, int resultCode, Bundle data);
+//		public void onSetResult(int requestCode, int resultCode, Bundle data);
 	};
 
 	public enum EBUTT_STYLE{
@@ -67,7 +68,9 @@ public class BaseView extends LinearLayout{
 	public void onPause(){}//called before put into stack
 	public void onResume(){}
 	
-	public void onSetResult(int requestCode, int resultCode, Bundle data){}
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {}
+	
+	public void onPreviousViewBack(int message, Object obj){}
 	
 	public boolean onBack(){return false;}//called when back button/key pressed
 	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
