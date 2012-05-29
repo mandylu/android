@@ -46,6 +46,8 @@ import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 
 public class GetGoodsView extends BaseView implements OnScrollListener{
@@ -60,7 +62,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 
 	private String json = "";
 	private int startRow = 0;
-	private List<Bitmap> listBm = new ArrayList<Bitmap>();
+	//private List<Bitmap> listBm = new ArrayList<Bitmap>();
 	private List<GoodsDetail> listGoods = new ArrayList<GoodsDetail>();
 	private List<GoodsDetail> listCommonGoods = new ArrayList<GoodsDetail>();
 	private GoodsList goodsList = new GoodsList();
@@ -78,14 +80,33 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 		this.categoryEnglishName = categoryEnglishName;
 
 		this.bundle = bundle;
+		
+		init();
 	}
 
 	public GetGoodsView(Context context, Bundle bundle, String categoryEnglishName, String siftResult){
 		super(context, bundle);
 		this.categoryEnglishName = categoryEnglishName;
 		this.siftResult = siftResult;
-		this.bundle = bundle;		
+		this.bundle = bundle;	
+		
+		init();
 	}
+	
+	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_leftActionHint = bundle.getString("backPageName");
+		title.m_title = bundle.getString("name");
+		title.m_rightActionHint = "筛选";
+		return title;
+	}
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;}
 
 	protected void init() {
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());

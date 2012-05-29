@@ -128,16 +128,16 @@ public class SiftTest extends BaseActivity {
 				
 				if(result.length() > 0)
 				{
-					bundle.putString("siftresult", result);
-					intent.putExtras(bundle);
-					intent.setClass(SiftTest.this, GetGoods.class);
-					startActivity(intent);
+//					bundle.putString("siftresult", result);
+//					intent.putExtras(bundle);
+//					intent.setClass(SiftTest.this, GetGoods.class);
+//					startActivity(intent);
 				}else{
 					if(bundle.getString("siftresult") != null && !bundle.getString("siftresult").equals("")){
-						bundle.putString("siftresult", "");
-						intent.putExtras(bundle);
-						intent.setClass(SiftTest.this, GetGoods.class);
-						startActivity(intent);
+//						bundle.putString("siftresult", "");
+//						intent.putExtras(bundle);
+//						intent.setClass(SiftTest.this, GetGoods.class);
+//						startActivity(intent);
 					}
 					else{
 						Context context = MyApplication.context;

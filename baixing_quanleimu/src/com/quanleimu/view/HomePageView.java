@@ -43,7 +43,6 @@ import android.widget.ImageView.ScaleType;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.CateMain;
 import com.quanleimu.activity.CityChange;
-import com.quanleimu.activity.GetGoods;
 import com.quanleimu.activity.HomePage;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;

@@ -31,7 +31,6 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.SetMain;
 import com.quanleimu.adapter.GoodsListAdapter;
-import com.quanleimu.activity.GoodDetail;
 
 public class MyCenter extends BaseActivity implements OnScrollListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
@@ -118,10 +117,12 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 				else if(0 == currentPage || 1 == currentPage){
 					bundle.putSerializable("currentGoodsDetail", goodsList.get(arg2));
 				}
-				intent.setClass(MyCenter.this, GoodDetail.class);
-				bundle.putString("backPageName", "个人中心");
-				intent.putExtras(bundle);
-				startActivity(intent);
+				
+//				
+//				intent.setClass(MyCenter.this, GoodDetail.class);
+//				bundle.putString("backPageName", "个人中心");
+//				intent.putExtras(bundle);
+//				startActivity(intent);
 			}
 
 		});

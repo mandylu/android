@@ -214,18 +214,24 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 		if(isMyAd()){
 			if(this.m_viewInfoListener != null){
-				m_viewInfoListener.onRightBtnTextChanged(strManager);
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = strManager;
+				m_viewInfoListener.onTitleChanged(title);
 			}
 		}
 		else{
 			if(isInMyStore()){
 				if(this.m_viewInfoListener != null){
-					m_viewInfoListener.onRightBtnTextChanged(strCancelCollect);
+					TitleDef title = getTitleDef();
+					title.m_rightActionHint = strCancelCollect;
+					m_viewInfoListener.onTitleChanged(title);
 				}
 			}
 			else{
 				if(this.m_viewInfoListener != null){
-					m_viewInfoListener.onRightBtnTextChanged(strCollect);
+					TitleDef title = getTitleDef();
+					title.m_rightActionHint = strCollect;
+					m_viewInfoListener.onTitleChanged(title);
 				}
 			}
 		}
@@ -276,7 +282,11 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		if(-1 == btnStatus){
 			btnStatus = 0;
 			List<GoodsDetail> myStore = MyApplication.getApplication().getListMyStore();
-			m_viewInfoListener.onRightBtnTextChanged(strCancelCollect);
+			
+			TitleDef title = getTitleDef();
+			title.m_rightActionHint = strCancelCollect;
+			m_viewInfoListener.onTitleChanged(title);
+			
 			if (myStore == null){
 				myStore = new ArrayList<GoodsDetail>();
 				myStore.add(detail);
@@ -302,7 +312,9 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			}
 			MyApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getContext(), "listMyStore", myStore);
-			m_viewInfoListener.onRightBtnTextChanged(strCollect);
+			TitleDef title = getTitleDef();
+			title.m_rightActionHint = strCollect;
+			m_viewInfoListener.onTitleChanged(title);
 			Toast.makeText(this.getContext(), "取消收藏", 3).show();
 		}
 		else if(1 == btnStatus){

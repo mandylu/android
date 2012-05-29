@@ -3,43 +3,6 @@
 	xmlns:android="http://schemas.android.com/apk/res/android"
 	android:layout_width="fill_parent"
 	android:layout_height="fill_parent">
-	<LinearLayout 
-    	android:layout_alignParentLeft="true" 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="fill_parent" 
-    	android:id="@+id/linearTop" 
-    	android:layout_alignParentTop="true">
-    	<RelativeLayout 
-	    	android:layout_height="wrap_content" 
-	    	android:layout_width="fill_parent" 
-	    	android:id="@+id/rlTitle" 
-	    	android:background="@drawable/bg_header">
-	        <TextView 
-	        	android:id="@+id/tvTitle" 
-	        	android:layout_height="wrap_content" 
-	        	android:text="选择类目" 
-	        	android:textSize="22dip"
-	        	android:textColor="#ffffff"
-	        	android:layout_width="wrap_content" 
-	        	android:layout_centerInParent="true"></TextView>
-	        
-	        <Button
-                android:gravity="right"
-                android:id="@+id/btnBack"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:background="@drawable/btn_jj"
-                android:paddingLeft="12dip"
-                android:paddingTop="7dip"
-                android:paddingBottom="5dip"
-                android:paddingRight="12dip"
-                android:text="返回按钮" 
-                android:textColor="#ffffff">
-            </Button>
-    	</RelativeLayout>
-     </LinearLayout>
 
      <LinearLayout
          android:id="@+id/linearListView"
@@ -58,53 +21,6 @@
 <!--          	android:layout_height="wrap_content"  -->
 <!--          	android:layout_width="fill_parent"></ListView> -->
         
-     </LinearLayout>
-	 <LinearLayout 
-    	android:layout_alignParentLeft="true" 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="fill_parent" 
-    	android:id="@+id/linearBottom" 
-    	android:layout_alignParentBottom="true">
-    	<LinearLayout 
-	    	android:layout_height="wrap_content" 
-	    	android:layout_width="fill_parent"
-	    	android:background="@drawable/bg_bottom">
-	    	<ImageView 
-	    		android:layout_weight="3"
-		    	android:layout_height="wrap_content" 
-		    	android:layout_width="fill_parent" 
-		    	android:background="@drawable/iv_homepage_xml" 
-		    	android:id="@+id/ivHomePage" 
-		    	android:layout_gravity="bottom"/>
-		    <ImageView 
-		    	android:layout_weight="3"
-		    	android:layout_height="wrap_content" 
-		    	android:layout_width="fill_parent" 
-		    	android:background="@drawable/iv_catemain_xml"
-		    	android:id="@+id/ivCateMain" 
-		    	android:layout_gravity="bottom"/>
-		    <ImageView 
-		    	android:layout_weight="3" 
-		    	android:layout_height="wrap_content" 
-		    	android:layout_width="fill_parent" 
-		    	android:background="@drawable/iv_postgoods_xml"
-		    	android:id="@+id/ivPostGoods"
-		    	android:layout_gravity="bottom"/>
-		    <ImageView 
-		    	android:layout_weight="3" 
-		    	android:layout_height="wrap_content" 
-		    	android:layout_width="fill_parent" 
-		    	android:background="@drawable/iv_mycenter_xml"
-		    	android:id="@+id/ivMyCenter"
-		    	android:layout_gravity="bottom"/>
-		    <ImageView 
-		    	android:layout_weight="3" 
-		    	android:layout_height="wrap_content" 
-		    	android:layout_width="fill_parent" 
-		    	android:background="@drawable/iv_setmain_xml"
-		    	android:id="@+id/ivSetMain"
-		    	android:layout_gravity="bottom"/>
-	    </LinearLayout>>
      </LinearLayout>
 	 
 </RelativeLayout>

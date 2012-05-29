@@ -10,9 +10,11 @@ import android.widget.LinearLayout;
 public class BaseView extends LinearLayout{
 	
 	public interface ViewInfoListener{
-		public void onTitleChanged(String newTitle);
-		public void onLeftBtnTextChanged(String newText);
-		public void onRightBtnTextChanged(String newText);
+//		public void onTitleChanged(String newTitle);
+//		public void onLeftBtnTextChanged(String newText);
+//		public void onRightBtnTextChanged(String newText);
+		public void onTitleChanged(TitleDef title);
+		public void onTabChanged(TabDef tab);
 		public void onBack();
 		public void onNewView(BaseView view);
 		public void onExit(BaseView view);

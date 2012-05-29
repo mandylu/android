@@ -291,7 +291,9 @@ public class CityChange extends BaseView {
 								backPageName = "选择省份";
 								title = "选择城市";
 								if(null != m_viewInfoListener){
-									m_viewInfoListener.onLeftBtnTextChanged(backPageName);
+									TitleDef title = getTitleDef();
+									title.m_leftActionHint = backPageName;
+									title.m_title = CityChange.this.title;
 									m_viewInfoListener.onTitleChanged(title);
 								}
 								
@@ -399,7 +401,9 @@ public class CityChange extends BaseView {
 			title = stage.titleString;
 			
 			if(null != m_viewInfoListener){
-				m_viewInfoListener.onLeftBtnTextChanged(backPageName);
+				TitleDef title = getTitleDef();
+				title.m_leftActionHint = backPageName;
+				title.m_title = CityChange.this.title;
 				m_viewInfoListener.onTitleChanged(title);
 			}
 		}

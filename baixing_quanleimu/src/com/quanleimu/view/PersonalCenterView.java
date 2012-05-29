@@ -33,6 +33,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
@@ -75,7 +76,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			ivMyfav.setImageResource(R.drawable.btn_my_myfav);
 			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory);
 			if(m_viewInfoListener != null){
-				m_viewInfoListener.onTitleChanged("我发布的信息");
+				TitleDef title = getTitleDef();
+				title.m_title = "我发布的信息";
+				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(listMyPost.size() != 0){
 				adapter.setList(listMyPost);
@@ -103,7 +106,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory);
 			
 			if(m_viewInfoListener != null){
-				m_viewInfoListener.onTitleChanged("我的收藏");
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = "我的收藏";
+				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = MyApplication.getApplication().getListMyStore();
 			adapter.setList(goodsList);
@@ -114,7 +119,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			ivMyfav.setImageResource(R.drawable.btn_my_myfav);
 			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory_press);
 			if(m_viewInfoListener != null){
-				m_viewInfoListener.onTitleChanged("我的历史");
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = "我的历史";
+				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = MyApplication.getApplication().getListLookHistory();
 			adapter.setList(goodsList);
@@ -400,7 +407,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		if(-1 == buttonStatus){
 //		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
 			if(this.m_viewInfoListener != null){
-				m_viewInfoListener.onRightBtnTextChanged("完成");
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = "完成";
+				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(adapter != null){
 				adapter.setHasDelBtn(true);
@@ -410,7 +419,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		else{
 //			btnEdit.setBackgroundResource(R.drawable.btn_search);
 			if(this.m_viewInfoListener != null){
-				m_viewInfoListener.onRightBtnTextChanged("编辑");
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = "编辑";
+				m_viewInfoListener.onTitleChanged(title);
 			}
 			adapter.setHasDelBtn(false);
 			buttonStatus = -1;

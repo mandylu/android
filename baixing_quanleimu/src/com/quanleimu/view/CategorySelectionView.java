@@ -20,6 +20,7 @@ import com.quanleimu.util.Util;
 import com.quanleimu.activity.R;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.AsyncTask;
 import android.view.View;
 import android.widget.AdapterView;
@@ -96,8 +97,8 @@ public class CategorySelectionView extends ListView {
 			}
 		};
 	
-	public CategorySelectionView(BaseActivity activity) {
-		super(activity);
+	public CategorySelectionView(Context context) {
+		super(context);
 
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		this.setSelector(R.color.transparent);
@@ -112,7 +113,7 @@ public class CategorySelectionView extends ListView {
 		this.setOnItemClickListener(new MainCateItemClickListener());
 		
 		//main cate list
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(activity, mainCateCacheTag);
+		PostMu postMu = (PostMu) Util.loadDataFromLocate(context, mainCateCacheTag);
 
 		if (postMu != null && !postMu.getJson().equals("")) {
 			String json = postMu.getJson();
@@ -124,7 +125,7 @@ public class CategorySelectionView extends ListView {
 				(new AllCateTask()).execute(true);
 			} 
 		} else {
-			progressDialog = ProgressDialog.show(activity, "提示", "请稍候...");			
+			progressDialog = ProgressDialog.show(context, "提示", "请稍候...");			
 			progressDialog.setCancelable(true);
 			
 			(new AllCateTask()).execute(true);
