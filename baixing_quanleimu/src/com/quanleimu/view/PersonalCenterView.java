@@ -104,7 +104,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "我的收藏";
+				title.m_title = "我的收藏";
+				title.m_rightActionHint = "编辑";
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = QuanleimuApplication.getApplication().getListMyStore();
@@ -117,7 +118,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory_press);
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "我的历史";
+				title.m_title = "我的历史";
+				title.m_rightActionHint = "编辑";
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = QuanleimuApplication.getApplication().getListLookHistory();
@@ -256,12 +258,14 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				GoodsList gl = JsonUtil.getGoodsListFromJson(json); 
 				if (gl == null || gl.getCount() == 0) {
-					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show();
-				} else {
-					listMyPost = gl.getData();
-					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-					rebuildPage(true);
+					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show(); 
 				}
+				else{
+					listMyPost = gl.getData();
+				}
+				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				rebuildPage(true);
+				
 				break;
 			case MCMESSAGE_MYFAV_UPDATE_SUCCESS:
 				if (pd != null) {
