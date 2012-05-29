@@ -70,7 +70,26 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		}
 
 	}
+	
+	@Override
+	public void onBack(int message, Object obj){
+		this.onBack();
+		if(currentView != null){
+			currentView.onPreviousViewBack(message, obj);
+		}
+	}
 
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(currentView != null){
+			currentView.onActivityResult(requestCode, resultCode, data);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
+
+
+	
 	@Override
 	public void onBack(){
 		if(!currentView.onBack()){
@@ -270,14 +289,6 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		
 		if(null != viewClassName && null != viewClassName_ && viewClassName.equals(viewClassName_) ){
 			MyApplication.getApplication().getViewStack().pop();
-		}
-	}
-	
-	public void onSetResult(int requestCode, int resultCode, Bundle data){
-		BaseView view = MyApplication.getApplication().getViewStack().peer(); 
-		
-		if(null != view){
-			view.onSetResult(requestCode, resultCode, data);
 		}
 	}
 	
