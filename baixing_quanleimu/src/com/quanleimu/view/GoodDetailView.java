@@ -109,6 +109,32 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	
 	@Override
 	protected void onAttachedToWindow(){
+		if(isMyAd()){
+			if(this.m_viewInfoListener != null){
+				TitleDef title = getTitleDef();
+				title.m_rightActionHint = strManager;
+				m_viewInfoListener.onTitleChanged(title);
+				btnStatus = 1;
+			}
+		}
+		else{
+			if(isInMyStore()){
+				if(this.m_viewInfoListener != null){
+					TitleDef title = getTitleDef();
+					title.m_rightActionHint = strCancelCollect;
+					m_viewInfoListener.onTitleChanged(title);
+					btnStatus = 0;
+				}
+			}
+			else{
+				if(this.m_viewInfoListener != null){
+					TitleDef title = getTitleDef();
+					title.m_rightActionHint = strCollect;
+					m_viewInfoListener.onTitleChanged(title);
+					btnStatus = -1;
+				}
+			}
+		}
 		this.saveToHistory();
 		super.onAttachedToWindow();
 	}
@@ -214,29 +240,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
 
-		if(isMyAd()){
-			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = strManager;
-				m_viewInfoListener.onTitleChanged(title);
-			}
-		}
-		else{
-			if(isInMyStore()){
-				if(this.m_viewInfoListener != null){
-					TitleDef title = getTitleDef();
-					title.m_rightActionHint = strCancelCollect;
-					m_viewInfoListener.onTitleChanged(title);
-				}
-			}
-			else{
-				if(this.m_viewInfoListener != null){
-					TitleDef title = getTitleDef();
-					title.m_rightActionHint = strCollect;
-					m_viewInfoListener.onTitleChanged(title);
-				}
-			}
-		}
+
 
 		im_x.setOnClickListener(this);
 
