@@ -56,7 +56,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			break;
 		case ETAB_TYPE_MINE:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE)break;
-			changeTabView(new PersonalCenterView(this, bundle));
+			onNewView(new PersonalCenterView(this, bundle));
 			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_SETTING:
@@ -179,15 +179,14 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		
 		currentView.onPause();
 		MyApplication.getApplication().getViewStack().push(currentView);
+		
 		currentView = newView;
-		newView.setInfoChangeListener(this);
+		newView.setInfoChangeListener(this);//NOTE: MUST be called before addView is called, coz addView will call View.onAttatchedToWindow which could then call methods that will use ViewInfoListener
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		scroll.removeAllViews();
 		scroll.addView(currentView);
 		
 		setBaseLayout(newView);
-		
-		
 		
 		long time_end =  System.currentTimeMillis();
 		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
