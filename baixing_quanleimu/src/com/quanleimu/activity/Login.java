@@ -111,12 +111,14 @@ public class Login extends BaseView implements OnClickListener{
 	public void onClick(View v) {
 		if (v == forget_layout) {
 			// 忘记密码
-//			intent.setClass(Login.this, ForgetPassword.class);
-//			startActivity(intent);
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onNewView(new ForgetPassword(getContext(), null));
+			}
 		}else if (v == register_layout) {
 			// 注册
-//			intent.setClass(Login.this, Register.class);
-//			startActivity(intent);
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onNewView(new Register(getContext()));
+			}
 		} 
 	}
 

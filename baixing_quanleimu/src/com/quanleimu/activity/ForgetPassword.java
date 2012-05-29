@@ -12,6 +12,7 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -19,6 +20,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.webkit.WebView;
@@ -28,63 +30,48 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 
-public class ForgetPassword extends BaseActivity {
+public class ForgetPassword extends BaseView {
 
 	public String backPageName = "";
 	public String categoryEnglishName = "";
 	public String json = "";
-	public TextView tvTitle;
-	private Button backBtn; 
 	private WebView web;
 
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
+	public ForgetPassword(Context context, Bundle bundle){
+		super(context);
+		
+		Init();
 	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.forget_password);
-
-		super.onCreate(savedInstanceState);
-		// 解决自动弹出输入法
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		tvTitle.setText("忘记密码");
+	
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		this.addView(inflater.inflate(R.layout.forget_password, null));
 		
 		web = (WebView) findViewById(R.id.web);
 		web.loadUrl("http://www.baixing.com/auth/findPassword/");
-		
-		backBtn = (Button)findViewById(R.id.backBtn);
-		backBtn.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				// TODO Auto-generated method stub
-				ForgetPassword.this.finish();
-			}
-		});
 	}
 
-	@Override
-	public void onClick(View v) {
-		super.onClick(v);
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_title = "忘记密码";
+		title.m_leftActionHint = "返回";
+		return title;
 	}
-
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
+	}
 
 	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
 	class LoginThread implements Runnable {
@@ -134,7 +121,7 @@ public class ForgetPassword extends BaseActivity {
 					}
 					JSONObject json = jsonObject.getJSONObject("error");
 					String message = json.getString("message");
-					Toast.makeText(ForgetPassword.this, message, 0).show();
+					Toast.makeText(getContext(), message, 0).show();
 					if (!id.equals("")) {
 						// 登陆成功
 					}
@@ -143,10 +130,10 @@ public class ForgetPassword extends BaseActivity {
 				}
 				break;
 			case 2:
-				Toast.makeText(ForgetPassword.this, "登陆未成功，请稍后重试！", 3).show();
+				Toast.makeText(getContext(), "登陆未成功，请稍后重试！", 3).show();
 				break;
 			case 3:
-				Toast.makeText(ForgetPassword.this, "网络连接失败，请检查设置！", 3).show();
+				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
 				break;				
 			}
 			super.handleMessage(msg);

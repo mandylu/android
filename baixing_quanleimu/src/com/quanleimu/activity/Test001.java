@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -59,9 +60,7 @@ public class Test001 extends BaseView {
 						bundle.putString("all", "不限");
 					}
 					
-					m_viewInfoListener.onSetResult(1234, 1234, bundle);
-					
-					m_viewInfoListener.onExit(Test001.this);
+					m_viewInfoListener.onBack(1234, bundle);
 				}
 			}
 		});

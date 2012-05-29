@@ -199,8 +199,10 @@ public class SiftTest extends BaseView {
 	}
 
 	@Override
-	public void onSetResult(int requestCode, int resultCode, Bundle data) {
-		if (resultCode == 1234) {
+	public void onPreviousViewBack(int message, Object obj) {
+		if (message == 1234) {
+			Bundle data = (Bundle)obj;
+			
 			String s = data.getString("all"); 
 			if(s==null || s.equals("")){
 				res = data.getString("label");
