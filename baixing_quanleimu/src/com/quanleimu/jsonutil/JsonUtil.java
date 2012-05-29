@@ -122,10 +122,13 @@ public class JsonUtil {
 		return listHot;
 	}
 
+	static AllCates allCates = null;
 	// 获取所有类目列表
 	public static AllCates getAllCatesFromJson(String jsonData) {
-		AllCates allCates = new AllCates();
+//		static final AllCates allCates = null;
+		if(allCates != null) return allCates;
 		try {
+			allCates = new AllCates();
 			JSONObject jsonObj = new JSONObject(jsonData);
 			allCates.setName(jsonObj.getString("name"));
 			allCates.setEnglishName(jsonObj.getString("englishName"));
@@ -164,6 +167,7 @@ public class JsonUtil {
 			allCates.setChildren(listFirst);
 		} catch (JSONException e1) {
 			// TODO Auto-generated catch block
+			allCates = null;
 			e1.printStackTrace();
 		}
 		return allCates;
