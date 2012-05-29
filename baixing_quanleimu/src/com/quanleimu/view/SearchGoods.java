@@ -191,7 +191,11 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 	}
 	
 	public SearchGoods(Context context, Bundle bundle){
-		super(context);
+		super(context, bundle);
+		
+		backPageName = bundle.getString("backPageName");
+		searchContent = bundle.getString("searchContent");
+		act_type = bundle.getString("actType");
 		
 		Init();
 	}

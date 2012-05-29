@@ -255,9 +255,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 
 			@Override
 			public void onClick(View v) {
-//				intent.setClass(HomePage.this, CateMain.class);
-//				intent.putExtras(bundle);
-//				startActivity(intent);
+				m_viewInfoListener.onNewView(new CateMainView(getContext()));
 			}
 		});
 		
@@ -282,18 +280,17 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
 				if (listHot.get(arg2).getType() == 0) {
-//					intent.setClass(HomePage.this, SearchGoods.class);
-//					bundle.putString("act_type", "homepage");
-//					bundle.putString("name",
-//							(listHot.get(arg2).getHotData().getTitle()));
-//					bundle.putString("searchContent", (listHot.get(arg2)
-//							.getHotData().getKeyword()));
-//					intent.putExtras(bundle);
-//					startActivity(intent);
+					Bundle bundle = new Bundle();
+					bundle.putString("act_type", "homepage");
+					bundle.putString("name",
+							(listHot.get(arg2).getHotData().getTitle()));
+					bundle.putString("searchContent", (listHot.get(arg2)
+							.getHotData().getKeyword()));
+					m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
 				} else if (listHot.get(arg2).getType() == 1) {
-//					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(listHot
-//							.get(arg2).getHotData().getWeburl()));
-//					startActivity(i);
+					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(listHot
+							.get(arg2).getHotData().getWeburl()));
+					((BaseActivity)getContext()).startActivity(i);
 				}
 			}
 		});
