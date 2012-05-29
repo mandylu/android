@@ -180,13 +180,14 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		currentView.onPause();
 		MyApplication.getApplication().getViewStack().push(currentView);
 		currentView = newView;
+		newView.setInfoChangeListener(this);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		scroll.removeAllViews();
 		scroll.addView(currentView);
 		
 		setBaseLayout(newView);
 		
-		newView.setInfoChangeListener(this);
+		
 		
 		long time_end =  System.currentTimeMillis();
 		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );

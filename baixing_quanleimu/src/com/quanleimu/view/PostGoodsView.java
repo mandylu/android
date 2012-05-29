@@ -190,6 +190,15 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		return super.onKeyDown(keyCode, event);			
 	}
 	
+	@Override protected void onAttachedToWindow(){
+		pd = new ProgressDialog(this.getContext());
+		pd.setTitle("提示");
+		pd.setMessage("请稍候...");
+		pd.setCancelable(true);
+
+		usercheck();
+		super.onAttachedToWindow();
+	}
 	private void init() {
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.postgoodsview, null);
@@ -201,14 +210,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		initial();
-
-		pd = new ProgressDialog(this.getContext());
-		pd.setTitle("提示");
-		pd.setMessage("请稍候...");
-		pd.setCancelable(true);
-
-		usercheck();
-
 	}
 
 	/**
