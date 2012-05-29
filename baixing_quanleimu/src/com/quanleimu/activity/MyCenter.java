@@ -441,30 +441,6 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 			this.currentPage = 1;
 			rebuildPage();
 			break;
-		case R.id.ivHomePage:
-			intent.setClass(this, HomePage.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivCateMain:
-			intent.setClass(this, CateMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivPostGoods:
-			intent.setClass(this, PostGoodsCateMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivSetMain:
-			intent.setClass(this, SetMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
-			break;
 		}
 		super.onClick(v);
 	}
