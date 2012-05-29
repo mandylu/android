@@ -42,10 +42,12 @@ import android.widget.ImageView.ScaleType;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.CateMain;
+import com.quanleimu.activity.CityChange;
 import com.quanleimu.activity.GetGoods;
 import com.quanleimu.activity.HomePage;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.Search;
 import com.quanleimu.activity.SearchGoods;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
@@ -76,16 +78,21 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	static private String locationAddr = "";
 
 	
-	public HomePageView(BaseActivity context){
+	public HomePageView(Context context){
 		super(context);
 		
 		init();
 	}
 	
-	public HomePageView(BaseActivity activity, Bundle bundle){
+	public HomePageView(Context activity, Bundle bundle){
 		super(activity, bundle);
 
 		init();
+	}
+	
+	@Override
+	public void onResume(){
+		cityName = MyApplication.getApplication().getCityName();
 	}
 	
 	@Override
@@ -100,7 +107,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			{
 				found = true; 
 				MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
-				Helper.saveDataToLocate(MyApplication.getApplication().getApplicationContext(), "cityName", cityName);
+				Helper.saveDataToLocate(getContext(), "cityName", cityName);
 				break;
 			}
 		}
@@ -110,7 +117,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				if(cityName.contains(MyApplication.getApplication().getListCityDetails().get(i).getName()))
 				{
 					MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
-					Helper.saveDataToLocate(MyApplication.getApplication().getApplicationContext(), "cityName", cityName);
+					Helper.saveDataToLocate(getContext(), "cityName", cityName);
 					break;
 				}
 			}
@@ -154,18 +161,18 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	protected void onAttachedToWindow(){
 		if (MyApplication.listUsualCates == null) {
-			listUsualCates = (List<SecondStepCate>) Util.loadDataFromLocate(MyApplication.getApplication().getApplicationContext(), "listUsualCates");
+			listUsualCates = (List<SecondStepCate>) Util.loadDataFromLocate(getContext(), "listUsualCates");
 			if (listUsualCates == null) {
 				// 常用类目赋值
 				listUsualCates = LocateJsonData.getUsualCatesJson();
 				MyApplication.listUsualCates = listUsualCates;
-				Util.saveDataToLocate(MyApplication.getApplication().getApplicationContext(), "listUsualCates", listUsualCates);
+				Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
 			} else {
 				MyApplication.listUsualCates = listUsualCates;
 			}
 		} else {
 			listUsualCates = MyApplication.listUsualCates;
-			Util.saveDataToLocate(MyApplication.getApplication().getApplicationContext(), "listUsualCates", listUsualCates);
+			Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
 		}
 		addUsualCate();
 
@@ -179,20 +186,20 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					int index = lastAddr.indexOf("市");
 					lastAddr = (-1 == index ? lastAddr : lastAddr.substring(0, index));
 					if(!lastAddr.equals(locationAddr)){
-						LocationService.getInstance().start(MyApplication.getApplication().getApplicationContext(), HomePageView.this);
+						LocationService.getInstance().start(getContext(), HomePageView.this);
 					}					
 				}
 			};
 		}
 		else{
-			LocationService.getInstance().start(MyApplication.getApplication().getApplicationContext(), this);
+			LocationService.getInstance().start(getContext(), this);
 		}		
 		super.onAttachedToWindow();
 	}
 	
 	public void addUsualCate() {
 		linearUseualCates.removeAllViews();
-		LayoutInflater inflater = LayoutInflater.from(MyApplication.getApplication().getApplicationContext());
+		LayoutInflater inflater = LayoutInflater.from(getContext());
 		for (int i = 0; i < listUsualCates.size(); i++) {
 			View v = null;
 			v = inflater.inflate(R.layout.item_hotcity, null);
@@ -306,7 +313,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			//try to load from last-saved hot-list file
 			boolean lastSavedValid = true;
 			try {
-				FileInputStream jsonFile = MyApplication.getApplication().getApplicationContext().openFileInput("hotlist.json");
+				FileInputStream jsonFile = getContext().openFileInput("hotlist.json");
 				BufferedInputStream bufferedStream = new BufferedInputStream(jsonFile);
 				int bytesJson = bufferedStream.available();
 				byte[] json = new byte[bytesJson];
@@ -332,7 +339,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			//if last-saved is not ready, parse from initial hot-list in asset 
 			if(!lastSavedValid){
 				try {
-					InputStream jsonFile = MyApplication.getApplication().getApplicationContext().getAssets().open("hotlist.json");
+					InputStream jsonFile = getContext().getAssets().open("hotlist.json");
 					BufferedInputStream bufferedStream = new BufferedInputStream(jsonFile);
 					int bytesJson = bufferedStream.available();
 					byte[] json = new byte[bytesJson];
@@ -352,7 +359,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			new Thread(new HotListThread()).start(); 
 		}
 		
-		adapter = new HotListAdapter(MyApplication.getApplication().getApplicationContext(), 
+		adapter = new HotListAdapter(getContext(), 
 				listHot, 
 				tempListHot, 
 				MyApplication.lazyImageLoader);
@@ -401,9 +408,9 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					MyApplication.listHot = tempListHot;
 					
 					//save to context data
-					MyApplication.context.deleteFile("hotlist.json");
+					getContext().deleteFile("hotlist.json");
 					try {
-						BufferedOutputStream outFileStream = new BufferedOutputStream(MyApplication.context.openFileOutput("hotlist.json", Context.MODE_PRIVATE));
+						BufferedOutputStream outFileStream = new BufferedOutputStream(getContext().openFileOutput("hotlist.json", Context.MODE_PRIVATE));
 						outFileStream.write(json.getBytes(), 0, json.length());
 						outFileStream.flush();
 						outFileStream.close();
@@ -426,7 +433,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				if (pd != null) {
 					pd.dismiss();
 				}
-				 Toast.makeText(MyApplication.getApplication().getApplicationContext(), "网络连接失败，请检查设置！", 3).show();
+				 Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
 				//tvInfo.setVisibility(View.VISIBLE);
 				break;
 			}
@@ -513,7 +520,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			if(position < curList.size()){
 				WindowManager wm = 
-						(WindowManager)MyApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+						(WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
 				int height = wm.getDefaultDisplay().getHeight();
 				int fixHotHeight = height / 6;
 				if(fixHotHeight < 50)
@@ -636,16 +643,25 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	
 	@Override
 	public boolean onLeftActionPressed(){
-		return false;
+		if(null != m_viewInfoListener){
+			m_viewInfoListener.onNewView(new CityChange(getContext(), "首页"));
+		}
+		return true;
 	}
 	
 	@Override
-	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
+	public boolean onRightActionPressed(){
+		if(null != m_viewInfoListener){
+			m_viewInfoListener.onNewView(new Search(getContext(), "homePage"));
+		}
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "切换城市";
+		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_rightActionHint = "搜索";
 		title.m_title = cityName + "百姓网";
 		title.m_visible = true;

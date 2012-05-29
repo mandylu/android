@@ -4,6 +4,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -96,7 +97,24 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	}
 	
 	@Override
+	public void onExit(BaseView view){
+    	if(view == currentView && MyApplication.getApplication().getViewStack().size() > 0){
+    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+    		scroll.removeAllViews();
+    		
+    		currentView.onDestroy();
+    		currentView = MyApplication.getApplication().getViewStack().pop();
+    		setBaseLayout(currentView);            		
+
+    		scroll.addView(currentView);
+    	}
+	}
+	
+	@Override
 	public void onNewView(BaseView newView){
+		long time_start =  System.currentTimeMillis();
+		Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
+		
 		currentView.onPause();
 		MyApplication.getApplication().getViewStack().push(currentView);
 		currentView = newView;
@@ -105,12 +123,23 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		scroll.addView(currentView);
 		
 		setBaseLayout(newView);
+		
+		newView.setInfoChangeListener(this);
+		
+		long time_end =  System.currentTimeMillis();
+		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
+		Log.d("page switching performance log", "cost is " + (time_end-time_start) + "ms");
 	}
 	
 	@Override
 	public void onRightBtnTextChanged(String newText){
 		Button right = (Button)this.findViewById(R.id.btnRight);
 		right.setText(newText);
+	}
+	
+	public void onLeftBtnTextChanged(String newText){
+		Button left = (Button)this.findViewById(R.id.btnLeft);
+		left.setText(newText);
 	}
 
 	@Override
@@ -279,42 +308,36 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			if(!currentView.onLeftActionPressed()){
 				this.onBack();
 			}
-//			intent.setClass(HomePage.this, CityChange.class);
-//			bundle.putString("backPageName", "首页");
-////			bundle.putString("cityName", cityName);
-//			intent.putExtras(bundle);
-//			startActivity(intent);
 			break;
 		case R.id.ivHomePage:{
+			
 			if(currentView instanceof HomePageView)break;
 			changeTabView(new HomePageView(this, bundle));
+			
+			MyApplication.getApplication().getViewStack().clear();
 			break;
 		}
-		case R.id.ivCateMain:
-			///////////set currentview here
-			///currentView = ???
+		case R.id.ivCateMain:			
 			intent.setClass(this, CateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
 			overridePendingTransition(0, 0);
-			break;
-		case R.id.ivPostGoods:
-			///////////set currentview here
-			///currentView = ???
 			
+			MyApplication.getApplication().getViewStack().clear();
+			break;
+		case R.id.ivPostGoods:		
 			intent.setClass(this, PostGoodsCateMain.class);
 			intent.putExtras(bundle);
 			startActivity(intent);
 			overridePendingTransition(0, 0);
+			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case R.id.ivMyCenter:
 			if(currentView instanceof PersonalCenterView)break;
 			changeTabView(new PersonalCenterView(this, bundle));
+			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case R.id.ivSetMain:
-			///////////set currentview here
-			///currentView = ???
-	
 //			intent.setClass(this, SetMain.class);
 //			intent.putExtras(bundle);
 //			startActivity(intent);
@@ -324,6 +347,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			view.setInfoChangeListener(this);
 			onNewView(view);
 			
+			MyApplication.getApplication().getViewStack().clear();
 			
 			break;
 		}

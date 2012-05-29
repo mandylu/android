@@ -69,23 +69,21 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 	private String mUrl = "";
 	
 	TextView tvAddMore;
-	
-	BaseActivity baseActivity;
+
 	Bundle bundle;
 	
 		
-	public GetGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName){
+	public GetGoodsView(Context context, Bundle bundle, String categoryEnglishName){
 		super(context, bundle);
 		this.categoryEnglishName = categoryEnglishName;
-		this.baseActivity = context;
+
 		this.bundle = bundle;
 	}
 
-	public GetGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName, String siftResult){
+	public GetGoodsView(Context context, Bundle bundle, String categoryEnglishName, String siftResult){
 		super(context, bundle);
 		this.categoryEnglishName = categoryEnglishName;
 		this.siftResult = siftResult;
-		this.baseActivity = context;
 		this.bundle = bundle;		
 	}
 
@@ -152,7 +150,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				else
 				{
 					if(GetGoodsView.this.m_viewInfoListener != null){
-						m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(arg2), baseActivity, bundle));
+						m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(arg2), getContext(), bundle));
 					}
 //					intent.setClass(GetGoods.this, GoodDetail.class);
 //					bundle.putSerializable("currentGoodsDetail", listGoods.get(arg2));

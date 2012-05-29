@@ -2,89 +2,101 @@ package com.quanleimu.activity;
 
 
 import com.quanleimu.util.Util;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
+import com.quanleimu.view.BaseView.ViewInfoListener;
 
+import android.content.Context;
 import android.content.Intent;
+import android.os.AsyncTask;
 import android.os.Bundle;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
+import android.view.View.OnClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageButton;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
-public class MarkLable extends BaseActivity{
+public class MarkLable extends BaseView{
 
 	private EditText etMark;
-	private Button btnFinish;
-	private Button ivBack;
 	private String personMark = "";
 	
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.marklable);
-		super.onCreate(savedInstanceState);
+	
+	protected ViewInfoListener m_viewInfoListener = null;	
+	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
+	
+	protected void Init(){
+		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
-		intent = getIntent();
-		if(intent == null)
-		{
-			intent = new Intent();
-		}
-		bundle = intent.getExtras();
-		if(bundle == null)
-		{
-			bundle = new Bundle();
-		}
+		LayoutInflater inflator = LayoutInflater.from(getContext());
+		View markMain = inflator.inflate(R.layout.marklable, null);
 		
-		etMark = (EditText)findViewById(R.id.etMark);
-		btnFinish = (Button)findViewById(R.id.btnFinish);
-		ivBack = (Button)findViewById(R.id.ivBack);
 		
+		etMark = (EditText)markMain.findViewById(R.id.etMark);
 		etMark.findFocus();
+		
 		//键盘弹出
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		personMark = myApp.getPersonMark();
+		personMark = MyApplication.getApplication().getPersonMark();
 		if(personMark != null && !personMark.equals(""))
 		{
 			etMark.setText(personMark);
 		}
 		
-		btnFinish.setOnClickListener(this);
-		ivBack.setOnClickListener(this);
-		
-	}
-
-	@Override
-	public void onClick(View v) {
-		//点击完成
-		if(v.getId() == btnFinish.getId())
-		{
-			if(etMark.getText().toString() == null || etMark.getText().toString().trim().equals(""))
-			{
-				Toast.makeText(MarkLable.this, "内容不能为空", Toast.LENGTH_SHORT).show();
-			}
-			else
-			{
-				personMark = etMark.getText().toString();
-				myApp.setPersonMark(personMark);
-				new Thread(new SavePersonMark()).start();
-				MarkLable.this.finish();
-			}
-		}
-		//返回
-		if(v.getId() == ivBack.getId())
-		{
-			MarkLable.this.finish();
-		}
+		this.addView(markMain);
 	}
 	
-	class SavePersonMark implements Runnable
-	{
-
-		@Override
-		public void run() {
-			Util.saveDataToLocate(MarkLable.this, "personMark", personMark);
-		}
+	public MarkLable(Context context){
+		super(context); 
 		
+		Init();
+	}
+	public MarkLable(Context context, Bundle bundle){
+		super(context);
+		
+		Init();
 	}
 	
+	public boolean onRightActionPressed(){
+		if(etMark.getText().toString() == null || etMark.getText().toString().trim().equals(""))
+		{
+			Toast.makeText(getContext(), "内容不能为空", Toast.LENGTH_SHORT).show();
+		}
+		else
+		{
+			personMark = etMark.getText().toString();
+			MyApplication.getApplication().setPersonMark(personMark);
+			(new AsyncTask<Boolean, Boolean, Boolean>() { 
+				protected Boolean doInBackground(Boolean... bs) {   
+					Util.saveDataToLocate(MarkLable.this.getContext(), "personMark", personMark);
+					return true;
+				}
+				
+				protected void onPostExecute(Boolean bool) {  
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onBack();
+					}
+				}
+			}).execute(true);
+		}
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_rightActionHint = "修改";
+		title.m_title = "签名档";
+		title.m_leftActionHint = "返回";
+		return title;
+	}
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
+	}
 }

@@ -11,10 +11,11 @@ public class BaseView extends LinearLayout{
 	
 	public interface ViewInfoListener{
 		public void onTitleChanged(String newTitle);
-//		public void onLeftBtnTextChanged(String newText);
+		public void onLeftBtnTextChanged(String newText);
 		public void onRightBtnTextChanged(String newText);
 		public void onBack();
 		public void onNewView(BaseView view);
+		public void onExit(BaseView view);
 	};
 
 	public enum EBUTT_STYLE{
@@ -51,13 +52,14 @@ public class BaseView extends LinearLayout{
 	protected ViewInfoListener m_viewInfoListener = null;	
 	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
 	
-	public BaseView(BaseActivity context){super(context); this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
-	public BaseView(BaseActivity context, Bundle bundle){super(context);this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
+	public BaseView(Context context){super(context); this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
+	public BaseView(Context context, Bundle bundle){super(context);this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));}
 	
 	public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
 	
 	public void onDestroy(){}//called before destruction
 	public void onPause(){}//called before put into stack
+	public void onResume(){}
 	
 	public boolean onBack(){return false;}//called when back button/key pressed
 	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise

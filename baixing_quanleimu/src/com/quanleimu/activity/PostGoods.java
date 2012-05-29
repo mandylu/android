@@ -447,12 +447,12 @@ public class PostGoods extends BaseActivity {
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this, "user");
 		if (user == null) {
-			bundle.putInt("type", 2);
-			bundle.putString("back", backPageName);
-			intent.putExtras(bundle);
-			intent.setClass(this, Login.class);
-			startActivity(intent);
-			finish();
+//			bundle.putInt("type", 2);
+//			bundle.putString("back", backPageName);
+//			intent.putExtras(bundle);
+//			intent.setClass(this, Login.class);
+//			startActivity(intent);
+//			finish();
 		} else {
 			mobile = user.getPhone();
 			password = user.getPassword();

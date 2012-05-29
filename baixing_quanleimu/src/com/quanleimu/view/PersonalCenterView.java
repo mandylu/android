@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -60,13 +61,11 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	UserBean user;
 	private int currentPage = -1;//-1:mypost, 0:myfav, 1:history
 	private Bundle bundle;
-	private BaseActivity baseActivity;
 	private int buttonStatus = -1;//-1:edit 0:finish
 	
-	public PersonalCenterView(BaseActivity context, Bundle bundle){
+	public PersonalCenterView(Context context, Bundle bundle){
 		super(context, bundle);
 		this.bundle = bundle;
-		baseActivity = context;
 		init();
 	}
 
@@ -135,7 +134,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					detail = goodsList.get(arg2);
 				}
 				if(null != detail){
-					GoodDetailView detailView = new GoodDetailView(detail, baseActivity, bundle);
+					GoodDetailView detailView = new GoodDetailView(detail, getContext(), bundle);
 					detailView.setInfoChangeListener(m_viewInfoListener);
 					m_viewInfoListener.onNewView(detailView);
 				}

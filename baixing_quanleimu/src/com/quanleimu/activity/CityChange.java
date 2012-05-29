@@ -9,7 +9,11 @@ import java.util.Stack;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -20,13 +24,12 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
-public class CityChange extends BaseActivity {
+public class CityChange extends BaseView {
 
 	// 定义控件名
-	public TextView tvTitle, tvGPSCityName;
-	public Button btnBack;
-	public ScrollView scrollListContainer;
+	public ScrollView parentView;
 	
 	public LinearLayout linearListInfo;
 	public LinearLayout linearProvinces;
@@ -37,6 +40,7 @@ public class CityChange extends BaseActivity {
 
 	// 定义变量
 	public String backPageName = "";
+	public String title = "";
 	public List<String> listCityName = new ArrayList<String>();
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
 	
@@ -48,64 +52,27 @@ public class CityChange extends BaseActivity {
 	protected Stack<chooseStage> stackStage = new Stack<chooseStage>();
 	protected View activeView;
 
-	@Override
-	protected void onPause() {
-		super.onPause();
-	}
- 
-	@Override
-	protected void onResume() { 
-		bundle.putString("backPageName", backPageName);
-		super.onResume();
-	}  
-	
-	@Override
-	public void onBackPressed() {
-		if(stackStage.size() == 0){
-			CityChange.this.finish();				
-		}else{
-			scrollListContainer.removeView(activeView);
-			
-			chooseStage stage = stackStage.pop();
-			activeView = stage.effectiveView;
-			scrollListContainer.addView(activeView);
-			btnBack.setText(stage.backString);
-			tvTitle.setText(stage.titleString);
-		}
-	}
- 
-	@Override 
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.citychange);
-		super.onCreate(savedInstanceState);
- 
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		this.addView(inflater.inflate(R.layout.citychange, null));
+		
 		// 获取热门城市列表数据
 		listHotCity = LocateJsonData.hotCityList();
-		myApp.setListHotCity(listHotCity);
+		MyApplication.getApplication().setListHotCity(listHotCity);
  
-		backPageName = intent.getExtras().getString("backPageName");
-		cityName = intent.getExtras().getString("cityName");
-		// 通过或ID获取控件
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
+		cityName = MyApplication.getApplication().getCityName();
 		
-		tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
-		tvGPSCityName.setText(myApp.getGpsCityName());
-
-		scrollListContainer = (ScrollView)findViewById(R.id.scrollList);
+		// 通过或ID获取控件
+		parentView = (ScrollView)findViewById(R.id.llParentView);
 		
 		linearListInfo = (LinearLayout) findViewById(R.id.linearList);
 		activeView = linearListInfo;
-//		linearProvinces = (LinearLayout) findViewById(R.id.linearCityInProvinceInfo);
-//		linearProvinces.setVisibility(View.GONE);
-//		linearChooseCity = (LinearLayout) findViewById(R.id.linearCityInProvinceInfo);
-//		linearChooseCity.setVisibility(View.GONE);
 		
-		
-		
-		btnBack = (Button) findViewById(R.id.btnBack);
 		ivGPSChoose = (ImageView) findViewById(R.id.ivGPSChoose);
 		
 		//ivGPSChoose.setClickable(true); 
+		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
+		tvGPSCityName.setText(MyApplication.getApplication().getGpsCityName());
 		boolean isLocated = !tvGPSCityName.getText().toString().equals("");
 		if(!isLocated){
 			tvGPSCityName.setText("定位中...");
@@ -118,48 +85,40 @@ public class CityChange extends BaseActivity {
 				
 				@Override
 				public void onClick(View v) {
-					intent.setClass(CityChange.this, HomePage.class);
-					bundle.putString("backPageName", "");
-					bundle.putString("cityName", tvGPSCityName.getText().toString());
-					intent.putExtras(bundle);
-					startActivity(intent);
-	
-					for(int i=0;i<myApp.getListCityDetails().size();i++)
+
+					for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
 					{
-						if(tvGPSCityName.getText().toString().equals(myApp.getListCityDetails().get(i).getName()))
+						if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
 						{
-							myApp.setCityEnglishName(myApp.getListCityDetails().get(i).getEnglishName());
+							MyApplication.getApplication().setCityEnglishName(MyApplication.getApplication().getListCityDetails().get(i).getEnglishName());
 	//						System.out.println("CityChange cityName1----->" +cityName1);
 							break;
 						}
 					}
-					myApp.setCityName(tvGPSCityName.getText().toString());
-					Helper.saveDataToLocate(CityChange.this, "cityName", tvGPSCityName.getText().toString());
-	
-					CityChange.this.finish();
+					MyApplication.getApplication().setCityName(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
+					Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
 					
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onExit(CityChange.this);
+					}		
 				}
 			});
 		}
 		//ivGPSChoose.setOnClickListener
 		
 		
-		if(myApp.getGpsCityName() == null || myApp.getGpsCityName().equals(""))
+		if(MyApplication.getApplication().getGpsCityName() == null || MyApplication.getApplication().getGpsCityName().equals(""))
 		{
-			myApp.setGpsCityName("上海");
+			MyApplication.getApplication().setGpsCityName("上海");
 		}
 		
-		if (!cityName.equals(myApp.getGpsCityName())) {
+		if (!cityName.equals(MyApplication.getApplication().getGpsCityName())) {
 			ivGPSChoose.setVisibility(View.INVISIBLE);
 		} else {
 			ivGPSChoose.setVisibility(View.VISIBLE);
 		}
-
-		LayoutInflater inflater = LayoutInflater.from(this);
 		
 		// hot city list
-		tvTitle.setText("切换城市");
-		btnBack.setText(backPageName);		
 		final List<ImageView> listImageViews = new ArrayList<ImageView>();
 		
 		LinearLayout linearHotCities = (LinearLayout)findViewById(R.id.linearHotCities); 
@@ -198,32 +157,25 @@ public class CityChange extends BaseActivity {
 						if (!cityName.equals(listHotCity.get(a).getName())) {
 							ivGPSChoose.setVisibility(View.INVISIBLE);
 						}
-						intent.setClass(CityChange.this, HomePage.class);
-						bundle.putString("backPageName", "");
-						bundle.putString("cityName", listHotCity.get(a)
-								.getName());
-						System.out.println("您选择的城市是：------------>"
-								+ listHotCity.get(a).getName());
-						intent.putExtras(bundle);
-						startActivity(intent);
-						
-//						String cityName1 = cn2Spell(listHotCity.get(a).getName());
-						for(int i=0;i<myApp.getListCityDetails().size();i++)
+
+						for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
 						{
-							if(listHotCity.get(a).getName().equals(myApp.getListCityDetails().get(i).getName()))
+							if(listHotCity.get(a).getName().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
 							{
-								cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-								myApp.setCityEnglishName(cityName1);
-								System.out.println("CityChange cityName1----->" +cityName1);
+								cityName1 = MyApplication.getApplication().getListCityDetails().get(i).getEnglishName();
+								MyApplication.getApplication().setCityEnglishName(cityName1);
 								break;
 							}
 						}
 						
-						myApp.setCityEnglishName(cityName1);
-						myApp.setCityName(listHotCity.get(a).getName());
-						Helper.saveDataToLocate(CityChange.this, "cityName", listHotCity.get(a).getName());
+						MyApplication.getApplication().setCityEnglishName(cityName1);
+						MyApplication.getApplication().setCityName(listHotCity.get(a).getName());
+						Helper.saveDataToLocate(getContext(), "cityName", listHotCity.get(a).getName());
 
-						CityChange.this.finish();
+					}
+					
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onExit(CityChange.this);
 					}
 				}
 			});
@@ -239,53 +191,46 @@ public class CityChange extends BaseActivity {
 		}
 		
 		//
-
-		// 设置监听器
-		btnBack.setOnClickListener(new View.OnClickListener() {			
-			@Override
-			public void onClick(View v) {
-				onBackPressed();
-			}
-		});
 		
 		((RelativeLayout)findViewById(R.id.linear2Other)).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {
 				
-				scrollListContainer.scrollTo(0, 0);
+				parentView.scrollTo(0, 0);
 				
 				chooseStage stage = new chooseStage();
 				stage.effectiveView = activeView;
-				stage.titleString = tvTitle.getText().toString();
-				stage.backString = btnBack.getText().toString();
+				stage.titleString = title;
+				stage.backString = backPageName;
 				stackStage.push(stage);
-				scrollListContainer.removeView(activeView);
+				parentView.removeView(activeView);
 				
-				btnBack.setText("选择城市");
-				tvTitle.setText("选择省份");
+				backPageName = "选择城市";
+				title = "选择省份";
+				
 				
 				if(null == linearProvinces){
 					
-					linearProvinces = new LinearLayout(CityChange.this);
+					linearProvinces = new LinearLayout(getContext());
 					linearProvinces.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 					linearProvinces.setOrientation(LinearLayout.VERTICAL);
 					
-					if(null == myApp.getShengMap() || myApp.getShengMap().size() == 0){
+					if(null == MyApplication.getApplication().getShengMap() || MyApplication.getApplication().getShengMap().size() == 0){
 						
 						List<String> listShengName = new ArrayList<String>();
 						HashMap<String, List<CityDetail>> shengMap = new HashMap<String, List<CityDetail>>();
 						
 						// 获取所有省份列表
-						for (int i = 0; i < myApp.getListCityDetails().size(); i++) {
-							if (!(myApp.getListCityDetails().get(i).getSheng().equals("直辖市"))) {
+						for (int i = 0; i < MyApplication.getApplication().getListCityDetails().size(); i++) {
+							if (!(MyApplication.getApplication().getListCityDetails().get(i).getSheng().equals("直辖市"))) {
 								if (listShengName == null || listShengName.size() == 0) {
-									listShengName.add(myApp.getListCityDetails().get(i)
+									listShengName.add(MyApplication.getApplication().getListCityDetails().get(i)
 											.getSheng());
 								} else {
-									if (!listShengName.contains(myApp.getListCityDetails()
+									if (!listShengName.contains(MyApplication.getApplication().getListCityDetails()
 											.get(i).getSheng())) {
-										listShengName.add(myApp.getListCityDetails().get(i)
+										listShengName.add(MyApplication.getApplication().getListCityDetails().get(i)
 												.getSheng());
 									}
 								}
@@ -295,28 +240,28 @@ public class CityChange extends BaseActivity {
 						// 将对应城市添加到对应的省里面去 shengMap
 						for (int j = 0; j < listShengName.size(); j++) {
 							List<CityDetail> listCD = new ArrayList<CityDetail>();
-							for (int i = 0; i < myApp.getListCityDetails().size(); i++) {
-								if (myApp.getListCityDetails().get(i).getSheng()
+							for (int i = 0; i < MyApplication.getApplication().getListCityDetails().size(); i++) {
+								if (MyApplication.getApplication().getListCityDetails().get(i).getSheng()
 										.equals(listShengName.get(j))) {
-									listCD.add(myApp.getListCityDetails().get(i));
+									listCD.add(MyApplication.getApplication().getListCityDetails().get(i));
 								}
 							}
 							shengMap.put(listShengName.get(j), listCD);
 						}
 	
-						myApp.setShengMap(shengMap);
+						MyApplication.getApplication().setShengMap(shengMap);
 					}
 					
-					LayoutInflater inflater = LayoutInflater.from(CityChange.this);
-					Object[] keyArray= myApp.getShengMap().keySet().toArray();
-					for (int i = 0; i < myApp.getShengMap().size(); i++) {
+					LayoutInflater inflater = LayoutInflater.from(getContext());
+					Object[] keyArray= MyApplication.getApplication().getShengMap().keySet().toArray();
+					for (int i = 0; i < MyApplication.getApplication().getShengMap().size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
 						View vTemp = null;
 						vTemp = inflater.inflate(R.layout.item_hotcity, null);
 						
 						if (i == 0) {
 							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
-						} else if (i == myApp.getShengMap().size() - 1) {
+						} else if (i == MyApplication.getApplication().getShengMap().size() - 1) {
 							vTemp.setBackgroundResource(R.drawable.btn_down_bg);
 						} else {
 							vTemp.setBackgroundResource(R.drawable.btn_m_bg);
@@ -334,25 +279,29 @@ public class CityChange extends BaseActivity {
 
 							@Override
 							public void onClick(View v) {								
-								scrollListContainer.scrollTo(0, 0);
+								parentView.scrollTo(0, 0);
 								
 								chooseStage stage = new chooseStage();
 								stage.effectiveView = activeView;
-								stage.titleString = tvTitle.getText().toString();
-								stage.backString = btnBack.getText().toString();
+								stage.titleString = title;
+								stage.backString = backPageName;
 								stackStage.push(stage);
-								scrollListContainer.removeView(activeView);
+								parentView.removeView(activeView);
 								
-								btnBack.setText("选择省份");
-								tvTitle.setText("选择城市");
+								backPageName = "选择省份";
+								title = "选择城市";
+								if(null != m_viewInfoListener){
+									m_viewInfoListener.onLeftBtnTextChanged(backPageName);
+									m_viewInfoListener.onTitleChanged(title);
+								}
 								
-								LinearLayout linearCities = new LinearLayout(CityChange.this);
+								LinearLayout linearCities = new LinearLayout(getContext());
 								linearCities.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
 								linearCities.setOrientation(LinearLayout.VERTICAL);
 																
-								LayoutInflater inflater = LayoutInflater.from(CityChange.this);
+								LayoutInflater inflater = LayoutInflater.from(getContext());
 								String province = v.getTag().toString();
-								final List<CityDetail> list2Sheng = myApp.getShengMap().get(province);
+								final List<CityDetail> list2Sheng = MyApplication.getApplication().getShengMap().get(province);
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									// 添加新的视图，循环添加到ScrollView中
 									View vCity = null;
@@ -382,33 +331,31 @@ public class CityChange extends BaseActivity {
 											int a = Integer.valueOf(v.getTag().toString());
 											
 //											String cityName1 = cn2Spell(list2Sheng.get(a).getName());
-											for(int i=0;i<myApp.getListCityDetails().size();i++)
+											for(int i=0;i<MyApplication.getApplication().getListCityDetails().size();i++)
 											{
-												if(list2Sheng.get(a).getName().equals(myApp.getListCityDetails().get(i).getName()))
+												if(list2Sheng.get(a).getName().equals(MyApplication.getApplication().getListCityDetails().get(i).getName()))
 												{
-													cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-													myApp.setCityEnglishName(cityName1);
+													cityName1 = MyApplication.getApplication().getListCityDetails().get(i).getEnglishName();
+													MyApplication.getApplication().setCityEnglishName(cityName1);
 													break;
 												}
 											}
 											
-											myApp.setCityEnglishName(cityName1);
-											myApp.setCityName(list2Sheng.get(a).getName());
+											MyApplication.getApplication().setCityEnglishName(cityName1);
+											MyApplication.getApplication().setCityName(list2Sheng.get(a).getName());
 											
-											Helper.saveDataToLocate(CityChange.this, "cityName", list2Sheng.get(a).getName());
+											Helper.saveDataToLocate(getContext(), "cityName", list2Sheng.get(a).getName());
 											
-											intent.setClass(CityChange.this, HomePage.class);
-											bundle.putString("backPageName", "");
-											bundle.putString("cityName", list2Sheng.get(a).getName());
-											intent.putExtras(bundle);
-											startActivity(intent);
+											if(null != m_viewInfoListener){
+												m_viewInfoListener.onExit(CityChange.this);
+											}
 										}
 									});
 									linearCities.addView(vCity);
 								}
 								
 								activeView = linearCities;
-								scrollListContainer.addView(activeView);
+								parentView.addView(activeView);
 							}
 						});
 						
@@ -417,8 +364,65 @@ public class CityChange extends BaseActivity {
 				}
 				
 				activeView = linearProvinces;
-				scrollListContainer.addView(activeView);
+				parentView.addView(activeView);
 			}
 		});
+	}
+	
+	public CityChange(Context context, String backPageName_){
+		super(context); 
+		
+		this.backPageName = backPageName_;
+		this.title = "切换城市";
+		
+		Init();
+	}
+	public CityChange(Context context, Bundle bundle){
+		super(context);
+		
+		Init();
+	}
+	
+	//public void onResume(){}
+	
+	@Override
+	public boolean onBack(){
+		if(stackStage.size() == 0){
+			return false;
+		}else{
+			parentView.removeView(activeView);
+			
+			chooseStage stage = stackStage.pop();
+			activeView = stage.effectiveView;
+			parentView.addView(activeView);
+			backPageName = stage.backString;
+			title = stage.titleString;
+			
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onLeftBtnTextChanged(backPageName);
+				m_viewInfoListener.onTitleChanged(title);
+			}
+		}
+		
+		return true;
+	}
+
+	@Override
+	public boolean onLeftActionPressed(){
+		return onBack();
+	}
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_leftActionHint = backPageName;
+		title.m_title = this.title;
+		return title;
+	}
+	
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
 	}
 }

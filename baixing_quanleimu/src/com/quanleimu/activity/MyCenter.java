@@ -78,11 +78,11 @@ public class MyCenter extends BaseActivity implements OnScrollListener{
 					pd.setCancelable(true);
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
-					bundle.putInt("type", 1);
-					intent.putExtras(bundle);
-					intent.setClass(this, Login.class);
-					startActivity(intent);
-					finish();
+//					bundle.putInt("type", 1);
+//					intent.putExtras(bundle);
+//					intent.setClass(this, Login.class);
+//					startActivity(intent);
+//					finish();
 				}
 			}
 		}

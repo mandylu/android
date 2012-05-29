@@ -2,6 +2,7 @@ package com.quanleimu.view;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
@@ -13,6 +14,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.MarkLable;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.id;
@@ -20,6 +22,8 @@ import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+
+import com.quanleimu.activity.Login;
 
 public class SetMain extends BaseView implements View.OnClickListener{
 
@@ -69,16 +73,25 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		}
 	}
 	
-	public SetMain(BaseActivity context){
+	public SetMain(Context context){
 		super(context);		
 		
 		Init();
 	}
 	
-	public SetMain(BaseActivity context, Bundle bundle){
+	public SetMain(Context context, Bundle bundle){
 		super(context, bundle);
 		
 		Init();
+	}
+	
+	public void onResume(){
+		((TextView)findViewById(R.id.personMark)).setText(MyApplication.getApplication().getPersonMark());
+		
+		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+		if (user != null) {
+			((TextView)findViewById(R.id.tvPhoneNum)).setText(user.getPhone());
+		}		
 	}
 	
 	@Override
@@ -86,7 +99,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = "设置";
-		title.m_leftActionHint = "首页";
+		//title.m_leftActionHint = "首页";
 		
 		return title;
 		}
@@ -106,11 +119,9 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		if (v.getId() == ((RelativeLayout) findViewById(R.id.rlTelNum)).getId()) {
 			if (((TextView)findViewById(R.id.tvPhoneNum)).getText().equals("")) {
 				// 跳转登录界面
-//				bundle.putString("back", "设置");
-//				intent.putExtras(bundle);
-//				intent.setClass(SetMain.this, Login.class);
-//				intent.putExtras(bundle);
-//				startActivityForResult(intent, 1);
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onNewView(new Login(getContext(), "设置"));
+				}
 			} else {
 				// 修改对话框
 
@@ -132,11 +143,10 @@ public class SetMain extends BaseView implements View.OnClickListener{
 					public void onClick(View v) {
 						// 点击换号码，重新跳转到登录
 						changePhoneDialog.dismiss();
-//						bundle.putString("back", "设置");
-//						intent.putExtras(bundle);
-//						intent.setClass(SetMain.this, Login.class);
-//						intent.putExtras(bundle);
-//						startActivity(intent);
+						
+						if(null != m_viewInfoListener){
+							m_viewInfoListener.onNewView(new Login(getContext(), "设置"));
+						}
 					}
 				});
 
@@ -155,9 +165,9 @@ public class SetMain extends BaseView implements View.OnClickListener{
 
 		// 签名档
 		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
-//			intent.setClass(SetMain.this, MarkLable.class);
-//			intent.putExtras(bundle);
-//			startActivity(intent);
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onNewView(new MarkLable(getContext()));
+			}
 		}
 
 		// 清空缓存
@@ -190,7 +200,7 @@ public class SetMain extends BaseView implements View.OnClickListener{
 		//aboutus
 		else if(v.getId() == ((RelativeLayout) findViewById(R.id.rlAbout)).getId()){
 			if(null != m_viewInfoListener){
-				m_viewInfoListener.onNewView(new AboutUs((BaseActivity)getContext()));
+				m_viewInfoListener.onNewView(new AboutUs(getContext()));
 			}
 		}
 		

@@ -7,110 +7,125 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
-import android.widget.Button;
+import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.SetMain;
+import com.quanleimu.view.AboutUs;
+import com.quanleimu.view.BaseView;
 
-public class Login extends BaseActivity {
 
-	private Button login, backBtn;
+public class Login extends BaseView implements OnClickListener{
+
 	private EditText accoutnEt, passwordEt;
 	public String backPageName = "";
 	public String categoryEnglishName = "";
-	public String json = "";
-	public TextView tvTitle;
 	private LinearLayout forget_layout, register_layout;
-	private int type = 0;
 	
-
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		// TODO Auto-generated method stub
-		super.onResume();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.login);
-
-		super.onCreate(savedInstanceState);
-		intent = getIntent();
-		bundle = intent.getExtras();
-		String txt = bundle.getString("back");
-		type = bundle.getInt("type");
-
-		// 解决自动弹出输入法
-		getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		login = (Button) findViewById(R.id.login);
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		
+		LinearLayout llLoginRoot = (LinearLayout)inflater.inflate(R.layout.login, null);
+		this.addView(llLoginRoot);
+		
 		accoutnEt = (EditText) findViewById(R.id.accountEt);
 		passwordEt = (EditText) findViewById(R.id.passwordEt);
-		backBtn = (Button) findViewById(R.id.backBtn);
-		tvTitle = (TextView) findViewById(R.id.tvTitle);
-		tvTitle.setText("登录"); 
 		forget_layout = (LinearLayout) findViewById(R.id.forget_layout);
 		register_layout = (LinearLayout) findViewById(R.id.register_layout);
-		if (txt != null) {
-			if (!txt.equals("")) {
-				backBtn.setText(txt);
-			} else {
-				backBtn.setVisibility(View.GONE);
-			}
-		}else{
-			backBtn.setVisibility(View.GONE);
-		}
+		
+		
 		forget_layout.setOnClickListener(this);
 		register_layout.setOnClickListener(this);
-		login.setOnClickListener(this);
-		backBtn.setOnClickListener(this);
 	}
+	
+	public Login(Context context, String backPageName_){
+		super(context);
+		this.backPageName = backPageName_;
+		
+		Init();
+		}
+	public Login(Context context, Bundle bundle){
+		super(context);
+		
+		this.backPageName = bundle.getString("backPageName");
+		
+		Init();		
+		}
+	
+	public Bundle extracBundle(){
+		Bundle bundle = new Bundle();
+		bundle.putString("backPageName", this.backPageName);
+		
+		return bundle;
+		}//return a bundle that could be used to re-build the very BaseView
+	
+	@Override
+	public boolean onRightActionPressed(){
+		if (check()) {
+			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			new Thread(new LoginThread()).start();
+		}
+		
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
+	
+	@Override
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		
+		if(null != backPageName)
+			title.m_leftActionHint = this.backPageName;
+		else
+			title.m_leftActionHint = null;
+		
+		title.m_visible = true;
+		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
+		title.m_rightActionHint = "登陆";
+		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
+		title.m_title = "登陆";
+		
+		return title;
+	}
+	
+	@Override
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = true;
+		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_SETTING;
+		return tab;
+		}
 
 	@Override
 	public void onClick(View v) {
 		if (v == forget_layout) {
 			// 忘记密码
-			intent.setClass(Login.this, ForgetPassword.class);
-			startActivity(intent);
-		} else if (v == login) {
-			if (check()) {
-				pd = ProgressDialog.show(Login.this, "提示", "请稍候...");
-				pd.setCancelable(true);
-				new Thread(new LoginThread()).start();
-			}
-		} else if (v == register_layout) {
+//			intent.setClass(Login.this, ForgetPassword.class);
+//			startActivity(intent);
+		}else if (v == register_layout) {
 			// 注册
-			intent.setClass(Login.this, Register.class);
-			startActivity(intent);
-		} else if (v == backBtn) {
-			finish();
-		}
-		super.onClick(v);
+//			intent.setClass(Login.this, Register.class);
+//			startActivity(intent);
+		} 
 	}
 
 	private boolean check() {
 		if (accoutnEt.getText().toString().trim().equals("")) {
-			Toast.makeText(Login.this, "账号不能为空！", 0).show();
+			Toast.makeText(getContext(), "账号不能为空！", 0).show();
 			return false;
 		} else if (passwordEt.getText().toString().trim().equals("")) {
-			Toast.makeText(Login.this, "密码不能为空！", 0).show();
+			Toast.makeText(getContext(), "密码不能为空！", 0).show();
 			return false;
 		}
 		return true;
@@ -128,9 +143,9 @@ public class Login extends BaseActivity {
 			String url = Communication.getApiUrl(apiName, list);
 			System.out.println("url ------ >" + url);
 			try {
-				json = Communication.getDataByUrl(url);
+				String json = Communication.getDataByUrl(url);
 				if (json != null) {
-					myHandler.sendEmptyMessage(1);
+					parseLoginResponse(json);
 				} else {
 					myHandler.sendEmptyMessage(2);
 				}
@@ -142,6 +157,41 @@ public class Login extends BaseActivity {
 			}
 		}
 	}
+	
+	private void parseLoginResponse(String json_response){
+		try {
+			JSONObject jsonObject = new JSONObject(json_response);
+
+			String id;
+			try {
+				id = jsonObject.getString("id");
+			} catch (Exception e) {
+				id = "";
+				e.printStackTrace();
+			}
+			JSONObject json = jsonObject.getJSONObject("error");
+			String message = json.getString("message");
+			if (!id.equals("")) {
+				// 登陆成功
+				UserBean user = new UserBean();
+				JSONObject jb = jsonObject.getJSONObject("id");
+				user.setId(jb.getString("userId"));
+				user.setPhone(jb.getString("mobile"));
+				//user.setPhone(accoutnEt.getText().toString());
+				user.setPassword(passwordEt.getText().toString());
+				MyApplication.getApplication().setMobile(user.getPhone());
+				Util.saveDataToLocate(getContext(), "user", user);
+			}
+			
+			Message msg = Message.obtain();
+			msg.what = 0;
+			msg.obj = message;
+			myHandler.sendMessage(msg);
+		} catch (JSONException e) {
+			e.printStackTrace();
+			myHandler.sendEmptyMessage(2);
+		}		
+	}
 
 	// 管理线程的Handler
 	Handler myHandler = new Handler() {
@@ -151,56 +201,20 @@ public class Login extends BaseActivity {
 				pd.dismiss();
 			}
 			switch (msg.what) {
-			case 1:
-				try {
-					JSONObject jsonObject = new JSONObject(json);
-					System.out.println("jsonObject--->" + jsonObject);
-					String id;
-					try {
-						id = jsonObject.getString("id");
-					} catch (Exception e) {
-						id = "";
-						e.printStackTrace();
-					}
-					JSONObject json = jsonObject.getJSONObject("error");
-					String message = json.getString("message");
-					Toast.makeText(Login.this, message, 0).show();
-					if (!id.equals("")) {
-						// 登陆成功
-						UserBean user = new UserBean();
-						JSONObject jb = jsonObject.getJSONObject("id");
-						user.setId(jb.getString("userId"));
-						user.setPhone(jb.getString("mobile"));
-						//user.setPhone(accoutnEt.getText().toString());
-						user.setPassword(passwordEt.getText().toString());
-						myApp.setMobile(user.getPhone());
-						Util.saveDataToLocate(Login.this, "user", user);
-						// bundle.putSerializable("user", user);
-						// intent.putExtras(bundle);
-						if(type == 0){
-							intent.setClass(Login.this, SetMain.class);
-						}else if(type == 1){
-							intent.setClass(Login.this, MyCenter.class);
-						}else if(type ==2){
-							intent.setClass(Login.this, PostGoods.class);
-						}
-						startActivity(intent);
-						finish();
-						// setResult(1, intent);
-						
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
+			case 0:
+				Toast.makeText(getContext(), (String)msg.obj, 0).show();
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onBack();
 				}
 				break;
 			case 2:
-				Toast.makeText(Login.this, "登陆未成功，请稍后重试！", 3).show();
+				Toast.makeText(getContext(), "登陆未成功，请稍后重试！", 3).show();
 				break;
 			case 10:
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(Login.this, "网络连接失败，请检查设置！", 3).show();
+				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
 				break;
 			}
 			super.handleMessage(msg);

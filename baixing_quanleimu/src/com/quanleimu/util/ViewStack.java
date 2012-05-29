@@ -44,6 +44,8 @@ public class ViewStack {
 				}				
 			}
 			
+			m_view.onResume();
+			
 			return m_view;
 		}
 		
@@ -79,6 +81,10 @@ public class ViewStack {
 	
 	public void push(BaseView view){
 		m_viewList.add(new StackItem(view));
+	}
+	
+	public void clear(){
+		m_viewList.clear();
 	}
 	
 

@@ -11,6 +11,9 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TabDef;
+import com.quanleimu.view.BaseView.TitleDef;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -34,7 +37,7 @@ import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.LinearLayout.LayoutParams;
 
-public class Search extends BaseActivity {
+public class Search extends BaseView implements View.OnClickListener{
 	
 	//定义控件
 	public Button btnSearch,btnCancel;
@@ -66,23 +69,9 @@ public class Search extends BaseActivity {
 	
 	private List<String> listRemark = new ArrayList<String>();
 	
-	//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-	@Override
-	protected void onPause() {
-		// TODO Auto-generated method stub
-		super.onPause();
-	}
-
-	@Override
-	protected void onResume() {
-		myApp.setActivity_type("search");
-		super.onResume();
-	}
-
-	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-		setContentView(R.layout.search);
-		super.onCreate(savedInstanceState);
+	protected void Init(){
+		LayoutInflater inflater = LayoutInflater.from(getContext());
+		this.addView(inflater.inflate(R.layout.search, null));
 		
 		
 		//通过ID获取控件
@@ -94,23 +83,23 @@ public class Search extends BaseActivity {
 		lvSearchHistory = (ListView) findViewById(R.id.lvSearchHistory);
 		
 		//键盘始终显示
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
+		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
-		adapter = new SearchAdapter(this);
+		adapter = new SearchAdapter(getContext());
 		
 		//设置监听器
 		btnSearch.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);
 		
 		//获得searchType
-		searchType = intent.getExtras().getString("searchType");
 		
-		listRemark = myApp.getListRemark();
+		
+		listRemark = MyApplication.getApplication().getListRemark();
 		
 		//添加自定义布局
-		 LinearLayout layout = new LinearLayout(this);  
+		 LinearLayout layout = new LinearLayout(getContext());  
 		 layout.setOrientation(LinearLayout.HORIZONTAL);  
-		 tvClear = new TextView(this);
+		 tvClear = new TextView(getContext());
 		 tvClear.setTextSize(22);
 		 tvClear.setText("清除历史记录");
 		 tvClear.setGravity(Gravity.CENTER_VERTICAL);  
@@ -118,7 +107,7 @@ public class Search extends BaseActivity {
 		 layout.addView(tvClear,FFlayoutParams);  
 		 layout.setGravity(Gravity.CENTER);  
 		 
-		 LinearLayout loadingLayout = new LinearLayout(this);  
+		 LinearLayout loadingLayout = new LinearLayout(getContext());  
 		 loadingLayout.addView(layout,WClayoutParams);  
 		 loadingLayout.setGravity(Gravity.CENTER);  
 		 lvSearchHistory.addFooterView(loadingLayout);
@@ -131,12 +120,12 @@ public class Search extends BaseActivity {
 			public void onClick(View v) {
 				// TODO Auto-generated method stub
 				listRemark.clear();
-				myApp.setListRemark(listRemark);
+				MyApplication.getApplication().setListRemark(listRemark);
 				lvSearchHistory.setVisibility(View.GONE);
 				v.setVisibility(View.GONE);
 				
 				//将搜索记录保存本地
-				Helper.saveDataToLocate(Search.this, "listRemark", listRemark);
+				Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
 			}
 		 });
 		 
@@ -155,25 +144,63 @@ public class Search extends BaseActivity {
 						{
 							 searchContent = listRemark.get(arg2);
 							 //调用搜索接口获取搜索结果，跳转搜索界面
-							 intent.setClass(Search.this, SearchGoods.class);
-							 bundle.putString("searchContent",searchContent);
-							 bundle.putString("act_type","search");
-							 intent.putExtras(bundle);
-							 startActivity(intent);
-							 Search.this.finish();
+							 
+							 if(null != m_viewInfoListener){
+								 m_viewInfoListener.onNewView(new SearchGoods(getContext(), "首页", searchContent, "search"));
+							 }
+							 
+//							 intent.setClass(Search.this, SearchGoods.class);
+//							 bundle.putString("searchContent",searchContent);
+//							 bundle.putString("act_type","search");
+//							 intent.putExtras(bundle);
+//							 startActivity(intent);
+//							 Search.this.finish();
 							 
 						}
 						else
 						{
 							listRemark.clear();
-							myApp.setListRemark(listRemark);
+							MyApplication.getApplication().setListRemark(listRemark);
 							lvSearchHistory.setVisibility(View.GONE);
 							tvClear.setVisibility(View.GONE);
 						}
 					}
 				});
 		 }
-		 
+	}
+	
+	public Search(Context context, String searchType_){
+		super(context);
+		searchType = searchType_;
+		Init();
+	}
+	public Search(Context context, Bundle bundle){
+		super(context);
+		Init();
+	}
+	
+	//public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
+	
+	//public void onDestroy(){}//called before destruction
+	//public void onPause(){}//called before put into stack
+	public void onResume(){
+		MyApplication.getApplication().setActivity_type("search");
+	}
+	
+	public boolean onBack(){return false;}//called when back button/key pressed
+	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
+	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
+	
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = false;
+		return title;
+	}
+	
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = false;
+		return tab;
 	}
 
 	@Override
@@ -183,7 +210,7 @@ public class Search extends BaseActivity {
 			case R.id.btnSearch:
 				if(etSearch.getText().toString().equals(""))
 				{
-					Toast.makeText(Search.this, "搜索内容不能为空", 3).show();
+					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
 				}
 				else
 				{
@@ -197,25 +224,31 @@ public class Search extends BaseActivity {
 					{
 						listRemark.add(searchContent);
 					}
-					myApp.setListRemark(listRemark);
+					MyApplication.getApplication().setListRemark(listRemark);
 					//将搜索记录保存本地
-					Helper.saveDataToLocate(Search.this, "listRemark", listRemark);
-					//调用搜索接口获取搜索结果，跳转搜索界面
-					intent.setClass(Search.this, SearchGoods.class);
-					bundle.putString("searchContent",searchContent);
-					bundle.putString("act_type","search");
-					intent.putExtras(bundle);
-					startActivity(intent);
-					Search.this.finish();
+					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
+					
+					 if(null != m_viewInfoListener){
+						 m_viewInfoListener.onNewView(new SearchGoods(getContext(), "首页", searchContent, "search"));
+					 }
+					
+//					//调用搜索接口获取搜索结果，跳转搜索界面
+//					intent.setClass(Search.this, SearchGoods.class);
+//					bundle.putString("searchContent",searchContent);
+//					bundle.putString("act_type","search");
+//					intent.putExtras(bundle);
+//					startActivity(intent);
+//					Search.this.finish();
 					
 				}
 				
 				break;
 			case R.id.btnCancel:
-				Search.this.finish();
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onExit(this);
+				}
 				break;
 		}
-		super.onClick(v);
 	}
 	
 	// 管理线程的Handler
@@ -231,14 +264,14 @@ public class Search extends BaseActivity {
 				
 				int totalCount = goodsList.getCount();
 				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(Search.this, "没有符合条件的结果，请重新输入！", 3).show();
+					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
 					
 					//总数存入全局
-					myApp.setSearchCount(totalCount);
+					MyApplication.getApplication().setSearchCount(totalCount);
 					
 					listSearchGoods = goodsList.getData();
-					myApp.setListSearchGoods(listSearchGoods);
+					MyApplication.getApplication().setListSearchGoods(listSearchGoods);
 					
 					
 				}
@@ -248,7 +281,7 @@ public class Search extends BaseActivity {
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(Search.this, "没有符合条件的结果，请重新输入！", 3).show();
+				Toast.makeText(Search.this.getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				break;
 			}
 			
@@ -263,7 +296,7 @@ public class Search extends BaseActivity {
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("fields=" + URLEncoder.encode(fields));
-			list.add("query="+"cityEnglishName:"+myApp.getCityEnglishName()+" AND "+ URLEncoder.encode(searchContent));
+			list.add("query="+"cityEnglishName:"+MyApplication.getApplication().getCityEnglishName()+" AND "+ URLEncoder.encode(searchContent));
 			list.add("start=" + startRow);
 			list.add("rows=" + 30);
 

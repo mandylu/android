@@ -77,8 +77,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	private TextView txt_phone, txt_address;
 	private ImageView im_x;
 
-	private BaseActivity baseActivity;
-
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
 	public List<Bitmap> listBm = new ArrayList<Bitmap>();
@@ -93,10 +91,9 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		REQUEST_TYPE_DELETE
 	}
 	
-	public GoodDetailView(GoodsDetail detail, BaseActivity content, Bundle bundle){
+	public GoodDetailView(GoodsDetail detail, Context content, Bundle bundle){
 		super(content, bundle);
 		this.detail = detail;
-		baseActivity = content;
 		init();
 	}
 	
@@ -382,10 +379,12 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
 				Bundle bundle = new Bundle();
 				bundle.putString("detailPosition", positions);
-				baseActivity.getIntent().putExtras(bundle);
 				
-				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-				baseActivity.startActivity(baseActivity.getIntent());
+				//TODO:
+//				baseActivity.getIntent().putExtras(bundle);
+//				
+//				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+//				baseActivity.startActivity(baseActivity.getIntent());
 			}
 			else
 			{

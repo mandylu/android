@@ -21,17 +21,15 @@ import com.quanleimu.activity.R.layout;
 
 public class AboutUs extends BaseView {
 
-	private Button backBtn; 
-	
 	public TextView tvTitle, rlVersion;
 	
-	public AboutUs(BaseActivity context){
+	public AboutUs(Context context){
 		super(context);
 		
 		Init(context);
 	}
 	
-	public AboutUs(BaseActivity context, Bundle bundle){
+	public AboutUs(Context context, Bundle bundle){
 		super(context, bundle);
 		
 		Init(context);
@@ -55,9 +53,8 @@ public class AboutUs extends BaseView {
 		return tabDef;
 	}	
 	
-	protected void Init(BaseActivity context) {
-		context.getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
-		
+	protected void Init(Context context) {
+	
 		LayoutInflater inflator = LayoutInflater.from(context);
 		
 		RelativeLayout relAbout = (RelativeLayout)inflator.inflate(R.layout.aboutus, null);
