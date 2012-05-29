@@ -182,11 +182,10 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 		
 		currentView = newView;
 		newView.setInfoChangeListener(this);//NOTE: MUST be called before addView is called, coz addView will call View.onAttatchedToWindow which could then call methods that will use ViewInfoListener
+		setBaseLayout(newView);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		scroll.removeAllViews();
 		scroll.addView(currentView);
-		
-		setBaseLayout(newView);
 		
 		long time_end =  System.currentTimeMillis();
 		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
