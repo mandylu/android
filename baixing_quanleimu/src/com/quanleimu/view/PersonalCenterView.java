@@ -35,6 +35,7 @@ import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.Login;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
 public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener{
@@ -92,11 +93,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					pd.setCancelable(true);
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
-//					bundle.putInt("type", 1);
-//					intent.putExtras(bundle);
-//					intent.setClass(this, Login.class);
-//					startActivity(intent);
-//					finish();
+					bundle.putInt("type", 1);
+					m_viewInfoListener.onNewView(new Login(getContext(), bundle));
 				}
 			}
 		}
@@ -153,8 +151,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	
 	@Override
 	protected void onAttachedToWindow(){
-		this.rebuildPage();
 		super.onAttachedToWindow();
+		
+		this.rebuildPage();
 	}
 
 	private void init(){

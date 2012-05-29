@@ -41,6 +41,7 @@ public class BaseView extends LinearLayout{
 	};
 	
 	public enum ETAB_TYPE{
+		ETAB_TYPE_PREV,
 		ETAB_TYPE_MAINPAGE,
 		ETAB_TYPE_CATEGORY,
 		ETAB_TYPE_PUBLISH,
@@ -51,7 +52,7 @@ public class BaseView extends LinearLayout{
 	public class TabDef{
 		
 		public boolean m_visible = true;
-		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
+		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_PREV;
 	};
 	
 	protected ProgressDialog pd;
