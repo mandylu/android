@@ -19,9 +19,6 @@ import android.location.Location;
 import org.json.JSONException;
 import org.json.JSONObject;
 import org.json.JSONArray;
-
-import com.quanleimu.activity.Loading2;
-
 import android.content.Context;
 
 public class LocationService{

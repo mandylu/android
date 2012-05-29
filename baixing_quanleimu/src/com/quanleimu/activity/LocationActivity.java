@@ -37,7 +37,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 
-public class Loading2 extends BaseActivity implements LocationService.BXLocationServiceListener{
+public class LocationActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
 
 	private LocationListener listener;
 	private LocationListener locationListener;
@@ -81,7 +81,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 
 		try {
 			if (JadgeConnection() == false) {
-				Toast.makeText(Loading2.this, "网络连接异常", 3).show();
+				Toast.makeText(LocationActivity.this, "网络连接异常", 3).show();
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -106,7 +106,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 	public String cityName1 = "";
 	class CityThread implements Runnable {
 		public void run() {
-			chengshiName = (String) Helper.loadDataFromLocate(Loading2.this,
+			chengshiName = (String) Helper.loadDataFromLocate(LocationActivity.this,
 					"cityName");
 			if (chengshiName == null || chengshiName.equals("")) {
 				tag = 0;
@@ -184,12 +184,12 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 				break;
 			}
 			if(1 == record1 && 1 == record2){
-				LocationService.getInstance().start(Loading2.this, Loading2.this);
-				intent.setClass(Loading2.this, QuanleimuMainActivity.class);
+				LocationService.getInstance().start(LocationActivity.this, LocationActivity.this);
+				intent.setClass(LocationActivity.this, QuanleimuMainActivity.class);
 				// bundle.putString("cityName", cityName);
 				intent.putExtras(bundle);
 				startActivity(intent);
-				Loading2.this.finish();
+				LocationActivity.this.finish();
 			}
 		}
 	};
@@ -236,7 +236,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 		@Override
 		public void run() { 
 			// 获取搜索记录
-			Object objRemark = Helper.loadDataFromLocate(Loading2.this, "listRemark");
+			Object objRemark = Helper.loadDataFromLocate(LocationActivity.this, "listRemark");
 			if(objRemark != null)
 			{
 				listRemark = (List<String>)objRemark;
@@ -248,7 +248,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 			myApp.setListRemark(listRemark);
 
 			// 获取我的浏览历史以及我的收藏
-			Object objLookHistory = Helper.loadDataFromLocate(Loading2.this, "listLookHistory");
+			Object objLookHistory = Helper.loadDataFromLocate(LocationActivity.this, "listLookHistory");
 			if(objLookHistory != null)
 			{
 				listLookHistory = (List<GoodsDetail>)objLookHistory;
@@ -259,7 +259,7 @@ public class Loading2 extends BaseActivity implements LocationService.BXLocation
 			}
 			myApp.setListLookHistory(listLookHistory);
 
-			Object objStore = Helper.loadDataFromLocate(Loading2.this, "listMyStore");
+			Object objStore = Helper.loadDataFromLocate(LocationActivity.this, "listMyStore");
 			if(objStore != null)
 			{
 				listMyStore = (List<GoodsDetail>)objStore;
