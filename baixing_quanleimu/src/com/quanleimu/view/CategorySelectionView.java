@@ -190,15 +190,18 @@ public class CategorySelectionView extends ListView {
 					Util.saveDataToLocate(CategorySelectionView.this.getContext(), "saveFirstStepCate",	postMu);
 					
 				} else {
-					ErrorHandler.instance().sendEmptyMessage(2);
+					//TODO:: check
+					//ErrorHandler.instance().sendEmptyMessage(2);
 				}
 				
 				return json;
 			} catch (UnsupportedEncodingException e) {
-				ErrorHandler.instance().sendEmptyMessage(3);
+				//TODO:: check
+				//ErrorHandler.instance().sendEmptyMessage(3);
 				e.printStackTrace();
 			} catch (IOException e) {
-				ErrorHandler.instance().sendEmptyMessage(3);
+				//TODO:: check
+				//ErrorHandler.instance().sendEmptyMessage(3);
 				e.printStackTrace();
 			}
 			

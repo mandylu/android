@@ -1,6 +1,7 @@
 package com.quanleimu.activity;
 
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
@@ -10,6 +11,8 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -93,6 +96,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	public void onBack(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+        imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
+
+		
 		if(!currentView.onBack()){
 	    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
 	    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
@@ -161,6 +168,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	public void onExit(BaseView view){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+        imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
+		
     	if(view == currentView && QuanleimuApplication.getApplication().getViewStack().size() > 0){
     		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
     		scroll.removeAllViews();
@@ -175,6 +185,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	public void onNewView(BaseView newView){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+        imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
+		
 		long time_start =  System.currentTimeMillis();
 		Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
 		
@@ -191,6 +204,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		long time_end =  System.currentTimeMillis();
 		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
 		Log.d("page switching performance log", "cost is " + (time_end-time_start) + "ms");
+		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 	
 //	@Override
