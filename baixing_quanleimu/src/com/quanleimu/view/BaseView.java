@@ -4,6 +4,7 @@ import com.quanleimu.activity.BaseActivity;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.widget.LinearLayout;
 
@@ -48,6 +49,8 @@ public class BaseView extends LinearLayout{
 		public boolean m_visible = true;
 		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	};
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 	
 	protected ProgressDialog pd;
 	

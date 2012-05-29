@@ -2,6 +2,7 @@ package com.quanleimu.activity;
 
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
@@ -27,10 +28,19 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.quanleimu.view.PersonalCenterView;
+import com.quanleimu.view.PostGoodsCateMainView;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(currentView != null){
+			currentView.onActivityResult(requestCode, resultCode, data);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	}
 
 	@Override
 	public void onBack(){
@@ -340,11 +350,9 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			
 			MyApplication.getApplication().getViewStack().clear();
 			break;
-		case R.id.ivPostGoods:		
-			intent.setClass(this, PostGoodsCateMain.class);
-			intent.putExtras(bundle);
-			startActivity(intent);
-			overridePendingTransition(0, 0);
+		case R.id.ivPostGoods:
+			if(currentView instanceof PostGoodsCateMainView) break;
+			onNewView(new PostGoodsCateMainView(this, bundle));
 			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case R.id.ivMyCenter:
