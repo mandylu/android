@@ -29,7 +29,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.quanleimu.view.PersonalCenterView;
-//import com.quanleimu.view.PostGoodsCateMainView;
+import com.quanleimu.view.PostGoodsCateMainView;
 
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
@@ -51,7 +51,7 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			break;
 		case ETAB_TYPE_PUBLISH:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
-			//onNewView(new PostGoodsCateMainView(this, bundle));
+			onNewView(new PostGoodsCateMainView(this, bundle));
 			MyApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_MINE:
