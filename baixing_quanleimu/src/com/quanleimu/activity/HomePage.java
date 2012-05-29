@@ -18,6 +18,7 @@ import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.EBUTT_STYLE;
+import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.view.SetMain;
@@ -33,6 +34,42 @@ import com.quanleimu.view.PostGoodsCateMainView;
 import com.quanleimu.view.HomePageView;
 public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
+	
+	public void onSwitchToTab(ETAB_TYPE tabType){
+		switch(tabType){
+		case ETAB_TYPE_MAINPAGE:
+			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE)break;
+			onNewView(new HomePageView(this, bundle));
+			
+			MyApplication.getApplication().getViewStack().clear();
+			break;
+		case ETAB_TYPE_CATEGORY:				
+			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY)break;
+			onNewView(new CateMain(this));
+			
+			MyApplication.getApplication().getViewStack().clear();
+			break;
+		case ETAB_TYPE_PUBLISH:
+			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
+			onNewView(new PostGoodsCateMainView(this, bundle));
+			MyApplication.getApplication().getViewStack().clear();
+			break;
+		case ETAB_TYPE_MINE:
+			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE)break;
+			changeTabView(new PersonalCenterView(this, bundle));
+			MyApplication.getApplication().getViewStack().clear();
+			break;
+		case ETAB_TYPE_SETTING:
+			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
+			onNewView(new SetMain(this));
+			
+			MyApplication.getApplication().getViewStack().clear();
+			
+			break;
+			
+		}
+
+	}
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
@@ -338,33 +375,20 @@ public class HomePage extends BaseActivity implements BaseView.ViewInfoListener{
 			}
 			break;
 		case R.id.ivHomePage:{
-			
-			if(currentView instanceof HomePageView)break;
-			onNewView(new HomePageView(this, bundle));
-			
-			MyApplication.getApplication().getViewStack().clear();
+			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE);
 			break;
 		}
 		case R.id.ivCateMain:				
-			onNewView(new CateMain(this));
-			
-			MyApplication.getApplication().getViewStack().clear();
+			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY);
 			break;
 		case R.id.ivPostGoods:
-			if(currentView instanceof PostGoodsCateMainView) break;
-			onNewView(new PostGoodsCateMainView(this, bundle));
-			MyApplication.getApplication().getViewStack().clear();
+			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH);			
 			break;
 		case R.id.ivMyCenter:
-			if(currentView instanceof PersonalCenterView)break;
-			changeTabView(new PersonalCenterView(this, bundle));
-			MyApplication.getApplication().getViewStack().clear();
+			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MINE);			
 			break;
 		case R.id.ivSetMain:
-			onNewView(new SetMain(this));
-			
-			MyApplication.getApplication().getViewStack().clear();
-			
+			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_SETTING);	
 			break;
 		}
 		super.onClick(v);

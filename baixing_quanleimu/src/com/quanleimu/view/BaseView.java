@@ -19,6 +19,7 @@ public class BaseView extends LinearLayout{
 		public void onBack();
 		public void onNewView(BaseView view);
 		public void onExit(BaseView view);
+		public void onSwitchToTab(ETAB_TYPE tabType);
 	};
 
 	public enum EBUTT_STYLE{
