@@ -70,7 +70,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		init();
 	}
 
-	private void rebuildPage(){
+	private void rebuildPage(boolean onResult){
 		if(-1 == currentPage){
 			ivMyads.setImageResource(R.drawable.btn_my_myads_press);
 			ivMyfav.setImageResource(R.drawable.btn_my_myfav);
@@ -80,7 +80,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				title.m_title = "我发布的信息";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			if(listMyPost.size() != 0){
+			if(onResult || listMyPost.size() != 0){
 				adapter.setList(listMyPost);
 				adapter.notifyDataSetChanged();
 			}
@@ -152,7 +152,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	protected void onAttachedToWindow(){
 		super.onAttachedToWindow();
 		
-		this.rebuildPage();
+		this.rebuildPage(false);
 	}
 
 	private void init(){
@@ -260,7 +260,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				} else {
 					listMyPost = gl.getData();
 					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-					rebuildPage();
+					rebuildPage(true);
 				}
 				break;
 			case MCMESSAGE_MYFAV_UPDATE_SUCCESS:
@@ -270,7 +270,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				GoodsList glFav = JsonUtil.getGoodsListFromJson(json); 
 				if (glFav != null && glFav.getCount() > 0) {
 					QuanleimuApplication.getApplication().setListMyStore(glFav.getData());
-					rebuildPage();
+					rebuildPage(true);
 				}
 				break;
 			case MCMESSAGE_MYHISTORY_UPDATE_SUCCESS:
@@ -280,7 +280,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				GoodsList glHistory = JsonUtil.getGoodsListFromJson(json); 
 				if (glHistory != null && glHistory.getCount() > 0) {
 					QuanleimuApplication.getApplication().setListLookHistory(glHistory.getData());
-					rebuildPage();
+					rebuildPage(true);
 				}				
 				break;
 			case MCMESSAGE_MYPOST_FAIL:
@@ -436,15 +436,15 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		switch (v.getId()) {
 		case R.id.ivMyads:
 			this.currentPage = -1;
-			rebuildPage();
+			rebuildPage(false);
 			break;
 		case R.id.ivMyfav:
 			this.currentPage = 0;
-			rebuildPage();
+			rebuildPage(false);
 			break;
 		case R.id.ivMyhistory:
 			this.currentPage = 1;
-			rebuildPage();
+			rebuildPage(false);
 			break;
 		default:
 			break;
