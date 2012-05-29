@@ -64,6 +64,7 @@ import java.io.Serializable;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.MyApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.Login;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
@@ -398,12 +399,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		if (user == null) {
-//			bundle.putInt("type", 2);
-//			bundle.putString("back", backPageName);
-//			intent.putExtras(bundle);
-//			intent.setClass(this, Login.class);
-//			startActivity(intent);
-//			finish();
+			if(this.m_viewInfoListener != null){
+				m_viewInfoListener.onNewView(new Login(baseActivity, bundle));
+			}
 		} else {
 			mobile = user.getPhone();
 			password = user.getPassword();
