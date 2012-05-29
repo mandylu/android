@@ -396,10 +396,11 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				bundle.putString("detailPosition", positions);
 				
 				//TODO:
-//				baseActivity.getIntent().putExtras(bundle);
-//				
-//				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-//				baseActivity.startActivity(baseActivity.getIntent());
+				BaseActivity baseActivity = (BaseActivity)getContext();
+				baseActivity.getIntent().putExtras(bundle);
+				
+				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+				baseActivity.startActivity(baseActivity.getIntent());
 			}
 			else
 			{
