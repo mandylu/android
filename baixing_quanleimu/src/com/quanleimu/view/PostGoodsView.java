@@ -101,6 +101,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private BaseActivity baseActivity;
 	private Bundle bundle;
 	
+	private boolean firsttime = true;
+	
 	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName){
 		super(context, bundle);
 		this.baseActivity = context;
@@ -191,12 +193,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 	
 	@Override protected void onAttachedToWindow(){
-		pd = new ProgressDialog(this.getContext());
-		pd.setTitle("提示");
-		pd.setMessage("请稍候...");
-		pd.setCancelable(true);
-
-		usercheck();
+		if(firsttime){
+			usercheck();
+		}
 		super.onAttachedToWindow();
 	}
 	private void init() {
@@ -210,6 +209,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		initial();
+		pd = new ProgressDialog(this.getContext());
+		pd.setTitle("提示");
+		pd.setMessage("请稍候...");
+		pd.setCancelable(true);
 	}
 
 	/**
@@ -404,6 +407,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				m_viewInfoListener.onNewView(new Login(baseActivity, bundle));
 			}
 		} else {
+			firsttime = false;
 			mobile = user.getPhone();
 			password = user.getPassword();
 			
