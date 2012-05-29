@@ -542,6 +542,41 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 				setMetaObject();
 				break;
+			case msgDelete:
+				if(pd!=null){
+					pd.dismiss();
+				}
+				try {
+					JSONObject jb = new JSONObject(json);
+					JSONObject js = jb.getJSONObject("error");
+					String message = js.getString("message");
+					int code = js.getInt("code");
+					if (code == 0) {
+						// 删除成功
+						List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+						for(int i = 0; i < listMyPost.size(); ++ i){
+							if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+									.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+								listMyPost.remove(i);
+								break;
+							}
+						}
+//						listMyPost.remove(pos);
+						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+						if(m_viewInfoListener != null){
+							m_viewInfoListener.onBack();
+						}
+//						finish();
+						Toast.makeText(GoodDetailView.this.getContext(), message, 0).show();
+					} else {
+						// 删除失败
+						Toast.makeText(GoodDetailView.this.getContext(), "删除失败,请稍后重试！", 0).show();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 			default:
 				break;
 			}
