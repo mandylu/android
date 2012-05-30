@@ -58,6 +58,7 @@ public class SiftOptionListView extends BaseView {
 						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 						bundle.putString("label", listFilterss.get(temp)
 								.getLabelsList().get(arg2-1).getLabel());
+						bundle.remove("all");
 					}else{
 						bundle.putString("all", "不限");
 					}
