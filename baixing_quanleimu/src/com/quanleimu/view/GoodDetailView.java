@@ -78,6 +78,8 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	
 	private String json = "";
 	
+	private Bundle bundle;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
@@ -87,6 +89,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	public GoodDetailView(GoodsDetail detail, Context content, Bundle bundle){
 		super(content, bundle);
 		this.detail = detail;
+		this.bundle = bundle;
 		init();
 	}
 	
@@ -323,6 +326,12 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 						public void onClick(DialogInterface dialog, int which){
 							switch(which){
 								case 0:
+									if(null != m_viewInfoListener){
+										m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)GoodDetailView.this.getContext(),
+												bundle, 
+												detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME),
+												detail));			
+									}
 //									Bundle bundle = new Bundle();
 //									bundle.putSerializable("goodsDetail", detail);
 //									bundle.putString("categoryEnglishName",detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));

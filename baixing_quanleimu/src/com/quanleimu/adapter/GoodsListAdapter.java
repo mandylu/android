@@ -206,6 +206,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		if (price.equals("null") || price.equals("")) {
 			tvPrice.setVisibility(View.GONE);
 		} else {
+			tvPrice.setVisibility(View.VISIBLE);
 			tvPrice.setText(price);
 		}
 		tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
