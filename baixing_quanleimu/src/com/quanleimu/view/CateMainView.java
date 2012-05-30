@@ -45,6 +45,8 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 
 	// 定义控件
 	protected CategorySelectionView selectionView;
+	String title_str;
+	String back_str;
 
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -54,6 +56,9 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 		selectionView.setSelectionListener(this);
 
 		((LinearLayout)findViewById(R.id.linearListView)).addView(selectionView);
+		
+		title_str = "选择类目";
+		back_str = "";
 	}
 	
 	public CateMainView(Context context){
@@ -93,7 +98,8 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
-		title.m_title = "选择类目";
+		title.m_title = title_str;
+		title.m_leftActionHint = back_str;
 		return title;
 	}
 	
@@ -108,21 +114,23 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 	@Override
 	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
 		if(null != m_viewInfoListener){
-			TitleDef title = getTitleDef();
-			title.m_leftActionHint = "选择类目";
-			title.m_title = selectedMainCate.getName();
-			m_viewInfoListener.onTitleChanged(title);
+			title_str = selectedMainCate.getName();
+			back_str = title_str;
+			m_viewInfoListener.onTitleChanged(getTitleDef());
 		}
 	}
 	
 	@Override
 	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
 		
+		back_str = title_str;
+		title_str = selectedSubCate.getName();
+		
 		Bundle bundle = new Bundle();
 		bundle.putString("name", selectedSubCate.getName());
 		bundle.putString("categoryEnglishName",	selectedSubCate.getEnglishName());
 		bundle.putString("siftresult", "");
-		bundle.putString("backPageName", "选择类目");
+		bundle.putString("backPageName", "返回");
 		if(null != m_viewInfoListener){
 			m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, selectedSubCate.getEnglishName()));			
 		}

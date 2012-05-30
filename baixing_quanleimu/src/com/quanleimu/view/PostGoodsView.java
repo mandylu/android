@@ -10,6 +10,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -26,6 +27,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
@@ -41,29 +43,21 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BXDecorateImageView;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.util.BXDecorateImageView;
-import com.quanleimu.view.BaseView.ETAB_TYPE;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
-
-import android.os.Environment;
-import java.util.Set;
-import java.io.Serializable;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
@@ -100,7 +94,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private BaseActivity baseActivity;
 	private Bundle bundle;
 	
-	private boolean firsttime = true;
+	private boolean userValidated = false;
+	private boolean loginTried = false;
+
 	
 	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName){
 		super(context, bundle);
@@ -192,7 +188,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 	
 	@Override protected void onAttachedToWindow(){
-		if(firsttime){
+		if(!userValidated){
 			usercheck();
 		}
 		super.onAttachedToWindow();
@@ -402,11 +398,19 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		if (user == null) {
-			if(this.m_viewInfoListener != null){
-				m_viewInfoListener.onNewView(new LoginView(baseActivity, bundle));
+			if(loginTried){
+				if(this.m_viewInfoListener != null){
+					m_viewInfoListener.onExit(this);
+				}
+			}else{
+				if(this.m_viewInfoListener != null){
+					bundle.putString("backPageName", "取消");
+					m_viewInfoListener.onNewView(new LoginView(baseActivity, bundle));
+					loginTried = true;
+				}
 			}
 		} else {
-			firsttime = false;
+			userValidated = true;
 			mobile = user.getPhone();
 			password = user.getPassword();
 			

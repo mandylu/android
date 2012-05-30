@@ -43,6 +43,10 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	private BaseActivity baseActivity;
 	private Bundle bundle;
 	
+	String title_str;
+	String back_str;
+	
+	
 	public PostGoodsCateMainView(BaseActivity context, Bundle bundle){
 		super(context, bundle);
 		baseActivity = context;
@@ -53,15 +57,17 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	@Override
 	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
 		if(null != m_viewInfoListener){
-			TitleDef title = getTitleDef();
-			title.m_leftActionHint = "选择类目";
-			title.m_title = selectedMainCate.getName();
-			m_viewInfoListener.onTitleChanged(title);
+			back_str = title_str;
+			title_str = selectedMainCate.getName();
+			m_viewInfoListener.onTitleChanged(getTitleDef());
 		}
 	}
 	
 	@Override
 	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
+		back_str = title_str;
+		title_str = selectedSubCate.getName();
+		
 		if(null != m_viewInfoListener){
 			m_viewInfoListener.onNewView(new PostGoodsView(baseActivity, bundle, selectedSubCate.getEnglishName()));			
 		}
@@ -76,6 +82,9 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 		selectionView.setSelectionListener(this);
 		lvCateArea = (LinearLayout) findViewById(R.id.linearListView);		
 		lvCateArea.addView(selectionView);		
+		
+		title_str = "请选择类目";
+		back_str = "";
 	}
 	
 	@Override
@@ -102,7 +111,8 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
-		title.m_title = "选择类目";
+		title.m_title = title_str;
+		title.m_leftActionHint = back_str;
 		return title;
 	}
 	

@@ -93,6 +93,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
 					bundle.putInt("type", 1);
+					bundle.putString("backPageName", "");
 					m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
 				}
 			}
