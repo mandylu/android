@@ -26,7 +26,7 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 
 		((LinearLayout)findViewById(R.id.linearListView)).addView(selectionView);
 		
-		title_str = "选择类目";
+		title_str = "选择浏览类目";
 		back_str = "";
 	}
 	
@@ -48,9 +48,10 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 		}else
 		{
 			if(null != m_viewInfoListener){
-				TitleDef title = getTitleDef();
-				title.m_leftActionHint = "";
-				m_viewInfoListener.onTitleChanged(title);
+				this.title_str = back_str;
+				back_str = "";
+				
+				m_viewInfoListener.onTitleChanged(getTitleDef());
 			}
 		}
 		return true;
@@ -83,18 +84,15 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 	@Override
 	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
 		if(null != m_viewInfoListener){
-			title_str = selectedMainCate.getName();
 			back_str = title_str;
+			title_str = selectedMainCate.getName();			
 			m_viewInfoListener.onTitleChanged(getTitleDef());
 		}
 	}
 	
 	@Override
 	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
-		
-		back_str = title_str;
-		title_str = selectedSubCate.getName();
-		
+
 		Bundle bundle = new Bundle();
 		bundle.putString("name", selectedSubCate.getName());
 		bundle.putString("categoryEnglishName",	selectedSubCate.getEnglishName());

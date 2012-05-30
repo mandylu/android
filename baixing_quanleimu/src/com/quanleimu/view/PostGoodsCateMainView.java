@@ -40,8 +40,6 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	
 	@Override
 	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
-		back_str = title_str;
-		title_str = selectedSubCate.getName();
 		
 		if(null != m_viewInfoListener){
 			m_viewInfoListener.onNewView(new PostGoodsView(baseActivity, bundle, selectedSubCate.getEnglishName()));			
@@ -58,7 +56,7 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 		lvCateArea = (LinearLayout) findViewById(R.id.linearListView);		
 		lvCateArea.addView(selectionView);		
 		
-		title_str = "请选择类目";
+		title_str = "选择发布类目";
 		back_str = "";
 	}
 	
@@ -68,10 +66,11 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 			return false;
 		}else
 		{
-			if(null != m_viewInfoListener){
-				TitleDef title = getTitleDef();
-				title.m_leftActionHint = "";
-				m_viewInfoListener.onTitleChanged(title);
+			if(null != m_viewInfoListener){				
+				this.title_str = back_str;
+				back_str = "";
+				
+				m_viewInfoListener.onTitleChanged(getTitleDef());
 			}
 		}
 		return true;
