@@ -27,21 +27,17 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.HotList;
@@ -55,9 +51,6 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.ETAB_TYPE;
-import com.quanleimu.view.BaseView.ViewInfoListener;
-import com.quanleimu.activity.BaseActivity;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
 	private Gallery glDetail;
@@ -153,10 +146,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		};
 	}
 	
+	@SuppressWarnings("unchecked")
 	@Override
 	protected void onAttachedToWindow(){
 		if (QuanleimuApplication.listUsualCates == null) {
-			listUsualCates = (List<SecondStepCate>) Util.loadDataFromLocate(getContext(), "listUsualCates");
+			
+			listUsualCates = (List<SecondStepCate>)Util.loadDataFromLocate(getContext(), "listUsualCates");
 			if (listUsualCates == null) {
 				// 常用类目赋值
 				listUsualCates = LocateJsonData.getUsualCatesJson();

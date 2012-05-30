@@ -31,9 +31,6 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.drawable;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 import com.quanleimu.adapter.GoodsListAdapter;
 
 public class MyCenterView extends BaseActivity implements OnScrollListener{
