@@ -10,7 +10,6 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
@@ -29,7 +28,6 @@ import com.quanleimu.view.SetMainView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
-import android.widget.RelativeLayout;
 
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.PersonalCenterView;
@@ -315,36 +313,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		super.onPause();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onResume() {
 		bundle.putString("backPageName", "");
 		super.onResume();
 	} 
-
-	private void changeTabView(BaseView view){
-		view.setInfoChangeListener(this);
-		if(currentView instanceof HomePageView){
-			ivHomePage.setImageResource(R.drawable.iv_homepage);
-		}
-		else if(currentView instanceof PersonalCenterView){
-			ivMyCenter.setImageResource(R.drawable.iv_mycenter);
-		}
-		
-		
-		if(view instanceof HomePageView){
-			ivHomePage.setImageResource(R.drawable.iv_homepage_press);
-		}
-		else if(view instanceof PersonalCenterView){
-			ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
-		}
-		
-		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-		scroll.removeAllViews();
-		scroll.addView(view);
-		currentView = view;
-		setBaseLayout(view);
-	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 

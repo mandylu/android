@@ -11,13 +11,10 @@ import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
-import com.baidu.mapapi.LocationListener;
-import com.baidu.mapapi.MKSearch;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
-import com.baidu.mapapi.Overlay;
 import java.util.List;
 
 public class BaiduMapActivity extends MapActivity{

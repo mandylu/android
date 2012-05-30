@@ -2,14 +2,9 @@ package com.quanleimu.activity;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.BufferedReader;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.net.URL;
-import java.net.URLConnection;
-import java.net.MalformedURLException;
 
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
@@ -19,16 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.provider.Settings.Secure;
-import android.view.View;
 import android.widget.Toast;
-
-import android.location.*;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-
-import android.content.Context;
 
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
@@ -38,10 +24,6 @@ import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 
 public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
-
-	private LocationListener listener;
-	private LocationListener locationListener;
-	private LocationManager locationMgr;
 
 	// 定义经纬度
 	public double Lat = 0;
