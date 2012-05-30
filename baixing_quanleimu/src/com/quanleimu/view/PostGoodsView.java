@@ -215,62 +215,129 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	 */
 	private void editpostUI() {
 		// TODO Auto-generated method stub
-		//有goodsDetail，显示goodsDetail内容，编辑发布。
+
 		if (goodsDetail != null) {
 			System.out.println("editMap--->" + editMap.toString());
 			System.out.println("goodsDetail--->"
 					+ goodsDetail.getMetaData().toString());
-			// metaData里的参数
-			ArrayList<String> metas = goodsDetail.getMetaData();
-			for (int i = 0; i < metas.size(); i++) {
-				String[] curMeta = metas.get(i).split(" ");
-				String key = curMeta[0];
-				Object obj = this.getEditMapValue(key);
-				System.out.println("obj--->" + obj);
-				PostGoodsBean bean = postList.get(key);
-				if(bean != null && !bean.getUnit().equals("")){
-					if(curMeta[1] != null){
-						int pos = curMeta[1].indexOf(bean.getUnit());
-						if(pos != -1){
-							curMeta[1] = curMeta[1].substring(0, pos);
-						}
-					}
-				}
-				if (obj != null) {
-					if (obj instanceof TextView) {
-						((TextView) obj).setText(curMeta[1]);
-					} else if (obj instanceof EditText) {
-						((EditText) obj).setText(curMeta[1]);
-					} else if (obj instanceof List<?>) {
-						String value = curMeta[1];
-						@SuppressWarnings("unchecked")
-						List<CheckBox> list = ((List<CheckBox>) obj);
-						for (int j = 0; j < list.size(); j++) {
-							CheckBox c = list.get(j);
-							String v = (String) c.getTag();
-							if (value.contains(v)) {
-								c.setChecked(true);
-							} else {
-								c.setChecked(false);
+			
+			Set<String> sets = editMap.keySet();
+			if(sets != null){
+				Object[] objKeys = sets.toArray();
+				for(int i = 0; i < objKeys.length; ++ i){
+					String key = (String)objKeys[i];
+					String[] subs = key.split(" ");
+					
+					PostGoodsBean bean = postList.get(subs[0]);
+					
+					String value = goodsDetail.getValueByKey(subs[1]);
+					String displayValue = value;
+					List<String> beanVs = bean.getValues();
+					if(beanVs != null){
+						for(int t = 0; t < beanVs.size(); ++ t){
+							if(beanVs.get(t).equals(value)){
+								displayValue = bean.getLabels().get(t);
+								break;
 							}
 						}
 					}
+					
+				if(bean != null && !bean.getUnit().equals("")){
+					int pos = displayValue.indexOf(bean.getUnit());
+					if(pos != -1){
+						displayValue = displayValue.substring(0, pos);
+					}
 				}
-				postMap.put(curMeta[0], curMeta[1]);
-				
-				//PostGoodsBean bean = postList.get(key);
-				if(null == bean) continue;
-				HashMap<String, String>map = bean.getLvmap();
-				String value = null;
-				if(map.containsKey(curMeta[1])){
-					value = map.get(curMeta[1]);
-				}
-				if (value != null && value.length() > 0) {
-					postMap.put(key, value);
-				} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
-					postMap.put(key, "");
+
+					
+					Object obj = this.getEditMapValue(subs[0]);
+					if (obj != null && !value.equals("")) {
+						if (obj instanceof TextView) {
+							((TextView) obj).setText(displayValue);
+						} else if (obj instanceof EditText) {
+							((EditText) obj).setText(displayValue);
+						} else if (obj instanceof List<?>) {
+//							String value = curMeta[1];
+							@SuppressWarnings("unchecked")
+							List<CheckBox> list = ((List<CheckBox>) obj);
+							for (int j = 0; j < list.size(); j++) {
+								CheckBox c = list.get(j);
+								String v = (String) c.getTag();
+								if (displayValue.contains(v)) {
+									c.setChecked(true);
+								} else {
+									c.setChecked(false);
+								}
+							}
+						}
+						postMap.put(subs[0], value);
+						
+//						if(null == bean) continue;
+//						HashMap<String, String>map = bean.getLvmap();
+////						String value = null;
+//						if(map.containsKey(subs[0])){
+//							value = map.get(subs[0]);
+//						}
+//						if (value != null && value.length() > 0) {
+//							postMap.put(key, value);
+//						} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
+//							postMap.put(key, "");
+//						}
+//
+					}
 				}
 			}
+
+//			ArrayList<String> metas = goodsDetail.getMetaData();
+//			for (int i = 0; i < metas.size(); i++) {
+//				String[] curMeta = metas.get(i).split(" ");
+//				String key = curMeta[0];
+//				Object obj = this.getEditMapValue(key);
+//				System.out.println("obj--->" + obj);
+//				PostGoodsBean bean = postList.get(key);
+//				if(bean != null && !bean.getUnit().equals("")){
+//					if(curMeta[1] != null){
+//						int pos = curMeta[1].indexOf(bean.getUnit());
+//						if(pos != -1){
+//							curMeta[1] = curMeta[1].substring(0, pos);
+//						}
+//					}
+//				}
+//				if (obj != null) {
+//					if (obj instanceof TextView) {
+//						((TextView) obj).setText(curMeta[1]);
+//					} else if (obj instanceof EditText) {
+//						((EditText) obj).setText(curMeta[1]);
+//					} else if (obj instanceof List<?>) {
+//						String value = curMeta[1];
+//						@SuppressWarnings("unchecked")
+//						List<CheckBox> list = ((List<CheckBox>) obj);
+//						for (int j = 0; j < list.size(); j++) {
+//							CheckBox c = list.get(j);
+//							String v = (String) c.getTag();
+//							if (value.contains(v)) {
+//								c.setChecked(true);
+//							} else {
+//								c.setChecked(false);
+//							}
+//						}
+//					}
+//				}
+//				postMap.put(curMeta[0], curMeta[1]);
+//				
+//				//PostGoodsBean bean = postList.get(key);
+//				if(null == bean) continue;
+//				HashMap<String, String>map = bean.getLvmap();
+//				String value = null;
+//				if(map.containsKey(curMeta[1])){
+//					value = map.get(curMeta[1]);
+//				}
+//				if (value != null && value.length() > 0) {
+//					postMap.put(key, value);
+//				} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
+//					postMap.put(key, "");
+//				}
+//			}
 			Set<String>keySet = goodsDetail.getKeys();
 			Object[] keys = null;
 			if(keySet != null){
@@ -299,53 +366,53 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					}
 				}
 			}
-			for(int i = 0; i < keys.length; ++ i){
-				Object obj = this.getEditMapValue((String)keys[i]);
-				PostGoodsBean bean = postList.get(this.getEditMapKeyDisplayName((String)keys[i]));
-				String labelValue = goodsDetail.getValueByKey((String)keys[i]);
-				if(null != bean && null != bean.getValues() && null != bean.getLabels()){
-					for(int j = 0; j < bean.getValues().size(); ++ j){
-						if(labelValue.equals(bean.getValues().get(j))){
-							labelValue = bean.getLabels().get(j).toString();
-							break;
-						}
-					}
-				}
-				if (obj != null) {
-					if (obj instanceof TextView) {
-						if(((TextView)obj).getText() != null 
-								&& !((TextView)obj).getText().toString().equals("")
-								&& !((TextView)obj).getText().toString().equals("请选择")
-								&& !((TextView)obj).getText().toString().equals("请输入")
-								&& !((TextView)obj).getText().toString().equals("请填写"))
-							continue;
-						((TextView) obj).setText(labelValue);
-					} else if (obj instanceof EditText) {
-						if(((EditText)obj).getText() != null 
-								&& !((EditText)obj).getText().toString().equals("")
-								&& !((EditText)obj).getText().toString().equals("")
-								&& !((EditText)obj).getText().toString().equals("请选择")
-								&& !((EditText)obj).getText().toString().equals("请输入")
-								&& !((EditText)obj).getText().toString().equals("请填写"))
-							continue;
-						((EditText) obj).setText(labelValue);
-					} else if (obj instanceof List<?>) {
-						String value = goodsDetail.getValueByKey((String)keys[i]);
-						@SuppressWarnings("unchecked")
-						List<CheckBox> list = ((List<CheckBox>) obj);
-						for (int j = 0; j < list.size(); j++) {
-							CheckBox c = list.get(j);
-							String v = (String) c.getTag();
-							if (value.contains(v)) {
-								c.setChecked(true);
-							} else {
-								c.setChecked(false);
-							}
-						}
-					}
-					postMap.put(getEditMapKeyDisplayName((String)keys[i]), goodsDetail.getValueByKey((String)keys[i]));
-				}					
-			}
+//			for(int i = 0; i < keys.length; ++ i){
+//				Object obj = this.getEditMapValue((String)keys[i]);
+//				PostGoodsBean bean = postList.get(this.getEditMapKeyDisplayName((String)keys[i]));
+//				String labelValue = goodsDetail.getValueByKey((String)keys[i]);
+//				if(null != bean && null != bean.getValues() && null != bean.getLabels()){
+//					for(int j = 0; j < bean.getValues().size(); ++ j){
+//						if(labelValue.equals(bean.getValues().get(j))){
+//							labelValue = bean.getLabels().get(j).toString();
+//							break;
+//						}
+//					}
+//				}
+//				if (obj != null) {
+//					if (obj instanceof TextView) {
+//						if(((TextView)obj).getText() != null 
+//								&& !((TextView)obj).getText().toString().equals("")
+//								&& !((TextView)obj).getText().toString().equals("请选择")
+//								&& !((TextView)obj).getText().toString().equals("请输入")
+//								&& !((TextView)obj).getText().toString().equals("请填写"))
+//							continue;
+//						((TextView) obj).setText(labelValue);
+//					} else if (obj instanceof EditText) {
+//						if(((EditText)obj).getText() != null 
+//								&& !((EditText)obj).getText().toString().equals("")
+//								&& !((EditText)obj).getText().toString().equals("")
+//								&& !((EditText)obj).getText().toString().equals("请选择")
+//								&& !((EditText)obj).getText().toString().equals("请输入")
+//								&& !((EditText)obj).getText().toString().equals("请填写"))
+//							continue;
+//						((EditText) obj).setText(labelValue);
+//					} else if (obj instanceof List<?>) {
+//						String value = goodsDetail.getValueByKey((String)keys[i]);
+//						@SuppressWarnings("unchecked")
+//						List<CheckBox> list = ((List<CheckBox>) obj);
+//						for (int j = 0; j < list.size(); j++) {
+//							CheckBox c = list.get(j);
+//							String v = (String) c.getTag();
+//							if (value.contains(v)) {
+//								c.setChecked(true);
+//							} else {
+//								c.setChecked(false);
+//							}
+//						}
+//					}
+//					postMap.put(getEditMapKeyDisplayName((String)keys[i]), goodsDetail.getValueByKey((String)keys[i]));
+//				}					
+//			}
 			
 			if (goodsDetail.getImageList() != null) {
 				String b = (goodsDetail.getImageList().getResize180())
@@ -824,13 +891,14 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					JSONObject json = jsonObject.getJSONObject("error");
 					code = json.getInt("code");
 					message = json.getString("message");
-					if (code == 0) {
+					myHandler.sendEmptyMessage(3);
+//					if (code == 0) {
 						// 发布成功
-						myHandler.sendEmptyMessageDelayed(3, 3000);
-					} else {
+//						myHandler.sendEmptyMessageDelayed(3, 3000);
+//					} else {
 
-						myHandler.sendEmptyMessage(2);
-					}
+//						myHandler.sendEmptyMessage(2);
+//					}
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -1360,6 +1428,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				break;
 			case 3:
 				try {
+					if(pd != null){
+						pd.dismiss();
+					}
 					JSONObject jsonObject = new JSONObject(json);
 					String id;
 					try {

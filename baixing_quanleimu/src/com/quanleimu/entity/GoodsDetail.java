@@ -134,8 +134,8 @@ public class GoodsDetail implements Serializable{
 	
 	public String getValueByKey(String key){
 		if(key.equals("")) return "";
-		EDATAKEYS e =  getEnumByString(key);
-		if(e == null) return "";
+//		EDATAKEYS e =  getEnumByString(key);
+//		if(e == null) return "";
 		if(data.containsKey(key)){
 			return data.get(key);
 		}
@@ -150,8 +150,8 @@ public class GoodsDetail implements Serializable{
 	
 	public void setValueByKey(String key, String value){
 		if(key.equals("")) return;
-		EDATAKEYS e =  getEnumByString(key);
-		if(e == null) return;
+//		EDATAKEYS e =  getEnumByString(key);
+//		if(e == null) return;
 		data.put(key, value);
 	}
 	
