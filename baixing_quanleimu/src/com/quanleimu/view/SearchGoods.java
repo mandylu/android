@@ -21,7 +21,6 @@ import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.View.OnClickListener;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -34,14 +33,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
-
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.color;
-import com.quanleimu.activity.R.drawable;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -85,7 +78,6 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 	public int totalCount = -1;
 	
 	private String backPageName = "";
-	private String titleName = "";
 	private ProgressBar progressBar;
 	private TextView tvAddMore;
 	
