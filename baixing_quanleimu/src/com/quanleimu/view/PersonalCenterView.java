@@ -474,6 +474,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "更新";
+		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_rightActionHint = "编辑";
 		title.m_title = "个人中心";
 		title.m_visible = true;

@@ -40,6 +40,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		( (RelativeLayout) findViewById(R.id.rlAbout)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlMark)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlTextImage)).setOnClickListener(this);
+		((RelativeLayout) findViewById(R.id.rlBack)).setOnClickListener(this);
 		
 		final TextView textImg = (TextView)findViewById(R.id.textView3);
 		if(QuanleimuApplication.isTextMode()){
@@ -204,9 +205,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		
 		// 反馈
 		else if (v.getId() ==((RelativeLayout) findViewById(R.id.rlBack)).getId()) {
-//			intent.setClass(SetMain.this, OpinionBack.class);
-//			intent.putExtras(bundle);
-//			startActivity(intent);
+			m_viewInfoListener.onNewView(new OpinionBackView(getContext(), null));
 		}
 	}
 

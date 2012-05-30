@@ -3,7 +3,9 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:id="@+id/llLoginRoot"
-    android:orientation="vertical" >
+    android:orientation="vertical" 
+    android:paddingLeft="10dip"
+    android:paddingRight="10dip" >
 
             <LinearLayout
                 android:id="@+id/layout_txt"
@@ -11,9 +13,9 @@
                 android:layout_height="wrap_content"
                 android:layout_marginTop="10dip"
                 android:background="@drawable/btn_top_bg"
-                android:orientation="horizontal"
-                android:paddingLeft="15dip"
-                android:paddingRight="15dip" >
+                android:orientation="horizontal" 
+			    android:paddingLeft="10dip"
+			    android:paddingRight="10dip">
 
                 <TextView
                     android:id="@+id/textView1"
@@ -43,8 +45,8 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:background="@drawable/btn_down_bg"
-                android:paddingLeft="15dip"
-                android:paddingRight="15dip" >
+			    android:paddingLeft="10dip"
+			    android:paddingRight="10dip">
 
                 <TextView
                     android:id="@+id/textView2"
@@ -73,8 +75,8 @@
                 android:layout_marginTop="10dip"
                 android:background="@drawable/btn_s_bg"
                 android:gravity="center"
-                android:paddingLeft="15dip"
-                android:paddingRight="15dip" >
+			    android:paddingLeft="10dip"
+			    android:paddingRight="10dip">
 
                 <TextView
                     android:id="@+id/textView3"
@@ -100,8 +102,8 @@
                 android:layout_marginTop="10dip"
                 android:background="@drawable/btn_s_bg"
                 android:gravity="center"
-                android:paddingLeft="15dip"
-                android:paddingRight="15dip" >
+			    android:paddingLeft="10dip"
+			    android:paddingRight="10dip">
 
                 <TextView
                     android:id="@+id/textView4"

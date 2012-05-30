@@ -1,70 +1,25 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
   xmlns:android="http://schemas.android.com/apk/res/android"
   android:layout_width="fill_parent"
   android:layout_height="fill_parent"
   android:orientation="vertical">
-    <RelativeLayout 
-    	android:layout_width="fill_parent" 
-    	android:id="@+id/rlTitle" 
-    	android:layout_height="wrap_content" 
-    	android:background="@drawable/bg_header">
-        <TextView 
-        	android:layout_width="wrap_content" 
-        	android:id="@+id/tvTitle" 
-        	android:layout_height="wrap_content" 
-        	android:textColor="#fff" 
-        	android:layout_centerInParent="true" 
-        	android:text="反馈" 
-        	android:textSize="22dip"></TextView>
-        <Button
-                android:id="@+id/backBtn"
-                android:layout_centerVertical="true" 
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_alignParentTop="true"
-                android:background="@drawable/btn_jj"
-                 android:paddingLeft="12dip"
-                android:paddingTop="5dip"
-                android:paddingBottom="5dip"
-                android:paddingRight="12dip"
-                android:textColor="#ffffff"
-                android:text="返回" />
-	      <Button 
-	      	android:id="@+id/btnFinish" 
-	      	android:text="完成" 
-	      	android:textColor="#ffffff"
-	      	android:background="@drawable/btn_editx"
-	      	android:layout_alignParentRight="true" 
-	      	android:layout_width="wrap_content" 
-	      	android:layout_height="wrap_content" 
-	      	android:layout_centerVertical="true" 
-	      	android:layout_marginRight="10dip"></Button>
-    </RelativeLayout>
 
-    <LinearLayout
-        android:id="@+id/linearLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:background="@drawable/bg" >
+	<EditText
+	    android:id="@+id/etOpinion"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+	    android:layout_margin="10dip"
+	    android:layout_weight="1"
+	    android:cursorVisible="true"
+	    android:focusableInTouchMode="true"
+	    android:gravity="top"
+	    android:marqueeRepeatLimit="marquee_forever"
+	    android:minLines="6"
+	    android:typeface="monospace" 
+	    android:layout_alignParentTop="true">
+	
+	    <requestFocus />
+	</EditText>
 
-        <EditText
-            android:id="@+id/etOpinion"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_margin="10dip"
-            android:layout_weight="1"
-            android:cursorVisible="true"
-            android:focusableInTouchMode="true"
-            android:gravity="top"
-            android:marqueeRepeatLimit="marquee_forever"
-            android:minLines="6"
-            android:typeface="monospace" >
-
-            <requestFocus />
-        </EditText>
-
-    </LinearLayout>
-
-</LinearLayout>
+</RelativeLayout>

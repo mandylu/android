@@ -348,7 +348,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
-		setContentView(R.layout.homepage);
+		setContentView(R.layout.main_activity);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		
 		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
