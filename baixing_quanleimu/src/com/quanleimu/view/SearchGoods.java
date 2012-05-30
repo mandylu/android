@@ -85,6 +85,7 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 	public int totalCount = -1;
 	
 	private String backPageName = "";
+	private String titleName = "";
 	private ProgressBar progressBar;
 	private TextView tvAddMore;
 	
@@ -179,16 +180,6 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 		new Thread(new GetGoodsListThread()).start();
 
 	}
-
-	public SearchGoods(Context context, String backPageName_, String searchContent_, String actType_){
-		super(context); 
-		
-		backPageName = backPageName_;
-		searchContent = searchContent_;
-		act_type = actType_;
-		
-		Init();
-	}
 	
 	public SearchGoods(Context context, Bundle bundle){
 		super(context, bundle);
@@ -196,26 +187,28 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 		backPageName = bundle.getString("backPageName");
 		searchContent = bundle.getString("searchContent");
 		act_type = bundle.getString("actType");
+		if(act_type.equals("search")){
+			title = searchContent;
+		}
+		else{
+			title = bundle.getString("name");
+		}
 		
 		Init();
 	}
-	
-	//public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
-	
-	public void onDestroy(){}//called before destruction
-	public void onPause(){}//called before put into stack
-	public void onResume(){}
-	
-	public boolean onBack(){return false;}//called when back button/key pressed
-	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
-	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
+
+	public boolean onRightActionPressed(){
+		m_viewInfoListener.onNewView(new SearchView(getContext(), new Bundle()));
+		return true;
+	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_leftActionHint = backPageName;
-		title.m_rightActionHint = "";
+		title.m_title = this.title;
+		title.m_rightActionHint = "搜索";
 		return title;
 	}
 	

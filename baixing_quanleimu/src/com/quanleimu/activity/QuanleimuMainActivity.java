@@ -171,12 +171,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
     	if(view == currentView && QuanleimuApplication.getApplication().getViewStack().size() > 0){
     		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-    		scroll.removeAllViews();
-    		
+    		scroll.removeAllViews();    		
     		currentView.onDestroy();
+    		
     		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
-    		setBaseLayout(currentView);            		
-
+    		setBaseLayout(currentView);
     		scroll.addView(currentView);
     	}
 	}

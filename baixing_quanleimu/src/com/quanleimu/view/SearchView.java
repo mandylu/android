@@ -147,12 +147,19 @@ public class SearchView extends BaseView implements View.OnClickListener{
 							 //调用搜索接口获取搜索结果，跳转搜索界面
 							 
 							 if(null != m_viewInfoListener){
-								 m_viewInfoListener.onNewView(new SearchGoods(getContext(), "首页", searchContent, "search"));
+								 Bundle bundle = new Bundle();
+								 bundle.putString("backPageName", "首页");
+								 bundle.putString("searchContent", searchContent);
+								 bundle.putString("actType", "search");
+								 bundle.putString("name", "");
+								 m_viewInfoListener.onExit(SearchView.this);								 
+								 m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
+								 m_viewInfoListener.onPopView(SearchGoods.class.getName());
 							 }
 							 
 //							 intent.setClass(Search.this, SearchGoods.class);
 //							 bundle.putString("searchContent",searchContent);
-//							 bundle.putString("act_type","search");
+//							 bundle.putString("actType","search");
 //							 intent.putExtras(bundle);
 //							 startActivity(intent);
 //							 Search.this.finish();
@@ -177,6 +184,9 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	}
 	public SearchView(Context context, Bundle bundle){
 		super(context);
+		
+		searchType = bundle.getString("searchType");
+		
 		Init();
 	}
 	
@@ -187,10 +197,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	public void onResume(){
 		QuanleimuApplication.getApplication().setActivity_type("search");
 	}
-	
-	public boolean onBack(){return false;}//called when back button/key pressed
-	public boolean onLeftActionPressed(){return false;}//called when left button on title bar pressed, return true if handled already, false otherwise
-	public boolean onRightActionPressed(){return false;}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
@@ -230,17 +236,16 @@ public class SearchView extends BaseView implements View.OnClickListener{
 					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
 					
 					 if(null != m_viewInfoListener){
-						 m_viewInfoListener.onNewView(new SearchGoods(getContext(), "首页", searchContent, "search"));
+						 Bundle bundle = new Bundle();
+						 bundle.putString("backPageName", "首页");
+						 bundle.putString("searchContent", searchContent);
+						 bundle.putString("actType", "search");
+						 bundle.putString("name", "");
+						 
+						 m_viewInfoListener.onExit(this);						 
+						 m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
+						 m_viewInfoListener.onPopView(SearchGoods.class.getName());
 					 }
-					
-//					//调用搜索接口获取搜索结果，跳转搜索界面
-//					intent.setClass(Search.this, SearchGoods.class);
-//					bundle.putString("searchContent",searchContent);
-//					bundle.putString("act_type","search");
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					Search.this.finish();
-					
 				}
 				
 				break;

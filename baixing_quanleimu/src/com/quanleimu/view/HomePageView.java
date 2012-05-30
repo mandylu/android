@@ -281,11 +281,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					long arg3) {
 				if (listHot.get(arg2).getType() == 0) {
 					Bundle bundle = new Bundle();
-					bundle.putString("act_type", "homepage");
+					bundle.putString("actType", "homepage");
 					bundle.putString("name",
 							(listHot.get(arg2).getHotData().getTitle()));
 					bundle.putString("searchContent", (listHot.get(arg2)
 							.getHotData().getKeyword()));
+					bundle.putString("backPageName", "首页");
 					m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
 				} else if (listHot.get(arg2).getType() == 1) {
 					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(listHot
