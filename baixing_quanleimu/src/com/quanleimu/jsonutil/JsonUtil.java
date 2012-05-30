@@ -1,7 +1,6 @@
 package com.quanleimu.jsonutil;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
@@ -26,7 +25,6 @@ import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.entity.labels;
 import com.quanleimu.entity.values;
-import java.util.Iterator;
 public class JsonUtil {
 
 	// 获取所有城市列表

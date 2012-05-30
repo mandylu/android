@@ -8,14 +8,12 @@ package com.quanleimu.imageCache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
 import com.quanleimu.util.Helper;
 
 

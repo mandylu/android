@@ -25,11 +25,7 @@ public class LocationService{
 	private BMapManager bMapManager;
 	private MKLocationManager mkLocationManager;
 	private Location lastKnownLocation;
-	private MKSearch mkSearch;
-	private LocationListener locationListener;
-	private GeoPoint gp;
-	private BXLocationServiceListener userListener;
-	
+	private LocationListener locationListener;	
 	
 	public interface BXLocationServiceListener{
 		abstract void onLocationUpdated(Location location);
@@ -99,7 +95,7 @@ public class LocationService{
 	}
 	
 	public void start(Context context, BXLocationServiceListener listener){
-		this.userListener = listener;
+//		this.userListener = listener;
 		init(context, listener);
 	}
 	

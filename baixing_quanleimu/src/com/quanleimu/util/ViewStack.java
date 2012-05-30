@@ -9,8 +9,6 @@ import com.quanleimu.view.BaseView;
 
 import android.content.Context;
 import android.os.Bundle;
-import android.view.View;
-
 public class ViewStack {	
 	public class StackItem extends Object{
 		public BaseView m_view = null;
