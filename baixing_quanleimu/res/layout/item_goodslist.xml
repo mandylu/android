@@ -35,12 +35,12 @@
 
         <TextView
             android:id="@+id/tvDes"
+            android:layout_toRightOf="@+id/ivInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvPrice"
             android:layout_marginLeft="10dip"
-            android:layout_toLeftOf="@+id/ivTurn2Detail"
-            android:layout_toRightOf="@+id/ivInfo"
+            android:layout_marginRight="10dip"
             android:singleLine="true"
             android:textColor="#000000"
             android:textSize="16dip" >
@@ -63,7 +63,7 @@
             android:layout_below="@+id/tvDes"
             android:layout_marginLeft="10dip"
             android:textColor="#595959"
-            android:layout_toLeftOf="@+id/ivTurn2Detail"
+            
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
             android:textSize="14dip" >

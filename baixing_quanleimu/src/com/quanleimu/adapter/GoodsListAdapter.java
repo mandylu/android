@@ -20,6 +20,7 @@ import android.widget.ImageView;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -83,7 +84,6 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		Log.d("", "hahahhahaha: " + position);
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = convertView;
 		if(v == null){
@@ -115,6 +115,9 @@ public class GoodsListAdapter extends BaseAdapter {
 		}
 
 		ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+		if(QuanleimuApplication.isTextMode()){
+			ivInfo.setVisibility(View.GONE);
+		}
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         if(null == defaultBk1){
@@ -127,8 +130,9 @@ public class GoodsListAdapter extends BaseAdapter {
 			defaultBk2 = Helper.toRoundCorner(tmb1, 20);
 			tmb1.recycle();
 		}
-		
-		ivInfo.setImageBitmap(defaultBk1);
+		if(!QuanleimuApplication.isTextMode()){
+			ivInfo.setImageBitmap(defaultBk1);
+		}
 		
 		int type = Util.getWidthByContext(context);
 		RelativeLayout.LayoutParams lp = null;
@@ -154,42 +158,45 @@ public class GoodsListAdapter extends BaseAdapter {
 		}
 
 		lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		ivInfo.setLayoutParams(lp);
-		if (list.get(position).getImageList() == null
-				|| list.get(position).getImageList().equals("")
-				|| list.get(position).getImageList().getResize180() == null
-				|| list.get(position).getImageList().getResize180()
-						.equals("")) {
-			ivInfo.setImageBitmap(defaultBk2);
-		} else {
-//			if (isConnect == 0) {
-//				ivInfo.setImageBitmap(defaultBk2);
-//			}
-//			else{
-				String b = (list.get(position).getImageList().getResize180())
-				.substring(1, (list.get(position).getImageList()
-						.getResize180()).length() - 1);
-				b = Communication.replace(b);
-		
-				if (b.contains(",")) {
-					String[] c = b.split(",");
-					if (c[0] == null || c[0].equals("")) {
-						
-						ivInfo.setImageBitmap(defaultBk2);
+		if(!QuanleimuApplication.isTextMode()){
+			ivInfo.setLayoutParams(lp);
+			
+			if (list.get(position).getImageList() == null
+					|| list.get(position).getImageList().equals("")
+					|| list.get(position).getImageList().getResize180() == null
+					|| list.get(position).getImageList().getResize180()
+							.equals("")) {
+				ivInfo.setImageBitmap(defaultBk2);
+			} else {
+	//			if (isConnect == 0) {
+	//				ivInfo.setImageBitmap(defaultBk2);
+	//			}
+	//			else{
+					String b = (list.get(position).getImageList().getResize180())
+					.substring(1, (list.get(position).getImageList()
+							.getResize180()).length() - 1);
+					b = Communication.replace(b);
+			
+					if (b.contains(",")) {
+						String[] c = b.split(",");
+						if (c[0] == null || c[0].equals("")) {
+							
+							ivInfo.setImageBitmap(defaultBk2);
+						} else {
+							ivInfo.setTag(c[0]);
+							SimpleImageLoader.showImg(ivInfo, c[0], this.context);
+							
+						}
 					} else {
-						ivInfo.setTag(c[0]);
-						SimpleImageLoader.showImg(ivInfo, c[0], this.context);
-						
+						if (b == null || b.equals("")) {
+							ivInfo.setImageBitmap(defaultBk2);
+						} else {
+							ivInfo.setTag(b);
+							SimpleImageLoader.showImg(ivInfo, b, this.context);				
+						}
 					}
-				} else {
-					if (b == null || b.equals("")) {
-						ivInfo.setImageBitmap(defaultBk2);
-					} else {
-						ivInfo.setTag(b);
-						SimpleImageLoader.showImg(ivInfo, b, this.context);				
-					}
-				}
-//			}
+	//			}
+			}
 		}
 		String price = "";
 		try {
