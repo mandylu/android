@@ -313,6 +313,11 @@ public class QuanleimuApplication extends Application {
 		
 		return viewStack;
 	}
+	
+	
+	public void ClearCache(){
+		listHot = null;
+	}
 
 	// 百度MapAPI的管理类
 	BMapManager mBMapMan = null;

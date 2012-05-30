@@ -181,6 +181,9 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 										String file_path = files[i];
 										getContext().deleteFile(file_path);
 									}
+									
+									QuanleimuApplication.getApplication().ClearCache();
+									
 									//清空手机号码
 									((TextView)findViewById(R.id.tvPhoneNum)).setText("");
 									//清空签名档
