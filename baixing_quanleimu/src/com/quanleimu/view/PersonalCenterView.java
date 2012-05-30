@@ -60,6 +60,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private Bundle bundle;
 	private int buttonStatus = -1;//-1:edit 0:finish
 	
+	private boolean loginTried = false;
+	
 	public PersonalCenterView(Context context, Bundle bundle){
 		super(context, bundle);
 		this.bundle = bundle;
@@ -81,6 +83,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				adapter.notifyDataSetChanged();
 			}
 			else{
+				user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+						
 				if (user != null) {
 					mobile = user.getPhone();
 					password = user.getPassword();
@@ -88,9 +92,19 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					pd.setCancelable(true);
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
+					if(loginTried){
+						m_viewInfoListener.onExit(this);
+					}
+					
 					bundle.putInt("type", 1);
-					bundle.putString("backPageName", "");
+					bundle.putString("backPageName", "");					
 					m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
+					
+					if(loginTried){
+						m_viewInfoListener.onBack();
+					}	
+					
+					loginTried = true;
 				}
 			}
 		}
@@ -158,7 +172,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.personalcenterview, null);
 		this.addView(v);
-		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+		
 		try {
 			if (Util.JadgeConnection(this.getContext()) == false) {
 				Toast.makeText(this.getContext(), "网络连接异常", 3).show();

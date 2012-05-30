@@ -36,39 +36,45 @@ import com.quanleimu.view.PostGoodsCateMainView;
 import com.quanleimu.view.HomePageView;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
+	private boolean needClearViewStack = false;
 	
 	public void onSwitchToTab(ETAB_TYPE tabType){
 		switch(tabType){
 		case ETAB_TYPE_MAINPAGE:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE)break;
+			
+			needClearViewStack = true;
 			onNewView(new HomePageView(this, bundle));
 			
-			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_CATEGORY:				
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY)break;
+			
+			needClearViewStack = true;
 			onNewView(new CateMainView(this));
 			
-			QuanleimuApplication.getApplication().getViewStack().clear();
 			break;
 		case ETAB_TYPE_PUBLISH:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
+			
+			needClearViewStack = true;
 			onNewView(new PostGoodsCateMainView(this, bundle));
-			QuanleimuApplication.getApplication().getViewStack().clear();
+			
 			break;
 		case ETAB_TYPE_MINE:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE)break;
+			
+			needClearViewStack = true;
 			onNewView(new PersonalCenterView(this, bundle));
-			QuanleimuApplication.getApplication().getViewStack().clear();
+
 			break;
 		case ETAB_TYPE_SETTING:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
+			
+			needClearViewStack = true;
 			onNewView(new SetMainView(this));
 			
-			QuanleimuApplication.getApplication().getViewStack().clear();
-			
-			break;
-			
+			break;			
 		}
 
 	}
@@ -169,14 +175,18 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 		
-    	if(view == currentView && QuanleimuApplication.getApplication().getViewStack().size() > 0){
+    	if(view == currentView ){
     		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
     		scroll.removeAllViews();    		
     		currentView.onDestroy();
     		
     		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
-    		setBaseLayout(currentView);
-    		scroll.addView(currentView);
+    		if(null != currentView){
+	    		setBaseLayout(currentView);
+	    		scroll.addView(currentView);
+    		}/*else{
+    			onNewView(new HomePageView(this));
+    		}*/
     	}
 	}
 	
@@ -186,22 +196,34 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 		
 		long time_start =  System.currentTimeMillis();
-		Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
+		if(null != currentView){
+			Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
+		}else{
+			Log.d("page switching performance log", "from current:" + "N/A" + " at " + time_start + "ms" );
+		}
 		
-		currentView.onPause();
-		QuanleimuApplication.getApplication().getViewStack().push(currentView);
+		if(null != currentView){
+			currentView.onPause();
+			QuanleimuApplication.getApplication().getViewStack().push(currentView);
+		}
+		
+		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+		scroll.removeAllViews();
 		
 		currentView = newView;
 		newView.setInfoChangeListener(this);//NOTE: MUST be called before addView is called, coz addView will call View.onAttatchedToWindow which could then call methods that will use ViewInfoListener
 		setBaseLayout(newView);
-		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-		scroll.removeAllViews();
+		
+		if(needClearViewStack){
+			QuanleimuApplication.getApplication().getViewStack().clear();
+			needClearViewStack = false;
+		}
+		
 		scroll.addView(currentView);
 		
 		long time_end =  System.currentTimeMillis();
 		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
 		Log.d("page switching performance log", "cost is " + (time_end-time_start) + "ms");
-		getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 	}
 	
 //	@Override

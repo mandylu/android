@@ -171,6 +171,9 @@ public class LoginView extends BaseView implements OnClickListener{
 			}
 			JSONObject json = jsonObject.getJSONObject("error");
 			String message = json.getString("message");
+			
+			Message msg = Message.obtain();
+			
 			if (!id.equals("")) {
 				// 登陆成功
 				UserBean user = new UserBean();
@@ -181,11 +184,14 @@ public class LoginView extends BaseView implements OnClickListener{
 				user.setPassword(passwordEt.getText().toString());
 				QuanleimuApplication.getApplication().setMobile(user.getPhone());
 				Util.saveDataToLocate(getContext(), "user", user);
+				
+				msg.what = 0;				
+			}else{
+				msg.what = 1;
 			}
 			
-			Message msg = Message.obtain();
-			msg.what = 0;
-			msg.obj = message;
+			msg.obj = message;		
+
 			myHandler.sendMessage(msg);
 		} catch (JSONException e) {
 			e.printStackTrace();
@@ -207,6 +213,9 @@ public class LoginView extends BaseView implements OnClickListener{
 					m_viewInfoListener.onBack();
 				}
 				break;
+			case 1:
+				Toast.makeText(getContext(), (String)msg.obj, 0).show();
+				break;				
 			case 2:
 				Toast.makeText(getContext(), "登陆未成功，请稍后重试！", 3).show();
 				break;
