@@ -8,31 +8,22 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
-import java.util.Vector;
 
 import android.content.Context;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.drawable;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
@@ -163,21 +154,45 @@ public class SiftView extends BaseView {
 				result += URLEncoder.encode(str);
 			}
 			
-			if(bundle.getString("siftresult") != null)
+			if(result.length() > 0)
 			{
 				bundle.putString("siftresult", result);
 				bundle.putString("backPageName", "选择类目");
-				
 				if(null != m_viewInfoListener){
 					m_viewInfoListener.onExit(this);
 					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
 				}				
 			}else{
-				CharSequence text = "请输入或选择筛选条件。";
-				int duration = Toast.LENGTH_SHORT;
-				Toast toast = Toast.makeText(getContext(), text, duration);
-				toast.show();
+				if(bundle.getString("siftresult") != null && !bundle.getString("siftresult").equals("")){
+					bundle.putString("siftresult", "");
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onExit(this);
+						m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
+					}				
+				}
+				else{
+					CharSequence text = "请输入或选择筛选条件。";
+					int duration = Toast.LENGTH_SHORT;
+					Toast toast = Toast.makeText(getContext(), text, duration);
+					toast.show();
+				}
 			}
+//			
+//			if(bundle.getString("siftresult") != null)
+//			{
+//				bundle.putString("siftresult", result);
+//				bundle.putString("backPageName", "选择类目");
+//				
+//				if(null != m_viewInfoListener){
+//					m_viewInfoListener.onExit(this);
+//					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
+//				}				
+//			}else{
+//				CharSequence text = "请输入或选择筛选条件。";
+//				int duration = Toast.LENGTH_SHORT;
+//				Toast toast = Toast.makeText(getContext(), text, duration);
+//				toast.show();
+//			}
 		}		
 		
 		
