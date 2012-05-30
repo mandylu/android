@@ -1,39 +1,14 @@
 package com.quanleimu.view;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AdapterView;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.TextView;
-import android.widget.Toast;
 
-import com.quanleimu.adapter.AllCatesAdapter;
-import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.entity.PostMu;
-import com.quanleimu.entity.SaveFirstStepCate;
 import com.quanleimu.entity.SecondStepCate;
-import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
-import com.quanleimu.view.SetMainView;
 import com.quanleimu.view.PostGoodsCateMainView;
-import com.quanleimu.view.BaseView.ETAB_TYPE;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 

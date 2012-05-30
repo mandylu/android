@@ -79,7 +79,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private LinkedHashMap<String, String> initialValueMap;
 	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
 	private LinkedHashMap<String, Object> editMap;				
-	private EditText descriptionEt, titleEt;
+	private EditText descriptionEt;
 	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
 	private ArrayList<String>bitmap_url;
@@ -243,6 +243,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						((EditText) obj).setText(curMeta[1]);
 					} else if (obj instanceof List<?>) {
 						String value = curMeta[1];
+						@SuppressWarnings("unchecked")
 						List<CheckBox> list = ((List<CheckBox>) obj);
 						for (int j = 0; j < list.size(); j++) {
 							CheckBox c = list.get(j);
@@ -312,7 +313,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 				if (obj != null) {
 					if (obj instanceof TextView) {
-						String text = ((TextView)obj).getText().toString();
 						if(((TextView)obj).getText() != null 
 								&& !((TextView)obj).getText().toString().equals("")
 								&& !((TextView)obj).getText().toString().equals("请选择")
@@ -331,6 +331,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						((EditText) obj).setText(labelValue);
 					} else if (obj instanceof List<?>) {
 						String value = goodsDetail.getValueByKey((String)keys[i]);
+						@SuppressWarnings("unchecked")
 						List<CheckBox> list = ((List<CheckBox>) obj);
 						for (int j = 0; j < list.size(); j++) {
 							CheckBox c = list.get(j);
@@ -1028,7 +1029,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		intent.putExtra("aspectX", 1);
 		intent.putExtra("aspectY", 1);
 		// outputX outputY 是裁剪图片宽高
-		int width = baseActivity.getWindowManager().getDefaultDisplay().getWidth();
+//		int width = baseActivity.getWindowManager().getDefaultDisplay().getWidth();
 		//intent.putExtra("outputX", width);
 		//intent.putExtra("outputY", width);
 		intent.putExtra("return-data", false);

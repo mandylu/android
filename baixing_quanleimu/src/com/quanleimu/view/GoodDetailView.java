@@ -17,9 +17,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.Point;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -45,8 +42,6 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
@@ -54,13 +49,11 @@ import com.quanleimu.activity.BaiduMapActivity;
 import android.net.Uri;
 import android.content.Intent;
 
-import android.view.InflateException;
-
 public class GoodDetailView extends BaseView implements DialogInterface.OnClickListener, View.OnClickListener{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
-	final private int msgShowMap = 1;
+//	final private int msgShowMap = 1;
 	final private int msgCancelMap = 2;
 	final private int msgRefresh = 5;
 	final private int msgUpdate = 6;
@@ -73,7 +66,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	private LinearLayout ll_meta;
 	private TextView txt_tittle;
 	private TextView txt_message1;
-	private RelativeLayout rl_phone, rl_address, rl_test, llgl;
+	private RelativeLayout rl_phone, rl_address, llgl;
 	private TextView txt_phone, txt_address;
 	private ImageView im_x;
 
@@ -227,7 +220,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			llgl = (RelativeLayout) findViewById(R.id.llgl);
 			llgl.setVisibility(View.GONE);
 		}
-		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
+//		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
 		llgl = (RelativeLayout) findViewById(R.id.llgl);
 
 		txt_tittle = (TextView) findViewById(R.id.goods_tittle);
