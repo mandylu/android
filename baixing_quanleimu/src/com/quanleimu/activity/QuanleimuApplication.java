@@ -21,6 +21,7 @@ import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache2SD.LazyImageLoader2SD;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.ViewStack;
 
 public class QuanleimuApplication extends Application {
@@ -312,6 +313,14 @@ public class QuanleimuApplication extends Application {
 		}
 		
 		return viewStack;
+	}
+	
+	protected ErrorHandler handler;
+	public void setErrorHandler(Context context){
+		handler = new ErrorHandler(context);
+	}
+	public ErrorHandler getErrorHandler(){
+		return handler;
 	}
 	
 	

@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -14,15 +15,17 @@ import android.view.LayoutInflater;
 import android.webkit.WebView;
 import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 
 public class ForgetPasswordView extends BaseView {
 
 	public String backPageName = "";
 	public String categoryEnglishName = "";
-	public String json = "";
 	private WebView web;
+	//private ProgressDialog pd;
 
 	public ForgetPasswordView(Context context, Bundle bundle){
 		super(context);
@@ -36,6 +39,9 @@ public class ForgetPasswordView extends BaseView {
 		
 		web = (WebView) findViewById(R.id.web);
 		web.loadUrl("http://www.baixing.com/auth/findPassword/");
+		
+//		pd = ProgressDialog.show(getContext(), "提示", "数据下载中，请稍后。。。");
+//		pd.setCancelable(true);
 	}
 
 	public TitleDef getTitleDef(){
@@ -51,70 +57,67 @@ public class ForgetPasswordView extends BaseView {
 		return tab;
 	}
 
-	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
-	class LoginThread implements Runnable {
-		public void run() {
-			String apiName = "user_login";
-			ArrayList<String> list = new ArrayList<String>();
-//			list.add("mobile=" + accoutnEt.getText().toString().trim());
-//			list.add("password=" + passwordEt.getText().toString().trim());
-
-			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url ------ >" + url);
-			try {
-				json = Communication.getDataByUrl(url);
-				if (json != null) {
-					myHandler.sendEmptyMessage(1);
-				} else {
-					myHandler.sendEmptyMessage(2);
-				}
-			} catch (UnsupportedEncodingException e) {
-				myHandler.sendEmptyMessage(3);
-				e.printStackTrace();
-			} catch (Exception e) {
-				myHandler.sendEmptyMessage(3);
-				e.printStackTrace();
-			}
-		}
-	}
-
-	// 管理线程的Handler
-	Handler myHandler = new Handler() {
-		@Override
-		public void handleMessage(Message msg) {
-			if (pd.isShowing()) {
-				pd.dismiss();
-			}
-			switch (msg.what) {
-			case 1:
-				try {
-					JSONObject jsonObject = new JSONObject(json);
-					System.out.println("jsonObject--->" + jsonObject);
-					String id;
-					try {
-						id = jsonObject.getString("id");
-					} catch (Exception e) {
-						id = "";
-						e.printStackTrace();
-					}
-					JSONObject json = jsonObject.getJSONObject("error");
-					String message = json.getString("message");
-					Toast.makeText(getContext(), message, 0).show();
-					if (!id.equals("")) {
-						// 登陆成功
-					}
-				} catch (JSONException e) {
-					e.printStackTrace();
-				}
-				break;
-			case 2:
-				Toast.makeText(getContext(), "登陆未成功，请稍后重试！", 3).show();
-				break;
-			case 3:
-				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
-				break;				
-			}
-			super.handleMessage(msg);
-		}
-	};
+//	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
+//	class LoginThread implements Runnable {
+//		public void run() {
+//			String apiName = "user_login";
+//			ArrayList<String> list = new ArrayList<String>();
+//
+//			String url = Communication.getApiUrl(apiName, list);
+//			
+//			Message msg = Message.obtain();
+//			msg.obj = pd;
+//			
+//			try {
+//		
+//				String json = Communication.getDataByUrl(url);
+//				if (json != null) {
+//					ForgetPasswordView.this.parseResponse(json, msg);
+//					return;
+//				} else {
+//					msg.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+//					Bundle bundle = new Bundle();
+//					bundle.putString("popup_message", "登陆未成功，请稍后重试！");
+//					msg.setData(new Bundle());
+//				}
+//			} catch (UnsupportedEncodingException e) {
+//				msg.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				//e.printStackTrace();
+//			} catch (Exception e) {
+//				msg.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				//e.printStackTrace();
+//			}
+//			
+//			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg);
+//		}
+//	}
+//	
+//	protected void parseResponse(String jsonString, Message msg){
+//		try {
+//			JSONObject jsonObject = new JSONObject(jsonString);
+//			System.out.println("jsonObject--->" + jsonObject);
+//			
+//			String id = "";
+//			try {
+//				id = jsonObject.getString("id");
+//			} catch (Exception e) {
+//				id = "";
+//				e.printStackTrace();
+//			}
+//			
+//			JSONObject json = jsonObject.getJSONObject("error");
+//			String message = json.getString("message");
+//			
+//			Bundle bundle = new Bundle();
+//			bundle.putString("popup_message", message);
+//			msg.setData(bundle);
+//			
+//			
+//		} catch (JSONException e) {
+//			msg.what = ErrorHandler.ERROR_COMMON_FAILURE;
+//			e.printStackTrace();
+//		}	
+//		
+//		QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg);
+//	}
 }

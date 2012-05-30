@@ -38,6 +38,12 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
 	
+	public QuanleimuMainActivity(){
+		super();
+		
+		QuanleimuApplication.getApplication().setErrorHandler(this);
+	}
+	
 	public void onSwitchToTab(ETAB_TYPE tabType){
 		switch(tabType){
 		case ETAB_TYPE_MAINPAGE:

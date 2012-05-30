@@ -26,6 +26,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -48,8 +49,12 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 	private List<GoodsDetail> listCommonGoods = new ArrayList<GoodsDetail>();
 	private GoodsList goodsList = new GoodsList();
 	private GoodsListAdapter adapter;
-	private int isFirst = 0;
+	private boolean isFirst = true;
 	private String mUrl = "";
+	
+	private final static int ERROR_FIRST = 0;
+	private final static int ERROR_MORE = 1;
+	private final static int ERROR_NOMORE = 2;
 	
 	TextView tvAddMore;
 
@@ -135,7 +140,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				tvAddMore.setText("加载中...");
 				
 				//点击获取更多 按钮布局消失
-				isFirst = -1;
+				isFirst = false;
 				startRow = listGoods.size();
 				new Thread(new GetGoodsListThread()).start();
 			}
@@ -156,7 +161,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					tvAddMore.setText("加载中...");
 					
 					//点击获取更多 按钮布局消失
-					isFirst = -1;
+					isFirst = false;
 					startRow = listGoods.size();
 					new Thread(new GetGoodsListThread()).start();
 				}
@@ -191,17 +196,19 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 
 		// 管理线程的Handler
 	Handler myHandler = new Handler() {
+		
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1:
-				 
+			case GetGoodsView.ERROR_FIRST:				 
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				if (goodsList == null || goodsList.getCount() == 0) {
-					if (pd != null) {
-						pd.dismiss();
-					}
-					Toast.makeText(GetGoodsView.this.getContext(), "没有符合的结果，请更改条件并重试！", 3).show();
+					Message msg1 = Message.obtain();
+					msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+					Bundle bundle = new Bundle();
+					bundle.putString("popup_message", "没有符合的结果，请更改条件并重试！");
+					msg1.setData(bundle);
+					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 				} else {
 					listGoods = goodsList.getData();
 					QuanleimuApplication.getApplication().setListGoods(listGoods);
@@ -214,35 +221,34 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					
 					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), listGoods);
 					lvGoodsList.setAdapter(adapter);
-					if (pd != null) {
-						pd.dismiss();
-					}
 				}
 
 				break;
-			case 2:
-				if (pd != null) {
-					pd.dismiss();
-				}
+			case GetGoodsView.ERROR_NOMORE:
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
 				loadingLayout.setVisibility(View.GONE);
-				Toast.makeText(GetGoodsView.this.getContext(), "没有符合的结果，请更改条件并重试！", 3).show();
-				// 判断总数是不是已经超出当前集合长度
-				if (goodsList.getCount() > listGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
-				}
+				
+				Message msg1 = Message.obtain();
+				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+				Bundle bundle = new Bundle();
+				bundle.putString("popup_message", "数据下载失败，请重试！");
+				msg1.setData(bundle);
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 				break;
-			case 3:
+			case GetGoodsView.ERROR_MORE:
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
 				loadingLayout.setVisibility(View.GONE);
 				
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(GetGoodsView.this.getContext(), "没有符合的结果，请更改条件并重试！", 3).show();
+					Message msg2 = Message.obtain();
+					msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
+					Bundle bundle1 = new Bundle();
+					bundle1.putString("popup_message", "没有更多啦！");
+					msg2.setData(bundle1);
+					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 				} else {
 					listCommonGoods =  goodsList.getData();
 					for(int i=0;i<listCommonGoods.size();i++)
@@ -252,34 +258,29 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					QuanleimuApplication.getApplication().setListGoods(listGoods);
 					
 					adapter.setList(listGoods);
-					adapter.notifyDataSetChanged();
-					
-					
-				}
-				// 判断总数是不是已经超出当前集合长度
-				if (goodsList.getCount() > listGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
+					adapter.notifyDataSetChanged();					
 				}
 				break;
-			case 4:
-				break;
-			case 10:
-				if (pd != null) {
-					pd.dismiss();
-				}
+			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
 				loadingLayout.setVisibility(View.GONE);
-				Toast.makeText(GetGoodsView.this.getContext(), "网络连接失败，请检查设置！", 3).show();
-				// 判断总数是不是已经超出当前集合长度
-				if (goodsList.getCount() > listGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
-				}
+				
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 				break;
+			}
+			
+			if (pd != null) {
+				pd.dismiss();
+			}
+			
+			// 判断总数是不是已经超出当前集合长度
+			if (goodsList.getCount() > listGoods.size()) {
+				loadingLayout.setVisibility(View.VISIBLE);
+			} else {
+				loadingLayout.setVisibility(View.GONE);
 			}
 			
 			super.handleMessage(msg);
@@ -302,21 +303,21 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				json = Communication.getDataByUrl(url);
 
 				if (json != null) {
-					if (isFirst == -1) {
-						isFirst = 0;
-						myHandler.sendEmptyMessage(3);
+					if (isFirst == false) {
+						//isFirst = 0;
+						myHandler.sendEmptyMessage(GetGoodsView.ERROR_MORE);
 					} else {
-						myHandler.sendEmptyMessage(1);
+						isFirst = false;
+						myHandler.sendEmptyMessage(GetGoodsView.ERROR_FIRST);
 					}
 
 				} else {
-					myHandler.sendEmptyMessage(2);
+					myHandler.sendEmptyMessage(GetGoodsView.ERROR_NOMORE);
 				}
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
-				myHandler.sendEmptyMessage(10);
-				e.printStackTrace();
+				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} 
 
 		}

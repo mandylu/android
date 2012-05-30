@@ -133,14 +133,11 @@ public class CategorySelectionView extends ListView {
 	}
 
 	protected void parseCategory(String json) {
-		if(progressDialog != null){
-			progressDialog.dismiss();
-		}
 		
 		mainCate = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
 		
 		if (mainCate == null || mainCate.getChildren().size() == 0) {
-			ErrorHandler.instance().sendEmptyMessage(3);
+			QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);
 		} else {
 			((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
 			if(allCateAdapter == null){
@@ -190,18 +187,15 @@ public class CategorySelectionView extends ListView {
 					Util.saveDataToLocate(CategorySelectionView.this.getContext(), "saveFirstStepCate",	postMu);
 					
 				} else {
-					//TODO:: check
-					//ErrorHandler.instance().sendEmptyMessage(2);
+					QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);
 				}
 				
 				return json;
 			} catch (UnsupportedEncodingException e) {
-				//TODO:: check
-				//ErrorHandler.instance().sendEmptyMessage(3);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				e.printStackTrace();
 			} catch (IOException e) {
-				//TODO:: check
-				//ErrorHandler.instance().sendEmptyMessage(3);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				e.printStackTrace();
 			}
 			
@@ -209,12 +203,13 @@ public class CategorySelectionView extends ListView {
 		}
 		
 		protected void onPostExecute(String json) { 
-			if(null == json || 0 == json.length()){
-				ErrorHandler.instance().sendEmptyMessage(10);
-			}
-			else{
+			if(null != json && json.length() > 0){
 				parseCategory(json);
-			}			
+			}
+			
+			if(progressDialog != null){
+				progressDialog.dismiss();
+			}
 		}
 	};
 }

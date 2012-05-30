@@ -358,14 +358,19 @@ public class SiftView extends BaseView {
 							if(preValues != null && preValues.containsKey(listFilterss.get(i).getName())){
 								String preValue = preValues.get(listFilterss.get(i).getName());
 								List<values>values = listFilterss.get(i).getValuesList();
+								boolean valid = false;
 								for(int z = 0; z < values.size(); ++ z){
 									if(values.get(z).getValue().equals(preValue)){
 										tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
 										valuemap.put(listFilterss.get(i).getName(), preValue);
+										valid = true;
 										break;
 									}
 								}
 								
+								if(!valid){
+									tvmeta.setText("请选择");
+								}
 							}
 							else{
 								tvmeta.setText("请选择");
