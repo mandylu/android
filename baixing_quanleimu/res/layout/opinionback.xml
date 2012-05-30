@@ -17,9 +17,8 @@
 	    android:marqueeRepeatLimit="marquee_forever"
 	    android:minLines="6"
 	    android:typeface="monospace" 
-	    android:layout_alignParentTop="true">
-	
-	    <requestFocus />
+	    android:layout_alignParentTop="true"
+	    android:hint="感谢使用百姓网 android客户端，欢迎您反馈任何意见和问题，同时留下您的联系方式，方便我们及时联系您解决问题。">
 	</EditText>
 
 </RelativeLayout>

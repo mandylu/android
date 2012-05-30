@@ -700,31 +700,33 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	 * @return
 	 */
 	private boolean filled() {
-		boolean bRet = false;
+		return true;
 		
-		for(int i = 0; i < bitmap_url.size(); ++i){
-			if(bitmap_url.get(i) != null && bitmap_url.get(i).length() > 0 && initialValueMap.get(bitmap_url.get(i)) == null)
-				return true;
-		}
-		
-		extractInputData();
-		
-		for (int i = 0; i < postList.size(); i++) {
-			String key = (String) postList.keySet().toArray()[i];
-			PostGoodsBean postGoodsBean = postList.get(key);
-			
-			String displayName = postGoodsBean.getDisplayName();
-			
-			String value = postMap.get(displayName);
-			String initialValue = initialValueMap.get(displayName)+postGoodsBean.getUnit();
-			
-			if(initialValue == null || !initialValue.equals(value)){
-				bRet = true;
-				break;
-			}
-		}			
-			
-		return bRet;
+//		boolean bRet = false;
+//		
+//		for(int i = 0; i < bitmap_url.size(); ++i){
+//			if(bitmap_url.get(i) != null && bitmap_url.get(i).length() > 0 && initialValueMap.get(bitmap_url.get(i)) == null)
+//				return true;
+//		}
+//		
+//		extractInputData();
+//		
+//		for (int i = 0; i < postList.size(); i++) {
+//			String key = (String) postList.keySet().toArray()[i];
+//			PostGoodsBean postGoodsBean = postList.get(key);
+//			
+//			String displayName = postGoodsBean.getDisplayName();
+//			
+//			String value = postMap.get(displayName);
+//			String initialValue = initialValueMap.get(displayName)+postGoodsBean.getUnit();
+//			
+//			if(initialValue == null || !initialValue.equals(value)){
+//				bRet = true;
+//				break;
+//			}
+//		}			
+//			
+//		return bRet;
 	}
 
 	/**
