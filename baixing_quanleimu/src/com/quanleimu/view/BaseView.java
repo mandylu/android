@@ -1,7 +1,5 @@
 package com.quanleimu.view;
 
-import com.quanleimu.activity.BaseActivity;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;

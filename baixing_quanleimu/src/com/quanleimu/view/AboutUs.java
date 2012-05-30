@@ -2,10 +2,6 @@ package com.quanleimu.view;
 
 import android.os.Bundle;
 import android.view.LayoutInflater;
-import android.view.View;
-import android.view.WindowManager;
-import android.webkit.WebView;
-import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.content.Context;
@@ -13,11 +9,8 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageInfo;
 import java.text.SimpleDateFormat;
 
-import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 
 public class AboutUs extends BaseView {
 
