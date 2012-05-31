@@ -1,6 +1,7 @@
 package com.quanleimu.view;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 
 import org.json.JSONException;
@@ -136,8 +137,16 @@ public class LoginView extends BaseView implements OnClickListener{
 		public void run() {
 			String apiName = "user_login";
 			ArrayList<String> list = new ArrayList<String>();
-			list.add("mobile=" + accoutnEt.getText().toString().trim());
-			list.add("nickname=" + accoutnEt.getText().toString().trim());
+//			list.add("mobile=" + URLEncoder.encode(accoutnEt.getText().toString().trim(), "UTF-8"));
+			String nickname = accoutnEt.getText().toString().trim();
+			try{
+				nickname = URLEncoder.encode(nickname, "UTF-8");
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			list.add("mobile=" + nickname);
+			list.add("nickname=" + nickname);
 			list.add("password=" + passwordEt.getText().toString().trim());
 
 			String url = Communication.getApiUrl(apiName, list);
