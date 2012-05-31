@@ -836,8 +836,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					city = city + "," + tvText;
 				}
 			}
-			if(editMap != null && PostGoodsView.this.getEditMapValue("具体地区") != null){
-				Object objArea = PostGoodsView.this.getEditMapValue("具体地区");
+			if(editMap != null && PostGoodsView.this.getEditMapValue("具体地点") != null){
+				Object objArea = PostGoodsView.this.getEditMapValue("具体地点");
 				String tvText = null;
 				if(objArea instanceof TextView){
 					tvText = ((TextView)objArea).getText().toString();

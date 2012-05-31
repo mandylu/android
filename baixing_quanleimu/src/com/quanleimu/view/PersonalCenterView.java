@@ -117,6 +117,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				TitleDef title = getTitleDef();
 				title.m_title = "我的收藏";
 				title.m_rightActionHint = "编辑";
+				title.m_leftActionHint = "更新";
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = QuanleimuApplication.getApplication().getListMyStore();
@@ -131,6 +132,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				TitleDef title = getTitleDef();
 				title.m_title = "我的历史";
 				title.m_rightActionHint = "编辑";
+				title.m_leftActionHint = "更新";
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			goodsList = QuanleimuApplication.getApplication().getListLookHistory();
@@ -409,9 +411,31 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	
 	@Override
 	public boolean onLeftActionPressed(){
-		pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
-		pd.setCancelable(true);
-		new Thread(new UpdateThread(currentPage)).start();
+		boolean toUpdate = true;
+		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
+			toUpdate = false;
+		}
+		if(toUpdate){
+			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			new Thread(new UpdateThread(currentPage)).start();
+		}
+		else{
+			if(0 == PersonalCenterView.this.currentPage){
+				goodsList.clear();
+				QuanleimuApplication.getApplication().setListMyStore(goodsList);
+				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+				adapter.setList(goodsList);
+				adapter.notifyDataSetChanged();
+			}
+			else if(1 == PersonalCenterView.this.currentPage){
+				goodsList.clear();
+				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
+				adapter.setList(goodsList);
+				adapter.notifyDataSetChanged();					
+			}
+		}
 		return true;
 	}
 
@@ -422,6 +446,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_rightActionHint = "完成";
+				if(currentPage != -1){
+					title.m_leftActionHint = "清空";
+				}
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(adapter != null){
@@ -434,6 +461,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_rightActionHint = "编辑";
+				title.m_leftActionHint = "更新";
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			adapter.setHasDelBtn(false);
