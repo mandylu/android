@@ -778,7 +778,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
-		title.m_leftActionHint = "后退";
+		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "收藏";
 		title.m_title = "详细信息";
 		title.m_visible = true;

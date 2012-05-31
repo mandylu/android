@@ -204,7 +204,7 @@ public class SiftView extends BaseView {
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = "筛选";
-		title.m_leftActionHint = "后退";
+		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
 		return title;
 	}
