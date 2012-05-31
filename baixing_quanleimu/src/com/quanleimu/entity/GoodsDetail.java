@@ -33,50 +33,50 @@ public class GoodsDetail implements Serializable{
 		if(null == data) return null;
 		return data.keySet();
 	}
-	private EDATAKEYS getEnumByString(String key){
-		EDATAKEYS e = null;
-		if(key.equals("title")){
-			e = EDATAKEYS.EDATAKEYS_TITLE;
-		}
-		else if(key.equals("description")){
-			e = EDATAKEYS.EDATAKEYS_DESCRIPTION;
-		}
-		else if(key.equals("lat")){
-			e = EDATAKEYS.EDATAKEYS_LAT;
-		}
-		else if(key.equals("lng")){
-			e = EDATAKEYS.EDATAKEYS_LON;
-		}
-		else if(key.equals("createdTime")){
-			e = EDATAKEYS.EDATAKEYS_DATE;
-		}
-		else if(key.equals("id")){
-			e = EDATAKEYS.EDATAKEYS_ID;
-		}
-		else if(key.equals("categoryEnglishName")){
-			e = EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME;
-		}
-		else if(key.equals("cityEnglishName"))
-		{
-			e = EDATAKEYS.EDATAKEYS_CITYENGLISHNAME;
-		}
-		else if(key.equals("areaNames")){
-			e = EDATAKEYS.EDATAKEYS_AREANAME;
-		}
-		else if(key.equals("mobile")){
-			e = EDATAKEYS.EDATAKEYS_MOBILE;
-		}
-		else if(key.equals("wanted")){
-			e = EDATAKEYS.EDATAKEYS_WANTED;
-		}
-		else if(key.equals("contact")){
-			e = EDATAKEYS.EDATAKEYS_CONTACT;
-		}
-		else if(key.equals("link")){
-			e = EDATAKEYS.EDATAKEYS_LINK;
-		}
-		return e;
-	}
+//	private EDATAKEYS getEnumByString(String key){
+//		EDATAKEYS e = null;
+//		if(key.equals("title")){
+//			e = EDATAKEYS.EDATAKEYS_TITLE;
+//		}
+//		else if(key.equals("description")){
+//			e = EDATAKEYS.EDATAKEYS_DESCRIPTION;
+//		}
+//		else if(key.equals("lat")){
+//			e = EDATAKEYS.EDATAKEYS_LAT;
+//		}
+//		else if(key.equals("lng")){
+//			e = EDATAKEYS.EDATAKEYS_LON;
+//		}
+//		else if(key.equals("createdTime")){
+//			e = EDATAKEYS.EDATAKEYS_DATE;
+//		}
+//		else if(key.equals("id")){
+//			e = EDATAKEYS.EDATAKEYS_ID;
+//		}
+//		else if(key.equals("categoryEnglishName")){
+//			e = EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME;
+//		}
+//		else if(key.equals("cityEnglishName"))
+//		{
+//			e = EDATAKEYS.EDATAKEYS_CITYENGLISHNAME;
+//		}
+//		else if(key.equals("areaNames")){
+//			e = EDATAKEYS.EDATAKEYS_AREANAME;
+//		}
+//		else if(key.equals("mobile")){
+//			e = EDATAKEYS.EDATAKEYS_MOBILE;
+//		}
+//		else if(key.equals("wanted")){
+//			e = EDATAKEYS.EDATAKEYS_WANTED;
+//		}
+//		else if(key.equals("contact")){
+//			e = EDATAKEYS.EDATAKEYS_CONTACT;
+//		}
+//		else if(key.equals("link")){
+//			e = EDATAKEYS.EDATAKEYS_LINK;
+//		}
+//		return e;
+//	}
 	private String getStringByEnum(EDATAKEYS e){
 		String key = "";
 		switch(e){

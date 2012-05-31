@@ -1,24 +1,10 @@
 package com.quanleimu.view;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.webkit.WebView;
-import android.widget.Toast;
-
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
 
 public class ForgetPasswordView extends BaseView {
 

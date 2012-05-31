@@ -7,7 +7,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
@@ -128,18 +127,18 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		super.onDestroy();
 	}
 	
-	private String getEditMapKeyDisplayName(String keyName){
-		if(null == editMap) return null;
-		Set<String>keySet = editMap.keySet();
-		if(null == keySet) return null;
-		Object[] keys = (Object[])keySet.toArray();
-		for(int i = 0; i < keys.length; ++ i){
-			String[] subKeys = ((String)keys[i]).split(" ");
-			if(subKeys.length != 2) continue;
-			if(subKeys[1].equals(keyName)) return subKeys[0];
-		}
-		return null;	
-	}
+//	private String getEditMapKeyDisplayName(String keyName){
+//		if(null == editMap) return null;
+//		Set<String>keySet = editMap.keySet();
+//		if(null == keySet) return null;
+//		Object[] keys = (Object[])keySet.toArray();
+//		for(int i = 0; i < keys.length; ++ i){
+//			String[] subKeys = ((String)keys[i]).split(" ");
+//			if(subKeys.length != 2) continue;
+//			if(subKeys[1].equals(keyName)) return subKeys[0];
+//		}
+//		return null;	
+//	}
 	
 	private Object getEditMapValue(String key){
 		if(null == editMap) return null;
@@ -338,11 +337,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 //					postMap.put(key, "");
 //				}
 //			}
-			Set<String>keySet = goodsDetail.getKeys();
-			Object[] keys = null;
-			if(keySet != null){
-				keys = keySet.toArray();
-			}
+//			Set<String>keySet = goodsDetail.getKeys();
+//			Object[] keys = null;
+//			if(keySet != null){
+//				keys = keySet.toArray();
+//			}
 			Object objArea = this.getEditMapValue("地区");
 			if(objArea != null){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
