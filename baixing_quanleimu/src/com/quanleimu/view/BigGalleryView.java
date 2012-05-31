@@ -5,6 +5,7 @@ import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
+import java.util.Vector;
 import java.util.concurrent.ExecutorService;
 import java.util.concurrent.Executors;
 
@@ -31,6 +32,7 @@ import android.widget.Toast;
 
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
@@ -121,11 +123,32 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
         if(mb != null)
         {
             mb.recycle();
+            mb = null;
         }
         
-        imageData = null;
+        //imageData = null;
         goodsDetail = null;
+        
+  		//SimpleImageLoader.Cancel(listUrl);
+       
     }
+    
+    @Override
+    public void onResume()
+    {
+    	if(null == mb){
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+            o.inPurgeable = true;
+			Bitmap tmb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);
+			mb= Helper.toRoundCorner(tmb, 20);
+			tmb.recycle();		
+    	}
+    }
+//    
+//    @Override
+//    public void onPause(){
+//    	
+//    }
 
     class GalleryImageAdapter extends BaseAdapter
     {
@@ -255,7 +278,9 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
             }
             ImageView imageView = new ImageView(context);
             imageView.setScaleType(ScaleType.FIT_CENTER);
-            imageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.WRAP_CONTENT, Gallery.LayoutParams.FILL_PARENT));
+            imageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
+//            imageView.setImageBitmap(mb);
+//            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
             loadBitmap(imageUrls.get(position), imageView);
 
             return imageView;
@@ -271,6 +296,18 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 			title.m_title = (position + 1)+"/"+listUrl.size();
 			m_viewInfoListener.onTitleChanged(title);
 		}
+		
+		//adjust download sequence
+		ArrayList<String> urls = new ArrayList<String>();
+		urls.add(listUrl.get(position));
+		for(int index = 0; (index + position < listUrl.size() || position - index >= 0); ++index){
+			if(index + position < listUrl.size())
+				urls.add(listUrl.get(index+position));
+			
+			if(position - index >= 0)
+				urls.add(listUrl.get(position-index));				
+		}
+		SimpleImageLoader.AdjustPriority(urls);
     }
 
     @Override

@@ -25,6 +25,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter; 
 import android.widget.Gallery;
 import android.widget.ImageView;
@@ -42,6 +43,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
@@ -49,7 +51,7 @@ import com.quanleimu.activity.BaiduMapActivity;
 import android.net.Uri;
 import android.content.Intent;
 
-public class GoodDetailView extends BaseView implements DialogInterface.OnClickListener, View.OnClickListener{
+public class GoodDetailView extends BaseView implements DialogInterface.OnClickListener, View.OnClickListener, OnItemSelectedListener{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
@@ -75,6 +77,8 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	public List<Bitmap> listBm = new ArrayList<Bitmap>();
 	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
 	public String mycenter_type = "";
+	
+	private List<String> listUrl = null;
 	
 	private String json = "";
 	
@@ -187,7 +191,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		if(detail.getImageList() != null){
 			String b = (detail.getImageList().getResize180()).substring(1, (detail.getImageList().getResize180()).length()-1);
 			b = Communication.replace(b);
-			List<String> listUrl = new ArrayList<String>();
+			listUrl = new ArrayList<String>();
 			String[] c = b.split(",");
 			for(int i=0;i<c.length;i++) 
 			{
@@ -198,6 +202,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				llgl.setVisibility(View.GONE);
 			}else{
 				glDetail = (Gallery) findViewById(R.id.glDetail);
+				glDetail.setOnItemSelectedListener(this);
 				glDetail.setFadingEdgeLength(10);
 				glDetail.setSpacing(40);
 				
@@ -791,5 +796,29 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		tab.m_visible = false;
 		return tab;
 	}
+	
+	
+    @Override
+    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+    {
+		//adjust download sequence
+		ArrayList<String> urls = new ArrayList<String>();
+		urls.add(listUrl.get(position));
+		for(int index = 0; (index + position < listUrl.size() || position - index >= 0); ++index){
+			if(index + position < listUrl.size())
+				urls.add(listUrl.get(index+position));
+			
+			if(position - index >= 0)
+				urls.add(listUrl.get(position-index));				
+		}
+		SimpleImageLoader.AdjustPriority(urls);
+    }
+
+    @Override
+    public void onNothingSelected(AdapterView<?> arg0)
+    {
+        // TODO Auto-generated method stub
+        
+    }
 	
 }
