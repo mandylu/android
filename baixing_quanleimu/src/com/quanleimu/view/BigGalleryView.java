@@ -211,7 +211,7 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 
         public Bitmap getBitmapFromCache(String url)
         {
-            if (!imageData.containsKey(url))
+            if (imageData != null && !imageData.containsKey(url))
             {
                 return null;
             }
