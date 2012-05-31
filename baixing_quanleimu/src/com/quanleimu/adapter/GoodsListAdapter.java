@@ -121,12 +121,12 @@ public class GoodsListAdapter extends BaseAdapter {
         o.inPurgeable = true;
         if(null == defaultBk1){
         	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren1, o);
-        	defaultBk1 = Helper.toRoundCorner(tmb, 20);
+        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
         	tmb.recycle();
         }
 		if(null == defaultBk2){
 			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren, o);
-			defaultBk2 = Helper.toRoundCorner(tmb1, 20);
+			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
 			tmb1.recycle();
 		}
 		if(!QuanleimuApplication.isTextMode()){
