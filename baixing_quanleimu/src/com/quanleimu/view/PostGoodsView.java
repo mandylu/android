@@ -758,6 +758,24 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						return false;
 					}
 				}
+				else if(postGoodsBean.getControlType().equals("checkbox")){
+					@SuppressWarnings("unchecked")
+					List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+					boolean checked = false;
+					for (int j = 0; j < l.size(); j++) {
+						CheckBox c = l.get(j);
+						if (c.isChecked()) {
+							checked = true;
+							break;
+						}
+					}
+					if(!checked){
+						Toast.makeText(this.getContext(),
+								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
+								.show();
+						return false;
+					}
+				}
 			}
 		}
 		return true;
