@@ -111,6 +111,11 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			}
 			
 		}		
+		if(this.m_viewInfoListener != null){
+			TitleDef t = getTitleDef();
+			t.m_title = (cityName + "百姓网");
+			m_viewInfoListener.onTitleChanged(t);
+		}
 //		tvTitle.setText(cityName + "百姓网");
 	}
 
@@ -129,7 +134,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				QuanleimuApplication.getApplication().setGpsCityName(locationAddr);
 				LocationService.getInstance().stop();
 				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
-					AlertDialog.Builder builder = new AlertDialog.Builder(QuanleimuApplication.getApplication());  
+					AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
 					builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
 					.setCancelable(false)  
 					.setPositiveButton("是", HomePageView.this)  
@@ -139,11 +144,16 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 							LocationService.getInstance().stop();
 						}  
 					});
-					AlertDialog alert = builder.create();
-					alert.show();
+					final AlertDialog alert = builder.create();
+					((BaseActivity)HomePageView.this.getContext()).runOnUiThread(new Runnable(){
+						@Override
+						public void run(){
+							alert.show();
+						}
+					});
 				}				
 			}
-		};
+		}.run();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -179,7 +189,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 						LocationService.getInstance().start(getContext(), HomePageView.this);
 					}					
 				}
-			};
+			}.run();
 		}
 		else{
 			LocationService.getInstance().start(getContext(), this);
@@ -622,10 +632,14 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	}
 	
 	@Override
-	public void onDestroy(){}
+	public void onDestroy(){
+		LocationService.getInstance().stop();
+	}
 	
 	@Override
-	public void onPause(){}//called before put into stack
+	public void onPause(){
+		LocationService.getInstance().stop();
+	}
 	
 	@Override
 	public boolean onBack(){

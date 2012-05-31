@@ -451,13 +451,21 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		switch (v.getId()) {
 		case R.id.ivMyads:
 			this.currentPage = -1;
+			buttonStatus = -1;
+			adapter.setHasDelBtn(false);
 			rebuildPage(false);
 			break;
 		case R.id.ivMyfav:
+			buttonStatus = -1;
+			adapter.setHasDelBtn(false);
+			
 			this.currentPage = 0;
 			rebuildPage(false);
 			break;
 		case R.id.ivMyhistory:
+			buttonStatus = -1;
+			adapter.setHasDelBtn(false);
+			
 			this.currentPage = 1;
 			rebuildPage(false);
 			break;
