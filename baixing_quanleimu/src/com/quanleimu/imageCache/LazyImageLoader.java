@@ -17,6 +17,7 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 
 
 
@@ -45,6 +46,10 @@ public class LazyImageLoader
 		if(imgManger.contains(url))
 		{
 			bitmap = imgManger.getFromCache(url);
+//			
+//			if(null == bitmap){
+//				Log.d("simple image loader:", "image contained but is null");
+//			}
 
 			return bitmap;
 		}

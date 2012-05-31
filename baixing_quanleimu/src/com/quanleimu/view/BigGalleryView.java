@@ -1,6 +1,5 @@
 package com.quanleimu.view;
 
-import java.io.ByteArrayOutputStream;
 import java.io.InputStream;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -19,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -35,7 +35,6 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
-import com.quanleimu.util.NetworkProtocols;
 
 public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 
@@ -44,7 +43,7 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
 	private Bitmap mb;
-	private HashMap<String, byte[]> imageData;
+//	private HashMap<String, byte[]> imageData;
 	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -158,99 +157,99 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 
         private int position = 0;
 
-        private final ExecutorService pool;
+//        private final ExecutorService pool;
 
         public GalleryImageAdapter(Context c, List<String> imageUrls)
         {
             this.context = c;
             this.imageUrls = imageUrls;
 
-            imageData = new HashMap<String, byte[]>();
-            pool = Executors.newFixedThreadPool(5);
+//            imageData = new HashMap<String, byte[]>();
+//            pool = Executors.newFixedThreadPool(5);
         }
 
-        public void loadBitmap(final String url, final ImageView imageView)
-        {
-            final Bitmap bitmap = getBitmapFromCache(url);
-            if (bitmap != null)
-            {
-                imageView.setImageBitmap(bitmap);
-            }
-            else
-            {
-                imageView.setImageBitmap(mb);
-                pool.submit(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        byte[] data = downloadBitmap(url);
-                        imageData.put(url, data);
-                        
-                        BitmapFactory.Options o = new BitmapFactory.Options();
-                        o.inPurgeable = true;
-                        final Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
-                        
-                        ((Activity) context).runOnUiThread(new Runnable()
-                        {
-                            public void run()
-                            {
-                                imageView.setImageBitmap(tmb);
-                            }
-                        });
-                    }
-                });
-            }
-        }
-
-        private byte[] downloadBitmap(String url)
-        {
-            try
-            {
-                HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
-
-                HttpPost httpPost = new HttpPost(url);
-                HttpResponse response = httpClient.execute(httpPost);
-
-                InputStream is = response.getEntity().getContent();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int length;
-                while((length = is.read(buffer)) != -1)
-                {
-                    bos.write(buffer, 0, length);
-                }
-                httpClient.getConnectionManager().shutdown();
-
-                return bos.toByteArray();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        public Bitmap getBitmapFromCache(String url)
-        {
-            if (imageData != null && !imageData.containsKey(url))
-            {
-                return null;
-            }
-
-            byte[] data = imageData.get(url);
-            
-            if(data == null)
-            {
-                return null;
-            }
-            
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inPurgeable = true;
-            Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
-            return tmb;
-        }
+//        public void loadBitmap(final String url, final ImageView imageView)
+//        {
+//            final Bitmap bitmap = getBitmapFromCache(url);
+//            if (bitmap != null)
+//            {
+//                imageView.setImageBitmap(bitmap);
+//            }
+//            else
+//            {
+//                imageView.setImageBitmap(mb);
+//                pool.submit(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        byte[] data = downloadBitmap(url);
+//                        imageData.put(url, data);
+//                        
+//                        BitmapFactory.Options o = new BitmapFactory.Options();
+//                        o.inPurgeable = true;
+//                        final Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
+//                        
+//                        ((Activity) context).runOnUiThread(new Runnable()
+//                        {
+//                            public void run()
+//                            {
+//                                imageView.setImageBitmap(tmb);
+//                            }
+//                        });
+//                    }
+//                });
+//            }
+//        }
+//
+//        private byte[] downloadBitmap(String url)
+//        {
+//            try
+//            {
+//                HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+//
+//                HttpPost httpPost = new HttpPost(url);
+//                HttpResponse response = httpClient.execute(httpPost);
+//
+//                InputStream is = response.getEntity().getContent();
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                byte[] buffer = new byte[1024];
+//                int length;
+//                while((length = is.read(buffer)) != -1)
+//                {
+//                    bos.write(buffer, 0, length);
+//                }
+//                httpClient.getConnectionManager().shutdown();
+//
+//                return bos.toByteArray();
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            return null;
+//        }
+//
+//        public Bitmap getBitmapFromCache(String url)
+//        {
+//            if (imageData != null && !imageData.containsKey(url))
+//            {
+//                return null;
+//            }
+//
+//            byte[] data = imageData.get(url);
+//            
+//            if(data == null)
+//            {
+//                return null;
+//            }
+//            
+//            BitmapFactory.Options o = new BitmapFactory.Options();
+//            o.inPurgeable = true;
+//            Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
+//            return tmb;
+//        }
 
         @Override
         public int getCount()
@@ -279,9 +278,11 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
             ImageView imageView = new ImageView(context);
             imageView.setScaleType(ScaleType.FIT_CENTER);
             imageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.FILL_PARENT, Gallery.LayoutParams.FILL_PARENT));
-//            imageView.setImageBitmap(mb);
-//            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
-            loadBitmap(imageUrls.get(position), imageView);
+            imageView.setImageBitmap(mb);
+            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
+            //loadBitmap(imageUrls.get(position), imageView);
+            
+            //Log.d("simple image loader:", imageView.toString()+" at position " + position);
 
             return imageView;
 

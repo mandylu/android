@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import android.graphics.Bitmap;
+import android.util.Log;
 
 public class CallbackManager
 {
@@ -30,10 +31,17 @@ private ConcurrentHashMap<String, List<ImageLoaderCallback>> callbackMap;
 	public void put(String url,ImageLoaderCallback callback)
 	{
 		
-		if(!callbackMap.contains(url)){
+		if(null == callbackMap.get(url)){
 			callbackMap.put(url, new ArrayList<ImageLoaderCallback>());
+			//Log.d("simple image loader: ", "url: "+url+"   => callback array created: ");
 		}
+//		else
+//		{
+//			Log.d("simple image loader: ", "url: "+url+"   => callback array existing: ");
+//		}
 		callbackMap.get(url).add(callback);
+		
+//		Log.d("simple image loader: ", "url: "+url+"   => callback count is now: "+ callbackMap.get(url).size());
 		
 	}
 	
@@ -48,8 +56,14 @@ private ConcurrentHashMap<String, List<ImageLoaderCallback>> callbackMap;
 		
 		for (ImageLoaderCallback callback : callbacks)
 		{
-			if(null != callback)
+			if(null != callback){
 				callback.refresh(url, bitmap);
+//				Log.d("simple image loader: ", "url: "+url+"   => callback is valid and called once");
+			}
+//			else
+//			{
+//				Log.d("simple image loader: ", "url: "+url+"   => callback is null");
+//			}
 		}
 		
 		callbacks.clear();

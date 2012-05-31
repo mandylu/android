@@ -2,6 +2,7 @@ package com.quanleimu.imageCache;
 
 import java.io.BufferedInputStream;
 import java.io.BufferedOutputStream;
+import java.io.ByteArrayOutputStream;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
@@ -83,7 +84,7 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 			
 			BitmapFactory.Options o =  new BitmapFactory.Options();
             o.inPurgeable = true;
-            
+
 			return BitmapFactory.decodeStream(is, null, o);
 		} 
 		catch (FileNotFoundException e)
@@ -163,32 +164,48 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException
 	{
-		
+		HttpClient httpClient = null;
+        InputStream bis = null;
+        Bitmap bitmapRet = null;
+        
 		try
 		{
 //			URL url = new URL(urlStr);
 //			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
 			
-			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+			httpClient = NetworkProtocols.getInstance().getHttpClient();
 	        
 	        HttpPost httpPost = new HttpPost(urlStr); 
-	        HttpResponse response = httpClient.execute(httpPost);
-	        
-			String fileName=writerToFile(getMd5(urlStr),response.getEntity().getContent());
-			
-			
-			httpClient.getConnectionManager().shutdown();
-			
+	        HttpResponse response = httpClient.execute(httpPost);			
+            
 			BitmapFactory.Options o =  new BitmapFactory.Options();
             o.inPurgeable = true;
+            bitmapRet = BitmapFactory.decodeFile(writeToFile(getMd5(urlStr),  response.getEntity().getContent()));       
             
-			return BitmapFactory.decodeFile(fileName, o);
+            return bitmapRet;
+		}catch (Exception e){
 			
-		} 
-		catch (IOException e)
-		{
-			e.printStackTrace();
 		}
+		finally
+		{			
+			try
+			{
+				if(null != httpClient){
+					httpClient.getConnectionManager().shutdown();
+				}
+				
+				if(null != bis)
+				{
+					bis.close();
+				}				    				
+			}
+			catch (IOException e)
+			{
+				e.printStackTrace();
+			}catch(Exception e){
+				
+			}
+		} 
 		
 		return null;
 	}
@@ -203,7 +220,7 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	}
 	
 	public static List<String> listNames= new ArrayList<String>();;
-	public String  writerToFile(String fileName, InputStream is)
+	public String  writeToFile(String fileName, InputStream is)
 	{
 		
 		BufferedInputStream bis = null;
