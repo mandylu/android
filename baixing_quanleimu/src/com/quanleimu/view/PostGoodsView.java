@@ -242,16 +242,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						}
 					}
 					
-				if(bean != null && !bean.getUnit().equals("")){
-					int pos = displayValue.indexOf(bean.getUnit());
-					if(pos != -1){
-						displayValue = displayValue.substring(0, pos);
+					if(displayValue != null && bean != null && !bean.getUnit().equals("")){
+						int pos = displayValue.indexOf(bean.getUnit());
+						if(pos != -1){
+							displayValue = displayValue.substring(0, pos);
+						}
 					}
-				}
 
 					
 					Object obj = this.getEditMapValue(subs[0]);
-					if (obj != null && !value.equals("")) {
+				 	if (obj != null && value != null && !value.equals("")) {
 						if (obj instanceof TextView) {
 							((TextView) obj).setText(displayValue);
 						} else if (obj instanceof EditText) {
