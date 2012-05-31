@@ -149,8 +149,8 @@ public class SearchView extends BaseView implements View.OnClickListener{
 								 bundle.putString("actType", "search");
 								 bundle.putString("name", "");
 								 m_viewInfoListener.onExit(SearchView.this);								 
-								 m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
-								 m_viewInfoListener.onPopView(SearchGoods.class.getName());
+								 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
+								 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
 							 }
 							 
 //							 intent.setClass(Search.this, SearchGoods.class);
@@ -239,8 +239,8 @@ public class SearchView extends BaseView implements View.OnClickListener{
 						 bundle.putString("name", "");
 						 
 						 m_viewInfoListener.onExit(this);						 
-						 m_viewInfoListener.onNewView(new SearchGoods(getContext(), bundle));
-						 m_viewInfoListener.onPopView(SearchGoods.class.getName());
+						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
+						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
 					 }
 				}
 				

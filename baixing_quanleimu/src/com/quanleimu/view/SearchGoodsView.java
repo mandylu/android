@@ -43,7 +43,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 
-public class SearchGoods extends BaseView implements OnScrollListener {
+public class SearchGoodsView extends BaseView implements OnScrollListener {
 
 	// 定义控件
 	public Button btnSearch, btnBack;
@@ -173,7 +173,7 @@ public class SearchGoods extends BaseView implements OnScrollListener {
 
 	}
 	
-	public SearchGoods(Context context, Bundle bundle){
+	public SearchGoodsView(Context context, Bundle bundle){
 		super(context, bundle);
 		
 		backPageName = bundle.getString("backPageName");
