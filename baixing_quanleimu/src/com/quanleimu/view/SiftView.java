@@ -147,7 +147,10 @@ public class SiftView extends BaseView {
 
 			
 			if (!str.equals("")) {
-				result += " " + URLEncoder.encode(str);
+				if(result.length() > 0){
+					result += " AND ";
+				}
+				result += URLEncoder.encode(str);
 			}
 			
 //			if (!str.equals("")) {
