@@ -157,7 +157,7 @@ public class SiftView extends BaseView {
 			if(result.length() > 0)
 			{
 				bundle.putString("siftresult", result);
-				bundle.putString("backPageName", "选择类目");
+				bundle.putString("backPageName", backPageName);
 				if(null != m_viewInfoListener){
 					m_viewInfoListener.onExit(this);
 					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
