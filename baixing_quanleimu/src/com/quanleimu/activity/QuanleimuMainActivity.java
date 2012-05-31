@@ -200,12 +200,12 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 		
-		long time_start =  System.currentTimeMillis();
-		if(null != currentView){
-			Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
-		}else{
-			Log.d("page switching performance log", "from current:" + "N/A" + " at " + time_start + "ms" );
-		}
+//		long time_start =  System.currentTimeMillis();
+//		if(null != currentView){
+//			Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
+//		}else{
+//			Log.d("page switching performance log", "from current:" + "N/A" + " at " + time_start + "ms" );
+//		}
 		
 		if(null != currentView){
 			currentView.onPause();
@@ -226,9 +226,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		scroll.addView(currentView);
 		
-		long time_end =  System.currentTimeMillis();
-		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
-		Log.d("page switching performance log", "cost is " + (time_end-time_start) + "ms");
+//		long time_end =  System.currentTimeMillis();
+//		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
+//		Log.d("page switching performance log", "cost is " + (time_end-time_start) + "ms");
 	}
 	
 //	@Override
