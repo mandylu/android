@@ -23,7 +23,9 @@ private ConcurrentHashMap<String, List<ImageLoaderCallback>> callbackMap;
 		callbackMap = new ConcurrentHashMap<String, List<ImageLoaderCallback>>();
 	}
 	
-	
+	public void remove(String url){
+		callbackMap.remove(url);
+	}
 	
 	public void put(String url,ImageLoaderCallback callback)
 	{

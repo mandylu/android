@@ -553,10 +553,19 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
-		//TODO:: check this
-//		if (scrollState == SCROLL_STATE_IDLE) {
-//			LoadImage.doTask();
-//		}
-
+		if(scrollState == SCROLL_STATE_IDLE)
+		{
+			ArrayList<String> urls = new ArrayList<String>();
+			for(int index = 0; index < view.getChildCount(); ++index){
+				View curView = view.getChildAt(+index);
+				if(null != curView){
+					View curIv = curView.findViewById(R.id.ivInfo);
+					
+					if(null != curIv && null != curIv.getTag())	urls.add(curIv.getTag().toString());
+				}			
+			}
+			
+			SimpleImageLoader.AdjustPriority(urls);			
+		}
 	}
 }

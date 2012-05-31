@@ -6,6 +6,10 @@
  */
 package com.quanleimu.imageCache;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Queue;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.view.View;
@@ -23,7 +27,13 @@ import com.quanleimu.util.Helper;
  */
 public class SimpleImageLoader
 {
-
+	public static void AdjustPriority(ArrayList<String> urls){
+		QuanleimuApplication.lazyImageLoader.AdjustPriority(urls);
+	}
+	
+	public static void Cancel(List<String> urls){
+		QuanleimuApplication.lazyImageLoader.Cancel(urls);
+	}
 
 	
 	public static void showImg(ImageView view,String url,Context con)

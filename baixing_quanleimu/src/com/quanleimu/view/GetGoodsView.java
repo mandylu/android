@@ -20,9 +20,9 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.ListView;
 import android.widget.TextView;
-
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
@@ -325,13 +325,23 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
+
 	}
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
 		if(scrollState == SCROLL_STATE_IDLE)
 		{
-//			LoadImage.doTask();
-		}
-		
+			ArrayList<String> urls = new ArrayList<String>();
+			for(int index = 0; index < view.getChildCount(); ++index){
+				View curView = view.getChildAt(+index);
+				if(null != curView){
+					View curIv = curView.findViewById(R.id.ivInfo);
+					
+					if(null != curIv && null != curIv.getTag())	urls.add(curIv.getTag().toString());
+				}			
+			}
+			
+			SimpleImageLoader.AdjustPriority(urls);			
+		}		
 	}
 }

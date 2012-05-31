@@ -7,8 +7,9 @@
 package com.quanleimu.imageCache;
 
 import java.lang.Thread.State;
-import java.util.concurrent.ArrayBlockingQueue;
-import java.util.concurrent.BlockingQueue;
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Vector;
 
 import com.quanleimu.activity.QuanleimuApplication;
 
@@ -30,7 +31,7 @@ public class LazyImageLoader
 	
 	private ImageManager imgManger = new ImageManager(QuanleimuApplication.context);
 	
-	private BlockingQueue<String> urlQueue = new ArrayBlockingQueue<String>(50);
+	private Vector<String> urlDeque = new Vector<String>();
 	
 	private DownloadImageThread downloadImgThread = new DownloadImageThread();
 	
@@ -57,6 +58,25 @@ public class LazyImageLoader
 		return bitmap;
 	}
 	
+	public void AdjustPriority(ArrayList<String> urls){
+		while(urls.size() > 0){
+			String url = urls.remove(urls.size() - 1);
+			
+			if(urlDeque.remove(url)){
+				urlDeque.add(0, url);
+			}
+		}
+	}
+	
+	public void Cancel(List<String> urls){
+		for(int i = 0; i < urls.size(); ++i){
+			String url = urls.get(i);
+
+			urlDeque.remove(url);
+			callbackManager.remove(url);
+			
+		}	
+	}
 	
 	public boolean checkWithImmediateIO(String url){
 		
@@ -114,17 +134,9 @@ public class LazyImageLoader
 	private void putUrlToUrlQueue(String url)
 	{
 		
-		if(!urlQueue.contains(url))
+		if(!urlDeque.contains(url))
 		{
-			try
-			{
-				urlQueue.put(url);
-				
-			} catch (InterruptedException e)
-			{
-				e.printStackTrace();
-			}
-			
+			urlDeque.add(url);
 		}
 	}
 	
@@ -176,9 +188,9 @@ public class LazyImageLoader
 		{
 			try
 			{
-				while(isRun)
+				while(isRun && urlDeque.size() > 0)
 				{
-					String url= urlQueue.poll();
+					String url= urlDeque.remove(0);
 					
 					if(null == url){
 						break;
