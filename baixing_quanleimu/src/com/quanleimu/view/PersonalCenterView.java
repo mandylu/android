@@ -411,6 +411,18 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	
 	@Override
 	public boolean onLeftActionPressed(){
+		if(currentPage == 0 && buttonStatus == -1){
+			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
+			if(myfavs == null || myfavs.size() == 0){
+				return true;
+			}
+		}
+		if(currentPage == 1 && buttonStatus == -1){
+			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
+			if(myhis == null || myhis.size() == 0){
+				return true;
+			}
+		}
 		boolean toUpdate = true;
 		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
 			toUpdate = false;
