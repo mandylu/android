@@ -134,7 +134,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				QuanleimuApplication.getApplication().setGpsCityName(locationAddr);
 				LocationService.getInstance().stop();
 				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
-					AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
+					final AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
 					builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
 					.setCancelable(false)  
 					.setPositiveButton("是", HomePageView.this)  
@@ -144,10 +144,11 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 							LocationService.getInstance().stop();
 						}  
 					});
-					final AlertDialog alert = builder.create();
+					
 					((BaseActivity)HomePageView.this.getContext()).runOnUiThread(new Runnable(){
 						@Override
 						public void run(){
+							final AlertDialog alert = builder.create();
 							alert.show();
 						}
 					});
