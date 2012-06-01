@@ -454,6 +454,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		List<HotList> curList = new ArrayList<HotList>();
 		List<HotList> loadingList = new ArrayList<HotList>();
 		
+		private int nNotifyInstance = 0;
+		
 		final LazyImageLoader imgLoader;
 
 		private class AdapterNotifyChange extends AsyncTask<Boolean, Boolean, Boolean> { 
@@ -461,6 +463,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			public AdapterNotifyChange(HotListAdapter adapter_){
 				this.adapter = adapter_;
+				nNotifyInstance++;
+				//Log.d("HomePage async task count:", " " + nNotifyInstance);
 			}
 			
 			protected Boolean doInBackground(Boolean... bs) {   
@@ -478,6 +482,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			protected void onPostExecute(Boolean bool) {  
 				this.adapter.notifyDataSetChanged();
+				nNotifyInstance--;
+				//Log.d("HomePage async task count:", " " + nNotifyInstance);
 			}
 		};
 		
@@ -603,7 +609,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 									curList.add(loadingList.get(position_next));
 									tempUpdated.set(position_next, true);
 								}								
-								(new AdapterNotifyChange(thisAdapter)).execute(true);
+								notifyChange();
 							}
 						});
 						
@@ -630,10 +636,16 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					}
 				}
 				
-				if(needNotify)	(new AdapterNotifyChange(this)).execute(true);
+				if(needNotify)	notifyChange();
 			}			
 			
 			return v;			
+		}
+		
+		private void notifyChange(){
+			if(HotListAdapter.this.nNotifyInstance < 1){
+				(new AdapterNotifyChange(this)).execute(true);
+			}
 		}
 	}
 	
