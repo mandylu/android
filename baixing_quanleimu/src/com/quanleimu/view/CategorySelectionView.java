@@ -78,6 +78,16 @@ public class CategorySelectionView extends ListView {
 					SecondStepCate selectedSubCate =  CategorySelectionView.this.secondCateAdapter.list.get(arg2);							
 					
 					if(null != CategorySelectionView.this.selectionListener){
+						if(QuanleimuApplication.listUsualCates != null){
+							QuanleimuApplication.listUsualCates.add(0, selectedSubCate);
+							int size = QuanleimuApplication.listUsualCates.size();
+							while(size > 5){
+								QuanleimuApplication.listUsualCates.remove(5);
+								size = QuanleimuApplication.listUsualCates.size();
+								Util.saveDataToLocate(getContext(), "listUsualCates", QuanleimuApplication.listUsualCates);
+
+							}
+						}
 						CategorySelectionView.this.selectionListener.OnSubCategorySelected(selectedSubCate);
 					}
 				}
