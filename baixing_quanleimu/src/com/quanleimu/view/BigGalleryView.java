@@ -128,7 +128,7 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
         //imageData = null;
         goodsDetail = null;
         
-  		//SimpleImageLoader.Cancel(listUrl);
+  		SimpleImageLoader.Cancel(listUrl);
        
     }
     

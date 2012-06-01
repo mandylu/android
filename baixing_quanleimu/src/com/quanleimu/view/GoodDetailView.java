@@ -1,5 +1,7 @@
 package com.quanleimu.view;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -16,10 +18,12 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -84,6 +88,10 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	
 	private Bundle bundle;
 	
+	private Bitmap mb_loading = null;
+	
+	private int type = 240;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
@@ -135,7 +143,14 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				}
 			}
 		}
-		this.saveToHistory();
+		
+		(new Thread(new Runnable(){
+			@Override
+			public void run(){
+				GoodDetailView.this.saveToHistory();
+			}
+		})).start();
+		
 		super.onAttachedToWindow();
 	}
 	
@@ -283,7 +298,38 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 //			txt_phone.setText("无");
 //			rl_phone.setBackgroundResource(R.drawable.iv_bg_unclickable);
 		}
+		
+		
+		BitmapFactory.Options o =  new BitmapFactory.Options();
+        o.inPurgeable = true;
+        mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren, o);
+        {
+        	File file = new File("/sdcard/mb_loading.png");
+        	try{
+        		FileOutputStream stream = new FileOutputStream(file);
+        		mb_loading.compress(CompressFormat.PNG, 100, stream);
+        	}catch(Exception e){
+        		
+        	}        	
+        }
+        
+        mb_loading = Helper.toRoundCorner(mb_loading, 10);
+        {
+        	File file = new File("/sdcard/mb_loading_rounded.png");
+        	try{
+        		FileOutputStream stream = new FileOutputStream(file);
+        		mb_loading.compress(CompressFormat.PNG, 100, stream);
+        	}catch(Exception e){
+        		
+        	}        	
+        }
+        
+		WindowManager wm = 
+				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		type = wm.getDefaultDisplay().getWidth();
 	}
+	
+	
 	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
 	private void handleStoreBtnClicked(){
 		if(-1 == btnStatus){
@@ -733,23 +779,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 //			}
 			ImageView iv = (ImageView) v.findViewById(R.id.ivGoods);
 			
-			BitmapFactory.Options o =  new BitmapFactory.Options();
-            o.inPurgeable = true;
-			Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren1, o);
-			Bitmap mb= Helper.toRoundCorner(tmb, 20);
-			tmb.recycle();
-			
-			
-			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren, o);
-			Bitmap mb1= Helper.toRoundCorner(tmb1, 20);
-			tmb1.recycle();
-			
-			iv.setImageBitmap(mb);
-			
-			WindowManager wm = 
-					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-			int type = wm.getDefaultDisplay().getWidth();
-
 			if (type == 240) {
 				iv.setLayoutParams(new Gallery.LayoutParams(86, 86));
 			} else if (type == 320) {
@@ -764,13 +793,15 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				iv.setLayoutParams(new Gallery.LayoutParams(245,245));
 			}
 
+			iv.setImageBitmap(mb_loading);
 			
 			if (listUrl.size() != 0 && listUrl.get(position) != null) {
 				iv.setTag(listUrl.get(position));
 				SimpleImageLoader.showImg(iv, listUrl.get(position), GoodDetailView.this.getContext());
-			} else {
-				iv.setImageBitmap(mb1);
 			}
+			
+			Log.d("GoodDetailView: ", "getView for position-" + position);
+			
 			return iv;
 		}
 	}

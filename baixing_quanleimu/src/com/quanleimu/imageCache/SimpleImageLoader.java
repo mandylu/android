@@ -42,11 +42,10 @@ public class SimpleImageLoader
 	}
 
 	
-	public static void showImg(ImageView view,String url,Context con)
+	public static void showImg(final ImageView view,String url,Context con)
 	{
 		view.setTag(url);	
 		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,view));
-		bitmap = Helper.toRoundCorner(bitmap, 10);
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
@@ -59,10 +58,26 @@ public class SimpleImageLoader
 //			Bitmap mb= Helper.toRoundCorner(tmb, 20);
 //			tmb.recycle();
 //			view.setImageBitmap(mb);			
-		}else{
-		view.setImageBitmap(bitmap);
-		}
+		}else{			
+			(new AsyncTask<Bitmap, Boolean, Bitmap>(){
 	
+				@Override
+				protected Bitmap doInBackground(Bitmap... bitmaps) { 
+					try {
+						bitmaps[0] = Helper.toRoundCorner(bitmaps[0], 10);									
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return bitmaps[0];
+				}
+				
+				@Override
+				protected void onPostExecute(Bitmap bitmap_) {  
+					view.setImageBitmap(bitmap_);
+				}
+			}).execute(bitmap);			
+		}	
 	}
 	
 	 
@@ -88,52 +103,13 @@ public class SimpleImageLoader
 //								view.invalidate();
 //							}
 //						});
-						
-//						final String url_f = url;
-//						(new AsyncTask<Bitmap, Boolean, Bitmap>(){
-//				
-//							@Override
-//							protected Bitmap doInBackground(Bitmap... bitmaps) { 
-//								Bitmap bitmap_rd = null;
-//								try {
-//									bitmap_rd = Helper.toRoundCorner(bitmaps[0], 10);
-//									bitmaps[0] = null;									
-//								} catch (Exception e) {
-//									// TODO Auto-generated catch block
-//									e.printStackTrace();
-//								}
-//								return bitmap_rd;
-//							}
-//							
-//							@Override
-//							protected void onPostExecute(Bitmap bitmap_) {  
-//								String filename = url_f.replace('/', '_').replace(':', '_');
-//								File file = new File("/sdcard/"+filename);
-////								try{
-////									bitmap_.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(file));
-////								}catch(Exception e){}
-//								view.setImageBitmap(bitmap_);
-//								try{
-//									Bitmap b = Bitmap.createBitmap(bitmap_.getWidth(), bitmap_.getHeight(), Config.ARGB_4444);
-//									Canvas c = new Canvas(b);
-//									view.draw(c);
-//									boolean ret = b.compress(Bitmap.CompressFormat.PNG, 100, new FileOutputStream(file));
-//									if(ret)
-//										System.out.println("compress bitmap succeeded!!");
-//									else
-//										System.out.println("compress bitmap failed!!");
-//								}catch(Exception e){
-//									e.printStackTrace();
-//								}
-//							}
-//						}).execute(bitmap);
 //						
 //						bitmap = null;
 					}
 					else
 					{
 //						view.setImageResource(R.drawable.moren);
-						System.out.print("fjljsafljaljalfjl");
+//						System.out.print("fjljsafljaljalfjl");
 					}
 				
 			}
