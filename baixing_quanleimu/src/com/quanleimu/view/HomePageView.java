@@ -126,11 +126,11 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		(new Thread(new Runnable(){
 			@Override
 			public void run(){
+				final String preLocation = locationAddr;
 				locationAddr = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
 				if(null == locationAddr) return;
 				int index = locationAddr.indexOf("市");
 				locationAddr = (-1 == index ? locationAddr : locationAddr.substring(0, index));
-				System.out.println("onLocationUpdated of HomePage, set gpscityname " + locationAddr);
 				QuanleimuApplication.getApplication().setGpsCityName(locationAddr);
 				LocationService.getInstance().stop();
 				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
@@ -148,8 +148,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					((BaseActivity)HomePageView.this.getContext()).runOnUiThread(new Runnable(){
 						@Override
 						public void run(){
-							final AlertDialog alert = builder.create();
-							alert.show();
+							if(HomePageView.this.isShown()){
+								AlertDialog alert = builder.create();
+								alert.show();
+							}else{
+								locationAddr = preLocation;
+							}
 						}
 					});
 				}				
