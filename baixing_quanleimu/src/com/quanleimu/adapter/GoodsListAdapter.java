@@ -113,10 +113,6 @@ public class GoodsListAdapter extends BaseAdapter {
 			btnDelete.setVisibility(View.VISIBLE);
 		}
 
-		ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
-		if(QuanleimuApplication.isTextMode()){
-			ivInfo.setVisibility(View.GONE);
-		}
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         if(null == defaultBk1){
@@ -129,10 +125,6 @@ public class GoodsListAdapter extends BaseAdapter {
 			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
 			tmb1.recycle();
 		}
-		if(!QuanleimuApplication.isTextMode()){
-			ivInfo.setImageBitmap(defaultBk1);
-		}
-		
 		int type = Util.getWidthByContext(context);
 		RelativeLayout.LayoutParams lp = null;
 		switch (type) {
@@ -155,7 +147,15 @@ public class GoodsListAdapter extends BaseAdapter {
 			 lp= new RelativeLayout.LayoutParams(140,140);
 			break;
 		}
-
+		ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+			
+		if(QuanleimuApplication.isTextMode()){
+			ivInfo.setVisibility(View.GONE);
+		}
+		if(!QuanleimuApplication.isTextMode()){
+			ivInfo.setTag("");
+			ivInfo.setImageBitmap(defaultBk1);
+		}
 		lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 		if(!QuanleimuApplication.isTextMode()){
 			ivInfo.setLayoutParams(lp);
@@ -165,8 +165,9 @@ public class GoodsListAdapter extends BaseAdapter {
 					|| list.get(position).getImageList().getResize180() == null
 					|| list.get(position).getImageList().getResize180()
 							.equals("")) {
-				ivInfo.setImageBitmap(defaultBk2);
+				
 				ivInfo.setTag("");
+				ivInfo.setImageBitmap(defaultBk2);
 //				ivInfo.invalidate();
 			} else {
 	//			if (isConnect == 0) {
@@ -181,9 +182,8 @@ public class GoodsListAdapter extends BaseAdapter {
 					if (b.contains(",")) {
 						String[] c = b.split(",");
 						if (c[0] == null || c[0].equals("")) {
-							
-							ivInfo.setImageBitmap(defaultBk2);
 							ivInfo.setTag("");
+							ivInfo.setImageBitmap(defaultBk2);
 //							ivInfo.invalidate();
 						} else {
 							ivInfo.setTag(c[0]);
@@ -191,7 +191,8 @@ public class GoodsListAdapter extends BaseAdapter {
 							
 						}
 					} else {
-						if (b == null || b.equals("")) {
+						if (b == null || b.equals("")) {			
+							ivInfo.setTag("");
 							ivInfo.setImageBitmap(defaultBk2);
 						} else {
 							ivInfo.setTag(b);

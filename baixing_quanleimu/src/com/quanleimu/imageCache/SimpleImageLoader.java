@@ -25,6 +25,7 @@ import android.widget.ProgressBar;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.view.PostGoodsView;
 
 
 /**
@@ -42,7 +43,7 @@ public class SimpleImageLoader
 	}
 
 	
-	public static void showImg(final ImageView view,String url,Context con)
+	public static void showImg(final ImageView view,final String url,Context con)
 	{
 		view.setTag(url);	
 		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,view));
@@ -74,7 +75,9 @@ public class SimpleImageLoader
 				
 				@Override
 				protected void onPostExecute(Bitmap bitmap_) {  
-					view.setImageBitmap(bitmap_);
+					if(((String)view.getTag()).equals(url)){
+						view.setImageBitmap(bitmap_);
+					}
 				}
 			}).execute(bitmap);			
 		}	
@@ -88,7 +91,6 @@ public class SimpleImageLoader
 			
 			public void refresh(String url, Bitmap bitmap)
 			{
-				
 					if(url.equals(view.getTag().toString()))
 					{
 						bitmap = Helper.toRoundCorner(bitmap, 10);
@@ -111,8 +113,7 @@ public class SimpleImageLoader
 //						view.setImageResource(R.drawable.moren);
 //						System.out.print("fjljsafljaljalfjl");
 					}
-				
-			}
+				}
 		};
 		
 	}
