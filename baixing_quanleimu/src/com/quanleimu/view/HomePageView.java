@@ -123,7 +123,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	public void onLocationUpdated(final Location location){
 		if(location == null || (locationAddr != null && !locationAddr.equals(""))) return;
-		new Runnable(){
+		(new Thread(new Runnable(){
 			@Override
 			public void run(){
 				locationAddr = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
@@ -153,7 +153,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					});
 				}				
 			}
-		}.run();
+		})).start();
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -178,7 +178,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 
 		final Location lastLocation = LocationService.getInstance().getLastKnownLocation();
 		if(lastLocation != null){
-			new Runnable(){
+			(new Thread(new Runnable(){
 				@Override
 				public void run(){
 					String lastAddr = LocationService.geocodeAddr(Double.toString(lastLocation.getLatitude()), Double.toString(lastLocation.getLongitude()));
@@ -186,10 +186,15 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					int index = lastAddr.indexOf("市");
 					lastAddr = (-1 == index ? lastAddr : lastAddr.substring(0, index));
 					if(!lastAddr.equals(locationAddr)){
-						LocationService.getInstance().start(getContext(), HomePageView.this);
-					}					
-				}
-			}.run();
+						((BaseActivity)(HomePageView.this.getContext())).runOnUiThread(new Runnable(){
+							@Override
+							public void run(){
+								LocationService.getInstance().start(getContext(), HomePageView.this);
+							}
+						});
+					}
+				}					
+			})).start();
 		}
 		else{
 			LocationService.getInstance().start(getContext(), this);
