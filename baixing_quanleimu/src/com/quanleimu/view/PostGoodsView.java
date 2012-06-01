@@ -1676,7 +1676,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = "发布";
-		title.m_leftActionHint = "选择类目";
+		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "立即发布";
 		return title;
 	}
