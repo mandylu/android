@@ -166,6 +166,8 @@ public class GoodsListAdapter extends BaseAdapter {
 					|| list.get(position).getImageList().getResize180()
 							.equals("")) {
 				ivInfo.setImageBitmap(defaultBk2);
+				ivInfo.setTag("");
+//				ivInfo.invalidate();
 			} else {
 	//			if (isConnect == 0) {
 	//				ivInfo.setImageBitmap(defaultBk2);
@@ -181,6 +183,8 @@ public class GoodsListAdapter extends BaseAdapter {
 						if (c[0] == null || c[0].equals("")) {
 							
 							ivInfo.setImageBitmap(defaultBk2);
+							ivInfo.setTag("");
+//							ivInfo.invalidate();
 						} else {
 							ivInfo.setTag(c[0]);
 							SimpleImageLoader.showImg(ivInfo, c[0], this.context);
