@@ -169,6 +169,15 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		
 		this.rebuildPage(false);
 	}
+	
+	@Override
+	public void onPause(){
+		if(adapter != null){
+			adapter.setHasDelBtn(false);
+			adapter.notifyDataSetChanged();
+		}
+		buttonStatus = -1;
+	}
 
 	private void init(){
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
