@@ -2,7 +2,7 @@ package com.quanleimu.entity;
 
 import java.io.Serializable;
 
-public class SecondStepCate implements Serializable{
+public class SecondStepCate extends Object implements Serializable{
 
 	/**
 	 * 
@@ -29,5 +29,9 @@ public class SecondStepCate implements Serializable{
 	}
 	public void setParentEnglishName(String parentEnglishName) {
 		this.parentEnglishName = parentEnglishName;
+	}
+	@Override
+	public String toString() {
+		return name;
 	}
 }

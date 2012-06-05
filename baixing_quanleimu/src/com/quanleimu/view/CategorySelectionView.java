@@ -7,8 +7,8 @@ import java.util.List;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.adapter.AllCatesAdapter;
-import com.quanleimu.adapter.SecondCatesAdapter;
+import com.quanleimu.adapter.CommonItemAdapter;
+//import com.quanleimu.adapter.SecondCatesAdapter;
 import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.PostMu;
@@ -45,11 +45,11 @@ public class CategorySelectionView extends ListView {
 	protected static String mainCateAPI = "category_list";
 	protected AllCates mainCate = null;
 	//protected ListView lvAllCates = null;
-	protected AllCatesAdapter allCateAdapter = null;
+	protected CommonItemAdapter allCateAdapter = null;
 
 	protected List<SecondStepCate> subCate = null;
 	//protected ListView lvSubCate = null;
-	protected SecondCatesAdapter secondCateAdapter = null;
+	protected CommonItemAdapter secondCateAdapter = null;
 	
 	protected enum ECATE_LEVEL{
 		ECATE_LEVEL_MAIN,
@@ -62,20 +62,20 @@ public class CategorySelectionView extends ListView {
 		public void onItemClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
 			
-			FirstStepCate selectedMainCate = CategorySelectionView.this.allCateAdapter.list.get(arg2);
+			FirstStepCate selectedMainCate = (FirstStepCate)CategorySelectionView.this.allCateAdapter.getList().get(arg2);
 			String cateName = selectedMainCate.getName();
 			
 
 			
 			if(null == secondCateAdapter){
-				secondCateAdapter = new SecondCatesAdapter(CategorySelectionView.this.getContext(), cateName, selectedMainCate.getChildren());
+				secondCateAdapter = new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren());
 			}	
 			
 			CategorySelectionView.this.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
-					SecondStepCate selectedSubCate =  CategorySelectionView.this.secondCateAdapter.list.get(arg2);							
+					SecondStepCate selectedSubCate =  (SecondStepCate)CategorySelectionView.this.secondCateAdapter.getList().get(arg2);							
 					
 					if(null != CategorySelectionView.this.selectionListener){
 						if(QuanleimuApplication.listUsualCates != null){
@@ -99,9 +99,11 @@ public class CategorySelectionView extends ListView {
 				}
 			});
 			
-			if(null != secondCateAdapter && !cateName.equals(secondCateAdapter.cateName)){
-				secondCateAdapter.SetCateName(cateName);
-				secondCateAdapter.SetSubCateList(selectedMainCate.getChildren());
+			if(null != secondCateAdapter 
+					&& secondCateAdapter.getTag() != null 
+					&& !cateName.equals((String)secondCateAdapter.getTag())){
+				secondCateAdapter.setTag(cateName);
+				secondCateAdapter.setList(selectedMainCate.getChildren());
 			}
 			
 			CategorySelectionView.this.setAdapter(secondCateAdapter);
@@ -157,11 +159,11 @@ public class CategorySelectionView extends ListView {
 		} else {
 			((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
 			if(allCateAdapter == null){
-				allCateAdapter = new AllCatesAdapter(getContext(), mainCate.getChildren());
+				allCateAdapter = new CommonItemAdapter(getContext(), mainCate.getChildren());
 				this.setAdapter(allCateAdapter);	
 			}
 			else{
-				allCateAdapter.setAllCatesList(mainCate.getChildren());
+				allCateAdapter.setList(mainCate.getChildren());
 			}
 		}
 	}

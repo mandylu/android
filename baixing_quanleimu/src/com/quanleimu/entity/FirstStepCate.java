@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class FirstStepCate implements Serializable {
+public class FirstStepCate extends Object implements Serializable {
 	
 	/**
 	 * 
@@ -42,9 +42,10 @@ public class FirstStepCate implements Serializable {
 	}
 	@Override
 	public String toString() {
-		return "FirstStepCate [name=" + name + ", englishName=" + englishName
-				+ ", children=" + children + ", parentEnglishName="
-				+ parentEnglishName + "]";
+//		return "FirstStepCate [name=" + name + ", englishName=" + englishName
+//				+ ", children=" + children + ", parentEnglishName="
+//				+ parentEnglishName + "]";
+		return name;
 	}
 	
 	
