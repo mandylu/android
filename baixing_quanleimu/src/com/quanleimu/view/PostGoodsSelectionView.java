@@ -18,7 +18,7 @@ import com.quanleimu.entity.PostGoodsBean;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
-
+import com.quanleimu.adapter.CommonItemAdapter;
 public class PostGoodsSelectionView extends BaseView {
 
 	public int temp = -1;
@@ -43,7 +43,9 @@ public class PostGoodsSelectionView extends BaseView {
 
 		list = postBean.getLabels();
 		lv = (ListView) v.findViewById(R.id.lv_test);
-		lv.setAdapter(new ItemList());
+		CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), list);
+		adapter.setHasArrow(false);
+		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
@@ -54,48 +56,6 @@ public class PostGoodsSelectionView extends BaseView {
 
 			}
 		});
-	}
-
-	class ItemList extends BaseAdapter {
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return list.size();
-		} 
-
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = LayoutInflater.from(PostGoodsSelectionView.this.getContext());
-			convertView = inflater.inflate(R.layout.item_goodsselectionlist,
-					null);
-			
-			if(position==0){ 
-				convertView.setBackgroundResource(R.drawable.btn_top_bg);
-			}else if(position==list.size()-1){
-				convertView.setBackgroundResource(R.drawable.btn_down_bg);
-			}else{
-				convertView.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-			convertView.setPadding(10, 10, 10, 10);
-			TextView txts = (TextView) convertView
-					.findViewById(R.id.goodsselectionlisttxt);
-			txts.setText(list.get(position));
-			return convertView;
-		}
-
 	}
 	
 	@Override
