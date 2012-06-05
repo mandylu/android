@@ -33,7 +33,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.AdapterView.OnItemClickListener;
-
+import com.quanleimu.adapter.CommonItemAdapter;
 public class SearchView extends BaseView implements View.OnClickListener{
 	
 	//定义控件
@@ -41,7 +41,7 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	public EditText etSearch;
 	private TextView tvClear;
 	public ListView lvSearchHistory;
-	private SearchAdapter adapter;
+	private CommonItemAdapter adapter;
 	public ProgressDialog pd;
 	//参数
 	private String fields = "mobile,id,link,title,description,date,areaNames,categoryEnglishName,lat,lng,images_big,images_resize180,metaDat";
@@ -82,16 +82,17 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		//键盘始终显示
 		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
-		adapter = new SearchAdapter(getContext());
-		
 		//设置监听器
 		btnSearch.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);
 		
 		//获得searchType
 		
-		
 		listRemark = QuanleimuApplication.getApplication().getListRemark();
+		
+		adapter = new CommonItemAdapter(getContext(), listRemark);
+		adapter.setPlaneState(true);
+		adapter.setHasArrow(false);
 		
 		//添加自定义布局
 		 LinearLayout layout = new LinearLayout(getContext());  
@@ -322,50 +323,4 @@ public class SearchView extends BaseView implements View.OnClickListener{
 
 		}
 	}
-	
-	//搜索的Adapter
-	class SearchAdapter extends BaseAdapter
-	{
-		Context context;
-		public SearchAdapter(Context context)
-		{
-			this.context = context;
-		}
-	
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return listRemark.size();
-		}
-	
-		@Override
-		public Object getItem(int arg0) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-	
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub
-			return 0;
-		}
-	
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = LayoutInflater.from(context);
-			View v = null;
-//			if(convertView == null)
-//			{
-				v = inflater.inflate(R.layout.item_searchview, null);
-//			}
-//			else
-//				v = (View)convertView;
-			
-			TextView tvContent = (TextView)v.findViewById(R.id.tvContent);
-			tvContent.setText(listRemark.get(position));
-			return v;
-		}
-	}
-
-	
 }

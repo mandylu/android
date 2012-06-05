@@ -20,6 +20,7 @@ public class CommonItemAdapter extends BaseAdapter {
 	private Object tag;
 	private boolean hasArrow = true;
 	private int iconId = R.drawable.arrow;
+	private boolean plane = false;
 	
 	public void setTag(Object obj){
 		tag = obj;
@@ -34,6 +35,10 @@ public class CommonItemAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
+	}
+	
+	public void setPlaneState(boolean plane){
+		this.plane = plane;
 	}
 	
 	public void setHasArrow(boolean has){
@@ -82,13 +87,17 @@ public class CommonItemAdapter extends BaseAdapter {
 		}else{
 			v = (View)convertView; 
 		}
-		if(position==0){ 
-			v.setBackgroundResource(R.drawable.btn_top_bg);
-		}else if(position==list.size()-1){
-//			v.setBackgroundResource(R.drawable.btn_m_bg);
-			v.setBackgroundResource(R.drawable.btn_down_bg);
-		}else{
-			v.setBackgroundResource(R.drawable.btn_m_bg);
+		if(!plane){
+			if(position==0){ 
+				v.setBackgroundResource(R.drawable.btn_top_bg);
+			}else if(position==list.size()-1){
+				v.setBackgroundResource(R.drawable.btn_down_bg);
+			}else{
+				v.setBackgroundResource(R.drawable.btn_m_bg);
+			}
+		}
+		else{
+			v.setBackgroundDrawable(null);
 		}
 		
 		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
