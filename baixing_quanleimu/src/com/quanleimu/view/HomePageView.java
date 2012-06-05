@@ -212,7 +212,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		for (int i = 0; i < listUsualCates.size(); i++) {
 			View v = null;
-			v = inflater.inflate(R.layout.item_hotcity, null);
+			v = inflater.inflate(R.layout.item_common, null);
 
 			if (i == 0) {
 				v.setBackgroundResource(R.drawable.btn_top_bg);
@@ -223,8 +223,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			}
 
 			// findviewbyid
-			TextView tvCityName = (TextView) v.findViewById(R.id.tvItemName);
-			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivItemIcon);
+			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
+			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
 
 			// imageview 赋值
 			ivChoose.setImageResource(R.drawable.arrow);
@@ -258,12 +258,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		}
 		
 		View v1 = null;
-		v1 = inflater.inflate(R.layout.item_hotcity, null);
+		v1 = inflater.inflate(R.layout.item_common, null);
 		v1.setBackgroundResource(R.drawable.btn_down_bg); 
 		
 		// findviewbyid 
-		TextView tv = (TextView) v1.findViewById(R.id.tvItemName);
-		ImageView iv = (ImageView) v1.findViewById(R.id.ivItemIcon);
+		TextView tv = (TextView) v1.findViewById(R.id.tvCateName);
+		ImageView iv = (ImageView) v1.findViewById(R.id.ivChoose);
 		tv.setText("其他类目");
 		iv.setImageResource(R.drawable.arrow);
 		v1.setOnClickListener(new View.OnClickListener() {

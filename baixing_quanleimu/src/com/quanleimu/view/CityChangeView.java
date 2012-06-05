@@ -114,13 +114,10 @@ public class CityChangeView extends BaseView {
 			ivGPSChoose.setVisibility(View.VISIBLE);
 		}
 		
-		// hot city list
-		final List<ImageView> listImageViews = new ArrayList<ImageView>();
-		
-		LinearLayout linearHotCities = (LinearLayout)findViewById(R.id.linearHotCities); 
+		final LinearLayout linearHotCities = (LinearLayout)findViewById(R.id.linearHotCities); 
 		for (int i = 0; i < listHotCity.size(); i++) {
 			View v = null;
-			v = inflater.inflate(R.layout.item_hotcity, null);
+			v = inflater.inflate(R.layout.item_common, null);
 
 			if (i == 0) {
 				v.setBackgroundResource(R.drawable.btn_top_bg);
@@ -130,11 +127,10 @@ public class CityChangeView extends BaseView {
 				v.setBackgroundResource(R.drawable.btn_m_bg);
 			}
 
-			TextView tvCityName = (TextView) v.findViewById(R.id.tvItemName);
-			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivItemIcon);
+			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
+			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
 			ivChoose.setImageResource(R.drawable.gou);
 			ivChoose.setTag(i);
-			listImageViews.add(ivChoose);
 			tvCityName.setText(listHotCity.get(i).getName());
 			ivChoose.setVisibility(View.INVISIBLE);
 			v.setTag(i);
@@ -143,13 +139,7 @@ public class CityChangeView extends BaseView {
 				@Override
 				public void onClick(View v) {
 					int a = Integer.valueOf(v.getTag().toString());
-					for (int j = 0; j < listImageViews.size(); j++) {
-						if (a != j) {
-							listImageViews.get(j).setVisibility(View.INVISIBLE);
-
-						} else {
-							listImageViews.get(a).setVisibility(View.VISIBLE);
-						}
+					for (int j = 0; j < linearHotCities.getChildCount(); j++) {
 						if (!cityName.equals(listHotCity.get(a).getName())) {
 							ivGPSChoose.setVisibility(View.INVISIBLE);
 						}
@@ -180,13 +170,11 @@ public class CityChangeView extends BaseView {
 
 		for (int i = 0; i < listHotCity.size(); i++) {
 			if (cityName.equals(listHotCity.get(i).getName())) {
-				listImageViews.get(i).setVisibility(View.VISIBLE);
+				linearHotCities.getChildAt(i).findViewById(R.id.ivChoose).setVisibility(View.VISIBLE);
 			} else {
-				listImageViews.get(i).setVisibility(View.INVISIBLE);
+				linearHotCities.getChildAt(i).findViewById(R.id.ivChoose).setVisibility(View.GONE);
 			}
 		}
-		
-		//
 		
 		((RelativeLayout)findViewById(R.id.linear2Other)).setOnClickListener(new View.OnClickListener() {
 			
@@ -253,7 +241,7 @@ public class CityChangeView extends BaseView {
 					for (int i = 0; i < QuanleimuApplication.getApplication().getShengMap().size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
 						View vTemp = null;
-						vTemp = inflater.inflate(R.layout.item_hotcity, null);
+						vTemp = inflater.inflate(R.layout.item_common, null);
 						
 						if (i == 0) {
 							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
@@ -264,8 +252,8 @@ public class CityChangeView extends BaseView {
 						}
 						
 						
-						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvItemName);
-						ImageView ivChoose = (ImageView) vTemp.findViewById(R.id.ivItemIcon);
+						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvCateName);
+						ImageView ivChoose = (ImageView) vTemp.findViewById(R.id.ivChoose);
 						ivChoose.setImageResource(R.drawable.arrow);
 						tvCityName.setText(keyArray[i].toString());
 
@@ -303,7 +291,7 @@ public class CityChangeView extends BaseView {
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									// 添加新的视图，循环添加到ScrollView中
 									View vCity = null;
-									vCity = inflater.inflate(R.layout.item_hotcity, null);
+									vCity = inflater.inflate(R.layout.item_common, null);
 									
 									if (i == 0) {
 										vCity.setBackgroundResource(R.drawable.btn_top_bg);
@@ -313,10 +301,10 @@ public class CityChangeView extends BaseView {
 										vCity.setBackgroundResource(R.drawable.btn_m_bg);
 									}
 									
-									TextView tvCityName = (TextView) vCity.findViewById(R.id.tvItemName);
+									TextView tvCityName = (TextView) vCity.findViewById(R.id.tvCateName);
 									tvCityName.setText(list2Sheng.get(i).getName());
 									
-									ImageView ivChoose = (ImageView) vCity.findViewById(R.id.ivItemIcon);
+									ImageView ivChoose = (ImageView) vCity.findViewById(R.id.ivChoose);
 									ivChoose.setImageResource(R.drawable.arrow);
 									
 

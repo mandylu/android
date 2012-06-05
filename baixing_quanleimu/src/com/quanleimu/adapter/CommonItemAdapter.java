@@ -19,6 +19,7 @@ public class CommonItemAdapter extends BaseAdapter {
 	private List<? extends Object> list = new ArrayList<Object>();
 	private Object tag;
 	private boolean hasArrow = true;
+	private int iconId = R.drawable.arrow;
 	
 	public void setTag(Object obj){
 		tag = obj;
@@ -65,7 +66,11 @@ public class CommonItemAdapter extends BaseAdapter {
 	public long getItemId(int position) {
 		// TODO Auto-generated method stub
 		return position; 
-	} 
+	}
+	
+	public void setRightIcon(int resourceId){
+		iconId = resourceId;
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -92,6 +97,7 @@ public class CommonItemAdapter extends BaseAdapter {
 		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
 		if(this.hasArrow){
 			arrow.setVisibility(View.VISIBLE);
+			arrow.setImageResource(iconId);
 		}
 		else{
 			arrow.setVisibility(View.GONE);
