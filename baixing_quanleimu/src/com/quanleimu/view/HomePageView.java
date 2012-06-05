@@ -10,7 +10,6 @@ import java.io.InputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -51,9 +50,11 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.widget.ViewFlow.ViewFlow;
+import com.quanleimu.widget.ViewFlow.CircleFlowIndicator;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
-	private Gallery glDetail;
+	private ViewFlow glDetail;
 	private LinearLayout linearUseualCates;
 	private List<HotList> listHot = new ArrayList<HotList>();
 	private String cityName;
@@ -286,10 +287,13 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		tvInfo.setVisibility(View.GONE);
 		
 		linearUseualCates = (LinearLayout)v.findViewById(R.id.linearUseualCates);
-		glDetail = (Gallery) v.findViewById(R.id.glDetail);
+		glDetail = (ViewFlow) v.findViewById(R.id.glDetail);
 
 		glDetail.setFadingEdgeLength(10);
-		glDetail.setSpacing(40);
+		CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
+		glDetail.setFlowIndicator(indic);
+		
+//		glDetail.setSpacing(40);
 		glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,

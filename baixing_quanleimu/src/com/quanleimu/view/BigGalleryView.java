@@ -37,15 +37,17 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
+import com.quanleimu.widget.ViewFlow.CircleFlowIndicator;
+import com.quanleimu.widget.ViewFlow.ViewFlow;
 
-public class BigGalleryView extends BaseView implements OnItemSelectedListener{
+public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener{
 
 	int index = 0;
 	private int postIndex = -1;
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
 	private Bitmap mb;
-	private HashMap<String, byte[]> imageData;
+//	private HashMap<String, byte[]> imageData;
 	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -78,10 +80,13 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 					listUrl.add(b);
 				}
 				
-				Gallery vfCoupon = (Gallery)findViewById(R.id.vfCoupon);
+				ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
 				vfCoupon.setAdapter(new GalleryImageAdapter(getContext(), listUrl));
-				vfCoupon.setOnItemSelectedListener(this);
+				vfCoupon.setOnViewSwitchListener(this);
 				vfCoupon.setSelection(postIndex);
+				CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
+				vfCoupon.setFlowIndicator(indic);
+				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
 				Bitmap tmb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);
@@ -159,99 +164,99 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 
         private int position = 0;
 
-        private final ExecutorService pool;
+ //       private final ExecutorService pool;
 
         public GalleryImageAdapter(Context c, List<String> imageUrls)
         {
             this.context = c;
             this.imageUrls = imageUrls;
 
-            imageData = new HashMap<String, byte[]>();
-            pool = Executors.newFixedThreadPool(5);
+//            imageData = new HashMap<String, byte[]>();
+//            pool = Executors.newFixedThreadPool(5);
         }
 
-        public void loadBitmap(final String url, final ImageView imageView)
-        {
-            final Bitmap bitmap = getBitmapFromCache(url);
-            if (bitmap != null)
-            {
-                imageView.setImageBitmap(bitmap);
-            }
-            else
-            {
-                imageView.setImageBitmap(mb);
-                pool.submit(new Runnable()
-                {
-                    @Override
-                    public void run()
-                    {
-                        byte[] data = downloadBitmap(url);
-                        imageData.put(url, data);
-                        
-                        BitmapFactory.Options o = new BitmapFactory.Options();
-                        o.inPurgeable = true;
-                        final Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
-                        
-                        ((Activity) context).runOnUiThread(new Runnable()
-                        {
-                            public void run()
-                            {
-                                imageView.setImageBitmap(tmb);
-                            }
-                        });
-                    }
-                });
-            }
-        }
-
-        private byte[] downloadBitmap(String url)
-        {
-            try
-            {
-                HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
-
-                HttpPost httpPost = new HttpPost(url);
-                HttpResponse response = httpClient.execute(httpPost);
-
-                InputStream is = response.getEntity().getContent();
-                ByteArrayOutputStream bos = new ByteArrayOutputStream();
-                byte[] buffer = new byte[1024];
-                int length;
-                while((length = is.read(buffer)) != -1)
-                {
-                    bos.write(buffer, 0, length);
-                }
-                httpClient.getConnectionManager().shutdown();
-
-                return bos.toByteArray();
-            }
-            catch (Exception e)
-            {
-                e.printStackTrace();
-            }
-
-            return null;
-        }
-
-        public Bitmap getBitmapFromCache(String url)
-        {
-            if (imageData != null && !imageData.containsKey(url))
-            {
-                return null;
-            }
-
-            byte[] data = imageData.get(url);
-            
-            if(data == null)
-            {
-                return null;
-            }
-            
-            BitmapFactory.Options o = new BitmapFactory.Options();
-            o.inPurgeable = true;
-            Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
-            return tmb;
-        }
+//        public void loadBitmap(final String url, final ImageView imageView)
+//        {
+//            final Bitmap bitmap = getBitmapFromCache(url);
+//            if (bitmap != null)
+//            {
+//                imageView.setImageBitmap(bitmap);
+//            }
+//            else
+//            {
+//                imageView.setImageBitmap(mb);
+//                pool.submit(new Runnable()
+//                {
+//                    @Override
+//                    public void run()
+//                    {
+//                        byte[] data = downloadBitmap(url);
+//                        imageData.put(url, data);
+//                        
+//                        BitmapFactory.Options o = new BitmapFactory.Options();
+//                        o.inPurgeable = true;
+//                        final Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
+//                        
+//                        ((Activity) context).runOnUiThread(new Runnable()
+//                        {
+//                            public void run()
+//                            {
+//                                imageView.setImageBitmap(tmb);
+//                            }
+//                        });
+//                    }
+//                });
+//            }
+//        }
+//
+//        private byte[] downloadBitmap(String url)
+//        {
+//            try
+//            {
+//                HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+//
+//                HttpPost httpPost = new HttpPost(url);
+//                HttpResponse response = httpClient.execute(httpPost);
+//
+//                InputStream is = response.getEntity().getContent();
+//                ByteArrayOutputStream bos = new ByteArrayOutputStream();
+//                byte[] buffer = new byte[1024];
+//                int length;
+//                while((length = is.read(buffer)) != -1)
+//                {
+//                    bos.write(buffer, 0, length);
+//                }
+//                httpClient.getConnectionManager().shutdown();
+//
+//                return bos.toByteArray();
+//            }
+//            catch (Exception e)
+//            {
+//                e.printStackTrace();
+//            }
+//
+//            return null;
+//        }
+//
+//        public Bitmap getBitmapFromCache(String url)
+//        {
+//            if (imageData != null && !imageData.containsKey(url))
+//            {
+//                return null;
+//            }
+//
+//            byte[] data = imageData.get(url);
+//            
+//            if(data == null)
+//            {
+//                return null;
+//            }
+//            
+//            BitmapFactory.Options o = new BitmapFactory.Options();
+//            o.inPurgeable = true;
+//            Bitmap tmb = BitmapFactory.decodeByteArray(data, 0, data.length, o);
+//            return tmb;
+//        }
 
         @Override
         public int getCount()
@@ -283,11 +288,11 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 			}
 
 			if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
-			{				
-//	            imageView.setImageBitmap(mb);
-//	            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
-//	            imageView.setTag(imageUrls.get(position));
-				loadBitmap(imageUrls.get(position), imageView);
+			{	
+				imageView.setImageBitmap(mb);
+	            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
+	            imageView.setTag(imageUrls.get(position));
+//				loadBitmap(imageUrls.get(position), imageView);
 			}
             //loadBitmap(imageUrls.get(position), imageView);
             
@@ -298,10 +303,10 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
         }
     }
 
-    @Override
-    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
-    {
-		if(null != m_viewInfoListener){
+	@Override
+	public void onSwitched(View view, int position) {
+		// TODO Auto-generated method stub
+			if(null != m_viewInfoListener){
 			TitleDef title = getTitleDef();
 			title.m_title = (position + 1)+"/"+listUrl.size();
 			m_viewInfoListener.onTitleChanged(title);
@@ -317,13 +322,35 @@ public class BigGalleryView extends BaseView implements OnItemSelectedListener{
 			if(position - index >= 0)
 				urls.add(listUrl.get(position-index));				
 		}
-		SimpleImageLoader.AdjustPriority(urls);
-    }
+		SimpleImageLoader.AdjustPriority(urls);		
+	}
 
-    @Override
-    public void onNothingSelected(AdapterView<?> arg0)
-    {
-        // TODO Auto-generated method stub
-        
-    }
+//    @Override
+//    public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
+//    {
+//		if(null != m_viewInfoListener){
+//			TitleDef title = getTitleDef();
+//			title.m_title = (position + 1)+"/"+listUrl.size();
+//			m_viewInfoListener.onTitleChanged(title);
+//		}
+//		
+//		//adjust download sequence
+//		ArrayList<String> urls = new ArrayList<String>();
+//		urls.add(listUrl.get(position));
+//		for(int index = 0; (index + position < listUrl.size() || position - index >= 0); ++index){
+//			if(index + position < listUrl.size())
+//				urls.add(listUrl.get(index+position));
+//			
+//			if(position - index >= 0)
+//				urls.add(listUrl.get(position-index));				
+//		}
+//		SimpleImageLoader.AdjustPriority(urls);
+//    }
+//
+//    @Override
+//    public void onNothingSelected(AdapterView<?> arg0)
+//    {
+//        // TODO Auto-generated method stub
+//        
+//    }
 }

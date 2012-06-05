@@ -10,6 +10,8 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.animation.Animation;
+import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -200,6 +202,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 		
+		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+		
 //		long time_start =  System.currentTimeMillis();
 //		if(null != currentView){
 //			Log.d("page switching performance log", "from current:" + currentView.getClass().getName() + " at " + time_start + "ms" );
@@ -212,7 +216,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			QuanleimuApplication.getApplication().getViewStack().push(currentView);
 		}
 		
-		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+		Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
+		currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
+		
 		scroll.removeAllViews();
 		
 		currentView = newView;
@@ -224,7 +230,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			needClearViewStack = false;
 		}
 		
+		Animation hyperspaceJumpAnimation_emerging = AnimationUtils.loadAnimation(this, R.anim.animation_emerging);
+		currentView.startAnimation(hyperspaceJumpAnimation_emerging);		
 		scroll.addView(currentView);
+		
+
 		
 //		long time_end =  System.currentTimeMillis();
 //		Log.d("page switching performance log", "to current:" + currentView.getClass().getName() + " at " + time_end + "ms" );
