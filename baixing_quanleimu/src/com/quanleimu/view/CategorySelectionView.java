@@ -79,14 +79,20 @@ public class CategorySelectionView extends ListView {
 					
 					if(null != CategorySelectionView.this.selectionListener){
 						if(QuanleimuApplication.listUsualCates != null){
-							QuanleimuApplication.listUsualCates.add(0, selectedSubCate);
 							int size = QuanleimuApplication.listUsualCates.size();
+							for(int i = 0; i < size; ++ i){
+								if(QuanleimuApplication.listUsualCates.get(i).getName().equals(selectedSubCate.getName())){
+									QuanleimuApplication.listUsualCates.remove(i);
+									break;
+								}
+							}
+							QuanleimuApplication.listUsualCates.add(0, selectedSubCate);
+							size = QuanleimuApplication.listUsualCates.size();
 							while(size > 5){
 								QuanleimuApplication.listUsualCates.remove(5);
 								size = QuanleimuApplication.listUsualCates.size();
-								Util.saveDataToLocate(getContext(), "listUsualCates", QuanleimuApplication.listUsualCates);
-
 							}
+							Util.saveDataToLocate(getContext(), "listUsualCates", QuanleimuApplication.listUsualCates);
 						}
 						CategorySelectionView.this.selectionListener.OnSubCategorySelected(selectedSubCate);
 					}
