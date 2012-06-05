@@ -17,25 +17,33 @@ import android.widget.TextView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.Filterss;
-
+import com.quanleimu.entity.labels;
+import com.quanleimu.adapter.CommonItemAdapter;
 public class SiftOptionListView extends BaseView {
 
 	public int temp = -1;
-	public List<Filterss> listFilterss = new ArrayList<Filterss>();
+	public List<labels> filterLabels = new ArrayList<labels>();
 	public ListView lv;
 	
 	Bundle bundle = null;
 	
-	protected void Init(){
+	protected void Init(){		
+		List<Filterss> listFilterss = QuanleimuApplication.getApplication().getListFilterss();
+		temp = bundle.getInt("temp");
+		filterLabels.addAll(listFilterss.get(temp).getLabelsList());
+		labels nolimit = new labels();
+		nolimit.setLabel("不限");
+		filterLabels.add(0, nolimit);
+	
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView(inflater.inflate(R.layout.siftlist, null));
-		
-		temp = bundle.getInt("temp");
 		
 		lv = (ListView) findViewById(R.id.lv_test);
 		if(listFilterss != null && listFilterss.size() != 0)
 		{
-			lv.setAdapter(new ItemList());
+			CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), filterLabels);
+			adapter.setHasArrow(false);
+			lv.setAdapter(adapter);
 		}
 		
 		lv.setOnItemClickListener(new OnItemClickListener() {
@@ -46,10 +54,10 @@ public class SiftOptionListView extends BaseView {
 				
 				if(null != m_viewInfoListener){
 					if(arg2 != 0){
-						bundle.putString("value", listFilterss.get(temp)
+						bundle.putString("value", QuanleimuApplication.getApplication().getListFilterss().get(temp)
 								.getValuesList().get(arg2-1).getValue());
 						// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-						bundle.putString("label", listFilterss.get(temp)
+						bundle.putString("label", QuanleimuApplication.getApplication().getListFilterss().get(temp)
 								.getLabelsList().get(arg2-1).getLabel());
 						bundle.remove("all");
 					}else{
@@ -63,12 +71,8 @@ public class SiftOptionListView extends BaseView {
 	}
 	
 	public SiftOptionListView(Context context, Bundle bundle_){
-		super(context);
-		
+		super(context);		
 		bundle = bundle_;
-		
-		listFilterss = QuanleimuApplication.getApplication().getListFilterss();
-		
 		Init();
 	}
 
@@ -87,57 +91,5 @@ public class SiftOptionListView extends BaseView {
 		tab.m_visible = false;
 		return tab;
 	}
-
-
-	class ItemList extends BaseAdapter {
-
-		@Override
-		public int getCount() {
-			// TODO Auto-generated method stub
-			return listFilterss.get(temp).getLabelsList().size()+1;
-		}
-
-		@Override
-		public Object getItem(int position) {
-			// TODO Auto-generated method stub
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			// TODO Auto-generated method stub 
-			return 0;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			convertView = LayoutInflater.from(getContext()).inflate(R.layout.item_siftlist,	null);
-			
-			if(position==0){ 
-				convertView.setBackgroundResource(R.drawable.btn_top_bg);
-			}else if(position>listFilterss.get(temp).getLabelsList().size()-1){
-//				convertView.setBackgroundResource(R.drawable.btn_m_bg);
-				convertView.setBackgroundResource(R.drawable.btn_down_bg);
-			}else{
-				convertView.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-			convertView.setPadding(10, 10, 10, 10);
-			
-			TextView txts = (TextView) convertView
-			.findViewById(R.id.siftlisttxt);
-			if(position == 0){
-				txts.setText("不限");
-			}else{
-				txts.setText(listFilterss.get(temp).getLabelsList().get(position-1)
-						.getLabel());
-			}
-			
-			
-			return convertView;
-		}
-
-	}
-
-	
 }
 

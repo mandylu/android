@@ -19,7 +19,8 @@ public class labels implements Serializable{
 
 	@Override
 	public String toString() {
-		return "label [label=" + label + "]";
+//		return "label [label=" + label + "]";
+		return label;
 	}
 
 }

@@ -12,16 +12,13 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-
+import android.widget.ImageView;
 public class CommonItemAdapter extends BaseAdapter {
 
 	private Context context;
 	private List<? extends Object> list = new ArrayList<Object>();
 	private Object tag;
-	
-	public CommonItemAdapter() {
-		super();
-	}
+	private boolean hasArrow = true;
 	
 	public void setTag(Object obj){
 		tag = obj;
@@ -36,6 +33,10 @@ public class CommonItemAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
+	}
+	
+	public void setHasArrow(boolean has){
+		this.hasArrow = has;
 	}
 	
 	public void setList(List<? extends Object> list_){
@@ -87,6 +88,14 @@ public class CommonItemAdapter extends BaseAdapter {
 		
 		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
 		tvCateName.setText(list.get(position).toString());
+		
+		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
+		if(this.hasArrow){
+			arrow.setVisibility(View.VISIBLE);
+		}
+		else{
+			arrow.setVisibility(View.GONE);
+		}
 		
 		return v;
 	}
