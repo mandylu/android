@@ -88,22 +88,12 @@ public class GoodsListAdapter extends BaseAdapter {
 		if(v == null){
 			v = inflater.inflate(R.layout.item_goodslist, null);
 		}
-		if (list.size() == 1) {
-			v.setBackgroundResource(R.drawable.btn_s_bg);
-		} else {
-			if (position == 0) {
-				v.setBackgroundResource(R.drawable.btn_top_bg);
-			} else if (position == list.size() - 1) {
-				v.setBackgroundResource(R.drawable.btn_down_bg);
-			} else {
-				v.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-		}
+
 		tvDes = (TextView) v.findViewById(R.id.tvDes);
 		tvPrice = (TextView) v.findViewById(R.id.tvPrice);
-		tvPrice.setTextColor(Color.RED);
+//		tvPrice.setTextColor(Color.RED);
 		tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
-		tvDateAndAddress.setTextColor(R.color.hui);
+//		tvDateAndAddress.setTextColor(R.color.hui);
 		btnDelete = (Button) v.findViewById(R.id.btnDelete);
 
 		if (!hasDelBtn) {

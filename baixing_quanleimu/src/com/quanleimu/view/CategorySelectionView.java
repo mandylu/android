@@ -25,9 +25,11 @@ import android.os.AsyncTask;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
+import android.widget.TextView;
 
-
-
+import android.graphics.Color;
+import android.graphics.drawable.Drawable;
+import android.view.MotionEvent;
 public class CategorySelectionView extends ListView {
 	
 	public interface ICateSelectionListener{
@@ -69,7 +71,7 @@ public class CategorySelectionView extends ListView {
 			
 			if(null == secondCateAdapter){
 				secondCateAdapter = new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren());
-			}	
+			}
 			
 			CategorySelectionView.this.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -99,9 +101,7 @@ public class CategorySelectionView extends ListView {
 				}
 			});
 			
-			if(null != secondCateAdapter 
-					&& secondCateAdapter.getTag() != null 
-					&& !cateName.equals((String)secondCateAdapter.getTag())){
+			if(null != secondCateAdapter && !cateName.equals((String)secondCateAdapter.getTag())){
 				secondCateAdapter.setTag(cateName);
 				secondCateAdapter.setList(selectedMainCate.getChildren());
 			}
@@ -119,15 +119,20 @@ public class CategorySelectionView extends ListView {
 		super(context);
 
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		this.setSelector(R.color.transparent);
-		this.setDivider(null);
-		this.setCacheColorHint(0x00000000);
-	
+//		this.setSelector(R.drawable.list_selector);
+		this.setCacheColorHint(0);
+//		this.setFocusable(true);
 		
-//		lvAllCates = new ListView(activity);
-//		lvAllCates.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-		//lvAllCates.setBackgroundColor(R.color.background_color);
-		
+		try{
+			Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);
+			this.setDivider(divider);
+			this.setDividerHeight(1);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+		this.setBackgroundResource(R.drawable.home_bg_2x);
+			
 		this.setOnItemClickListener(new MainCateItemClickListener());
 		
 		//main cate list

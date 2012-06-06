@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
+    android:background = "@drawable/list_selector">
     android:orientation="horizontal" >
 
     <Button
@@ -42,7 +43,7 @@
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
             android:singleLine="true"
-            android:textColor="#000000"
+            android:textColor="@drawable/list_textselector"
             android:textSize="16dip" >
         </TextView>
 
@@ -53,6 +54,7 @@
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
+            android:textColor="@drawable/list_textselector"
             android:textSize="14dip" >
         </TextView>
 
@@ -62,7 +64,7 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDes"
             android:layout_marginLeft="10dip"
-            android:textColor="#595959"
+            android:textColor="@drawable/list_textselector"
             
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"

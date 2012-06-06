@@ -145,7 +145,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 			}
 		});
 		
-        lvGoodsList.setDivider(null);
+//        lvGoodsList.setDivider(null);
 		lvGoodsList.addFooterView(loadingLayout);
 		
 		lvGoodsList.setOnScrollListener(this);

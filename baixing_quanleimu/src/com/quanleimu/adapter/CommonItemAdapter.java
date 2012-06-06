@@ -7,6 +7,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
 
 import android.content.Context;
+import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -87,21 +88,22 @@ public class CommonItemAdapter extends BaseAdapter {
 		}else{
 			v = (View)convertView; 
 		}
-		if(!plane){
-			if(position==0){ 
-				v.setBackgroundResource(R.drawable.btn_top_bg);
-			}else if(position==list.size()-1){
-				v.setBackgroundResource(R.drawable.btn_down_bg);
-			}else{
-				v.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-		}
-		else{
-			v.setBackgroundDrawable(null);
-		}
+//		if(!plane){
+//			if(position==0){ 
+//				v.setBackgroundResource(R.drawable.btn_top_bg);
+//			}else if(position==list.size()-1){
+//				v.setBackgroundResource(R.drawable.btn_down_bg);
+//			}else{
+//				v.setBackgroundResource(R.drawable.btn_m_bg);
+//			}
+//		}
+//		else{
+//			v.setBackgroundDrawable(null);
+//		}
 		
 		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
 		tvCateName.setText(list.get(position).toString());
+//		tvCateName.setTextColor(Color.BLACK);
 		
 		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
 		if(this.hasArrow){

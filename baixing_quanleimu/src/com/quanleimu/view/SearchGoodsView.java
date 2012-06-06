@@ -130,7 +130,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 			}
 		});
 
-        lvSearchResult.setDivider(null);
+//        lvSearchResult.setDivider(null);
 		lvSearchResult.addFooterView(loadingLayout);
 
 		listSearchGoods = QuanleimuApplication.getApplication().getListSearchGoods();

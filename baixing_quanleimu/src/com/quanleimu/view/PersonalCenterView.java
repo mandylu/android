@@ -201,7 +201,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		ivMyfav = (ImageView) findViewById(R.id.ivMyfav);
 		ivMyhistory = (ImageView) findViewById(R.id.ivMyhistory);
 
-		lvGoodsList.setDivider(null);
+//		lvGoodsList.setDivider(null);
 		lvGoodsList.setOnScrollListener(this);
 
 		ivMyads.setOnClickListener(this);
