@@ -50,8 +50,8 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
-import com.quanleimu.widget.ViewFlow.ViewFlow;
-import com.quanleimu.widget.ViewFlow.CircleFlowIndicator;
+import com.quanleimu.widget.CircleFlowIndicator;
+import com.quanleimu.widget.ViewFlow;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
 	private ViewFlow glDetail;

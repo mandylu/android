@@ -22,13 +22,13 @@
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent">					
 					
-    	<com.quanleimu.widget.ViewFlow.ViewFlow
+    	<com.quanleimu.widget.ViewFlow
     		android:id="@+id/vfCoupon" 
     		android:layout_width="fill_parent"
     		android:layout_height="fill_parent"
     		app:sidebuffer="3"/>	
     		
-    	<com.quanleimu.widget.ViewFlow.CircleFlowIndicator 
+    	<com.quanleimu.widget.CircleFlowIndicator 
     		android:padding="5dip"
     		android:layout_height="wrap_content"
     		android:layout_width="wrap_content"

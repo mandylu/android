@@ -10,6 +10,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -30,13 +31,14 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.widget.PullToRefreshListView;
 
-public class GetGoodsView extends BaseView implements OnScrollListener{
+public class GetGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener{
 
-	private ListView lvGoodsList;
+	private PullToRefreshListView lvGoodsList;
 	private ProgressDialog pd;
 	private ProgressBar progressBar;
-	private LinearLayout loadingLayout;
+	//private LinearLayout loadingLayout;
 
 	private String categoryEnglishName = "";
 	private String siftResult = "";
@@ -55,7 +57,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 	private final static int ERROR_MORE = 1;
 	private final static int ERROR_NOMORE = 2;
 	
-	TextView tvAddMore;
+	//TextView tvAddMore;
 
 	Bundle bundle;
 	
@@ -109,7 +111,9 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 		View v = inflater.inflate(R.layout.goodslist, null);
 		this.addView(v);
 
-		lvGoodsList = (ListView) findViewById(R.id.lvGoodsList);
+		lvGoodsList = (PullToRefreshListView) findViewById(R.id.lvGoodsList);
+		lvGoodsList.setOnRefreshListener(this);
+		lvGoodsList.setOnGetMoreListener(this);
 
         LinearLayout layout = new LinearLayout(this.getContext());  
         layout.setOrientation(LinearLayout.HORIZONTAL);  
@@ -120,33 +124,28 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
         LayoutParams WClayoutParams =
         		new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layout.addView(progressBar, WClayoutParams);  
-        tvAddMore = new TextView(this.getContext());  
-        tvAddMore.setTextSize(18);
-        tvAddMore.setText("更多...");  
-        tvAddMore.setGravity(Gravity.CENTER_VERTICAL);  
-        layout.addView(tvAddMore, WClayoutParams);  
         layout.setGravity(Gravity.CENTER);  
-        loadingLayout = new LinearLayout(this.getContext());  
-        loadingLayout.setBackgroundResource(R.drawable.alpha_bg);
-        loadingLayout.addView(layout, WClayoutParams);  
-        loadingLayout.setGravity(Gravity.CENTER); 
+//        loadingLayout = new LinearLayout(this.getContext());  
+//        loadingLayout.setBackgroundResource(R.drawable.alpha_bg);
+//        loadingLayout.addView(layout, WClayoutParams);  
+//        loadingLayout.setGravity(Gravity.CENTER); 
         
-        tvAddMore.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				progressBar.setVisibility(View.VISIBLE);
-				tvAddMore.setText("加载中...");
-				
-				//点击获取更多 按钮布局消失
-				isFirst = false;
-				startRow = listGoods.size();
-				new Thread(new GetGoodsListThread()).start();
-			}
-		});
+//        tvAddMore.setOnClickListener(new View.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				progressBar.setVisibility(View.VISIBLE);
+//				tvAddMore.setText("加载中...");
+//				
+//				//点击获取更多 按钮布局消失
+//				isFirst = false;
+//				startRow = listGoods.size();
+//				new Thread(new GetGoodsListThread()).start();
+//			}
+//		});
 		
 //        lvGoodsList.setDivider(null);
-		lvGoodsList.addFooterView(loadingLayout);
+//		lvGoodsList.addFooterView(loadingLayout);
 		
 		lvGoodsList.setOnScrollListener(this);
 
@@ -157,7 +156,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				if(arg2 == listGoods.size())
 				{
 					progressBar.setVisibility(View.VISIBLE);
-					tvAddMore.setText("加载中...");
+//					tvAddMore.setText("加载中...");
 					
 					//点击获取更多 按钮布局消失
 					isFirst = false;
@@ -211,22 +210,17 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				} else {
 					listGoods = goodsList.getData();
 					QuanleimuApplication.getApplication().setListGoods(listGoods);
-					// 判断总数是不是已经超出当前集合长度
-					if (goodsList.getCount() > listGoods.size()) {
-						loadingLayout.setVisibility(View.VISIBLE);
-					} else {
-						loadingLayout.setVisibility(View.GONE);
-					}
 					
 					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), listGoods);
 					lvGoodsList.setAdapter(adapter);
 				}
-
+				
+				lvGoodsList.onRefreshComplete();
 				break;
 			case GetGoodsView.ERROR_NOMORE:
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
+//				tvAddMore.setText("更多...");
+//				loadingLayout.setVisibility(View.GONE);
 				
 				Message msg1 = Message.obtain();
 				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
@@ -234,11 +228,14 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				bundle.putString("popup_message", "数据下载失败，请重试！");
 				msg1.setData(bundle);
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+				
+				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
+				
 				break;
 			case GetGoodsView.ERROR_MORE:
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
+//				tvAddMore.setText("更多...");
+//				loadingLayout.setVisibility(View.GONE);
 				
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				if (goodsList == null || goodsList.getCount() == 0) {
@@ -259,11 +256,14 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 					adapter.setList(listGoods);
 					adapter.notifyDataSetChanged();					
 				}
+				
+				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
+				
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
+//				tvAddMore.setText("更多...");
+//				loadingLayout.setVisibility(View.GONE);
 				
 				Message msg2 = Message.obtain();
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
@@ -275,12 +275,12 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 				pd.dismiss();
 			}
 			
-			// 判断总数是不是已经超出当前集合长度
-			if (goodsList.getCount() > listGoods.size()) {
-				loadingLayout.setVisibility(View.VISIBLE);
-			} else {
-				loadingLayout.setVisibility(View.GONE);
-			}
+//			// 判断总数是不是已经超出当前集合长度
+//			if (goodsList.getCount() > listGoods.size()) {
+//				loadingLayout.setVisibility(View.VISIBLE);
+//			} else {
+//				loadingLayout.setVisibility(View.GONE);
+//			}
 			
 			super.handleMessage(msg);
 		}
@@ -325,7 +325,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-
+		Log.d("GetGoodsView: ", "on scroll called!");
 	}
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -343,5 +343,22 @@ public class GetGoodsView extends BaseView implements OnScrollListener{
 			
 			SimpleImageLoader.AdjustPriority(urls);			
 		}		
+	}
+
+	@Override
+	public void onGetMore() {
+		// TODO Auto-generated method stub
+		//点击获取更多 按钮布局消失
+		isFirst = false;
+		startRow = listGoods.size();
+		new Thread(new GetGoodsListThread()).start();
+	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		isFirst = true;
+		startRow = 0;
+		new Thread(new GetGoodsListThread()).start();		
 	}
 }

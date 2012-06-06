@@ -5,4 +5,10 @@
     <string name="weiboinfo">weiboinfo</string>
     <string name="alert_dialog_hide">隐藏</string>
     <string name="alert_dialog_cancel">取消</string>
+    <string name="pull_to_refresh_tap_label">点击这里刷新。。。</string>
+    <string name="pull_to_refresh_pull_label">向下拉刷新。。。</string>
+    <string name="pull_to_refresh_refreshing_label">正在刷新。。。</string>
+    <string name="pull_to_refresh_release_label">松开刷新。。。</string>
+    <string name="scrolldown_to_getmore">正在加载更多，请耐心等待~</string>
+    <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
 </resources>

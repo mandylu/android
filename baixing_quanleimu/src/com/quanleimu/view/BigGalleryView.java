@@ -37,8 +37,8 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
-import com.quanleimu.widget.ViewFlow.CircleFlowIndicator;
-import com.quanleimu.widget.ViewFlow.ViewFlow;
+import com.quanleimu.widget.CircleFlowIndicator;
+import com.quanleimu.widget.ViewFlow;
 
 public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener{
 
