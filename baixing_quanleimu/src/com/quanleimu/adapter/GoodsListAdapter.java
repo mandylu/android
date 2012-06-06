@@ -27,7 +27,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import android.os.Handler;
-
+import android.graphics.Typeface;
 public class GoodsListAdapter extends BaseAdapter {
 
 	private Context context;
@@ -106,14 +106,18 @@ public class GoodsListAdapter extends BaseAdapter {
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         if(null == defaultBk1){
-        	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren1, o);
-        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
-        	tmb.recycle();
+        	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
+//        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
+//        	defaultBk1 = Helper.addBorder(tmb, 1);
+//        	tmb.recycle();
+        	defaultBk1 = tmb;
         }
 		if(null == defaultBk2){
-			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.moren, o);
-			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
-			tmb1.recycle();
+			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
+//			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
+//			defaultBk2 = Helper.addBorder(tmb1, 1);
+//			tmb1.recycle();
+			defaultBk2 = tmb1;
 		}
 		int type = Util.getWidthByContext(context);
 		RelativeLayout.LayoutParams lp = null;
@@ -205,6 +209,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			tvPrice.setText(price);
 		}
 		tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+		tvDes.setTypeface(null, Typeface.BOLD);
 
 		String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
 		if(dateV != null && !dateV.equals(""))

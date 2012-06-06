@@ -15,6 +15,7 @@ import android.graphics.Bitmap.Config;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.PorterDuff.Mode;
+import android.graphics.Color;
 import android.graphics.PorterDuffXfermode;
 import android.graphics.Rect;
 import android.graphics.RectF;
@@ -192,6 +193,16 @@ public class Helper {
 			}
 		}
 		return obj;
+	}
+	
+	public static Bitmap addBorder(Bitmap bitmap, int borderWidth){
+		if(bitmap == null) return null;
+		Bitmap dest = Bitmap.createBitmap(bitmap.getWidth() + 2 * borderWidth, bitmap.getHeight() + 2 * borderWidth, bitmap.getConfig());
+		Rect rec = new Rect(borderWidth, borderWidth, bitmap.getWidth(), bitmap.getHeight());
+		Canvas canvas = new Canvas(dest);
+		canvas.drawColor(Color.WHITE);
+		canvas.drawBitmap(bitmap, null, rec, null);
+		return dest;
 	}
 
 	//图片圆角

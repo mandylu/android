@@ -20,9 +20,9 @@
         android:id="@+id/rlListInfo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
-        android:paddingBottom="2dip"
-        android:paddingLeft="3dip"
-        android:paddingTop="3dip"
+        android:paddingBottom="5dip"
+        android:paddingLeft="5dip"
+        android:paddingTop="5dip"
         android:paddingRight="5dip" >
 
         <ImageView
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/btnDelete"
-            android:src="@drawable/moren1" >
+            android:src="@drawable/home_bg_thumb_2x" >
         </ImageView>
 
         <TextView
@@ -39,11 +39,11 @@
             android:layout_toRightOf="@+id/ivInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@+id/tvPrice"
             android:layout_marginLeft="10dip"
             android:layout_marginRight="10dip"
             android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
+            android:textColor="@drawable/list_titleselector"
+            android:textStyle="bold"
             android:textSize="16dip" >
         </TextView>
 
@@ -53,8 +53,9 @@
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
+            android:layout_below="@+id/tvDateAndAddress"
             android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
+            android:textColor="@drawable/list_pricetextselector"
             android:textSize="14dip" >
         </TextView>
 
