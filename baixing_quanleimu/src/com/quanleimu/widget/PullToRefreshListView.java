@@ -1,6 +1,8 @@
 package com.quanleimu.widget;
 
 
+import java.util.Calendar;
+
 import android.content.Context;
 import android.util.AttributeSet;
 import android.util.Log;
@@ -31,6 +33,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
  
     private static final int SCROLLDOWN_TO_GETMORE = 5;
     private static final int GETTING_MORE = 6;
+    
+    private static final int DAY_MS = 24*60*60*1000;
+    private static final int HOUR_MS = 60*60*1000;
+    private static final int MINUTE_MS = 60*1000;
+    private static final int SECOND_MS = 1000;
 
     private static final String TAG = "PullToRefreshListView";
 
@@ -66,6 +73,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private boolean mBounceHack;
     private boolean mTouchDown = false;
     private boolean mHasMore = true;
+    
+    private long mLastUpdateTimeMs;
 
     public PullToRefreshListView(Context context) {
         super(context);
@@ -130,6 +139,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         measureView(mRefreshView);
         mRefreshViewHeight = mRefreshView.getMeasuredHeight();
+        
+        mLastUpdateTimeMs = System.currentTimeMillis();
     }
 
     private void updateFooter(boolean hasMore){
@@ -181,13 +192,31 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Set a text to represent when the list was last updated. 
      * @param lastUpdated Last updated at.
      */
-    public void setLastUpdated(CharSequence lastUpdated) {
-        if (lastUpdated != null) {
-            mRefreshViewLastUpdated.setVisibility(View.VISIBLE);
-            mRefreshViewLastUpdated.setText(lastUpdated);
-        } else {
-            mRefreshViewLastUpdated.setVisibility(View.GONE);
-        }
+    public void checkLastUpdateTime() {    
+    	long time_diff = System.currentTimeMillis() - mLastUpdateTimeMs;
+    	long nDays = time_diff / DAY_MS;
+    	time_diff %= DAY_MS;
+    	long nHours = time_diff / HOUR_MS;
+    	time_diff %= HOUR_MS;
+    	long nMinutes = time_diff / MINUTE_MS;
+    	time_diff %= MINUTE_MS;
+    	long nSeconds = time_diff / SECOND_MS;
+    	
+    	String strLastUpdate = "最后更新于:";
+    	if(nDays > 0){
+    		strLastUpdate += nDays + "天";
+    	}
+    	if(nHours > 0){
+    		strLastUpdate += nHours + "小时";
+    	}
+    	
+   		strLastUpdate += nMinutes + "分";
+    	
+//   		strLastUpdate += nSeconds + "秒";
+   		
+    	strLastUpdate += "前";
+    	
+        mRefreshViewLastUpdated.setText(strLastUpdate);       
     }
 
     @Override
@@ -295,6 +324,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             // Hide progress bar and arrow.
             mRefreshViewImage.setVisibility(View.GONE);
             mRefreshViewProgress.setVisibility(View.GONE);
+            
         }
     }
 
@@ -333,6 +363,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     mRefreshViewText.setText(R.string.pull_to_refresh_release_label);
                     mRefreshViewImage.clearAnimation();
                     mRefreshViewImage.startAnimation(mFlipAnimation);
+                    checkLastUpdateTime();
                     mRefreshState = RELEASE_TO_REFRESH;
                 }
                 else if (mRefreshView.getBottom() < mRefreshViewHeight + 20
@@ -342,6 +373,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         mRefreshViewImage.clearAnimation();
                         mRefreshViewImage.startAnimation(mReverseFlipAnimation);
                     }
+                    checkLastUpdateTime();
                     mRefreshState = PULL_TO_REFRESH;
                 }
             } else {
@@ -373,6 +405,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             	Log.d("on fling: ", "top y = " + mRefreshView.getTop());
             	if(mRefreshState != REFRESHING && mRefreshView.getTop() >= 0){
 	                mRefreshState = REFRESHING;
+	                checkLastUpdateTime();
 	                prepareForRefresh();
 	                onRefresh();
             	}
@@ -450,16 +483,18 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Resets the list to a normal state after a refresh.
      * @param lastUpdated Last updated at.
      */
-    public void onRefreshComplete(CharSequence lastUpdated) {
-        setLastUpdated(lastUpdated);
-        onRefreshComplete();
-    }
+//    public void onRefreshComplete(CharSequence lastUpdated) {
+//        setLastUpdated(lastUpdated);
+//        onRefreshComplete();
+//    }
 
     /**
      * Resets the list to a normal state after a refresh.
      */
     public void onRefreshComplete() {        
         Log.d(TAG, "onRefreshComplete");
+        
+        mLastUpdateTimeMs = System.currentTimeMillis();
 
         resetHeader();
 
@@ -471,7 +506,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             	setSelection(1);
         }
         
-        updateFooter(true);
+        updateFooter(true);        
     }
     
 	public enum E_GETMORE{

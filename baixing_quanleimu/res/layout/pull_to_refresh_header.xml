@@ -62,7 +62,7 @@
     <TextView
         android:id="@+id/pull_to_refresh_updated_at"
         android:layout_below="@+id/pull_to_refresh_text"
-        android:visibility="gone"
+        android:visibility="visible"
         android:textAppearance="?android:attr/textAppearanceSmall"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"

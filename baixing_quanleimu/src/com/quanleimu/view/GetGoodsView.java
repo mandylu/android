@@ -3,6 +3,7 @@ package com.quanleimu.view;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Calendar;
 import java.util.List;
 
 import android.app.ProgressDialog;
@@ -216,6 +217,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				}
 				
 				lvGoodsList.onRefreshComplete();
+				
 				break;
 			case GetGoodsView.ERROR_NOMORE:
 				progressBar.setVisibility(View.GONE);
