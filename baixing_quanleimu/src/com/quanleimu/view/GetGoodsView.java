@@ -350,7 +350,6 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	@Override
 	public void onGetMore() {
 		// TODO Auto-generated method stub
-		//点击获取更多 按钮布局消失
 		isFirst = false;
 		startRow = listGoods.size();
 		new Thread(new GetGoodsListThread()).start();

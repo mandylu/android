@@ -42,14 +42,15 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.GetGoodsView.GetGoodsListThread;
+import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.adapter.GoodsListAdapter;
-public class SearchGoodsView extends BaseView implements OnScrollListener {
+public class SearchGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
 	// 定义控件
 	public Button btnSearch, btnBack;
-	public ListView lvSearchResult;
+	public PullToRefreshListView lvSearchResult;
 	public Button btnMore;
-	public LinearLayout loadingLayout;
 
 	public ProgressDialog pd;
 	public String title = "";
@@ -91,8 +92,10 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 		LayoutParams WClayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
 		// findViewById
-		lvSearchResult = (ListView) findViewById(R.id.lvSearchResult);
-
+		lvSearchResult = (PullToRefreshListView) findViewById(R.id.lvSearchResult);
+		lvSearchResult.setOnRefreshListener(this);
+		lvSearchResult.setOnGetMoreListener(this);
+		
 		//线性布局  
         LinearLayout layout = new LinearLayout(getContext());  
         //设置布局 水平方向  
@@ -110,11 +113,6 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
         tvAddMore.setGravity(Gravity.CENTER_VERTICAL);  
         layout.addView(tvAddMore, WClayoutParams);  
         layout.setGravity(Gravity.CENTER);  
-        loadingLayout = new LinearLayout(getContext());  
-        loadingLayout.setBackgroundResource(R.drawable.alpha_bg);
-//        loadingLayout.setBackgroundColor(R.color.white);
-        loadingLayout.addView(layout, WClayoutParams);  
-        loadingLayout.setGravity(Gravity.CENTER); 
         
         tvAddMore.setOnClickListener(new View.OnClickListener() {
 			
@@ -129,9 +127,6 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 				new Thread(new GetGoodsListThread()).start();
 			}
 		});
-
-//        lvSearchResult.setDivider(null);
-		lvSearchResult.addFooterView(loadingLayout);
 
 		listSearchGoods = QuanleimuApplication.getApplication().getListSearchGoods();
 		totalCount = QuanleimuApplication.getApplication().getSearchCount();
@@ -216,7 +211,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1:
+			case 1://new
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				totalCount = goodsList.getCount();
 
@@ -232,17 +227,14 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 
 					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
-					if (totalCount > listSearchGoods.size()) {
-						loadingLayout.setVisibility(View.VISIBLE);
-					} else {
-						loadingLayout.setVisibility(View.GONE);
-					}
 					adapter = new GoodsListAdapter(getContext(), listSearchGoods);
 					adapter.setHasDelBtn(false);
 					lvSearchResult.setAdapter(adapter);
 					if (pd != null) {
 						pd.dismiss();
 					}
+					
+					lvSearchResult.onRefreshComplete();
 				}
 
 				break;
@@ -252,26 +244,21 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 				}
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
 				Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
-				// 判断总数是不是已经超出当前集合长度
-				if (goodsList.getCount() > listSearchGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
-				}
 				break;
-			case 3:
+				
+			case 3://more
 				if (pd != null) {
 					pd.dismiss();
 				}
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 
 				if (goodsList == null || goodsList.getCount() == 0) {
 					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+					
+					lvSearchResult.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				} else {
 					listCommonSearchGoods = goodsList.getData();
 					for (int i = 0; i < listCommonSearchGoods.size(); i++) {
@@ -280,13 +267,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
 					adapter.setList(listSearchGoods);
-					adapter.notifyDataSetChanged();
+					adapter.notifyDataSetChanged();	
 					
-				}
-				if (totalCount > listSearchGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
+					lvSearchResult.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				}
 				break;
 			case 10:
@@ -295,14 +278,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 				}
 				progressBar.setVisibility(View.GONE);
 				tvAddMore.setText("更多...");
-				loadingLayout.setVisibility(View.GONE);
 				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
-				// 判断总数是不是已经超出当前集合长度
-				if (goodsList.getCount() > listSearchGoods.size()) {
-					loadingLayout.setVisibility(View.VISIBLE);
-				} else {
-					loadingLayout.setVisibility(View.GONE);
-				}
 				break;
 			}
 
@@ -369,5 +345,21 @@ public class SearchGoodsView extends BaseView implements OnScrollListener {
 			
 			SimpleImageLoader.AdjustPriority(urls);			
 		}
+	}
+
+	@Override
+	public void onGetMore() {
+		// TODO Auto-generated method stub
+		isFirst = -1;
+		startRow = listSearchGoods.size();
+		new Thread(new GetGoodsListThread()).start();		
+	}
+
+	@Override
+	public void onRefresh() {
+		// TODO Auto-generated method stub
+		isFirst = 0;
+		startRow = 0;
+		new Thread(new GetGoodsListThread()).start();	
 	}
 }
