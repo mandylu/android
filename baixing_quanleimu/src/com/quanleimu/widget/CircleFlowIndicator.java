@@ -22,6 +22,7 @@ import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Paint.Style;
+import android.graphics.RectF;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.View;
@@ -58,9 +59,11 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 	private static final int STYLE_FILL = 1;
 
 	private float radius = 4;
+	private float height_gap = 2;
 	private int fadeOutTime = 0;
 	private final Paint mPaintInactive = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private final Paint mPaintActive = new Paint(Paint.ANTI_ALIAS_FLAG);
+	private final Paint mPaintBackground = new Paint(Paint.ANTI_ALIAS_FLAG);
 	private ViewFlow viewFlow;
 	private int currentScroll = 0;
 	private int flowWidth = 0;
@@ -76,7 +79,7 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 	 */
 	public CircleFlowIndicator(Context context) {
 		super(context);
-		initColors(0xFFFFFFFF, 0xFFFFFFFF, STYLE_FILL, STYLE_STROKE);
+		initColors(0xFFFFFFFF, 0xFFFFFFFF, STYLE_FILL, STYLE_STROKE, 0x00ffffff);
 	}
 
 	/**
@@ -120,11 +123,13 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		
 		mCentered = a.getBoolean(R.styleable.CircleFlowIndicator_centered, false);
 		
-		initColors(activeColor, inactiveColor, activeType, inactiveType);
+		initColors(activeColor, inactiveColor, activeType, inactiveType, a.getColor(R.styleable.CircleFlowIndicator_background_color, 0x00ffffff));	
+		
+		height_gap = a.getInt(R.styleable.CircleFlowIndicator_height_gap, 2);
 	}
 
 	private void initColors(int activeColor, int inactiveColor, int activeType,
-			int inactiveType) {
+			int inactiveType, int backgroundColor) {
 		// Select the paint type given the type attr
 		switch (inactiveType) {
 		case STYLE_FILL:
@@ -134,6 +139,9 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 			mPaintInactive.setStyle(Style.STROKE);
 		}
 		mPaintInactive.setColor(inactiveColor);
+		
+		mPaintBackground.setStyle(Style.FILL);
+		mPaintBackground.setColor(backgroundColor);
 
 		// Select the paint type given the type attr
 		switch (activeType) {
@@ -153,7 +161,11 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 	 */
 	@Override
 	protected void onDraw(Canvas canvas) {
+		if(getVisibility() != View.VISIBLE)
+			return;
+		
 		super.onDraw(canvas);
+		
 		int count = 3;
 		if (viewFlow != null) {
 			count = viewFlow.getViewsCount();
@@ -165,19 +177,23 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		
 		int leftPadding = getPaddingLeft();
 		
-		// Draw stroked circles
+		canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop()-height_gap, getPaddingLeft()+width(), getPaddingTop()-height_gap+height()), height() / 2, height() / 2, mPaintBackground);
+		
+		// Draw inactive circles
 		for (int iLoop = 0; iLoop < count; iLoop++) {
-			canvas.drawCircle(leftPadding + radius
+			canvas.drawCircle(leftPadding + 2*radius + height_gap
 					+ (iLoop * circleSeparation) + centeringOffset,
 					getPaddingTop() + radius, radius, mPaintInactive);
 		}
+		
 		float cx = 0;
 		if (flowWidth != 0) {
 			// Draw the filled circle according to the current scroll
 			cx = (currentScroll * (2 * radius + radius)) / flowWidth;
 		}
+		
 		// The flow width has been upadated yet. Draw the default position
-		canvas.drawCircle(leftPadding + radius + cx+centeringOffset, getPaddingTop()
+		canvas.drawCircle(leftPadding + 2*radius + height_gap + cx+centeringOffset, getPaddingTop()
 				+ radius, radius, mPaintActive);
 	}
 
@@ -251,12 +267,9 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		}
 		// Calculate the width according the views count
 		else {
-			int count = 3;
-			if (viewFlow != null) {
-				count = viewFlow.getViewsCount();
-			}
-			result = (int) (getPaddingLeft() + getPaddingRight()
-					+ (count * 2 * radius) + (count - 1) * radius + 1);
+
+			result = width() + getPaddingLeft() + getPaddingRight();
+			
 			// Respect AT_MOST value if that was what is called for by
 			// measureSpec
 			if (specMode == MeasureSpec.AT_MOST) {
@@ -264,6 +277,16 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 			}
 		}
 		return result;
+	}
+
+	protected int width() {
+		
+		int count = 3;
+		if (viewFlow != null) {
+			count = viewFlow.getViewsCount();
+		}
+		
+		return (int) ((count * 2 * radius) + (count - 1) * radius + height());
 	}
 
 	/**
@@ -284,7 +307,8 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		}
 		// Measure the height
 		else {
-			result = (int) (2 * radius + getPaddingTop() + getPaddingBottom() + 1);
+			
+			result = height() + getPaddingTop() + getPaddingBottom();
 			// Respect AT_MOST value if that was what is called for by
 			// measureSpec
 			if (specMode == MeasureSpec.AT_MOST) {
@@ -292,6 +316,10 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 			}
 		}
 		return result;
+	}
+
+	protected int height() {
+		return (int) (2 * radius + 2 * height_gap);
 	}
 
 	/**

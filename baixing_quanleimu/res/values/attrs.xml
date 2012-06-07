@@ -17,6 +17,9 @@
 <resources>
     <declare-styleable name="ViewFlow">
         <attr name="sidebuffer" format="integer" />
+        <attr name="timedScroll" format="boolean" />
+        <attr name="scrollIntervalMs" format="integer" />
+        <attr name="scrollDurationMs" format="integer" />
     </declare-styleable>
     <declare-styleable name="CircleFlowIndicator">
         <attr name="activeColor" format="color" />
@@ -32,6 +35,8 @@
 			<flag name="stroke" value="0" />
 			<flag name="fill" value="1" />
 		</attr>
+		<attr name="height_gap" format="integer"/>
+		<attr name="background_color" format="color"/>
     </declare-styleable>    
     <declare-styleable name="TitleFlowIndicator">
         <attr name="titlePadding" format="dimension" />

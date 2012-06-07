@@ -55,6 +55,7 @@ import com.quanleimu.widget.ViewFlow;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
 	private ViewFlow glDetail;
+	private CircleFlowIndicator indicator;
 	private LinearLayout linearUseualCates;
 	private List<HotList> listHot = new ArrayList<HotList>();
 	private String cityName;
@@ -290,8 +291,9 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		glDetail = (ViewFlow) v.findViewById(R.id.glDetail);
 
 		glDetail.setFadingEdgeLength(10);
-		CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
-		glDetail.setFlowIndicator(indic);
+		indicator = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
+		glDetail.setFlowIndicator(indicator);
+		indicator.setVisibility(View.GONE);
 		
 //		glDetail.setSpacing(40);
 		glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -490,6 +492,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			protected void onPostExecute(Boolean bool) {  
 				this.adapter.notifyDataSetChanged();
+				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
 				nNotifyInstance--;
 				//Log.d("HomePage async task count:", " " + nNotifyInstance);
 			}
@@ -645,7 +648,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				}
 				
 				if(needNotify)	notifyChange();
-			}			
+			}
+			
+			if(View.GONE == indicator.getVisibility() && glDetail.getHeight() > 0){
+				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
+				indicator.setVisibility(View.VISIBLE);
+			}
 			
 			return v;			
 		}

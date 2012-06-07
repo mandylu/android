@@ -17,6 +17,8 @@ package com.quanleimu.widget;
 
 import java.util.EnumSet;
 import java.util.LinkedList;
+import java.util.Timer;
+import java.util.TimerTask;
 
 import com.quanleimu.activity.R;
 
@@ -74,6 +76,10 @@ public class ViewFlow extends AdapterView<Adapter> {
 	private AdapterDataSetObserver mDataSetObserver;
 	private FlowIndicator mIndicator;
 	private int mLastOrientation = -1;
+	
+	private Timer timerScroll = null;
+	private long scrollIntervalMs = 5000;
+	private long scrollDurationMs = 200;
 
 	private OnGlobalLayoutListener orientationChangeListener = new OnGlobalLayoutListener() {
 
@@ -122,11 +128,48 @@ public class ViewFlow extends AdapterView<Adapter> {
 		init();
 	}
 
+	private class TimedScroll extends TimerTask{
+		private boolean mCanceled = false;
+		
+		@Override
+		public boolean cancel(){
+			super.cancel();
+			
+			mCanceled = true;
+			return true;
+		}
+		
+		@Override
+		public void run(){
+			if(!mCanceled){
+				ViewFlow.this.post(new Runnable(){
+					public void run(){
+			
+						if(ViewFlow.this.mCurrentAdapterIndex == getViewsCount() - 1){
+							ViewFlow.this.setSelection(0);							
+						}else{
+							ViewFlow.this.snapToScreen(ViewFlow.this.mCurrentScreen + 1, (int)ViewFlow.this.scrollDurationMs);
+						}
+					}
+				});
+			}
+		}
+	};
+	
 	public ViewFlow(Context context, AttributeSet attrs) {
 		super(context, attrs);
 		TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
 				R.styleable.ViewFlow);
 		mSideBuffer = styledAttrs.getInt(R.styleable.ViewFlow_sidebuffer, 3);
+		
+		if(styledAttrs.getBoolean(R.styleable.ViewFlow_timedScroll, false)){
+			scrollIntervalMs = styledAttrs.getInteger(R.styleable.ViewFlow_scrollIntervalMs, 5000);
+			scrollDurationMs = styledAttrs.getInteger(R.styleable.ViewFlow_scrollDurationMs, 200);
+			
+			timerScroll = new Timer();
+			timerScroll.scheduleAtFixedRate(new TimedScroll(), scrollIntervalMs, scrollIntervalMs);
+		}
+		
 		init();
 	}
 
@@ -496,6 +539,23 @@ public class ViewFlow extends AdapterView<Adapter> {
 		final int delta = newX - getScrollX();
 		mScroller.startScroll(getScrollX(), 0, delta, 0, Math.abs(delta) * 2);
 		invalidate();
+	}
+	
+	private void snapToScreen(int whichScreen, int durationMs) {
+		mLastScrollDirection = whichScreen - mCurrentScreen;
+		if (!mScroller.isFinished())
+			return;
+
+		whichScreen = Math.max(0, Math.min(whichScreen, getViewsCount() - 1));
+
+		mNextScreen = whichScreen;
+
+		final int newX = whichScreen * getWidth();
+		final int delta = newX - getScrollX();
+		mScroller.startScroll(getScrollX(), 0, delta, 0, durationMs);
+		invalidate();
+		
+		Log.d("timed scroll:", "snap to screen " + whichScreen + "/" + getViewsCount());
 	}
 
 	@Override
