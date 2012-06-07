@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/postcheckboxlayout"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal" 
+	android:gravity="left|center_vertical"
+	android:padding="10dip">
+
+	<TextView
+	    android:id="@+id/postcheckshow"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:gravity="center_vertical"
+	    android:textSize="18dip"
+	    android:textColor="@drawable/list_titleselector" />	
+	<requestFocus />
+
+    <LinearLayout
+        android:orientation="vertical"
+        android:id="@+id/postchecklayout"
+		android:layout_width="wrap_content"
+        android:layout_height="wrap_content">
+	</LinearLayout>
+</LinearLayout>

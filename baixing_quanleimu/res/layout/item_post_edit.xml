@@ -1,0 +1,44 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/postinputlayout"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:orientation="horizontal" 
+	android:padding="10dip">
+
+	<TextView
+	    android:id="@+id/postshow"
+	    android:layout_width="wrap_content"
+	    android:layout_height="fill_parent"
+	    android:gravity="center_vertical"
+	    android:textSize="18dip"
+	    android:textColor="@drawable/list_titleselector" />	
+	<requestFocus />
+
+    <RelativeLayout
+		android:layout_width="fill_parent"
+		android:gravity="center_vertical"
+        android:layout_height="fill_parent">
+		
+		<EditText
+		    android:id="@+id/postinput"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:gravity="right|center_vertical"
+		    android:background="@null"
+		    android:paddingRight="5dip"
+		    android:hint="请输入"
+		    android:layout_toLeftOf="@+id/postunit">
+		</EditText>
+
+		<TextView
+		    android:id="@+id/postunit"
+		    android:layout_width="wrap_content"
+		    android:layout_height="fill_parent"
+		    android:gravity="center_vertical"
+		    android:layout_alignParentRight="true"
+		    android:textSize="18dip"
+		    android:text="元"
+		    android:textColor="@drawable/list_titleselector" />
+	</RelativeLayout>
+</LinearLayout>

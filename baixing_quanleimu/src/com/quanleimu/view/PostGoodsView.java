@@ -58,6 +58,8 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 
+import android.view.ViewGroup;
+
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
@@ -1161,167 +1163,69 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					String key = (String) postList.keySet().toArray()[i];
 					PostGoodsBean postBean = postList.get(key);
 					System.out.println("postList--->" + postList);
-					LinearLayout layout = new LinearLayout(PostGoodsView.this.getContext());
+					ViewGroup layout = null;
+					
 					TextView tvshow = new TextView(PostGoodsView.this.getContext());
 					tvshow.setTextColor(Color.BLACK);
 					TextView tvcontent = new TextView(PostGoodsView.this.getContext());
 					tvcontent.setTextColor(Color.BLACK);
 					ImageView ivforward = new ImageView(PostGoodsView.this.getContext());
-					EditText etcontent = new EditText(PostGoodsView.this.getContext());
-//					etcontent.setTextColor(Color.BLACK);
-
-					img1 = new BXDecorateImageView(PostGoodsView.this.getContext());
-					//((BXDecorateImageView)img1).setDecorateDResource(R.drawable.gou, BXDecorateImageView.ImagePos.ImagePos_RightTop);
-					img2 = new BXDecorateImageView(PostGoodsView.this.getContext());
-					img3 = new BXDecorateImageView(PostGoodsView.this.getContext());
-					imgs = new ImageView[] { img1, img2, img3 };
-					TextView tvlastunit = new TextView(PostGoodsView.this.getContext());
-					tvlastunit.setTextColor(Color.BLACK);
-
-					TextView ttxx = new TextView(PostGoodsView.this.getContext());
-//					ttxx.setTextColor(Color.BLACK);
-
-					if (i == 0) {
-						layout.setBackgroundResource(R.drawable.btn_top_bg);
-					} else if (i == postList.size() - 1) {
-						layout.setBackgroundResource(R.drawable.btn_down_bg);
-					} else {
-						layout.setBackgroundResource(R.drawable.btn_m_bg);
-					}
-
-					layout.setGravity(Gravity.CENTER_VERTICAL);
-					layout.setPadding(10, 10, 10, 10);
-
-					if (postBean.getRequired().equals("required")) {
-						// xx.setImageResource(R.drawable.icon);
-						// layout.addView(xx);
-						ttxx.setGravity(Gravity.TOP);
-						ttxx.setTextColor(Color.RED);
-						ttxx.setText("*");
-						layout.addView(ttxx);
-					}
 
 					if (postBean.getControlType().equals("input")) {
-						// 输入框
-						tvshow.setText(postBean.getDisplayName());
-						tvshow.setTextSize(18);
-						layout.addView(tvshow);
-						layout.setOrientation(LinearLayout.HORIZONTAL);
-						
-						etcontent.setTextSize(16);
-						etcontent.setTextColor(0xff595959);
-						etcontent.setLayoutParams(new LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						
-
-						etcontent.setBackgroundDrawable(null);						
-						etcontent.setGravity(Gravity.RIGHT|Gravity.CENTER_VERTICAL);	
-						
-						if(postBean.getName().equals("contact")){
-							etcontent.setText(user.getPhone());
-							postMap.put(postBean.getDisplayName(), user.getPhone());
-						}
-						else
-						{
-							etcontent.setText("");
-						}						
-						etcontent.setHint("请输入");
-						etcontent.setHintTextColor(0xff595959);
-
-
-						// textViewMap.put(position, etcontent);
-						btMap.put(position, etcontent);
-						// 联系方式已添加
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), etcontent);
-
-						layout.addView(etcontent);
-						
-						if (!postBean.getUnit().equals("")) {
-							tvlastunit.setTextSize(18);
-							tvlastunit.setLayoutParams(new LayoutParams(
-									LayoutParams.WRAP_CONTENT,
-									LayoutParams.WRAP_CONTENT));
-							tvlastunit.setText(postBean.getUnit());
-						}
-						
-						layout.addView(tvlastunit);
+						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+						View v = inflater.inflate(R.layout.item_post_edit, null);
+						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+						layout = (ViewGroup)v;
 					} else if (postBean.getControlType().equals("select")) {
-						tvshow.setText(postBean.getDisplayName());
-						tvshow.setTextSize(18);
-						tvcontent.setLayoutParams(new LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						tvcontent.setTextSize(16);
-						tvcontent.setTextColor(0xff595959);
-						LayoutParams lp = new LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1);
-						lp.setMargins(0, 0, 20, 0);
-						tvcontent.setLayoutParams(lp);
-						tvcontent.setGravity(Gravity.RIGHT);
-						tvcontent.setText("请选择");
-						btMap.put(position, tvcontent);
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
-						ivforward.setLayoutParams(new LayoutParams(
-								LayoutParams.WRAP_CONTENT,
-								LayoutParams.WRAP_CONTENT));
-						ivforward.setImageResource(R.drawable.arrow);
+						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+						View v = inflater.inflate(R.layout.item_post_select, null);
+						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+						layout = (ViewGroup)v;
+					}
+//					else if (postBean.getControlType().equals("tableSelect")) {
+//						tvshow.setText(postBean.getDisplayName());
+//						tvshow.setTextSize(18);
+//						tvcontent.setLayoutParams(new LayoutParams(
+//								LayoutParams.FILL_PARENT,
+//								LayoutParams.WRAP_CONTENT, 1));
+//						tvcontent.setTextSize(16);
+//						tvcontent.setTextColor(0xff595959);
+//						LayoutParams lp = new LayoutParams(
+//								LayoutParams.FILL_PARENT,
+//								LayoutParams.WRAP_CONTENT, 1);
+//						lp.setMargins(0, 0, 20, 0);
+//						tvcontent.setLayoutParams(lp);
+//						tvcontent.setGravity(Gravity.RIGHT);
+//						tvcontent.setText("请选择");
+//						btMap.put(position, tvcontent);
+//						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
+//						ivforward.setLayoutParams(new LayoutParams(
+//								LayoutParams.WRAP_CONTENT,
+//								LayoutParams.WRAP_CONTENT));
+//						ivforward.setImageResource(R.drawable.arrow);
+//
+//						layout.addView(tvshow);
+//						layout.addView(tvcontent);
+//						layout.addView(ivforward);
+//
+//					}
+					else if (postBean.getControlType().equals("checkbox")) {
+						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+						View v = inflater.inflate(R.layout.item_post_checkbox, null);
 
-						layout.addView(tvshow);
-						layout.addView(tvcontent);
-						layout.addView(ivforward);
-
-					} else if (postBean.getControlType().equals("tableSelect")) {
-						tvshow.setText(postBean.getDisplayName());
-						tvshow.setTextSize(18);
-						tvcontent.setLayoutParams(new LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1));
-						tvcontent.setTextSize(16);
-						tvcontent.setTextColor(0xff595959);
-						LayoutParams lp = new LayoutParams(
-								LayoutParams.FILL_PARENT,
-								LayoutParams.WRAP_CONTENT, 1);
-						lp.setMargins(0, 0, 20, 0);
-						tvcontent.setLayoutParams(lp);
-						tvcontent.setGravity(Gravity.RIGHT);
-						tvcontent.setText("请选择");
-						btMap.put(position, tvcontent);
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
-						ivforward.setLayoutParams(new LayoutParams(
-								LayoutParams.WRAP_CONTENT,
-								LayoutParams.WRAP_CONTENT));
-						ivforward.setImageResource(R.drawable.arrow);
-
-						layout.addView(tvshow);
-						layout.addView(tvcontent);
-						layout.addView(ivforward);
-
-					} else if (postBean.getControlType().equals("checkbox")) {
-						layout.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
-						tvshow.setText(postBean.getDisplayName());
+						TextView leftTxt = (TextView)v.findViewById(R.id.postcheckshow);
+						leftTxt.setText(postBean.getDisplayName());
+//						leftTxt.setWidth(100);
+						
 						//try not to display left side label if it 's same with label of checkbox
 						List<String> rightLabels = postBean.getLabels();
 						if(rightLabels.size() > 0){
 							if(((String)(rightLabels.get(0))).equals(postBean.getDisplayName())){
-								tvshow.setText("");
+								leftTxt.setText("");
 							}
 						}
-						
-						tvshow.setTextSize(18);
-						tvshow.setPadding(3, 0, 3, 0);
-						tvshow.setWidth(100);
-						layout.addView(tvshow);
-						LinearLayout checkbox_layout = new LinearLayout(
-								PostGoodsView.this.getContext());
-						
-						checkbox_layout.setGravity(Gravity.CENTER_VERTICAL|Gravity.LEFT);
-						checkbox_layout.setLayoutParams(new LayoutParams(
-								LayoutParams.WRAP_CONTENT,
-								LayoutParams.WRAP_CONTENT));
-						checkbox_layout.setOrientation(LinearLayout.VERTICAL);
-						checkbox_layout.setPadding(0, 0, 15, 0);
+						LinearLayout checkbox_layout = (LinearLayout)v.findViewById(R.id.postchecklayout);
+
 						List<String> boxes = postBean.getLabels();
 						List<CheckBox> boxeslist = new ArrayList<CheckBox>();
 						for (int j = 0; j < boxes.size(); j++) {
@@ -1336,35 +1240,39 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 							boxeslist.add(checkbox);
 							checkbox_layout.addView(checkbox);
 						}
-						layout.addView(checkbox_layout);
+						layout = (ViewGroup)v;
 						// checkBoxMap.put(position, boxeslist);
 						btMap.put(position, boxeslist);
 						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), boxeslist);
 					} else if (postBean.getControlType().equals("textarea")) {
-						descriptionEt = new EditText(PostGoodsView.this.getContext());
-						descriptionEt.setTextSize(16);
-						descriptionEt.setTextColor(0xff595959);
-						tvshow.setText(postBean.getDisplayName());
-						tvshow.setTextSize(18);
-						descriptionEt.setHint("请输入");
-						descriptionEt.setHintTextColor(0xff595959);
-						descriptionEt.setGravity(Gravity.TOP);
-						descriptionEt.setLines(5);
+						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+						View v = inflater.inflate(R.layout.item_post_description, null);
+						((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
+
+						EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
+
 						descriptionEt.setText(QuanleimuApplication.getApplication().getPersonMark());
 						// textViewMap.put(position, descriptionEt);
 						btMap.put(position, descriptionEt);
 						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
-						layout.setOrientation(LinearLayout.VERTICAL);
-						layout.addView(tvshow);
-						layout.addView(descriptionEt);
+						
+						layout = (ViewGroup)v;
 					} else if (postBean.getControlType().equals("image")) {
-					    
+						layout = new LinearLayout(PostGoodsView.this.getContext());
+						((LinearLayout)layout).setOrientation(HORIZONTAL);
+						layout.setPadding(10, 10, 10, 10);
+						layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
+
 					    int height = baseActivity.getWindowManager().getDefaultDisplay().getHeight();
 			            int fixHotHeight = height * 15 / 100;
 			            if(fixHotHeight < 50)
 			            {
 			                fixHotHeight = 50;
 			            }
+						img1 = new ImageView(PostGoodsView.this.getContext());
+						img2 = new ImageView(PostGoodsView.this.getContext());
+						img3 = new ImageView(PostGoodsView.this.getContext());
+						imgs = new ImageView[] { img1, img2, img3 };
 			            //fixHotHeight = layout.getHeight() - 5 * 2;
                         img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
                         img1.setAdjustViewBounds(true);                       
@@ -1422,6 +1330,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						}
 					});
 					layout_txt.addView(layout);
+					TextView border = new TextView(PostGoodsView.this.getContext());
+					border.setLayoutParams(new LayoutParams(
+							LayoutParams.FILL_PARENT, 1, 1));
+					border.setBackgroundResource(R.drawable.list_divider);
+					layout_txt.addView(border);
 				}
 				editpostUI();
 				break;
