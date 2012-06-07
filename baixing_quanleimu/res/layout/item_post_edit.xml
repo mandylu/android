@@ -38,7 +38,6 @@
 		    android:gravity="center_vertical"
 		    android:layout_alignParentRight="true"
 		    android:textSize="18dip"
-		    android:text="元"
 		    android:textColor="@drawable/list_titleselector" />
 	</RelativeLayout>
 </LinearLayout>

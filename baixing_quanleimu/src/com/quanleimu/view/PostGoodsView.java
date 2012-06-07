@@ -53,7 +53,6 @@ import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXDecorateImageView;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
@@ -74,13 +73,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private LinkedHashMap<String, TextView> tvlist;
-	// private int selId;
 	private String displayname;
 	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合	
 	private LinkedHashMap<String, String> initialValueMap;
 	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
 	private LinkedHashMap<String, Object> editMap;				
-	private EditText descriptionEt;
 	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
 	private ArrayList<String>bitmap_url;
@@ -272,78 +269,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 							}
 						}
 						postMap.put(subs[0], value);
-						
-//						if(null == bean) continue;
-//						HashMap<String, String>map = bean.getLvmap();
-////						String value = null;
-//						if(map.containsKey(subs[0])){
-//							value = map.get(subs[0]);
-//						}
-//						if (value != null && value.length() > 0) {
-//							postMap.put(key, value);
-//						} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
-//							postMap.put(key, "");
-//						}
-//
 					}
 				}
 			}
 
-//			ArrayList<String> metas = goodsDetail.getMetaData();
-//			for (int i = 0; i < metas.size(); i++) {
-//				String[] curMeta = metas.get(i).split(" ");
-//				String key = curMeta[0];
-//				Object obj = this.getEditMapValue(key);
-//				System.out.println("obj--->" + obj);
-//				PostGoodsBean bean = postList.get(key);
-//				if(bean != null && !bean.getUnit().equals("")){
-//					if(curMeta[1] != null){
-//						int pos = curMeta[1].indexOf(bean.getUnit());
-//						if(pos != -1){
-//							curMeta[1] = curMeta[1].substring(0, pos);
-//						}
-//					}
-//				}
-//				if (obj != null) {
-//					if (obj instanceof TextView) {
-//						((TextView) obj).setText(curMeta[1]);
-//					} else if (obj instanceof EditText) {
-//						((EditText) obj).setText(curMeta[1]);
-//					} else if (obj instanceof List<?>) {
-//						String value = curMeta[1];
-//						@SuppressWarnings("unchecked")
-//						List<CheckBox> list = ((List<CheckBox>) obj);
-//						for (int j = 0; j < list.size(); j++) {
-//							CheckBox c = list.get(j);
-//							String v = (String) c.getTag();
-//							if (value.contains(v)) {
-//								c.setChecked(true);
-//							} else {
-//								c.setChecked(false);
-//							}
-//						}
-//					}
-//				}
-//				postMap.put(curMeta[0], curMeta[1]);
-//				
-//				//PostGoodsBean bean = postList.get(key);
-//				if(null == bean) continue;
-//				HashMap<String, String>map = bean.getLvmap();
-//				String value = null;
-//				if(map.containsKey(curMeta[1])){
-//					value = map.get(curMeta[1]);
-//				}
-//				if (value != null && value.length() > 0) {
-//					postMap.put(key, value);
-//				} else if(postMap.get(key) == null || postMap.get(key).toString().length() == 0){
-//					postMap.put(key, "");
-//				}
-//			}
-//			Set<String>keySet = goodsDetail.getKeys();
-//			Object[] keys = null;
-//			if(keySet != null){
-//				keys = keySet.toArray();
-//			}
 			Object objArea = this.getEditMapValue("地区");
 			if(objArea != null){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
@@ -367,54 +296,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					}
 				}
 			}
-//			for(int i = 0; i < keys.length; ++ i){
-//				Object obj = this.getEditMapValue((String)keys[i]);
-//				PostGoodsBean bean = postList.get(this.getEditMapKeyDisplayName((String)keys[i]));
-//				String labelValue = goodsDetail.getValueByKey((String)keys[i]);
-//				if(null != bean && null != bean.getValues() && null != bean.getLabels()){
-//					for(int j = 0; j < bean.getValues().size(); ++ j){
-//						if(labelValue.equals(bean.getValues().get(j))){
-//							labelValue = bean.getLabels().get(j).toString();
-//							break;
-//						}
-//					}
-//				}
-//				if (obj != null) {
-//					if (obj instanceof TextView) {
-//						if(((TextView)obj).getText() != null 
-//								&& !((TextView)obj).getText().toString().equals("")
-//								&& !((TextView)obj).getText().toString().equals("请选择")
-//								&& !((TextView)obj).getText().toString().equals("请输入")
-//								&& !((TextView)obj).getText().toString().equals("请填写"))
-//							continue;
-//						((TextView) obj).setText(labelValue);
-//					} else if (obj instanceof EditText) {
-//						if(((EditText)obj).getText() != null 
-//								&& !((EditText)obj).getText().toString().equals("")
-//								&& !((EditText)obj).getText().toString().equals("")
-//								&& !((EditText)obj).getText().toString().equals("请选择")
-//								&& !((EditText)obj).getText().toString().equals("请输入")
-//								&& !((EditText)obj).getText().toString().equals("请填写"))
-//							continue;
-//						((EditText) obj).setText(labelValue);
-//					} else if (obj instanceof List<?>) {
-//						String value = goodsDetail.getValueByKey((String)keys[i]);
-//						@SuppressWarnings("unchecked")
-//						List<CheckBox> list = ((List<CheckBox>) obj);
-//						for (int j = 0; j < list.size(); j++) {
-//							CheckBox c = list.get(j);
-//							String v = (String) c.getTag();
-//							if (value.contains(v)) {
-//								c.setChecked(true);
-//							} else {
-//								c.setChecked(false);
-//							}
-//						}
-//					}
-//					postMap.put(getEditMapKeyDisplayName((String)keys[i]), goodsDetail.getValueByKey((String)keys[i]));
-//				}					
-//			}
-			
+
 			if (goodsDetail.getImageList() != null) {
 				String b = (goodsDetail.getImageList().getResize180())
 						.substring(1, (goodsDetail.getImageList()
@@ -675,22 +557,25 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 							.equals("textarea")) {
 				//文本框
 				EditText et = (EditText) btMap.get(i);
-				postMap.put(postGoodsBean.getDisplayName(), et
-						.getText().toString() + postGoodsBean.getUnit());
+				if(et != null){
+					postMap.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit());
+				}
 			} else if (postGoodsBean.getControlType()
 					.equals("checkbox")) {
 				//多选选择
 				String value = "";
 				@SuppressWarnings("unchecked")
 				List<CheckBox> l = (List<CheckBox>) btMap.get(i);
-				for (int j = 0; j < l.size(); j++) {
-					CheckBox c = l.get(j);
-					if (c.isChecked()) {
-						value = value
-								+ postGoodsBean.getValues().get(j);
+				if(l != null)
+				{
+					for (int j = 0; j < l.size(); j++) {
+						CheckBox c = l.get(j);
+						if (c.isChecked()) {
+							value = value + postGoodsBean.getValues().get(j);
+						}
 					}
-				}
-				postMap.put(postGoodsBean.getDisplayName(), value);
+					postMap.put(postGoodsBean.getDisplayName(), value);
+				}				
 			}
 		}
 	}
@@ -1163,52 +1048,31 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					String key = (String) postList.keySet().toArray()[i];
 					PostGoodsBean postBean = postList.get(key);
 					System.out.println("postList--->" + postList);
+					if(!postBean.getRequired().endsWith("required")) continue;
 					ViewGroup layout = null;
 					
 					TextView tvshow = new TextView(PostGoodsView.this.getContext());
 					tvshow.setTextColor(Color.BLACK);
-					TextView tvcontent = new TextView(PostGoodsView.this.getContext());
-					tvcontent.setTextColor(Color.BLACK);
-					ImageView ivforward = new ImageView(PostGoodsView.this.getContext());
 
 					if (postBean.getControlType().equals("input")) {
 						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 						View v = inflater.inflate(R.layout.item_post_edit, null);
 						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+						btMap.put(position, v.findViewById(R.id.postinput));
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.postinput));
+						if (!postBean.getUnit().equals("")) {
+							((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
+						}
 						layout = (ViewGroup)v;
 					} else if (postBean.getControlType().equals("select")) {
 						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 						View v = inflater.inflate(R.layout.item_post_select, null);
 						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+						tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
+						btMap.put(position, v.findViewById(R.id.posthint));
+						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
 						layout = (ViewGroup)v;
 					}
-//					else if (postBean.getControlType().equals("tableSelect")) {
-//						tvshow.setText(postBean.getDisplayName());
-//						tvshow.setTextSize(18);
-//						tvcontent.setLayoutParams(new LayoutParams(
-//								LayoutParams.FILL_PARENT,
-//								LayoutParams.WRAP_CONTENT, 1));
-//						tvcontent.setTextSize(16);
-//						tvcontent.setTextColor(0xff595959);
-//						LayoutParams lp = new LayoutParams(
-//								LayoutParams.FILL_PARENT,
-//								LayoutParams.WRAP_CONTENT, 1);
-//						lp.setMargins(0, 0, 20, 0);
-//						tvcontent.setLayoutParams(lp);
-//						tvcontent.setGravity(Gravity.RIGHT);
-//						tvcontent.setText("请选择");
-//						btMap.put(position, tvcontent);
-//						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), tvcontent);
-//						ivforward.setLayoutParams(new LayoutParams(
-//								LayoutParams.WRAP_CONTENT,
-//								LayoutParams.WRAP_CONTENT));
-//						ivforward.setImageResource(R.drawable.arrow);
-//
-//						layout.addView(tvshow);
-//						layout.addView(tvcontent);
-//						layout.addView(ivforward);
-//
-//					}
 					else if (postBean.getControlType().equals("checkbox")) {
 						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 						View v = inflater.inflate(R.layout.item_post_checkbox, null);
@@ -1314,8 +1178,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 					if(postMap.get(postBean.getDisplayName()) == null)
 						postMap.put(postBean.getDisplayName(), "");
-					
-					tvlist.put(postBean.getDisplayName(), tvcontent);
 
 					layout.setTag(postBean);
 					layout.setOnClickListener(new OnClickListener() {
