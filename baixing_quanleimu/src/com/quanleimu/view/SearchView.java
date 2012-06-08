@@ -91,7 +91,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		listRemark = QuanleimuApplication.getApplication().getListRemark();
 		
 		adapter = new CommonItemAdapter(getContext(), listRemark);
-		adapter.setPlaneState(true);
 		adapter.setHasArrow(false);
 		
 		//添加自定义布局

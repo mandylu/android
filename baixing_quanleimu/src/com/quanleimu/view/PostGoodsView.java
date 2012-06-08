@@ -31,7 +31,6 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
-import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -70,13 +69,14 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final int PHOTOZOOM = 2; 
 	public static final int PHOTORESOULT = 3;
 	public static final int POST_LIST = 4;
+	public static final int POST_OTHERPROPERTIES = 5;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private LinkedHashMap<String, TextView> tvlist;
 	private String displayname;
 	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合	
 	private LinkedHashMap<String, String> initialValueMap;
-	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
+//	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
 	private LinkedHashMap<String, Object> editMap;				
 	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
@@ -94,6 +94,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	
 	private boolean userValidated = false;
 	private boolean loginTried = false;
+	
+	private List<String> otherProperties = new ArrayList<String>();
 
 	
 	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName){
@@ -409,7 +411,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		bitmap_url.add(null);
 		bitmap_url.add(null);
 		bitmap_url.add(null);
-		btMap = new LinkedHashMap<Integer, Object>();
+//		btMap = new LinkedHashMap<Integer, Object>();
 		editMap = new LinkedHashMap<String, Object>();
 		
 	}
@@ -556,7 +558,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					|| postGoodsBean.getControlType()
 							.equals("textarea")) {
 				//文本框
-				EditText et = (EditText) btMap.get(i);
+				EditText et = (EditText)getEditMapValue(postGoodsBean.getDisplayName());
+//				EditText et = (EditText) btMap.get(i);
 				if(et != null){
 					postMap.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit());
 				}
@@ -565,7 +568,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				//多选选择
 				String value = "";
 				@SuppressWarnings("unchecked")
-				List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+//				List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+				List<CheckBox> l = (List<CheckBox>) getEditMapValue(postGoodsBean.getDisplayName());
 				if(l != null)
 				{
 					for (int j = 0; j < l.size(); j++) {
@@ -626,7 +630,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getRequired().endsWith("required")) {
 				if (postGoodsBean.getControlType().equals("select")) {
-					TextView obj = (TextView) btMap.get(i);
+//					TextView obj = (TextView) btMap.get(i);
+					TextView obj = (TextView) this.getEditMapValue(postGoodsBean.getDisplayName());
 					if (obj.getText().toString().trim().length() == 0
 							|| obj.getText().toString().trim().equals("请选择")) {
 						
@@ -636,7 +641,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						return false;
 					}
 				} else if (postGoodsBean.getControlType().equals("input")) {
-					EditText obj = (EditText) btMap.get(i);
+					EditText obj = (EditText)getEditMapValue(postGoodsBean.getDisplayName());
+//					EditText obj = (EditText) btMap.get(i);
 					if (obj.getText().toString().trim().length() == 0) {
 						Toast.makeText(this.getContext(),
 								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
@@ -646,7 +652,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 				else if(postGoodsBean.getControlType().equals("checkbox")){
 					@SuppressWarnings("unchecked")
-					List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+//					List<CheckBox> l = (List<CheckBox>) btMap.get(i);
+					List<CheckBox> l = (List<CheckBox>)getEditMapValue(postGoodsBean.getDisplayName());
 					boolean checked = false;
 					for (int j = 0; j < l.size(); j++) {
 						CheckBox c = l.get(j);
@@ -934,6 +941,21 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 	}
 	
+	private void appendSelectedProperties(String[] lists){
+		if(lists == null || lists.length == 0) return;
+		for(int i = 0; i < lists.length; ++ i){
+			PostGoodsBean bean = this.postList.get(otherProperties.get(Integer.parseInt(lists[i]) - i));
+			if(bean == null) continue;
+			this.appendBeanToLayout(bean);
+			otherProperties.remove(Integer.parseInt(lists[i]) - i);
+		}
+		if(otherProperties.size() == 0){
+			if(layout_txt.getChildCount() > 0){
+				layout_txt.removeViewAt(layout_txt.getChildCount() - 1);
+			}
+		}
+	}
+	
 	@Override
 	public void onPreviousViewBack(int message, Object obj){		
 		if (message == POST_LIST) {
@@ -944,6 +966,13 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			System.out.println(id+" "+txt+" "+txtValue);
 			postMap.put(displayname, txtValue);
 			tv.setText(txt);
+		}
+		else if(POST_OTHERPROPERTIES == message){
+			String list = (String)obj;
+			if(!list.equals("")){
+				String[] lists = list.split(",");
+				appendSelectedProperties(lists);
+			}
 		}
 	}
 
@@ -1030,6 +1059,195 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			e.printStackTrace();
 		}
 	}
+	
+	private void appendBeanToLayout(PostGoodsBean postBean){
+		ViewGroup layout = null;
+		
+		if (postBean.getControlType().equals("input")) {
+			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			View v = inflater.inflate(R.layout.item_post_edit, null);
+			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+//			btMap.put(position, v.findViewById(R.id.postinput));
+			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.postinput));
+			if (!postBean.getUnit().equals("")) {
+				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
+			}
+			layout = (ViewGroup)v;
+		} else if (postBean.getControlType().equals("select")) {
+			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			View v = inflater.inflate(R.layout.item_post_select, null);
+			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+			tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
+//			btMap.put(position, v.findViewById(R.id.posthint));
+			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+			layout = (ViewGroup)v;
+		}
+		else if (postBean.getControlType().equals("checkbox")) {
+			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			View v = inflater.inflate(R.layout.item_post_checkbox, null);
+
+			TextView leftTxt = (TextView)v.findViewById(R.id.postcheckshow);
+			leftTxt.setText(postBean.getDisplayName());
+//			leftTxt.setWidth(100);
+			
+			//try not to display left side label if it 's same with label of checkbox
+			List<String> rightLabels = postBean.getLabels();
+			if(rightLabels.size() > 0){
+				if(((String)(rightLabels.get(0))).equals(postBean.getDisplayName())){
+					leftTxt.setText("");
+				}
+			}
+			LinearLayout checkbox_layout = (LinearLayout)v.findViewById(R.id.postchecklayout);
+
+			List<String> boxes = postBean.getLabels();
+			List<CheckBox> boxeslist = new ArrayList<CheckBox>();
+			for (int j = 0; j < boxes.size(); j++) {
+				String ss = boxes.get(j);
+				CheckBox checkbox = new CheckBox(PostGoodsView.this.getContext());
+				checkbox.setLayoutParams(new LayoutParams(
+						LayoutParams.WRAP_CONTENT,
+						LayoutParams.WRAP_CONTENT));
+				checkbox.setTag(postBean.getLabels().get(j));
+				checkbox.setTextSize(16);
+				checkbox.setText(ss);
+				boxeslist.add(checkbox);
+				checkbox_layout.addView(checkbox);
+			}
+			layout = (ViewGroup)v;
+//			btMap.put(position, boxeslist);
+			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), boxeslist);
+		} else if (postBean.getControlType().equals("textarea")) {
+			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			View v = inflater.inflate(R.layout.item_post_description, null);
+			((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
+
+			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
+
+			descriptionEt.setText(QuanleimuApplication.getApplication().getPersonMark());
+			// textViewMap.put(position, descriptionEt);
+//			btMap.put(position, descriptionEt);
+			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
+			
+			layout = (ViewGroup)v;
+		} else if (postBean.getControlType().equals("image")) {
+			layout = new LinearLayout(PostGoodsView.this.getContext());
+			((LinearLayout)layout).setOrientation(HORIZONTAL);
+			layout.setPadding(10, 10, 10, 10);
+			layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
+
+		    int height = baseActivity.getWindowManager().getDefaultDisplay().getHeight();
+            int fixHotHeight = height * 15 / 100;
+            if(fixHotHeight < 50)
+            {
+                fixHotHeight = 50;
+            }
+			img1 = new ImageView(PostGoodsView.this.getContext());
+			img2 = new ImageView(PostGoodsView.this.getContext());
+			img3 = new ImageView(PostGoodsView.this.getContext());
+			imgs = new ImageView[] { img1, img2, img3 };
+            //fixHotHeight = layout.getHeight() - 5 * 2;
+            img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            img1.setAdjustViewBounds(true);                       
+            img1.setMaxHeight(fixHotHeight);
+            img1.setMaxWidth(fixHotHeight);
+            LinearLayout l1 = new LinearLayout(PostGoodsView.this.getContext());
+            l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+            l1.addView(img1);
+            
+            img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            img2.setAdjustViewBounds(true);
+            img2.setMaxHeight(fixHotHeight);
+            img2.setMaxWidth(fixHotHeight);
+            LinearLayout l2 = new LinearLayout(PostGoodsView.this.getContext());
+            l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+            l2.addView(img2);
+            
+            img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+            img3.setAdjustViewBounds(true);
+            img3.setMaxHeight(fixHotHeight);
+            img3.setMaxWidth(fixHotHeight);
+            LinearLayout l3 = new LinearLayout(PostGoodsView.this.getContext());
+            l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+            l3.addView(img3);
+            
+			img1.setImageResource(R.drawable.d);
+			img2.setImageResource(R.drawable.d);
+			img3.setImageResource(R.drawable.d);
+			img1.setOnClickListener(PostGoodsView.this);
+			img2.setOnClickListener(PostGoodsView.this);
+			img3.setOnClickListener(PostGoodsView.this);
+			layout.addView(l1);
+			layout.addView(l2);
+			layout.addView(l3);
+			
+//			btMap.put(position, imgs);
+			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), imgs);
+		}
+
+		if(postMap.get(postBean.getDisplayName()) == null)
+			postMap.put(postBean.getDisplayName(), "");
+
+		layout.setTag(postBean);
+		layout.setOnClickListener(new OnClickListener() {
+			public void onClick(View v) {
+				PostGoodsBean postBean = (PostGoodsBean) v.getTag();
+				if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
+					displayname = postBean.getDisplayName();
+					if(m_viewInfoListener != null){
+						m_viewInfoListener.onNewView(new PostGoodsSelectionView(baseActivity, bundle, postBean, POST_LIST));
+					}
+				}
+			}
+		});
+		TextView border = new TextView(PostGoodsView.this.getContext());
+		border.setLayoutParams(new LayoutParams(
+				LayoutParams.FILL_PARENT, 1, 1));
+		border.setBackgroundResource(R.drawable.list_divider);
+
+		if(this.otherProperties.size() > 0){
+			int insertIndex = layout_txt.getChildCount() - 1;
+			insertIndex = insertIndex >= 0 ? insertIndex : 0;
+			layout_txt.addView(layout, insertIndex);
+			layout_txt.addView(border, insertIndex + 1);
+		}
+		else{
+			layout_txt.addView(layout);
+			layout_txt.addView(border);
+		}
+	}
+	
+	private void buildPostLayout(){
+		//根据模板显示
+		
+		postList = JsonUtil.getPostGoodsBean(json); 
+		Object[] postListKeySetArray = postList.keySet().toArray();
+		for (int i = 0; i < postList.size(); i++) {
+			String key = (String) postListKeySetArray[i];
+			PostGoodsBean postBean = postList.get(key);
+			if(!postBean.getRequired().endsWith("required")) {
+				otherProperties.add(postBean.getDisplayName());
+				continue;
+			}
+			this.appendBeanToLayout(postBean);
+		}
+		if(otherProperties.size() > 0){
+			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			View v = inflater.inflate(R.layout.item_post_select, null);
+			((TextView)v.findViewById(R.id.postshow)).setText(otherProperties.toString());
+			((TextView)v.findViewById(R.id.postshow)).setWidth(layout_txt.getWidth() * 2 / 3);
+			((TextView)v.findViewById(R.id.posthint)).setText("非必选");
+			v.setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					if(m_viewInfoListener != null){
+						m_viewInfoListener.onNewView(new OtherPropertiesView(baseActivity, bundle, otherProperties, POST_OTHERPROPERTIES));
+					}
+				}	
+			});
+			layout_txt.addView(v);
+		}
+		editpostUI();		
+	}
 
 	// 管理线程的Handler
 	Handler myHandler = new Handler() {
@@ -1040,165 +1258,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}
 			switch (msg.what) {
 			case 1:
-				//根据模板显示
-				layout_txt.setOrientation(LinearLayout.VERTICAL);
-				postList = JsonUtil.getPostGoodsBean(json); 
-				for (int i = 0; i < postList.size(); i++) {
-					final int position = i;
-					String key = (String) postList.keySet().toArray()[i];
-					PostGoodsBean postBean = postList.get(key);
-					System.out.println("postList--->" + postList);
-					if(!postBean.getRequired().endsWith("required")) continue;
-					ViewGroup layout = null;
-					
-					TextView tvshow = new TextView(PostGoodsView.this.getContext());
-					tvshow.setTextColor(Color.BLACK);
-
-					if (postBean.getControlType().equals("input")) {
-						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-						View v = inflater.inflate(R.layout.item_post_edit, null);
-						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-						btMap.put(position, v.findViewById(R.id.postinput));
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.postinput));
-						if (!postBean.getUnit().equals("")) {
-							((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
-						}
-						layout = (ViewGroup)v;
-					} else if (postBean.getControlType().equals("select")) {
-						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-						View v = inflater.inflate(R.layout.item_post_select, null);
-						((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-						tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
-						btMap.put(position, v.findViewById(R.id.posthint));
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
-						layout = (ViewGroup)v;
-					}
-					else if (postBean.getControlType().equals("checkbox")) {
-						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-						View v = inflater.inflate(R.layout.item_post_checkbox, null);
-
-						TextView leftTxt = (TextView)v.findViewById(R.id.postcheckshow);
-						leftTxt.setText(postBean.getDisplayName());
-//						leftTxt.setWidth(100);
-						
-						//try not to display left side label if it 's same with label of checkbox
-						List<String> rightLabels = postBean.getLabels();
-						if(rightLabels.size() > 0){
-							if(((String)(rightLabels.get(0))).equals(postBean.getDisplayName())){
-								leftTxt.setText("");
-							}
-						}
-						LinearLayout checkbox_layout = (LinearLayout)v.findViewById(R.id.postchecklayout);
-
-						List<String> boxes = postBean.getLabels();
-						List<CheckBox> boxeslist = new ArrayList<CheckBox>();
-						for (int j = 0; j < boxes.size(); j++) {
-							String ss = boxes.get(j);
-							CheckBox checkbox = new CheckBox(PostGoodsView.this.getContext());
-							checkbox.setLayoutParams(new LayoutParams(
-									LayoutParams.WRAP_CONTENT,
-									LayoutParams.WRAP_CONTENT));
-							checkbox.setTag(postBean.getLabels().get(j));
-							checkbox.setTextSize(16);
-							checkbox.setText(ss);
-							boxeslist.add(checkbox);
-							checkbox_layout.addView(checkbox);
-						}
-						layout = (ViewGroup)v;
-						// checkBoxMap.put(position, boxeslist);
-						btMap.put(position, boxeslist);
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), boxeslist);
-					} else if (postBean.getControlType().equals("textarea")) {
-						LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-						View v = inflater.inflate(R.layout.item_post_description, null);
-						((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
-
-						EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
-
-						descriptionEt.setText(QuanleimuApplication.getApplication().getPersonMark());
-						// textViewMap.put(position, descriptionEt);
-						btMap.put(position, descriptionEt);
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
-						
-						layout = (ViewGroup)v;
-					} else if (postBean.getControlType().equals("image")) {
-						layout = new LinearLayout(PostGoodsView.this.getContext());
-						((LinearLayout)layout).setOrientation(HORIZONTAL);
-						layout.setPadding(10, 10, 10, 10);
-						layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
-
-					    int height = baseActivity.getWindowManager().getDefaultDisplay().getHeight();
-			            int fixHotHeight = height * 15 / 100;
-			            if(fixHotHeight < 50)
-			            {
-			                fixHotHeight = 50;
-			            }
-						img1 = new ImageView(PostGoodsView.this.getContext());
-						img2 = new ImageView(PostGoodsView.this.getContext());
-						img3 = new ImageView(PostGoodsView.this.getContext());
-						imgs = new ImageView[] { img1, img2, img3 };
-			            //fixHotHeight = layout.getHeight() - 5 * 2;
-                        img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                        img1.setAdjustViewBounds(true);                       
-                        img1.setMaxHeight(fixHotHeight);
-                        img1.setMaxWidth(fixHotHeight);
-                        LinearLayout l1 = new LinearLayout(PostGoodsView.this.getContext());
-			            l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-			            l1.addView(img1);
-                        
-                        img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-                        img2.setAdjustViewBounds(true);
-                        img2.setMaxHeight(fixHotHeight);
-                        img2.setMaxWidth(fixHotHeight);
-                        LinearLayout l2 = new LinearLayout(PostGoodsView.this.getContext());
-			            l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-			            l2.addView(img2);
-                        
-                        img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-                        img3.setAdjustViewBounds(true);
-                        img3.setMaxHeight(fixHotHeight);
-                        img3.setMaxWidth(fixHotHeight);
-                        LinearLayout l3 = new LinearLayout(PostGoodsView.this.getContext());
-			            l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-			            l3.addView(img3);
-                        
-						img1.setImageResource(R.drawable.d);
-						img2.setImageResource(R.drawable.d);
-						img3.setImageResource(R.drawable.d);
-						img1.setOnClickListener(PostGoodsView.this);
-						img2.setOnClickListener(PostGoodsView.this);
-						img3.setOnClickListener(PostGoodsView.this);
-						layout.addView(l1);
-						layout.addView(l2);
-						layout.addView(l3);
-						
-						btMap.put(position, imgs);
-						editMap.put(postBean.getDisplayName() + " " + postBean.getName(), imgs);
-					}
-
-					if(postMap.get(postBean.getDisplayName()) == null)
-						postMap.put(postBean.getDisplayName(), "");
-
-					layout.setTag(postBean);
-					layout.setOnClickListener(new OnClickListener() {
-						public void onClick(View v) {
-							PostGoodsBean postBean = (PostGoodsBean) v.getTag();
-							if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
-								displayname = postBean.getDisplayName();
-								if(m_viewInfoListener != null){
-									m_viewInfoListener.onNewView(new PostGoodsSelectionView(baseActivity, bundle, postBean, POST_LIST));
-								}
-							}
-						}
-					});
-					layout_txt.addView(layout);
-					TextView border = new TextView(PostGoodsView.this.getContext());
-					border.setLayoutParams(new LayoutParams(
-							LayoutParams.FILL_PARENT, 1, 1));
-					border.setBackgroundResource(R.drawable.list_divider);
-					layout_txt.addView(border);
-				}
-				editpostUI();
+				buildPostLayout();
 				break;
 
 			case 2:

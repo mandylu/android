@@ -13,14 +13,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
-import android.widget.ImageView;
-public class CommonItemAdapter extends BaseAdapter {
+import android.widget.CheckBox;
 
+public class CheckableAdapter extends BaseAdapter {
+	public static class CheckableItem extends Object{
+		public String txt;
+		public boolean checked;
+		@Override
+		public String toString(){
+			return txt;
+		}
+	}
 	private Context context;
-	private List<? extends Object> list = new ArrayList<Object>();
+	private List<? extends CheckableItem> list = new ArrayList<CheckableItem>();
 	private Object tag;
-	private boolean hasArrow = true;
-	private int iconId = R.drawable.arrow;
+	private int checkedResourceId = -1;//R.drawable.pic_radio_normal_2x;
+	private int uncheckedResourceId = -1;//R.drawable.pic_radio_selected_2x;
+	
 	private int left = -1, right = -1, top = -1, bottom = -1;
 	
 	public void setPadding(int left, int right, int top, int bottom){
@@ -39,17 +48,13 @@ public class CommonItemAdapter extends BaseAdapter {
 	}
 	
 
-	public CommonItemAdapter(Context context,List<? extends Object> list) {
+	public CheckableAdapter(Context context,List<? extends CheckableItem> list) {
 		super();
 		this.context = context;
 		this.list = list;
 	}
-	
-	public void setHasArrow(boolean has){
-		this.hasArrow = has;
-	}
-	
-	public void setList(List<? extends Object> list_){
+		
+	public void setList(List<? extends CheckableItem> list_){
 		this.list = list_;
 		this.notifyDataSetChanged();
 	}
@@ -77,8 +82,9 @@ public class CommonItemAdapter extends BaseAdapter {
 		return position; 
 	}
 	
-	public void setRightIcon(int resourceId){
-		iconId = resourceId;
+	public void setIconId(int checkedId, int uncheckedId){
+		this.checkedResourceId = checkedId;
+		this.uncheckedResourceId = uncheckedId;
 	}
 
 	@Override
@@ -87,7 +93,7 @@ public class CommonItemAdapter extends BaseAdapter {
 		View v = null;
 		if(convertView == null)
 		{
-			v = inflater.inflate(R.layout.item_common, null);
+			v = inflater.inflate(R.layout.item_text_checkbox, null);
 		}else{
 			v = (View)convertView; 
 		}
@@ -96,18 +102,19 @@ public class CommonItemAdapter extends BaseAdapter {
 			v.setPadding(left, top, right, bottom);
 		}
 		
-		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
+		TextView tvCateName = (TextView)v.findViewById(R.id.checktext);
 		tvCateName.setText(list.get(position).toString());
 		
-		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
-		if(this.hasArrow){
-			arrow.setVisibility(View.VISIBLE);
-			arrow.setImageResource(iconId);
+		CheckBox box = (CheckBox)v.findViewById(R.id.checkitem);
+		box.setChecked(list.get(position).checked);
+		if(this.checkedResourceId > 0 && this.uncheckedResourceId > 0){
+			if(((CheckableItem)list.get(position)).checked){
+				box.setButtonDrawable(this.checkedResourceId);
+			}
+			else{
+				box.setButtonDrawable(this.uncheckedResourceId);
+			}
 		}
-		else{
-			arrow.setVisibility(View.GONE);
-		}
-		
 		return v;
 	}
 

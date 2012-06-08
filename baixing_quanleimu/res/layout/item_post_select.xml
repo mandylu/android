@@ -3,6 +3,7 @@
     android:id="@+id/post_select"
     android:layout_width="fill_parent"
     android:padding="10dip"
+	android:background="@drawable/list_selector"    
     android:layout_height="wrap_content">
 
     <TextView
