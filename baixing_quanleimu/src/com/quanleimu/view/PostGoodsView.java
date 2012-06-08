@@ -1082,48 +1082,30 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
 			layout = (ViewGroup)v;
-		} else if (postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")) {
+		} else if (postBean.getControlType().equals("select")) {
 			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 			View v = inflater.inflate(R.layout.item_post_select, null);
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 			tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
-//			btMap.put(position, v.findViewById(R.id.posthint));
 			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
 			layout = (ViewGroup)v;
 		}
 		else if (postBean.getControlType().equals("checkbox")) {
 			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-			View v = inflater.inflate(R.layout.item_post_checkbox, null);
 
-			TextView leftTxt = (TextView)v.findViewById(R.id.postcheckshow);
-			leftTxt.setText(postBean.getDisplayName());
-			
-			//try not to display left side label if it 's same with label of checkbox
-			List<String> rightLabels = postBean.getLabels();
-			if(rightLabels.size() > 0){
-				if(((String)(rightLabels.get(0))).equals(postBean.getDisplayName())){
-					leftTxt.setText("");
-				}
+			if(postBean.getLabels().size() > 1){
+				View v = inflater.inflate(R.layout.item_post_select, null);
+				((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
+				tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
+				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+				layout = (ViewGroup)v;
 			}
-			LinearLayout checkbox_layout = (LinearLayout)v.findViewById(R.id.postchecklayout);
-
-			List<String> boxes = postBean.getLabels();
-			List<CheckBox> boxeslist = new ArrayList<CheckBox>();
-			for (int j = 0; j < boxes.size(); j++) {
-				String ss = boxes.get(j);
-				CheckBox checkbox = new CheckBox(PostGoodsView.this.getContext());
-				checkbox.setLayoutParams(new LayoutParams(
-						LayoutParams.WRAP_CONTENT,
-						LayoutParams.WRAP_CONTENT));
-				checkbox.setTag(postBean.getLabels().get(j));
-				checkbox.setTextSize(16);
-				checkbox.setText(ss);
-				boxeslist.add(checkbox);
-				checkbox_layout.addView(checkbox);
+			else{
+				View v = inflater.inflate(R.layout.item_text_checkbox, null);
+				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
+				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+				layout = (ViewGroup)v;				
 			}
-			layout = (ViewGroup)v;
-//			btMap.put(position, boxeslist);
-			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), boxeslist);
 		} else if (postBean.getControlType().equals("textarea")) {
 			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 			View v = inflater.inflate(R.layout.item_post_description, null);
@@ -1211,15 +1193,29 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 							m_viewInfoListener.onNewView(next);
 						}
 					}
-					else if(postBean.getControlType().equals("checkbox")){						
+					else if(postBean.getControlType().equals("checkbox")){
 						displayname = postBean.getDisplayName();
-						if(m_viewInfoListener != null){
-							OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_CHECKSELECT, false);
-							next.setTitle(postBean.getDisplayName());
-							if(txview !=  null){
-								next.setSelectedItems(txview.getText().toString());
-							}							
-							m_viewInfoListener.onNewView(next);
+						if(postBean.getLabels().size() > 1){
+							if(m_viewInfoListener != null){
+								OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_CHECKSELECT, false);
+								next.setTitle(postBean.getDisplayName());
+								if(txview !=  null){
+									next.setSelectedItems(txview.getText().toString());
+								}							
+								m_viewInfoListener.onNewView(next);
+							}
+						}
+						else{
+							View checkV = v.findViewById(R.id.checkitem);
+							if(checkV != null && checkV instanceof CheckBox){
+								((CheckBox)checkV).setChecked(!((CheckBox)checkV).isChecked());
+								if(((CheckBox)checkV).isChecked()){
+									postMap.put(displayname, postBean.getValues().get(0));
+								}
+								else{
+									postMap.remove(displayname);
+								}
+							}
 						}
 					}
 				}

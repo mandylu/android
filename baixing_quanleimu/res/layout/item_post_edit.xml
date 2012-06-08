@@ -12,7 +12,7 @@
 	    android:layout_height="fill_parent"
 	    android:gravity="center_vertical"
 	    android:textSize="18dip"
-	    android:textColor="@drawable/list_titleselector" />	
+	    android:textColor="@drawable/list_textselector" />	
 	<requestFocus />
 
     <RelativeLayout
@@ -25,6 +25,7 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:gravity="right|center_vertical"
+		    android:textColor="@drawable/list_titleselector"
 		    android:background="@null"
 		    android:paddingRight="5dip"
 		    android:hint="请输入"
