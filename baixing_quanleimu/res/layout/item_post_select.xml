@@ -21,6 +21,7 @@
         android:layout_toLeftOf="@+id/post_next"
         android:singleLine="true"
         android:textColor="@drawable/list_textselector"
+        android:gravity="right|center_vertical"
         android:text="请选择"
         android:paddingRight="5dip"
         android:textSize="16dip" />
