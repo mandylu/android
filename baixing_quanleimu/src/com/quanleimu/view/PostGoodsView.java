@@ -56,6 +56,8 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 
 import android.view.ViewGroup;
+import com.quanleimu.view.MultiLevelSelectionView;
+import com.quanleimu.adapter.CheckableAdapter;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
@@ -70,6 +72,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final int POST_LIST = 4;
 	public static final int POST_OTHERPROPERTIES = 5;
 	public static final int POST_CHECKSELECT = 6;
+	public static final int MSG_MULTISEL_BACK = 10;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private LinkedHashMap<String, TextView> tvlist;
@@ -983,6 +986,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			tv.setWidth(layout_txt.getWidth() * 2 / 3);
 			tv.setText(txt);			
 		}
+		else if(MSG_MULTISEL_BACK == message){
+			if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
+				TextView tv = tvlist.get(displayname);
+				if(tv != null){
+					tv.setWidth(layout_txt.getWidth() * 2 / 3);
+					tv.setText(((MultiLevelSelectionView.MultiLevelItem)obj).txt);
+				}
+				postMap.put(displayname, ((MultiLevelSelectionView.MultiLevelItem)obj).id);
+			}
+		}
 	}
 
 	
@@ -1185,12 +1198,28 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
 						displayname = postBean.getDisplayName();
 						if(m_viewInfoListener != null){
-							OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_LIST, true);
-							next.setTitle(postBean.getDisplayName());
-							if(txview !=  null){
-								next.setSelectedItems(txview.getText().toString());
+							if(postBean.getSubMeta().equals("1")){
+								List<MultiLevelSelectionView.MultiLevelItem> items = 
+										new ArrayList<MultiLevelSelectionView.MultiLevelItem>();
+								for(int i = 0; i < postBean.getLabels().size(); ++ i){
+									MultiLevelSelectionView.MultiLevelItem t = new MultiLevelSelectionView.MultiLevelItem();
+									t.txt = postBean.getLabels().get(i);
+									t.id = postBean.getValues().get(i);
+									items.add(t);
+								}
+								MultiLevelSelectionView nextView = 
+										new MultiLevelSelectionView((BaseActivity)PostGoodsView.this.getContext(), items, MSG_MULTISEL_BACK);
+								m_viewInfoListener.onNewView(nextView);
+								
 							}
-							m_viewInfoListener.onNewView(next);
+							else{
+								OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_LIST, true);
+								next.setTitle(postBean.getDisplayName());
+								if(txview !=  null){
+									next.setSelectedItems(txview.getText().toString());
+								}
+								m_viewInfoListener.onNewView(next);
+							}
 						}
 					}
 					else if(postBean.getControlType().equals("checkbox")){

@@ -451,6 +451,12 @@ public class JsonUtil {
 				} catch (Exception e1) {
 					postGoods.setName("");
 				}
+				try {
+					postGoods.setSubMeta(jsonObject.getString("subMeta"));
+				} catch (Exception e1) {
+					postGoods.setSubMeta("");
+				}
+				
 
 				// values数组
 				JSONArray valueArray;

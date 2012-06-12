@@ -20,6 +20,15 @@ public class PostGoodsBean implements Serializable{
 	private List<String> labels;
 	private List<String> values;
 	private HashMap<String, String> lvmap;
+	private String subMeta;
+	
+	public void setSubMeta(String sm){
+		subMeta = sm;
+	}
+	
+	public String getSubMeta(){
+		return subMeta;
+	}
 	
 	public String getUnit() {
 		return unit;
@@ -85,6 +94,7 @@ public class PostGoodsBean implements Serializable{
 		return "PostGoodsBean [unit=" + unit + ", controlType=" + controlType
 				+ ", numeric=" + numeric + ", required=" + required
 				+ ", displayName=" + displayName + ", name=" + name
+				+ ", subMeta=" + subMeta
 				+ ", labels=" + labels + ", values=" + values + ", lvmap="
 				+ getLvmap() + "]";
 	}

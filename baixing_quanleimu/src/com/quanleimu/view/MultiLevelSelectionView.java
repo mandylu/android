@@ -1,0 +1,206 @@
+package com.quanleimu.view;
+
+import java.util.ArrayList;
+import java.util.List;
+
+import android.app.ProgressDialog;
+import android.os.Handler;
+import android.os.Message;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ListView;
+import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.R;
+import com.quanleimu.adapter.CheckableAdapter;
+import com.quanleimu.adapter.CheckableAdapter.CheckableItem;
+import android.widget.ListAdapter;
+import com.quanleimu.adapter.CommonItemAdapter;
+import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.Communication;
+import java.util.LinkedHashMap;
+import com.quanleimu.entity.PostGoodsBean;
+public class MultiLevelSelectionView extends BaseView {
+	public static class MultiLevelItem extends Object{
+		public String txt;
+		public String id;
+		@Override
+		public String toString(){
+			return txt;
+		}
+	}
+	private final int MESSAGE_GET_METAOBJ = 1;
+	private int message;
+	private List<MultiLevelItem>items = null;
+	private String title = "请选择"; 
+	private String json = null;
+	private String id = null;
+	ListAdapter adapter = null;
+	
+	public MultiLevelSelectionView(BaseActivity context, List<MultiLevelItem>items, int backMessage){
+		super(context);
+		message = backMessage;
+		this.items = items;
+//		init();
+	}
+	
+	public MultiLevelSelectionView(BaseActivity context, String id, int backMessage){
+		super(context);
+		this.id = id;
+		message = backMessage;
+	}
+	
+	public void setTitle(String title){
+		this.title = title;
+	}
+	
+	@Override
+	protected void onAttachedToWindow(){
+		if(null == adapter){
+			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			pd.show();
+	
+			if(items == null || items.size() == 0){
+				(new Thread(new GetMetaDataThread(id))).start();
+			}
+			else{
+				(new Thread(new GetMetaDataThread(items.get(0).id))).start();
+			}
+		}
+		super.onAttachedToWindow();
+	}
+
+	private void init(final boolean hasNextLevel){
+		LayoutInflater inflater = LayoutInflater.from(this.getContext());
+		View v = inflater.inflate(R.layout.post_othersview, null);
+		this.addView(v);
+
+		final ListView lv = (ListView) v.findViewById(R.id.post_other_list);
+
+		if(!hasNextLevel){
+			List<CheckableItem> checkList = new ArrayList<CheckableItem>();
+			for(int i = 0; i < items.size(); ++ i){
+				CheckableItem t = new CheckableItem();
+				t.txt = items.get(i).txt;
+				t.checked = false;
+				checkList.add(t);
+			}
+			adapter = new CheckableAdapter(this.getContext(), checkList);
+		}
+		else{
+			adapter = new CommonItemAdapter(this.getContext(), items);
+		}
+		lv.setAdapter(adapter);
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+				if(hasNextLevel){
+					if(null != m_viewInfoListener){
+						MultiLevelSelectionView nextV = 
+								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), items.get(position).id, message); 
+						m_viewInfoListener.onNewView(nextV);
+					}
+				}
+				else{
+					CheckableItem item = (CheckableItem)adapter.getItem(position);
+					item.checked = !item.checked;
+					List<CheckableItem>lists = (List<CheckableItem>)((CheckableAdapter)adapter).getList();
+					lists.set(position, item);
+					((CheckableAdapter)adapter).setList(lists);
+					if(null != m_viewInfoListener){
+						m_viewInfoListener.onBack(message, items.get(position));
+					}
+				}
+			}
+		});
+	}
+	
+	@Override
+	public boolean onRightActionPressed(){
+		return true;
+	}
+	
+	@Override
+	public void onPreviousViewBack(int message, Object obj){
+		if(this.m_viewInfoListener != null){
+			this.m_viewInfoListener.onBack(message, obj);
+		}
+	}
+	
+	@Override
+	public TitleDef getTitleDef(){
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_title = this.title;
+//		title.m_leftActionHint = "发布";
+//		if(!singleSelection){
+//			title.m_rightActionHint = "完成";
+//		}
+		return title;
+	}
+	
+	@Override
+	public TabDef getTabDef(){
+		TabDef tab = new TabDef();
+		tab.m_visible = true;
+		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
+		return tab;
+	}
+	
+	Handler myHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MESSAGE_GET_METAOBJ:
+				if(pd != null){
+					pd.dismiss();
+				}
+				if(json != null){
+					LinkedHashMap<String, PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
+					if(beans != null){
+						PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
+						if(MultiLevelSelectionView.this.items == null || MultiLevelSelectionView.this.items.size() == 0){
+							MultiLevelSelectionView.this.items = new ArrayList<MultiLevelItem>();
+							for(int i = 0; i < bean.getLabels().size(); ++ i){
+								MultiLevelItem t = new MultiLevelItem();
+								t.txt = bean.getLabels().get(i);
+								t.id = bean.getValues().get(i);
+								MultiLevelSelectionView.this.items.add(t);
+							}
+							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1"));
+						}
+						else{
+							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1") || bean.getLabels().size() > 0);
+						}
+						
+					}
+				}
+				break;
+			}
+		}
+	};
+	
+	class GetMetaDataThread implements Runnable {
+		private String id;
+		public GetMetaDataThread(String id) {
+			this.id = id;
+		}
+
+		@Override
+		public void run() {
+			String apiName = "metaobject";
+			ArrayList<String> list = new ArrayList<String>();
+			list.add("objIds=" + id);
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				json = Communication.getDataByUrl(url);
+			}
+			catch(Exception e){
+				e.printStackTrace();
+			}
+			myHandler.sendEmptyMessage(MESSAGE_GET_METAOBJ);
+		}
+	}
+
+}
