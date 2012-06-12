@@ -45,9 +45,10 @@ public class MultiLevelSelectionView extends BaseView {
 //		init();
 	}
 	
-	public MultiLevelSelectionView(BaseActivity context, String id, int backMessage){
+	public MultiLevelSelectionView(BaseActivity context, String id, String name, int backMessage){
 		super(context);
 		this.id = id;
+		title = name;
 		message = backMessage;
 	}
 	
@@ -95,10 +96,17 @@ public class MultiLevelSelectionView extends BaseView {
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+				if(position == 0 && items.get(0).txt.equals("全部")){
+					MultiLevelItem nItem = new MultiLevelItem();
+					nItem.id = MultiLevelSelectionView.this.id;
+					nItem.txt = MultiLevelSelectionView.this.title;
+					m_viewInfoListener.onBack(message, nItem);
+					return;
+				}
 				if(hasNextLevel){
 					if(null != m_viewInfoListener){
 						MultiLevelSelectionView nextV = 
-								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), items.get(position).id, message); 
+								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), items.get(position).id, items.get(position).txt, message); 
 						m_viewInfoListener.onNewView(nextV);
 					}
 				}
@@ -162,6 +170,12 @@ public class MultiLevelSelectionView extends BaseView {
 						PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 						if(MultiLevelSelectionView.this.items == null || MultiLevelSelectionView.this.items.size() == 0){
 							MultiLevelSelectionView.this.items = new ArrayList<MultiLevelItem>();
+							if(bean.getLabels().size() > 1){
+								MultiLevelItem tAll = new MultiLevelItem();
+								tAll.txt ="全部";
+								tAll.id = null;
+								MultiLevelSelectionView.this.items.add(tAll);
+							}
 							for(int i = 0; i < bean.getLabels().size(); ++ i){
 								MultiLevelItem t = new MultiLevelItem();
 								t.txt = bean.getLabels().get(i);
