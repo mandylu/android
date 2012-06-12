@@ -1007,7 +1007,22 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 		case MSG_CATEGORY_SEL_BACK:{
 			layout_txt.removeAllViews();
-			tvlist.remove(displayname);
+			tvlist.clear();
+			otherProperties.clear();
+			postList.clear();
+			postMap.clear();
+			initialValueMap.clear();
+			editMap.clear();
+			bitmap_url.clear();
+			bitmap_url.add(null);
+			bitmap_url.add(null);
+			bitmap_url.add(null);
+
+			listUrl.clear();
+			imgs = null;
+			currentImgView = -1;
+			uploadCount = 0;
+						
 			this.addCategoryItem();
 			TextView tv = tvlist.get(displayname);
 			String[] backMsg = ((String)obj).split(",");
