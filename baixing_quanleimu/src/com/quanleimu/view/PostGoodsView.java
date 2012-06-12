@@ -256,23 +256,19 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					
 					Object obj = this.getEditMapValue(subs[0]);
 				 	if (obj != null && value != null && !value.equals("")) {
-						if (obj instanceof TextView) {
-							((TextView) obj).setText(displayValue);
-						} else if (obj instanceof EditText) {
-							((EditText) obj).setText(displayValue);
-						} else if (obj instanceof List<?>) {
-//							String value = curMeta[1];
-							@SuppressWarnings("unchecked")
-							List<CheckBox> list = ((List<CheckBox>) obj);
-							for (int j = 0; j < list.size(); j++) {
-								CheckBox c = list.get(j);
-								String v = (String) c.getTag();
-								if (displayValue.contains(v)) {
-									c.setChecked(true);
-								} else {
-									c.setChecked(false);
-								}
+				 		if (obj instanceof CheckBox) {
+							String v = (String) ((CheckBox)obj).getTag();
+							if (displayValue.contains(v)) {
+								((CheckBox)obj).setChecked(true);
+							} else {
+								((CheckBox)obj).setChecked(false);
 							}
+						}
+				 		else if (obj instanceof EditText) {
+							((EditText) obj).setText(displayValue);
+						}
+				 		else if (obj instanceof TextView) {
+							((TextView) obj).setText(displayValue);
 						}
 						postMap.put(subs[0], value);
 					}
@@ -1161,7 +1157,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			else{
 				View v = inflater.inflate(R.layout.item_text_checkbox, null);
 				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
-				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+				v.findViewById(R.id.checkitem).setTag(postBean.getDisplayName());
+				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.checkitem));						
 				layout = (ViewGroup)v;				
 			}
 		} else if (postBean.getControlType().equals("textarea")) {
@@ -1314,7 +1311,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 	
 	private void addCategoryItem(){
-		if(tvlist.get("分类") != null)return;
+		if(this.goodsDetail != null || tvlist.get("分类") != null)return;
 		LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 		View v = inflater.inflate(R.layout.item_post_select, null);
 		((TextView)v.findViewById(R.id.postshow)).setText("分类");
@@ -1347,7 +1344,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
-			if(!postBean.getRequired().endsWith("required")) {
+			if(!postBean.getRequired().endsWith("required") 
+					&& (goodsDetail == null || goodsDetail.getValueByKey(postBean.getName()) == null || goodsDetail.getValueByKey(postBean.getName()).equals(""))) {
 				otherProperties.add(postBean.getDisplayName());
 				continue;
 			}
