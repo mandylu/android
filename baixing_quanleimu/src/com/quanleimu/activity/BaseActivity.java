@@ -32,7 +32,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 	protected Intent intent = null;
 	protected Bundle bundle = null;
 	protected QuanleimuApplication myApp; 
-	protected ImageView ivHomePage,ivCateMain,ivPostGoods,ivMyCenter,ivSetMain;
+	protected ImageView ivHomePage,ivPostGoods,ivMyCenter;
 	protected View v = null; 
 	protected ProgressDialog pd;
 	public LoadImage LoadImage;

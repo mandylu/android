@@ -8,24 +8,23 @@
         android:id="@+id/linearListView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/linearBottom"
-        android:layout_below="@+id/rlTitle"
         android:background="@drawable/bg"
-        android:orientation="vertical"
-        android:padding="10dip" >
+        android:orientation="vertical" >
 
         <com.quanleimu.widget.PullToRefreshListView
             android:id="@+id/lvSearchResult"
             android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:fastScrollEnabled="false"
             android:scrollbars="vertical"
-            android:focusable="true" 
-            android:layout_height="fill_parent"
+            android:focusable="true"            
             android:divider="@drawable/list_divider"
             android:dividerHeight="1dp"
             android:background="@drawable/home_bg_2x"
             android:headerDividersEnabled="true"
-            android:footerDividersEnabled="true"/>
+            android:footerDividersEnabled="true"
+            android:listSelector="#00000000"
+            android:scrollingCache="false"/>
     </LinearLayout>
 
 </RelativeLayout>

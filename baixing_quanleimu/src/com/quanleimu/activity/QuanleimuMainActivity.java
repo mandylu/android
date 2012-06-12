@@ -26,9 +26,11 @@ import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.view.SetMainView;
 
+import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
+import android.widget.RelativeLayout;
 
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.PersonalCenterView;
@@ -270,7 +272,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	public void onTitleChanged(TitleDef title){
 
 		if(null == title) return;
-		LinearLayout top = (LinearLayout)findViewById(R.id.linearTop);
+		RelativeLayout top = (RelativeLayout)findViewById(R.id.linearTop);
 		if(title.m_visible){
 			top.setVisibility(View.VISIBLE);
 			TextView tTitle = (TextView)findViewById(R.id.tvTitle);
@@ -319,21 +321,23 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	public void onTabChanged(TabDef tab){
 
 		if(null == tab) return;
-		LinearLayout bottom = (LinearLayout)findViewById(R.id.linearBottom);
+		FrameLayout bottom = (FrameLayout)findViewById(R.id.linearBottom);
 		if(tab.m_visible){
 			bottom.setVisibility(View.VISIBLE);
+			findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);
 		}
 		else{
 			bottom.setVisibility(View.GONE);
+			findViewById(R.id.ivBottomNull).setVisibility(View.GONE);
 		}
 		
-		if(tab.m_tabSelected != BaseView.ETAB_TYPE.ETAB_TYPE_PREV){
-			ivHomePage.setImageResource((tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE) ? R.drawable.iv_homepage_press : R.drawable.iv_homepage);
-			ivCateMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY ? R.drawable.iv_cate_press : R.drawable.iv_cate);
-			ivPostGoods.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH ? R.drawable.iv_postgoods_press : R.drawable.iv_postgoods);
-			ivMyCenter.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE ? R.drawable.iv_mycenter_press : R.drawable.iv_mycenter);
-			ivSetMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING ? R.drawable.iv_setmain_press : R.drawable.iv_setmain);
-		}
+//		if(tab.m_tabSelected != BaseView.ETAB_TYPE.ETAB_TYPE_PREV){
+//			ivHomePage.setImageResource((tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE) ? R.drawable.tabbar_cate_selected : R.drawable.tabbar_cate);
+////			ivCateMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY ? R.drawable.iv_cate_press : R.drawable.iv_cate);
+//			ivPostGoods.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH ? R.drawable.tabbar_add_selected : R.drawable.tabbar_add);
+//			ivMyCenter.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE ? R.drawable.tabbar_my_selected : R.drawable.tabbar_my);
+////			ivSetMain.setImageResource(tab.m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING ? R.drawable.iv_setmain_press : R.drawable.iv_setmain);
+//		}
 	}
 	
 	public void onPopView(String viewClassName_){
@@ -363,7 +367,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		
 		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
-		vHomePage.setImageResource(R.drawable.iv_homepage_press);
+		//vHomePage.setImageResource(R.drawable.iv_homepage_press);
 		
 		Button left = (Button)findViewById(R.id.btnLeft);
 		left.setOnClickListener(this);
@@ -372,14 +376,14 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		ivHomePage = (ImageView)findViewById(R.id.ivHomePage);
 		ivHomePage.setOnClickListener(this);
-		ivCateMain = (ImageView)findViewById(R.id.ivCateMain);
-		ivCateMain.setOnClickListener(this);
+//		ivCateMain = (ImageView)findViewById(R.id.ivCateMain);
+//		ivCateMain.setOnClickListener(this);
 		ivPostGoods = (ImageView)findViewById(R.id.ivPostGoods);
 		ivPostGoods.setOnClickListener(this);
 		ivMyCenter = (ImageView)findViewById(R.id.ivMyCenter);
 		ivMyCenter.setOnClickListener(this);
-		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
-		ivSetMain.setOnClickListener(this);
+//		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
+//		ivSetMain.setOnClickListener(this);
 		
 		if(!QuanleimuApplication.update){
 			QuanleimuApplication.update = true;
@@ -424,18 +428,18 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MAINPAGE);
 			break;
 		}
-		case R.id.ivCateMain:				
-			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY);
-			break;
+//		case R.id.ivCateMain:				
+//			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY);
+//			break;
 		case R.id.ivPostGoods:
 			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH);			
 			break;
 		case R.id.ivMyCenter:
 			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MINE);			
 			break;
-		case R.id.ivSetMain:
-			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_SETTING);	
-			break;
+//		case R.id.ivSetMain:
+//			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_SETTING);	
+//			break;
 		}
 		super.onClick(v);
 	}

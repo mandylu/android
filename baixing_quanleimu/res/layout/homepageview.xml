@@ -7,7 +7,82 @@
     android:orientation="vertical" 
     xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity">
-    			
+    	
+		<RelativeLayout
+			android:id="@+id/lvLogoAndChangeCity"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:background="@drawable/home_bg_navibar">
+			
+			<LinearLayout
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:layout_centerInParent="true"
+				>
+			
+		    	 <ImageView 
+			        android:layout_width="wrap_content"
+			        android:layout_height="wrap_content"
+			        android:src="@drawable/pic_logo"/>
+		    	 
+		    	 <TextView 
+		    	    android:id="@+id/tvCityName"
+		    	    android:layout_width="wrap_content"
+		    	    android:layout_height="fill_parent"
+		    	    android:gravity="bottom"
+		    	    android:text="上海"
+		    	    android:textStyle="bold"
+		    	    android:textColor="#ffffffff"
+		    	    android:textSize="20dip"
+		    	    android:paddingLeft="5dip"/>
+		    	 
+		    	 <ImageView 
+			        android:layout_width="wrap_content"
+			        android:layout_height="fill_parent"
+			        android:gravity="bottom"
+			        android:src="@drawable/home_pic_cityarrow"/>
+		    	 		    	 
+		    </LinearLayout>		 
+		</RelativeLayout>	
+		
+				
+		
+		<LinearLayout
+			android:id="@+id/lvSearch"
+			android:layout_width="fill_parent"
+			android:layout_height="wrap_content"
+			android:background="@drawable/home_bg_search">			
+		    
+		    <LinearLayout
+		        android:id="@+id/rlSearch"
+		        android:layout_width="fill_parent"
+		        android:layout_height="fill_parent"
+		        android:background="@drawable/bgsearch"
+		        android:padding="20dip">
+
+		        <ImageView
+		            android:layout_width="wrap_content"
+		            android:layout_height="match_parent"
+		            android:src="@drawable/iconsearch" />
+
+		        <EditText
+		            android:layout_width="fill_parent"
+		            android:layout_height="fill_parent"
+		            android:background="#00000000"
+		            android:ems="10"
+		            android:gravity="center_vertical"
+		            android:hint="请输入需要搜索的关键字"
+		            android:singleLine="true"
+		            android:textColor="#ffaaaaaa"
+		            android:textSize="20dip"
+		            android:layout_weight="1">		            
+		            <requestFocus />  
+		        </EditText>
+
+		    </LinearLayout>
+		</LinearLayout>		
+		
+		
     	<ScrollView 
     	 	android:id="@+id/scrHomepageScroll"
     	 	android:layout_width="fill_parent"
@@ -26,19 +101,19 @@
 				        android:layout_width="fill_parent"
 				        android:layout_height="fill_parent"
 				        android:gravity="center_horizontal"
-				        android:orientation="vertical" >
+				        android:orientation="vertical" > 
 				        
-				        <TextView
-				            android:id="@+id/tvInfo"
-				            android:layout_width="wrap_content"
-				            android:layout_height="wrap_content"
-				            android:layout_centerHorizontal="true"
-				            android:background="@drawable/s_bg2_h"
-				            android:gravity="center"
-				            android:text="网络连接失败"
-				            android:textColor="#595959"
-				            android:textSize="18dip" >
-				        </TextView>
+<!-- 				        <TextView -->
+<!-- 				            android:id="@+id/tvInfo" -->
+<!-- 				            android:layout_width="wrap_content" -->
+<!-- 				            android:layout_height="wrap_content" -->
+<!-- 				            android:layout_centerHorizontal="true" -->
+<!-- 				            android:background="@drawable/s_bg2_h" -->
+<!-- 				            android:gravity="center" -->
+<!-- 				            android:text="网络连接失败" -->
+<!-- 				            android:textColor="#595959" -->
+<!-- 				            android:textSize="18dip" > -->
+<!-- 				        </TextView> -->
 				        
 				        <com.quanleimu.widget.ViewFlow
 								android:id="@+id/glDetail" 
@@ -56,6 +131,7 @@
 					        android:orientation="vertical"
 					        android:padding="5dip" >
 				    	</LinearLayout>
+
 				    </LinearLayout>  	
 				    	
 				    <com.quanleimu.widget.CircleFlowIndicator 

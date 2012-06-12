@@ -284,8 +284,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.homepageview, null);
 		this.addView(v);
-		TextView tvInfo = (TextView) findViewById(R.id.tvInfo);
-		tvInfo.setVisibility(View.GONE);
+//		TextView tvInfo = (TextView) findViewById(R.id.tvInfo);
+//		tvInfo.setVisibility(View.GONE);
 		
 		linearUseualCates = (LinearLayout)v.findViewById(R.id.linearUseualCates);
 		glDetail = (ViewFlow) v.findViewById(R.id.glDetail);
@@ -703,7 +703,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_rightActionHint = "搜索";
 		title.m_title = cityName + "百姓网";
-		title.m_visible = true;
+		title.m_visible = false;
 		return title;
 	}
 	

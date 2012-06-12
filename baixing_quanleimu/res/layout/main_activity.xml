@@ -1,22 +1,20 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<FrameLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
     <LinearLayout
-        android:id="@+id/linearTop"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true" >
+        android:layout_height="fill_parent"
+        android:orientation="vertical">
 
         <RelativeLayout
-            android:id="@+id/rlTitle"
+            android:id="@+id/linearTop"
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
+            android:layout_height="wrap_content"
             android:background="@drawable/bg_header"
-            android:gravity="center_vertical"
-            android:padding="0dip" >
+            android:gravity="center_vertical|top"
+            android:padding="0dip">
 
             <TextView
                 android:id="@+id/tvTitle"
@@ -52,71 +50,70 @@
                 android:text="@string/Search"
                 android:textColor="#ffffff" >
             </Button>
-
         </RelativeLayout>
-    </LinearLayout>
-
-    <LinearLayout
-        android:id="@+id/contentLayout"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_above="@+id/linearBottom"
-        android:layout_below="@+id/linearTop"
-        android:background="@drawable/bg" >
-    </LinearLayout>
-
-    <LinearLayout
+        
+	    <LinearLayout
+	        android:id="@+id/contentLayout"
+	        android:layout_width="fill_parent"
+	        android:layout_height="fill_parent"
+	        android:background="@drawable/bg" 
+	        android:layout_weight="1">
+	    </LinearLayout>
+	
+	    <ImageView
+	        	android:id="@+id/ivBottomNull"
+				android:layout_height="wrap_content" 
+				android:layout_width="fill_parent" 
+				android:background="@drawable/tabbar_bg"
+				android:layout_gravity="bottom"/>
+    </LinearLayout>    
+			
+    <FrameLayout
         android:id="@+id/linearBottom"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
+        android:background="#00000000"
+        android:layout_gravity="bottom"
+        android:layout_weight="0">
+        
+<!--         <ImageView -->
+<!-- 			android:layout_height="wrap_content"  -->
+<!-- 			android:layout_width="fill_parent"  -->
+<!-- 			android:background="@drawable/tabbar_bg" -->
+<!-- 			android:layout_gravity="bottom"/> -->
+        
+	    <LinearLayout	        
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="bottom"
+	        android:orientation="horizontal">	
+	        
+		    	<ImageView 
+			    	android:layout_height="wrap_content" 
+			    	android:layout_width="fill_parent" 
+			    	android:background="@drawable/iv_homepage_xml" 
+			    	android:id="@+id/ivHomePage"
+			    	android:layout_gravity="bottom"
+			    	android:layout_weight="1"/>
 
-        <LinearLayout
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/bg_bottom" >
+			    <ImageView 
+			    	android:layout_height="wrap_content" 
+			    	android:layout_width="fill_parent" 
+			    	android:background="@drawable/iv_postgoods_xml"
+			    	android:id="@+id/ivPostGoods"
+			    	android:layout_gravity="bottom"
+			    	android:layout_weight="1"/>
+			    
+			    <ImageView 
+			    	android:layout_height="wrap_content" 
+			    	android:layout_width="fill_parent" 
+			    	android:background="@drawable/iv_mycenter_xml"
+			    	android:id="@+id/ivMyCenter"
+			    	android:layout_gravity="bottom"
+			    	android:layout_weight="1"/>
+			    
+	   </LinearLayout>
+        
+    </FrameLayout>
 
-            <ImageView
-                android:id="@+id/ivHomePage"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="3"
-                android:background="@drawable/iv_homepage_xml" />
-
-            <ImageView
-                android:id="@+id/ivCateMain"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="3"
-                android:background="@drawable/iv_catemain_xml" />
-
-            <ImageView
-                android:id="@+id/ivPostGoods"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="3"
-                android:background="@drawable/iv_postgoods_xml" />
-
-            <ImageView
-                android:id="@+id/ivMyCenter"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="3"
-                android:background="@drawable/iv_mycenter_xml" />
-
-            <ImageView
-                android:id="@+id/ivSetMain"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_gravity="bottom"
-                android:layout_weight="3"
-                android:background="@drawable/iv_setmain_xml" />
-        </LinearLayout>
-    </LinearLayout>
-
-</RelativeLayout>
+</FrameLayout>
