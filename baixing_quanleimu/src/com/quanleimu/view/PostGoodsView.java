@@ -57,7 +57,7 @@ import com.quanleimu.util.Util;
 
 import android.view.ViewGroup;
 import com.quanleimu.view.MultiLevelSelectionView;
-import com.quanleimu.adapter.CheckableAdapter;
+import com.quanleimu.view.PostGoodsCateMainView;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
@@ -73,6 +73,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final int POST_OTHERPROPERTIES = 5;
 	public static final int POST_CHECKSELECT = 6;
 	public static final int MSG_MULTISEL_BACK = 10;
+	public static final int MSG_CATEGORY_SEL_BACK = 11;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private LinkedHashMap<String, TextView> tvlist;
@@ -366,7 +367,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			userValidated = true;
 			mobile = user.getPhone();
 			password = user.getPassword();
-			
+
+			if(categoryEnglishName == null || categoryEnglishName.equals("")){
+				this.addCategoryItem();
+				return; 
+			}
 			//获取发布模板
 			String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 			if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
@@ -950,7 +955,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	
 	@Override
 	public void onPreviousViewBack(int message, Object obj){		
-		if (message == POST_LIST) {
+		switch(message){
+		case POST_LIST:{
 			int id = (Integer)obj;
 			TextView tv = tvlist.get(displayname);
 			String txt = postList.get(displayname).getLabels().get(id);
@@ -958,15 +964,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			System.out.println(id+" "+txt+" "+txtValue);
 			postMap.put(displayname, txtValue);
 			tv.setText(txt);
+			break;
 		}
-		else if(POST_OTHERPROPERTIES == message){
+		case POST_OTHERPROPERTIES:
 			String list = (String)obj;
 			if(!list.equals("")){
 				String[] lists = list.split(",");
 				appendSelectedProperties(lists);
 			}
-		}
-		else if(POST_CHECKSELECT == message){
+			break;
+		case POST_CHECKSELECT:{
 			TextView tv = tvlist.get(displayname);
 			String check = (String)obj;
 			String[] checks = check.split(",");
@@ -984,9 +991,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}
 			postMap.put(displayname, value);
 			tv.setWidth(layout_txt.getWidth() * 2 / 3);
-			tv.setText(txt);			
+			tv.setText(txt);	
+			break;
 		}
-		else if(MSG_MULTISEL_BACK == message){
+		case MSG_MULTISEL_BACK:{
 			if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
 				TextView tv = tvlist.get(displayname);
 				if(tv != null){
@@ -995,6 +1003,25 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 				postMap.put(displayname, ((MultiLevelSelectionView.MultiLevelItem)obj).id);
 			}
+			break;
+		}
+		case MSG_CATEGORY_SEL_BACK:{
+			layout_txt.removeAllViews();
+			tvlist.remove(displayname);
+			this.addCategoryItem();
+			TextView tv = tvlist.get(displayname);
+			String[] backMsg = ((String)obj).split(",");
+			if(backMsg == null || backMsg.length != 2) break;
+			if(tv != null){
+				tv.setText(backMsg[1]);
+			}
+			this.categoryEnglishName = backMsg[0];
+			this.usercheck();
+			
+			break;
+		}
+		default:
+			break;
 		}
 	}
 
@@ -1095,6 +1122,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
 			layout = (ViewGroup)v;
+			if(postBean.getName().equals("contact")){
+				((EditText)v.findViewById(R.id.postinput)).setText(mobile);
+			}
 		} else if (postBean.getControlType().equals("select")) {
 			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
 			View v = inflater.inflate(R.layout.item_post_select, null);
@@ -1250,6 +1280,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 			});
 		}
+		
 		TextView border = new TextView(PostGoodsView.this.getContext());
 		border.setLayoutParams(new LayoutParams(
 				LayoutParams.FILL_PARENT, 1, 1));
@@ -1267,9 +1298,35 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 	}
 	
+	private void addCategoryItem(){
+		if(tvlist.get("分类") != null)return;
+		LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+		View v = inflater.inflate(R.layout.item_post_select, null);
+		((TextView)v.findViewById(R.id.postshow)).setText("分类");
+		this.displayname = "分类";
+		tvlist.put(displayname, (TextView)v.findViewById(R.id.posthint));
+		v.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				if(m_viewInfoListener != null){
+					PostGoodsCateMainView pview = 
+							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
+					m_viewInfoListener.onNewView(pview);
+				}
+			}				
+		});
+		layout_txt.addView(v);
+		
+		TextView border = new TextView(PostGoodsView.this.getContext());
+		border.setLayoutParams(new LayoutParams(
+				LayoutParams.FILL_PARENT, 1, 1));
+		border.setBackgroundResource(R.drawable.list_divider);
+		layout_txt.addView(border);
+	}
+	
 	private void buildPostLayout(){
 		//根据模板显示
-		
+		if(null == json || json.equals("")) return;
 		postList = JsonUtil.getPostGoodsBean(json); 
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
@@ -1309,6 +1366,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}
 			switch (msg.what) {
 			case 1:
+				addCategoryItem();
 				buildPostLayout();
 				break;
 

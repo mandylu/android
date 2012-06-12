@@ -35,6 +35,7 @@ import com.quanleimu.view.PersonalCenterView;
 import com.quanleimu.view.PostGoodsCateMainView;
 
 import com.quanleimu.view.HomePageView;
+import com.quanleimu.view.PostGoodsView;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
@@ -65,7 +66,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
 			
 			needClearViewStack = true;
-			onNewView(new PostGoodsCateMainView(this, bundle));
+//			onNewView(new PostGoodsCateMainView(this, bundle));
+			onNewView(new PostGoodsView(this, bundle, ""));
 			
 			break;
 		case ETAB_TYPE_MINE:

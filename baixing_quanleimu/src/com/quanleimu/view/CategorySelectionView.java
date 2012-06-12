@@ -49,7 +49,7 @@ public class CategorySelectionView extends ListView {
 	//protected ListView lvAllCates = null;
 	protected CommonItemAdapter allCateAdapter = null;
 
-	protected List<SecondStepCate> subCate = null;
+//	protected List<SecondStepCate> subCate = null;
 	//protected ListView lvSubCate = null;
 	protected CommonItemAdapter secondCateAdapter = null;
 	

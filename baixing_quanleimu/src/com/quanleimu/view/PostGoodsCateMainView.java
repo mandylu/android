@@ -17,15 +17,18 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	protected CategorySelectionView selectionView;
 	private BaseActivity baseActivity;
 	private Bundle bundle;
+	private int message;
+	private boolean subSelected = false;
 	
 	String title_str;
 	String back_str;
 	
 	
-	public PostGoodsCateMainView(BaseActivity context, Bundle bundle){
+	public PostGoodsCateMainView(BaseActivity context, Bundle bundle, int msgBack){
 		super(context, bundle);
 		baseActivity = context;
 		this.bundle = bundle;
+		message = msgBack;
 		init();
 	}
 		
@@ -42,7 +45,8 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
 		
 		if(null != m_viewInfoListener){
-			m_viewInfoListener.onNewView(new PostGoodsView(baseActivity, bundle, selectedSubCate.getEnglishName()));			
+			subSelected = true;
+			m_viewInfoListener.onBack(message, selectedSubCate.getEnglishName() + "," + selectedSubCate.getName());			
 		}
 	}
 	
@@ -62,7 +66,8 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	
 	@Override
 	public boolean onBack(){
-		if(selectionView == null || !selectionView.OnBack()){
+		if(subSelected || selectionView == null || !selectionView.OnBack()){
+			subSelected = false;
 			return false;
 		}else
 		{
