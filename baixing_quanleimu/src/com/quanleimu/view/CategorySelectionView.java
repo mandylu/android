@@ -8,6 +8,7 @@ import java.util.List;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.adapter.CommonItemAdapter;
+import com.quanleimu.adapter.MainCateAdapter;
 //import com.quanleimu.adapter.SecondCatesAdapter;
 import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.FirstStepCate;
@@ -47,7 +48,7 @@ public class CategorySelectionView extends ListView {
 	protected static String mainCateAPI = "category_list";
 	protected AllCates mainCate = null;
 	//protected ListView lvAllCates = null;
-	protected CommonItemAdapter allCateAdapter = null;
+	protected MainCateAdapter allCateAdapter = null;
 
 //	protected List<SecondStepCate> subCate = null;
 	//protected ListView lvSubCate = null;
@@ -164,7 +165,7 @@ public class CategorySelectionView extends ListView {
 		} else {
 			((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
 			if(allCateAdapter == null){
-				allCateAdapter = new CommonItemAdapter(getContext(), mainCate.getChildren());
+				allCateAdapter = new MainCateAdapter(getContext(), mainCate.getChildren());
 				this.setAdapter(allCateAdapter);	
 			}
 			else{
