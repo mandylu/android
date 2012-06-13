@@ -13,7 +13,7 @@
 		android:focusable="true" 
 		android:divider="@drawable/list_divider"
 		android:dividerHeight="1dp"
-		android:background="@drawable/home_bg_2x"
+		android:background="@drawable/home_bg"
 		android:layout_height="fill_parent" >
 	</ListView>
 </LinearLayout>

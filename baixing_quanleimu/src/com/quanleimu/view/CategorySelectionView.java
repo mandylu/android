@@ -132,7 +132,7 @@ public class CategorySelectionView extends ListView {
 		catch(Exception e){
 			e.printStackTrace();
 		}
-		this.setBackgroundResource(R.drawable.home_bg_2x);
+		this.setBackgroundResource(R.drawable.home_bg);
 			
 		this.setOnItemClickListener(new MainCateItemClickListener());
 		

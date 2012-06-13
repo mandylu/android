@@ -20,6 +20,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -55,7 +56,10 @@ import com.quanleimu.activity.BaiduMapActivity;
 import android.net.Uri;
 import android.content.Intent;
 
-public class GoodDetailView extends BaseView implements DialogInterface.OnClickListener, View.OnClickListener, OnItemSelectedListener{
+import android.graphics.Canvas;
+import android.graphics.Paint;
+
+public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
@@ -72,9 +76,11 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	private LinearLayout ll_meta;
 	private TextView txt_tittle;
 	private TextView txt_message1;
-	private RelativeLayout rl_phone, rl_address, llgl;
-	private TextView txt_phone, txt_address;
-	private ImageView im_x;
+	private LinearLayout rl_address;
+	private RelativeLayout llgl;
+	private LinearLayout rl_phone;
+	private ImageView iv_call, iv_sms;
+	private TextView txt_phone;
 
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
@@ -248,17 +254,13 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 		txt_tittle = (TextView) findViewById(R.id.goods_tittle);
 		txt_message1 = (TextView) findViewById(R.id.sendmess1);
-		txt_phone = (TextView) findViewById(R.id.address1);
-		txt_address = (TextView) findViewById(R.id.address2);
-		rl_phone = (RelativeLayout) findViewById(R.id.showphone);
-		rl_address = (RelativeLayout) findViewById(R.id.showmap);
-		im_x = (ImageView) findViewById(R.id.ivCancel);
+		txt_phone = (TextView) findViewById(R.id.number);
+		iv_call = (ImageView)findViewById(R.id.call);
+		iv_sms = (ImageView)findViewById(R.id.sms);
+		rl_address = (LinearLayout) findViewById(R.id.showmap);
+		rl_phone = (LinearLayout)findViewById(R.id.phonelayout);
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
-
-
-
-		im_x.setOnClickListener(this);
 
 		this.setMetaObject();
 		
@@ -267,9 +269,7 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 
 		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 		if (areaNamesV != null && !areaNamesV.equals("")) 
-		{
-			txt_address.setText(areaNamesV);
-			
+		{			
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
@@ -283,7 +283,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		} 
 		else 
 		{
-			txt_address.setText("无");
 			rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 		}
 
@@ -292,7 +291,8 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				&& !mobileV.equals("")
 				&& !mobileV.equals("无")) {
 			txt_phone.setText(mobileV);
-			rl_phone.setOnClickListener(this);
+			iv_call.setOnClickListener(this);
+			iv_sms.setOnClickListener(this);
 		} else {
 			rl_phone.setVisibility(View.GONE);
 //			txt_phone.setText("无");
@@ -427,19 +427,18 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.showphone:
-			final String[] names = {"打电话","发短信"};
-			new AlertDialog.Builder(this.getContext()).setTitle("选择联系方式")
-					.setItems(names, this)
-					.setNegativeButton(
-				     "取消", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();							
-						}
-					})
-				     .show();
+		case R.id.call:{
+			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+			this.getContext().startActivity(intent);
+			break;	
+		}
+		case R.id.sms:{
+			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+			this.getContext().startActivity(intent);			
 			break;
+		}
 		case R.id.showmap:
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
@@ -463,9 +462,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 			}
 			break;
-		case R.id.ivCancel:
-			myHandler.sendEmptyMessage(msgCancelMap);
-			break;
 		}
 //		super.onClick(v);
 	}
@@ -486,6 +482,20 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 			v.setTag(i);
 			ll_meta.addView(v);
 		}
+//		BitmapFactory.Options o =  new BitmapFactory.Options();
+//        o.inPurgeable = true;
+//		Bitmap tmb = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.viewad_bg_meta, o);
+//		if(ll_meta.getWidth() > tmb.getWidth())
+//		Bitmap newBk = Bitmap.createBitmap(tmb.getWidth(), 20, tmb.getConfig());
+//		Canvas canvas = new Canvas(newBk);
+//		canvas.drawBitmap(tmb, 0, 0, new Paint());
+//		float scaleWidth = ((float)ll_meta.getWidth()) / tmb.getWidth();
+//		Matrix matrix = new Matrix();
+//		matrix.postScale(scaleWidth, 1);
+//		Bitmap topBmp = Bitmap.createBitmap(newBk, 0, 0, tmb.getWidth(), 20, matrix, true);
+//		newBk.recycle();
+
+
 		Date date = new Date(Long.parseLong(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
 		SimpleDateFormat df = new SimpleDateFormat("MM月dd日 HH:mm:ss",
 				Locale.SIMPLIFIED_CHINESE);
@@ -498,20 +508,6 @@ public class GoodDetailView extends BaseView implements DialogInterface.OnClickL
 		ll_meta.addView(time);
 	}
 	
-	@Override
-	public void onClick(DialogInterface dialog, int which){
-		if(0 == which){
-			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-			this.getContext().startActivity(intent);
-		}
-		else if(1 == which){
-			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-			this.getContext().startActivity(intent);
-		}
-	}
-
 	public Handler myHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {

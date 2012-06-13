@@ -20,7 +20,7 @@
             android:focusable="true"            
             android:divider="@drawable/list_divider"
             android:dividerHeight="1dp"
-            android:background="@drawable/home_bg_2x"
+            android:background="@drawable/home_bg"
             android:headerDividersEnabled="true"
             android:footerDividersEnabled="true"
             android:listSelector="#00000000"
