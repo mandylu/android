@@ -14,7 +14,6 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:layout_above="@+id/phonelayout"
-            android:layout_below="@+id/rlTitle"
             android:background="@drawable/home_bg">
 
             <LinearLayout
@@ -125,6 +124,7 @@
                         android:layout_width="wrap_content"
                         android:paddingLeft="5dip"
                         android:paddingRight="5dip"
+                        android:clickable="true"
                         android:layout_marginLeft="10dip"
                         android:background="@drawable/btn_bg"
                         android:gravity="center_vertical"
@@ -141,6 +141,30 @@
 	                        android:text="分享"
 	                        android:textColor="#000000" />
                 	</LinearLayout>
+                	
+					<LinearLayout
+                        android:id="@+id/jubaolayout"
+                        android:layout_width="wrap_content"
+                        android:paddingLeft="5dip"
+                        android:clickable="true"
+                        android:paddingRight="5dip"
+                        android:layout_marginLeft="20dip"
+                        android:background="@drawable/btn_bg"
+                        android:gravity="center_vertical"
+                        android:layout_height="wrap_content">
+	                    <ImageView
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:background="@drawable/icon_flag" />
+	
+	                    <TextView
+	                        android:layout_width="wrap_content"
+	                        android:layout_height="wrap_content"
+	                        android:layout_marginLeft="1dip"
+	                        android:text="举报"
+	                        android:textColor="#000000" />
+                	</LinearLayout>
+										
                	</LinearLayout>
             </LinearLayout>
         </ScrollView>

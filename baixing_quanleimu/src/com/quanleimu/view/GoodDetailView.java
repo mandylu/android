@@ -58,7 +58,8 @@ import android.content.Intent;
 
 import android.graphics.Canvas;
 import android.graphics.Paint;
-
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
@@ -158,6 +159,36 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		})).start();
 		
 		super.onAttachedToWindow();
+	}
+	
+	@Override
+	protected void onLayout (boolean changed, int l, int t, int r, int b){
+		super.onLayout(changed, l, t, r, b);
+		BitmapFactory.Options o =  new BitmapFactory.Options();
+        o.inPurgeable = true;
+
+		Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
+		Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
+		bk.recycle();
+		Drawable drawable = new BitmapDrawable(scaledBk);
+		ll_meta.setBackgroundDrawable(drawable);
+		
+	}
+	
+	@Override
+	protected void onDraw(Canvas canvas){
+		super.onDraw(canvas);
+		
+//		if(ll_meta.getBackground() != null) return;
+		BitmapFactory.Options o =  new BitmapFactory.Options();
+        o.inPurgeable = true;
+
+		Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
+		Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
+		bk.recycle();
+		Drawable drawable = new BitmapDrawable(scaledBk);
+		ll_meta.setBackgroundDrawable(drawable);
+		
 	}
 	
 	private void saveToHistory(){
@@ -482,19 +513,6 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			v.setTag(i);
 			ll_meta.addView(v);
 		}
-//		BitmapFactory.Options o =  new BitmapFactory.Options();
-//        o.inPurgeable = true;
-//		Bitmap tmb = BitmapFactory.decodeResource(this.getContext().getResources(), R.drawable.viewad_bg_meta, o);
-//		if(ll_meta.getWidth() > tmb.getWidth())
-//		Bitmap newBk = Bitmap.createBitmap(tmb.getWidth(), 20, tmb.getConfig());
-//		Canvas canvas = new Canvas(newBk);
-//		canvas.drawBitmap(tmb, 0, 0, new Paint());
-//		float scaleWidth = ((float)ll_meta.getWidth()) / tmb.getWidth();
-//		Matrix matrix = new Matrix();
-//		matrix.postScale(scaleWidth, 1);
-//		Bitmap topBmp = Bitmap.createBitmap(newBk, 0, 0, tmb.getWidth(), 20, matrix, true);
-//		newBk.recycle();
-
 
 		Date date = new Date(Long.parseLong(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
 		SimpleDateFormat df = new SimpleDateFormat("MM月dd日 HH:mm:ss",

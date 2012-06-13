@@ -39,7 +39,9 @@ import android.net.NetworkInfo.State;
 import android.os.Environment;
 import android.util.Log;
 import android.view.Display;
-
+import android.graphics.Canvas;
+import android.graphics.Rect;
+import android.graphics.Paint;
 public class Util {
 	private static String[] keys;
 	private static String[] values;
@@ -692,6 +694,58 @@ System.out.println("没找到文件");
 			
 		}
 		return bits;
+	}
+	
+	public static Bitmap scaleBitmap(Bitmap src, int outputX, int outputY, int leftMask, int topMask, int rightMask, int bottomMask){
+		Bitmap toRet = null;
+		BitmapFactory.Options o =  new BitmapFactory.Options();
+		o.inPurgeable = true;
+		int tx = (int)((((float)outputX) / src.getWidth()) * src.getHeight());
+		Bitmap scaledBmp = newBitmap(src, outputX, (int)((((float)outputX) / src.getWidth()) * src.getHeight()));
+		if(outputY <= scaledBmp.getHeight()) return scaledBmp;
+
+		Bitmap lineBk = Bitmap.createBitmap(outputX, 1, src.getConfig());
+		Canvas canvas = new Canvas(lineBk);
+		Rect srcRc = new Rect();
+		srcRc.left = 0;
+		srcRc.top = topMask;
+		srcRc.right = outputX;
+		srcRc.bottom = topMask + 1;
+		
+		Rect destRc = new Rect();
+		destRc.left = 0;
+		destRc.top = 0;
+		destRc.right = outputX;
+		destRc.bottom = 1;
+		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+		
+		toRet = Bitmap.createBitmap(outputX, outputY, src.getConfig());
+		canvas = new Canvas(toRet);
+		srcRc.left = 0;
+		srcRc.top = 0;
+		srcRc.right = outputX;
+		srcRc.bottom = topMask;
+		
+		destRc.left = srcRc.left;
+		destRc.right = srcRc.right;
+		destRc.top = srcRc.top;
+		destRc.bottom = srcRc.bottom;
+		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+		srcRc.top = topMask;
+		srcRc.bottom = topMask + 1;
+		for(int i = 0; i < outputY - topMask - bottomMask; ++ i){
+			destRc.top = i + topMask;
+			destRc.bottom = i + topMask + 1;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+		}
+		srcRc.top = scaledBmp.getHeight() - bottomMask;
+		srcRc.bottom = scaledBmp.getHeight();
+		destRc.top = outputY - bottomMask;
+		destRc.bottom = outputY;
+		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+		lineBk.recycle();
+		scaledBmp.recycle();
+		return toRet;
 	}
 	
 	//保存数据手机内存
