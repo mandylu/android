@@ -23,6 +23,7 @@ import com.quanleimu.activity.R;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.AsyncTask;
+import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
@@ -116,9 +117,15 @@ public class CategorySelectionView extends ListView {
 			}
 		};
 	
-	public CategorySelectionView(Context context) {
+	public CategorySelectionView(Context context, View headerView, View footerView) {
 		super(context);
+		
+		init(context);
+		
+		setHeaderFooterView(headerView, footerView);
+	}
 
+	public void init(Context context) {
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //		this.setSelector(R.drawable.list_selector);
 		this.setCacheColorHint(0);
@@ -135,9 +142,16 @@ public class CategorySelectionView extends ListView {
 		this.setBackgroundResource(R.drawable.home_bg);
 			
 		this.setOnItemClickListener(new MainCateItemClickListener());
+	}
+	
+	public void setHeaderFooterView(View headerView, View footerView){
+		if(null != headerView)
+			this.addHeaderView(headerView);
+		if(null != footerView)
+		this.addFooterView(footerView);
 		
 		//main cate list
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(context, mainCateCacheTag);
+		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), mainCateCacheTag);
 
 		if (postMu != null && !postMu.getJson().equals("")) {
 			String json = postMu.getJson();
@@ -149,11 +163,17 @@ public class CategorySelectionView extends ListView {
 				(new AllCateTask()).execute(true);
 			} 
 		} else {
-			progressDialog = ProgressDialog.show(context, "提示", "请稍候...");			
+			progressDialog = ProgressDialog.show(getContext(), "提示", "请稍候...");			
 			progressDialog.setCancelable(true);
 			
 			(new AllCateTask()).execute(true);
 		}
+	}
+	
+	public CategorySelectionView(Context context, AttributeSet attrs){
+		super(context, attrs);
+
+		init(context);		
 	}
 
 	protected void parseCategory(String json) {

@@ -234,11 +234,11 @@ public class ViewFlow extends AdapterView<Adapter> {
 		}
 		
 		if(0 == width){
-			width = item_width;
+			width = item_width + getPaddingLeft() + getPaddingRight();
 		}
 		
 		if(0 == height){
-			height = item_height;
+			height = item_height + getPaddingTop() + getPaddingBottom();
 		}
 		
 		setMeasuredDimension(width, height);

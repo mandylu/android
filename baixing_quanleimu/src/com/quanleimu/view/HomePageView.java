@@ -32,6 +32,7 @@ import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.ImageView.ScaleType;
@@ -56,7 +57,8 @@ import com.quanleimu.widget.ViewFlow;
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
 	private ViewFlow glDetail;
 	private CircleFlowIndicator indicator;
-	private LinearLayout linearUseualCates;
+	View hotlistView = null;
+	private CategorySelectionView catesView;
 	private List<HotList> listHot = new ArrayList<HotList>();
 	private String cityName;
 	private String json;
@@ -64,7 +66,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	private List<HotList> tempListHot = new ArrayList<HotList>();
 	private ProgressDialog pd;
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
-	private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
+	//private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
 	static private String locationAddr = "";
 
 	
@@ -113,12 +115,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			}
 			
 		}		
-		if(this.m_viewInfoListener != null){
-			TitleDef t = getTitleDef();
-			t.m_title = (cityName + "百姓网");
-			m_viewInfoListener.onTitleChanged(t);
-		}
-//		tvTitle.setText(cityName + "百姓网");
 	}
 
 	
@@ -166,22 +162,21 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void onAttachedToWindow(){
-		if (QuanleimuApplication.listUsualCates == null) {
-			
-			listUsualCates = (List<SecondStepCate>)Util.loadDataFromLocate(getContext(), "listUsualCates");
-			if (listUsualCates == null) {
-				// 常用类目赋值
-				listUsualCates = LocateJsonData.getUsualCatesJson();
-				QuanleimuApplication.listUsualCates = listUsualCates;
-				Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
-			} else {
-				QuanleimuApplication.listUsualCates = listUsualCates;
-			}
-		} else {
-			listUsualCates = QuanleimuApplication.listUsualCates;
-			Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
-		}
-		addUsualCate();
+//		if (QuanleimuApplication.listUsualCates == null) {
+//			
+//			listUsualCates = (List<SecondStepCate>)Util.loadDataFromLocate(getContext(), "listUsualCates");
+//			if (listUsualCates == null) {
+//				// 常用类目赋值
+//				listUsualCates = LocateJsonData.getUsualCatesJson();
+//				QuanleimuApplication.listUsualCates = listUsualCates;
+//				Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
+//			} else {
+//				QuanleimuApplication.listUsualCates = listUsualCates;
+//			}
+//		} else {
+//			listUsualCates = QuanleimuApplication.listUsualCates;
+//			Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
+//		}
 
 		final Location lastLocation = LocationService.getInstance().getLastKnownLocation();
 		if(lastLocation != null){
@@ -205,97 +200,25 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		}
 		else{
 			LocationService.getInstance().start(getContext(), this);
-		}		
+		}	
+		
+		((TextView)findViewById(R.id.tvCityName)).setText(cityName);
+		
 		super.onAttachedToWindow();
 	}
-	
-	public void addUsualCate() {
-		linearUseualCates.removeAllViews();
-		LayoutInflater inflater = LayoutInflater.from(getContext());
-		for (int i = 0; i < listUsualCates.size(); i++) {
-			View v = null;
-			v = inflater.inflate(R.layout.item_common, null);
-
-			if (i == 0) {
-				v.setBackgroundResource(R.drawable.btn_top_bg);
-			} else if (i == listUsualCates.size() - 1) {
-				v.setBackgroundResource(R.drawable.btn_m_bg);
-			} else {
-				v.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-
-			// findviewbyid
-			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
-			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
-
-			// imageview 赋值
-			ivChoose.setImageResource(R.drawable.arrow);
-			// 设置标记位
-			ivChoose.setTag(i);
-
-			// 类目名称
-			tvCityName.setText(listUsualCates.get(i).getName());
-			v.setTag(i);
-			// 设置点击事件
-			v.setOnClickListener(new View.OnClickListener() {
-
-				@Override
-				public void onClick(View v) {
-					int a = Integer.valueOf(v.getTag().toString());
-					
-					Bundle bundle = new Bundle();
-					bundle.putString("name", (listUsualCates.get(a).getName()));
-					bundle.putString("categoryEnglishName",
-							(listUsualCates.get(a).getEnglishName()));
-					bundle.putString("siftresult", "");
-					bundle.putString("backPageName", "首页");
-
-					if(null != m_viewInfoListener){
-						m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, listUsualCates.get(a).getEnglishName()));
-					}
-				}
-			});
-			linearUseualCates.addView(v);
-
-		}
-		
-		View v1 = null;
-		v1 = inflater.inflate(R.layout.item_common, null);
-		v1.setBackgroundResource(R.drawable.btn_down_bg); 
-		
-		// findviewbyid 
-		TextView tv = (TextView) v1.findViewById(R.id.tvCateName);
-		ImageView iv = (ImageView) v1.findViewById(R.id.ivChoose);
-		tv.setText("其他类目");
-		iv.setImageResource(R.drawable.arrow);
-		v1.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				m_viewInfoListener.onNewView(new CateMainView(getContext()));
-			}
-		});
-		
-		linearUseualCates.addView(v1);
-	}
-
 	
 	private void init(){
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.homepageview, null);
 		this.addView(v);
-//		TextView tvInfo = (TextView) findViewById(R.id.tvInfo);
-//		tvInfo.setVisibility(View.GONE);
 		
-		linearUseualCates = (LinearLayout)v.findViewById(R.id.linearUseualCates);
-		glDetail = (ViewFlow) v.findViewById(R.id.glDetail);
-
+		
+		hotlistView = inflater.inflate(R.layout.hotlist, null);
+		glDetail = (ViewFlow) hotlistView.findViewById(R.id.glDetail);
 		glDetail.setFadingEdgeLength(10);
-		indicator = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
+		indicator = (CircleFlowIndicator) hotlistView.findViewById(R.id.viewflowindic);
 		glDetail.setFlowIndicator(indicator);
-		indicator.setVisibility(View.GONE);
-		
-//		glDetail.setSpacing(40);
+
 		glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
@@ -381,6 +304,33 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				tempListHot, 
 				QuanleimuApplication.lazyImageLoader);
 		glDetail.setAdapter(adapter);		
+		
+		
+		RelativeLayout footer = (RelativeLayout)inflater.inflate(R.layout.feedback_homepage, null);
+		footer.findViewById(R.id.feedback).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				HomePageView.this.m_viewInfoListener.onNewView(new OpinionBackView(getContext(), new Bundle()));
+			}
+		});
+		
+		catesView = (CategorySelectionView)findViewById(R.id.cateSelection);
+		catesView.setHeaderFooterView(hotlistView, footer);
+		
+		LinearLayout changeCity = (LinearLayout) findViewById(R.id.llChangeCity);
+		changeCity.setOnClickListener(new View.OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onNewView(new CityChangeView(getContext(), "首页"));
+				}
+			}
+			
+		});
 	}
 	
 	class HotListThread implements Runnable {
@@ -492,7 +442,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			protected void onPostExecute(Boolean bool) {  
 				this.adapter.notifyDataSetChanged();
-				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
+//				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
 				nNotifyInstance--;
 				//Log.d("HomePage async task count:", " " + nNotifyInstance);
 			}
@@ -648,11 +598,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				}
 				
 				if(needNotify)	notifyChange();
-			}
-			
-			if(View.GONE == indicator.getVisibility() && glDetail.getHeight() > 0){
-				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
-				indicator.setVisibility(View.VISIBLE);
 			}
 			
 			return v;			

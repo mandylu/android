@@ -68,52 +68,37 @@
 				android:layout_gravity="bottom"/>
     </LinearLayout>    
 			
-    <FrameLayout
-        android:id="@+id/linearBottom"
+    <LinearLayout    
+        android:id="@+id/linearBottom"    
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:background="#00000000"
         android:layout_gravity="bottom"
-        android:layout_weight="0">
+        android:orientation="horizontal">	
         
-<!--         <ImageView -->
-<!-- 			android:layout_height="wrap_content"  -->
-<!-- 			android:layout_width="fill_parent"  -->
-<!-- 			android:background="@drawable/tabbar_bg" -->
-<!-- 			android:layout_gravity="bottom"/> -->
-        
-	    <LinearLayout	        
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="bottom"
-	        android:orientation="horizontal">	
-	        
-		    	<ImageView 
-			    	android:layout_height="wrap_content" 
-			    	android:layout_width="fill_parent" 
-			    	android:background="@drawable/iv_homepage_xml" 
-			    	android:id="@+id/ivHomePage"
-			    	android:layout_gravity="bottom"
-			    	android:layout_weight="1"/>
+	    	<ImageView 
+		    	android:layout_height="wrap_content" 
+		    	android:layout_width="fill_parent" 
+		    	android:background="@drawable/iv_homepage_xml" 
+		    	android:id="@+id/ivHomePage"
+		    	android:layout_gravity="bottom"
+		    	android:layout_weight="1"/>
 
-			    <ImageView 
-			    	android:layout_height="wrap_content" 
-			    	android:layout_width="fill_parent" 
-			    	android:background="@drawable/iv_postgoods_xml"
-			    	android:id="@+id/ivPostGoods"
-			    	android:layout_gravity="bottom"
-			    	android:layout_weight="1"/>
-			    
-			    <ImageView 
-			    	android:layout_height="wrap_content" 
-			    	android:layout_width="fill_parent" 
-			    	android:background="@drawable/iv_mycenter_xml"
-			    	android:id="@+id/ivMyCenter"
-			    	android:layout_gravity="bottom"
-			    	android:layout_weight="1"/>
-			    
-	   </LinearLayout>
-        
-    </FrameLayout>
+		    <ImageView 
+		    	android:layout_height="wrap_content" 
+		    	android:layout_width="fill_parent" 
+		    	android:background="@drawable/iv_postgoods_xml"
+		    	android:id="@+id/ivPostGoods"
+		    	android:layout_gravity="bottom"
+		    	android:layout_weight="1"/>
+		    
+		    <ImageView 
+		    	android:layout_height="wrap_content" 
+		    	android:layout_width="fill_parent" 
+		    	android:background="@drawable/iv_mycenter_xml"
+		    	android:id="@+id/ivMyCenter"
+		    	android:layout_gravity="bottom"
+		    	android:layout_weight="1"/>
+		    
+	</LinearLayout>
 
 </FrameLayout>

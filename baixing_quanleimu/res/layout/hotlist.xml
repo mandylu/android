@@ -1,0 +1,34 @@
+<?xml version="1.0" encoding="UTF-8"?>
+
+<RelativeLayout
+    xmlns:android="http://schemas.android.com/apk/res/android"
+	xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity" 
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content">
+    
+	<com.quanleimu.widget.ViewFlow
+		android:id="@+id/glDetail" 
+		android:layout_width="fill_parent"
+		android:layout_height="wrap_content"
+		android:layout_alignParentTop="true"
+		android:paddingBottom="7dip"
+		app:sidebuffer="3"
+		app:timedScroll="true"
+		app:scrollIntervalMs="5000"
+		app:scrollDurationMs="300"/>    
+    
+	<com.quanleimu.widget.CircleFlowIndicator 
+		android:layout_height="wrap_content"
+		android:layout_width="wrap_content"
+		android:id="@+id/viewflowindic"
+		android:layout_alignParentBottom="true"
+		android:layout_centerHorizontal="true"
+		android:layout_gravity="center_horizontal"
+		app:radius="5dip"
+		app:activeColor="#ffffff"
+		app:inactiveColor="#dddddd"
+		app:inactiveType="fill"
+		app:height_gap ="4"
+		app:background_color="#a000ee11"/>				    	
+	
+</RelativeLayout>

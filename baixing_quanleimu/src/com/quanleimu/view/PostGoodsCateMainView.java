@@ -55,7 +55,7 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 		View v = inflater.inflate(R.layout.catemain, null);
 		this.addView(v);
 
-		selectionView = new CategorySelectionView(baseActivity);
+		selectionView = new CategorySelectionView(baseActivity, null, null);
 		selectionView.setSelectionListener(this);
 		lvCateArea = (LinearLayout) findViewById(R.id.linearListView);		
 		lvCateArea.addView(selectionView);		

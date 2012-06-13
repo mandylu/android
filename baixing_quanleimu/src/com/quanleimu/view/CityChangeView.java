@@ -117,7 +117,7 @@ public class CityChangeView extends BaseView {
 		final LinearLayout linearHotCities = (LinearLayout)findViewById(R.id.linearHotCities); 
 		for (int i = 0; i < listHotCity.size(); i++) {
 			View v = null;
-			v = inflater.inflate(R.layout.item_common, null);
+			v = inflater.inflate(R.layout.item_citychange, null);
 
 			if (i == 0) {
 				v.setBackgroundResource(R.drawable.btn_top_bg);
@@ -241,15 +241,15 @@ public class CityChangeView extends BaseView {
 					for (int i = 0; i < QuanleimuApplication.getApplication().getShengMap().size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
 						View vTemp = null;
-						vTemp = inflater.inflate(R.layout.item_common, null);
+						vTemp = inflater.inflate(R.layout.item_citychange, null);
 						
-						if (i == 0) {
-							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
-						} else if (i == QuanleimuApplication.getApplication().getShengMap().size() - 1) {
-							vTemp.setBackgroundResource(R.drawable.btn_down_bg);
-						} else {
+//						if (i == 0) {
+//							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
+//						} else if (i == QuanleimuApplication.getApplication().getShengMap().size() - 1) {
+//							vTemp.setBackgroundResource(R.drawable.btn_down_bg);
+//						} else {
 							vTemp.setBackgroundResource(R.drawable.btn_m_bg);
-						}
+//						}
 						
 						
 						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvCateName);
@@ -291,15 +291,15 @@ public class CityChangeView extends BaseView {
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									// 添加新的视图，循环添加到ScrollView中
 									View vCity = null;
-									vCity = inflater.inflate(R.layout.item_common, null);
+									vCity = inflater.inflate(R.layout.item_citychange, null);
 									
-									if (i == 0) {
-										vCity.setBackgroundResource(R.drawable.btn_top_bg);
-									} else if (i == list2Sheng.size() - 1) {
-										vCity.setBackgroundResource(R.drawable.btn_down_bg);
-									} else {
+//									if (i == 0) {
+//										vCity.setBackgroundResource(R.drawable.btn_top_bg);
+//									} else if (i == list2Sheng.size() - 1) {
+//										vCity.setBackgroundResource(R.drawable.btn_down_bg);
+//									} else {
 										vCity.setBackgroundResource(R.drawable.btn_m_bg);
-									}
+//									}
 									
 									TextView tvCityName = (TextView) vCity.findViewById(R.id.tvCateName);
 									tvCityName.setText(list2Sheng.get(i).getName());

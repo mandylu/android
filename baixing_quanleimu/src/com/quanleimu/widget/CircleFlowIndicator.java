@@ -177,13 +177,13 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		
 		int leftPadding = getPaddingLeft();
 		
-		canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop()-height_gap, getPaddingLeft()+width(), getPaddingTop()-height_gap+height()), height() / 2, height() / 2, mPaintBackground);
+		canvas.drawRoundRect(new RectF(getPaddingLeft(), getPaddingTop(), getPaddingLeft()+width(), getPaddingTop()+height()), height() / 2, height() / 2, mPaintBackground);
 		
 		// Draw inactive circles
 		for (int iLoop = 0; iLoop < count; iLoop++) {
 			canvas.drawCircle(leftPadding + 2*radius + height_gap
 					+ (iLoop * circleSeparation) + centeringOffset,
-					getPaddingTop() + radius, radius, mPaintInactive);
+					getPaddingTop() + radius + height_gap, radius, mPaintInactive);
 		}
 		
 		float cx = 0;
@@ -194,7 +194,7 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		
 		// The flow width has been upadated yet. Draw the default position
 		canvas.drawCircle(leftPadding + 2*radius + height_gap + cx+centeringOffset, getPaddingTop()
-				+ radius, radius, mPaintActive);
+				+ radius + height_gap, radius, mPaintActive);
 	}
 
 	/*

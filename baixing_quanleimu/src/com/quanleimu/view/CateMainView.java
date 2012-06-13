@@ -21,7 +21,7 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView((RelativeLayout)inflater.inflate(R.layout.catemain, null));
 
-		selectionView = new CategorySelectionView(getContext());
+		selectionView = new CategorySelectionView(getContext(), null, null);
 		selectionView.setSelectionListener(this);
 
 		((LinearLayout)findViewById(R.id.linearListView)).addView(selectionView);
