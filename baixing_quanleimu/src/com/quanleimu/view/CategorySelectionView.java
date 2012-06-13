@@ -55,11 +55,14 @@ public class CategorySelectionView extends ListView {
 	//protected ListView lvSubCate = null;
 	protected CommonItemAdapter secondCateAdapter = null;
 	
-	protected enum ECATE_LEVEL{
+	public enum ECATE_LEVEL{
 		ECATE_LEVEL_MAIN,
 		ECATE_LEVEL_SUB
 	};
 	protected ECATE_LEVEL curLevel = ECATE_LEVEL.ECATE_LEVEL_MAIN;
+	public ECATE_LEVEL getLevel(){
+		return curLevel;
+	}
 	
 	protected class MainCateItemClickListener implements AdapterView.OnItemClickListener {
 		@Override
@@ -196,7 +199,7 @@ public class CategorySelectionView extends ListView {
 	
 	public void setSelectionListener(ICateSelectionListener listener){
 		this.selectionListener = listener;
-	}
+	}	
 	
 	public boolean OnBack(){
 		if(curLevel == ECATE_LEVEL.ECATE_LEVEL_SUB){

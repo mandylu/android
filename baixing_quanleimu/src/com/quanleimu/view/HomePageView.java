@@ -29,6 +29,7 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -40,6 +41,7 @@ import android.widget.ImageView.ScaleType;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.ImageLoaderCallback;
@@ -54,10 +56,13 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
 
-public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener{
+public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener,  CategorySelectionView.ICateSelectionListener{
 	private ViewFlow glDetail;
 	private CircleFlowIndicator indicator;
-	View hotlistView = null;
+	LinearLayout hotlistView = null;
+	RelativeLayout rlHotList = null;
+	LinearLayout footer = null;
+	RelativeLayout feedback = null;
 	private CategorySelectionView catesView;
 	private List<HotList> listHot = new ArrayList<HotList>();
 	private String cityName;
@@ -68,6 +73,9 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
 	//private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
 	static private String locationAddr = "";
+	
+	String title_str;
+	String back_str;
 
 	
 	public HomePageView(Context context){
@@ -213,7 +221,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		this.addView(v);
 		
 		
-		hotlistView = inflater.inflate(R.layout.hotlist, null);
+		hotlistView = (LinearLayout)inflater.inflate(R.layout.hotlist, null);
+		rlHotList = (RelativeLayout)hotlistView.findViewById(R.id.rlHotList);
 		glDetail = (ViewFlow) hotlistView.findViewById(R.id.glDetail);
 		glDetail.setFadingEdgeLength(10);
 		indicator = (CircleFlowIndicator) hotlistView.findViewById(R.id.viewflowindic);
@@ -306,7 +315,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		glDetail.setAdapter(adapter);		
 		
 		
-		RelativeLayout footer = (RelativeLayout)inflater.inflate(R.layout.feedback_homepage, null);
+		footer = (LinearLayout)inflater.inflate(R.layout.feedback_homepage, null);
 		footer.findViewById(R.id.feedback).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
@@ -315,9 +324,14 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				HomePageView.this.m_viewInfoListener.onNewView(new OpinionBackView(getContext(), new Bundle()));
 			}
 		});
+		feedback = (RelativeLayout)footer.findViewById(R.id.llFeedback);
 		
 		catesView = (CategorySelectionView)findViewById(R.id.cateSelection);
 		catesView.setHeaderFooterView(hotlistView, footer);
+		catesView.setSelectionListener(this);
+		
+		title_str = "选择浏览类目";
+		back_str = "";
 		
 		LinearLayout changeCity = (LinearLayout) findViewById(R.id.llChangeCity);
 		changeCity.setOnClickListener(new View.OnClickListener(){
@@ -620,18 +634,41 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		LocationService.getInstance().stop();
 	}
 	
-	@Override
-	public boolean onBack(){
-		return false;
+	protected void SwitchCateLevel(boolean toSubCate){
+		int visibility = toSubCate ? View.GONE : View.VISIBLE;
+		
+		hotlistView.setVisibility(visibility);
+		rlHotList.setVisibility(visibility);
+		footer.setVisibility(visibility);
+		feedback.setVisibility(visibility);
+		
+		findViewById(R.id.lvLogoAndChangeCity).setVisibility(visibility);
+		findViewById(R.id.lvSearch).setVisibility(visibility);		
 	}
 	
 	@Override
-	public boolean onLeftActionPressed(){
-		if(null != m_viewInfoListener){
-			m_viewInfoListener.onNewView(new CityChangeView(getContext(), "首页"));
+	public boolean onBack(){
+		if(catesView == null || !catesView.OnBack()){
+			return false;
+		}else
+		{
+			if(null != m_viewInfoListener){
+				this.title_str = back_str;
+				back_str = "";
+				
+				m_viewInfoListener.onTitleChanged(getTitleDef());
+			}		
 		}
+		
+		SwitchCateLevel(catesView.getLevel() == CategorySelectionView.ECATE_LEVEL.ECATE_LEVEL_SUB );
+		
 		return true;
-	}
+	}//called when back button/key pressed
+	
+	@Override
+	public boolean onLeftActionPressed(){
+		return onBack();
+	}//called when left button on title bar pressed, return true if handled already, false otherwise
 	
 	@Override
 	public boolean onRightActionPressed(){
@@ -644,11 +681,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
-		title.m_leftActionHint = "切换城市";
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-		title.m_rightActionHint = "搜索";
-		title.m_title = cityName + "百姓网";
-		title.m_visible = false;
+
+		title.m_title = title_str;
+		title.m_leftActionHint = back_str;
+		
+		title.m_visible = (catesView.getLevel() != CategorySelectionView.ECATE_LEVEL.ECATE_LEVEL_MAIN);
+		
 		return title;
 	}
 	
@@ -658,6 +696,32 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		tab.m_visible = true;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 		return tab;
+	}
+
+	@Override
+	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
+		if(null != m_viewInfoListener){
+			back_str = title_str;
+			title_str = selectedMainCate.getName();			
+			m_viewInfoListener.onTitleChanged(getTitleDef());
+		}
+		
+		SwitchCateLevel(true);
+	}
+	
+	@Override
+	public void OnSubCategorySelected(SecondStepCate selectedSubCate){
+
+		Bundle bundle = new Bundle();
+		bundle.putString("name", selectedSubCate.getName());
+		bundle.putString("categoryEnglishName",	selectedSubCate.getEnglishName());
+		bundle.putString("siftresult", "");
+		bundle.putString("backPageName", "返回");
+		if(null != m_viewInfoListener){
+			m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, selectedSubCate.getEnglishName()));			
+		}
+		
+		SwitchCateLevel(true);
 	}
 	
 };
