@@ -245,6 +245,15 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(listHot
 							.get(arg2).getHotData().getWeburl()));
 					((BaseActivity)getContext()).startActivity(i);
+				}else if(listHot.get(arg2).getType() == 2){
+					Bundle bundle = new Bundle();
+					bundle.putString("actType", "homepage");
+					bundle.putString("name",
+							(listHot.get(arg2).getHotData().getTitle()));
+					bundle.putString("searchContent", (listHot.get(arg2)
+							.getHotData().getKeyword()));
+					bundle.putString("backPageName", "首页");
+					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, listHot.get(arg2).getHotData().getKeyword()));
 				}
 			}
 		});
@@ -353,6 +362,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		public void run() {
 			String apiName = "city_hotlist";
 			ArrayList<String> list = new ArrayList<String>();
+			list.add("v=_v2");
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url);
