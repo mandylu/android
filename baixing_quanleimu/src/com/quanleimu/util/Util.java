@@ -704,7 +704,7 @@ System.out.println("没找到文件");
 			Bitmap scaledBmp = newBitmap(src, outputX, (int)((((float)outputX) / src.getWidth()) * src.getHeight()));
 			if(outputY <= scaledBmp.getHeight()) return scaledBmp;
 	
-			Bitmap lineBk = Bitmap.createBitmap(outputX, 1, src.getConfig());
+		Bitmap lineBk = Bitmap.createBitmap(outputX, 1, Config.ARGB_4444);
 			Canvas canvas = new Canvas(lineBk);
 			Rect srcRc = new Rect();
 			srcRc.left = 0;
@@ -719,7 +719,7 @@ System.out.println("没找到文件");
 			destRc.bottom = 1;
 			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
 			
-			toRet = Bitmap.createBitmap(outputX, outputY, src.getConfig());
+		toRet = Bitmap.createBitmap(outputX, outputY, Config.ARGB_4444);
 			canvas = new Canvas(toRet);
 			srcRc.left = 0;
 			srcRc.top = 0;
