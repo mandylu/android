@@ -1,6 +1,11 @@
 package com.quanleimu.view;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.ObjectOutputStream;
+import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
@@ -43,7 +48,7 @@ public class CategorySelectionView extends ListView {
 	
 	
 	protected ICateSelectionListener selectionListener = null;
-	protected ProgressDialog progressDialog;
+	protected ProgressDialog progressDialog = null;
 	
 	protected static String mainCateCacheTag = "saveFirstStepCate";
 	protected static String mainCateAPI = "category_list";
@@ -154,19 +159,24 @@ public class CategorySelectionView extends ListView {
 		this.addFooterView(footerView);
 		
 		//main cate list
-		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), mainCateCacheTag);
-
-		if (postMu != null && !postMu.getJson().equals("")) {
-			String json = postMu.getJson();
+		List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+		
+		if(null != allCates && allCates.size() > 0)
+		{	
+			this.ApplyAllCates(allCates);
 			
-			parseCategory(json);
-			
-			long time = postMu.getTime();
-			if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
-				(new AllCateTask()).execute(true);
+			PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), mainCateCacheTag);
+	
+			if (postMu != null && !postMu.getJson().equals("")) {
+				
+				long time = postMu.getTime();
+				if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
+					(new AllCateTask()).execute(true);
+				} 
 			} 
-		} else {
-			progressDialog = ProgressDialog.show(getContext(), "提示", "请稍候...");			
+		}
+		else {
+			progressDialog = ProgressDialog.show(getContext(), "提示", "正在更新分类列表,请稍候...");			
 			progressDialog.setCancelable(true);
 			
 			(new AllCateTask()).execute(true);
@@ -183,16 +193,21 @@ public class CategorySelectionView extends ListView {
 		
 		mainCate = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
 		
-		if (mainCate == null || mainCate.getChildren().size() == 0) {
+		((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
+		
+		ApplyAllCates(mainCate.getChildren());
+	}
+
+	protected void ApplyAllCates(List<FirstStepCate> allCateList) {
+		if (allCateList == null || allCateList.size() == 0) {
 			QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);
-		} else {
-			((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
+		} else {			
 			if(allCateAdapter == null){
-				allCateAdapter = new MainCateAdapter(getContext(), mainCate.getChildren());
+				allCateAdapter = new MainCateAdapter(getContext(), allCateList);
 				this.setAdapter(allCateAdapter);	
 			}
 			else{
-				allCateAdapter.setList(mainCate.getChildren());
+				allCateAdapter.setList(allCateList);
 			}
 		}
 	}
@@ -231,7 +246,27 @@ public class CategorySelectionView extends ListView {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(CategorySelectionView.this.getContext(), "saveFirstStepCate",	postMu);
+					Util.saveDataToLocate(CategorySelectionView.this.getContext(), mainCateCacheTag, postMu);
+					
+					
+//					File file = new File("/sdcard/cateJson.txt");
+//					ObjectOutputStream out = null;   
+//					try {     
+//						out = new ObjectOutputStream(new FileOutputStream(file));
+//						
+//						out.writeObject(postMu);
+//					}catch(IOException e){
+//						
+//					}catch(Exception e){
+//						
+//					}
+//					finally { 
+//						if (out != null) {    
+//							try{
+//								out.close();     
+//							}catch(Exception e){}
+//						}   
+//					} 
 					
 				} else {
 					QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);

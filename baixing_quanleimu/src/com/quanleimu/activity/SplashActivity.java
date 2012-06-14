@@ -1,7 +1,13 @@
 package com.quanleimu.activity;
 
+import java.io.BufferedOutputStream;
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
+import java.io.ObjectInputStream;
+import java.io.OutputStream;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -16,22 +22,22 @@ import android.os.Message;
 import android.provider.Settings.Secure;
 import android.widget.Toast;
 
+import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
+import com.quanleimu.util.Util;
 
 public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
 
 	// 定义经纬度
 	public double Lat = 0;
 	public double Lon = 0;
-	public String cityName = "";
-	public String json = "";
-	public String content = "";
-	public String chengshiName = "";
 	public int tag = -1;
 
 	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
@@ -83,33 +89,15 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 		}, 3000);*/
 		new Thread(new ReadCityListThread()).start();
 		new Thread(new ReadInfoThread()).start();
+		new Thread(new ReadCateListThread()).start();
 
 	}
 	public String cityName1 = "";
-	class CityThread implements Runnable {
-		public void run() {
-			chengshiName = (String) Helper.loadDataFromLocate(SplashActivity.this,
-					"cityName");
-			if (chengshiName == null || chengshiName.equals("")) {
-				tag = 0;
-			} else {
-				tag = 1;
-				myApp.setCityName(chengshiName);
-				
-				for(int i=0;i<myApp.getListCityDetails().size();i++)
-				{
-					if(chengshiName.equals(myApp.getListCityDetails().get(i).getName()))
-					{
-						cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-						myApp.setCityEnglishName(cityName1);
-						break;
-					}
-				}
-			}
-			myHandler.sendEmptyMessage(1);
-		}
-
-	}
+//	class CityThread implements Runnable {
+//		public void run() {
+//
+//		}
+//	}
 	
 	public void onPause(){
 		LocationService.getInstance().stop();
@@ -152,8 +140,10 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 	}
 
 	Handler myHandler = new Handler() {
-		private int record1 = 0;
-		private int record2 = 0;
+		private int record1 = 0;//flag city list
+		private int record2 = 0;//flag history/stored 
+		private int record3 = 0;//flag for allcate list
+		
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case 1:
@@ -162,10 +152,14 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 			case 2:
 				record2 = 1;
 				break;
+			case 3:
+				record3 = 1;
+				break;
 			default:
 				break;
 			}
-			if(1 == record1 && 1 == record2){
+			
+			if(1 == record1 && 1 == record2 && 1 == record3){
 				LocationService.getInstance().start(SplashActivity.this, SplashActivity.this);
 				intent.setClass(SplashActivity.this, QuanleimuMainActivity.class);
 				// bundle.putString("cityName", cityName);
@@ -176,6 +170,73 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 		}
 	};
 
+	class ReadCateListThread implements Runnable {
+
+		@Override
+		public void run() {
+		
+			// TODO Auto-generated method stub
+			PostMu postMu = (PostMu)Util.loadDataFromLocate(SplashActivity.this, "saveFirstStepCate");
+			
+			boolean valid = true;
+			
+			if(null == postMu || postMu.getJson().length() == 0){
+				
+				ObjectInputStream ois = null;
+				InputStream is = null;
+				
+				try {
+					is = getAssets().open("cateJson.txt");
+					ois = new ObjectInputStream(is);
+//					byte[] b = new byte[is.available()];
+//					is.read(b);
+//					String content = new String(b);	
+					
+					postMu = (PostMu)ois.readObject();
+					
+					//save to context
+					if(null != postMu)
+						Util.saveDataToLocate(SplashActivity.this, "saveFirstStepCate", postMu);
+	
+				}catch(ClassNotFoundException e){
+					System.out.println("类目列表数据转存不能转换成类目表！");
+				}catch (IOException e) {
+					// TODO Auto-generated catch block
+					valid = false;
+					e.printStackTrace();
+				}finally{
+					try{
+						if(null != ois){
+							ois.close();
+						}
+						
+						if(null != is){
+							is.close();
+						}
+					}catch(Exception e){
+						System.out.println("类目列表数据转存失败！");
+					}
+				}
+			}
+
+			if(valid){
+				String json = postMu.getJson();
+				
+				if (json != null && json.length() > 0) {
+					AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
+					
+					if (allCates == null) {
+						System.out.println("类目列表数据有误！");
+					} else {
+						myApp.setListFirst(allCates.getChildren());
+					}
+				}
+			}
+			
+			myHandler.sendEmptyMessage(3);
+		}
+	}
+	
 	class ReadCityListThread implements Runnable {
 
 		@Override
@@ -186,7 +247,7 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 				InputStream is = getAssets().open("cityjson.txt");
 				byte[] b = new byte[is.available()];
 				is.read(b);
-				content = new String(b);
+				String content = new String(b);
 
 				if (content == null || content.equals("")) {
 					cityList = null;
@@ -197,8 +258,25 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 						System.out.println("无城市列表集合");
 					} else {
 						myApp.setListCityDetails(cityList.getListDetails());
-						new Thread(new CityThread()).start();
-						return;
+						
+						//update current city name
+						String chengshiName = (String) Helper.loadDataFromLocate(SplashActivity.this, "cityName");
+						if (chengshiName == null || chengshiName.equals("")) {
+							tag = 0;
+						} else {
+							tag = 1;
+							myApp.setCityName(chengshiName);
+							
+							for(int i=0;i<myApp.getListCityDetails().size();i++)
+							{
+								if(chengshiName.equals(myApp.getListCityDetails().get(i).getName()))
+								{
+									cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+									myApp.setCityEnglishName(cityName1);
+									break;
+								}
+							}
+						}
 					}
 				}
 
@@ -206,6 +284,7 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
+			
 			myHandler.sendEmptyMessage(1);
 		}
 	}

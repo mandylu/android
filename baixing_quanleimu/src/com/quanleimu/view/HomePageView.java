@@ -69,7 +69,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	private String json;
 	private HotListAdapter adapter;
 	private List<HotList> tempListHot = new ArrayList<HotList>();
-	private ProgressDialog pd;
+	private ProgressDialog pd = null;
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
 	//private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
 	static private String locationAddr = "";
@@ -277,7 +277,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				byte[] json = new byte[bytesJson];
 				int readBytes = bufferedStream.read(json, 0, bytesJson);
 				
-				String jsonDecoded = Communication.decodeUnicode(new String(json, 0, readBytes));
+				String jsonRaw = new String(json, 0, readBytes);
+				String jsonDecoded = Communication.decodeUnicode(jsonRaw);
 				listHot = JsonUtil.parseCityHotFromJson(jsonDecoded);
 				
 				for(int i = 0; i < listHot.size(); ++i){
@@ -517,20 +518,11 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			ImageView iv = null;
 			
 			if(position < curList.size()){
-				WindowManager wm = 
-						(WindowManager)getContext().getSystemService(Context.WINDOW_SERVICE);
-				int height = wm.getDefaultDisplay().getHeight();
-				int fixHotHeight = height / 6;
-				if(fixHotHeight < 50)
-				{
-				    fixHotHeight = 50;
-				}
-				
 				iv = (ImageView) v.findViewById(R.id.ivHotDetail);
 				iv.setLayoutParams(new LinearLayout.LayoutParams(
 						LinearLayout.LayoutParams.FILL_PARENT,
-						fixHotHeight));
-				iv.setPadding(5, 0, 5, 0);
+						LinearLayout.LayoutParams.WRAP_CONTENT));
+				iv.setPadding(0, 0, 0, 0);
 				// 设置图片填充布局
 				iv.setScaleType(ScaleType.FIT_XY);
 				iv.setTag(curList.get(position).getImgUrl());

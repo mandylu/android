@@ -353,20 +353,24 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		// TODO Auto-generated method stub
 		LocationService.getInstance().stop();
 		super.onPause();
+		MobclickAgent.onPause(this);
 	}
 	
 	@Override
 	protected void onResume() {
 		bundle.putString("backPageName", "");
 		super.onResume();
+		MobclickAgent.onResume(this);
 	} 
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
+		super.onCreate(savedInstanceState);
+
 		setContentView(R.layout.main_activity);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		
-		ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
+		//ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
 		//vHomePage.setImageResource(R.drawable.iv_homepage_press);
 		
 		Button left = (Button)findViewById(R.id.btnLeft);
@@ -395,9 +399,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		currentView = childView;
 		childView.setInfoChangeListener(this);		
 		setBaseLayout(childView);
-		scroll.addView(childView);
-		
-		super.onCreate(savedInstanceState);
+		scroll.addView(childView);		
 	}
 	
 	private void setBaseLayout(BaseView view){

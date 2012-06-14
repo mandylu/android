@@ -199,13 +199,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
 		
 		int width = MeasureSpec.getSize(widthMeasureSpec);
-//		final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
+		final int widthMode = MeasureSpec.getMode(widthMeasureSpec);
 //		if (widthMode != MeasureSpec.EXACTLY && !isInEditMode()) {
 //			throw new IllegalStateException(
 //					"ViewFlow can only be used in EXACTLY mode.");
 //		}
-//
-//		final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
+
+		final int heightMode = MeasureSpec.getMode(heightMeasureSpec);
 //		if (heightMode != MeasureSpec.EXACTLY && !isInEditMode()) {
 //			throw new IllegalStateException(
 //					"ViewFlow can only be used in EXACTLY mode.");
@@ -233,11 +233,11 @@ public class ViewFlow extends AdapterView<Adapter> {
 			mFirstLayout = false;
 		}
 		
-		if(0 == width){
+		if(0 == width || widthMode == MeasureSpec.UNSPECIFIED){
 			width = item_width + getPaddingLeft() + getPaddingRight();
 		}
 		
-		if(0 == height){
+		if(0 == height || heightMode == MeasureSpec.UNSPECIFIED){
 			height = item_height + getPaddingTop() + getPaddingBottom();
 		}
 		
