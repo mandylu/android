@@ -700,51 +700,98 @@ System.out.println("没找到文件");
 		Bitmap toRet = null;
 		BitmapFactory.Options o =  new BitmapFactory.Options();
 		o.inPurgeable = true;
-		int tx = (int)((((float)outputX) / src.getWidth()) * src.getHeight());
-		Bitmap scaledBmp = newBitmap(src, outputX, (int)((((float)outputX) / src.getWidth()) * src.getHeight()));
-		if(outputY <= scaledBmp.getHeight()) return scaledBmp;
-
-		Bitmap lineBk = Bitmap.createBitmap(outputX, 1, src.getConfig());
-		Canvas canvas = new Canvas(lineBk);
-		Rect srcRc = new Rect();
-		srcRc.left = 0;
-		srcRc.top = topMask;
-		srcRc.right = outputX;
-		srcRc.bottom = topMask + 1;
-		
-		Rect destRc = new Rect();
-		destRc.left = 0;
-		destRc.top = 0;
-		destRc.right = outputX;
-		destRc.bottom = 1;
-		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-		
-		toRet = Bitmap.createBitmap(outputX, outputY, src.getConfig());
-		canvas = new Canvas(toRet);
-		srcRc.left = 0;
-		srcRc.top = 0;
-		srcRc.right = outputX;
-		srcRc.bottom = topMask;
-		
-		destRc.left = srcRc.left;
-		destRc.right = srcRc.right;
-		destRc.top = srcRc.top;
-		destRc.bottom = srcRc.bottom;
-		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-		srcRc.top = topMask;
-		srcRc.bottom = topMask + 1;
-		for(int i = 0; i < outputY - topMask - bottomMask; ++ i){
-			destRc.top = i + topMask;
-			destRc.bottom = i + topMask + 1;
+		if(src.getWidth() > outputX){
+			Bitmap scaledBmp = newBitmap(src, outputX, (int)((((float)outputX) / src.getWidth()) * src.getHeight()));
+			if(outputY <= scaledBmp.getHeight()) return scaledBmp;
+	
+			Bitmap lineBk = Bitmap.createBitmap(outputX, 1, src.getConfig());
+			Canvas canvas = new Canvas(lineBk);
+			Rect srcRc = new Rect();
+			srcRc.left = 0;
+			srcRc.top = topMask;
+			srcRc.right = outputX;
+			srcRc.bottom = topMask + 1;
+			
+			Rect destRc = new Rect();
+			destRc.left = 0;
+			destRc.top = 0;
+			destRc.right = outputX;
+			destRc.bottom = 1;
 			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			
+			toRet = Bitmap.createBitmap(outputX, outputY, src.getConfig());
+			canvas = new Canvas(toRet);
+			srcRc.left = 0;
+			srcRc.top = 0;
+			srcRc.right = outputX;
+			srcRc.bottom = topMask;
+			
+			destRc.left = srcRc.left;
+			destRc.right = srcRc.right;
+			destRc.top = srcRc.top;
+			destRc.bottom = srcRc.bottom;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			srcRc.top = topMask;
+			srcRc.bottom = topMask + 1;
+			for(int i = 0; i < outputY - topMask - bottomMask; ++ i){
+				destRc.top = i + topMask;
+				destRc.bottom = i + topMask + 1;
+				canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			}
+			srcRc.top = scaledBmp.getHeight() - bottomMask;
+			srcRc.bottom = scaledBmp.getHeight();
+			destRc.top = outputY - bottomMask;
+			destRc.bottom = outputY;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			lineBk.recycle();
+			scaledBmp.recycle();
 		}
-		srcRc.top = scaledBmp.getHeight() - bottomMask;
-		srcRc.bottom = scaledBmp.getHeight();
-		destRc.top = outputY - bottomMask;
-		destRc.bottom = outputY;
-		canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-		lineBk.recycle();
-		scaledBmp.recycle();
+		else
+		{
+			Bitmap scaledBmp = newBitmap(src, (int)((((float)outputY) / src.getHeight()) * src.getWidth()), outputY);
+	
+			Bitmap lineBk = Bitmap.createBitmap(1, outputY, src.getConfig());
+			Canvas canvas = new Canvas(lineBk);
+			Rect srcRc = new Rect();
+			srcRc.left = leftMask;
+			srcRc.top = 0;
+			srcRc.right = leftMask + 1;
+			srcRc.bottom = scaledBmp.getHeight();
+			
+			Rect destRc = new Rect();
+			destRc.left = 0;
+			destRc.top = 0;
+			destRc.right = 1;
+			destRc.bottom = outputY;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			
+			toRet = Bitmap.createBitmap(outputX, outputY, src.getConfig());
+			canvas = new Canvas(toRet);
+			srcRc.left = 0;
+			srcRc.top = 0;
+			srcRc.right = leftMask;
+			srcRc.bottom = scaledBmp.getHeight();
+			
+			destRc.left = 0;
+			destRc.right = leftMask;
+			destRc.top = 0;
+			destRc.bottom = outputY;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			srcRc.left = leftMask;
+			srcRc.right = leftMask + 1;
+			for(int i = 0; i < outputX - leftMask - rightMask; ++ i){
+				destRc.left = i + leftMask;
+				destRc.right = i + leftMask + 1;
+				canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			}
+			srcRc.left = scaledBmp.getWidth() - bottomMask;
+			srcRc.right = scaledBmp.getWidth();
+			destRc.left = outputX - rightMask;
+			destRc.right = outputX;
+			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
+			lineBk.recycle();
+			scaledBmp.recycle();
+		}
 		return toRet;
 	}
 	

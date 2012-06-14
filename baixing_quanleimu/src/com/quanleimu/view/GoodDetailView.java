@@ -60,7 +60,7 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener{
+public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener, View.OnTouchListener{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
@@ -82,6 +82,12 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	private LinearLayout rl_phone;
 	private ImageView iv_call, iv_sms;
 	private TextView txt_phone;
+	
+	private BitmapDrawable metaBk = null;
+	private BitmapDrawable locationBk = null;
+	private BitmapDrawable locationBkPressed = null;
+	private BitmapDrawable shareBk = null;
+	private BitmapDrawable shareBkPressed = null;
 
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
@@ -166,29 +172,35 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		super.onLayout(changed, l, t, r, b);
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
-
-		Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
-		Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
+    	if(null == metaBk){
+			Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
+			Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
+			bk.recycle();
+			metaBk = new BitmapDrawable(scaledBk);
+			ll_meta.setBackgroundDrawable(metaBk);
+    	}
+		
+    	Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.btn_bg_normal, o);
+    	if(null == locationBk){    		
+    		Bitmap scaledBk = Util.scaleBitmap(bk, rl_address.getMeasuredWidth(), rl_address.getMeasuredHeight(), 8, 10, 8, 10);
+    		locationBk = new BitmapDrawable(scaledBk);
+			rl_address.setBackgroundDrawable(locationBk);
+    	}
+    	
+    	if(null == shareBk){		
+			LinearLayout rl_fenxiang= (LinearLayout) findViewById(R.id.fenxianglayout);
+			Bitmap scaledBk = Util.scaleBitmap(bk, rl_fenxiang.getMeasuredWidth(), rl_fenxiang.getMeasuredHeight(), 8, 10, 8, 10);
+			shareBk = new BitmapDrawable(scaledBk);
+			rl_fenxiang.setBackgroundDrawable(shareBk);
+    	}
+		
+//		LinearLayout rl_jubao = (LinearLayout) findViewById(R.id.jubaolayout);
+//		scaledBk = Util.scaleBitmap(bk, rl_jubao.getMeasuredWidth(), rl_fenxiang.getMeasuredHeight(), 8, 10, 8, 10);
+//		drawable = new BitmapDrawable(scaledBk);
+//		
+//		rl_jubao.setBackgroundDrawable(drawable);
 		bk.recycle();
-		Drawable drawable = new BitmapDrawable(scaledBk);
-		ll_meta.setBackgroundDrawable(drawable);
-		
-	}
-	
-	@Override
-	protected void onDraw(Canvas canvas){
-		super.onDraw(canvas);
-		
-//		if(ll_meta.getBackground() != null) return;
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-        o.inPurgeable = true;
 
-		Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
-		Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
-		bk.recycle();
-		Drawable drawable = new BitmapDrawable(scaledBk);
-		ll_meta.setBackgroundDrawable(drawable);
-		
 	}
 	
 	private void saveToHistory(){
@@ -289,9 +301,13 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		iv_call = (ImageView)findViewById(R.id.call);
 		iv_sms = (ImageView)findViewById(R.id.sms);
 		rl_address = (LinearLayout) findViewById(R.id.showmap);
+		rl_address.setOnTouchListener(this);
 		rl_phone = (LinearLayout)findViewById(R.id.phonelayout);
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
+		
+		View sv = findViewById(R.id.svDetail);
+		sv.setOnTouchListener(this);
 
 		this.setMetaObject();
 		
@@ -309,12 +325,12 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			}
 			else
 			{
-				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
+//				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 			}
 		} 
 		else 
 		{
-			rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
+//			rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 		}
 
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
@@ -453,6 +469,39 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	public boolean onRightActionPressed(){
 		handleStoreBtnClicked();
 		return true;
+	}
+	
+	@Override
+	public boolean onTouch(View v, android.view.MotionEvent e){
+		if(v == rl_address){
+			if(e.getAction() == android.view.MotionEvent.ACTION_DOWN){
+				if(locationBkPressed == null){
+		    		BitmapFactory.Options o =  new BitmapFactory.Options();
+		            o.inPurgeable = true;
+		            Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.btn_bg_press, o);
+		    		Bitmap scaledBk = Util.scaleBitmap(bk, rl_address.getMeasuredWidth(), rl_address.getMeasuredHeight(), 8, 10, 8, 10);
+		    		locationBkPressed = new BitmapDrawable(scaledBk);
+				}
+				rl_address.setBackgroundDrawable(locationBkPressed);
+			}
+			else if(android.view.MotionEvent.ACTION_MOVE == e.getAction()){
+				int[] location = new int[]{0, 0};
+				rl_address.getLocationOnScreen(location);
+				if(e.getRawX() < location[0] || e.getRawX() > location[0] + rl_address.getWidth() 
+						|| e.getRawY() < location[1] || e.getRawY() > location[1] + rl_address.getHeight()){
+					rl_address.setBackgroundDrawable(locationBk);
+				}
+				return true;
+			}
+			else if(android.view.MotionEvent.ACTION_UP == e.getAction()){
+				rl_address.setBackgroundDrawable(locationBk);
+			}
+			return false;
+		}
+		else if(v.getId() == R.id.svDetail){
+			rl_address.setBackgroundDrawable(locationBk);
+		}
+		return false;
 	}
 
 	@Override
