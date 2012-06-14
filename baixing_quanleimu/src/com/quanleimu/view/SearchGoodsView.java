@@ -139,25 +139,16 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
-						if(arg2 == listSearchGoods.size())
-						{
-							progressBar.setVisibility(View.VISIBLE);
-							tvAddMore.setText("加载中...");
-							
-							//点击获取更多 按钮布局消失
-							isFirst = -1;
-							startRow = listSearchGoods.size();
-							new Thread(new GetGoodsListThread()).start();
-						}
-						else
-						{
-							if(null != m_viewInfoListener){
-								Bundle bundle = new Bundle();
-//								bundle.putString("backPageName", title);
-//								bundle.putString("detail_type", "searchgoods");
-//								bundle.putInt("detail_pos", arg2);
-								m_viewInfoListener.onNewView(new GoodDetailView(listSearchGoods.get(arg2), getContext(), bundle));
-							}
+						int index = arg2 - lvSearchResult.getHeaderViewsCount();
+						if(index < 0 || index > listSearchGoods.size() - 1)
+							return;
+
+						if(null != m_viewInfoListener){
+							Bundle bundle = new Bundle();
+//							bundle.putString("backPageName", title);
+//							bundle.putString("detail_type", "searchgoods");
+//							bundle.putInt("detail_pos", arg2);
+							m_viewInfoListener.onNewView(new GoodDetailView(listSearchGoods.get(index), getContext(), bundle));
 						}
 					}
 				});

@@ -163,6 +163,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 	private void ConfirmAbortAlert(){
 			AlertDialog.Builder builder = new AlertDialog.Builder(this.getContext());
+			
 			builder.setTitle("提示:")
 					.setMessage("您所填写的数据将会丢失,放弃发布？")
 					.setNegativeButton("否", null)
@@ -173,11 +174,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									if(m_viewInfoListener != null){
-										m_viewInfoListener.onBack();
+										m_viewInfoListener.onExit(PostGoodsView.this);									
 									}
-//									finish();
 								}
 							});
+			
 			builder.create().show();
 	}
 	
@@ -520,6 +521,12 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		} else if (v == photocancle) {
 			ad.dismiss();
 		}
+	}
+	
+	@Override
+	public boolean onBack()
+	{
+		return onLeftActionPressed();
 	}
 	
 	@Override

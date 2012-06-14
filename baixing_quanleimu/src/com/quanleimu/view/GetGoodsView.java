@@ -154,25 +154,16 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				if(arg2 == listGoods.size())
-				{
-					progressBar.setVisibility(View.VISIBLE);
-//					tvAddMore.setText("加载中...");
-					
-					//点击获取更多 按钮布局消失
-					isFirst = false;
-					startRow = listGoods.size();
-					new Thread(new GetGoodsListThread()).start();
-				}
-				else
-				{
-					if(GetGoodsView.this.m_viewInfoListener != null){
-						bundle.putSerializable("currentGoodsDetail", listGoods.get(arg2));
-						bundle.putString("detail_type", "getgoods");
-						m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(arg2), getContext(), bundle));
-					}
-				}
 				
+				int index = arg2 - lvGoodsList.getHeaderViewsCount();
+				if(index < 0 || index > listGoods.size() - 1)
+					return;
+
+				if(GetGoodsView.this.m_viewInfoListener != null){
+					bundle.putSerializable("currentGoodsDetail", listGoods.get(index));
+					bundle.putString("detail_type", "getgoods");
+					m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(index), getContext(), bundle));
+				}				
 			}
 		});
 

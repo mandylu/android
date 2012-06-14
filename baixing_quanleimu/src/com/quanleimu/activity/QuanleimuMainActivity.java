@@ -67,7 +67,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		case ETAB_TYPE_PUBLISH:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
 			
-			needClearViewStack = true;
+			needClearViewStack = false;
 //			onNewView(new PostGoodsCateMainView(this, bundle));
 			onNewView(new PostGoodsView(this, bundle, ""));
 			

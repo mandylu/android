@@ -73,8 +73,11 @@ public class CategorySelectionView extends ListView {
 		@Override
 		public void onItemClick(AdapterView<?> arg0, View arg1,
 				int arg2, long arg3) {
+			int index = arg2 - CategorySelectionView.this.getHeaderViewsCount();
+			if(index < 0 || index > CategorySelectionView.this.allCateAdapter.getList().size() - 1)
+				return;
 			
-			FirstStepCate selectedMainCate = (FirstStepCate)CategorySelectionView.this.allCateAdapter.getList().get(arg2);
+			FirstStepCate selectedMainCate = (FirstStepCate)CategorySelectionView.this.allCateAdapter.getList().get(index);
 			String cateName = selectedMainCate.getName();
 			
 
@@ -87,7 +90,12 @@ public class CategorySelectionView extends ListView {
 				@Override
 				public void onItemClick(AdapterView<?> arg0, View arg1,
 						int arg2, long arg3) {
-					SecondStepCate selectedSubCate =  (SecondStepCate)CategorySelectionView.this.secondCateAdapter.getList().get(arg2);							
+					
+					int index = arg2 - CategorySelectionView.this.getHeaderViewsCount();
+					if(index < 0 || index > CategorySelectionView.this.secondCateAdapter.getList().size() - 1)
+						return;
+					
+					SecondStepCate selectedSubCate =  (SecondStepCate)CategorySelectionView.this.secondCateAdapter.getList().get(index);							
 					
 					if(null != CategorySelectionView.this.selectionListener){
 						if(QuanleimuApplication.listUsualCates != null){
