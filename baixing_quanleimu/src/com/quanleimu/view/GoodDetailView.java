@@ -20,8 +20,8 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
-import android.graphics.Matrix;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -48,7 +48,6 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
@@ -56,11 +55,16 @@ import com.quanleimu.activity.BaiduMapActivity;
 import android.net.Uri;
 import android.content.Intent;
 
-import android.graphics.Canvas;
-import android.graphics.Paint;
-import android.graphics.drawable.BitmapDrawable;
-import android.graphics.drawable.Drawable;
-public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener, View.OnTouchListener{
+import com.weibo.net.AccessToken;
+import com.weibo.net.DialogError;
+import com.weibo.net.ShareActivity;
+import com.weibo.net.Utility;
+import com.weibo.net.Weibo;
+import com.weibo.net.WeiboDialogListener;
+import com.weibo.net.WeiboException;
+import com.weibo.net.WeiboParameters;
+
+public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener/*, View.OnTouchListener*/{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
@@ -69,6 +73,9 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	final private int msgRefresh = 5;
 	final private int msgUpdate = 6;
 	final private int msgDelete = 7;
+	final String kWBBaixingAppKey = "3747392969";
+	final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
+	private boolean inAuthorize = false;
 
 	// 定义控件
 	public MainAdapter adapter;
@@ -83,12 +90,6 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	private ImageView iv_call, iv_sms;
 	private TextView txt_phone;
 	
-	private BitmapDrawable metaBk = null;
-	private BitmapDrawable locationBk = null;
-	private BitmapDrawable locationBkPressed = null;
-	private BitmapDrawable shareBk = null;
-	private BitmapDrawable shareBkPressed = null;
-
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
 	public List<Bitmap> listBm = new ArrayList<Bitmap>();
@@ -165,42 +166,6 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		})).start();
 		
 		super.onAttachedToWindow();
-	}
-	
-	@Override
-	protected void onLayout (boolean changed, int l, int t, int r, int b){
-		super.onLayout(changed, l, t, r, b);
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-        o.inPurgeable = true;
-    	if(null == metaBk){
-			Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.viewad_bg_meta, o);
-			Bitmap scaledBk = Util.scaleBitmap(bk, ll_meta.getMeasuredWidth(), ll_meta.getMeasuredHeight(), 15, 20, 15, 15);
-			bk.recycle();
-			metaBk = new BitmapDrawable(scaledBk);
-			ll_meta.setBackgroundDrawable(metaBk);
-    	}
-		
-    	Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.btn_bg_normal, o);
-    	if(null == locationBk){    		
-    		Bitmap scaledBk = Util.scaleBitmap(bk, rl_address.getMeasuredWidth(), rl_address.getMeasuredHeight(), 8, 10, 8, 10);
-    		locationBk = new BitmapDrawable(scaledBk);
-			rl_address.setBackgroundDrawable(locationBk);
-    	}
-    	
-    	if(null == shareBk){		
-			LinearLayout rl_fenxiang= (LinearLayout) findViewById(R.id.fenxianglayout);
-			Bitmap scaledBk = Util.scaleBitmap(bk, rl_fenxiang.getMeasuredWidth(), rl_fenxiang.getMeasuredHeight(), 8, 10, 8, 10);
-			shareBk = new BitmapDrawable(scaledBk);
-			rl_fenxiang.setBackgroundDrawable(shareBk);
-    	}
-		
-//		LinearLayout rl_jubao = (LinearLayout) findViewById(R.id.jubaolayout);
-//		scaledBk = Util.scaleBitmap(bk, rl_jubao.getMeasuredWidth(), rl_fenxiang.getMeasuredHeight(), 8, 10, 8, 10);
-//		drawable = new BitmapDrawable(scaledBk);
-//		
-//		rl_jubao.setBackgroundDrawable(drawable);
-		bk.recycle();
-
 	}
 	
 	private void saveToHistory(){
@@ -301,13 +266,16 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		iv_call = (ImageView)findViewById(R.id.call);
 		iv_sms = (ImageView)findViewById(R.id.sms);
 		rl_address = (LinearLayout) findViewById(R.id.showmap);
-		rl_address.setOnTouchListener(this);
+//		rl_address.setOnTouchListener(this);
 		rl_phone = (LinearLayout)findViewById(R.id.phonelayout);
 
 		ll_meta = (LinearLayout) findViewById(R.id.meta);
 		
-		View sv = findViewById(R.id.svDetail);
-		sv.setOnTouchListener(this);
+		View fenxiang = findViewById(R.id.fenxianglayout);
+		fenxiang.setOnClickListener(this);
+		
+//		View sv = findViewById(R.id.svDetail);
+//		sv.setOnTouchListener(this);
 
 		this.setMetaObject();
 		
@@ -470,39 +438,6 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		handleStoreBtnClicked();
 		return true;
 	}
-	
-	@Override
-	public boolean onTouch(View v, android.view.MotionEvent e){
-		if(v == rl_address){
-			if(e.getAction() == android.view.MotionEvent.ACTION_DOWN){
-				if(locationBkPressed == null){
-		    		BitmapFactory.Options o =  new BitmapFactory.Options();
-		            o.inPurgeable = true;
-		            Bitmap bk = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.btn_bg_press, o);
-		    		Bitmap scaledBk = Util.scaleBitmap(bk, rl_address.getMeasuredWidth(), rl_address.getMeasuredHeight(), 8, 10, 8, 10);
-		    		locationBkPressed = new BitmapDrawable(scaledBk);
-				}
-				rl_address.setBackgroundDrawable(locationBkPressed);
-			}
-			else if(android.view.MotionEvent.ACTION_MOVE == e.getAction()){
-				int[] location = new int[]{0, 0};
-				rl_address.getLocationOnScreen(location);
-				if(e.getRawX() < location[0] || e.getRawX() > location[0] + rl_address.getWidth() 
-						|| e.getRawY() < location[1] || e.getRawY() > location[1] + rl_address.getHeight()){
-					rl_address.setBackgroundDrawable(locationBk);
-				}
-				return true;
-			}
-			else if(android.view.MotionEvent.ACTION_UP == e.getAction()){
-				rl_address.setBackgroundDrawable(locationBk);
-			}
-			return false;
-		}
-		else if(v.getId() == R.id.svDetail){
-			rl_address.setBackgroundDrawable(locationBk);
-		}
-		return false;
-	}
 
 	@Override
 	public void onClick(View v) {
@@ -542,8 +477,77 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
 			}
 			break;
+		case R.id.fenxianglayout:{
+//			try{
+//			Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
+//					"", kWBBaixingAppSecret, "分享测试", "");
+//			 Intent i = new Intent((BaseActivity)this.getContext(), ShareActivity.class);
+//             ((BaseActivity)this.getContext()).startActivity(i);
+//			}
+//			catch(Exception e){
+//				int i = 0;
+//				if(i == 1){
+//					break;
+//				}
+//			}
+		
+			Weibo weibo = Weibo.getInstance();
+			weibo.setupConsumerConfig(kWBBaixingAppKey, kWBBaixingAppSecret);
+			weibo.setRedirectUrl("http://www.baixing.com");
+			weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener()); 
+			inAuthorize = true;
+			break;
+		}
 		}
 //		super.onClick(v);
+	}
+	
+	class AuthDialogListener implements WeiboDialogListener {
+
+		@Override
+		public void onComplete(Bundle values) {		
+			if(!inAuthorize) return;
+			inAuthorize = false;
+			String token = values.getString("access_token");
+			String expires_in = values.getString("expires_in");
+//			mToken.setText("access_token : " + token + "  expires_in: "+ expires_in);
+			AccessToken accessToken = new AccessToken(token, kWBBaixingAppSecret);
+			accessToken.setExpiresIn(expires_in);
+			Weibo.getInstance().setAccessToken(accessToken);
+			try{
+			Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
+					accessToken.getToken(),
+					accessToken.getSecret(), 
+					"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
+					listUrl == null ? "" : GoodDetailView.this.getContext().getFilesDir() + "/" + Util.MD5(listUrl.get(0)));
+			}
+			catch(WeiboException e){
+				e.printStackTrace();
+			}
+		}
+
+		@Override
+		public void onError(DialogError e) {
+			inAuthorize = false;
+			Toast.makeText(GoodDetailView.this.getContext(),
+					"Auth error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onCancel() {
+			inAuthorize = false;
+			Toast.makeText(GoodDetailView.this.getContext(), "Auth cancel",
+					Toast.LENGTH_LONG).show();
+		}
+
+		@Override
+		public void onWeiboException(WeiboException e) {
+			inAuthorize = false;
+			Toast.makeText(GoodDetailView.this.getContext(),
+					"Auth exception : " + e.getMessage(), Toast.LENGTH_LONG)
+					.show();
+		}
+
 	}
 	
 	private void setMetaObject(){
