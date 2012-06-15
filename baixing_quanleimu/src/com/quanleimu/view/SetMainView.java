@@ -100,7 +100,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 	@Override	
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
-		tab.m_visible = true;		
+		tab.m_visible = false;		
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_SETTING;
 		
 		return tab;

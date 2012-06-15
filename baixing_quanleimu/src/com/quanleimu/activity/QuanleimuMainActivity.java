@@ -284,7 +284,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 				}
 				else //if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
 				{
-					left.setBackgroundResource(R.drawable.btn_back_xml);
+					left.setBackgroundResource(R.drawable.btn_editx);
 				}
 				
 				left.setText(title.m_leftActionHint);				

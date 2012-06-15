@@ -420,43 +420,46 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	
 	@Override
 	public boolean onLeftActionPressed(){
-		if(currentPage == 0 && buttonStatus == -1){
-			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
-			if(myfavs == null || myfavs.size() == 0){
-				return true;
-			}
-		}
-		if(currentPage == 1 && buttonStatus == -1){
-			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
-			if(myhis == null || myhis.size() == 0){
-				return true;
-			}
-		}
-		boolean toUpdate = true;
-		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
-			toUpdate = false;
-		}
-		if(toUpdate){
-			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
-			new Thread(new UpdateThread(currentPage)).start();
-		}
-		else{
-			if(0 == PersonalCenterView.this.currentPage){
-				goodsList.clear();
-				QuanleimuApplication.getApplication().setListMyStore(goodsList);
-				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-				adapter.setList(goodsList);
-				adapter.notifyDataSetChanged();
-			}
-			else if(1 == PersonalCenterView.this.currentPage){
-				goodsList.clear();
-				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-				adapter.setList(goodsList);
-				adapter.notifyDataSetChanged();					
-			}
-		}
+//		if(currentPage == 0 && buttonStatus == -1){
+//			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
+//			if(myfavs == null || myfavs.size() == 0){
+//				return true;
+//			}
+//		}
+//		if(currentPage == 1 && buttonStatus == -1){
+//			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
+//			if(myhis == null || myhis.size() == 0){
+//				return true;
+//			}
+//		}
+//		boolean toUpdate = true;
+//		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
+//			toUpdate = false;
+//		}
+//		if(toUpdate){
+//			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
+//			pd.setCancelable(true);
+//			new Thread(new UpdateThread(currentPage)).start();
+//		}
+//		else{
+//			if(0 == PersonalCenterView.this.currentPage){
+//				goodsList.clear();
+//				QuanleimuApplication.getApplication().setListMyStore(goodsList);
+//				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+//				adapter.setList(goodsList);
+//				adapter.notifyDataSetChanged();
+//			}
+//			else if(1 == PersonalCenterView.this.currentPage){
+//				goodsList.clear();
+//				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+//				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
+//				adapter.setList(goodsList);
+//				adapter.notifyDataSetChanged();					
+//			}
+//		}
+//		return true;
+		
+		m_viewInfoListener.onNewView(new SetMainView(getContext()));
 		return true;
 	}
 
@@ -541,7 +544,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
-		title.m_leftActionHint = "更新";
+		title.m_leftActionHint = "设置";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_rightActionHint = "编辑";
 		title.m_title = "个人中心";
