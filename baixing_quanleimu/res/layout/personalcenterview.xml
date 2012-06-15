@@ -11,30 +11,31 @@
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center_vertical"
-            android:padding="5dip" >
+            android:paddingTop="5dip"
+            android:paddingBottom="1dip">
 
             <ImageView
                 android:id="@+id/ivMyads"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/btn_mypost_xml" >
+                android:layout_weight="1">
+                
             </ImageView>
 
             <ImageView
                 android:id="@+id/ivMyfav"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/btn_store_xml" >
+                android:layout_weight="1">
+                
             </ImageView>
 
             <ImageView
                 android:id="@+id/ivMyhistory"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_weight="1"
-                android:background="@drawable/btn_history_xml" >
+                android:layout_weight="1">
+                
             </ImageView>
         </LinearLayout>
 

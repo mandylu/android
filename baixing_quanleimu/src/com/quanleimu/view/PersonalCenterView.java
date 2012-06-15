@@ -70,9 +70,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 
 	private void rebuildPage(boolean onResult){
 		if(-1 == currentPage){
-			ivMyads.setImageResource(R.drawable.btn_my_myads_press);
-			ivMyfav.setImageResource(R.drawable.btn_my_myfav);
-			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory);
+			ivMyads.setImageResource(R.drawable.btn_posted_press);
+			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
+			ivMyhistory.setImageResource(R.drawable.btn_history_normal);
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "我发布的信息";
@@ -109,9 +109,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			}
 		}
 		else if(0 == currentPage){
-			ivMyads.setImageResource(R.drawable.btn_my_myads);
-			ivMyfav.setImageResource(R.drawable.btn_my_myfav_press);
-			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory);
+			ivMyads.setImageResource(R.drawable.btn_posted_normal);
+			ivMyfav.setImageResource(R.drawable.btn_fav_press);
+			ivMyhistory.setImageResource(R.drawable.btn_history_normal);
 			
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
@@ -125,9 +125,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.notifyDataSetChanged();
 		}
 		else{
-			ivMyads.setImageResource(R.drawable.btn_my_myads);
-			ivMyfav.setImageResource(R.drawable.btn_my_myfav);
-			ivMyhistory.setImageResource(R.drawable.btn_my_myhistory_press);
+			ivMyads.setImageResource(R.drawable.btn_posted_normal);
+			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
+			ivMyhistory.setImageResource(R.drawable.btn_history_press);
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "我的历史";
