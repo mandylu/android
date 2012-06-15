@@ -4,6 +4,7 @@ package com.quanleimu.widget;
 import java.util.Calendar;
 
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -56,7 +57,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private ProgressBar mRefreshViewProgress;
     private TextView mRefreshViewLastUpdated;
     
-    private RelativeLayout mGetmoreView;
+    private RelativeLayout mGetmoreView = null;
     //private TextView mGetmoreViewText;
 
     private int mCurrentScrollState;
@@ -74,6 +75,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private boolean mTouchDown = false;
     private boolean mHasMore = true;
     
+    private boolean mAllowGetMore = true;
+    
     private long mLastUpdateTimeMs;
 
     public PullToRefreshListView(Context context) {
@@ -83,11 +86,21 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     public PullToRefreshListView(Context context, AttributeSet attrs) {
         super(context, attrs);
+        
+        TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
+				R.styleable.PullToRefreshListView);
+        mAllowGetMore = styledAttrs.getBoolean(R.styleable.PullToRefreshListView_getmore, true);
+        
         init(context);
     }
 
     public PullToRefreshListView(Context context, AttributeSet attrs, int defStyle) {
         super(context, attrs, defStyle);
+ 
+        TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
+				R.styleable.PullToRefreshListView);
+        mAllowGetMore = styledAttrs.getBoolean(R.styleable.PullToRefreshListView_getmore, true);
+        
         init(context);
     }
 
@@ -130,10 +143,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
         addHeaderView(mRefreshView);
         
-
-        mGetmoreView = (RelativeLayout)mInflater.inflate(R.layout.pull_to_refresh_footer, this, false);
-        //mGetmoreViewText = (TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore);
-        addFooterView(mGetmoreView, null, true);
+        if(mAllowGetMore){
+	        mGetmoreView = (RelativeLayout)mInflater.inflate(R.layout.pull_to_refresh_footer, this, false);
+	        //mGetmoreViewText = (TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore);
+	        addFooterView(mGetmoreView, null, true);
+        }
 
         super.setOnScrollListener(this);
 
@@ -144,11 +158,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     private void updateFooter(boolean hasMore){
-    	mHasMore = hasMore;
-    	if(mHasMore){
-    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore);
-    	}else{
-    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
+    	if(mAllowGetMore){
+	    	mHasMore = hasMore;
+	    	if(mHasMore){
+	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore);
+	    	}else{
+	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
+	    	}
     	}
     }
     
@@ -244,7 +260,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                         setSelection(1);
                     }
                 }
-                else if(this.getLastVisiblePosition() == this.getCount() - 1 && mGetMoreState != GETTING_MORE){
+                else if(mAllowGetMore && this.getLastVisiblePosition() == this.getCount() - 1 && mGetMoreState != GETTING_MORE){
 //                	int bottom1 = mGetmoreView.getBottom();
 //                	int bottom2 = this.getBottom();
                     if ((mGetmoreView.getTop() + mGetmoreView.getHeight() *2 / 5 < this.getBottom())) {
@@ -394,7 +410,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             setSelection(1);
         }*/else if(mCurrentScrollState == SCROLL_STATE_FLING){
         	
-            if (getLastVisiblePosition() == getCount() - 1 
+            if (mAllowGetMore
+            		&& getLastVisiblePosition() == getCount() - 1 
             		&& mGetMoreState != GETTING_MORE 
             		&&  mGetmoreView.getBottom() <= this.getBottom()) {
                 // Initiate the refresh

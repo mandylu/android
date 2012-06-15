@@ -31,9 +31,10 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
+import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener{
+public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener, PullToRefreshListView.OnRefreshListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
 	private final int MCMESSAGE_MYPOST_FAIL = 1;
 	private final int MCMESSAGE_DELETE = 2;
@@ -46,7 +47,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private final int MCMESSAGE_MYFAV_UPDATE_FAIL = 9;	
 	private final int MCMESSAGE_NETWORKERROR = 10;
 
-	public ListView lvGoodsList;
+	public PullToRefreshListView lvGoodsList;
 	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = new ArrayList<GoodsDetail>();
@@ -145,22 +146,27 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
+				int index = arg2 - lvGoodsList.getHeaderViewsCount();
+				if(index < 0)
+					return;
+				
 				GoodsDetail detail = null;
-				if(currentPage == -1){
-					detail = listMyPost.get(arg2);
+				if(currentPage == -1 && index < listMyPost.size() ){
+					detail = listMyPost.get(index);					
 				}
-				else if(0 == currentPage || 1 == currentPage){
-					detail = goodsList.get(arg2);
+				else if(index < goodsList.size() && (0 == currentPage || 1 == currentPage)){
+					detail = goodsList.get(index);
 				}
+				
 				if(null != detail){
 					GoodDetailView detailView = new GoodDetailView(detail, getContext(), bundle);
 					detailView.setInfoChangeListener(m_viewInfoListener);
 					m_viewInfoListener.onNewView(detailView);
 				}
 			}
-
 		});
 		
+		lvGoodsList.setOnRefreshListener(this);		
 	}
 	
 	@Override
@@ -195,7 +201,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			e.printStackTrace();
 		}
 
-		lvGoodsList = (ListView) findViewById(R.id.lvGoodsList);
+		lvGoodsList = (PullToRefreshListView) findViewById(R.id.lvGoodsList);
 
 		ivMyads = (ImageView) findViewById(R.id.ivMyads);
 		ivMyfav = (ImageView) findViewById(R.id.ivMyfav);
@@ -287,7 +293,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 				rebuildPage(true);
-				
+				lvGoodsList.onRefreshComplete();
 				break;
 			case MCMESSAGE_MYFAV_UPDATE_SUCCESS:
 				if (pd != null) {
@@ -298,16 +304,23 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					QuanleimuApplication.getApplication().setListMyStore(glFav.getData());
 					rebuildPage(true);
 				}
+				
+				lvGoodsList.onRefreshComplete();
+				
 				break;
 			case MCMESSAGE_MYHISTORY_UPDATE_SUCCESS:
 				if (pd != null) {
 					pd.dismiss();
 				}
+				
 				GoodsList glHistory = JsonUtil.getGoodsListFromJson(json); 
 				if (glHistory != null && glHistory.getCount() > 0) {
 					QuanleimuApplication.getApplication().setListLookHistory(glHistory.getData());
 					rebuildPage(true);
-				}				
+				}	
+				
+				lvGoodsList.onRefreshComplete();
+				
 				break;
 			case MCMESSAGE_MYPOST_FAIL:
 			case MCMESSAGE_MYFAV_UPDATE_FAIL:
@@ -316,6 +329,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					pd.dismiss();
 				}
 				Toast.makeText(PersonalCenterView.this.getContext(), "未获取到数据", 3).show();
+				lvGoodsList.onRefreshComplete();
 				break;
 			case MCMESSAGE_DELETE:
 				int pos = msg.arg2;
@@ -371,6 +385,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					pd.dismiss();
 				}
 				Toast.makeText(PersonalCenterView.this.getContext(), "网络连接失败，请检查设置！", 3).show();
+				
+				lvGoodsList.onRefreshComplete();
+				
 				break;
 			}
 			super.handleMessage(msg);
@@ -419,46 +436,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	}
 	
 	@Override
-	public boolean onLeftActionPressed(){
-//		if(currentPage == 0 && buttonStatus == -1){
-//			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
-//			if(myfavs == null || myfavs.size() == 0){
-//				return true;
-//			}
-//		}
-//		if(currentPage == 1 && buttonStatus == -1){
-//			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
-//			if(myhis == null || myhis.size() == 0){
-//				return true;
-//			}
-//		}
-//		boolean toUpdate = true;
-//		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
-//			toUpdate = false;
-//		}
-//		if(toUpdate){
-//			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
-//			pd.setCancelable(true);
-//			new Thread(new UpdateThread(currentPage)).start();
-//		}
-//		else{
-//			if(0 == PersonalCenterView.this.currentPage){
-//				goodsList.clear();
-//				QuanleimuApplication.getApplication().setListMyStore(goodsList);
-//				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-//				adapter.setList(goodsList);
-//				adapter.notifyDataSetChanged();
-//			}
-//			else if(1 == PersonalCenterView.this.currentPage){
-//				goodsList.clear();
-//				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-//				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-//				adapter.setList(goodsList);
-//				adapter.notifyDataSetChanged();					
-//			}
-//		}
-//		return true;
-		
+	public boolean onLeftActionPressed(){		
 		m_viewInfoListener.onNewView(new SetMainView(getContext()));
 		return true;
 	}
@@ -558,6 +536,51 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		tab.m_visible = true;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
 		return tab;
+	}
+
+	@Override
+	public void onRefresh() {
+		
+		if(currentPage == 0 && buttonStatus == -1){
+			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
+			if(myfavs == null || myfavs.size() == 0){
+				return;
+			}
+		}
+		
+		if(currentPage == 1 && buttonStatus == -1){
+			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
+			if(myhis == null || myhis.size() == 0){
+				return;
+			}
+		}
+		
+		boolean toUpdate = true;
+		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
+			toUpdate = false;
+		}
+		
+		if(toUpdate){
+	//		pd = ProgressDialog.show(this.getContext(), "提示", "正在更新请稍候...");
+	//		pd.setCancelable(true);
+			new Thread(new UpdateThread(currentPage)).start();
+		}
+		else{
+			if(0 == PersonalCenterView.this.currentPage){
+				goodsList.clear();
+				QuanleimuApplication.getApplication().setListMyStore(goodsList);
+				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+				adapter.setList(goodsList);
+				adapter.notifyDataSetChanged();
+			}
+			else if(1 == PersonalCenterView.this.currentPage){
+				goodsList.clear();
+				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
+				adapter.setList(goodsList);
+				adapter.notifyDataSetChanged();					
+			}
+		}				
 	}
 	
 }

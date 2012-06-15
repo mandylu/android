@@ -51,5 +51,8 @@
         <attr name="footerColor" format="color" />
         <attr name="footerTriangleHeight" format="dimension" />
         <attr name="customTypeface" format="string" />
-    </declare-styleable>    
+    </declare-styleable>  
+    <declare-styleable name="PullToRefreshListView">
+        <attr name="getmore" format="boolean" />
+    </declare-styleable>  
 </resources>

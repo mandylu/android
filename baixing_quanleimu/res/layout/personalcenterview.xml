@@ -1,5 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    	xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity"
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
@@ -45,18 +46,20 @@
             android:layout_height="fill_parent"
             android:layout_below="@+id/linearType"
             android:orientation="vertical">
-        <ListView
-         android:listSelector="#00000000"
-         android:scrollingCache="false"
-         android:id="@+id/lvGoodsList"
-         android:layout_width="fill_parent"
-         android:fastScrollEnabled="true"
-         android:scrollbars="none"
-         android:focusable="true" 
-		 android:divider="@drawable/list_divider"
-		 android:dividerHeight="1dp"
-		 android:background="@drawable/home_bg"
-         android:layout_height="fill_parent" >
-    	</ListView>
+            
+        <com.quanleimu.widget.PullToRefreshListView
+	         android:listSelector="#00000000"
+	         android:scrollingCache="false"
+	         android:id="@+id/lvGoodsList"
+	         android:layout_width="fill_parent"
+	         android:fastScrollEnabled="true"
+	         android:scrollbars="none"
+	         android:focusable="true" 
+			 android:divider="@drawable/list_divider"
+			 android:dividerHeight="1dp"
+			 android:background="@drawable/home_bg"
+	         android:layout_height="fill_parent"
+	         app:getmore="false"/>
+    	
     </LinearLayout>
 </RelativeLayout>
