@@ -175,16 +175,16 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		Init();
 	}
 
-	@Override
-	public boolean onBack(){
-		m_viewInfoListener.onPopView(SearchView.class.getName());
-		return false;
-	}
-	
-	@Override
-	public boolean onLeftActionPressed(){
-		return onBack();
-	}
+//	@Override
+//	public boolean onBack(){
+//		m_viewInfoListener.onPopView(SearchView.class.getName());
+//		return false;
+//	}
+//	
+//	@Override
+//	public boolean onLeftActionPressed(){
+//		return onBack();
+//	}
 	
 	@Override
 	public boolean onRightActionPressed(){

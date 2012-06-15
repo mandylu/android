@@ -81,15 +81,39 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		etSearch = (TextEditInputConnected)findViewById(R.id.etSearch);
 		etSearch.setOnActionListener(new TextEditInputConnected.OnActionListener() {
 			@Override
-			public void onActionFired() {
-				// TODO Auto-generated method stub
-				Bundle bundle = new Bundle();
-				bundle.putString("backPageName", "首页");
-				bundle.putString("searchContent", SearchView.this.etSearch.getText().toString());
-				bundle.putString("actType", "search");
-				bundle.putString("searchType", "homepage");
-	
-				m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));				
+			public void onActionFired() {					
+				if(etSearch.getText().toString().equals(""))
+				{
+					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
+				}
+				else
+				{
+					searchContent = etSearch.getText().toString();
+					if(listRemark == null || listRemark.size() == 0)
+					{
+						listRemark = new ArrayList<String>();
+						listRemark.add(searchContent);
+					}
+					else if(!listRemark.contains(searchContent))
+					{
+						listRemark.add(searchContent);
+					}
+					QuanleimuApplication.getApplication().setListRemark(listRemark);
+					//将搜索记录保存本地
+					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
+					
+					 if(null != m_viewInfoListener){
+						 Bundle bundle = new Bundle();
+						 bundle.putString("backPageName", "首页");
+						 bundle.putString("searchContent", searchContent);
+						 bundle.putString("actType", "search");
+						 bundle.putString("name", "");
+						 
+						 m_viewInfoListener.onExit(SearchView.this);						 
+						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
+						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
+					 }
+				}
 			}
 		});
 		
@@ -241,41 +265,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	public void onClick(View v) {
 		switch(v.getId())
 		{
-//			case R.id.btnSearch:
-//				if(etSearch.getText().toString().equals(""))
-//				{
-//					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
-//				}
-//				else
-//				{
-//					searchContent = etSearch.getText().toString();
-//					if(listRemark == null || listRemark.size() == 0)
-//					{
-//						listRemark = new ArrayList<String>();
-//						listRemark.add(searchContent);
-//					}
-//					else if(!listRemark.contains(searchContent))
-//					{
-//						listRemark.add(searchContent);
-//					}
-//					QuanleimuApplication.getApplication().setListRemark(listRemark);
-//					//将搜索记录保存本地
-//					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
-//					
-//					 if(null != m_viewInfoListener){
-//						 Bundle bundle = new Bundle();
-//						 bundle.putString("backPageName", "首页");
-//						 bundle.putString("searchContent", searchContent);
-//						 bundle.putString("actType", "search");
-//						 bundle.putString("name", "");
-//						 
-//						 m_viewInfoListener.onExit(this);						 
-//						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
-//						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
-//					 }
-//				}
-//				
-//				break;
 			case R.id.btnCancel:
 				if(null != m_viewInfoListener){
 					m_viewInfoListener.onExit(this);
