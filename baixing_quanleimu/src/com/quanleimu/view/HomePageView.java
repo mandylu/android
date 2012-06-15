@@ -22,14 +22,20 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.EditorInfo;
+import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
+import android.widget.EditText;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,6 +60,7 @@ import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.CircleFlowIndicator;
+import com.quanleimu.widget.TextEditInputConnected;
 import com.quanleimu.widget.ViewFlow;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener,  CategorySelectionView.ICateSelectionListener{
@@ -73,6 +80,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
 	//private List<SecondStepCate> listUsualCates = new ArrayList<SecondStepCate>();
 	static private String locationAddr = "";
+	TextView editSearch = null;
 	
 	String title_str;
 	String back_str;
@@ -355,6 +363,32 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			}
 			
 		});
+		
+		editSearch = (TextView)findViewById(R.id.etSearch);
+		
+		editSearch.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Bundle bundle = new Bundle();
+				bundle.putString("backPageName", "首页");
+				bundle.putString("searchContent", HomePageView.this.editSearch.getText().toString());
+				bundle.putString("actType", "search");
+
+				m_viewInfoListener.onNewView(new SearchView(getContext(), bundle));			
+			}
+		});
+		
+//		setEnabled(true);
+//		requestFocus();
+//		InputMethodManager input = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//		ResultReceiver receiver = new ResultReceiver(new Handler() {
+//			 
+//			public void handleMessage(Message msg) {
+//			 
+//			}
+//			 
+//			});
+//		input.showSoftInput(v, 0, receiver);	
 	}
 	
 	class HotListThread implements Runnable {
@@ -725,5 +759,4 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		
 		SwitchCateLevel(true);
 	}
-	
 };

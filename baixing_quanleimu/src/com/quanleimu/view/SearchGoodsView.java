@@ -175,7 +175,20 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		Init();
 	}
 
+	@Override
+	public boolean onBack(){
+		m_viewInfoListener.onPopView(SearchView.class.getName());
+		return false;
+	}
+	
+	@Override
+	public boolean onLeftActionPressed(){
+		return onBack();
+	}
+	
+	@Override
 	public boolean onRightActionPressed(){
+		m_viewInfoListener.onExit(this);
 		m_viewInfoListener.onNewView(new SearchView(getContext(), new Bundle()));
 		return true;
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
@@ -186,7 +199,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		title.m_visible = true;
 		title.m_leftActionHint = backPageName;
 		title.m_title = this.title;
-		title.m_rightActionHint = "搜索";
+		title.m_rightActionHint = "重新搜索";
 		return title;
 	}
 	

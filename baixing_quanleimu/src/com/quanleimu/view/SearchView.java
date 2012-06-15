@@ -13,6 +13,7 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.widget.TextEditInputConnected;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -20,10 +21,12 @@ import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.os.ResultReceiver;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
@@ -37,8 +40,8 @@ import com.quanleimu.adapter.CommonItemAdapter;
 public class SearchView extends BaseView implements View.OnClickListener{
 	
 	//定义控件
-	public Button btnSearch,btnCancel;
-	public EditText etSearch;
+	public Button btnCancel;
+	public TextEditInputConnected etSearch;
 	private TextView tvClear;
 	public ListView lvSearchHistory;
 	private CommonItemAdapter adapter;
@@ -72,10 +75,39 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		
 		
 		//通过ID获取控件
-		btnSearch = (Button)findViewById(R.id.btnSearch);
+		//btnSearch = (Button)findViewById(R.id.btnSearch);
 		btnCancel = (Button)findViewById(R.id.btnCancel);
 		
-		etSearch = (EditText)findViewById(R.id.etSearch);
+		etSearch = (TextEditInputConnected)findViewById(R.id.etSearch);
+		etSearch.setOnActionListener(new TextEditInputConnected.OnActionListener() {
+			@Override
+			public void onActionFired() {
+				// TODO Auto-generated method stub
+				Bundle bundle = new Bundle();
+				bundle.putString("backPageName", "首页");
+				bundle.putString("searchContent", SearchView.this.etSearch.getText().toString());
+				bundle.putString("actType", "search");
+				bundle.putString("searchType", "homepage");
+	
+				m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));				
+			}
+		});
+		
+//		findViewById(R.id.lvSearch).setOnClickListener(new View.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(View v) {
+//				InputMethodManager input = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+//				ResultReceiver receiver = new ResultReceiver(new Handler() {
+//					@Override 
+//					public void handleMessage(Message msg) {
+//					 
+//					}
+//					 
+//				});
+//				input.showSoftInput(v, 0, receiver);				
+//			}
+//		});
 		
 		lvSearchHistory = (ListView) findViewById(R.id.lvSearchHistory);
 		
@@ -83,7 +115,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
 		
 		//设置监听器
-		btnSearch.setOnClickListener(this);
 		btnCancel.setOnClickListener(this);
 		
 		//获得searchType
@@ -210,41 +241,41 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	public void onClick(View v) {
 		switch(v.getId())
 		{
-			case R.id.btnSearch:
-				if(etSearch.getText().toString().equals(""))
-				{
-					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
-				}
-				else
-				{
-					searchContent = etSearch.getText().toString();
-					if(listRemark == null || listRemark.size() == 0)
-					{
-						listRemark = new ArrayList<String>();
-						listRemark.add(searchContent);
-					}
-					else if(!listRemark.contains(searchContent))
-					{
-						listRemark.add(searchContent);
-					}
-					QuanleimuApplication.getApplication().setListRemark(listRemark);
-					//将搜索记录保存本地
-					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
-					
-					 if(null != m_viewInfoListener){
-						 Bundle bundle = new Bundle();
-						 bundle.putString("backPageName", "首页");
-						 bundle.putString("searchContent", searchContent);
-						 bundle.putString("actType", "search");
-						 bundle.putString("name", "");
-						 
-						 m_viewInfoListener.onExit(this);						 
-						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
-						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
-					 }
-				}
-				
-				break;
+//			case R.id.btnSearch:
+//				if(etSearch.getText().toString().equals(""))
+//				{
+//					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
+//				}
+//				else
+//				{
+//					searchContent = etSearch.getText().toString();
+//					if(listRemark == null || listRemark.size() == 0)
+//					{
+//						listRemark = new ArrayList<String>();
+//						listRemark.add(searchContent);
+//					}
+//					else if(!listRemark.contains(searchContent))
+//					{
+//						listRemark.add(searchContent);
+//					}
+//					QuanleimuApplication.getApplication().setListRemark(listRemark);
+//					//将搜索记录保存本地
+//					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
+//					
+//					 if(null != m_viewInfoListener){
+//						 Bundle bundle = new Bundle();
+//						 bundle.putString("backPageName", "首页");
+//						 bundle.putString("searchContent", searchContent);
+//						 bundle.putString("actType", "search");
+//						 bundle.putString("name", "");
+//						 
+//						 m_viewInfoListener.onExit(this);						 
+//						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
+//						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
+//					 }
+//				}
+//				
+//				break;
 			case R.id.btnCancel:
 				if(null != m_viewInfoListener){
 					m_viewInfoListener.onExit(this);

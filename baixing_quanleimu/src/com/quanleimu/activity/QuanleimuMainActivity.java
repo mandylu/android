@@ -218,10 +218,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		if(null != currentView){
 			currentView.onPause();
 			QuanleimuApplication.getApplication().getViewStack().push(currentView);
+			
+			Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
+			currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
 		}
-		
-		Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
-		currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
 		
 		scroll.removeAllViews();
 		
@@ -236,8 +236,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		Animation hyperspaceJumpAnimation_emerging = AnimationUtils.loadAnimation(this, R.anim.animation_emerging);
 		currentView.startAnimation(hyperspaceJumpAnimation_emerging);		
-		scroll.addView(currentView);
-		
+		scroll.addView(currentView);		
 
 		
 //		long time_end =  System.currentTimeMillis();
@@ -321,7 +320,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	public void onTabChanged(TabDef tab){
 
 		if(null == tab) return;
-		LinearLayout bottom = (LinearLayout)findViewById(R.id.linearBottom);
+		RelativeLayout bottom = (RelativeLayout)findViewById(R.id.linearBottom);
 		if(tab.m_visible){
 			bottom.setVisibility(View.VISIBLE);
 			findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);

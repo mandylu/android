@@ -1,86 +1,64 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
+<LinearLayout
  	 xmlns:android="http://schemas.android.com/apk/res/android"
   	 android:layout_width="fill_parent"
-  	 android:layout_height="fill_parent">
-  	 <RelativeLayout 
-    	android:layout_width="fill_parent"
-    	android:layout_height="wrap_content"
-    	android:id="@+id/rlTitle"
-    	android:background="@drawable/bg_header">
-    	<RelativeLayout 
-	    	android:layout_width="wrap_content"
-	    	android:layout_height="wrap_content"
-	    	android:id="@+id/rlSearch"
-	    	android:background="@drawable/bgsearch" 
-	    	android:layout_centerVertical="true" 
-	    	android:layout_marginLeft="10dip"
-	    	android:layout_toLeftOf="@+id/btnSearch"
-	    	android:layout_alignParentLeft="true">
-	    	<ImageView 
-		    	android:id="@+id/ivSearch" 
-		    	android:layout_width="wrap_content" 
-		    	android:background="@drawable/iconsearch" 
-		    	android:layout_height="wrap_content" 
-		    	android:layout_centerVertical="true" 
-		    	android:layout_marginLeft="10dip"></ImageView>
-	    	
-		  	     <EditText
-		  	         android:id="@+id/etSearch"
-		  	         android:layout_width="fill_parent"
-		  	         android:layout_height="wrap_content"
-		  	         android:layout_centerVertical="true"
-		  	         android:layout_marginRight="10dip"
-		  	         android:layout_toRightOf="@+id/ivSearch"
-		  	         android:background="#ffffff"
-		  	         android:singleLine="true" >
+  	 android:layout_height="fill_parent"
+  	 android:orientation="vertical">
 
-</EditText>
-  	     </RelativeLayout>
-  	     <Button 
-	  	     	android:layout_width="wrap_content" 
-	  	     	android:layout_height="wrap_content" 
-	  	     	android:layout_alignParentRight="true" 
-	  	     	android:text="取消" 
-	  	     	android:textColor="#ffffff"
-	  	     	android:id="@+id/btnCancel"
-	  	     	android:background="@drawable/btn_cancel"
-	  	     	android:layout_centerVertical="true"
-	  	     	android:layout_marginRight="10dip"></Button>
-	  	     <Button 
-	  	     	android:layout_width="wrap_content" 
-	  	     	android:layout_height="wrap_content" 
-	  	     	android:text="搜索" 
-	  	     	android:textColor="#ffffff"
-	  	     	android:id="@+id/btnSearch" 
-	  	     	android:layout_toLeftOf="@+id/btnCancel"
-	  	     	android:background="@drawable/btn_search" 
-	  	     	android:layout_centerVertical="true" 
-	  	     	android:layout_marginRight="5dip"></Button>
-	</RelativeLayout>
-  	 <ImageView 
-  	 	android:layout_width="wrap_content" 
-  	 	android:layout_height="wrap_content" 
-  	 	android:src="@drawable/pic_search_tips" 
-  	 	android:layout_marginTop="150dip" 
-  	 	android:id="@+id/ivBgSearch" android:layout_centerInParent="true"></ImageView>
+  	 <LinearLayout
+  	 	android:id="@+id/lvSearch"
+  	 	android:layout_width="fill_parent"
+  	 	android:layout_height="wrap_content"  	 	
+  	 	android:background="@drawable/home_bg_search">  	 
+  	     
+  	     <LinearLayout
+  	         android:id="@+id/rlSearch"
+  	         android:layout_width="fill_parent"
+  	         android:layout_height="fill_parent"
+  	         android:background="@drawable/bgsearch"
+  	         android:layout_marginLeft="10dip"
+  	         android:layout_marginTop="10dip"
+  	         android:layout_marginBottom="10dip"
+  	         android:layout_weight="1">
+	
+  	         <ImageView
+  	             android:layout_width="wrap_content"
+  	             android:layout_height="fill_parent"
+  	             android:paddingLeft="5dip"
+  	             android:src="@drawable/iconsearch" />
+	
+  	         <com.quanleimu.widget.TextEditInputConnected
+  	             android:id="@+id/etSearch"
+  	             android:layout_width="fill_parent"
+  	             android:layout_height="fill_parent"
+  	             android:background="#00000000"
+  	             android:ems="10"
+  	             android:gravity="center_vertical"
+  	             android:hint="点这里搜索"
+  	             android:singleLine="true"
+  	             android:textColor="#ffaaaaaa"
+  	             android:textSize="20dip"
+  	             android:focusable="true"
+  	             android:focusableInTouchMode="true"/>
+  	         		          	         
+  	     </LinearLayout>
+  	     
+  	     <Button
+  	         	android:id="@+id/btnCancel"
+  	             android:layout_width="wrap_content"
+  	             android:layout_height="fill_parent"
+  	             android:layout_margin="10dip"
+  	             android:singleLine="true"
+  	             android:text="取消"
+  	             android:gravity="center"	
+  	             android:textColor="#ffffff"		        
+  	             android:background="@drawable/btn_search" />
+  	 </LinearLayout>	
+  	 
   	 <ListView 
   	 	android:layout_height="fill_parent" 
   	 	android:layout_width="fill_parent" 
-  	 	android:id="@+id/lvSearchHistory" 
-  	 	android:layout_below="@+id/rlTitle"
-  	 	android:background="#ffffff"></ListView>
-  	 
-  	 <!-- <LinearLayout 
-    	android:layout_alignParentLeft="true" 
-    	android:layout_height="wrap_content" 
-    	android:layout_width="fill_parent" 
-    	android:id="@+id/linearBottom" 
-    	android:layout_alignParentBottom="true">
-    	<include
-    		android:layout_height="wrap_content" 
-    		android:layout_width="fill_parent" 
-    		android:id="@+id/linearBottom"
-    		layout="@layout/common_bottom"></include>
-     </LinearLayout> -->
-</RelativeLayout>
+  	 	android:id="@+id/lvSearchHistory"
+  	 	android:layout_gravity="bottom"/>
+
+</LinearLayout>
