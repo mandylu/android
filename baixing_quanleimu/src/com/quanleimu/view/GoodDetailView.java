@@ -273,9 +273,14 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		
 		View fenxiang = findViewById(R.id.fenxianglayout);
 		fenxiang.setOnClickListener(this);
-		
-//		View sv = findViewById(R.id.svDetail);
-//		sv.setOnTouchListener(this);
+
+		View jubao = findViewById(R.id.jubaolayout);
+		if(isMyAd()){
+			jubao.setVisibility(View.GONE);
+		}
+		else{			
+			jubao.setOnClickListener(this);			
+		}
 
 		this.setMetaObject();
 		
@@ -478,24 +483,17 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			}
 			break;
 		case R.id.fenxianglayout:{
-//			try{
-//			Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
-//					"", kWBBaixingAppSecret, "分享测试", "");
-//			 Intent i = new Intent((BaseActivity)this.getContext(), ShareActivity.class);
-//             ((BaseActivity)this.getContext()).startActivity(i);
-//			}
-//			catch(Exception e){
-//				int i = 0;
-//				if(i == 1){
-//					break;
-//				}
-//			}
-		
 			Weibo weibo = Weibo.getInstance();
 			weibo.setupConsumerConfig(kWBBaixingAppKey, kWBBaixingAppSecret);
 			weibo.setRedirectUrl("http://www.baixing.com");
 			weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener()); 
 			inAuthorize = true;
+			break;
+		}
+		case R.id.jubaolayout:{
+			if(this.m_viewInfoListener != null){
+				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), bundle, true, detail.getValueByKey("id")));
+			}
 			break;
 		}
 		}
@@ -518,7 +516,8 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
 					accessToken.getToken(),
 					accessToken.getSecret(), 
-					"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
+					isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
+							"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
 					listUrl == null ? "" : GoodDetailView.this.getContext().getFilesDir() + "/" + Util.MD5(listUrl.get(0)));
 			}
 			catch(WeiboException e){

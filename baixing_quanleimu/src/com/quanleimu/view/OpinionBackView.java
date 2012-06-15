@@ -27,6 +27,8 @@ public class OpinionBackView extends BaseView {
 	private String mobile = "";
 	private UserBean user;
 	private String result;
+	private boolean prosecute = false;
+	private String adId = "";
 
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -44,11 +46,20 @@ public class OpinionBackView extends BaseView {
 
 		etOpinion = (EditText) findViewById(R.id.etOpinion);
 		etOpinion.findFocus();
+		if(prosecute){
+			etOpinion.setHint("请留下举报原因");
+		}
 	}
 	
 	public OpinionBackView(Context context, Bundle bundle){
 		super(context, bundle);
-		
+		Init();
+	}
+	
+	public OpinionBackView(Context context, Bundle bundle, boolean prosecute, String adId){
+		super(context, bundle);
+		this.prosecute = prosecute;
+		this.adId = adId;
 		Init();
 	}
 
@@ -104,6 +115,10 @@ public class OpinionBackView extends BaseView {
 		}
 
 	}; 
+	
+	private void sendFeedback(){
+		
+	}
 
 	class OpinionBackThread implements Runnable {
 		@Override
@@ -112,13 +127,14 @@ public class OpinionBackView extends BaseView {
 			// "http://www.baixing.com/iphone/feedback/v1/?device=android";
 			// url = url + "&content="+URLEncoder.encode(content)
 			// +"&androidUniqueIdentifier="+phoneMark+"&mobile="+mobile;
-			
-			String apiName = "feedback";
+			String apiName = prosecute ? "report" : "feedback";
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("mobile=" + mobile);
-			list.add("feedback="
-					+ URLEncoder.encode(etOpinion.getText().toString()));
+			list.add((prosecute ? "description=" : "feedback=") + URLEncoder.encode(etOpinion.getText().toString()));
+			if(prosecute){
+				list.add("adId=" + adId);
+			}
 
 			String url = Communication.getApiUrl(apiName, list);
 			System.out.println("url--->" + url);
