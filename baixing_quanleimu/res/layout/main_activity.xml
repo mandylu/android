@@ -63,29 +63,39 @@
 				android:background="@drawable/tabbar_bg"/>
     </LinearLayout>    
 			
-    <RelativeLayout    
+    <LinearLayout    
         android:id="@+id/linearBottom"    
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-		android:layout_alignParentBottom="true">
-
-		    <ImageView
+        android:baselineAligned="true"
+        android:layout_alignParentBottom="true">
+	    
+        <RelativeLayout 
+            android:id="@+id/rlHomePage"
+         	android:layout_height="wrap_content"
+         	android:layout_width="wrap_content"
+         	android:layout_weight="1"
+         	android:layout_gravity="bottom"
+         	android:background="@drawable/blank">  
+         	
+            <ImageView
 		        android:id="@+id/ivHomePage"
 		        android:layout_width="wrap_content"
 		        android:layout_height="wrap_content"
 		        android:layout_alignParentBottom="true"
-		        android:layout_alignParentLeft="true"
+		        android:layout_centerHorizontal="true"
 		        android:background="@drawable/iv_homepage_xml" />
-
-		    <ImageView
-		        android:id="@+id/ivMyCenter"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        android:layout_alignParentBottom="true"
-		        android:layout_alignParentRight="true"
-		        
-		        android:background="@drawable/iv_mycenter_xml" />
-
+            
+        </RelativeLayout>
+        
+		<RelativeLayout 
+            android:id="@+id/rlPostGoods"
+         	android:layout_height="wrap_content"
+         	android:layout_width="wrap_content"
+         	android:layout_weight="1"
+         	android:baselineAligned="true"
+         	android:background="@drawable/blank">   
+         	
 		    <ImageView
 		        android:id="@+id/ivPostGoods"
 		        android:layout_width="wrap_content"
@@ -93,7 +103,26 @@
 		        android:layout_alignParentBottom="true"
 		        android:layout_centerHorizontal="true"
 		        android:background="@drawable/iv_postgoods_xml" />
+            
+        </RelativeLayout>
+        
+        <RelativeLayout 
+            android:id="@+id/rlMy"
+         	android:layout_height="wrap_content"
+         	android:layout_width="wrap_content"
+         	android:layout_weight="1"
+         	android:baselineAligned="true"
+         	android:background="@drawable/blank">            
+
+		    <ImageView
+		        android:id="@+id/ivMyCenter"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        android:layout_alignParentBottom="true"
+		        android:layout_centerHorizontal="true"		        
+		        android:background="@drawable/iv_mycenter_xml" />
+        </RelativeLayout>
 		    
-	</RelativeLayout>
+	</LinearLayout>
 
 </RelativeLayout>

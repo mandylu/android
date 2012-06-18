@@ -320,7 +320,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	public void onTabChanged(TabDef tab){
 
 		if(null == tab) return;
-		RelativeLayout bottom = (RelativeLayout)findViewById(R.id.linearBottom);
+		LinearLayout bottom = (LinearLayout)findViewById(R.id.linearBottom);
 		if(tab.m_visible){
 			bottom.setVisibility(View.VISIBLE);
 			findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);
