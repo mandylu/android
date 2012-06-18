@@ -95,6 +95,7 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	public List<Bitmap> listBm = new ArrayList<Bitmap>();
 	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
 	public String mycenter_type = "";
+	private View titleControlView = null;
 	
 	private List<String> listUrl = null;
 	
@@ -123,10 +124,50 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	public void onDestroy(){
 		super.onDestroy();
 	}
+	
+	@Override
+	public boolean onBack(){
+		this.removeTitleControls();
+		return false;
+	}
 
 	@Override
 	public void onPause() {
+		this.removeTitleControls();
 		super.onPause();
+	}
+	
+	private void addTitleControls(){
+		RelativeLayout title2 = (RelativeLayout)this.getRootView().findViewById(R.id.linearTop);
+		if(null != title2.findViewById(R.layout.myad_title)){
+			return;
+		}
+		
+		if(titleControlView == null){
+			LayoutInflater inflater = LayoutInflater.from(this.getContext());
+			titleControlView = inflater.inflate(R.layout.myad_title, null);
+			RelativeLayout.LayoutParams lp = 
+					new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
+			lp.addRule(RelativeLayout.CENTER_IN_PARENT);
+			titleControlView.setLayoutParams(lp);
+			View refresh = titleControlView.findViewById(R.id.iv_refresh);
+			refresh.setOnClickListener(this);
+			View edit = titleControlView.findViewById(R.id.iv_edit);
+			edit.setOnClickListener(this);
+			View del = titleControlView.findViewById(R.id.iv_del);
+			del.setOnClickListener(this);
+		}
+		title2.addView(titleControlView);
+		((TextView)title2.findViewById(R.id.tvTitle)).setText("");
+	}
+	
+	private void removeTitleControls(){
+		RelativeLayout title2 = (RelativeLayout)this.getRootView().findViewById(R.id.linearTop);
+		if(titleControlView != null){
+			title2.removeView(titleControlView);
+		}
+//		title2.addView(title2.findViewById(R.id.tvTitle));
+		
 	}
 	
 	@Override
@@ -134,12 +175,14 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		if(isMyAd()){
 			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-				title.m_rightActionHint = strManager;
+				title.m_rightActionHint = "";//strManager;
 				m_viewInfoListener.onTitleChanged(title);
+				addTitleControls();
 				btnStatus = 1;
 			}
 		}
 		else{
+			removeTitleControls();
 			if(isInMyStore()){
 				if(this.m_viewInfoListener != null){
 					TitleDef title = getTitleDef();
@@ -496,8 +539,28 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			}
 			break;
 		}
+		case R.id.iv_refresh:{
+			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
+			break;
 		}
-//		super.onClick(v);
+		case R.id.iv_edit:{
+			if(null != m_viewInfoListener){
+				m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)GoodDetailView.this.getContext(),
+						bundle, 
+						detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME),
+						detail));			
+			}
+			break;
+		}
+		case R.id.iv_del:{
+			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();			
+			break;
+		}
+		}
 	}
 	
 	class AuthDialogListener implements WeiboDialogListener {
