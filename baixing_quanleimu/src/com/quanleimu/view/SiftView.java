@@ -21,6 +21,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import android.widget.LinearLayout.LayoutParams;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -321,43 +322,19 @@ public class SiftView extends BaseView {
 					
 					for (int i = 0; i < listFilterss.size();++i) {
 						View v = null;
-						ImageView tvim = null;
-						EditText tved = null;
 						TextView tvmetatxt = null;
-						v = inflater.inflate(R.layout.item_sift, null);
-						v.setLayoutParams(new LinearLayout.LayoutParams(
-								LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT));
-
-						if (i == 0) {
-							v.setBackgroundResource(R.drawable.btn_top_bg);
-							if(listFilterss.size() == 1){
-								v.setBackgroundResource(R.drawable.btn_s_bg);
-							}
-						} else if (i == listFilterss.size() - 1) {
-							// v.setBackgroundResource(R.drawable.btn_m_bg);
-							v.setBackgroundResource(R.drawable.btn_down_bg);
-						} else {
-							v.setBackgroundResource(R.drawable.btn_m_bg);
-						}
-
-						v.setPadding(10, 10, 10, 10);
 
 						if (listFilterss.get(i).getControlType().equals("select")) {
+							v = inflater.inflate(R.layout.item_post_select, null);
+
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							valuemap.put(listFilterss.get(i).getName(), "");
 							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							savemap.put(i, "");
-							tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
-							tvmetatxt.setLayoutParams(new LinearLayout.LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.WRAP_CONTENT, 1));
+							tvmetatxt = (TextView) v.findViewById(R.id.postshow);
 							tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 
-							tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-							tvmeta.setGravity(Gravity.RIGHT);
-							tvmeta.setLayoutParams(new LinearLayout.LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.WRAP_CONTENT, 1));
+							tvmeta = (TextView) v.findViewById(R.id.posthint);
 							if(preValues != null && preValues.containsKey(listFilterss.get(i).getName())){
 								String preValue = preValues.get(listFilterss.get(i).getName());
 								List<values>values = listFilterss.get(i).getValuesList();
@@ -378,16 +355,6 @@ public class SiftView extends BaseView {
 							else{
 								tvmeta.setText("请选择");
 							}
-
-							tvim = (ImageView) v.findViewById(R.id.tvimage);
-							tvim.setLayoutParams(new LinearLayout.LayoutParams(
-									LayoutParams.WRAP_CONTENT, LayoutParams.FILL_PARENT));
-							tvim.setPadding(10, 10, 10, 10);
-							tvim.setImageResource(R.drawable.arrow);
-							tvim.setBackgroundDrawable(null);
-
-							tved = (EditText) v.findViewById(R.id.tved);
-							tved.setVisibility(View.GONE);
 							selector.put(i, tvmeta);
 							
 							v.setTag(i);
@@ -411,39 +378,25 @@ public class SiftView extends BaseView {
 						// else
 						// if(listFilterss.get(i).getControlType().equals(""))
 						else {
-							tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
+							v = inflater.inflate(R.layout.item_post_edit, null);
+							tvmetatxt = (TextView) v.findViewById(R.id.postshow);
 							tvmetatxt.setText(listFilterss.get(i).getDisplayName());
-							tvmetatxt.setGravity(Gravity.LEFT|Gravity.CENTER_VERTICAL);
-							tvmetatxt.setLayoutParams(new LinearLayout.LayoutParams(
-									LayoutParams.WRAP_CONTENT,
-									LayoutParams.FILL_PARENT));
-							tvmetatxt.setPadding(0, 0, 10, 0);
-							
+							tvmeta = (EditText) v.findViewById(R.id.postinput);
+							editors.put(listFilterss.get(i).getName(), (EditText)tvmeta);
 							if(null != preValues && preValues.containsKey(listFilterss.get(i).getName())){
 								String preValue = preValues.get(listFilterss.get(i).getName());
-								List<values>values = listFilterss.get(i).getValuesList();
-								for(int z = 0; z < values.size(); ++ z){
-									if(values.get(z).getValue().equals(preValue)){
-										tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
-										valuemap.put(listFilterss.get(i).getName(), preValue);
-										break;
-									}
-								}
-								
-							}							tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-							tvmeta.setVisibility(View.GONE);
-							
-							tvim = (ImageView) v.findViewById(R.id.tvimage);
-							tvim.setVisibility(View.GONE);
-							
-							tved = (EditText) v.findViewById(R.id.tved);
-							tved.clearFocus();
-							tved.setLayoutParams(new LinearLayout.LayoutParams(
-									LayoutParams.FILL_PARENT,
-									LayoutParams.WRAP_CONTENT, 1));
+								tvmeta.setText(preValue);
+								valuemap.put(listFilterss.get(i).getName(), preValue);
+							}
 						}
+						TextView border = new TextView(SiftView.this.getContext());
+						border.setLayoutParams(new LayoutParams(
+								LayoutParams.FILL_PARENT, 1, 1));
+						border.setBackgroundResource(R.drawable.list_divider);
+
 						
 						ll_meta.addView(v);
+						ll_meta.addView(border);
 					}
 
 				}
