@@ -45,6 +45,7 @@
   	             android:paddingTop="0dip"
   	             android:paddingBottom="0dip"
   	             android:focusableInTouchMode="true"/>
+<!--   	         <requestFocus/> -->
   	         		          	         
   	     </LinearLayout>
   	     

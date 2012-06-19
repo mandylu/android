@@ -553,12 +553,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			
 			if(position < curList.size()){
 				iv = (ImageView) v.findViewById(R.id.ivHotDetail);
-				iv.setLayoutParams(new LinearLayout.LayoutParams(
-						LinearLayout.LayoutParams.FILL_PARENT,
-						LinearLayout.LayoutParams.WRAP_CONTENT));
-				iv.setPadding(0, 0, 0, 0);
-				// 设置图片填充布局
-				iv.setScaleType(ScaleType.FIT_XY);
+				// 设置图片填充布局				
 				iv.setTag(curList.get(position).getImgUrl());
 			}
 			
