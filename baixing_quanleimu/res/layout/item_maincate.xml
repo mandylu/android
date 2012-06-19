@@ -13,6 +13,7 @@
         android:paddingBottom="5dip"
         android:paddingLeft="5dip"
         android:paddingTop="5dip"
+        android:background="@drawable/list_selector"
         android:paddingRight="5dip" >
 
         <ImageView
@@ -51,6 +52,7 @@
 			android:layout_gravity="bottom"  
 			android:layout_alignParentBottom="true"      
             android:singleLine="true"
+            android:textColor="@drawable/list_textselector"
             android:textSize="14dip" >
         </TextView>
 
