@@ -1351,7 +1351,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
-			if((postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
+			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
 					&& goodsDetail.getImageList().getResize180() != null 
 					&& !goodsDetail.getImageList().getResize180().equals("")))){
 				this.appendBeanToLayout(postBean);
