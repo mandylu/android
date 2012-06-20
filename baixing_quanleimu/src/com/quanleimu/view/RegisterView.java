@@ -13,12 +13,14 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
+import com.quanleimu.activity.BaseActivity;
 
 public class RegisterView extends BaseView implements View.OnClickListener{
 
@@ -29,12 +31,14 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 	private LinearLayout forget_layout;
 
 	protected void Init(){
+        
 		LayoutInflater inflater = LayoutInflater.from(getContext());
-		this.addView(inflater.inflate(R.layout.register, null));
+		addView(inflater.inflate(R.layout.register, null));
 		
 		accoutnEt = (EditText) findViewById(R.id.accountEt);
 		passwordEt = (EditText) findViewById(R.id.passwordEt);
 		repasswordEt = (EditText) findViewById(R.id.repasswordEt);
+
 		
 		forget_layout = (LinearLayout) findViewById(R.id.forget_layout);
 		forget_layout.setOnClickListener(this);
@@ -51,6 +55,23 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 		
 		Init();
 	}
+	
+//	@Override
+//	public void onAttachedToWindow(){
+//		super.onAttachedToWindow();
+//		
+//		EditText activeText = 	accoutnEt.isFocused() ? accoutnEt :
+//								passwordEt.isFocused() ? passwordEt :
+//								repasswordEt.isFocused() ? repasswordEt : null;
+//
+//		if(null != activeText){
+//	        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+//	        imm.showSoftInput(activeText, 0);
+//	        imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
+//		}
+//	}
+	
+	
 
 	public boolean onRightActionPressed(){
 		if (check()) {
@@ -170,4 +191,17 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 			super.handleMessage(msg);
 		}
 	};
+
+//	@Override
+//	public void onFocusChange(View v, boolean hasFocus) {
+//	
+//		if(hasFocus){
+//			EditText activeText = 	accoutnEt.isFocused() ? accoutnEt :
+//									passwordEt.isFocused() ? passwordEt :
+//									repasswordEt.isFocused() ? repasswordEt : null;
+//	        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+//	        imm.showSoftInput(activeText, 0);
+//	        imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
+//		}
+//	}
 }

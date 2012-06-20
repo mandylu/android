@@ -1,17 +1,35 @@
 package com.quanleimu.view;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.webkit.WebView;
+import android.webkit.WebViewClient;
 import com.quanleimu.activity.R;
+
 
 public class ForgetPasswordView extends BaseView {
 
+	public class ForgetPasswordWebClient extends WebViewClient{
+		public ForgetPasswordView mView;
+		
+		ForgetPasswordWebClient(ForgetPasswordView view){
+			mView = view;
+		}
+		
+		
+		@Override
+		public void onPageFinished(WebView view, String url){
+			mView.onDataLoaded();
+		}
+	}
+	
 	public String backPageName = "";
 	public String categoryEnglishName = "";
 	private WebView web;
-	//private ProgressDialog pd;
+	private ProgressDialog pd;
+	private boolean bMoved = false;
 
 	public ForgetPasswordView(Context context, Bundle bundle){
 		super(context);
@@ -21,13 +39,15 @@ public class ForgetPasswordView extends BaseView {
 	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
-		this.addView(inflater.inflate(R.layout.forget_password, null));
+		this.addView(inflater.inflate(R.layout.forget_password, null));		
+	
+		pd = ProgressDialog.show(getContext(), "提示", "数据下载中，请稍后。。。");
+		pd.setCancelable(false);
 		
 		web = (WebView) findViewById(R.id.web);
+		web.setWebViewClient(new ForgetPasswordWebClient(this));
 		web.loadUrl("http://www.baixing.com/auth/findPassword/");
-		
-//		pd = ProgressDialog.show(getContext(), "提示", "数据下载中，请稍后。。。");
-//		pd.setCancelable(true);
+		web.requestFocus();
 	}
 
 	public TitleDef getTitleDef(){
@@ -42,6 +62,37 @@ public class ForgetPasswordView extends BaseView {
 		tab.m_visible = false;
 		return tab;
 	}
+	
+	public void onDataLoaded(){
+		
+		if(null != pd){
+			pd.hide();
+		}
+	}
+	
+//	@Override
+//	public void onAttachedToWindow(){
+//		super.onAttachedToWindow();
+//		
+//        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+//        imm.showSoftInput(this, InputMethodManager.SHOW_FORCED); 
+//        imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
+//	}
+	
+//	@Override
+//	public boolean onTouchEvent(MotionEvent event){
+//		if(event.getAction() == MotionEvent.ACTION_MOVE){
+//			bMoved = true;
+//		}else if(event.getAction() == MotionEvent.ACTION_UP){
+//			if(!bMoved && web.getHitTestResult().getType() == WebView.HitTestResult.EDIT_TEXT_TYPE){
+//		        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+//		        imm.showSoftInput(this, InputMethodManager.SHOW_FORCED); 
+//		        imm.toggleSoftInput(0,InputMethodManager.HIDE_NOT_ALWAYS);
+//			}				
+//		}
+//		
+//		return super.onTouchEvent(event);
+//	}
 
 //	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
 //	class LoginThread implements Runnable {

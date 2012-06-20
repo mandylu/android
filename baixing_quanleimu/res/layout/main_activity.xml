@@ -33,7 +33,8 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/btn_jj"
                 android:text="@string/ChangeCity"
-                android:textColor="#ffffff" >
+                android:textColor="#ffffff"
+                android:layout_marginLeft="5dip" >
             </Button>
 
             <Button
@@ -44,7 +45,8 @@
                 android:layout_centerVertical="true"
                 android:background="@drawable/btn_editx"
                 android:text="@string/Search"
-                android:textColor="#ffffff" >
+                android:textColor="#ffffff" 
+                android:layout_marginRight="5dip">
             </Button>
         </RelativeLayout>
         

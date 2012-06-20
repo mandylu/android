@@ -6,12 +6,9 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.animation.Animation;
-import android.view.animation.AnimationUtils;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -26,7 +23,6 @@ import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.view.SetMainView;
 
-import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
@@ -34,8 +30,6 @@ import android.widget.RelativeLayout;
 
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.PersonalCenterView;
-import com.quanleimu.view.PostGoodsCateMainView;
-
 import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PostGoodsView;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{
@@ -219,8 +213,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			currentView.onPause();
 			QuanleimuApplication.getApplication().getViewStack().push(currentView);
 			
-			Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
-			currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
+//			Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
+//			currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
 		}
 		
 		scroll.removeAllViews();
@@ -234,8 +228,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			needClearViewStack = false;
 		}
 		
-		Animation hyperspaceJumpAnimation_emerging = AnimationUtils.loadAnimation(this, R.anim.animation_emerging);
-		currentView.startAnimation(hyperspaceJumpAnimation_emerging);		
+//		Animation hyperspaceJumpAnimation_emerging = AnimationUtils.loadAnimation(this, R.anim.animation_emerging);
+//		currentView.startAnimation(hyperspaceJumpAnimation_emerging);		
 		scroll.addView(currentView);		
 
 		

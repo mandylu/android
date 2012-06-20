@@ -15,6 +15,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
@@ -166,6 +167,15 @@ public class LoginView extends BaseView implements OnClickListener{
 			}
 		}
 	}
+	
+//	@Override
+//	public void onAttachedToWindow(){
+//		super.onAttachedToWindow();
+//		
+//        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+//        //imm.hideSoftInputFromInputMethod(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+//        imm.showSoftInput(this, 0); 
+//	}
 	
 	private void parseLoginResponse(String json_response){
 		try {
