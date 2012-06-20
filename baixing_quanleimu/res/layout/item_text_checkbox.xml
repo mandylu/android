@@ -3,7 +3,10 @@
 	android:layout_width="fill_parent" 
 	android:layout_height="wrap_content" 
 	android:background = "@drawable/list_selector"
-	android:padding="10dip">
+	android:paddingLeft="10dip"
+	android:paddingRight="10dip"
+	android:paddingTop="3dip"
+	android:paddingBottom="3dip">
     <TextView 
       	android:textSize="18dip"
       	android:id="@+id/checktext"
