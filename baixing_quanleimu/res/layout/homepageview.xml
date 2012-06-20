@@ -12,7 +12,7 @@
 				android:id="@+id/lvLogoAndChangeCity"
 				android:layout_width="fill_parent"
 				android:layout_height="wrap_content"
-				android:background="@drawable/home_bg_navibar">
+				android:background="@drawable/top_bg">
 				
 				<LinearLayout
 				    android:id="@+id/llChangeCity"
