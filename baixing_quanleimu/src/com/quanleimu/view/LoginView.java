@@ -102,7 +102,7 @@ public class LoginView extends BaseView implements OnClickListener{
 	@Override
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
-		tab.m_visible = true;
+		tab.m_visible = false;
 		return tab;
 		}
 

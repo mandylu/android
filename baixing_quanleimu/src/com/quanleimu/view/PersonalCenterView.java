@@ -20,6 +20,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.ListView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.entity.GoodsDetail;
@@ -34,6 +35,7 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import android.widget.LinearLayout;
 public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener, PullToRefreshListView.OnRefreshListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
 	private final int MCMESSAGE_MYPOST_FAIL = 1;
@@ -60,6 +62,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private int currentPage = -1;//-1:mypost, 0:myfav, 1:history
 	private Bundle bundle;
 	private int buttonStatus = -1;//-1:edit 0:finish
+	private View loginItem = null;
 	
 	private boolean loginTried = false;
 	
@@ -70,6 +73,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	}
 
 	private void rebuildPage(boolean onResult){
+		LinearLayout lView = (LinearLayout)this.findViewById(R.id.linearListView);
+		
 		if(-1 == currentPage){
 			ivMyads.setImageResource(R.drawable.btn_posted_press);
 			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
@@ -86,30 +91,44 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			else{
 				user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 						
-				if (user != null) {
+				if (user != null) {					
+					if(loginItem != null){
+						lView.removeView(loginItem);
+					}
+					lvGoodsList.setVisibility(View.VISIBLE);
 					mobile = user.getPhone();
 					password = user.getPassword();
 					pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 					pd.setCancelable(true);
 					new Thread(new UpdateThread(currentPage)).start();
 				} else {
-					if(loginTried){
-						m_viewInfoListener.onExit(this);
+					if(null == loginItem){
+						LayoutInflater inflater = LayoutInflater.from(this.getContext());
+						loginItem = inflater.inflate(R.layout.item_post_select, null);
+						loginItem.setClickable(true);
+						TextView show = (TextView)loginItem.findViewById(R.id.postshow);
+						show.setText("登陆或注册");
+						loginItem.setOnClickListener(new OnClickListener(){
+							@Override
+							public void onClick(View v) {
+								bundle.putInt("type", 1);
+								bundle.putString("backPageName", "");					
+								m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
+							}
+						});
 					}
-					
-					bundle.putInt("type", 1);
-					bundle.putString("backPageName", "");					
-					m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
-					
-					if(loginTried){
-						m_viewInfoListener.onBack();
-					}	
-					
-					loginTried = true;
+					if(loginItem.getParent() == null){
+						lView.addView(loginItem);
+					}
+					lvGoodsList.setVisibility(View.GONE);
 				}
 			}
 		}
 		else if(0 == currentPage){
+			if(loginItem != null){
+				lView.removeView(loginItem);
+			}
+			lvGoodsList.setVisibility(View.VISIBLE);
 			ivMyads.setImageResource(R.drawable.btn_posted_normal);
 			ivMyfav.setImageResource(R.drawable.btn_fav_press);
 			ivMyhistory.setImageResource(R.drawable.btn_history_normal);
@@ -126,6 +145,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.notifyDataSetChanged();
 		}
 		else{
+			if(loginItem != null){
+				lView.removeView(loginItem);
+			}
+			lvGoodsList.setVisibility(View.VISIBLE);
 			ivMyads.setImageResource(R.drawable.btn_posted_normal);
 			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
 			ivMyhistory.setImageResource(R.drawable.btn_history_press);
