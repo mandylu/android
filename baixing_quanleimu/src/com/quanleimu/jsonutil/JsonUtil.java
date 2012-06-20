@@ -332,6 +332,14 @@ public class JsonUtil {
 				} catch (Exception e1) {
 					mfil.setControlType("");
 				}
+				try{
+					String levels = jsonObject.getString("level");
+					if(levels != null){
+						mfil.setLevelCount(levels.split(",").length);
+					}
+				}catch(Exception e){
+					mfil.setLevelCount(0);
+				}
 				// values数组
 				JSONArray valueArray;
 				List<values> vlist = new ArrayList<values>();

@@ -8,14 +8,23 @@ public class Filterss implements Serializable{
 	 * 
 	 */
 	private static final long serialVersionUID = 1L;
-	public String name;
-	public String displayName;
-	public String unit;
-	public String controlType;
-	public List<values> valuesList;
-	public List<labels> labelsList;
-	public String numeric;
-	public String required;
+	private String name;
+	private String displayName;
+	private String unit;
+	private String controlType;
+	private List<values> valuesList;
+	private List<labels> labelsList;
+	private String numeric;
+	private String required;
+	private int levelCount = 0;
+	
+	public void setLevelCount(int levelCount){
+		this.levelCount = levelCount;
+	}
+	
+	public int getLevelCount(){
+		return levelCount;
+	}
 
 	public String getName() {
 		return name;

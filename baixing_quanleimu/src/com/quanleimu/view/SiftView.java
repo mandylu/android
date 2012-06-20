@@ -23,6 +23,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
 
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.Filterss;
@@ -49,7 +50,7 @@ public class SiftView extends BaseView {
 
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
-	private Map<Integer, String> savemap = new HashMap<Integer, String>();
+	private Map<String, String> labelmap = new HashMap<String, String>();
 
 	public Map<String, String> valuemap = new HashMap<String, String>();
 
@@ -57,6 +58,8 @@ public class SiftView extends BaseView {
 	public String json = "";
 
 	Bundle bundle = null;
+	
+	private final int MSG_MULTISEL_BACK = 0;
 	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -119,6 +122,7 @@ public class SiftView extends BaseView {
 			
 			//compose the sift result
 			String result = "";
+			String resultLabel = "";
 
 			String str = ed_sift.getText().toString().trim();
 			if( valuemap != null && valuemap.size() != 0)
@@ -133,6 +137,17 @@ public class SiftView extends BaseView {
 					}
 				}
 			}
+
+			if( labelmap != null && labelmap.size() != 0)
+			{
+				for (int i = 0; i < listFilterss.size(); i++) {
+
+					String key = listFilterss.get(i).getName();
+					if(labelmap.get(key) != null && !labelmap.get(key).equals("")){
+						resultLabel += " AND " + URLEncoder.encode(key) + ":" + URLEncoder.encode(labelmap.get(key));
+					}
+				}
+			}	
 			
 			for(int i = 0; i < editors.size(); ++i){
 				String key = editors.keySet().toArray()[i].toString();
@@ -161,6 +176,7 @@ public class SiftView extends BaseView {
 			if(result.length() > 0)
 			{
 				bundle.putString("siftresult", result);
+				bundle.putString("siftlabels", resultLabel);
 				bundle.putString("backPageName", backPageName);
 				if(null != m_viewInfoListener){
 					m_viewInfoListener.onExit(this);
@@ -169,6 +185,7 @@ public class SiftView extends BaseView {
 			}else{
 				if(bundle.getString("siftresult") != null && !bundle.getString("siftresult").equals("")){
 					bundle.putString("siftresult", "");
+					bundle.putString("siftlabels", "");
 					if(null != m_viewInfoListener){
 						m_viewInfoListener.onExit(this);
 						m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, categoryEnglishName, result));			
@@ -232,7 +249,6 @@ public class SiftView extends BaseView {
 					valuemap.put(listFilterss.get(temp).getName(), value_resl);
 				}
 				selector.get(temp).setText(res);
-				savemap.put(temp, res);
 			}else{
 				//res = datas.getString("label");
 				//value_resl = datas.getString("value");
@@ -240,8 +256,17 @@ public class SiftView extends BaseView {
 				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
 					valuemap.remove(listFilterss.get(temp).getName());
 				}
-				//savemap.put(temp, res);				
 				selector.get(temp).setText(s);
+			}
+		}
+		else if(MSG_MULTISEL_BACK == message){
+			if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
+				selector.get(temp).setText(((MultiLevelSelectionView.MultiLevelItem)obj).txt);
+				if(((MultiLevelSelectionView.MultiLevelItem)obj).id != null 
+						&&!((MultiLevelSelectionView.MultiLevelItem)obj).id.equals("")){
+					labelmap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionView.MultiLevelItem)obj).txt);
+					valuemap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionView.MultiLevelItem)obj).id);					
+				}
 			}
 		}
 	}
@@ -302,6 +327,7 @@ public class SiftView extends BaseView {
 				} else {
 
 					HashMap<String, String> preValues = null;
+					HashMap<String, String> preLabels = null;
 					if(bundle != null){
 						String preEncResult = bundle.getString("siftresult");
 						if(null != preEncResult){
@@ -318,6 +344,22 @@ public class SiftView extends BaseView {
 								preValues.put(subPairs[0], subPairs[1]);
 							}
 						}
+						
+						String preEncLabels = bundle.getString("siftlabels");
+						if(null != preEncLabels){
+							String decResult = URLDecoder.decode(preEncLabels);
+							String[] pairs = decResult.split("AND ");
+							if(pairs != null){
+								preLabels = new HashMap<String, String>();
+							}
+							for(int x = 0; x < pairs.length; ++ x){
+								String[] subPairs = pairs[x].split(":");
+								if(subPairs.length != 2)continue;
+								subPairs[0] = subPairs[0].trim();
+								subPairs[1] = subPairs[1].trim();
+								preLabels.put(subPairs[0], subPairs[1]);
+							}
+						}						
 					}
 					
 					for (int i = 0; i < listFilterss.size();++i) {
@@ -326,30 +368,34 @@ public class SiftView extends BaseView {
 
 						if (listFilterss.get(i).getControlType().equals("select")) {
 							v = inflater.inflate(R.layout.item_post_select, null);
-
-							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 							valuemap.put(listFilterss.get(i).getName(), "");
-							// ~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-							savemap.put(i, "");
 							tvmetatxt = (TextView) v.findViewById(R.id.postshow);
 							tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 
 							tvmeta = (TextView) v.findViewById(R.id.posthint);
 							if(preValues != null && preValues.containsKey(listFilterss.get(i).getName())){
 								String preValue = preValues.get(listFilterss.get(i).getName());
-								List<values>values = listFilterss.get(i).getValuesList();
 								boolean valid = false;
-								for(int z = 0; z < values.size(); ++ z){
-									if(values.get(z).getValue().equals(preValue)){
-										tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
-										valuemap.put(listFilterss.get(i).getName(), preValue);
-										valid = true;
-										break;
-									}
+								if(preLabels != null && preLabels.containsKey(listFilterss.get(i).getName())){									
+									tvmeta.setText(preLabels.get(listFilterss.get(i).getName()));
+									labelmap.put(listFilterss.get(i).getName(), 
+											preLabels.get(listFilterss.get(i).getName()));
+									valid = true;
 								}
-								
+								valuemap.put(listFilterss.get(i).getName(), preValue);
 								if(!valid){
-									tvmeta.setText("请选择");
+									List<values>values = listFilterss.get(i).getValuesList();									
+									for(int z = 0; z < values.size(); ++ z){
+										if(values.get(z).getValue().equals(preValue)){
+											tvmeta.setText(listFilterss.get(i).getLabelsList().get(z).getLabel());
+											valid = true;
+											break;
+										}
+									}
+								
+									if(!valid){
+										tvmeta.setText("请选择");
+									}
 								}
 							}
 							else{
@@ -368,9 +414,28 @@ public class SiftView extends BaseView {
 									bundle.putString("title", listFilterss.get(temp).getDisplayName());
 									bundle.putString("back", "筛选");
 									
-									if(null != m_viewInfoListener){
-										m_viewInfoListener.onNewView(new SiftOptionListView(getContext(), bundle));
-									}
+//									if(null != m_viewInfoListener){
+//										m_viewInfoListener.onNewView(new SiftOptionListView(getContext(), bundle));
+//									}
+									Filterss fss = listFilterss.get(temp);
+									if(fss.getLevelCount() > 0){
+										List<MultiLevelSelectionView.MultiLevelItem> items = 
+												new ArrayList<MultiLevelSelectionView.MultiLevelItem>();
+										MultiLevelSelectionView.MultiLevelItem head = new MultiLevelSelectionView.MultiLevelItem();
+										head.txt = "全部";
+										head.id = "";
+										items.add(head);
+										for(int i = 0; i < fss.getLabelsList().size(); ++ i){
+											MultiLevelSelectionView.MultiLevelItem t = new MultiLevelSelectionView.MultiLevelItem();
+											t.txt = fss.getLabelsList().get(i).getLabel();
+											t.id = fss.getValuesList().get(i).getValue();
+											items.add(t);
+										}
+										MultiLevelSelectionView nextView = 
+												new MultiLevelSelectionView((BaseActivity)SiftView.this.getContext(), items, MSG_MULTISEL_BACK, fss.getLevelCount() - 1);
+										m_viewInfoListener.onNewView(nextView);
+										
+									}									
 								}
 							});
 							
