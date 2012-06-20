@@ -376,6 +376,22 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 
 				break;
 			case MCMESSAGE_DELETEALL:
+				if(PersonalCenterView.this.currentPage != -1){
+					goodsList.clear();
+					QuanleimuApplication.getApplication().setListMyStore(goodsList);
+					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+					adapter.setList(goodsList);
+					adapter.notifyDataSetChanged();
+					
+					if(PersonalCenterView.this.m_viewInfoListener != null){
+						TitleDef title = getTitleDef();
+						title.m_rightActionHint = "编辑";
+						title.m_leftActionHint = "设置";
+						m_viewInfoListener.onTitleChanged(title);
+					}
+					adapter.setHasDelBtn(false);
+					buttonStatus = -1;
+				}
 				break;
 			case MCMESSAGE_DELETE_SUCCESS:
 				int pos2 = msg.arg2;
@@ -459,8 +475,12 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	}
 	
 	@Override
-	public boolean onLeftActionPressed(){		
-		m_viewInfoListener.onNewView(new SetMainView(getContext()));
+	public boolean onLeftActionPressed(){
+		if(currentPage != -1 && 0 == buttonStatus){
+			myHandler.sendEmptyMessage(MCMESSAGE_DELETEALL);
+		}else{
+			m_viewInfoListener.onNewView(new SetMainView(getContext()));
+		}
 		return true;
 	}
 

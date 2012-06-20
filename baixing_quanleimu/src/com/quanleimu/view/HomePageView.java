@@ -367,7 +367,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		
 		editSearch = (TextView)findViewById(R.id.etSearch);
 		
-		editSearch.setOnClickListener(new OnClickListener(){
+		findViewById(R.id.rlSearch).setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				Bundle bundle = new Bundle();

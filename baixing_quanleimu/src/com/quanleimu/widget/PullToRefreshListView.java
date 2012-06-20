@@ -168,10 +168,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	}
     }
     
-    @Override
-    protected void onAttachedToWindow() {
-        setSelection(1);
-    }
+//    @Override
+//    protected void onAttachedToWindow() {
+//        setSelection(1);
+//    }
 
     @Override
     public void setAdapter(ListAdapter adapter) {

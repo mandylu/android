@@ -45,7 +45,6 @@
                     android:background="@null"
                     android:inputType="number"
                     android:padding="5dip">
-                    <requestFocus />
                 </EditText>
             </LinearLayout>
 
