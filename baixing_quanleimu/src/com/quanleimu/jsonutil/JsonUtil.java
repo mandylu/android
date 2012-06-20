@@ -204,59 +204,49 @@ public class JsonUtil {
 							}else if(subObj.getClass().equals(Float.class)){
 								value = ((Float)subObj).toString();
 							}else{
+								if(names.getString(j).endsWith("_s")){
+									if(subObj.getClass().equals(JSONArray.class)){
+										value = "";
+										JSONArray _sAry = (JSONArray)subObj;
+										if(_sAry != null){
+											for(int t = 0; t < _sAry.length(); ++ t){
+												String[] subStrings = _sAry.get(t).toString().split(":");
+												if(subStrings.length == 2){
+													int firstIndex = -1;
+													int lastIndex = subStrings[1].length() - 1;
+													for(int s = 0; s < subStrings[1].length(); ++ s){
+														if(firstIndex == -1){
+															if(subStrings[1].charAt(s) != '{'
+																	&& subStrings[1].charAt(s) != '}'
+																	&& subStrings[1].charAt(s) != '"'){
+																firstIndex = s;
+															}
+														}
+														else{
+															if(subStrings[1].charAt(s) == '{'
+																	|| subStrings[1].charAt(s) == '}'
+																	|| subStrings[1].charAt(s) == '"'){
+																lastIndex = s;
+																break;
+															}
+														}
+													}
+													if(t > 0){
+														value += ",";
+													}
+													value += subStrings[1].substring(firstIndex, lastIndex);
+												}
+											}
+										}
+									}
+								}
 								Log.println(0, "in JsonUtil ", "unknown jason value type!!!!!");
 							}
 								
 							goodsDetail.setValueByKey(names.getString(j), value);
 						}						
 					}
-/*					
-					try {
-						goodsDetail.setId(jsonGoods.getString("id"));
-					} catch (Exception e1) {
-						goodsDetail.setId("");
-					}
 
-					try {
-						goodsDetail.setLink(jsonGoods.getString("link"));
-					} catch (Exception e1) {
-						goodsDetail.setLink("");
-					}
-					
-					try {
-						goodsDetail.setMobile(jsonGoods.getString("mobile"));
-					} catch (JSONException e1) {
-						goodsDetail.setMobile("无");
-					}
-
-					try {
-						goodsDetail.setDate(Long.parseLong(jsonGoods.getString("createdTime")));
-					} catch (Exception e1) {
-						goodsDetail.setDate(Long.parseLong(""));
-					}
-					try {
-						goodsDetail.setLat(jsonGoods.getString("lat"));
-					} catch (Exception e1) {
-						goodsDetail.setLat("");
-					}
-					try {
-						goodsDetail.setLng(jsonGoods.getString("lng"));
-					} catch (Exception e1) {
-						goodsDetail.setLng("");
-					}
-					try {
-						goodsDetail.setCategoryEnglishName(jsonGoods
-								.getString("categoryEnglishName"));
-					} catch (Exception e1) {
-						goodsDetail.setCategoryEnglishName("");
-					}
-					try {
-						goodsDetail.setAreaNames(jsonGoods
-								.getString("areaNames"));
-					} catch (Exception e1) {
-						goodsDetail.setAreaNames("无");
-					}
-					*/
 					// 为ImageList赋值
 					JSONObject jsonImages = null;
 					ImageList imageList = new ImageList();

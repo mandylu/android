@@ -215,17 +215,44 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		pd.setCancelable(true);
 	}
 
-	/**
-	 * 编辑发布
-	 */
+	private static String getDisplayValue(PostGoodsBean bean, GoodsDetail detail, String detailKey){
+		if(bean == null || detail == null || detailKey == null || detailKey.equals(""))return "";
+		String value = detail.getValueByKey(detailKey);
+		String displayValue = "";
+		if(bean.getControlType().equals("input")){
+			displayValue = detail.getValueByKey(detailKey);
+			if(displayValue != null && !bean.getUnit().equals("")){
+				int pos = displayValue.indexOf(bean.getUnit());
+				if(pos != -1){
+					displayValue = displayValue.substring(0, pos);
+				}
+			}
+			return displayValue;
+		}
+		else if(bean.getControlType().equals("select") || bean.getControlType().equals("checkbox")){
+			List<String> beanVs = bean.getValues();
+			if(beanVs != null){
+				for(int t = 0; t < beanVs.size(); ++ t){
+					if(beanVs.get(t).equals(value)){
+						displayValue = bean.getLabels().get(t);
+						break;
+					}
+				}
+			}
+			if(displayValue.equals("")){
+				String _sValue = detail.getValueByKey(detailKey + "_s"); 
+				if(_sValue != null && !_sValue.equals("")){
+					return _sValue;
+				}
+			}
+		}
+		return displayValue;
+	}
+	
 	private void editpostUI() {
 		// TODO Auto-generated method stub
 
 		if (goodsDetail != null) {
-			System.out.println("editMap--->" + editMap.toString());
-			System.out.println("goodsDetail--->"
-					+ goodsDetail.getMetaData().toString());
-			
 			Set<String> sets = editMap.keySet();
 			if(sets != null){
 				Object[] objKeys = sets.toArray();
@@ -234,26 +261,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					String[] subs = key.split(" ");
 					
 					PostGoodsBean bean = postList.get(subs[0]);
-					
+					String displayValue = getDisplayValue(bean, goodsDetail, subs[1]);					
 					String value = goodsDetail.getValueByKey(subs[1]);
-					String displayValue = value;
-					List<String> beanVs = bean.getValues();
-					if(beanVs != null){
-						for(int t = 0; t < beanVs.size(); ++ t){
-							if(beanVs.get(t).equals(value)){
-								displayValue = bean.getLabels().get(t);
-								break;
-							}
-						}
-					}
-					
-					if(displayValue != null && bean != null && !bean.getUnit().equals("")){
-						int pos = displayValue.indexOf(bean.getUnit());
-						if(pos != -1){
-							displayValue = displayValue.substring(0, pos);
-						}
-					}
-
 					
 					Object obj = this.getEditMapValue(subs[0]);
 				 	if (obj != null && value != null && !value.equals("")) {
