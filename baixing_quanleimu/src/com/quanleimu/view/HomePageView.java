@@ -583,11 +583,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 								tempUpdated.set(position_f, true);
 							}
 							if(iv_f != null)	iv_f.setImageBitmap(bitmap);
-							
-							if(iv_f != null){
-								int height = iv_f.getHeight();
-								int width = iv_f.getWidth();
-							}
 	
 							(new AdapterNotifyChange(thisAdapter)).execute(true);
 						}					
@@ -607,12 +602,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 						needNotify = true;
 						}
 					if(iv != null)	iv.setImageBitmap(bitmapReal);
-					
-					if(iv != null){
-						int height = iv.getHeight();
-						int width = iv.getWidth();
-					}
-						
 					
 					//if this is the last seen item, try to load next
 					int position_cur = position + 1;
@@ -649,11 +638,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					
 					if(bitmap != null){
 						if(iv != null)	iv.setImageBitmap(bitmap);	
-						
-						if(iv != null){
-							int height = iv.getHeight();
-							int width = iv.getWidth();
-						}
 					}else{
 						Log.d( "HotList original image loader 2", "original hotlist picture missing!!");
 					}

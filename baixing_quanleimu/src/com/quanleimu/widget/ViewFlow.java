@@ -50,6 +50,7 @@ import android.widget.Scroller;
 public class ViewFlow extends AdapterView<Adapter> {
 
 	private static final int SNAP_VELOCITY = 500;
+	private static final int EFFECTIVE_SCROLL = 2;
 	private static final int INVALID_SCREEN = -1;
 	private final static int TOUCH_STATE_REST = 0;
 	private final static int TOUCH_STATE_SCROLLING = 1;
@@ -80,6 +81,8 @@ public class ViewFlow extends AdapterView<Adapter> {
 	private Timer timerScroll = null;
 	private long scrollIntervalMs = 5000;
 	private long scrollDurationMs = 200;
+	
+	private int nLastScrollX = 0;
 
 	private OnGlobalLayoutListener orientationChangeListener = new OnGlobalLayoutListener() {
 
@@ -393,12 +396,14 @@ public class ViewFlow extends AdapterView<Adapter> {
 			mTouchState = mScroller.isFinished() ? TOUCH_STATE_REST
 					: TOUCH_STATE_SCROLLING;
 
+			nLastScrollX = getScrollX();
+			
 			break;
 
 		case MotionEvent.ACTION_MOVE:
 			final int deltaX = (int) (mLastMotionX - x);
 
-			boolean xMoved = true;//Math.abs(deltaX) > mTouchSlop;
+			boolean xMoved = Math.abs(deltaX) > EFFECTIVE_SCROLL;
 
 			if (xMoved) {
 				// Scroll if the user moved far enough along the X axis
@@ -406,11 +411,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 				if (mViewInitializeListener != null)
 					initializeView(deltaX);
-			}
-
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
-				// Scroll to follow the motion event
-
+				
 				mLastMotionX = x;
 
 				final int scrollX = getScrollX();
@@ -432,7 +433,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			break;
 
 		case MotionEvent.ACTION_UP:
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
+			if (mTouchState == TOUCH_STATE_SCROLLING/* && Math.abs(nLastScrollX - getScrollX()) > EFFECTIVE_SCROLL*/) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocityX = (int) velocityTracker.getXVelocity();
@@ -460,7 +461,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 			break;
 		case MotionEvent.ACTION_CANCEL:
-			if (mTouchState == TOUCH_STATE_SCROLLING) {
+			if (mTouchState == TOUCH_STATE_SCROLLING/* && Math.abs(nLastScrollX - getScrollX()) > EFFECTIVE_SCROLL*/) {
 				final VelocityTracker velocityTracker = mVelocityTracker;
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocityX = (int) velocityTracker.getXVelocity();
