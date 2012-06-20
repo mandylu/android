@@ -16,7 +16,6 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.mobclick.android.MobclickAgent;
-import com.yx.imageUtils.LoadImage;
 import java.util.ArrayList;
 import com.quanleimu.entity.CityDetail;
 import java.util.List;
@@ -35,7 +34,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 	protected ImageView ivHomePage,ivPostGoods,ivMyCenter;
 	protected View v = null; 
 	protected ProgressDialog pd;
-	public LoadImage LoadImage;
+	//public LoadImage LoadImage;
 	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -140,7 +139,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 //		v =findViewById(R.id.linearBottom);
 		MobclickAgent.onError(this);
 		myApp = (QuanleimuApplication) getApplication();
-		LoadImage = new LoadImage();
+		//LoadImage = new LoadImage();
 		//判断Intent和Bundle
 		intent = getIntent();
 		if(intent == null)
