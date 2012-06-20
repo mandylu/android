@@ -332,23 +332,15 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 
 		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 		if (areaNamesV != null && !areaNamesV.equals("")) 
-		{			
-			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
-			{
-				rl_address.setOnClickListener(this);
-			}
-			else
-			{
-//				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
-			}
+		{		
+			rl_address.setOnClickListener(this);
+//			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+//			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+//			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
+//			{
+//				
+//			}
 		} 
-		else 
-		{
-//			rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
-		}
-
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
 		if (mobileV != null
 				&& !mobileV.equals("")
@@ -520,9 +512,41 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
 				baseActivity.startActivity(baseActivity.getIntent());
 			}
-			else
-			{
-				rl_address.setBackgroundResource(R.drawable.iv_bg_unclickable);
+			else{
+				Thread getCoordinate = new Thread(new Runnable(){
+		            @Override
+		            public void run() {
+		            	if(!GoodDetailView.this.isShown()) return;
+						String city = QuanleimuApplication.getApplication().cityName;
+						if(!city.equals("")){
+							String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+							try{
+								String googleJsn = Communication.getDataByUrl(googleUrl);
+								String[] info = googleJsn.split(",");
+								if(info != null && info.length == 4){
+									String positions = 
+											Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
+											+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+									Bundle bundle = new Bundle();
+									bundle.putString("detailPosition", positions);
+									
+									//TODO:
+									BaseActivity baseActivity = (BaseActivity)getContext();
+									baseActivity.getIntent().putExtras(bundle);
+									
+									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+									baseActivity.startActivity(baseActivity.getIntent());
+								}
+							}catch(UnsupportedEncodingException e){
+								e.printStackTrace();
+							}catch(Exception e){
+								e.printStackTrace();
+							}
+						}	
+		            }
+				});
+				getCoordinate.start();
+
 			}
 			break;
 		case R.id.fenxianglayout:{
