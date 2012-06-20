@@ -10,11 +10,8 @@
         android:id="@+id/rlMainCateInfo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content" 
-        android:paddingBottom="5dip"
-        android:paddingLeft="5dip"
-        android:paddingTop="5dip"
-        android:background="@drawable/list_selector"
-        android:paddingRight="5dip" >
+        android:padding="5dip"
+        android:background="@drawable/list_selector" >
 
         <ImageView
             android:id="@+id/ivInfo"
@@ -24,37 +21,39 @@
             android:src="@drawable/home_bg_thumb_2x" >
         </ImageView>
 
-        <TextView
-            android:id="@+id/tvName"
-            android:layout_toRightOf="@+id/ivInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="10dip"
-            android:layout_marginTop="5dip"
-            android:layout_gravity="top"
-            android:layout_alignParentTop="true"     
-            android:singleLine="true"
-            android:textColor="@drawable/list_titleselector"
-            android:textStyle="bold"
-            android:textSize="20dip" >
-        </TextView>
-
-        <TextView
-            android:id="@+id/tvSubNames"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginBottom="15dip"
-            android:layout_marginRight="10dip"
-            android:layout_toRightOf="@+id/ivInfo"
-			android:layout_toLeftOf="@+id/iv2SubCates"
-			android:layout_gravity="bottom"  
-			android:layout_alignParentBottom="true"      
-            android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
-            android:textSize="14dip" >
-        </TextView>
+        <RelativeLayout 
+            	android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_marginLeft="10dip"
+	            android:layout_marginRight="10dip"
+	            android:paddingRight="5dip"
+	            android:layout_toRightOf="@+id/ivInfo">
+	            
+	        <TextView
+	            android:id="@+id/tvName"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:layout_alignParentTop="true" 
+	            android:layout_margin="0dip" 
+	            android:padding="0dip"
+	            android:singleLine="true"
+	            android:textColor="@drawable/list_titleselector"
+	            android:textStyle="bold"
+	            android:textSize="20dip">
+	        </TextView>
+	
+	        <TextView
+	            android:id="@+id/tvSubNames"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+				android:layout_alignParentBottom="true"
+				android:layout_below="@+id/tvName"      
+	            android:singleLine="true"
+	            android:textColor="@drawable/list_textselector"
+	            android:textSize="14dip" >
+	        </TextView>
+            
+        </RelativeLayout>
 
         <ImageView
             android:id="@+id/iv2SubCates"

@@ -28,12 +28,13 @@
 			android:id="@+id/viewflowindic"
 			android:layout_alignParentBottom="true"
 			android:layout_centerHorizontal="true"
-			android:layout_gravity="center_horizontal"
-			app:radius="5dip"
+			android:layout_alignBottom="@+id/glDetail"
+			android:layout_gravity="center_horizontal|bottom"
+			app:radius="4dip"
 			app:activeColor="#ffffff"
 			app:inactiveColor="#dddddd"
 			app:inactiveType="fill"
-			app:height_gap ="4"
+			app:height_gap ="3dip"
 			app:background_color="#a000ee11"/>				    	
 		
 	</RelativeLayout>

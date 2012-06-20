@@ -125,7 +125,7 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		
 		initColors(activeColor, inactiveColor, activeType, inactiveType, a.getColor(R.styleable.CircleFlowIndicator_background_color, 0x00ffffff));	
 		
-		height_gap = a.getInt(R.styleable.CircleFlowIndicator_height_gap, 2);
+		height_gap = a.getDimension(R.styleable.CircleFlowIndicator_height_gap, 2.0f);
 	}
 
 	private void initColors(int activeColor, int inactiveColor, int activeType,

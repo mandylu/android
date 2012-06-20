@@ -36,6 +36,7 @@ public class MainCateAdapter extends BaseAdapter {
 	private List<FirstStepCate> list = new ArrayList<FirstStepCate>();
 	private Handler handler = null;
 	private int messageWhat = -1;
+	private boolean firstItemOverlap = false;
 	
 	public void setMessageOutOnDelete(Handler h, int messageWhat){
 		this.handler = h;
@@ -49,13 +50,19 @@ public class MainCateAdapter extends BaseAdapter {
 	public void setList(List<FirstStepCate> list) {
 		this.list = list;
 	}
-
+	
 	public MainCateAdapter(Context context, List<FirstStepCate> list) {
 		super();
 		this.context = context;
 		this.list = list;
 	}
 
+	public MainCateAdapter(Context context, List<FirstStepCate> list, boolean firstItemOverlap_) {
+		super();
+		this.context = context;
+		this.list = list;
+		firstItemOverlap = firstItemOverlap_;
+	}
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
@@ -83,6 +90,9 @@ public class MainCateAdapter extends BaseAdapter {
 			v = inflater.inflate(R.layout.item_maincate, null);
 			v.setTag("");
 		}
+		
+		if(firstItemOverlap && 0 == position)
+			v.setPadding(v.getPaddingLeft(), 0, v.getPaddingRight(), v.getPaddingBottom());
 		
 		FirstStepCate cate = this.list.get(position);
 		if(!v.getTag().equals(cate.englishName)){

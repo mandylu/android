@@ -35,7 +35,7 @@
 			<flag name="stroke" value="0" />
 			<flag name="fill" value="1" />
 		</attr>
-		<attr name="height_gap" format="integer"/>
+		<attr name="height_gap" format="dimension"/>
 		<attr name="background_color" format="color"/>
     </declare-styleable>    
     <declare-styleable name="TitleFlowIndicator">
@@ -54,5 +54,8 @@
     </declare-styleable>  
     <declare-styleable name="PullToRefreshListView">
         <attr name="getmore" format="boolean" />
+    </declare-styleable>
+        <declare-styleable name="CategorySelectionView">
+        <attr name="firstitemoverlap" format="boolean" />
     </declare-styleable>  
 </resources>

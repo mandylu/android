@@ -1,15 +1,9 @@
 package com.quanleimu.view;
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.adapter.CommonItemAdapter;
@@ -27,17 +21,16 @@ import com.quanleimu.activity.R;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.res.TypedArray;
 import android.os.AsyncTask;
 import android.util.AttributeSet;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.ListView;
-import android.widget.TextView;
-
-import android.graphics.Color;
 import android.graphics.drawable.Drawable;
-import android.view.MotionEvent;
 public class CategorySelectionView extends ListView {
+	
+	protected boolean firstItemOverlap = false;
 	
 	public interface ICateSelectionListener{
 		
@@ -194,7 +187,11 @@ public class CategorySelectionView extends ListView {
 	public CategorySelectionView(Context context, AttributeSet attrs){
 		super(context, attrs);
 
-		init(context);		
+		init(context);	
+		
+		TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
+				R.styleable.CategorySelectionView);
+		firstItemOverlap = styledAttrs.getBoolean(R.styleable.CategorySelectionView_firstitemoverlap, false);
 	}
 
 	protected void parseCategory(String json) {
@@ -211,7 +208,7 @@ public class CategorySelectionView extends ListView {
 			QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);
 		} else {			
 			if(allCateAdapter == null){
-				allCateAdapter = new MainCateAdapter(getContext(), allCateList);
+				allCateAdapter = new MainCateAdapter(getContext(), allCateList, firstItemOverlap);
 				this.setAdapter(allCateAdapter);	
 			}
 			else{
