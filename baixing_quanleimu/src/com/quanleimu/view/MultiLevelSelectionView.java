@@ -37,19 +37,22 @@ public class MultiLevelSelectionView extends BaseView {
 	private String json = null;
 	private String id = null;
 	ListAdapter adapter = null;
+	private int remainLevel = 0;
 	
-	public MultiLevelSelectionView(BaseActivity context, List<MultiLevelItem>items, int backMessage){
+	public MultiLevelSelectionView(BaseActivity context, List<MultiLevelItem>items, int backMessage, int remainLevel){
 		super(context);
 		message = backMessage;
 		this.items = items;
 //		init();
+		this.remainLevel = remainLevel;
 	}
 	
-	public MultiLevelSelectionView(BaseActivity context, String id, String name, int backMessage){
+	public MultiLevelSelectionView(BaseActivity context, String id, String name, int backMessage, int remainLevel){
 		super(context);
 		this.id = id;
 		title = name;
 		message = backMessage;
+		this.remainLevel = remainLevel;
 	}
 	
 	public void setTitle(String title){
@@ -58,16 +61,16 @@ public class MultiLevelSelectionView extends BaseView {
 	
 	@Override
 	protected void onAttachedToWindow(){
+		
 		if(null == adapter){
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
-			pd.show();
-	
 			if(items == null || items.size() == 0){
+				pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
+				pd.setCancelable(true);
+				pd.show();
 				(new Thread(new GetMetaDataThread(id))).start();
 			}
 			else{
-				(new Thread(new GetMetaDataThread(items.get(0).id))).start();
+				init(remainLevel > 0);
 			}
 		}
 		super.onAttachedToWindow();
@@ -106,7 +109,12 @@ public class MultiLevelSelectionView extends BaseView {
 				if(hasNextLevel){
 					if(null != m_viewInfoListener){
 						MultiLevelSelectionView nextV = 
-								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), items.get(position).id, items.get(position).txt, message); 
+								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), 
+										items.get(position).
+										id, items.get(position).txt, 
+										message,
+										MultiLevelSelectionView.this.remainLevel - 1); 
+						
 						m_viewInfoListener.onNewView(nextV);
 					}
 				}
@@ -182,12 +190,12 @@ public class MultiLevelSelectionView extends BaseView {
 								t.id = bean.getValues().get(i);
 								MultiLevelSelectionView.this.items.add(t);
 							}
-							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1"));
+//							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1"));
 						}
 						else{
-							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1") || bean.getLabels().size() > 0);
+//							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1") || bean.getLabels().size() > 0);
 						}
-						
+						MultiLevelSelectionView.this.init(MultiLevelSelectionView.this.remainLevel > 0); 
 					}
 				}
 				break;

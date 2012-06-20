@@ -456,6 +456,14 @@ public class JsonUtil {
 				} catch (Exception e1) {
 					postGoods.setSubMeta("");
 				}
+				try{
+					String levels = jsonObject.getString("level");
+					if(levels != null){
+						postGoods.setLevelCount(levels.split(",").length);
+					}
+				}catch(Exception e){
+					postGoods.setLevelCount(0);
+				}
 				
 
 				// values数组

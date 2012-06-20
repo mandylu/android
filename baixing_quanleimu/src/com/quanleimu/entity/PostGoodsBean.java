@@ -21,6 +21,15 @@ public class PostGoodsBean implements Serializable{
 	private List<String> values;
 	private HashMap<String, String> lvmap;
 	private String subMeta;
+	private int levelCount;
+	
+	public void setLevelCount(int count){
+		levelCount = count;		
+	}
+	
+	public int getLevelCount(){
+		return levelCount;
+	}
 	
 	public void setSubMeta(String sm){
 		subMeta = sm;

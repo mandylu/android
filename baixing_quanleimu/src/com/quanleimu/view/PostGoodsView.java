@@ -1247,7 +1247,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
 						displayname = postBean.getDisplayName();
 						if(m_viewInfoListener != null){
-							if(postBean.getSubMeta().equals("1")){
+							if(postBean.getLevelCount() > 0){
 								List<MultiLevelSelectionView.MultiLevelItem> items = 
 										new ArrayList<MultiLevelSelectionView.MultiLevelItem>();
 								for(int i = 0; i < postBean.getLabels().size(); ++ i){
@@ -1257,7 +1257,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 									items.add(t);
 								}
 								MultiLevelSelectionView nextView = 
-										new MultiLevelSelectionView((BaseActivity)PostGoodsView.this.getContext(), items, MSG_MULTISEL_BACK);
+										new MultiLevelSelectionView((BaseActivity)PostGoodsView.this.getContext(), items, MSG_MULTISEL_BACK, postBean.getLevelCount() - 1);
 								m_viewInfoListener.onNewView(nextView);
 								
 							}
