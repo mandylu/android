@@ -15,6 +15,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.BaseView.EBUTT_STYLE;
 
 
 public class SetMainView extends BaseView implements View.OnClickListener{
@@ -92,7 +93,8 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = "设置";
-		//title.m_leftActionHint = "首页";
+		title.m_leftActionHint = "完成";
+		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		
 		return title;
 		}
@@ -101,7 +103,6 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
 		tab.m_visible = false;		
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_SETTING;
 		
 		return tab;
 	}

@@ -77,7 +77,6 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
 		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_CATEGORY;
 		return tab;
 	}
 

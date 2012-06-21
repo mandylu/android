@@ -41,7 +41,6 @@ public class AboutUs extends BaseView {
 	public TabDef getTabDef(){
 		TabDef tabDef = new TabDef();
 		tabDef.m_visible = false;
-		tabDef.m_tabSelected = ETAB_TYPE.ETAB_TYPE_SETTING;
 		
 		return tabDef;
 	}	
