@@ -273,6 +273,11 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		}
 	}
 	
+	@Override
+	public void onAttachedToWindow(){
+		super.onAttachedToWindow();
+	}
+	
 	// 管理线程的Handler
 	Handler myHandler = new Handler() {
 		@Override

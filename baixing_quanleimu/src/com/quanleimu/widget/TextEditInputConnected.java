@@ -3,10 +3,13 @@ package com.quanleimu.widget;
 
 import android.content.Context;
 import android.util.AttributeSet;
+import android.view.KeyEvent;
 import android.view.View;
 import android.view.inputmethod.BaseInputConnection;
+import android.view.inputmethod.CompletionInfo;
 import android.view.inputmethod.EditorInfo;
 import android.view.inputmethod.InputConnection;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
 
 public class TextEditInputConnected extends EditText{
@@ -35,6 +38,37 @@ public class TextEditInputConnected extends EditText{
 			
 			return super.performEditorAction(editorAction);
 		}
+		
+		@Override
+		public boolean commitText(CharSequence text, int newCursorPosition){
+			if((text.charAt(text.length()-1)=='\n' ||  text.charAt(text.length()-1)=='\r')
+					&& actionListener != null){
+				actionListener.onActionFired();
+			}
+			return super.commitText(text, newCursorPosition);
+		}
+		
+		@Override
+		public boolean commitCompletion (CompletionInfo text) {
+			if(/*1 == editorAction && */actionListener != null){
+				actionListener.onActionFired();
+			}
+			
+			return super.commitCompletion(text);
+		}
+		
+		@Override
+		public boolean sendKeyEvent(KeyEvent event){
+			if(		actionListener != null
+					&& event.getAction() == KeyEvent.ACTION_UP 
+					&& event.getKeyCode() == KeyEvent.KEYCODE_ENTER)
+			{
+				actionListener.onActionFired();
+				return true;
+			}else{
+				return super.sendKeyEvent(event);
+			}
+		}		
 	}
 	
 	@Override
@@ -51,5 +85,4 @@ public class TextEditInputConnected extends EditText{
 	public void setOnActionListener(OnActionListener listener){
 		actionListener = listener;
 	}
-
 }
