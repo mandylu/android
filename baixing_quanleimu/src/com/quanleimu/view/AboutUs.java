@@ -34,6 +34,8 @@ public class AboutUs extends BaseView {
 		title.m_visible = true;
 		title.m_title = "关于我们";
 		
+		title.m_leftActionHint = "返回";
+		
 		return title;
 	}
 	
