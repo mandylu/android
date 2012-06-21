@@ -124,8 +124,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 						R.layout.changephonedialog, null);
 				TextView tvTelNum = (TextView) linearlayout
 						.findViewById(R.id.tvTelNum);
-				tvTelNum.setText("您已经绑定" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString()
-						+ ",确定要修改吗？");
+				tvTelNum.setText("您已经登陆到" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString());
 				Button btnChange = (Button) linearlayout
 						.findViewById(R.id.btnChange);
 				Button btnCancel = (Button) linearlayout
@@ -137,10 +136,15 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 					public void onClick(View v) {
 						// 点击换号码，重新跳转到登录
 						changePhoneDialog.dismiss();
+
+						Util.clearData(getContext(), "user");
 						
-						if(null != m_viewInfoListener){
-							m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
-						}
+						QuanleimuApplication.getApplication().setListMyPost(null);
+						
+						((TextView)SetMainView.this.findViewById(R.id.tvPhoneNum)).setText("");
+//						if(null != m_viewInfoListener){
+//							m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
+//						}
 					}
 				});
 

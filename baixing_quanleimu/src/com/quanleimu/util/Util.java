@@ -174,6 +174,14 @@ public class Util {
 		}
 		return res;
 	}
+	
+	public static void clearData(Context context, String file){
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+			file = "_" + file;
+		}
+		
+		context.deleteFile(file);
+	}
 
 	//将数据从手机内存中读出来
 	public static Object loadDataFromLocate(Context context,String file) {
