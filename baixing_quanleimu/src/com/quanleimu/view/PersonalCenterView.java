@@ -362,23 +362,28 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lvGoodsList.onRefreshComplete();
 				break;
 			case MCMESSAGE_DELETE:
-				int pos = msg.arg2;
-				if(PersonalCenterView.this.currentPage == -1){
-					new Thread(new MyMessageDeleteThread(pos)).start();
-				}
-				else if(0 == PersonalCenterView.this.currentPage){
-					goodsList.remove(pos);
-					QuanleimuApplication.getApplication().setListMyStore(goodsList);
-					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-					adapter.setList(goodsList);
-					adapter.notifyDataSetChanged();
-				}
-				else if(1 == PersonalCenterView.this.currentPage){
-					goodsList.remove(pos);
-					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-					adapter.setList(goodsList);
-					adapter.notifyDataSetChanged();					
+				synchronized(PersonalCenterView.this){
+					int pos = msg.arg2;
+					if(PersonalCenterView.this.currentPage == -1){
+						pd = ProgressDialog.show(PersonalCenterView.this.getContext(), "提示", "请稍候...");
+						pd.show();
+
+						new Thread(new MyMessageDeleteThread(pos)).start();
+					}
+					else if(0 == PersonalCenterView.this.currentPage){
+						goodsList.remove(pos);
+						QuanleimuApplication.getApplication().setListMyStore(goodsList);
+						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+						adapter.setList(goodsList);
+						adapter.notifyDataSetChanged();
+					}
+					else if(1 == PersonalCenterView.this.currentPage){
+						goodsList.remove(pos);
+						QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
+						adapter.setList(goodsList);
+						adapter.notifyDataSetChanged();					
+					}
 				}
 
 				break;
@@ -401,6 +406,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				break;
 			case MCMESSAGE_DELETE_SUCCESS:
+				if(pd != null){
+					pd.dismiss();
+				}
 				int pos2 = msg.arg2;
 				try {
 					JSONObject jb = new JSONObject(json);
@@ -424,6 +432,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				break;
 			case MCMESSAGE_DELETE_FAIL:
+				if(pd != null){
+					pd.dismiss();
+				}
+
 				Toast.makeText(PersonalCenterView.this.getContext(), "删除失败，请稍后重试！", 0).show();
 				break;
 			case MCMESSAGE_NETWORKERROR:
