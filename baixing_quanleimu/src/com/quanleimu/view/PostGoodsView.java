@@ -99,6 +99,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private boolean userValidated = false;
 	private boolean loginTried = false;
 	
+	static private String lastCategoryEnglishName = null;
+	static private String lastCategoryShowName = null;
+	
 	private List<String> otherProperties = new ArrayList<String>();
 
 	
@@ -374,7 +377,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			mobile = user.getPhone();
 			password = user.getPassword();
 
-			if(categoryEnglishName == null || categoryEnglishName.equals("")){
+			if((lastCategoryEnglishName == null || lastCategoryEnglishName.equals("")) 
+					&& (categoryEnglishName == null || categoryEnglishName.equals(""))){
 				this.addCategoryItem();
 				return; 
 			}
@@ -383,8 +387,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 				cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 			}
-			PostMu postMu = (PostMu) Util.loadDataFromLocate(this.getContext(),
-					categoryEnglishName + cityEnglishName);
+			if(categoryEnglishName == null || categoryEnglishName.equals("")){
+				categoryEnglishName = lastCategoryEnglishName;
+			}
+			PostMu postMu =  (PostMu) Util.loadDataFromLocate(this.getContext(), categoryEnglishName + cityEnglishName);
 			if (postMu != null && !postMu.getJson().equals("")) {
 				json = postMu.getJson();
 				Long time = postMu.getTime();
@@ -1043,6 +1049,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				tv.setText(backMsg[1]);
 			}
 			this.categoryEnglishName = backMsg[0];
+			lastCategoryEnglishName = backMsg[0];
+			lastCategoryShowName = backMsg[1];
 			this.usercheck();
 			
 			break;
@@ -1344,6 +1352,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}				
 		});
 		layout_txt.addView(v);
+		
+		if(categoryEnglishName != null && !categoryEnglishName.equals("") 
+				&& lastCategoryEnglishName != null && lastCategoryEnglishName.equals(categoryEnglishName)){
+			 ((TextView)v.findViewById(R.id.posthint)).setText(lastCategoryShowName);
+		}
 		
 		TextView border = new TextView(PostGoodsView.this.getContext());
 		border.setLayoutParams(new LayoutParams(
