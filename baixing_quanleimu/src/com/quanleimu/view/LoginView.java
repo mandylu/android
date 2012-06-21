@@ -9,6 +9,7 @@ import org.json.JSONObject;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -74,7 +75,7 @@ public class LoginView extends BaseView implements OnClickListener{
 	@Override
 	public boolean onRightActionPressed(){
 		if (check()) {
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
+			pd = ProgressDialog.show(getContext(), "提示", "正在登陆，请稍候...");
 			pd.setCancelable(true);
 			new Thread(new LoginThread()).start();
 		}
@@ -172,10 +173,22 @@ public class LoginView extends BaseView implements OnClickListener{
 //	public void onAttachedToWindow(){
 //		super.onAttachedToWindow();
 //		
-//        InputMethodManager imm = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
-//        //imm.hideSoftInputFromInputMethod(getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
-//        imm.showSoftInput(this, 0); 
+//		if(accoutnEt passwordEt)
+//        UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+//        
 //	}
+	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(1212 == resultCode){
+			
+			UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+			accoutnEt.setText(user.getId()); 
+			passwordEt.setText(user.getPassword());
+			
+			onRightActionPressed();
+		}
+	}
 	
 	private void parseLoginResponse(String json_response){
 		try {

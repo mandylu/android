@@ -59,6 +59,7 @@
 			 android:dividerHeight="1dp"
 			 android:background="@drawable/home_bg"
 	         android:layout_height="fill_parent"
+	         android:headerDividersEnabled="false"
 	         app:getmore="false"/>
     	
     </LinearLayout>

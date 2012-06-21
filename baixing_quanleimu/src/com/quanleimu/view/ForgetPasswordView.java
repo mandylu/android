@@ -47,6 +47,7 @@ public class ForgetPasswordView extends BaseView {
 		web = (WebView) findViewById(R.id.web);
 		web.setWebViewClient(new ForgetPasswordWebClient(this));
 		web.loadUrl("http://www.baixing.com/auth/findPassword/");
+		web.getSettings().setJavaScriptEnabled(true);
 		web.requestFocus();
 	}
 

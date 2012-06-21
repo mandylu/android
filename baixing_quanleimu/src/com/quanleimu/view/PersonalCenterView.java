@@ -122,7 +122,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					}
 					lvGoodsList.setVisibility(View.GONE);
 				}
-			}
+			}			
+			
+			lvGoodsList.setPullToRefreshEnabled(true);
+			lvGoodsList.setAdapter(adapter);
 		}
 		else if(0 == currentPage){
 			if(loginItem != null){
@@ -143,6 +146,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			goodsList = QuanleimuApplication.getApplication().getListMyStore();
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
+			
+			lvGoodsList.setPullToRefreshEnabled(false);
 		}
 		else{
 			if(loginItem != null){
@@ -162,6 +167,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			goodsList = QuanleimuApplication.getApplication().getListLookHistory();
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
+			
+			lvGoodsList.setPullToRefreshEnabled(false);
 		}
 		
 

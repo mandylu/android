@@ -6,6 +6,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -18,9 +19,12 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Util;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.entity.UserBean;
 
 public class RegisterView extends BaseView implements View.OnClickListener{
 
@@ -176,8 +180,17 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 					Toast.makeText(getContext(), message, 0).show();
 					if (!id.equals("")) {
 						// 注册成功
+						
+						UserBean user = new UserBean();
+						user.setId(accoutnEt.getText().toString());
+						user.setPhone(accoutnEt.getText().toString());
+						user.setPassword(passwordEt.getText().toString());
+						QuanleimuApplication.getApplication().setMobile(user.getPhone());
+						Util.saveDataToLocate(getContext(), "user", user);
+						
 						if(null != m_viewInfoListener){
 							m_viewInfoListener.onExit(RegisterView.this);
+							m_viewInfoListener.onSetResult(1212, 1212, null);
 						}
 					}
 				} catch (JSONException e) {

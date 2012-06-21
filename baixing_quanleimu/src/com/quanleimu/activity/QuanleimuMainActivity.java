@@ -101,7 +101,15 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		super.onActivityResult(requestCode, resultCode, data);
 	}
 
-
+	@Override
+	public void onSetResult(int requestCode, int resultCode, Bundle data){
+		if(currentView != null){
+			Intent intent = new Intent();
+			if(null != data)
+				intent.putExtras(data);
+			currentView.onActivityResult(requestCode, resultCode, intent);
+		}		
+	}
 	
 	@Override
 	public void onBack(){

@@ -76,6 +76,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private boolean mHasMore = true;
     
     private boolean mAllowGetMore = true;
+    private boolean mEnableHeader = true;
     
     private long mLastUpdateTimeMs;
 
@@ -168,16 +169,43 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	}
     }
     
-//    @Override
-//    protected void onAttachedToWindow() {
-//        setSelection(1);
-//    }
+    @Override
+    protected void onAttachedToWindow() {
+    	if(mRefreshView.getBottom() > 0){
+    		setSelectionFromTop(1, 0);
+    	}
+    }
 
+    public void setPullToRefreshEnabled(boolean enable){
+    	if(mEnableHeader != enable){
+    		if(enable){
+    			mRefreshView.setVisibility(View.VISIBLE);
+    		    mRefreshViewText.setVisibility(View.VISIBLE);
+    		    
+    		    //mRefreshViewImage.setVisibility(View.VISIBLE);
+    		    
+    		    if(mRefreshState == REFRESHING)
+    		    	mRefreshViewProgress.setVisibility(View.VISIBLE);
+    		    
+    		    if(mRefreshState == PULL_TO_REFRESH && mRefreshState == RELEASE_TO_REFRESH)
+    		    	mRefreshViewLastUpdated.setVisibility(View.VISIBLE);
+    		}else{
+    			mRefreshView.setVisibility(View.GONE);
+    		    mRefreshViewText.setVisibility(View.GONE);
+    		    mRefreshViewImage.setVisibility(View.GONE);
+    		    mRefreshViewProgress.setVisibility(View.GONE);
+    		    mRefreshViewLastUpdated.setVisibility(View.GONE);
+    		}
+    		
+    		mEnableHeader = enable;
+    	}
+    }
+    
     @Override
     public void setAdapter(ListAdapter adapter) {
         super.setAdapter(adapter);
 
-        setSelection(1);
+        setSelectionFromTop(1, 0);
     }
 
     /**
@@ -246,7 +274,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                     setVerticalScrollBarEnabled(true);
                 }
                 
-                if (getFirstVisiblePosition() == 0 && mRefreshState != REFRESHING) {
+                if (getFirstVisiblePosition() == 0 && mEnableHeader && mRefreshState != REFRESHING) {
                     if (mRefreshView.getTop() >= 0 && mRefreshState == RELEASE_TO_REFRESH){
                         // Initiate the refresh
                         mRefreshState = REFRESHING;
@@ -369,7 +397,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             int visibleItemCount, int totalItemCount) {
         // When the refresh view is completely visible, change the text to say
         // "Release to refresh..." and flip the arrow drawable.
-        if (mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
+        if (mEnableHeader && mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING) {
             if (firstVisibleItem == 0) {
                 mRefreshViewImage.setVisibility(View.VISIBLE);
@@ -418,7 +446,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             	mGetMoreState = GETTING_MORE;                       
                 onGetMore();
             }            
-            else if (firstVisibleItem == 0) {
+            else if (mEnableHeader && firstVisibleItem == 0) {
             	Log.d("on fling: ", "top y = " + mRefreshView.getTop());
             	if(mRefreshState != REFRESHING && mRefreshView.getTop() >= 0){
 	                mRefreshState = REFRESHING;

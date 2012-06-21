@@ -41,7 +41,8 @@ public class TextEditInputConnected extends EditText{
 		
 		@Override
 		public boolean commitText(CharSequence text, int newCursorPosition){
-			if((text.charAt(text.length()-1)=='\n' ||  text.charAt(text.length()-1)=='\r')
+			if(		text.length() > 0
+					&&(text.charAt(text.length()-1)=='\n' ||  text.charAt(text.length()-1)=='\r')
 					&& actionListener != null){
 				actionListener.onActionFired();
 			}

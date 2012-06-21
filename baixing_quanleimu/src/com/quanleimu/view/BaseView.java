@@ -20,7 +20,7 @@ public class BaseView extends LinearLayout{
 		public void onExit(BaseView view);
 		public void onSwitchToTab(ETAB_TYPE tabType);
 		public void onPopView(String viewClassName);
-//		public void onSetResult(int requestCode, int resultCode, Bundle data);
+		public void onSetResult(int requestCode, int resultCode, Bundle data);
 	};
 
 	public enum EBUTT_STYLE{
