@@ -1,5 +1,6 @@
 package com.quanleimu.activity;
 
+
 import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
@@ -32,7 +33,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-
+import com.quanleimu.util.ErrorReporter;
 public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
 
 	// 定义经纬度
@@ -46,7 +47,12 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-	    
+	    //try to collect crash log
+		ErrorReporter errReporter = new ErrorReporter();
+		errReporter.Init(this);
+		errReporter.CheckErrorAndSendMail(this);
+		//end crash log sending
+		
 	    NetworkProtocols.getInstance().init(this);
 	    
 		setContentView(R.layout.main2);
