@@ -294,10 +294,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){
 					if(objArea instanceof TextView){
-						((TextView)objArea).setText(areas[1]);
+						((TextView)objArea).setText(areas[areas.length - 1]);
 					}
 					else if(objArea instanceof EditText){
-						((EditText)objArea).setText(areas[1]);
+						((EditText)objArea).setText(areas[areas.length - 1]);
 					}
 					PostGoodsBean areaBean = postList.get("地区");
 					if(areaBean != null && areaBean.getValues() != null && areaBean.getLabels() != null){
@@ -333,7 +333,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				String[] cbig = big.split(",");
 				for (int j = 0; j < listUrl.size(); j++) {
 					String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-					new Thread(new Imagethread(listUrl.get(j), bigUrl)).start();
+					if(j > 2)break;
+					this.bitmap_url.set(j, bigUrl); 
+;					new Thread(new Imagethread(listUrl.get(j), bigUrl)).start();
 //					imgs[j].setTag(listUrl.get(j));
 //					LoadImage.addTask(listUrl.get(j), imgs[j]);
 //					LoadImage.doTask();
@@ -1373,6 +1375,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
+			if(postBean.getName().equals("地区")){
+				this.appendBeanToLayout(postBean);
+				continue;
+			}
 			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
 					&& goodsDetail.getImageList().getResize180() != null 
 					&& !goodsDetail.getImageList().getResize180().equals("")))){
@@ -1639,10 +1645,13 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				
 				//Bitmap bitmap = Util.newBitmap(tbitmap, 480, 480);
 				for(int i = 0; i < PostGoodsView.this.bitmap_url.size(); ++ i){
-					if(null != PostGoodsView.this.bitmap_url.get(i) 
-							&& null != PostGoodsView.this.bitmap_url.get(i)
-							&& PostGoodsView.this.bitmap_url.get(i).contains("http:")){
-						continue;						
+//					if(null != PostGoodsView.this.bitmap_url.get(i) 
+//							&& PostGoodsView.this.bitmap_url.get(i).contains("http:")){
+//						continue;						
+//					}
+					if(null == PostGoodsView.this.bitmap_url.get(i)
+							|| !PostGoodsView.this.bitmap_url.get(i).equals(urlBig)){
+						continue;
 					}
 					PostGoodsView.this.bitmap_url.set(i, urlBig);
 					currentIndex = i;
