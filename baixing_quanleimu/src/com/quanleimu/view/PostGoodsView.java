@@ -1325,7 +1325,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		border.setBackgroundResource(R.drawable.list_divider);
 
 		if(layout_txt.getChildCount() % 2 == 1){
-			int insertIndex = layout_txt.getChildCount() - 1;
+			int insertIndex = 
+					layout_txt.getChildCount() >= 3 ? layout_txt.getChildCount() - 3 : layout_txt.getChildCount() - 1;
 			insertIndex = insertIndex >= 0 ? insertIndex : 0;
 			layout_txt.addView(layout, insertIndex);
 			layout_txt.addView(border, insertIndex + 1);
@@ -1379,9 +1380,10 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				this.appendBeanToLayout(postBean);
 				continue;
 			}
-			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
-					&& goodsDetail.getImageList().getResize180() != null 
-					&& !goodsDetail.getImageList().getResize180().equals("")))){
+//			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
+//					&& goodsDetail.getImageList().getResize180() != null 
+//					&& !goodsDetail.getImageList().getResize180().equals("")))){
+			if(postBean.getName().equals("images")){
 				this.appendBeanToLayout(postBean);
 				continue;
 			}
