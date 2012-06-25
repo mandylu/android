@@ -84,7 +84,11 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				title.m_title = "我发布的信息";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			if(onResult || listMyPost.size() != 0){
+			UserBean tmpBean = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+			if(onResult || 
+					(tmpBean != null 
+						&& user != null && tmpBean.getPhone().equals(user.getPhone())
+						&& listMyPost.size() != 0)){
 				adapter.setList(listMyPost);
 				adapter.notifyDataSetChanged();
 			}
