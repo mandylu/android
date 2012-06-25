@@ -336,6 +336,11 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 				listMyStore = null;
 			}
 			myApp.setListMyStore(listMyStore);
+			
+			Object personalMark = Helper.loadDataFromLocate(SplashActivity.this, "personMark");
+			if(personalMark != null){
+				myApp.setPersonMark((String)personalMark);
+			}
 			myHandler.sendEmptyMessage(2);
 		}
 
