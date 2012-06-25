@@ -23,9 +23,10 @@ import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache2SD.LazyImageLoader2SD;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.ViewStack;
-
+import com.weibo.net.AccessToken;
 public class QuanleimuApplication extends Application {
-	
+	public static final String kWBBaixingAppKey = "3747392969";
+	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
 	public static String version="";
 	public static Context context;	
@@ -36,6 +37,7 @@ public class QuanleimuApplication extends Application {
 	public static List<Bitmap> listBm;
 	public static boolean update = false;
 	public static boolean textMode = false;
+	private static AccessToken accessToken = null;
 	
 	public static void setTextMode(boolean tMode){
 		QuanleimuApplication.textMode = tMode;
@@ -51,6 +53,14 @@ public class QuanleimuApplication extends Application {
 	
 	public List<Bitmap> getListBigBm() {
 		return listBigBm;
+	}
+	
+	static public void setWeiboAccessToken(AccessToken token){
+		accessToken = token;
+	}
+	
+	static public AccessToken getWeiboAccessToken(){
+		return accessToken;
 	}
 
 	public void setListBigBm(List<Bitmap> listBigBm) {

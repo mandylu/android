@@ -42,6 +42,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
@@ -57,13 +58,14 @@ import android.content.Intent;
 
 import com.weibo.net.AccessToken;
 import com.weibo.net.DialogError;
+import com.weibo.net.Oauth2AccessTokenHeader;
 import com.weibo.net.ShareActivity;
 import com.weibo.net.Utility;
 import com.weibo.net.Weibo;
 import com.weibo.net.WeiboDialogListener;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
-
+import com.quanleimu.entity.AuthDialogListener;
 public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener/*, View.OnTouchListener*/{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
@@ -73,9 +75,6 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	final private int msgRefresh = 5;
 	final private int msgUpdate = 6;
 	final private int msgDelete = 7;
-	final String kWBBaixingAppKey = "3747392969";
-	final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
-	private boolean inAuthorize = false;
 
 	// 定义控件
 	public MainAdapter adapter;
@@ -551,10 +550,45 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 			break;
 		case R.id.fenxianglayout:{
 			Weibo weibo = Weibo.getInstance();
-			weibo.setupConsumerConfig(kWBBaixingAppKey, kWBBaixingAppSecret);
+			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
 			weibo.setRedirectUrl("http://www.baixing.com");
-			weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener()); 
-			inAuthorize = true;
+
+			if(QuanleimuApplication.getWeiboAccessToken() == null){
+				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
+				AccessToken token = null;
+				if(tokenWrapper != null && tokenWrapper.getToken() != null && tokenWrapper.getExpires() != null){
+					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
+					token.setExpiresIn(tokenWrapper.getExpires());
+					QuanleimuApplication.setWeiboAccessToken(token);
+				}
+			}
+			
+			if(QuanleimuApplication.getWeiboAccessToken() != null){
+				Weibo.getInstance().setAccessToken(QuanleimuApplication.getWeiboAccessToken());
+				doShare2Weibo(QuanleimuApplication.getWeiboAccessToken());
+			}else{
+	            WeiboParameters parameters=new WeiboParameters();
+	            parameters.add("forcelogin", "true");
+	            Utility.setAuthorization(new Oauth2AccessTokenHeader());
+                com.quanleimu.entity.AuthDialogListener lsn = 
+                		new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener() {
+	                	@Override
+	                	public void onComplete(){
+	        				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(GoodDetailView.this.getContext(), "weiboToken");
+	        				AccessToken token = null;
+	        				if(tokenWrapper != null && tokenWrapper.getToken() != null && tokenWrapper.getExpires() != null){
+	        					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
+	        					token.setExpiresIn(tokenWrapper.getExpires());
+	        					QuanleimuApplication.setWeiboAccessToken(token);
+	        					Weibo.getInstance().setAccessToken(token);
+	        					doShare2Weibo(token);
+	        				}
+	                	}
+                }); 
+	            weibo.dialog(this.getContext(), parameters, lsn);	 
+	            lsn.setInAuthrize(true);
+			}
+
 			break;
 		}
 		case R.id.jubaolayout:{
@@ -587,54 +621,58 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		}
 	}
 	
-	class AuthDialogListener implements WeiboDialogListener {
-
-		@Override
-		public void onComplete(Bundle values) {		
-			if(!inAuthorize) return;
-			inAuthorize = false;
-			String token = values.getString("access_token");
-			String expires_in = values.getString("expires_in");
-//			mToken.setText("access_token : " + token + "  expires_in: "+ expires_in);
-			AccessToken accessToken = new AccessToken(token, kWBBaixingAppSecret);
-			accessToken.setExpiresIn(expires_in);
-			Weibo.getInstance().setAccessToken(accessToken);
-			try{
-			Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
-					accessToken.getToken(),
-					accessToken.getSecret(), 
-					isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
-							"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
-					listUrl == null ? "" : GoodDetailView.this.getContext().getFilesDir() + "/" + Util.MD5(listUrl.get(0)));
-			}
-			catch(WeiboException e){
-				e.printStackTrace();
-			}
+	private void doShare2Weibo(AccessToken accessToken){
+		try{
+		Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
+				accessToken.getToken(),
+				accessToken.getSecret(), 
+				isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
+						"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
+				listUrl == null ? "" : GoodDetailView.this.getContext().getFilesDir() + "/" + Util.MD5(listUrl.get(0)));
 		}
-
-		@Override
-		public void onError(DialogError e) {
-			inAuthorize = false;
-			Toast.makeText(GoodDetailView.this.getContext(),
-					"Auth error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+		catch(WeiboException e){
+			e.printStackTrace();
 		}
-
-		@Override
-		public void onCancel() {
-			inAuthorize = false;
-			Toast.makeText(GoodDetailView.this.getContext(), "Auth cancel",
-					Toast.LENGTH_LONG).show();
-		}
-
-		@Override
-		public void onWeiboException(WeiboException e) {
-			inAuthorize = false;
-			Toast.makeText(GoodDetailView.this.getContext(),
-					"Auth exception : " + e.getMessage(), Toast.LENGTH_LONG)
-					.show();
-		}
-
 	}
+	
+//	class AuthDialogListener implements WeiboDialogListener {
+//
+//		@Override
+//		public void onComplete(Bundle values) {		
+//			if(!inAuthorize) return;
+//			inAuthorize = false;
+//			String token = values.getString("access_token");
+//			String expires_in = values.getString("expires_in");
+////			mToken.setText("access_token : " + token + "  expires_in: "+ expires_in);
+//			AccessToken accessToken = new AccessToken(token, QuanleimuApplication.kWBBaixingAppSecret);
+//			accessToken.setExpiresIn(expires_in);
+//			Weibo.getInstance().setAccessToken(accessToken);
+//			doShare2Weibo(accessToken);
+//		}
+//
+//		@Override
+//		public void onError(DialogError e) {
+//			inAuthorize = false;
+//			Toast.makeText(GoodDetailView.this.getContext(),
+//					"Auth error : " + e.getMessage(), Toast.LENGTH_LONG).show();
+//		}
+//
+//		@Override
+//		public void onCancel() {
+//			inAuthorize = false;
+//			Toast.makeText(GoodDetailView.this.getContext(), "Auth cancel",
+//					Toast.LENGTH_LONG).show();
+//		}
+//
+//		@Override
+//		public void onWeiboException(WeiboException e) {
+//			inAuthorize = false;
+//			Toast.makeText(GoodDetailView.this.getContext(),
+//					"Auth exception : " + e.getMessage(), Toast.LENGTH_LONG)
+//					.show();
+//		}
+//
+//	}
 	
 	private void setMetaObject(){
 		if(ll_meta == null) return;
