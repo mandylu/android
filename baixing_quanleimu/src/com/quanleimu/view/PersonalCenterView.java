@@ -366,30 +366,30 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lvGoodsList.onRefreshComplete();
 				break;
 			case MCMESSAGE_DELETE:
-				synchronized(PersonalCenterView.this){
-					int pos = msg.arg2;
-					if(PersonalCenterView.this.currentPage == -1){
-						pd = ProgressDialog.show(PersonalCenterView.this.getContext(), "提示", "请稍候...");
-						pd.show();
+				int pos = msg.arg2;
+				if(PersonalCenterView.this.currentPage == -1){
+					pd = ProgressDialog.show(PersonalCenterView.this.getContext(), "提示", "请稍候...");
+					pd.setCancelable(true);
+					pd.show();
 
-						new Thread(new MyMessageDeleteThread(pos)).start();
-					}
-					else if(0 == PersonalCenterView.this.currentPage){
-						goodsList.remove(pos);
-						QuanleimuApplication.getApplication().setListMyStore(goodsList);
-						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-						adapter.setList(goodsList);
-						adapter.notifyDataSetChanged();
-					}
-					else if(1 == PersonalCenterView.this.currentPage){
-						goodsList.remove(pos);
-						QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-						adapter.setList(goodsList);
-						adapter.notifyDataSetChanged();					
-					}
+					new Thread(new MyMessageDeleteThread(pos)).start();
 				}
-
+				else if(0 == PersonalCenterView.this.currentPage){
+					goodsList.remove(pos);
+					QuanleimuApplication.getApplication().setListMyStore(goodsList);
+					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+					adapter.setList(goodsList);
+					adapter.notifyDataSetChanged();
+					adapter.setUiHold(false);
+				}
+				else if(1 == PersonalCenterView.this.currentPage){
+					goodsList.remove(pos);
+					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
+					adapter.setList(goodsList);
+					adapter.notifyDataSetChanged();			
+					adapter.setUiHold(false);
+				}
 				break;
 			case MCMESSAGE_DELETEALL:
 				if(PersonalCenterView.this.currentPage != -1){
@@ -434,6 +434,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					// TODO Auto-generated catch block
 					e.printStackTrace();
 				}
+				adapter.setUiHold(false);
 				break;
 			case MCMESSAGE_DELETE_FAIL:
 				if(pd != null){
@@ -441,6 +442,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 
 				Toast.makeText(PersonalCenterView.this.getContext(), "删除失败，请稍后重试！", 0).show();
+				adapter.setUiHold(false);
 				break;
 			case MCMESSAGE_NETWORKERROR:
 				if (pd != null) {

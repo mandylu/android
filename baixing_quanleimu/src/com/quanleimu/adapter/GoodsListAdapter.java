@@ -39,6 +39,11 @@ public class GoodsListAdapter extends BaseAdapter {
 	private Bitmap defaultBk1, defaultBk2;
 	private Handler handler = null;
 	private int messageWhat = -1;
+	private boolean uiHold = false;
+	
+	public void setUiHold(boolean hold){
+		uiHold = hold;
+	}
 	
 	public void setMessageOutOnDelete(Handler h, int messageWhat){
 		this.handler = h;
@@ -246,6 +251,8 @@ public class GoodsListAdapter extends BaseAdapter {
 
 			@Override
 			public void onClick(View v) {
+				if(uiHold) return;
+				uiHold = true;
 				if(GoodsListAdapter.this.handler == null) return;
 				Message msg = GoodsListAdapter.this.handler.obtainMessage();
 				msg.arg2 = position;
