@@ -149,6 +149,26 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         return isDuplicate;
     }
 	
+	protected View getLeafFocusedView(View view)
+    {
+        View leafFocusedView = view;
+        while(leafFocusedView instanceof ViewGroup)
+        {
+            View focusedChild = ((ViewGroup)leafFocusedView).getFocusedChild();
+            System.out.println("!!!!!!!!!!!!!!!!!!!! got focused child " + focusedChild);
+            if(focusedChild == null)
+            {
+                break;
+            }
+            else
+            {
+                leafFocusedView = focusedChild;
+            }
+            
+        }
+        return leafFocusedView;
+    }
+	
 	@Override
 	public void onBack(){
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
@@ -159,13 +179,27 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
 		    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		    		scroll.removeAllViews();
-		    		
-		    		
 		    		currentView.onDestroy();
 		    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
 		    		setBaseLayout(currentView);  
-		    		//this.replaceDuplicate(scroll, currentView);
 		    		scroll.addView(currentView);
+		    		
+		    		
+		    	 	 final View leafFocusedView = currentView.hasFocus() ? getLeafFocusedView(currentView) : null;
+			    	 View rootView = currentView.getRootView();
+		         if (leafFocusedView == null)
+		         {
+		        	 	 if(!currentView.isInTouchMode())
+		             {
+		                 rootView.requestFocus(View.FOCUS_FORWARD);
+		             }
+		         }
+		         else
+		         {
+		             leafFocusedView.clearFocus();
+		             leafFocusedView.requestFocus();
+		         }
+		     	
 		    		
 		    	}else{
 		
@@ -239,6 +273,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
     		if(null != currentView){
 	    		setBaseLayout(currentView);
 	    		scroll.addView(currentView);
+	    		
     		}/*else{
     			onNewView(new HomePageView(this));
     		}*/
