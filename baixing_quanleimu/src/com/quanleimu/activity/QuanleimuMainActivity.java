@@ -10,6 +10,9 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.view.ViewGroup;
+import android.view.ViewParent;
+
 import android.widget.CheckBox;
 import android.widget.TextView;
 
@@ -111,75 +114,114 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		}		
 	}
 	
+	protected boolean replaceDuplicate(ViewGroup viewGroup, View view)
+    {
+        boolean isDuplicate = false;
+        //TODO Below comment codes need verify in android platform.. this codes is for RIM platform...
+        ViewParent parent = view.getParent();
+        if(parent instanceof ViewGroup)
+        {
+            ViewGroup groupParent = (ViewGroup)parent;
+            groupParent.removeView(view);
+        }
+        int childCount = viewGroup.getChildCount();
+        for(int next = 0; next < childCount; next++)
+        {
+            if(viewGroup.getChildAt(next).equals(view))
+            {
+                isDuplicate = true;
+                break;
+            }
+        }
+        
+      
+        
+        if(isDuplicate)
+        {
+            viewGroup.removeView(view);
+            viewGroup.addView(view);
+        }
+        else
+        {
+            viewGroup.addView(view);
+        }
+        
+        return isDuplicate;
+    }
+	
 	@Override
 	public void onBack(){
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 
+		try{
+			if(!currentView.onBack()){
+		    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
+		    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+		    		scroll.removeAllViews();
+		    		
+		    		
+		    		currentView.onDestroy();
+		    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
+		    		setBaseLayout(currentView);  
+		    		//this.replaceDuplicate(scroll, currentView);
+		    		scroll.addView(currentView);
+		    		
+		    	}else{
 		
-		if(!currentView.onBack()){
-	    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
-	    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-	    		scroll.removeAllViews();
-	    		
-	    		currentView.onDestroy();
-	    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
-	    		setBaseLayout(currentView);            		
-	
-	    		scroll.addView(currentView);
-	    		
-	    	}else{
-	
-	            SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-	            String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
-	
-	            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-	
-	            LayoutInflater adbInflater = LayoutInflater.from(QuanleimuMainActivity.this);
-	            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
-	
-	            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
-	            final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
-	            if (needShowShortcut)
-	            {
-	                builder.setView(shortcutLayout);
-	            }
-	
-	            builder.setTitle("提示:").setMessage("是否退出?").setNegativeButton("否", null).setPositiveButton("是", new DialogInterface.OnClickListener()
-	            {
-	
-	                @Override
-	                public void onClick(DialogInterface dialog, int which)
-	                {
-	
-	                    if (needShowShortcut && shortcutCheckBox.isChecked())
-	                    {
-	                        ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
-	                    }
-	
-	                    if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
-	                    {
-	                        for (String s : QuanleimuApplication.list)
-	                        {
-	                            deleteFile(s);
-	                        }
-	                        for (int i = 0; i < fileList().length; i++)
-	                        {
-	                            System.out.println("fileList()[i]----------->" + fileList()[i]);
-	                        }
-	                    }
-	
-	                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-	                    SharedPreferences.Editor editor = settings.edit();
-	                    editor.putString("hasShowShortcut", "yes");
-	                    // Commit the edits!
-	                    editor.commit();
-	
-	                    System.exit(0);
-	                }
-	            });
-	            builder.create().show();
-	    	}	
+		            SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+		            String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
+		
+		            AlertDialog.Builder builder = new AlertDialog.Builder(this);
+		
+		            LayoutInflater adbInflater = LayoutInflater.from(QuanleimuMainActivity.this);
+		            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
+		
+		            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
+		            final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
+		            if (needShowShortcut)
+		            {
+		                builder.setView(shortcutLayout);
+		            }
+		
+		            builder.setTitle("提示:").setMessage("是否退出?").setNegativeButton("否", null).setPositiveButton("是", new DialogInterface.OnClickListener()
+		            {
+		
+		                @Override
+		                public void onClick(DialogInterface dialog, int which)
+		                {
+		
+		                    if (needShowShortcut && shortcutCheckBox.isChecked())
+		                    {
+		                        ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
+		                    }
+		
+		                    if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
+		                    {
+		                        for (String s : QuanleimuApplication.list)
+		                        {
+		                            deleteFile(s);
+		                        }
+		                        for (int i = 0; i < fileList().length; i++)
+		                        {
+		                            System.out.println("fileList()[i]----------->" + fileList()[i]);
+		                        }
+		                    }
+		
+		                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+		                    SharedPreferences.Editor editor = settings.edit();
+		                    editor.putString("hasShowShortcut", "yes");
+		                    // Commit the edits!
+		                    editor.commit();
+		
+		                    System.exit(0);
+		                }
+		            });
+		            builder.create().show();
+		    	}	
+			}
+		}catch(Exception e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -224,9 +266,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //			Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
 //			currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
 		}
-		
-		scroll.removeAllViews();
-		
+		try{
+			scroll.removeAllViews();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 		currentView = newView;
 		newView.setInfoChangeListener(this);//NOTE: MUST be called before addView is called, coz addView will call View.onAttatchedToWindow which could then call methods that will use ViewInfoListener
 		setBaseLayout(newView);

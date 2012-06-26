@@ -29,6 +29,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.MotionEvent;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter; 
@@ -66,7 +67,7 @@ import com.weibo.net.WeiboDialogListener;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
-public class GoodDetailView extends BaseView implements View.OnClickListener, OnItemSelectedListener/*, View.OnTouchListener*/{
+public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, View.OnTouchListener*/{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private String strManager = "管理";
@@ -106,6 +107,8 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	
 	private int type = 240;
 	
+	private boolean keepSilent = false;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
@@ -121,18 +124,27 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 	
 	@Override
 	public void onDestroy(){
+		this.keepSilent = true;
 		super.onDestroy();
 	}
 	
 	@Override
 	public boolean onBack(){
+		this.keepSilent = false;
 		this.removeTitleControls();
 		return false;
 	}
 
 	@Override
 	public void onPause() {
+		this.keepSilent = true;
 		this.removeTitleControls();
+		super.onPause();
+	}
+	
+	@Override
+	public void onResume(){
+		this.keepSilent = false;
 		super.onPause();
 	}
 	
@@ -254,7 +266,12 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 		return false;		
 	}
 	
+	public boolean onTouch (View v, MotionEvent event){
+		return this.keepSilent;
+	}
+	
 	protected void init() {
+		this.keepSilent = false;
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
 		this.addView(v);
@@ -279,7 +296,7 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 				
 				adapter = new MainAdapter(this.getContext(), listUrl);
 				glDetail.setAdapter(adapter);
-				
+				glDetail.setOnTouchListener(this);
 				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 					@Override
@@ -294,6 +311,7 @@ public class GoodDetailView extends BaseView implements View.OnClickListener, On
 						}
 					}
 				});
+				
 			}
 		}else{
 			llgl = (RelativeLayout) findViewById(R.id.llgl);

@@ -1,5 +1,6 @@
 package com.quanleimu.adapter;
 import java.text.SimpleDateFormat;
+
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -28,6 +29,9 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import android.os.Handler;
 import android.graphics.Typeface;
+
+import android.database.DataSetObserver;
+
 public class GoodsListAdapter extends BaseAdapter {
 
 	private Context context;
@@ -41,10 +45,18 @@ public class GoodsListAdapter extends BaseAdapter {
 	private int messageWhat = -1;
 	private boolean uiHold = false;
 	
+	@Override
+	public void unregisterDataSetObserver(DataSetObserver observer) {
+	    if (observer != null) {
+	        super.unregisterDataSetObserver(observer);
+	    }
+	}
+
 	public void setUiHold(boolean hold){
 		uiHold = hold;
 	}
 	
+
 	public void setMessageOutOnDelete(Handler h, int messageWhat){
 		this.handler = h;
 		this.messageWhat = messageWhat;
