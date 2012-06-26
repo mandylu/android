@@ -1000,7 +1000,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String value = "";
 			String txt = "";
 			for(int i = 0; i < checks.length; ++ i){
-				txt += "," + postList.get(displayname).getLabels().get(Integer.parseInt(checks[i]));
+				if(checks[i].equals(""))continue;
+ 				txt += "," + postList.get(displayname).getLabels().get(Integer.parseInt(checks[i]));
 				value += "," + postList.get(displayname).getValues().get(Integer.parseInt(checks[i]));
 			}
 			if(txt.length() > 0){
