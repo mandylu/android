@@ -87,6 +87,49 @@
                         android:text="" >
                     </TextView>
                 </RelativeLayout>
+                
+				<RelativeLayout
+                    android:id="@+id/rlWeibo"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/btn_m_bg" >
+
+                    <TextView
+                        android:id="@+id/tvWeiboShow"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="15dip"
+                        android:text="新浪微博"
+                         android:textColor="#000000"
+                        android:textSize="16dip" >
+                    </TextView>
+
+                    <ImageView
+                        android:id="@+id/imageView1"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentRight="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginRight="15dip"
+                        android:focusable="false"
+                        android:src="@drawable/btn_viewad_right" >
+                    </ImageView>
+
+                    <TextView
+                        android:id="@+id/tvWeiboNick"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentTop="true"
+                        android:layout_centerVertical="true"
+                        android:layout_marginLeft="10dip"
+                        android:layout_marginRight="10dip"
+                        android:layout_toLeftOf="@+id/imageView1"
+                        android:layout_toRightOf="@+id/tvPhoneNumContent"
+                        android:gravity="right"
+                        android:text="" >
+                    </TextView>
+                </RelativeLayout>                
 
                 <RelativeLayout
                     android:id="@+id/rlMark"
