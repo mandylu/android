@@ -305,7 +305,8 @@ public class CityChangeView extends BaseView {
 									tvCityName.setText(list2Sheng.get(i).getName());
 									
 									ImageView ivChoose = (ImageView) vCity.findViewById(R.id.ivChoose);
-									ivChoose.setImageResource(R.drawable.arrow);
+									ivChoose.setVisibility(View.GONE);
+									//ivChoose.setImageResource(R.drawable.arrow);									
 									
 
 									// 设置标志位

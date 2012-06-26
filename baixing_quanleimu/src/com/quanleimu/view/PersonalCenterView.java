@@ -36,7 +36,7 @@ import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import android.widget.LinearLayout;
-public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener, PullToRefreshListView.OnRefreshListener{
+public class PersonalCenterView extends BaseView implements OnScrollListener, View.OnClickListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener{
 	private final int MCMESSAGE_MYPOST_SUCCESS = 0;
 	private final int MCMESSAGE_MYPOST_FAIL = 1;
 	private final int MCMESSAGE_DELETE = 2;
@@ -48,6 +48,18 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private final int MCMESSAGE_MYFAV_UPDATE_SUCCESS = 8;
 	private final int MCMESSAGE_MYFAV_UPDATE_FAIL = 9;	
 	private final int MCMESSAGE_NETWORKERROR = 10;
+
+	
+	private final int MCMESSAGE_MYPOST_GETMORE_SUCCESS = 11;
+	private final int MCMESSAGE_MYPOST_GETMORE_FAIL = 12;
+	private final int MCMESSAGE_MYHISTORY_GETMORE_SUCCESS = 13;
+	private final int MCMESSAGE_MYHISTORY_GETMORE_FAIL = 14;
+	private final int MCMESSAGE_MYFAV_GETMORE_SUCCESS = 15;
+	private final int MCMESSAGE_MYFAV_GETMORE_FAIL = 16;
+	
+	private final int MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY = 20;
+	private final int MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY = 21;	
+	
 
 	public PullToRefreshListView lvGoodsList;
 	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -102,9 +114,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					lvGoodsList.setVisibility(View.VISIBLE);
 					mobile = user.getPhone();
 					password = user.getPassword();
-					pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
+					pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
 					pd.setCancelable(true);
-					new Thread(new UpdateThread(currentPage)).start();
+					new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();
 				} else {
 					if(null == loginItem){
 						LayoutInflater inflater = LayoutInflater.from(this.getContext());
@@ -128,7 +140,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 			}			
 			
-			lvGoodsList.setPullToRefreshEnabled(true);
+//			lvGoodsList.setPullToRefreshEnabled(true);
 			lvGoodsList.setAdapter(adapter);
 		}
 		else if(0 == currentPage){
@@ -151,7 +163,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
 			
-			lvGoodsList.setPullToRefreshEnabled(false);
+//			lvGoodsList.setPullToRefreshEnabled(false);
 		}
 		else{
 			if(loginItem != null){
@@ -172,7 +184,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
 			
-			lvGoodsList.setPullToRefreshEnabled(false);
+//			lvGoodsList.setPullToRefreshEnabled(false);
 		}
 		
 
@@ -200,7 +212,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			}
 		});
 		
-		lvGoodsList.setOnRefreshListener(this);		
+		lvGoodsList.setOnRefreshListener(this);	
+		lvGoodsList.setOnGetMoreListener(this);
 	}
 	
 	@Override
@@ -252,37 +265,63 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		lvGoodsList.setAdapter(adapter);
 	}
 	
-	class UpdateThread implements Runnable{
+	class UpdateAndGetmoreThread implements Runnable{
 		private int currentPage = -1;
-		public UpdateThread(int currentPage){
+		private boolean update = false;
+		
+		public UpdateAndGetmoreThread(int currentPage, boolean update_){
 			this.currentPage = currentPage;
+			this.update = update_;
 		}
 		
 		@Override
 		public void run(){
 			String apiName = "ad_list";
 			ArrayList<String>list = new ArrayList<String>();
-			list.add("rt=1");
-			list.add("start=0");							
 			int msgToSend = -1;
 			int msgToSendOnFail = -1;
+			
+			boolean needUpdateOrGetmore = true;
 			if(currentPage == -1){
 				list.add("query=userId:" + user.getId() + " AND status:0");
-				list.add("rows=45");
-				msgToSend = MCMESSAGE_MYPOST_SUCCESS;
-				msgToSendOnFail = MCMESSAGE_MYPOST_FAIL;
+				if(update){
+					list.add("start=0");
+					msgToSend = MCMESSAGE_MYPOST_SUCCESS;
+					msgToSendOnFail = MCMESSAGE_MYPOST_FAIL;
+				}
+//				else{
+//					list.add("start="+PersonalCenterView.this.listMyPost.size());
+//					msgToSend = MCMESSAGE_MYPOST_GETMORE_SUCCESS;
+//					msgToSendOnFail = MCMESSAGE_MYPOST_GETMORE_FAIL;
+//				}
 			}
 			else{
 				List<GoodsDetail> details = null;
 				if(currentPage == 0){
 					details = QuanleimuApplication.getApplication().getListMyStore();
-					msgToSend = MCMESSAGE_MYFAV_UPDATE_SUCCESS;
-					msgToSendOnFail = MCMESSAGE_MYFAV_UPDATE_FAIL;
+					if(update){		
+						list.add("start=0");
+						msgToSend = MCMESSAGE_MYFAV_UPDATE_SUCCESS;
+						msgToSendOnFail = MCMESSAGE_MYFAV_UPDATE_FAIL;
+					}
+//					else{
+//						list.add("start="+PersonalCenterView.this.goodsList.size());
+//						msgToSend = MCMESSAGE_MYFAV_GETMORE_SUCCESS;
+//						msgToSendOnFail = MCMESSAGE_MYFAV_GETMORE_FAIL;						
+//					}
 				}
 				else if(currentPage == 1){
 					details = QuanleimuApplication.getApplication().getListLookHistory();
-					msgToSend = MCMESSAGE_MYHISTORY_UPDATE_SUCCESS;
-					msgToSendOnFail = MCMESSAGE_MYHISTORY_UPDATE_FAIL;					
+					if(update){
+						list.add("start=0");
+						msgToSend = MCMESSAGE_MYHISTORY_UPDATE_SUCCESS;
+						msgToSendOnFail = MCMESSAGE_MYHISTORY_UPDATE_FAIL;	
+					}
+//					else{
+//						list.add("start="+PersonalCenterView.this.goodsList.size());
+//						msgToSend = MCMESSAGE_MYHISTORY_GETMORE_SUCCESS;
+//						msgToSendOnFail = MCMESSAGE_MYHISTORY_GETMORE_FAIL;								
+//					}
 				}
 				if(details != null && details.size() > 0){
 					String ids = "id:" + details.get(0).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
@@ -290,23 +329,44 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 						ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);  
 					}
 					list.add("query=(" + ids + ")");
-					list.add("rows=100");
+				}
+				else{
+					needUpdateOrGetmore = false;
 				}
 			}
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
-				if (json != null) {
-					myHandler.sendEmptyMessage(msgToSend);
-				} else {
-					myHandler.sendEmptyMessage(msgToSendOnFail);
+			
+			list.add("rt=1");	
+			list.add("rows=30");
+			
+			if(needUpdateOrGetmore){
+				String url = Communication.getApiUrl(apiName, list);
+				try {
+					json = Communication.getDataByUrl(url);
+					if (json != null) {
+						myHandler.sendEmptyMessage(msgToSend);
+					} else {
+						myHandler.sendEmptyMessage(msgToSendOnFail);
+					}
+				} catch (UnsupportedEncodingException e) {
+					e.printStackTrace();
+				} catch (IOException e) {
+					e.printStackTrace();
+					myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				}	
+			}else{
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
-			}			
+				
+				if(update){
+					myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY);
+				}else{
+					myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY);
+				}
+			}
 		}
 	}
 
@@ -329,6 +389,23 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				rebuildPage(true);
 				lvGoodsList.onRefreshComplete();
 				break;
+//			case MCMESSAGE_MYPOST_GETMORE_SUCCESS:
+//				if (pd != null) {
+//					pd.dismiss();
+//				}
+//				GoodsList glGetMore = JsonUtil.getGoodsListFromJson(json); 
+//				if (glGetMore == null || glGetMore.getCount() == 0) {
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
+//				}
+//				else{
+//					List<GoodsDetail> listData = glGetMore.getData();
+//					for (int i = 0; i < listData.size(); i++) {
+//						listMyPost.add(listData.get(i));
+//					}
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
+//					QuanleimuApplication.getApplication().setListMyPost(listMyPost);					
+//				}
+//				break;				
 			case MCMESSAGE_MYFAV_UPDATE_SUCCESS:
 				if (pd != null) {
 					pd.dismiss();
@@ -342,6 +419,24 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lvGoodsList.onRefreshComplete();
 				
 				break;
+//			case MCMESSAGE_MYFAV_GETMORE_SUCCESS:
+//				if (pd != null) {
+//					pd.dismiss();
+//				}
+//				GoodsList glFavGetMore = JsonUtil.getGoodsListFromJson(json); 
+//				if (glFavGetMore != null && glFavGetMore.getCount() > 0) {
+//					List<GoodsDetail> listData = glFavGetMore.getData();
+//					for (int i = 0; i < listData.size(); i++) {
+//						goodsList.add(listData.get(i));
+//					}	
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
+//					QuanleimuApplication.getApplication().setListMyStore(goodsList);					
+//					
+//				}else{
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
+//				}
+//			
+//				break;
 			case MCMESSAGE_MYHISTORY_UPDATE_SUCCESS:
 				if (pd != null) {
 					pd.dismiss();
@@ -356,14 +451,43 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lvGoodsList.onRefreshComplete();
 				
 				break;
+//			case MCMESSAGE_MYHISTORY_GETMORE_SUCCESS:
+//				if (pd != null) {
+//					pd.dismiss();
+//				}
+//				
+//				GoodsList glHistoryGetmore = JsonUtil.getGoodsListFromJson(json); 
+//				if (glHistoryGetmore != null && glHistoryGetmore.getCount() > 0) {
+//					List<GoodsDetail> listData = glHistoryGetmore.getData();
+//					for (int i = 0; i < listData.size(); i++) {
+//						goodsList.add(listData.get(i));
+//					}	
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
+//					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+//				}else{
+//					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
+//				}
+//				
+//				lvGoodsList.onRefreshComplete();
+//				
+//				break;
 			case MCMESSAGE_MYPOST_FAIL:
 			case MCMESSAGE_MYFAV_UPDATE_FAIL:
-			case MCMESSAGE_MYHISTORY_UPDATE_FAIL:				
+			case MCMESSAGE_MYHISTORY_UPDATE_FAIL:
+//			case MCMESSAGE_MYPOST_GETMORE_FAIL:
+//			case MCMESSAGE_MYFAV_GETMORE_FAIL:
+//			case MCMESSAGE_MYHISTORY_GETMORE_FAIL:
 				if (pd != null) {
 					pd.dismiss();
 				}
-				Toast.makeText(PersonalCenterView.this.getContext(), "未获取到数据", 3).show();
+				Toast.makeText(PersonalCenterView.this.getContext(), "数据获取失败，请检查网络连接后重试！", 3).show();
 				lvGoodsList.onRefreshComplete();
+				break;
+			case MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY:
+				PersonalCenterView.this.lvGoodsList.onRefreshComplete();
+				break;
+			case MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY:
+				PersonalCenterView.this.lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				break;
 			case MCMESSAGE_DELETE:
 				int pos = msg.arg2;
@@ -608,47 +732,13 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 
 	@Override
 	public void onRefresh() {
-		
-		if(currentPage == 0 && buttonStatus == -1){
-			List<GoodsDetail> myfavs = QuanleimuApplication.getApplication().getListMyStore();
-			if(myfavs == null || myfavs.size() == 0){
-				return;
-			}
-		}
-		
-		if(currentPage == 1 && buttonStatus == -1){
-			List<GoodsDetail> myhis = QuanleimuApplication.getApplication().getListLookHistory();
-			if(myhis == null || myhis.size() == 0){
-				return;
-			}
-		}
-		
-		boolean toUpdate = true;
-		if((currentPage == 0 || currentPage == 1) && buttonStatus == 0){
-			toUpdate = false;
-		}
-		
-		if(toUpdate){
-	//		pd = ProgressDialog.show(this.getContext(), "提示", "正在更新请稍候...");
-	//		pd.setCancelable(true);
-			new Thread(new UpdateThread(currentPage)).start();
-		}
-		else{
-			if(0 == PersonalCenterView.this.currentPage){
-				goodsList.clear();
-				QuanleimuApplication.getApplication().setListMyStore(goodsList);
-				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-				adapter.setList(goodsList);
-				adapter.notifyDataSetChanged();
-			}
-			else if(1 == PersonalCenterView.this.currentPage){
-				goodsList.clear();
-				QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-				Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-				adapter.setList(goodsList);
-				adapter.notifyDataSetChanged();					
-			}
-		}				
+		new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();		
+	}
+
+	@Override
+	public void onGetMore() {
+		// TODO Auto-generated method stub
+		//new Thread(new UpdateAndGetmoreThread(currentPage, false)).start();		
 	}
 	
 }

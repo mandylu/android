@@ -52,7 +52,6 @@
 	         android:scrollingCache="false"
 	         android:id="@+id/lvGoodsList"
 	         android:layout_width="fill_parent"
-	         android:fastScrollEnabled="true"
 	         android:scrollbars="none"
 	         android:focusable="true" 
 			 android:divider="@drawable/list_divider"
@@ -60,6 +59,7 @@
 			 android:background="@drawable/home_bg"
 	         android:layout_height="fill_parent"
 	         android:headerDividersEnabled="false"
+	         android:footerDividersEnabled="false"
 	         app:getmore="false"/>
     	
     </LinearLayout>
