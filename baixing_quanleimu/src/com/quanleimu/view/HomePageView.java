@@ -101,6 +101,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	@Override
 	public void onResume(){
 		cityName = QuanleimuApplication.getApplication().getCityName();
+		this.catesView.requestFocus();//force cate view has focus
 	}
 	
 	@Override
