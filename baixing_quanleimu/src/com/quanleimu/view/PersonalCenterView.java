@@ -123,7 +123,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 						loginItem = inflater.inflate(R.layout.item_post_select, null);
 						loginItem.setClickable(true);
 						TextView show = (TextView)loginItem.findViewById(R.id.postshow);
-						show.setText("登陆或注册");
+						show.setText("登录或注册");
 						loginItem.setOnClickListener(new OnClickListener(){
 							@Override
 							public void onClick(View v) {

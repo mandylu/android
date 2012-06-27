@@ -115,7 +115,7 @@ public class ForgetPasswordView extends BaseView {
 //				} else {
 //					msg.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
 //					Bundle bundle = new Bundle();
-//					bundle.putString("popup_message", "登陆未成功，请稍后重试！");
+//					bundle.putString("popup_message", "登录未成功，请稍后重试！");
 //					msg.setData(new Bundle());
 //				}
 //			} catch (UnsupportedEncodingException e) {

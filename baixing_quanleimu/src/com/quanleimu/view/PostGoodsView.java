@@ -358,7 +358,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 
 	/**
-	 * 用户登陆进发布页、否则进登陆页
+	 * 用户登录进发布页、否则进登陆页
 	 */
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");

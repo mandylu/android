@@ -91,7 +91,7 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 		TitleDef title = new TitleDef();
 		title.m_title = "注册账号";
 		title.m_visible = true;
-		title.m_leftActionHint = "登陆";
+		title.m_leftActionHint = "登录";
 		title.m_rightActionHint = "提交";
 		return title;
 	}

@@ -152,7 +152,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 						R.layout.changephonedialog, null);
 				TextView tvTelNum = (TextView) linearlayout
 						.findViewById(R.id.tvTelNum);
-				tvTelNum.setText("您已经登陆到" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString());
+				tvTelNum.setText("您已经登录到" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString());
 				Button btnChange = (Button) linearlayout
 						.findViewById(R.id.btnChange);
 				Button btnCancel = (Button) linearlayout

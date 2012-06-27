@@ -132,7 +132,7 @@ public class QuanleimuApplication extends Application {
 		this.listRemark = listRemark;
 	}
 
-	//登陆以后的手机号码保存
+	//登录以后的手机号码保存
 	public String mobile = "";
 
 	public String getMobile() {

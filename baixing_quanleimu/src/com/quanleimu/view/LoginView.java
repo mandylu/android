@@ -75,7 +75,7 @@ public class LoginView extends BaseView implements OnClickListener{
 	@Override
 	public boolean onRightActionPressed(){
 		if (check()) {
-			pd = ProgressDialog.show(getContext(), "提示", "正在登陆，请稍候...");
+			pd = ProgressDialog.show(getContext(), "提示", "正在登录，请稍候...");
 			pd.setCancelable(true);
 			new Thread(new LoginThread()).start();
 		}
@@ -96,7 +96,7 @@ public class LoginView extends BaseView implements OnClickListener{
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		title.m_rightActionHint = "确定";
 		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-		title.m_title = "登陆";
+		title.m_title = "登录";
 		
 		return title;
 	}
@@ -207,7 +207,7 @@ public class LoginView extends BaseView implements OnClickListener{
 			Message msg = Message.obtain();
 			
 			if (!id.equals("")) {
-				// 登陆成功
+				// 登录成功
 				UserBean user = new UserBean();
 				JSONObject jb = jsonObject.getJSONObject("id");
 				user.setId(jb.getString("userId"));
@@ -249,7 +249,7 @@ public class LoginView extends BaseView implements OnClickListener{
 				Toast.makeText(getContext(), (String)msg.obj, 0).show();
 				break;				
 			case 2:
-				Toast.makeText(getContext(), "登陆未成功，请稍后重试！", 3).show();
+				Toast.makeText(getContext(), "登录未成功，请稍后重试！", 3).show();
 				break;
 			case 10:
 				if (pd != null) {
