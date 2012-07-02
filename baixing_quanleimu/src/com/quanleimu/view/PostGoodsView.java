@@ -815,19 +815,23 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					code = json.getInt("code");
 					message = json.getString("message");
 					myHandler.sendEmptyMessage(3);
-//					if (code == 0) {
-						// 发布成功
-//						myHandler.sendEmptyMessageDelayed(3, 3000);
-//					} else {
-
-//						myHandler.sendEmptyMessage(2);
-//					}
+					return;
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			if(pd != null){
+				pd.dismiss();
+			}
+			((BaseActivity)PostGoodsView.this.getContext()).runOnUiThread(new Runnable(){
+				@Override
+				public void run(){
+					Toast.makeText(PostGoodsView.this.getContext(), "发布失败，请检查内容或网络", 0).show();
+				}
+			});
+			
 		}
 	}
 
