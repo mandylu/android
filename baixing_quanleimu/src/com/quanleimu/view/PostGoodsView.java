@@ -786,8 +786,12 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 				String values = postMap.get(key);
 				if (values != null && values.length() > 0 && postList.get(key) != null) {
-					list.add(URLEncoder.encode(postList.get(key).getName())
-							+ "=" + URLEncoder.encode(values));
+					try{
+						list.add(URLEncoder.encode(postList.get(key).getName(), "UTF-8")
+								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));
+					}catch(UnsupportedEncodingException e){
+						e.printStackTrace();
+					}
 				}
 			}
 			//发布图片
