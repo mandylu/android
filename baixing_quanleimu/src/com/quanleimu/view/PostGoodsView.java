@@ -331,15 +331,15 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 								.getBig()).length() - 1);
 				big = Communication.replace(big);
 				String[] cbig = big.split(",");
+				List<String> smalls = new ArrayList<String>();
+				List<String> bigs = new ArrayList<String>();
 				for (int j = 0; j < listUrl.size(); j++) {
 					String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
 					if(j > 2)break;
-					this.bitmap_url.set(j, bigUrl); 
-;					new Thread(new Imagethread(listUrl.get(j), bigUrl)).start();
-//					imgs[j].setTag(listUrl.get(j));
-//					LoadImage.addTask(listUrl.get(j), imgs[j]);
-//					LoadImage.doTask();
+					smalls.add(listUrl.get(j));
+					bigs.add(bigUrl);
 				}
+				new Thread(new Imagethread(smalls, bigs)).start();
 			}
 		}
 		
@@ -1639,49 +1639,44 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 //		imageView.setImageBitmap(imageBitmap);
 		return thumbnail;
 	}
-	// 开启线程下载图片
+	
+	class SetBitmapThread implements Runnable{
+		private int index = -1;
+		private Bitmap bmp;
+		public SetBitmapThread(int index, Bitmap bmp){
+			this.index = index;
+			this.bmp = bmp;
+		}
+		
+		@Override
+		public void run(){
+			PostGoodsView.this.imgs[index].setImageBitmap(bmp);
+			PostGoodsView.this.imgs[index].setClickable(true);
+		}
+	}
+	
 	class Imagethread implements Runnable {
-		private String url;
-		private String urlBig;
-		private Bitmap bitmap = null;
-		private int currentIndex = -1;
-		public Imagethread(String url, String urlBig){
-			this.url = url;
-			this.urlBig = urlBig;
+		private List<String> smalls;
+		private List<String> bigs;
+		public Imagethread(List<String> smalls, List<String> bigs){
+			this.smalls = smalls;
+			this.bigs = bigs;
 		}
 		@Override
 		public void run() {
-			try {
-				Bitmap tbitmap = Util.getImage(url);
-				
-				//Bitmap bitmap = Util.newBitmap(tbitmap, 480, 480);
-				for(int i = 0; i < PostGoodsView.this.bitmap_url.size(); ++ i){
-//					if(null != PostGoodsView.this.bitmap_url.get(i) 
-//							&& PostGoodsView.this.bitmap_url.get(i).contains("http:")){
-//						continue;						
-//					}
-					if(null == PostGoodsView.this.bitmap_url.get(i)
-							|| !PostGoodsView.this.bitmap_url.get(i).equals(urlBig)){
-						continue;
-					}
-					PostGoodsView.this.bitmap_url.set(i, urlBig);
-					currentIndex = i;
-					this.bitmap = tbitmap;
-	                baseActivity.runOnUiThread(new Runnable(){
-						public void run(){
-							if(currentIndex >= 0 && bitmap != null){
-								PostGoodsView.this.imgs[currentIndex].setImageBitmap(bitmap);
-							}
-						}
-					});
-					//PostGoods.this.imgs[i].setImageBitmap(tbitmap);
-					break;					
+			for(int i = 0; i < smalls.size(); ++ i){
+				PostGoodsView.this.imgs[i].setClickable(false);
+			}
+			for(int t = 0; t < smalls.size(); ++ t){
+				try {
+					Bitmap tbitmap = Util.getImage(smalls.get(t));
+					PostGoodsView.this.bitmap_url.set(t, bigs.get(t));
+		            baseActivity.runOnUiThread(new SetBitmapThread(t, tbitmap));
+					
+				} catch (Exception e) {
+					e.printStackTrace();
+					PostGoodsView.this.imgs[t].setClickable(true);
 				}
-				//tbitmap.recycle();
-				//new Thread(new UpLoadThread(bitmap)).start();
-				
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
 		}
 	}
