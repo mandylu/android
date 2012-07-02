@@ -174,13 +174,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	}
     }
     
-    @Override
-    protected void onAttachedToWindow() {
-    	
-    	if(mRefreshView.getBottom() > 0){
-    		setSelectionFromTop(1, 0);
-    	}
-    }
+//    @Override
+//    protected void onAttachedToWindow() {
+//    	
+//    	if(mRefreshView.getBottom() > 0){
+//    		setSelectionFromTop(1, 0);
+//    	}
+//    }
 
 	@Override
 	protected void onDraw(Canvas canvas){
