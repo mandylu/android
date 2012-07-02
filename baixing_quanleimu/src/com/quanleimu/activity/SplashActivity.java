@@ -48,9 +48,9 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 	    //try to collect crash log
-		ErrorReporter errReporter = new ErrorReporter();
-		errReporter.Init(this);
-		errReporter.CheckErrorAndSendMail(this);
+		//ErrorReporter errReporter = new ErrorReporter();
+		//errReporter.Init(this);
+		//errReporter.CheckErrorAndSendMail(this);
 		//end crash log sending
 		
 	    NetworkProtocols.getInstance().init(this);

@@ -31,6 +31,7 @@ import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -40,7 +41,7 @@ import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
 
-public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener{
+public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener, ViewFlow.ViewLazyInitializeListener{
 
 	int index = 0;
 	private int postIndex = -1;
@@ -50,6 +51,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 //	private HashMap<String, byte[]> imageData;
 	
 	protected void Init(){
+		QuanleimuApplication.lazyImageLoader.enableSampleSize();
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView(inflater.inflate(R.layout.biggallery, null));
 		
@@ -80,18 +82,19 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 					listUrl.add(b);
 				}
 				
-				ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
-				vfCoupon.setAdapter(new GalleryImageAdapter(getContext(), listUrl));
-				vfCoupon.setOnViewSwitchListener(this);
-				vfCoupon.setSelection(postIndex);
+				ViewFlow vf = (ViewFlow)findViewById(R.id.vfCoupon);
+				vf.setAdapter(new GalleryImageAdapter(getContext(), listUrl));
+				vf.setOnViewSwitchListener(this);
+				vf.setOnViewLazyInitializeListener(this);
+				vf.setSelection(postIndex);
 				CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
-				vfCoupon.setFlowIndicator(indic);
+				vf.setFlowIndicator(indic);
 				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
 				Bitmap tmb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);
-				mb= Helper.toRoundCorner(tmb, 20);
-				tmb.recycle();				
+				mb= 	Helper.toRoundCorner(tmb, 20);
+				//tmb.recycle();				
 			}
 		} catch (Exception e) {
 			
@@ -134,21 +137,23 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
         
         //imageData = null;
         goodsDetail = null;
-        
+        QuanleimuApplication.lazyImageLoader.disableSampleSize();
   		SimpleImageLoader.Cancel(listUrl);
+  	
        
     }
     
     @Override
     public void onResume()
     {
-    	if(null == mb){
+    		QuanleimuApplication.lazyImageLoader.enableSampleSize();
+	    	if(null == mb){
 			BitmapFactory.Options o =  new BitmapFactory.Options();
             o.inPurgeable = true;
 			Bitmap tmb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);
 			mb= Helper.toRoundCorner(tmb, 20);
-			tmb.recycle();		
-    	}
+			//tmb.recycle();		
+	    	}
     }
 //    
 //    @Override
@@ -278,7 +283,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 
         public View getView(int position, View convertView, ViewGroup parent)
         {
-        	ImageView imageView = null;
+        		ImageView imageView = null;
 			if (convertView != null) {
 				imageView = (ImageView) convertView;
 			} else {
@@ -290,7 +295,15 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 			if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 			{	
 				imageView.setImageBitmap(mb);
-	            SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
+				
+				/*for(int i = 0; i < imageUrls.size(); ++i){
+					String url = imageUrls.get(i);
+					if(i != position){
+						QuanleimuApplication.lazyImageLoader.forceRecycle(url);
+					}
+				}*/
+				
+			    SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
 	            imageView.setTag(imageUrls.get(position));
 //				loadBitmap(imageUrls.get(position), imageView);
 			}
@@ -323,6 +336,21 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 				urls.add(listUrl.get(position-index));				
 		}
 		SimpleImageLoader.AdjustPriority(urls);		
+	}
+	
+	@Override
+	public void onViewLazyInitialize(View view, int position){
+		
+	}
+	
+	@Override
+	public void onViewRecycled(View view){
+		
+		if(view instanceof ImageView){
+			//recycle the bitmap referred by the view
+			System.out.println("Recyled view: " + view.toString() + "with image url:" + (String)(((ImageView)view).getTag()));
+			QuanleimuApplication.lazyImageLoader.forceRecycle((String)(((ImageView)view).getTag()));
+		}
 	}
 
 //    @Override

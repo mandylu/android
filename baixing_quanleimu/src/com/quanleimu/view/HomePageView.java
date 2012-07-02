@@ -517,6 +517,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			this.curList = listHot;
 			this.loadingList = loadingListHot;
 			this.imgLoader = imgLoader_;
+			this.imgLoader.disableSampleSize();
 		}
 
 		@Override
@@ -588,6 +589,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 							(new AdapterNotifyChange(thisAdapter)).execute(true);
 						}					
 					});
+					
 				}
 				
 				if(bitmapReal != null){
@@ -627,9 +629,10 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 							needNotify = true;
 							position_cur++;
 						}
+						
 					}
 				}else if(position < curList.size()){				
-				
+					
 					final Bitmap bitmap =  imgLoader.getWithImmediateIO(curList.get(position).getImgUrl(), new ImageLoaderCallback(){
 					
 						public void refresh(final String url, final Bitmap bitmap){	
@@ -642,12 +645,13 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					}else{
 						Log.d( "HotList original image loader 2", "original hotlist picture missing!!");
 					}
+					
 				}
 				
 				if(needNotify)	notifyChange();
 			}
-			
-			return v;			
+			//this.imgLoader.enableSampleSize();
+			return v;
 		}
 		
 		private void notifyChange(){

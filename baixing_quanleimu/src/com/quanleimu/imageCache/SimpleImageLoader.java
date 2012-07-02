@@ -40,6 +40,7 @@ public class SimpleImageLoader
 	
 	public static void Cancel(List<String> urls){
 		QuanleimuApplication.lazyImageLoader.Cancel(urls);
+	//	QuanleimuApplication.lazyImageLoader.forceRecycle();
 	}
 
 	

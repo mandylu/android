@@ -105,7 +105,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private Bitmap mb_loading = null;
 	
-	private int type = 240;
+	private int type = 240;//width of screen
+	private int paddingLeftMetaPixel = 16;//meta, right part, value
 	
 	private boolean keepSilent = false;
 	
@@ -271,7 +272,20 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	}
 	
 	protected void init() {
-		this.keepSilent = false;
+		this.keepSilent = false;//magic flag to refuse unexpected touch event
+		
+		WindowManager wm = 
+				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		type = wm.getDefaultDisplay().getWidth();
+		
+		//different padding for meta value to avoid overlapping display
+		if (type < 480) {
+			this.paddingLeftMetaPixel = 0;
+		}else{
+			this.paddingLeftMetaPixel = 16;
+		}
+		
+		
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
 		this.addView(v);
@@ -396,9 +410,9 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         	}        	
         }
         
-		WindowManager wm = 
-				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		type = wm.getDefaultDisplay().getWidth();
+		
+			
+		
 	}
 	
 	
@@ -702,7 +716,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 
 			TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
 			TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-
+			tvmeta.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
+			
 			tvmetatxt.setText(detail.getMetaData().get(i).split(" ")[0].toString() + "：");
 			tvmeta.setText(detail.getMetaData().get(i).split(" ")[1].toString());
 			v.setTag(i);
@@ -716,6 +731,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		View time = inflater.inflate(R.layout.item_meta, null);
 		TextView timetxt = (TextView) time.findViewById(R.id.tvmetatxt);
 		TextView timevalue = (TextView) time.findViewById(R.id.tvmeta);
+		timevalue.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
 		timetxt.setText("更新时间： ");
 		timevalue.setText(strTime);
 		ll_meta.addView(time);
@@ -988,15 +1004,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 //			}
 			ImageView iv = (ImageView) v.findViewById(R.id.ivGoods);
 			
-			if (type == 240) {
+			if (type <= 240) {
 				iv.setLayoutParams(new Gallery.LayoutParams(86, 86));
-			} else if (type == 320) {
+			} else if (type <= 320) {
 				iv.setLayoutParams(new Gallery.LayoutParams(145, 145));
-			} else if (type == 480) {
+			} else if (type <= 480) {
 				iv.setLayoutParams(new Gallery.LayoutParams(210, 210));
-			} else if (type == 540) {
+			} else if (type <= 540) {
 				iv.setLayoutParams(new Gallery.LayoutParams(235, 235));
-			} else if (type == 640) {
+			} else if (type <= 640) {
 				iv.setLayoutParams(new Gallery.LayoutParams(240, 240));
 			}else{
 				iv.setLayoutParams(new Gallery.LayoutParams(245,245));

@@ -59,7 +59,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 	private LinkedList<View> mRecycledViews;
 	private int mCurrentBufferIndex;
 	private int mCurrentAdapterIndex;
-	private int mSideBuffer = 2;
+	private int mSideBuffer = 1;
 	private Scroller mScroller;
 	private VelocityTracker mVelocityTracker;
 	private int mTouchState = TOUCH_STATE_REST;
@@ -113,6 +113,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 	public static interface ViewLazyInitializeListener {
 		void onViewLazyInitialize(View view, int position);
+		void onViewRecycled(View view);
 	}
 
 	enum LazyInit {
@@ -121,7 +122,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 	public ViewFlow(Context context) {
 		super(context);
-		mSideBuffer = 3;
+		mSideBuffer = 1;
 		init();
 	}
 
@@ -664,8 +665,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 	protected void recycleView(View v) {
 		if (v == null)
 			return;
-		mRecycledViews.add(v);
+		//mRecycledViews.add(v);
 		detachViewFromParent(v);
+		
+		if(mViewInitializeListener != null){
+			mViewInitializeListener.onViewRecycled(v);
+		}
+			
 	}
 
 	protected View getRecycledView() {
@@ -775,7 +781,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 		requestLayout();
 		setVisibleView(mCurrentBufferIndex, true);
-		if (mIndicator != null) {
+		if (mIndicator != null && mCurrentBufferIndex <= mLoadedViews.size() - 1) {
 			mIndicator.onSwitched(mLoadedViews.get(mCurrentBufferIndex),
 					mCurrentAdapterIndex);
 		}
@@ -803,12 +809,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 	}
 
 	private View makeAndAddView(int position, boolean addToEnd) {
-		return makeAndAddView(position, addToEnd, getRecycledView());
+		//return makeAndAddView(position, addToEnd, getRecycledView());
+		return makeAndAddView(position, addToEnd, null);//never use recycled view
 	}
 
 	private View makeAndAddView(int position, boolean addToEnd, View convertView) {
 		View view = mAdapter.getView(position, convertView, this);
-		if(view != convertView)
+		if(view != convertView && convertView!= null)
 			mRecycledViews.add(convertView);
 		return setupChild(view, addToEnd, view == convertView);
 	}

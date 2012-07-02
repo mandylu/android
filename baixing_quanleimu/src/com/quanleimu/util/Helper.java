@@ -207,7 +207,8 @@ public class Helper {
 
 	//图片圆角
 	public static Bitmap toRoundCorner(Bitmap bitmap, float pixels) {
-		Bitmap output = null;
+		return bitmap;
+		/*Bitmap output = null;
 		if(bitmap!=null){
 			try {
 				output = Bitmap.createBitmap(bitmap.getWidth(),
@@ -228,7 +229,7 @@ public class Helper {
 			paint.setXfermode(new PorterDuffXfermode(Mode.SRC_IN));
 			canvas.drawBitmap(bitmap, rect, rect, paint);
 		}
-		return output;
+		return output;*/
 	}
 	public static Drawable bitmap2Drawable(Bitmap bitmap) {
 		return new BitmapDrawable(bitmap);

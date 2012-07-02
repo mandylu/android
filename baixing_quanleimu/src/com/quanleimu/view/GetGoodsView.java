@@ -318,7 +318,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		Log.d("GetGoodsView: ", "on scroll called!");
+		//Log.d("GetGoodsView: ", "on scroll called!");
 	}
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {

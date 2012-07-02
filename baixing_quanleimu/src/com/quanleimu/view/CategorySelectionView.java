@@ -138,7 +138,7 @@ public class CategorySelectionView extends ListView {
 		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //		this.setSelector(R.drawable.list_selector);
 		this.setCacheColorHint(0);
-//		this.setFocusable(true);
+		this.setFocusable(true);
 		
 		try{
 			Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);

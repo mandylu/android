@@ -38,19 +38,31 @@ public class LazyImageLoader
 	
 	private CallbackManager callbackManager = new CallbackManager();
 
+	public void forceRecycle(){
+		this.imgManger.forceRecycle();
+	}
+	
+	public void enableSampleSize(){
+		this.imgManger.enableSampleSize(true);
+	}
+	
+	public void disableSampleSize(){
+		this.imgManger.enableSampleSize(false);
+	}
+	
 	public Bitmap get(String url,ImageLoaderCallback callback)
 	{
 		
 		Bitmap bitmap = null;//ImageManager.userDefualtHead;
 		
-		if(imgManger.contains(url))
-		{
-			bitmap = imgManger.getFromCache(url);
+		//if(imgManger.contains(url))
+		//{
+		bitmap = imgManger.getFromCache(url);
 //			
 //			if(null == bitmap){
 //				Log.d("simple image loader:", "image contained but is null");
 //			}
-
+		if(bitmap!=null){
 			return bitmap;
 		}
 		
@@ -73,13 +85,17 @@ public class LazyImageLoader
 		}
 	}
 	
+	public void forceRecycle(String url){
+		this.imgManger.forceRecycle(url);
+	}
+	
 	public void Cancel(List<String> urls){
 		for(int i = 0; i < urls.size(); ++i){
 			String url = urls.get(i);
-
+		
 			urlDeque.remove(url);
 			callbackManager.remove(url);
-			
+			this.imgManger.forceRecycle(url);
 		}	
 	}
 	
@@ -213,7 +229,7 @@ public class LazyImageLoader
 			}
 			catch (Exception e)
 			{
-			
+				e.printStackTrace();
 			}
 			finally
 			{
