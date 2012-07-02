@@ -380,7 +380,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				GoodsList gl = JsonUtil.getGoodsListFromJson(json); 
 				if (gl == null || gl.getCount() == 0) {
-					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show(); 
+//					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show();
+//					TODO:how to check if delay occurred or there's really no info
 				}
 				else{
 					listMyPost = gl.getData();
