@@ -99,8 +99,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			UserBean tmpBean = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 			if(onResult || 
 					(tmpBean != null 
-						&& user != null && tmpBean.getPhone().equals(user.getPhone())
-						&& listMyPost.size() != 0)){
+						&& user != null && tmpBean.getPhone().equals(user.getPhone()))){
 				adapter.setList(listMyPost);
 				adapter.notifyDataSetChanged();
 			}
@@ -382,6 +381,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if (gl == null || gl.getCount() == 0) {
 //					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show();
 //					TODO:how to check if delay occurred or there's really no info
+					listMyPost.clear();
 				}
 				else{
 					listMyPost = gl.getData();
