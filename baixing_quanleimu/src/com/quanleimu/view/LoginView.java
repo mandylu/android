@@ -133,6 +133,13 @@ public class LoginView extends BaseView implements OnClickListener{
 		}
 		return true;
 	}
+	
+	@Override
+	public void onPreviousViewBack(int message, Object obj){
+		if(message == 1){
+			Toast.makeText(getContext(), "重置密码成功，请重新登陆", 3).show();
+		}
+	}
 
 	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
 	class LoginThread implements Runnable {

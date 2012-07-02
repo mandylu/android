@@ -26,13 +26,12 @@ import com.quanleimu.util.Util;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.entity.UserBean;
 
-public class RegisterView extends BaseView implements View.OnClickListener{
+public class RegisterView extends BaseView{
 
 	private EditText accoutnEt, passwordEt,repasswordEt;
 	public String backPageName = "";
 	public String categoryEnglishName = "";
 	public String json = "";
-	private LinearLayout forget_layout;
 
 	protected void Init(){
         
@@ -42,10 +41,6 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 		accoutnEt = (EditText) findViewById(R.id.accountEt);
 		passwordEt = (EditText) findViewById(R.id.passwordEt);
 		repasswordEt = (EditText) findViewById(R.id.repasswordEt);
-
-		
-		forget_layout = (LinearLayout) findViewById(R.id.forget_layout);
-		forget_layout.setOnClickListener(this);
 	}
 	
 	public RegisterView(Context context){
@@ -102,16 +97,6 @@ public class RegisterView extends BaseView implements View.OnClickListener{
 		return tab;
 	}
 
-
-	@Override
-	public void onClick(View v) {
-		if (v == forget_layout) {
-			// 忘记密码
-			if(null != m_viewInfoListener){
-				m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
-			}
-		}
-	}
 
 	private boolean check() {
 		if (accoutnEt.getText().toString().trim().equals("")) {

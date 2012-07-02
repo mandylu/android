@@ -6,8 +6,10 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.webkit.WebView;
 import android.webkit.WebViewClient;
-import com.quanleimu.activity.R;
+import android.widget.Toast;
 
+import com.quanleimu.activity.R;
+import android.graphics.Bitmap;
 
 public class ForgetPasswordView extends BaseView {
 
@@ -18,6 +20,15 @@ public class ForgetPasswordView extends BaseView {
 			mView = view;
 		}
 		
+		@Override
+		public void onPageStarted (WebView view, String url, Bitmap favicon){
+			if(url != null && url.startsWith("http://www.baixing.com/auth/denglu/?username=")){
+				if(mView.m_viewInfoListener != null){
+//					Toast.makeText(mView.getContext(), "重置密码成功，请重新登陆", 2);
+					mView.m_viewInfoListener.onBack(1, null);
+				}
+			}
+		}
 		
 		@Override
 		public void onPageFinished(WebView view, String url){
@@ -29,7 +40,6 @@ public class ForgetPasswordView extends BaseView {
 	public String categoryEnglishName = "";
 	private WebView web;
 	private ProgressDialog pd;
-	private boolean bMoved = false;
 
 	public ForgetPasswordView(Context context, Bundle bundle){
 		super(context);
