@@ -28,6 +28,7 @@
 		    android:textColor="@drawable/list_titleselector"
 		    android:background="@null"
 		    android:paddingRight="5dip"
+		    android:singleLine="true"
 		    android:hint="请输入"
 		    android:layout_toLeftOf="@+id/postunit">
 		</EditText>
