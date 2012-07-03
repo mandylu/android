@@ -240,8 +240,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	@Override
 	public void onAttachedToWindow(){
 		super.onAttachedToWindow();
-		this.clearFocus();
-		etSearch.clearFocus();
 		etSearch.postDelayed(new Runnable(){
 			public void run(){
 				
@@ -253,8 +251,9 @@ public class SearchView extends BaseView implements View.OnClickListener{
 				etSearch.requestFocus();
 				InputMethodManager inputMgr = 
 						(InputMethodManager) SearchView.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
-				inputMgr.toggleSoftInput(0, 0);
+				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_FORCED);
+//				if(!inputMgr.isActive())
+//					inputMgr.toggleSoftInput(0, 0);
 			}			
 		}, 100);
 	}
