@@ -13,22 +13,17 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
-import com.quanleimu.widget.TextEditInputConnected;
-
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
-import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.LinearLayout;
@@ -41,7 +36,7 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	
 	//定义控件
 	public Button btnCancel;
-	public TextEditInputConnected etSearch;
+	public EditText etSearch;
 	private TextView tvClear;
 	public ListView lvSearchHistory;
 	private CommonItemAdapter adapter;
@@ -78,70 +73,13 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		//btnSearch = (Button)findViewById(R.id.btnSearch);
 		btnCancel = (Button)findViewById(R.id.btnCancel);
 		
-		etSearch = (TextEditInputConnected)findViewById(R.id.etSearch);
-		etSearch.setOnActionListener(new TextEditInputConnected.OnActionListener() {
-			@Override
-			public void onActionFired() {					
-				if(etSearch.getText().toString().equals(""))
-				{
-					Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
-				}
-				else
-				{
-					searchContent = etSearch.getText().toString();
-					if(listRemark == null || listRemark.size() == 0)
-					{
-						listRemark = new ArrayList<String>();
-						listRemark.add(searchContent);
-					}
-					else if(!listRemark.contains(searchContent))
-					{
-						listRemark.add(searchContent);
-					}
-					QuanleimuApplication.getApplication().setListRemark(listRemark);
-					//将搜索记录保存本地
-					Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
-					
-					 if(null != m_viewInfoListener){
-						 Bundle bundle = new Bundle();
-						 bundle.putString("backPageName", "首页");
-						 bundle.putString("searchContent", searchContent);
-						 bundle.putString("actType", "search");
-						 bundle.putString("name", "");
-						 
-						 m_viewInfoListener.onExit(SearchView.this);						 
-						 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
-						 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
-					 }
-				}
-			}
-		});
-		
-//		findViewById(R.id.lvSearch).setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				InputMethodManager input = (InputMethodManager) getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
-//				ResultReceiver receiver = new ResultReceiver(new Handler() {
-//					@Override 
-//					public void handleMessage(Message msg) {
-//					 
-//					}
-//					 
-//				});
-//				input.showSoftInput(v, 0, receiver);				
-//			}
-//		});
+		etSearch = (EditText)findViewById(R.id.etSearch);
+		etSearch.setFocusableInTouchMode(true);
+
 		
 		lvSearchHistory = (ListView) findViewById(R.id.lvSearchHistory);
 		
-		//键盘始终显示
-		//getWindow().setSoftInputMode(WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_VISIBLE);
-		
-		//设置监听器
 		btnCancel.setOnClickListener(this);
-		
-		//获得searchType
 		
 		listRemark = QuanleimuApplication.getApplication().getListRemark();
 		
@@ -208,13 +146,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 								 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
 							 }
 							 
-//							 intent.setClass(Search.this, SearchGoods.class);
-//							 bundle.putString("searchContent",searchContent);
-//							 bundle.putString("actType","search");
-//							 intent.putExtras(bundle);
-//							 startActivity(intent);
-//							 Search.this.finish();
-							 
 						}
 						else
 						{
@@ -260,15 +191,48 @@ public class SearchView extends BaseView implements View.OnClickListener{
 		tab.m_visible = false;
 		return tab;
 	}
+	
+	private void doSearch(){
+		if(etSearch.getText().toString().equals(""))
+		{
+			Toast.makeText(getContext(), "搜索内容不能为空", 3).show();
+		}
+		else
+		{
+			searchContent = etSearch.getText().toString();
+			if(listRemark == null || listRemark.size() == 0)
+			{
+				listRemark = new ArrayList<String>();
+				listRemark.add(searchContent);
+			}
+			else if(!listRemark.contains(searchContent))
+			{
+				listRemark.add(searchContent);
+			}
+			QuanleimuApplication.getApplication().setListRemark(listRemark);
+			//将搜索记录保存本地
+			Helper.saveDataToLocate(getContext(), "listRemark", listRemark);
+			
+			 if(null != m_viewInfoListener){
+				 Bundle bundle = new Bundle();
+				 bundle.putString("backPageName", "首页");
+				 bundle.putString("searchContent", searchContent);
+				 bundle.putString("actType", "search");
+				 bundle.putString("name", "");
+				 
+				 m_viewInfoListener.onExit(SearchView.this);						 
+				 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
+				 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
+			 }
+		}
+	}
 
 	@Override
 	public void onClick(View v) {
 		switch(v.getId())
 		{
 			case R.id.btnCancel:
-				if(null != m_viewInfoListener){
-					m_viewInfoListener.onExit(this);
-				}
+				doSearch();
 				break;
 		}
 	}
@@ -276,6 +240,23 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	@Override
 	public void onAttachedToWindow(){
 		super.onAttachedToWindow();
+		this.clearFocus();
+		etSearch.clearFocus();
+		etSearch.postDelayed(new Runnable(){
+			public void run(){
+				
+			}
+		}, 100);
+		etSearch.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				etSearch.requestFocus();
+				InputMethodManager inputMgr = 
+						(InputMethodManager) SearchView.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
+				inputMgr.toggleSoftInput(0, 0);
+			}			
+		}, 100);
 	}
 	
 	// 管理线程的Handler
