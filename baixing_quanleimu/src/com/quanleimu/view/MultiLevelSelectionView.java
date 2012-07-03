@@ -178,17 +178,28 @@ public class MultiLevelSelectionView extends BaseView {
 						PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 						if(MultiLevelSelectionView.this.items == null || MultiLevelSelectionView.this.items.size() == 0){
 							MultiLevelSelectionView.this.items = new ArrayList<MultiLevelItem>();
-							if(bean.getLabels().size() > 1){
-								MultiLevelItem tAll = new MultiLevelItem();
-								tAll.txt ="全部";
-								tAll.id = null;
-								MultiLevelSelectionView.this.items.add(tAll);
+							if(bean.getLabels() != null){
+								if(bean.getLabels().size() > 1){
+									MultiLevelItem tAll = new MultiLevelItem();
+									tAll.txt ="全部";
+									tAll.id = null;
+									MultiLevelSelectionView.this.items.add(tAll);
+								}
+								for(int i = 0; i < bean.getLabels().size(); ++ i){
+									MultiLevelItem t = new MultiLevelItem();
+									t.txt = bean.getLabels().get(i);
+									t.id = bean.getValues().get(i);
+									MultiLevelSelectionView.this.items.add(t);
+								}
 							}
-							for(int i = 0; i < bean.getLabels().size(); ++ i){
-								MultiLevelItem t = new MultiLevelItem();
-								t.txt = bean.getLabels().get(i);
-								t.id = bean.getValues().get(i);
-								MultiLevelSelectionView.this.items.add(t);
+							else{
+								if(m_viewInfoListener != null){
+									MultiLevelItem nItem = new MultiLevelItem();
+									nItem.id = MultiLevelSelectionView.this.id;
+									nItem.txt = MultiLevelSelectionView.this.title;
+									m_viewInfoListener.onBack(message, nItem);
+									return;
+								}
 							}
 //							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1"));
 						}
