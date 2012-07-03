@@ -1189,7 +1189,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
 
-			descriptionEt.setText(QuanleimuApplication.getApplication().getPersonMark());
+			String personalMark = QuanleimuApplication.getApplication().getPersonMark();
+			if(personalMark != null && personalMark.length() > 0){
+				personalMark = "\n\n" + personalMark;
+				descriptionEt.setText(personalMark);
+			}
 			// textViewMap.put(position, descriptionEt);
 //			btMap.put(position, descriptionEt);
 			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
