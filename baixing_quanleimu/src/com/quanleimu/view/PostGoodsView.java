@@ -59,6 +59,8 @@ import android.view.ViewGroup;
 import com.quanleimu.view.MultiLevelSelectionView;
 import com.quanleimu.view.PostGoodsCateMainView;
 
+import android.text.InputType;
+
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
@@ -656,25 +658,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						return false;
 					}
 				}
-//				else if(postGoodsBean.getControlType().equals("checkbox")){
-//					@SuppressWarnings("unchecked")
-////					List<CheckBox> l = (List<CheckBox>) btMap.get(i);
-//					List<CheckBox> l = (List<CheckBox>)getEditMapValue(postGoodsBean.getDisplayName());
-//					boolean checked = false;
-//					for (int j = 0; j < l.size(); j++) {
-//						CheckBox c = l.get(j);
-//						if (c.isChecked()) {
-//							checked = true;
-//							break;
-//						}
-//					}
-//					if(!checked){
-//						Toast.makeText(this.getContext(),
-//								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
-//								.show();
-//						return false;
-//					}
-//				}
 			}
 		}
 		return true;
@@ -1164,6 +1147,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 //			btMap.put(position, v.findViewById(R.id.postinput));
 			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.postinput));
+			if(postBean.getNumeric() != 0){
+				((EditText)v.findViewById(R.id.postinput)).setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+			}
 			if (!postBean.getUnit().equals("")) {
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
