@@ -35,7 +35,7 @@
 			app:inactiveColor="#dddddd"
 			app:inactiveType="fill"
 			app:height_gap ="3dip"
-			app:background_color="#a000ee11"/>				    	
+			app:background_color="#DC64BA00"/>				    	
 		
 	</RelativeLayout>
 </LinearLayout>
