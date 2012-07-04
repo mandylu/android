@@ -518,6 +518,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				break;
 			case MCMESSAGE_DELETEALL:
 				if(PersonalCenterView.this.currentPage != -1){
+					if(null == goodsList) break;
 					goodsList.clear();
 					QuanleimuApplication.getApplication().setListMyStore(goodsList);
 					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
