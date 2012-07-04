@@ -598,6 +598,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	 * @return
 	 */
 	private boolean filled() {
+		if(layout_txt == null || layout_txt.getChildCount() == 2) return false;
 		return true;
 		
 //		boolean bRet = false;
