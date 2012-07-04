@@ -116,10 +116,6 @@ public class OpinionBackView extends BaseView {
 
 	}; 
 	
-	private void sendFeedback(){
-		
-	}
-
 	class OpinionBackThread implements Runnable {
 		@Override
 		public void run() {

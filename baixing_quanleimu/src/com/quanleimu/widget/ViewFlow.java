@@ -64,7 +64,6 @@ public class ViewFlow extends AdapterView<Adapter> {
 	private VelocityTracker mVelocityTracker;
 	private int mTouchState = TOUCH_STATE_REST;
 	private float mLastMotionX;
-	private int mTouchSlop;
 	private int mMaximumVelocity;
 	private int mCurrentScreen;
 	private int mNextScreen = INVALID_SCREEN;
@@ -82,8 +81,6 @@ public class ViewFlow extends AdapterView<Adapter> {
 	private long scrollIntervalMs = 5000;
 	private long scrollDurationMs = 200;
 	
-	private int nLastScrollX = 0;
-
 	private OnGlobalLayoutListener orientationChangeListener = new OnGlobalLayoutListener() {
 
 		@Override
@@ -183,7 +180,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 		mScroller = new Scroller(getContext());
 		final ViewConfiguration configuration = ViewConfiguration
 				.get(getContext());
-		mTouchSlop = configuration.getScaledTouchSlop();
+		configuration.getScaledTouchSlop();
 		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
 	}
 
@@ -397,7 +394,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 			mTouchState = mScroller.isFinished() ? TOUCH_STATE_REST
 					: TOUCH_STATE_SCROLLING;
 
-			nLastScrollX = getScrollX();
+			getScrollX();
 			
 			break;
 

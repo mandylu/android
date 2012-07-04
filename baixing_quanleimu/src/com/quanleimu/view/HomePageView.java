@@ -22,28 +22,17 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.os.ResultReceiver;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.WindowManager;
-import android.view.inputmethod.BaseInputConnection;
-import android.view.inputmethod.EditorInfo;
-import android.view.inputmethod.InputConnection;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.BaseAdapter;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.ImageView.ScaleType;
-
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -53,14 +42,11 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.ImageLoaderCallback;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
-import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.CircleFlowIndicator;
-import com.quanleimu.widget.TextEditInputConnected;
 import com.quanleimu.widget.ViewFlow;
 
 public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener,  CategorySelectionView.ICateSelectionListener{
@@ -177,7 +163,6 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		})).start();
 	}
 	
-	@SuppressWarnings("unchecked")
 	@Override
 	protected void onAttachedToWindow(){
 //		if (QuanleimuApplication.listUsualCates == null) {

@@ -4,7 +4,6 @@ package com.quanleimu.widget;
 import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
-import android.graphics.Rect;
 import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -37,14 +36,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private static final int DAY_MS = 24*60*60*1000;
     private static final int HOUR_MS = 60*60*1000;
     private static final int MINUTE_MS = 60*1000;
-    private static final int SECOND_MS = 1000;
-
     private static final String TAG = "PullToRefreshListView";
 
     private OnRefreshListener mOnRefreshListener;
     private OnGetmoreListener mGetMoreListener;
-    private OnListHeightMeasurer mMeasurer;
-
     /**
      * Listener that will receive notifications every time the list scrolls.
      */
@@ -270,7 +265,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
     
     public void setOnListHeightMeasurer(OnListHeightMeasurer measurer){
-    	mMeasurer = measurer;
     }
 
     /**
@@ -285,8 +279,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	time_diff %= HOUR_MS;
     	long nMinutes = time_diff / MINUTE_MS;
     	time_diff %= MINUTE_MS;
-    	long nSeconds = time_diff / SECOND_MS;
-    	
     	String strLastUpdate = "最后更新于:";
     	if(nDays > 0){
     		strLastUpdate += nDays + "天";
@@ -295,7 +287,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     		strLastUpdate += nHours + "小时";
     	}
     	
-   		strLastUpdate += nMinutes + "分";
+   		strLastUpdate += nMinutes + "分钟";
     	
 //   		strLastUpdate += nSeconds + "秒";
    		

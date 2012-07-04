@@ -3,7 +3,6 @@ package com.quanleimu.widget;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.util.AttributeSet;
-import android.view.View.MeasureSpec;
 import android.widget.ImageView;
 
 public class CustomizedImageView extends ImageView {

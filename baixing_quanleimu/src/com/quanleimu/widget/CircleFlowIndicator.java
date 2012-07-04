@@ -70,8 +70,6 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 	private FadeTimer timer;
 	public AnimationListener animationListener = this;
 	private Animation animation;
-	private boolean mCentered = false;
-
 	/**
 	 * Default constructor
 	 * 
@@ -121,7 +119,7 @@ public class CircleFlowIndicator extends View implements FlowIndicator,
 		// Retrieve the fade out time
 		fadeOutTime = a.getInt(R.styleable.CircleFlowIndicator_fadeOut, 0);
 		
-		mCentered = a.getBoolean(R.styleable.CircleFlowIndicator_centered, false);
+		a.getBoolean(R.styleable.CircleFlowIndicator_centered, false);
 		
 		initColors(activeColor, inactiveColor, activeType, inactiveType, a.getColor(R.styleable.CircleFlowIndicator_background_color, 0x00ffffff));	
 		

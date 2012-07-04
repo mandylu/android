@@ -10,26 +10,17 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.weibo.net.AccessToken;
-import com.weibo.net.DialogError;
 import com.weibo.net.Oauth2AccessTokenHeader;
 import com.weibo.net.Utility;
 import com.weibo.net.Weibo;
-import com.weibo.net.WeiboDialogListener;
-import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 
-import org.json.JSONException;
-import org.json.JSONObject;
 import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.entity.AuthDialogListener;
 public class SetMainView extends BaseView implements View.OnClickListener{

@@ -1,15 +1,9 @@
 package com.quanleimu.activity;
 
 
-import java.io.BufferedOutputStream;
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
-import java.io.OutputStream;
-
 import java.util.ArrayList;
 import java.util.List;
 
@@ -33,7 +27,6 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-import com.quanleimu.util.ErrorReporter;
 public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
 
 	// 定义经纬度

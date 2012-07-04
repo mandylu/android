@@ -16,7 +16,6 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	private LinearLayout lvCateArea;
 	protected CategorySelectionView selectionView;
 	private BaseActivity baseActivity;
-	private Bundle bundle;
 	private int message;
 	private boolean subSelected = false;
 	
@@ -27,7 +26,6 @@ public class PostGoodsCateMainView extends BaseView implements CategorySelection
 	public PostGoodsCateMainView(BaseActivity context, Bundle bundle, int msgBack){
 		super(context, bundle);
 		baseActivity = context;
-		this.bundle = bundle;
 		message = msgBack;
 		init();
 	}
