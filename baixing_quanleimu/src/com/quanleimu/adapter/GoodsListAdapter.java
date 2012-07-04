@@ -83,7 +83,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return list == null ? 1 : list.size();
+		return (list == null || 0 == list.size()) ? 1 : list.size();
 	}
 
 	@Override
@@ -100,7 +100,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		if(list == null){
+		if(list == null || 0 == list.size()){
 			View v = null;
 			
 			if(0 == position){			

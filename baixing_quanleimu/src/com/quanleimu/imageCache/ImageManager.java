@@ -18,6 +18,7 @@ import android.graphics.drawable.Drawable;
 import android.support.v4.util.LruCache;
 import android.app.ActivityManager;
 import com.quanleimu.activity.R;
+import com.quanleimu.util.BitmapUtils;
 import com.quanleimu.util.DiskLruCache;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.Util;
@@ -48,7 +49,9 @@ public class ImageManager
 	    final int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
 	    
 	    File fileCacheDir = DiskLruCache.getDiskCacheDir(context, "");
-	    final long diskCacheSize = 1024*1024;//BitmapUtils.getUsableSpace(fileCacheDir) / 2;
+	    long capacity_20M = 20*1024*1024;
+	    long capacity_halfFreeSpace = BitmapUtils.getUsableSpace(fileCacheDir) / 2;	    
+	    final long diskCacheSize =  capacity_20M > capacity_halfFreeSpace ? capacity_20M : capacity_halfFreeSpace;
 	    
 	    imageDiskLruCache = DiskLruCache.openCache(context, fileCacheDir, diskCacheSize);
 
