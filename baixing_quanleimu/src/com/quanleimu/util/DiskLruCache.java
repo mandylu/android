@@ -104,7 +104,7 @@ public class DiskLruCache {
      */
     public static DiskLruCache openCache(Context context, File cacheDir, long maxByteSize) {
         if (!cacheDir.exists()) {
-            cacheDir.mkdir();
+            cacheDir.mkdirs();
         }
 
         if (cacheDir.isDirectory() && cacheDir.canWrite()

@@ -81,9 +81,9 @@ public class BitmapUtils {
      */
     @SuppressLint("NewApi")
     public static File getExternalCacheDir(Context context) {
-        if (hasExternalCacheDir()) {
-            return context.getExternalCacheDir();
-        }
+//        if (hasExternalCacheDir()) {
+//            return context.getExternalCacheDir();
+//        }
 
         // Before Froyo we need to construct the external cache dir ourselves
         final String cacheDir = "/Android/data/" + context.getPackageName() + "/cache/";

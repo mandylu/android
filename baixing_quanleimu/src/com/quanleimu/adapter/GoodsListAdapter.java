@@ -83,7 +83,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		// TODO Auto-generated method stub
-		return list == null ? 0 : list.size();
+		return list == null ? 1 : list.size();
 	}
 
 	@Override
@@ -100,181 +100,192 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		View v = convertView;
-		if(v == null){
-			v = inflater.inflate(R.layout.item_goodslist, null);
-		}
-
-		tvDes = (TextView) v.findViewById(R.id.tvDes);
-		tvPrice = (TextView) v.findViewById(R.id.tvPrice);
-//		tvPrice.setTextColor(Color.RED);
-		tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
-//		tvDateAndAddress.setTextColor(R.color.hui);
-		btnDelete = (Button) v.findViewById(R.id.btnDelete);
-
-		if (!hasDelBtn) {
-			btnDelete.setVisibility(View.GONE);
-		} 
-		else{
-			btnDelete.setVisibility(View.VISIBLE);
-		}
-
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-        o.inPurgeable = true;
-        if(null == defaultBk1){
-        	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
-//        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
-//        	defaultBk1 = Helper.addBorder(tmb, 1);
-//        	tmb.recycle();
-        	defaultBk1 = tmb;
-        }
-		if(null == defaultBk2){
-			Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
-//			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
-//			defaultBk2 = Helper.addBorder(tmb1, 1);
-//			tmb1.recycle();
-			defaultBk2 = tmb1;
-		}
-		int type = Util.getWidthByContext(context);
-		RelativeLayout.LayoutParams lp = null;
-		switch (type) {
-		case 240:
-			lp = new RelativeLayout.LayoutParams(45, 45);
-			break;
-		case 320:
-			lp = new RelativeLayout.LayoutParams(60, 60);
-			break;
-		case 480:
-			lp = new RelativeLayout.LayoutParams(90, 90);
-			break;
-		case 540:
-			lp = new RelativeLayout.LayoutParams(100, 100);
-			break;
-		case 640:
-			lp = new RelativeLayout.LayoutParams(120, 120);
-			break;
-		default:
-			 lp= new RelativeLayout.LayoutParams(140,140);
-			break;
-		}
-		ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+		if(list == null){
+			View v = null;
 			
-		if(QuanleimuApplication.isTextMode()){
-			ivInfo.setVisibility(View.GONE);
-		}
-		if(!QuanleimuApplication.isTextMode()){
-			ivInfo.setTag("");
-			ivInfo.setImageBitmap(defaultBk1);
-		}
-		lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-		if(!QuanleimuApplication.isTextMode()){
-			ivInfo.setLayoutParams(lp);
-			
-			if (list.get(position).getImageList() == null
-					|| list.get(position).getImageList().equals("")
-					|| list.get(position).getImageList().getResize180() == null
-					|| list.get(position).getImageList().getResize180()
-							.equals("")) {
+			if(0 == position){			
 				
+				LayoutInflater inflater = LayoutInflater.from(context);
+				v = inflater.inflate(R.layout.goodslist_empty_hint, null);
+			}
+			
+			return v;
+		}else{
+			LayoutInflater inflater = LayoutInflater.from(context);
+			View v = convertView;
+			if(v == null || null == v.findViewById(R.id.tvDes)){
+				v = inflater.inflate(R.layout.item_goodslist, null);
+			}
+	
+			tvDes = (TextView) v.findViewById(R.id.tvDes);
+			tvPrice = (TextView) v.findViewById(R.id.tvPrice);
+	//		tvPrice.setTextColor(Color.RED);
+			tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
+	//		tvDateAndAddress.setTextColor(R.color.hui);
+			btnDelete = (Button) v.findViewById(R.id.btnDelete);
+	
+			if (!hasDelBtn) {
+				btnDelete.setVisibility(View.GONE);
+			} 
+			else{
+				btnDelete.setVisibility(View.VISIBLE);
+			}
+	
+			BitmapFactory.Options o =  new BitmapFactory.Options();
+	        o.inPurgeable = true;
+	        if(null == defaultBk1){
+	        	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
+	//        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
+	//        	defaultBk1 = Helper.addBorder(tmb, 1);
+	//        	tmb.recycle();
+	        	defaultBk1 = tmb;
+	        }
+			if(null == defaultBk2){
+				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
+	//			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
+	//			defaultBk2 = Helper.addBorder(tmb1, 1);
+	//			tmb1.recycle();
+				defaultBk2 = tmb1;
+			}
+			int type = Util.getWidthByContext(context);
+			RelativeLayout.LayoutParams lp = null;
+			switch (type) {
+			case 240:
+				lp = new RelativeLayout.LayoutParams(45, 45);
+				break;
+			case 320:
+				lp = new RelativeLayout.LayoutParams(60, 60);
+				break;
+			case 480:
+				lp = new RelativeLayout.LayoutParams(90, 90);
+				break;
+			case 540:
+				lp = new RelativeLayout.LayoutParams(100, 100);
+				break;
+			case 640:
+				lp = new RelativeLayout.LayoutParams(120, 120);
+				break;
+			default:
+				 lp= new RelativeLayout.LayoutParams(140,140);
+				break;
+			}
+			ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+				
+			if(QuanleimuApplication.isTextMode()){
+				ivInfo.setVisibility(View.GONE);
+			}
+			if(!QuanleimuApplication.isTextMode()){
 				ivInfo.setTag("");
-				ivInfo.setImageBitmap(defaultBk2);
-//				ivInfo.invalidate();
+				ivInfo.setImageBitmap(defaultBk1);
+			}
+			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+			if(!QuanleimuApplication.isTextMode()){
+				ivInfo.setLayoutParams(lp);
+				
+				if (list.get(position).getImageList() == null
+						|| list.get(position).getImageList().equals("")
+						|| list.get(position).getImageList().getResize180() == null
+						|| list.get(position).getImageList().getResize180()
+								.equals("")) {
+					
+					ivInfo.setTag("");
+					ivInfo.setImageBitmap(defaultBk2);
+	//				ivInfo.invalidate();
+				} else {
+		//			if (isConnect == 0) {
+		//				ivInfo.setImageBitmap(defaultBk2);
+		//			}
+		//			else{
+						String b = (list.get(position).getImageList().getResize180())
+						.substring(1, (list.get(position).getImageList()
+								.getResize180()).length() - 1);
+						b = Communication.replace(b);
+				
+						if (b.contains(",")) {
+							String[] c = b.split(",");
+							if (c[0] == null || c[0].equals("")) {
+								ivInfo.setTag("");
+								ivInfo.setImageBitmap(defaultBk2);
+	//							ivInfo.invalidate();
+							} else {
+								ivInfo.setTag(c[0]);
+								SimpleImageLoader.showImg(ivInfo, c[0], this.context);
+								
+							}
+						} else {
+							if (b == null || b.equals("")) {			
+								ivInfo.setTag("");
+								ivInfo.setImageBitmap(defaultBk2);
+							} else {
+								ivInfo.setTag(b);
+								SimpleImageLoader.showImg(ivInfo, b, this.context);				
+							}
+						}
+		//			}
+				}
+			}
+			String price = "";
+			try {
+				price = list.get(position).getMetaValueByKey("价格") + "";
+			} catch (Exception e) {
+				price = "";
+			}
+			if (price.equals("null") || price.equals("")) {
+				tvPrice.setVisibility(View.GONE);
 			} else {
-	//			if (isConnect == 0) {
-	//				ivInfo.setImageBitmap(defaultBk2);
-	//			}
-	//			else{
-					String b = (list.get(position).getImageList().getResize180())
-					.substring(1, (list.get(position).getImageList()
-							.getResize180()).length() - 1);
-					b = Communication.replace(b);
-			
-					if (b.contains(",")) {
-						String[] c = b.split(",");
-						if (c[0] == null || c[0].equals("")) {
-							ivInfo.setTag("");
-							ivInfo.setImageBitmap(defaultBk2);
-//							ivInfo.invalidate();
-						} else {
-							ivInfo.setTag(c[0]);
-							SimpleImageLoader.showImg(ivInfo, c[0], this.context);
-							
-						}
-					} else {
-						if (b == null || b.equals("")) {			
-							ivInfo.setTag("");
-							ivInfo.setImageBitmap(defaultBk2);
-						} else {
-							ivInfo.setTag(b);
-							SimpleImageLoader.showImg(ivInfo, b, this.context);				
-						}
-					}
-	//			}
+				tvPrice.setVisibility(View.VISIBLE);
+				tvPrice.setText(price);
 			}
-		}
-		String price = "";
-		try {
-			price = list.get(position).getMetaValueByKey("价格") + "";
-		} catch (Exception e) {
-			price = "";
-		}
-		if (price.equals("null") || price.equals("")) {
-			tvPrice.setVisibility(View.GONE);
-		} else {
-			tvPrice.setVisibility(View.VISIBLE);
-			tvPrice.setText(price);
-		}
-		tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-		tvDes.setTypeface(null, Typeface.BOLD);
-
-		String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
-		if(dateV != null && !dateV.equals(""))
-		{
-			Date date = new Date(Long.parseLong(dateV) * 1000);
-			SimpleDateFormat df = new SimpleDateFormat("MM月dd日",
-					Locale.SIMPLIFIED_CHINESE);
-			
-			String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-			if(areaV != null && !areaV.equals(""))
+			tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+			tvDes.setTypeface(null, Typeface.BOLD);
+	
+			String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
+			if(dateV != null && !dateV.equals(""))
 			{
-				tvDateAndAddress.setText(df.format(date) + " "
-						+ areaV);
+				Date date = new Date(Long.parseLong(dateV) * 1000);
+				SimpleDateFormat df = new SimpleDateFormat("MM月dd日",
+						Locale.SIMPLIFIED_CHINESE);
+				
+				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if(areaV != null && !areaV.equals(""))
+				{
+					tvDateAndAddress.setText(df.format(date) + " "
+							+ areaV);
+				}
+				else
+				{
+					tvDateAndAddress.setText(df.format(date));
+				}
 			}
 			else
 			{
-				tvDateAndAddress.setText(df.format(date));
+				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				if(areaV != null && !areaV.equals(""))
+				{
+					tvDateAndAddress.setText(areaV);
+				}
+				else
+				{
+					tvDateAndAddress.setVisibility(View.GONE);
+				}
 			}
+	
+			btnDelete.setOnClickListener(new View.OnClickListener() {
+	
+				@Override
+				public void onClick(View v) {
+					if(uiHold) return;
+					uiHold = true;
+					if(GoodsListAdapter.this.handler == null) return;
+					Message msg = GoodsListAdapter.this.handler.obtainMessage();
+					msg.arg2 = position;
+					msg.what = GoodsListAdapter.this.messageWhat;
+	//				list.remove(position);
+					GoodsListAdapter.this.notifyDataSetChanged();
+					GoodsListAdapter.this.handler.sendMessage(msg);
+				}
+			});
+			return v;
 		}
-		else
-		{
-			String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-			if(areaV != null && !areaV.equals(""))
-			{
-				tvDateAndAddress.setText(areaV);
-			}
-			else
-			{
-				tvDateAndAddress.setVisibility(View.GONE);
-			}
-		}
-
-		btnDelete.setOnClickListener(new View.OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				if(uiHold) return;
-				uiHold = true;
-				if(GoodsListAdapter.this.handler == null) return;
-				Message msg = GoodsListAdapter.this.handler.obtainMessage();
-				msg.arg2 = position;
-				msg.what = GoodsListAdapter.this.messageWhat;
-//				list.remove(position);
-				GoodsListAdapter.this.notifyDataSetChanged();
-				GoodsListAdapter.this.handler.sendMessage(msg);
-			}
-		});
-		return v;
 	}
-
 }
