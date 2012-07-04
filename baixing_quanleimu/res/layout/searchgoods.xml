@@ -1,7 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent" >
+    android:layout_height="fill_parent" 
+	android:focusableInTouchMode="true"
+	android:focusable="true">    
 
 
     <LinearLayout
@@ -9,6 +11,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@drawable/bg"
+		android:focusableInTouchMode="true"
+		android:focusable="true" 
         android:orientation="vertical" >
 
         <com.quanleimu.widget.PullToRefreshListView

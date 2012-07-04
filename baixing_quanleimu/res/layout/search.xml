@@ -31,7 +31,7 @@
   	             android:paddingLeft="5dip"
   	             android:src="@drawable/iconsearch" />
 	
-  	         <com.quanleimu.widget.TextEditInputConnected
+  	         <EditText
   	             android:id="@+id/etSearch"
   	             android:layout_width="fill_parent"
   	             android:layout_height="wrap_content"
@@ -56,7 +56,7 @@
   	             android:layout_height="wrap_content"
   	             android:layout_margin="5dip"
   	             android:singleLine="true"
-  	             android:text="取消"
+  	             android:text="搜索"
   	             android:gravity="center"	
   	             android:textColor="#ffffff"		        
   	             android:background="@drawable/btn_search" />
