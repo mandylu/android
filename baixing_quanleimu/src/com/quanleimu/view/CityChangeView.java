@@ -21,6 +21,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
 
 public class CityChangeView extends BaseView {
 
@@ -119,14 +120,6 @@ public class CityChangeView extends BaseView {
 			View v = null;
 			v = inflater.inflate(R.layout.item_citychange, null);
 
-			if (i == 0) {
-				v.setBackgroundResource(R.drawable.btn_top_bg);
-			} else if (i == listHotCity.size() - 1) {
-				v.setBackgroundResource(R.drawable.btn_down_bg);
-			} else {
-				v.setBackgroundResource(R.drawable.btn_m_bg);
-			}
-
 			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
 			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
 			ivChoose.setImageResource(R.drawable.gou);
@@ -165,7 +158,15 @@ public class CityChangeView extends BaseView {
 					}
 				}
 			});
+			if (i != listHotCity.size() - 1) {
+				TextView border = new TextView(CityChangeView.this.getContext());
+				border.setLayoutParams(new LayoutParams(
+						LayoutParams.FILL_PARENT, 1, 1));
+				border.setBackgroundResource(R.drawable.list_divider);
+				((LinearLayout)v.findViewById(R.id.ll_item_cityChange)).addView(border);
+			}
 			linearHotCities.addView(v);
+		
 		}
 
 		for (int i = 0; i < listHotCity.size(); i++) {
