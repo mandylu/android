@@ -6,18 +6,11 @@
  */
 package com.quanleimu.imageCache;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Queue;
-
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
-import android.graphics.Bitmap.Config;
 import android.os.AsyncTask;
-import android.util.Log;
 import android.view.View;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -25,7 +18,6 @@ import android.widget.ProgressBar;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.PostGoodsView;
 
 
 /**

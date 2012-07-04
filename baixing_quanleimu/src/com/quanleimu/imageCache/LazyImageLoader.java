@@ -52,26 +52,25 @@ public class LazyImageLoader
 	
 	public Bitmap get(String url,ImageLoaderCallback callback)
 	{
-		
 		Bitmap bitmap = null;//ImageManager.userDefualtHead;
 		
-		//if(imgManger.contains(url))
-		//{
-		bitmap = imgManger.getFromCache(url);
-//			
-//			if(null == bitmap){
-//				Log.d("simple image loader:", "image contained but is null");
-//			}
-		if(bitmap!=null){
-			return bitmap;
+		if(imgManger.contains(url))
+		{
+			bitmap = imgManger.getFromMemoryCache(url);
+			if(bitmap!=null && bitmap.isRecycled()){
+				Log.d("imageCache", "bitmap in cache, but it is recycled and reclaimed, oOH...");
+			}
 		}
 		
-		else
+		
+		if(bitmap!=null){
+			return bitmap;
+		}else
 		{
 			callbackManager.put(url, callback);			
 			startDownLoadTread(url);
 	    }
-
+		
 		return bitmap;
 	}
 	
@@ -104,10 +103,10 @@ public class LazyImageLoader
 		Bitmap result = null;
 		
 		if(imgManger.contains(url)){
-			result = imgManger.getFromCache(url); 			
+			result = imgManger.getFromMemoryCache(url); 			
 		}		
 		else{
-			result = imgManger.safeGetFromFile(url);
+			result = imgManger.safeGetFromFileCache(url);
 	    }
 
 		return (result != null);		
@@ -118,10 +117,10 @@ public class LazyImageLoader
 		Bitmap result = null;
 		
 		if(imgManger.contains(url)){
-			result = imgManger.getFromCache(url); 			
+			result = imgManger.getFromMemoryCache(url); 			
 		}		
 		else{
-			result = imgManger.safeGetFromFile(url);
+			result = imgManger.safeGetFromFileCache(url);
 			
 			if(result == null){
 				callbackManager.put(url, callback);			

@@ -1,18 +1,10 @@
 package com.quanleimu.imageCache;
 
-import java.io.BufferedInputStream;
-import java.io.BufferedOutputStream;
-import java.io.ByteArrayOutputStream;
+import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
-import java.lang.ref.SoftReference;
-import java.util.ArrayList;
-import java.util.HashMap;
-import java.util.List;
-import java.util.Map;
-
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -23,44 +15,78 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
-import android.view.WindowManager;
-
-import com.quanleimu.activity.QuanleimuApplication;
+import android.support.v4.util.LruCache;
+import android.app.ActivityManager;
 import com.quanleimu.activity.R;
+import com.quanleimu.util.DiskLruCache;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.Util;
+
+
 
 public class ImageManager
 {
 
-Map<String, SoftReference<Bitmap>> imgCache ;
+	//private Map<String, SoftReference<Bitmap>> imgCache ;
 	
-	private Context context;
+	private LruCache<String, Bitmap> imageLruCache;
+	private DiskLruCache imageDiskLruCache;
+
 	
-	private boolean useSampleSize = false;
+	private Context context;	
 	
 	public static Bitmap userDefualtHead;
 	
 	public ImageManager(Context context)
 	{
 		this.context = context;
-		imgCache = new HashMap<String, SoftReference<Bitmap>>();
+		//imgCache = new HashMap<String, SoftReference<Bitmap>>();
 		userDefualtHead =drawabltToBitmap(context.getResources().getDrawable(R.drawable.moren));
 		
+	    // Get memory class of this device, exceeding this amount will throw an
+	    // OutOfMemory exception.
+	    final int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
+	    
+	    File fileCacheDir = DiskLruCache.getDiskCacheDir(context, "");
+	    final long diskCacheSize = 1024*1024;//BitmapUtils.getUsableSpace(fileCacheDir) / 2;
+	    
+	    imageDiskLruCache = DiskLruCache.openCache(context, fileCacheDir, diskCacheSize);
+
+	    // Use 1/8th of the available memory for this memory cache.
+	    final int cacheSize = 1024 * 1024 * memClass / 8;    
+	    
+	    imageLruCache = new LruCache<String, Bitmap>(cacheSize){
+	        @Override
+	        protected int sizeOf(String key, Bitmap bitmap) {
+	            // The cache size will be measured in bytes rather than number of items.
+	            int bytes = bitmap.getHeight()*bitmap.getRowBytes();
+	            return bytes;
+	        }
+	        
+	        @Override
+	        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue){
+//	        	if(!evicted)
+//	        		oldValue.recycle();
+	        	
+	        	super.entryRemoved(evicted, key, oldValue, newValue);
+	        }
+	    };    
 	}
 	
 	public void enableSampleSize(boolean b){
-		this.useSampleSize = b;
+		imageDiskLruCache.enableSampleSize(b);
 	}
 	
 	public boolean contains(String url)
 	{
 		
-		return imgCache.containsKey(url);
+		//return imgCache.containsKey(url);
+		
+		return (null != imageLruCache.get(url));
 		
 	}
 	
-	public Bitmap getFromCache(String url)
+	public Bitmap getFromMemoryCache(String url)
 	{
 		Bitmap bitmap = null;
 		
@@ -69,42 +95,10 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		if(null == bitmap)
 		{
 			
-			bitmap =getFromFile(url);
+			bitmap =getFromFileCache(url);
 		}
 		
-		return bitmap;
-		
-		
-	}
-	
-	
-	private static void screenDimension(_Rect rc){
-		WindowManager wm = 
-				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
-		rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
-				
-	}
-	
-	public int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		if(!	useSampleSize) return 1;
-	    // Raw height and width of image
-	    final int height = options.outHeight;
-	    final int width = options.outWidth;
-	    int inSampleSize = 1;
-	
-	    if (height > reqHeight || width > reqWidth) {
-	        inSampleSize = Math.round((float)height / (float)reqHeight);
-	        int t = Math.round((float)width / (float)reqWidth);
-	        if(t > inSampleSize) inSampleSize = t;
-	        
-	    }
-	    
-	    System.out.println("[decodeSampledBitmapFromFile] SampleSize = " + inSampleSize
-	    		+ " reqWidth/width =" + reqWidth + "/" + width 
-	    		+ " reqHeight/height = " + reqHeight + "/" + height);
-	    return inSampleSize;
+		return bitmap;		
 	}
 	
 	
@@ -136,33 +130,6 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	}
 */	
 
-	public Bitmap decodeSampledBitmapFromFile(String fileName,
-	        int reqWidth, int reqHeight) {
-
-	    // First decode with inJustDecodeBounds=true to check dimensions
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    options.inJustDecodeBounds = true;
-	    BitmapFactory.decodeFile(fileName,options);
-
-	    // Calculate inSampleSize
-	    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-	    
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    options.inPurgeable = true;
-	    return BitmapFactory.decodeFile(fileName, options);
-	}
-
-	
-	public Bitmap decodeBitmapFromFile(String fileName){
-		int reqWidth = 200;
-		int reqHeight = 200;
-		_Rect rc = new _Rect();
-		rc.width = reqWidth;
-		rc.height = reqHeight;
-		screenDimension(rc);
-		return decodeSampledBitmapFromFile(fileName, rc.width, rc.height);
-	}
 /*	
 	public static Bitmap decodeBitmapFromStream(InputStream is){
 		int reqWidth = 200;
@@ -175,130 +142,92 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	}
 */	
 	
-	public Bitmap getFromFile(String url)
+	public Bitmap getFromFileCache(String url)
 	{
-		Bitmap result = null;
-		String fileName = context.getFilesDir() + "/" + this.getMd5(url);
-		
-		result = decodeBitmapFromFile(fileName);
-		if(result != null){
-			System.out.println(fileName + "===================== fetched bitmap from file cache =================== " + url);
-		}else{
-			System.out.println(fileName + "===================== Failed to fetch bitmap from file cache =================== " + url);
-		}
-		return result;
-		/*
-		FileInputStream is=null;
-		
-		try
-		{
-			is=context.openFileInput(fileName);
-			
-			//BitmapFactory.Options o =  new BitmapFactory.Options();
-            //o.inPurgeable = true;
-            //result = BitmapFactory.decodeStream(is, null, o);
-			
-			result = ImageManager.decodeBitmapFromStream(is);
-			if(result != null){
-				System.out.println("===================== fetched bitmap from file cache =================== " + url);
-			}else{
-				System.out.println("===================== Failed to fetch bitmap from file cache =================== " + url);
-			}
-			return result;
-		} 
-		catch (FileNotFoundException e)
-		{
-			try{
-				is = context.getAssets().openFd(fileName).createInputStream();
-				//BitmapFactory.Options o =  new BitmapFactory.Options();
-	            //o.inPurgeable = true;
-	            //return BitmapFactory.decodeStream(is, null, o);
-				result = ImageManager.decodeBitmapFromStream(is);
-				if(result != null){
-					System.out.println("===================== fetched bitmap from file cache (assets) =================== " + url);
-				}
-				return result;
-				
-			}catch(FileNotFoundException ee){
-				//ee.printStackTrace();
-				return result;
-			}catch(IOException eee){
-				//eee.printStackTrace();
-				return result;
-			}
-		}
-		finally
-		{
-			if(null != is)
-			{
-				try{is.close();}catch(Exception ex){
-					//ex.printStackTrace();
-				};
-			}
-		}
-		*/
-		
+		//Log.d("LruDiskCache", "get from filecache: "+url+";");
+		return imageDiskLruCache.get(getMd5(url));
 	}
 	
 	public Bitmap getFromMapCache(String url)
 	{
 		Bitmap bitmap = null;
 		
-		SoftReference<Bitmap> ref = null;
+//		SoftReference<Bitmap> ref = null;
+//		
+//		synchronized (this)
+//		{
+//			ref = imgCache.get(url);
+//		}
+//		if(null != ref)
+//		{
+//			bitmap = ref.get();
+//			
+//		}
 		
-		synchronized (this)
-		{
-			ref = imgCache.get(url);
-		}
-		if(null != ref)
-		{
-			bitmap = ref.get();
-			System.out.println("===================== fetched bitmap from mem cache =================== " + url);
+		synchronized (this){
+			bitmap = imageLruCache.get(url);			
 		}
 		return bitmap;
 	}
+	
 	public void forceRecycle(String url){
-		SoftReference<Bitmap> r = imgCache.get(url);
-		if(r!=null){
-			Bitmap b = r.get();
-			if(b != null && !b.isRecycled()){
-				System.out.println("=============recycle bitmap======= " + b.toString() + " by " + url);
-				b.recycle();
-				b = null;
-    			}
-		}else{
-			System.out.println("============= bitmap missed in cache ======= by " + url);
-		}
-		
-		imgCache.remove(url);//anyway ,remove it from cache
-		
-	}
-	public void forceRecycle(){//release all bitmap
-		//imgCache.keySet()
-		for(SoftReference<Bitmap> r:imgCache.values()){
-            if(r != null){
-                Bitmap b = r.get();
-                
-                if(b != null && !b.isRecycled()){
-                	    System.out.println("=============recycle bitmap======= " + b.toString());
-	                b.recycle();
-	                b = null;
-            		}
-                
-            }
-        }
-	  imgCache.clear();
+//		Bitmap bitmap = imageLruCache.get(url);
+//		if(bitmap!=null&& !bitmap.isRecycled()){
+//			bitmap.recycle();
+//			bitmap = null;
+//		}else{
+//			System.out.println("============= bitmap missed in cache ======= by " + url);
+//		}
+//		
+		imageLruCache.remove(url);//anyway ,remove it from cache		
 	}
 	
-	public Bitmap safeGetFromFile(String url)
+	public void forceRecycle(){//release all bitmap
+		
+//		for(bitmap r : imageLruCache.){
+//            if(r != null){
+//                Bitmap b = r.get();
+//                
+//                if(b != null && !b.isRecycled()){
+//                	    System.out.println("=============recycle bitmap======= " + b.toString());
+//	                b.recycle();
+//	                b = null;
+//            		}
+//                
+//            }
+//        }
+//	  imgCache.clear();
+		
+		imageLruCache.evictAll();
+	}
+	
+	public Bitmap safeGetFromFileCache(String url)
 	{
-		Bitmap bitmap = this.getFromFile(url);
+		String fileName = getMd5(url);
+		Bitmap bitmap = this.getFromFileCache(url);
+		
+		if(null == bitmap){
+			try{
+				FileInputStream is = context.getAssets().openFd(fileName).createInputStream();
+				BitmapFactory.Options o =  new BitmapFactory.Options();
+	            o.inPurgeable = true;
+	            bitmap = BitmapFactory.decodeStream(is, null, o);
+	            
+	            imageDiskLruCache.put(fileName, bitmap);
+			}catch(FileNotFoundException ee){
+				
+			}catch(IOException eee){
+				
+			}
+		}
+		
 		if(null != bitmap)
 		{
 			synchronized (this)
 			{
-				System.out.println("=============cache bitmap======= " + bitmap.toString() + " by " + url);
-				imgCache.put(url, new SoftReference<Bitmap>(bitmap));
+				//imgCache.put(url, new SoftReference<Bitmap>(bitmap));
+				
+				imageLruCache.put(url, bitmap);
 			}			
 		}
 		
@@ -308,7 +237,12 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 	
 	public Bitmap safeGet(String url) throws HttpException
 	{
-		Bitmap bitmap = this.getFromFile(url);
+		Bitmap bitmap = this.getFromFileCache(url);
+		
+		if(null == bitmap){
+			bitmap = downloadImg(url);
+		}
+		
 		if(null == bitmap){
 			bitmap = downloadImg(url);
 		}
@@ -316,40 +250,37 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		{
 			synchronized (this)
 			{
-				System.out.println("=============cache bitmap======= " + bitmap.toString() + " by " + url);
-				imgCache.put(url, new SoftReference<Bitmap>(bitmap));
+				imageLruCache.put(url, bitmap);
 			}
-			
 		}
 		return bitmap;
-		
 	}
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException
 	{
+		//Log.d("LruDiskCache", "download image: "+urlStr+";");
+		
 		HttpClient httpClient = null;
         InputStream bis = null;
         Bitmap bitmapRet = null;
         
 		try
 		{
-//			URL url = new URL(urlStr);
-//			HttpURLConnection connection =(HttpURLConnection) url.openConnection();
-			
 			httpClient = NetworkProtocols.getInstance().getHttpClient();
 	        
 	        HttpPost httpPost = new HttpPost(urlStr); 
-	        HttpResponse response = httpClient.execute(httpPost);			
-            //BitmapFactory.Options o =  new BitmapFactory.Options();
-            //o.inPurgeable = true;
-            //bitmapRet = BitmapFactory.decodeFile(writeToFile(getMd5(urlStr),  response.getEntity().getContent()));       
-            String newFile = writeToFile(getMd5(urlStr),  response.getEntity().getContent());
-            System.out.println(newFile + "===================== downloaded bitmap =================== " + urlStr);
-            bitmapRet = decodeBitmapFromFile(newFile);
+	        HttpResponse response = httpClient.execute(httpPost);	
+	        
+	        String key = getMd5(urlStr);
+           	imageDiskLruCache.put(key, response.getEntity().getContent());
+           	
+           	httpClient.getConnectionManager().shutdown();
+           	httpClient = null;
+           	
+           	bitmapRet = imageDiskLruCache.get(key);
             
             return bitmapRet;
-		}catch (Exception e){
-			
+		}catch (Exception e){			
 		}
 		finally
 		{			
@@ -384,70 +315,70 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		}
 	}
 	
-	public static List<String> listNames= new ArrayList<String>();;
-	public String  writeToFile(String fileName, InputStream is)
-	{
-		
-		BufferedInputStream bis = null;
-		
-		BufferedOutputStream bos = null;
-		
-		try
-		{
-			bis = new BufferedInputStream(is);
-			bos = new BufferedOutputStream(context.openFileOutput(fileName, Context.MODE_PRIVATE));
-			
-			byte[] buffer = new byte[1024];
-			int length;
-			while((length = bis.read(buffer)) != -1)
-			{
-				bos.write(buffer, 0, length);
-			}
-//			listNames = MyApplication.list;
-//			if(listNames == null || listNames.size() == 0)
+//	public static List<String> listNames= new ArrayList<String>();;
+//	public String  writeToFile(String fileName, InputStream is)
+//	{
+//		
+//		BufferedInputStream bis = null;
+//		
+//		BufferedOutputStream bos = null;
+//		
+//		try
+//		{
+//			bis = new BufferedInputStream(is);
+//			bos = new BufferedOutputStream(context.openFileOutput(fileName, Context.MODE_PRIVATE));
+//			
+//			byte[] buffer = new byte[1024];
+//			int length;
+//			while((length = bis.read(buffer)) != -1)
 //			{
-//				listNames = new ArrayList<String>();
-//				listNames.add(fileName);
+//				bos.write(buffer, 0, length);
 //			}
-//			else if(!listNames.contains(fileName))
+////			listNames = MyApplication.list;
+////			if(listNames == null || listNames.size() == 0)
+////			{
+////				listNames = new ArrayList<String>();
+////				listNames.add(fileName);
+////			}
+////			else if(!listNames.contains(fileName))
+////			{
+////				listNames.add(fileName);
+////			}
+////			MyApplication.list = listNames;
+//			
+//			
+//		} catch (Exception e)
+//		{
+//			
+//		}
+//		finally
+//		{
+//			
+//			try
 //			{
-//				listNames.add(fileName);
+//				if(null != bis)
+//				{
+//					bis.close();
+//				}
+//				
+//				if(null != bos)
+//					{
+//						bos.flush();
+//						bos.close();
+//					
+//					}
+//				
 //			}
-//			MyApplication.list = listNames;
-			
-			
-		} catch (Exception e)
-		{
-			
-		}
-		finally
-		{
-			
-			try
-			{
-				if(null != bis)
-				{
-					bis.close();
-				}
-				
-				if(null != bos)
-					{
-						bos.flush();
-						bos.close();
-					
-					}
-				
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}
-		}
-		
-		
-		return context.getFilesDir() + "/" + fileName;
-		
-	}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}
+//		}
+//		
+//		
+//		return context.getFilesDir() + "/" + fileName;
+//		
+//	}
 	
 	
 	
@@ -468,16 +399,6 @@ Map<String, SoftReference<Bitmap>> imgCache ;
 		BitmapDrawable tempDrawable = (BitmapDrawable)drawable;
 		return tempDrawable.getBitmap();
 		
-	}
-}
-
-
-class _Rect{
-	public int width = 0;
-	public int height =0;
-	public _Rect(){
-		this.width = 0;
-		this.height = 0;
 	}
 }
 

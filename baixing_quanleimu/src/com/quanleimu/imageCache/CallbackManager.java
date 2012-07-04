@@ -11,7 +11,6 @@ import java.util.List;
 import java.util.concurrent.ConcurrentHashMap;
 
 import android.graphics.Bitmap;
-import android.util.Log;
 
 public class CallbackManager
 {
