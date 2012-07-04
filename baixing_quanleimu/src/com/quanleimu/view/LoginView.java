@@ -27,7 +27,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
-
+import android.widget.RelativeLayout;
 public class LoginView extends BaseView implements OnClickListener{
 
 	private EditText accoutnEt, passwordEt;
@@ -38,7 +38,7 @@ public class LoginView extends BaseView implements OnClickListener{
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		
-		LinearLayout llLoginRoot = (LinearLayout)inflater.inflate(R.layout.login, null);
+		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
 		this.addView(llLoginRoot);
 		
 		accoutnEt = (EditText) findViewById(R.id.accountEt);

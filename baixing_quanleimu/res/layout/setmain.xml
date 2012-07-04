@@ -5,448 +5,410 @@
     android:background="@drawable/bg_home" >
 
     <ScrollView
-        android:id="@+id/scrollView1"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_above="@+id/linearBottom"
-        android:layout_below="@+id/rlTitle"
         android:background="@drawable/bg" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout1"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:orientation="vertical" >
+            android:layout_height="wrap_content">
 
-            <LinearLayout
-                android:id="@+id/linearPersonalSet"
+            <TextView
+                android:id="@+id/tvPersonalText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="个人设置"
+                android:textColor="#4C566C"
+                android:textStyle="bold"
+                android:paddingLeft="15dip"
+                android:paddingBottom="5dip"
+                android:paddingTop="5dip"
+                android:textSize="18dip" >
+            </TextView>
+
+            <RelativeLayout
+                android:id="@+id/personalLayout"
+                android:layout_below="@id/tvPersonalText"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content">
+	            <RelativeLayout
+	                android:id="@+id/rlTelNum"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:background="@drawable/list_selector"
+	                android:paddingBottom="10dip"
+	                android:paddingTop="10dip" >
+	
+	                <TextView
+	                    android:id="@+id/tvPhoneNumContent"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:text="手机号码"
+	                    android:textColor="#000000"
+	                    android:textSize="16dip" >
+	                </TextView>
+	
+	                <ImageView
+	                    android:id="@+id/imageView1"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentRight="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginRight="10dip"
+	                    android:focusable="false"
+	                    android:src="@drawable/btn_viewad_right" >
+	                </ImageView>
+	
+	                <TextView
+	                    android:id="@+id/tvPhoneNum"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentTop="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:layout_marginRight="10dip"
+	                    android:layout_toLeftOf="@+id/imageView1"
+	                    android:layout_toRightOf="@+id/tvPhoneNumContent"
+	                    android:gravity="right"
+	                    android:text="" >
+	                </TextView>
+	            </RelativeLayout>
+	
+	            <TextView
+	                android:layout_below="@id/rlTelNum"
+	                android:id="@+id/border1"
+	                android:layout_width="fill_parent"
+	                android:layout_height="1dip"
+	                android:background="@drawable/list_divider" >
+	            </TextView>
+	
+	            <RelativeLayout
+	                android:id="@+id/rlWeibo"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_below="@id/border1"
+	                android:paddingBottom="10dip"
+	                android:background="@drawable/list_selector"
+	                android:paddingTop="10dip" >
+	
+	                <TextView
+	                    android:id="@+id/tvWeiboShow"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:text="新浪微博"
+	                    android:textColor="#000000"
+	                    android:textSize="16dip" >
+	                </TextView>
+	
+	                <ImageView
+	                    android:id="@+id/imageView1"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentRight="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginRight="10dip"
+	                    android:focusable="false"
+	                    android:src="@drawable/btn_viewad_right" >
+	                </ImageView>
+	
+	                <TextView
+	                    android:id="@+id/tvWeiboNick"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentTop="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:layout_marginRight="10dip"
+	                    android:layout_toLeftOf="@+id/imageView1"
+	                    android:layout_toRightOf="@+id/tvPhoneNumContent"
+	                    android:gravity="right"
+	                    android:text="" >
+	                </TextView>
+	            </RelativeLayout>
+	
+	            <TextView
+	                android:id="@+id/border2"
+	                android:layout_width="fill_parent"
+	                android:layout_height="1dip"
+	                android:layout_below="@id/rlWeibo"
+	                android:background="@drawable/list_divider" >
+	            </TextView>
+	
+	            <RelativeLayout
+	                android:id="@+id/rlMark"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:layout_below="@id/border2"
+	                android:paddingBottom="10dip"
+	                android:background="@drawable/list_selector"
+	                android:paddingTop="10dip" >
+	
+	                <TextView
+	                    android:id="@+id/tvMarkContent"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:text="签名档"
+	                    android:textColor="#000000"
+	                    android:textSize="16dip" >
+	                </TextView>
+	
+	                <ImageView
+	                    android:id="@+id/imageView1"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentRight="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginRight="10dip"
+	                    android:focusable="false"
+	                    android:src="@drawable/btn_viewad_right" >
+	                </ImageView>
+	
+	                <TextView
+	                    android:id="@+id/personMark"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:layout_marginRight="10dip"
+	                    android:layout_toLeftOf="@+id/imageView1"
+	                    android:layout_toRightOf="@+id/tvMarkContent"
+	                    android:gravity="right"
+	                    android:text="" />
+	            </RelativeLayout>
+	        </RelativeLayout>
+        	<ImageView
+			    android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent"
+			    
+				android:layout_alignTop="@id/personalLayout"
+				android:layout_alignLeft="@id/personalLayout"
+				android:layout_alignRight="@id/personalLayout"
+				android:background="@drawable/s_bg2"
+				android:layout_alignBottom="@id/personalLayout">
+			</ImageView>
+
+            <TextView
+                android:layout_below="@id/personalLayout"
+                android:id="@+id/tvSystemSetText"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingLeft="15dip"
+                android:paddingBottom="5dip"
+                android:paddingTop="10dip"
+                android:text="系统设置"
+                android:textColor="#4C566C"
+                android:textSize="18dip" >
+            </TextView>
+
+            <RelativeLayout
+                android:id="@+id/rlClearCache"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:paddingTop="10dip" >
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"  
+                android:paddingTop="10dip"
+                android:paddingBottom="10dip"
+                android:background="@drawable/list_selector"              
+                android:layout_below="@id/tvSystemSetText">
 
-                <RelativeLayout
-                    android:id="@+id/rlPersonalText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/tvPersonalText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="个人设置"
-                         android:textColor="#000000"
-                        android:textSize="18dip" >
-                    </TextView>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlTelNum"
-                    android:layout_width="fill_parent"
+                <TextView
+                    android:id="@+id/tvClearCache"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dip"
-                    android:background="@drawable/btn_top_bg" >
+	                android:paddingLeft="10dip"
+                    android:layout_centerVertical="true"
+                    android:text="清空所有缓存"
+                    android:textColor="#000000"
+                    android:textSize="16dip" >
+                </TextView>
 
-                    <TextView
-                        android:id="@+id/tvPhoneNumContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="手机号码"
-                         android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/tvPhoneNum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_toLeftOf="@+id/imageView1"
-                        android:layout_toRightOf="@+id/tvPhoneNumContent"
-                        android:gravity="right"
-                        android:text="" >
-                    </TextView>
-                </RelativeLayout>
-                
-				<RelativeLayout
-                    android:id="@+id/rlWeibo"
-                    android:layout_width="fill_parent"
+                <ImageView
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:background="@drawable/btn_m_bg" >
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="10dip"
+                    android:focusable="false"
+                    android:src="@drawable/btn_viewad_right" >
+                </ImageView>
+            </RelativeLayout>
+            
+            <ImageView
+			    android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent"
+				android:layout_alignTop="@id/rlClearCache"
+				android:layout_alignLeft="@id/rlClearCache"
+				android:layout_alignRight="@id/rlClearCache"
+				android:background="@drawable/s_bg2"
+				android:layout_alignBottom="@id/rlClearCache">
+			</ImageView>
 
-                    <TextView
-                        android:id="@+id/tvWeiboShow"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="新浪微博"
-                         android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
+            <TextView
+                android:layout_below="@id/rlClearCache"
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingTop="10dip"
+                android:paddingBottom="5dip"
+                android:layout_marginLeft="15dip"
+                android:text="列表模式"
+				android:textColor="#4C566C"
+                android:textSize="18dip" />
 
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/tvWeiboNick"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_toLeftOf="@+id/imageView1"
-                        android:layout_toRightOf="@+id/tvPhoneNumContent"
-                        android:gravity="right"
-                        android:text="" >
-                    </TextView>
-                </RelativeLayout>                
-
-                <RelativeLayout
-                    android:id="@+id/rlMark"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/btn_down_bg" >
-
-                    <TextView
-                        android:id="@+id/tvMarkContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="签名档"
-                         android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/personMark"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_toLeftOf="@+id/imageView1"
-                        android:layout_toRightOf="@+id/tvMarkContent"
-                        android:gravity="right"
-                        android:text="" />
-
-                </RelativeLayout>
-
-              <!--   <RelativeLayout
-                    android:id="@+id/rlBlogNum"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/btn_down_bg" >
-
-                    <TextView
-                        android:id="@+id/tvBlogNumText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="微博账号"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/tvUserName"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_toLeftOf="@+id/imageView1"
-                        android:layout_toRightOf="@+id/tvBlogNumText"
-                        android:gravity="center"
-                        android:text="未绑定" >
-                    </TextView>
-                </RelativeLayout> -->
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearSystemSet"
+            <RelativeLayout
+                android:layout_below="@id/textView1"
+                android:id="@+id/rlTextImage"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:paddingTop="10dip" >
-
-                <RelativeLayout
-                    android:id="@+id/rlSystemSetText"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/tvSystemSetText"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="系统设置"
-                        android:textColor="#000000"
-                        android:textSize="18dip" >
-                    </TextView>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlClearCache"
-                    android:layout_width="fill_parent"
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"  
+                android:paddingTop="10dip"
+                android:paddingBottom="10dip"
+                android:background="@drawable/list_selector">
+                <TextView
+                    android:id="@+id/textView2"
+                    android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginTop="10dip"
-                    android:background="@drawable/btn_s_bg" >
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:paddingLeft="10dip"
+                    android:text="图片／纯文本"
+                    android:textColor="#000000"
+                    android:textSize="16dip" />
 
-                    <TextView
-                        android:id="@+id/tvClearCache"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="清空所有缓存"
-                        android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
+                <TextView
+                    android:id="@+id/textView3"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentRight="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginRight="26dp"
+                    android:text="图片"
+                    android:textSize="16dip" />
+            </RelativeLayout>
+        	
+        	<ImageView
+			    android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent"
+			    
+				android:layout_alignTop="@id/rlTextImage"
+				android:layout_alignLeft="@id/rlTextImage"
+				android:layout_alignRight="@id/rlTextImage"
+				android:background="@drawable/s_bg2"
+				android:layout_alignBottom="@id/rlTextImage">
+			</ImageView>
+            
+            <TextView
+                android:layout_below="@id/rlTextImage"
+                android:id="@+id/tvOther"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:paddingTop="10dip"
+                android:paddingBottom="5dip"
+                android:layout_marginLeft="15dip"
+                android:text="其他"
+                android:textColor="#4C566C"
+                android:textSize="18dip" >
+            </TextView>
 
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-                </RelativeLayout>
-            </LinearLayout>
-
-            <LinearLayout
-                android:id="@+id/linearOther"
+            <RelativeLayout
+                android:id="@+id/othersLayout"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:orientation="vertical"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:paddingTop="10dip" >
-
-                <LinearLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:orientation="vertical" >
-
-                    <LinearLayout
-                        android:layout_width="fill_parent"
-                        android:layout_height="wrap_content"
-                        android:layout_weight="2.18"
-                        android:orientation="vertical" >
-
-                        <TextView
-                            android:id="@+id/textView1"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:text="列表模式"
-                            android:layout_marginLeft="15dip"
-                            android:textColor="#000000"
-                            android:textSize="18dip" />
-
-                        <RelativeLayout
-                            android:id="@+id/rlTextImage"
-                            android:layout_width="fill_parent"
-                            android:layout_height="wrap_content"
-                            android:layout_marginTop="10dip"
-                            android:background="@drawable/btn_s_bg" >
-
-                            <TextView
-                                android:id="@+id/textView2"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentLeft="true"
-                                android:layout_centerVertical="true"
-                                android:layout_marginLeft="18dp"
-                                android:text="图片／纯文本"
-                                android:textColor="#000000"
-                                android:textSize="16dip" />
-
-                            <TextView
-                                android:id="@+id/textView3"
-                                android:layout_width="wrap_content"
-                                android:layout_height="wrap_content"
-                                android:layout_alignParentRight="true"
-                                android:layout_marginRight="26dp"
-                                android:layout_centerVertical="true"                                
-                                android:text="图片"
-                                android:textSize="16dip" />
-
-                        </RelativeLayout>
-
-                    </LinearLayout>
-
-                </LinearLayout>
-
-                <RelativeLayout
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content" >
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlOther"
-                    android:layout_width="fill_parent"
-                    android:layout_marginTop="10dip"
-                    android:layout_height="wrap_content" >
-
-                    <TextView
-                        android:id="@+id/tvOther"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="其他"
-                        android:textColor="#000000"
-                        android:textSize="18dip" >
-                    </TextView>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlAbout"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dip"
-                    android:background="@drawable/btn_top_bg" >
-
-                    <TextView
-                        android:id="@+id/tvAbout"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="关于"
-                        android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-                </RelativeLayout>
-
-                <RelativeLayout
-                    android:id="@+id/rlBack"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/btn_down_bg" >
-
-                    <TextView
-                        android:id="@+id/tvBack"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="反馈"
-                        android:textColor="#000000"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-                </RelativeLayout>
-
-                <!-- <RelativeLayout
-                    android:id="@+id/rlHelp"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/btn_down_bg" >
-
-                    <TextView
-                        android:id="@+id/tvHelp"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="15dip"
-                        android:text="帮助"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="15dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-                </RelativeLayout> -->
-            </LinearLayout>
-        </LinearLayout>
+                android:layout_marginLeft="10dip"
+                android:layout_marginRight="10dip"                
+                android:layout_below="@id/tvOther">
+	            <RelativeLayout
+	                android:id="@+id/rlAbout"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:paddingTop="10dip"
+	                android:paddingBottom="10dip"
+	                android:background="@drawable/list_selector">
+	
+	                <TextView
+	                    android:id="@+id/tvAbout"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:paddingLeft="10dip"
+	                    android:text="关于"
+	                    android:textColor="#000000"
+	                    android:textSize="16dip" >
+	                </TextView>
+	
+	                <ImageView
+	                    android:id="@+id/imageView1"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentRight="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginRight="10dip"
+	                    android:focusable="false"
+	                    android:src="@drawable/btn_viewad_right" >
+	                </ImageView>
+	            </RelativeLayout>
+		        
+		        <TextView
+	                android:id="@+id/border3"
+	                android:layout_width="fill_parent"
+	                android:layout_height="1dip"
+	                android:layout_below="@id/rlAbout"
+	                android:background="@drawable/list_divider" >
+	            </TextView>
+	            
+	            <RelativeLayout
+	                android:layout_below="@id/border3"
+	                android:id="@+id/rlBack"
+	                android:layout_width="fill_parent"
+	                android:layout_height="wrap_content"
+	                android:paddingTop="10dip"
+	                android:paddingBottom="10dip"	                
+	                android:background="@drawable/list_selector">
+	
+	                <TextView
+	                    android:id="@+id/tvBack"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginLeft="10dip"
+	                    android:text="反馈"
+	                    android:textColor="#000000"
+	                    android:textSize="16dip" >
+	                </TextView>
+	
+	                <ImageView
+	                    android:id="@+id/imageView1"
+	                    android:layout_width="wrap_content"
+	                    android:layout_height="wrap_content"
+	                    android:layout_alignParentRight="true"
+	                    android:layout_centerVertical="true"
+	                    android:layout_marginRight="10dip"
+	                    android:focusable="false"
+	                    android:src="@drawable/btn_viewad_right" >
+	                </ImageView>
+	            </RelativeLayout>
+            </RelativeLayout>
+            <ImageView
+			    android:layout_width="fill_parent"
+		    	android:layout_height="fill_parent"
+			    
+				android:layout_alignTop="@id/othersLayout"
+				android:layout_alignLeft="@id/othersLayout"
+				android:layout_alignRight="@id/othersLayout"
+				android:background="@drawable/s_bg2"
+				android:layout_alignBottom="@id/othersLayout">
+			</ImageView>
+        </RelativeLayout>
     </ScrollView>
-
 </RelativeLayout>

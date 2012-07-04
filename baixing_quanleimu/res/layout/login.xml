@@ -1,125 +1,171 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:id="@+id/llLoginRoot"
-    android:orientation="vertical" 
     android:paddingLeft="10dip"
     android:paddingRight="10dip" >
 
-            <LinearLayout
-                android:id="@+id/layout_txt"
+    <RelativeLayout
+        android:id="@+id/accountLayout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="10dip" >
+
+        <LinearLayout
+            android:id="@+id/layout_txt"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="horizontal"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip" >
+
+            <TextView
+                android:id="@+id/textView1"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="手机号/昵称："
+                android:layout_marginBottom="5dip"
+                android:layout_marginTop="5dip"                
+                android:textColor="#000000"
+                android:textSize="16dip" />
+
+            <requestFocus />
+
+            <EditText
+                android:id="@+id/accountEt"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:background="@drawable/btn_top_bg"
-                android:orientation="horizontal" 
-			    android:paddingLeft="10dip"
-			    android:paddingRight="10dip">
+                android:layout_height="fill_parent"
+                android:background="@null"
+                android:padding="5dip" >
+            </EditText>
+        </LinearLayout>
 
-                <TextView
-                    android:id="@+id/textView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:text="手机号/昵称："
-                    android:textSize="16dip"
-                    android:textColor="#000000" />
+        <TextView
+            android:id="@+id/border_login"
+            android:layout_width="fill_parent"
+            android:layout_height="1dip"
+            android:layout_below="@id/layout_txt"
+            android:background="@drawable/list_divider" >
+        </TextView>
 
-                <requestFocus />
+        <LinearLayout
+            android:id="@+id/linearLayout1"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/border_login"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip" >
 
-                <EditText
-                    android:id="@+id/accountEt"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_marginBottom="5dip"
-                    android:layout_marginTop="5dip"
-                    android:background="@null"
-                    android:padding="5dip" >
-                     <!--android:inputType="number"-->
-                </EditText>
-            </LinearLayout>
+            <TextView
+                android:id="@+id/textView2"
+                android:layout_width="wrap_content"
+                android:layout_height="fill_parent"
+                android:gravity="center_vertical"
+                android:text="密\t\t码："
+                android:layout_marginBottom="5dip"
+                android:layout_marginTop="5dip"                
+                android:textColor="#000000"
+                android:textSize="16dip" />
 
-            <LinearLayout
-                android:id="@+id/linearLayout1"
+            <EditText
+                android:id="@+id/passwordEt"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:background="@drawable/btn_down_bg"
-			    android:paddingLeft="10dip"
-			    android:paddingRight="10dip">
+                android:layout_height="fill_parent"
+                android:background="@null"
+                android:inputType="textPassword"
+                android:padding="5dip" />
+        </LinearLayout>
+    </RelativeLayout>
 
-                <TextView
-                    android:id="@+id/textView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="fill_parent"
-                    android:gravity="center_vertical"
-                    android:text="密\t\t码："
-                    android:textSize="16dip"
-                    android:textColor="#000000" />
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@id/accountLayout"
+        android:layout_alignLeft="@id/accountLayout"
+        android:layout_alignRight="@id/accountLayout"
+        android:layout_alignTop="@id/accountLayout"
+        android:background="@drawable/s_bg2" >
+    </ImageView>
 
-                <EditText
-                    android:id="@+id/passwordEt"
-                    android:layout_width="fill_parent"
-                    android:layout_height="fill_parent"
-                    android:layout_marginBottom="5dip"
-                    android:layout_marginTop="5dip"
-                    android:background="@null"
-                    android:inputType="textPassword"
-                    android:padding="5dip" />
-            </LinearLayout>
+    <LinearLayout
+        android:id="@+id/forget_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/accountLayout"
+        android:layout_marginTop="10dip"
+        android:background="@drawable/list_selector"
+        android:gravity="center"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip" >
 
-            <LinearLayout
-                android:id="@+id/forget_layout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:background="@drawable/btn_s_bg"
-                android:gravity="center"
-			    android:paddingLeft="10dip"
-			    android:paddingRight="10dip">
+        <TextView
+            android:id="@+id/textView3"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="10dip"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="忘记密码"
+            android:textColor="#000000"
+            android:textSize="16dip" />
 
-                <TextView
-                    android:id="@+id/textView3"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="忘记密码"
-                    android:textSize="16dip"
-                    android:textColor="#000000" />
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow" />
+    </LinearLayout>
 
-                <ImageView
-                    android:id="@+id/imageView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/arrow" />
-            </LinearLayout>
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@id/forget_layout"
+        android:layout_alignLeft="@id/forget_layout"
+        android:layout_alignRight="@id/forget_layout"
+        android:layout_alignTop="@id/forget_layout"
+        android:background="@drawable/s_bg2" >
+    </ImageView>
 
-            <LinearLayout
-                android:id="@+id/register_layout"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginTop="10dip"
-                android:background="@drawable/btn_s_bg"
-                android:gravity="center"
-			    android:paddingLeft="10dip"
-			    android:paddingRight="10dip">
+    <LinearLayout
+        android:id="@+id/register_layout"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/forget_layout"
+        android:layout_marginTop="10dip"
+        android:gravity="center"
+        android:background="@drawable/list_selector"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip" >
 
-                <TextView
-                    android:id="@+id/textView4"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_weight="1"
-                    android:gravity="center_vertical"
-                    android:text="注册"
-                    android:textSize="16dip"
-                    android:textColor="#000000" />
+        <TextView
+            android:id="@+id/textView4"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_weight="1"
+            android:gravity="center_vertical"
+            android:text="注册"
+            android:layout_marginTop="10dip"
+            android:layout_marginBottom="10dip"
+            android:textColor="#000000"
+            android:textSize="16dip" />
 
-                <ImageView
-                    android:id="@+id/imageView2"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:src="@drawable/arrow" />
-            </LinearLayout>
+        <ImageView
+            android:id="@+id/imageView2"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:src="@drawable/arrow" />
+    </LinearLayout>
 
-</LinearLayout>
+    <ImageView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignBottom="@id/register_layout"
+        android:layout_alignLeft="@id/register_layout"
+        android:layout_alignRight="@id/register_layout"
+        android:layout_alignTop="@id/register_layout"
+        android:background="@drawable/s_bg2" >
+    </ImageView>
+
+</RelativeLayout>
