@@ -30,6 +30,7 @@ public class CityChangeView extends BaseView {
 	
 	public LinearLayout linearListInfo;
 	public LinearLayout linearProvinces;
+	private RelativeLayout relativeProvinces;
 	public ImageView ivGPSChoose;
 
 	public String cityName = "";
@@ -158,12 +159,8 @@ public class CityChangeView extends BaseView {
 					}
 				}
 			});
-			if (i != listHotCity.size() - 1) {
-				TextView border = new TextView(CityChangeView.this.getContext());
-				border.setLayoutParams(new LayoutParams(
-						LayoutParams.FILL_PARENT, 1, 1));
-				border.setBackgroundResource(R.drawable.list_divider);
-				((LinearLayout)v.findViewById(R.id.ll_item_cityChange)).addView(border);
+			if (i == listHotCity.size() - 1) {
+				v.findViewById(R.id.citychange_border).setVisibility(View.GONE);
 			}
 			linearHotCities.addView(v);
 		
@@ -196,10 +193,9 @@ public class CityChangeView extends BaseView {
 				
 				
 				if(null == linearProvinces){
-					
-					linearProvinces = new LinearLayout(getContext());
-					linearProvinces.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-					linearProvinces.setOrientation(LinearLayout.VERTICAL);
+					LayoutInflater inflater = LayoutInflater.from(getContext());
+					relativeProvinces = (RelativeLayout)inflater.inflate(R.layout.citylist, null);
+					linearProvinces = (LinearLayout)relativeProvinces.findViewById(R.id.llcitylist);
 					
 					if(null == QuanleimuApplication.getApplication().getShengMap() || QuanleimuApplication.getApplication().getShengMap().size() == 0){
 						
@@ -237,21 +233,11 @@ public class CityChangeView extends BaseView {
 						QuanleimuApplication.getApplication().setShengMap(shengMap);
 					}
 					
-					LayoutInflater inflater = LayoutInflater.from(getContext());
 					Object[] keyArray= QuanleimuApplication.getApplication().getShengMap().keySet().toArray();
 					for (int i = 0; i < QuanleimuApplication.getApplication().getShengMap().size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
 						View vTemp = null;
 						vTemp = inflater.inflate(R.layout.item_citychange, null);
-						
-//						if (i == 0) {
-//							vTemp.setBackgroundResource(R.drawable.btn_top_bg);
-//						} else if (i == QuanleimuApplication.getApplication().getShengMap().size() - 1) {
-//							vTemp.setBackgroundResource(R.drawable.btn_down_bg);
-//						} else {
-							vTemp.setBackgroundResource(R.drawable.btn_m_bg);
-//						}
-						
 						
 						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvCateName);
 						ImageView ivChoose = (ImageView) vTemp.findViewById(R.id.ivChoose);
@@ -282,26 +268,17 @@ public class CityChangeView extends BaseView {
 									m_viewInfoListener.onTitleChanged(title);
 								}
 								
-								LinearLayout linearCities = new LinearLayout(getContext());
-								linearCities.setLayoutParams(new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT));
-								linearCities.setOrientation(LinearLayout.VERTICAL);
-																
 								LayoutInflater inflater = LayoutInflater.from(getContext());
+								RelativeLayout relativeCitys = (RelativeLayout)inflater.inflate(R.layout.citylist, null);
+								LinearLayout linearCities = (LinearLayout)relativeCitys.findViewById(R.id.llcitylist);
+																
 								String province = v.getTag().toString();
 								final List<CityDetail> list2Sheng = QuanleimuApplication.getApplication().getShengMap().get(province);
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									// 添加新的视图，循环添加到ScrollView中
 									View vCity = null;
 									vCity = inflater.inflate(R.layout.item_citychange, null);
-									
-//									if (i == 0) {
-//										vCity.setBackgroundResource(R.drawable.btn_top_bg);
-//									} else if (i == list2Sheng.size() - 1) {
-//										vCity.setBackgroundResource(R.drawable.btn_down_bg);
-//									} else {
-										vCity.setBackgroundResource(R.drawable.btn_m_bg);
-//									}
-									
+
 									TextView tvCityName = (TextView) vCity.findViewById(R.id.tvCateName);
 									tvCityName.setText(list2Sheng.get(i).getName());
 									
@@ -342,7 +319,7 @@ public class CityChangeView extends BaseView {
 									linearCities.addView(vCity);
 								}
 								
-								activeView = linearCities;
+								activeView = relativeCitys;
 								parentView.addView(activeView);
 							}
 						});
@@ -351,7 +328,7 @@ public class CityChangeView extends BaseView {
 					}					
 				}
 				
-				activeView = linearProvinces;
+				activeView = relativeProvinces;
 				parentView.addView(activeView);
 			}
 		});

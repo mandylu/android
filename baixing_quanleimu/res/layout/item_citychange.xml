@@ -4,13 +4,14 @@
 	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent"
-	  android:background="@drawable/list_selector"
-	  android:paddingTop="5dip"
+	  android:clickable="true"
+	  android:background="@drawable/list_selector"	  
 	  android:orientation="vertical">
 	  <RelativeLayout 
 	       android:layout_width="fill_parent" 
-	       android:id="@+id/linearGpsCity" 	 
-	       android:paddingBottom="5dip"  
+	       android:id="@+id/linearGpsCity" 	 	         
+	       android:paddingTop="5dip"
+	       android:paddingBottom="5dip"
 	       android:layout_height="wrap_content">
 	       
 			<TextView 
@@ -33,4 +34,10 @@
 			    android:src="@drawable/arrow" >
 			</ImageView>
       </RelativeLayout>
+      <TextView
+          android:id="@+id/citychange_border"
+          android:layout_width="fill_parent"
+          android:layout_height="1dip"
+          android:background="@drawable/list_divider">
+      </TextView>
 </LinearLayout>
