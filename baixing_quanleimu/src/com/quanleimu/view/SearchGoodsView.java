@@ -87,7 +87,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		this.addView(inflater.inflate(R.layout.searchgoods, null));
 		
 		// 参数 用来过滤
-		fields = "mobile,id,link,title,description,date,areaNames,categoryEnglishName,lat,lng,images_big,images_resize180,metaData";
+		fields = "";//"mobile,id,link,title,description,date,areaNames,categoryEnglishName,lat,lng,images_big,images_resize180,metaData";
 		
 		LayoutParams WClayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
