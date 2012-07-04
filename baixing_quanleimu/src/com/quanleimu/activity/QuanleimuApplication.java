@@ -29,6 +29,7 @@ public class QuanleimuApplication extends Application {
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
 	public static String version="";
+	public static String ads_viewed="";
 	public static Context context;	
 	public static LazyImageLoader lazyImageLoader;
 	public static LazyImageLoader2SD lazyImageLoader2SD;
@@ -38,6 +39,19 @@ public class QuanleimuApplication extends Application {
 	public static boolean update = false;
 	public static boolean textMode = false;
 	private static AccessToken accessToken = null;
+	
+	public static void addViewCounter(String adId){
+		if(!ads_viewed.equals("")){
+			ads_viewed += ",";
+		}
+		ads_viewed += adId;
+		System.out.println("addViewCounter(" + adId + ") =============== " + ads_viewed );
+	}
+	
+	public static void resetViewCounter(){
+		QuanleimuApplication.ads_viewed = "";
+		System.out.println("resetViewCounter ================ " + ads_viewed );
+	}
 	
 	public static void setTextMode(boolean tMode){
 		QuanleimuApplication.textMode = tMode;

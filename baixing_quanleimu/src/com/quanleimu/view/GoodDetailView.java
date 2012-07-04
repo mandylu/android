@@ -125,6 +125,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public boolean onBack(){
 		this.keepSilent = false;
+	
 		this.removeTitleControls();
 		return false;
 	}
@@ -138,6 +139,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	@Override
 	public void onResume(){
+		//the ad is viewed again
+		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onPause();
 	}
@@ -265,6 +268,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	}
 	
 	protected void init() {
+		
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
 		WindowManager wm = 
@@ -403,8 +407,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         	}        	
         }
         
-		
-			
+		//the ad is viewed once
+        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
 		
 	}
 	

@@ -54,6 +54,7 @@ public class Communication implements Comparator<String> {
 	public static String getApiUrl(String apiName, ArrayList<String> parameters) {
 
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
+		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> getApiUrl:" + url);
 		return url;
 	}
 
@@ -83,7 +84,7 @@ public class Communication implements Comparator<String> {
 	}
 	
 	// 业务逻辑API URL
-	public static String getPostParameters(ArrayList<String> list) {
+	private static String getPostParameters(ArrayList<String> list) {
 		/*if(MyApplication.udid.equals("") || MyApplication.version.equals("")){
 			getudid();
 			getversion();
@@ -93,7 +94,8 @@ public class Communication implements Comparator<String> {
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
 		list.add("timestamp=" + getTimeStamp());
-
+		list.add("ads_viewed=" + QuanleimuApplication.ads_viewed);
+		
 		Collections.sort(list, COMPARATOR);
 
 		String queryString = "";
@@ -112,7 +114,7 @@ public class Communication implements Comparator<String> {
 	public static String urlEncode(String str) {
 		return str.replaceAll(":", "%3A").replaceAll(" ", "%20")
 				.replaceAll("\\(", "%28").replaceAll("\\)", "%29")
-				.replaceAll("/", "%2F").replaceAll("\\+", "%20").replaceAll("\\*", "%2A");
+				.replaceAll("/", "%2F").replaceAll("\\+", "%20").replaceAll("\\*", "%2A").replaceAll("\\,", "%2C");
 	}
 	
 	//Url编码
@@ -283,12 +285,14 @@ public class Communication implements Comparator<String> {
 		// 断开连接
 		
 		httpClient.getConnectionManager().shutdown();
-		
+		if(url.contains("ads_viewed=")){
+			QuanleimuApplication.resetViewCounter();//counter sent successfully
+		}
 		return temp;
 	}
 
 	//Post提交数据方法
-	public static String PostDataByUrl(String Url, ArrayList<String> list) {
+	/*private static String PostDataByUrl(String Url, ArrayList<String> list) {
 		String word = Communication.getPostParameters(list);
 //		BufferedWriter out;
 		String line = "";
@@ -327,7 +331,7 @@ public class Communication implements Comparator<String> {
 				word = line;
 
 			}
-			
+			QuanleimuApplication.resetViewCounter();//counter sent successfully
 			httpClient.getConnectionManager().shutdown();
 		} catch (UnsupportedEncodingException e) {
 			// TODO Auto-generated catch block
@@ -339,7 +343,7 @@ public class Communication implements Comparator<String> {
 
 		return word;
 	}
-
+*/
 	// 老版本API
 
 	public static final String POST_URL = "http://www.baixing.com/iphone/fabu/v2/?action=mobilePost&device=android";
