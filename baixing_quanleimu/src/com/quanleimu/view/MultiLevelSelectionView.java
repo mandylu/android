@@ -159,7 +159,7 @@ public class MultiLevelSelectionView extends BaseView {
 	@Override
 	public TabDef getTabDef(){
 		TabDef tab = new TabDef();
-		tab.m_visible = true;
+		tab.m_visible = false;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
 		return tab;
 	}
