@@ -101,6 +101,11 @@ public class BitmapUtils {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 //            return path.getUsableSpace();
 //        }
+    	
+        if (!path.exists()) {
+        	path.mkdirs();
+        }
+        
         final StatFs stats = new StatFs(path.getPath());
         return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
     }
