@@ -30,6 +30,7 @@
 		    android:paddingRight="5dip"
 		    android:singleLine="true"
 		    android:hint="请输入"
+		    android:ellipsize="end"
 		    android:layout_toLeftOf="@+id/postunit">
 		</EditText>
 
