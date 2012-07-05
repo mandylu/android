@@ -336,8 +336,8 @@ public class ViewFlow extends AdapterView<Adapter> {
 				if (velocityX > SNAP_VELOCITY && mCurrentScreen > 0) {
 					// Fling hard enough to move left
 					snapToScreen(mCurrentScreen - 1);
-				} else if (velocityX < -SNAP_VELOCITY/*
-						&& mCurrentScreen < getChildCount() - 1*/) {
+				} else if (velocityX < -SNAP_VELOCITY
+						&& mCurrentAdapterIndex < mAdapter.getCount() - 1) {
 					// Fling hard enough to move right
 					snapToScreen(mCurrentScreen + 1);
 				} else {
@@ -413,7 +413,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 				mLastMotionX = x;
 
 				final int scrollX = getScrollX();
-				if (deltaX < 0 && mCurrentAdapterIndex > 0) {
+				if (deltaX < 0) {
 					if (scrollX > 0) {
 						scrollBy(Math.max(-scrollX, deltaX), 0);
 					}
@@ -439,8 +439,8 @@ public class ViewFlow extends AdapterView<Adapter> {
 				if (velocityX > SNAP_VELOCITY && mCurrentScreen > 0) {
 					// Fling hard enough to move left
 					snapToScreen(mCurrentScreen - 1);
-				} else if (velocityX < -SNAP_VELOCITY/*
-						&& mCurrentScreen < getChildCount() - 1*/) {
+				} else if (velocityX < -SNAP_VELOCITY
+						&& mCurrentAdapterIndex < mAdapter.getCount() - 1) {
 					// Fling hard enough to move right
 					snapToScreen(mCurrentScreen + 1);
 				} else {
