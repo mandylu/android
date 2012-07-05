@@ -198,7 +198,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if(currentPage == -1 && index < listMyPost.size() ){
 					detail = listMyPost.get(index);					
 				}
-				else if(index < goodsList.size() && (0 == currentPage || 1 == currentPage)){
+				else if(null != goodsList && index < goodsList.size() && (0 == currentPage || 1 == currentPage)){
 					detail = goodsList.get(index);
 				}
 				
