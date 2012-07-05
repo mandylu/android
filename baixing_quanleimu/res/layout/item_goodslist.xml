@@ -4,8 +4,8 @@
     android:layout_height="fill_parent"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
-    android:background = "@drawable/list_selector">
-    android:orientation="horizontal" >
+    android:background = "@drawable/list_selector"
+    android:orientation="horizontal">
 
     <Button
         android:id="@+id/btnDelete"
@@ -31,7 +31,7 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/btnDelete"
-            android:src="@drawable/home_bg_thumb_2x" >
+            android:background="@drawable/home_bg_thumb_2x" >
         </ImageView>
 
         <TextView

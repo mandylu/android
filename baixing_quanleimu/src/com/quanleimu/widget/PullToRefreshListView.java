@@ -8,7 +8,9 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
+import android.view.VelocityTracker;
 import android.view.View;
+import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -76,6 +78,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     private boolean mEnableHeader = true;
     
     private long mLastUpdateTimeMs;
+    
+    private VelocityTracker mVelocityTracker;
+	private int mMaximumVelocity;
+    private static final int SNAP_VELOCITY = 500;
 
     public PullToRefreshListView(Context context) {
         super(context);
@@ -156,6 +162,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mLastUpdateTimeMs = System.currentTimeMillis();
         
         resetHeader();
+        
+        //for velocity_tracker
+		final ViewConfiguration configuration = ViewConfiguration
+				.get(getContext());
+		configuration.getScaledTouchSlop();
+		mMaximumVelocity = configuration.getScaledMaximumFlingVelocity();
     }
 
     private void updateFooter(boolean hasMore){
@@ -298,6 +310,12 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 
     @Override
     public boolean onTouchEvent(MotionEvent event) {
+    	
+		if (mVelocityTracker == null) {
+			mVelocityTracker = VelocityTracker.obtain();
+		}
+		mVelocityTracker.addMovement(event);
+    	
         final int y = (int) event.getY();
         mBounceHack = false;
 
@@ -517,8 +535,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
                 onGetMore();
             }            
             else if (mEnableHeader && firstVisibleItem == 0) {
-            	Log.d("on fling: ", "top y = " + mRefreshView.getTop());
-            	if(mRefreshState != REFRESHING && mRefreshView.getTop() >= 0){
+            	mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
+            	int velocityX = (int) mVelocityTracker.getXVelocity();
+            	
+            	//Log.d("on fling: ", "top y = " + mRefreshView.getTop());
+            	
+            	if(mRefreshState != REFRESHING 
+            			&& velocityX > SNAP_VELOCITY
+            			&& mRefreshView.getTop() >= 0){
 	                mRefreshState = REFRESHING;
 	                openHeaderView();
 	                checkLastUpdateTime();

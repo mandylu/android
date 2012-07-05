@@ -385,7 +385,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
-        mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren, o);
+        mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren1, o);
         {
         	File file = new File("/sdcard/mb_loading.png");
         	try{
