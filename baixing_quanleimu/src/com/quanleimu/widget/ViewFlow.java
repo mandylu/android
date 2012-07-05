@@ -774,7 +774,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 			if(mCurrentBufferIndex <= 0){
 				// Recycle view outside buffer range
-				for (int index = mCurrentBufferIndex; index < mSideBuffer && mCurrentAdapterIndex-index > 0; ++index) {
+				while (mLoadedViews.size() - 1 - mCurrentBufferIndex > mSideBuffer) {
 					recycleView(mLoadedViews.removeLast());
 				}
 			}

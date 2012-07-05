@@ -35,8 +35,9 @@
     		android:id="@+id/viewflowindic"
     		android:layout_gravity="center_horizontal"
     		app:radius="5dip"
+    		app:inactiveType="fill"
     		app:activeColor="#dddddd"
-    		app:inactiveColor="#dddddd"/>    		    
+    		app:inactiveColor="#777777"/>    		    
 	</FrameLayout>
 	
 </RelativeLayout>
