@@ -27,7 +27,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import android.os.Handler;
 import android.graphics.Typeface;
-
+import android.graphics.drawable.AnimationDrawable;
 import android.database.DataSetObserver;
 
 public class GoodsListAdapter extends BaseAdapter {
@@ -38,7 +38,8 @@ public class GoodsListAdapter extends BaseAdapter {
 	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
 	private Button btnDelete;
 	private boolean hasDelBtn = false;
-	private Bitmap defaultBk1, defaultBk2;
+	private Bitmap defaultBk2;
+	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
 	private boolean uiHold = false;
@@ -129,16 +130,12 @@ public class GoodsListAdapter extends BaseAdapter {
 				btnDelete.setVisibility(View.VISIBLE);
 			}
 	
-			BitmapFactory.Options o =  new BitmapFactory.Options();
-	        o.inPurgeable = true;
-	        if(null == defaultBk1){
-	        	Bitmap tmb = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
-	//        	defaultBk1 = Helper.toRoundCorner(tmb, 10);
-	//        	defaultBk1 = Helper.addBorder(tmb, 1);
-	//        	tmb.recycle();
-	        	defaultBk1 = tmb;
+	        if(null == loadingBK){
+	        	loadingBK = (AnimationDrawable)(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 	        }
 			if(null == defaultBk2){
+				BitmapFactory.Options o =  new BitmapFactory.Options();
+		        o.inPurgeable = true;
 				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
 	//			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
 	//			defaultBk2 = Helper.addBorder(tmb1, 1);
@@ -168,13 +165,12 @@ public class GoodsListAdapter extends BaseAdapter {
 				break;
 			}
 			ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+			ivInfo.setScaleType(ImageView.ScaleType.CENTER);
 				
 			if(QuanleimuApplication.isTextMode()){
 				ivInfo.setVisibility(View.GONE);
-			}
-			if(!QuanleimuApplication.isTextMode()){
+			}else{			
 				ivInfo.setTag("");
-				ivInfo.setImageBitmap(defaultBk1);
 			}
 			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 			if(!QuanleimuApplication.isTextMode()){
@@ -207,8 +203,8 @@ public class GoodsListAdapter extends BaseAdapter {
 	//							ivInfo.invalidate();
 							} else {
 								ivInfo.setTag(c[0]);
+								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 								SimpleImageLoader.showImg(ivInfo, c[0], this.context);
-								
 							}
 						} else {
 							if (b == null || b.equals("")) {			
@@ -216,7 +212,8 @@ public class GoodsListAdapter extends BaseAdapter {
 								ivInfo.setImageBitmap(defaultBk2);
 							} else {
 								ivInfo.setTag(b);
-								SimpleImageLoader.showImg(ivInfo, b, this.context);				
+								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
+								SimpleImageLoader.showImg(ivInfo, b, this.context);
 							}
 						}
 		//			}

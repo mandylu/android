@@ -6,6 +6,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -274,6 +275,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 
 			if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 			{	
+				Log.d("BigGallery", "getView("+position+") and imageView image set!");
 				imageView.setImageBitmap(mb);
 				
 			    SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
