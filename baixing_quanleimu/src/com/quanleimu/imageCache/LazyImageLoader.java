@@ -241,6 +241,14 @@ public class LazyImageLoader
 		
 		
 	}
+
+
+
+
+
+	public String getFileInDiskCache(String url) {
+		return imgManger.getFileInDiskCache(url);
+	}
 	
 	
 }

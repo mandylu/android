@@ -329,6 +329,11 @@ public class DiskLruCache {
 	    		+ " reqHeight/height = " + reqHeight + "/" + height);
 	    return inSampleSize;
 	}
+	
+	public String getFilePath(String key){
+		return mLinkedHashMap.get(key);
+	}
+	
     /**
      * Get an image from the disk cache.
      *

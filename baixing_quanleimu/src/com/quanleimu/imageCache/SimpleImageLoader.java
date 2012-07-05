@@ -34,6 +34,10 @@ public class SimpleImageLoader
 		QuanleimuApplication.lazyImageLoader.Cancel(urls);
 	//	QuanleimuApplication.lazyImageLoader.forceRecycle();
 	}
+	
+	public static String getFileInDiskCache(String url){
+		return QuanleimuApplication.lazyImageLoader.getFileInDiskCache(url);
+	}
 
 	
 	public static void showImg(final ImageView view,final String url,Context con)

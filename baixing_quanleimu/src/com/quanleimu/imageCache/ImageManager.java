@@ -403,5 +403,9 @@ public class ImageManager
 		return tempDrawable.getBitmap();
 		
 	}
+
+	public String getFileInDiskCache(String url) {
+		return imageDiskLruCache.getFilePath(this.getMd5(url));
+	}
 }
 
