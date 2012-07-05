@@ -58,6 +58,13 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 
 	Bundle bundle;
 	
+	
+	
+	@Override
+	public void onResume(){
+		this.lvGoodsList.requestFocus();//force cate view has focus
+	}
+	
 		
 	public GetGoodsView(Context context, Bundle bundle, String categoryEnglishName){
 		super(context, bundle);

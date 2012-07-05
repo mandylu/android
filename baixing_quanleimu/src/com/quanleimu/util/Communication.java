@@ -94,7 +94,7 @@ public class Communication implements Comparator<String> {
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("ads_viewed=" + QuanleimuApplication.ads_viewed);
+		list.add("adIds=" + QuanleimuApplication.ads_viewed);
 		
 		Collections.sort(list, COMPARATOR);
 
@@ -285,7 +285,7 @@ public class Communication implements Comparator<String> {
 		// 断开连接
 		
 		httpClient.getConnectionManager().shutdown();
-		if(url.contains("ads_viewed=")){
+		if(url.contains("adIds=")){
 			QuanleimuApplication.resetViewCounter();//counter sent successfully
 		}
 		return temp;
