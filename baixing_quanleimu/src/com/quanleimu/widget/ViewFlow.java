@@ -333,7 +333,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocityX = (int) velocityTracker.getXVelocity();
 
-				if (velocityX > SNAP_VELOCITY && mCurrentScreen > 0) {
+				if (velocityX > SNAP_VELOCITY && mCurrentAdapterIndex > 0) {
 					// Fling hard enough to move left
 					snapToScreen(mCurrentScreen - 1);
 				} else if (velocityX < -SNAP_VELOCITY
@@ -436,7 +436,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 				velocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
 				int velocityX = (int) velocityTracker.getXVelocity();
 
-				if (velocityX > SNAP_VELOCITY && mCurrentScreen > 0) {
+				if (velocityX > SNAP_VELOCITY && mCurrentAdapterIndex > 0) {
 					// Fling hard enough to move left
 					snapToScreen(mCurrentScreen - 1);
 				} else if (velocityX < -SNAP_VELOCITY
