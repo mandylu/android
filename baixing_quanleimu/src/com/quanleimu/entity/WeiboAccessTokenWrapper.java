@@ -1,6 +1,5 @@
 package com.quanleimu.entity;
 import java.io.Serializable;
-import com.weibo.net.AccessToken;
 public class WeiboAccessTokenWrapper  extends Object implements Serializable{
 	private static final long serialVersionUID = 1L;
 	private String token = null;

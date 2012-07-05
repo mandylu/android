@@ -1,48 +1,23 @@
 package com.quanleimu.adapter;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
-import java.util.Locale;
 
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.graphics.Color;
-import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
-import android.widget.Button;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.imageCache.SimpleImageLoader;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.Helper;
-import com.quanleimu.util.Util;
-import android.os.Handler;
-import android.graphics.Typeface;
 public class MainCateAdapter extends BaseAdapter {
 
 	private Context context;
-	private TextView tvDes, tvPrice, tvDateAndAddress;
-	private ImageView ivInfo;
 	private List<FirstStepCate> list = new ArrayList<FirstStepCate>();
-	private Handler handler = null;
-	private int messageWhat = -1;
 	private boolean firstItemOverlap = false;
 	
-	public void setMessageOutOnDelete(Handler h, int messageWhat){
-		this.handler = h;
-		this.messageWhat = messageWhat;
-	}
-
 	public List<FirstStepCate> getList() {
 		return list;
 	}

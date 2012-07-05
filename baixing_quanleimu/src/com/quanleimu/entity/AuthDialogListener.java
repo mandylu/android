@@ -4,13 +4,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.os.Bundle;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.SetMainView;
 import com.weibo.net.AccessToken;
 import com.weibo.net.DialogError;
 import com.weibo.net.Weibo;

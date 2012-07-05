@@ -2,12 +2,8 @@ package com.quanleimu.adapter;
 
 import java.util.ArrayList;
 import java.util.List;
-
 import com.quanleimu.activity.R;
-import com.quanleimu.entity.FirstStepCate;
-
 import android.content.Context;
-import android.graphics.Color;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
