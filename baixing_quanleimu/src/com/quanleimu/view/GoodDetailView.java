@@ -899,6 +899,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						e.printStackTrace();
 					} catch (IOException e) {
 						e.printStackTrace();
+					} catch (Communication.BXHttpException e){
+						
 					}
 					myHandler.sendEmptyMessage(msgToSend);
 				}

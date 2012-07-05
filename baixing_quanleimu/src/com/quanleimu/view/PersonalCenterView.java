@@ -350,6 +350,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				} catch (IOException e) {
 					e.printStackTrace();
 					myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				} catch (Communication.BXHttpException e){
+					
 				}	
 			}else{
 				try {
@@ -620,6 +622,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
 			} catch (IOException e) {
 				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+			} catch (Communication.BXHttpException e){
+				
 			}
 		}
 	}

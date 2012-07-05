@@ -313,7 +313,9 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
 				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} 
+			} catch (Communication.BXHttpException e){
+				
+			}
 
 		}
 	}

@@ -788,7 +788,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			// list.add("title=" + "111");
 			// list.add("description=" +
 			// URLEncoder.encode(descriptionEt.getText().toString()));
-			
+			String errorMsg = "内部错误，发布失败";
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url);
@@ -803,16 +803,25 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
-			} catch (Exception e) {
+			} catch (Communication.BXHttpException e) {
+				if(e.errorCode == 414){
+					errorMsg = "内容超出规定长度，请修改后重试";
+				}
+				else{
+					errorMsg = e.msg;
+				}
+				
+			} catch(Exception e){
 				e.printStackTrace();
 			}
 			if(pd != null){
 				pd.dismiss();
 			}
+			final String fmsg = errorMsg;
 			((BaseActivity)PostGoodsView.this.getContext()).runOnUiThread(new Runnable(){
 				@Override
 				public void run(){
-					Toast.makeText(PostGoodsView.this.getContext(), "发布失败，请检查内容或网络", 0).show();
+					Toast.makeText(PostGoodsView.this.getContext(), fmsg, 0).show();
 				}
 			});
 			
@@ -871,6 +880,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			} catch (IOException e) {
 				myHandler.sendEmptyMessage(10);
 				e.printStackTrace();
+			} catch (Communication.BXHttpException e){
+				
 			}
 
 		}

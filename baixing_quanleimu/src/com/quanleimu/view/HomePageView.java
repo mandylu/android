@@ -397,6 +397,8 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 				myHandler.sendEmptyMessage(4);
 			} catch (IOException e) {
 				myHandler.sendEmptyMessage(4);
+			} catch (Communication.BXHttpException e){
+				
 			}
 
 		}

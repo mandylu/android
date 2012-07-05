@@ -284,6 +284,8 @@ public class CategorySelectionView extends ListView {
 			} catch (IOException e) {
 				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				e.printStackTrace();
+			} catch (Communication.BXHttpException e){
+				
 			}
 			
 			return null;

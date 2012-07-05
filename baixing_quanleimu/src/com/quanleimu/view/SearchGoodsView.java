@@ -308,6 +308,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 			} catch (UnsupportedEncodingException e) {
 			} catch (IOException e) {
 				myHandler.sendEmptyMessage(10);
+			} catch (Communication.BXHttpException e){
+				
 			}
 
 		}

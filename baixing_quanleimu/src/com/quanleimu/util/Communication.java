@@ -249,10 +249,21 @@ public class Communication implements Comparator<String> {
 	         '0','1','2','3','4','5','6','7','8','9','A','B','C','D','E','F'
 	  };
 	  
+	  static public class BXHttpException extends Exception{
+		  public int errorCode = 0;
+		  public String msg = "";
+		  public BXHttpException(int errorCode, String msg){
+			  this.errorCode = errorCode;
+			  this.msg = msg;
+		  }
+		  public BXHttpException(){
+			  
+		  }
+	  }
 	  
 	//get提交数据方法
 	public static String getDataByUrl(String url)
-			throws UnsupportedEncodingException, IOException {
+			throws UnsupportedEncodingException, IOException, BXHttpException {
 
 //		URL getUrl = new URL(url);
 
@@ -261,7 +272,10 @@ public class Communication implements Comparator<String> {
 		
 		HttpPost httpPost = new HttpPost(url); 
 		HttpResponse response = httpClient.execute(httpPost);
-		
+		if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
+			BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
+			throw bxe;
+		}
 		/*StatusLine statusLine = response.getStatusLine(); 
 	   if(statusLine.getStatusCode() == 200)
 	   {

@@ -323,6 +323,8 @@ public class SearchView extends BaseView implements View.OnClickListener{
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (Communication.BXHttpException e){
+				
 			}
 
 		}

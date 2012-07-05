@@ -299,6 +299,8 @@ public class SiftView extends BaseView {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
+			} catch (Communication.BXHttpException e){
+				
 			}
 
 		}
