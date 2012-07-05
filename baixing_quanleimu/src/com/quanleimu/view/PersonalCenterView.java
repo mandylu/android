@@ -127,7 +127,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 							public void onClick(View v) {
 								bundle.putInt("type", 1);
 								bundle.putString("backPageName", "");					
-								m_viewInfoListener.onNewView(new LoginView(getContext(), bundle));
+								m_viewInfoListener.onNewView(new LoginView(getContext(), "我的信息"));
 							}
 						});
 					}

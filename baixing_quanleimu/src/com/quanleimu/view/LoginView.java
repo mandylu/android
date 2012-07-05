@@ -136,7 +136,7 @@ public class LoginView extends BaseView implements OnClickListener{
 	@Override
 	public void onPreviousViewBack(int message, Object obj){
 		if(message == 1){
-			Toast.makeText(getContext(), "重置密码成功，请重新登陆", 3).show();
+			Toast.makeText(getContext(), "重置密码成功，请重新登录", 3).show();
 		}
 	}
 
