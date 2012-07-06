@@ -585,9 +585,10 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(QuanleimuApplication.getWeiboAccessToken() == null){
 				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
 				AccessToken token = null;
-				if(tokenWrapper != null && tokenWrapper.getToken() != null && tokenWrapper.getExpires() != null){
+				if(tokenWrapper != null && tokenWrapper.getToken() != null){
 					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-					token.setExpiresIn(tokenWrapper.getExpires());
+//					token.setExpiresIn(tokenWrapper.getExpires());
+					Utility.setAuthorization(new Oauth2AccessTokenHeader());
 					QuanleimuApplication.setWeiboAccessToken(token);
 				}
 			}
@@ -605,7 +606,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	                	public void onComplete(){
 	        				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(GoodDetailView.this.getContext(), "weiboToken");
 	        				AccessToken token = null;
-	        				if(tokenWrapper != null && tokenWrapper.getToken() != null && tokenWrapper.getExpires() != null){
+	        				if(tokenWrapper != null && tokenWrapper.getToken() != null){
 	        					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
 	        					token.setExpiresIn(tokenWrapper.getExpires());
 	        					QuanleimuApplication.setWeiboAccessToken(token);
@@ -651,7 +652,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	}
 	
 	private void doShare2Weibo(AccessToken accessToken){
-		try{
+		try{ 
 		Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
 				accessToken.getToken(),
 				accessToken.getSecret(), 
