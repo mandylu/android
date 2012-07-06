@@ -119,6 +119,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
+		
+		SimpleImageLoader.Cancel(listUrl);
 		super.onDestroy();
 	}
 	

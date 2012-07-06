@@ -10,6 +10,7 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -114,7 +115,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			View v = convertView;
 			if(v == null || null == v.findViewById(R.id.tvDes)){
 				v = inflater.inflate(R.layout.item_goodslist, null);
-			}
+			}			
 	
 			tvDes = (TextView) v.findViewById(R.id.tvDes);
 			tvPrice = (TextView) v.findViewById(R.id.tvPrice);
@@ -169,11 +170,16 @@ public class GoodsListAdapter extends BaseAdapter {
 				
 			if(QuanleimuApplication.isTextMode()){
 				ivInfo.setVisibility(View.GONE);
-			}else{			
-				ivInfo.setTag("");
 			}
+			
 			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 			if(!QuanleimuApplication.isTextMode()){
+				
+				List<String> listUrlsToCancel = new ArrayList<String>();
+				
+				String strTag = null;
+				if(null != ivInfo.getTag()) strTag = ivInfo.getTag().toString();
+				
 				ivInfo.setLayoutParams(lp);
 				
 				if (list.get(position).getImageList() == null
@@ -182,9 +188,11 @@ public class GoodsListAdapter extends BaseAdapter {
 						|| list.get(position).getImageList().getResize180()
 								.equals("")) {
 					
+					if(null != strTag && strTag.length() > 0)
+						listUrlsToCancel.add(strTag);
+					
 					ivInfo.setTag("");
-					ivInfo.setImageBitmap(defaultBk2);
-	//				ivInfo.invalidate();
+					ivInfo.setImageBitmap(defaultBk2);		
 				} else {
 		//			if (isConnect == 0) {
 		//				ivInfo.setImageBitmap(defaultBk2);
@@ -198,25 +206,47 @@ public class GoodsListAdapter extends BaseAdapter {
 						if (b.contains(",")) {
 							String[] c = b.split(",");
 							if (c[0] == null || c[0].equals("")) {
+								
+								if(null != v.getTag() && v.getTag().toString().length() > 0)
+									listUrlsToCancel.add(v.getTag().toString());
+								
 								ivInfo.setTag("");
 								ivInfo.setImageBitmap(defaultBk2);
 	//							ivInfo.invalidate();
 							} else {
+								
+								if(null != strTag && strTag.length() > 0 && !strTag.equals(c[0]))
+									listUrlsToCancel.add(strTag);
+								
 								ivInfo.setTag(c[0]);
 								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 								SimpleImageLoader.showImg(ivInfo, c[0], this.context);
 							}
 						} else {
-							if (b == null || b.equals("")) {			
+							if (b == null || b.equals("")) {
+								
+								if(null != strTag && strTag.length() > 0)
+									listUrlsToCancel.add(strTag);
+								
 								ivInfo.setTag("");
 								ivInfo.setImageBitmap(defaultBk2);
 							} else {
+								
+								if(null != strTag && strTag.length() > 0 && !strTag.equals(b))
+									listUrlsToCancel.add(strTag);
+								
 								ivInfo.setTag(b);
 								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 								SimpleImageLoader.showImg(ivInfo, b, this.context);
 							}
 						}
 		//			}
+				}
+				
+				if(listUrlsToCancel.size() > 0){
+					Log.d("in GoodsListAdapter", "canceled image loading: "+listUrlsToCancel.get(0));
+					
+					SimpleImageLoader.Cancel(listUrlsToCancel);
 				}
 			}
 			String price = "";
