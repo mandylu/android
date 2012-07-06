@@ -390,6 +390,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			if((lastCategoryEnglishName == null || lastCategoryEnglishName.equals("")) 
 					&& (categoryEnglishName == null || categoryEnglishName.equals(""))){
 				this.addCategoryItem();
+				if(m_viewInfoListener != null){
+					PostGoodsCateMainView pview = 
+							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
+					m_viewInfoListener.onNewView(pview);
+				}
 				return; 
 			}
 			//获取发布模板
