@@ -42,7 +42,7 @@ public class AuthDialogListener implements WeiboDialogListener {
 		accessToken.setExpiresIn(expires_in);			
 		Weibo.getInstance().setAccessToken(accessToken);
 		QuanleimuApplication.setWeiboAccessToken(accessToken);
-		Helper.saveDataToLocate(context, "weiboToken", new WeiboAccessTokenWrapper(token, expires_in));
+		Helper.saveDataToLocate(context, "weiboToken", new WeiboAccessTokenWrapper(token, accessToken.getExpiresIn()));
 
 		
 		String url="https://api.weibo.com/2/account/get_uid.json";
