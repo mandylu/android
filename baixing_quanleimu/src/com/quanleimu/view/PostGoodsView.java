@@ -238,6 +238,12 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			List<String> beanVs = bean.getValues();
 			if(beanVs != null){
 				for(int t = 0; t < beanVs.size(); ++ t){
+					if(bean.getControlType().equals("checkbox") && bean.getLabels() != null && bean.getLabels().size() > 1){
+						if(value.contains(beanVs.get(t))){
+							displayValue += (displayValue.equals("") ? "" : ",") + bean.getLabels().get(t);
+							continue;
+						}
+					}
 					if(beanVs.get(t).equals(value)){
 						displayValue = bean.getLabels().get(t);
 						break;
