@@ -112,9 +112,20 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					lvGoodsList.setVisibility(View.VISIBLE);
 					mobile = user.getPhone();
 					password = user.getPassword();
-					pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
-					pd.setCancelable(true);
-					new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();
+					listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+					if(listMyPost != null){
+						adapter.setList(listMyPost);
+					}
+					if((this.bundle != null && bundle.getInt("forceUpdate") == 1) 
+							|| QuanleimuApplication.getApplication().getListMyPost() == null
+							|| QuanleimuApplication.getApplication().getListMyPost().size() == 0){
+						if(bundle != null){
+							bundle.remove("forceUpdate");
+						}
+						pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
+						pd.setCancelable(true);
+						new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();
+					}
 				} else {
 					if(null == loginItem){
 						LayoutInflater inflater = LayoutInflater.from(this.getContext());
