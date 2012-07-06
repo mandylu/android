@@ -27,6 +27,8 @@ import android.net.ConnectivityManager;
 import android.content.Context; 
 import android.net.NetworkInfo;
 
+import org.apache.http.entity.StringEntity;
+
 public class Communication implements Comparator<String> {
 
     private final static Communication COMPARATOR = new Communication();
@@ -269,8 +271,12 @@ public class Communication implements Comparator<String> {
 		
 		HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
 		
-		HttpPost httpPost = new HttpPost(url); 
+		HttpPost httpPost = new HttpPost(url.substring(0, url.indexOf("/?") + 2));
+		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+		httpPost.setEntity(se);
+		se.setContentType("application/x-www-form-urlencoded");
 		HttpResponse response = httpClient.execute(httpPost);
+		
 		if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
 			BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
 			throw bxe;
@@ -301,6 +307,7 @@ public class Communication implements Comparator<String> {
 		if(url.contains("adIds=")){
 			QuanleimuApplication.resetViewCounter();//counter sent successfully
 		}
+		System.out.println(temp);
 		return temp;
 	}
 
