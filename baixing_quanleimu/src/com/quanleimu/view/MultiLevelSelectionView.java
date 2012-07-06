@@ -38,6 +38,7 @@ public class MultiLevelSelectionView extends BaseView {
 	private String id = null;
 	ListAdapter adapter = null;
 	private int remainLevel = 0;
+	private ListView listView = null;
 	
 	public MultiLevelSelectionView(BaseActivity context, List<MultiLevelItem>items, int backMessage, int remainLevel){
 		super(context);
@@ -75,6 +76,11 @@ public class MultiLevelSelectionView extends BaseView {
 		}
 		super.onAttachedToWindow();
 	}
+	
+	public void onResume(){
+		if(listView != null)
+			listView.requestFocus();
+	}
 
 	private void init(final boolean hasNextLevel){
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
@@ -82,6 +88,7 @@ public class MultiLevelSelectionView extends BaseView {
 		this.addView(v);
 
 		final ListView lv = (ListView) v.findViewById(R.id.post_other_list);
+		if(lv!=null) listView = lv;
 
 		if(!hasNextLevel){
 			List<CheckableItem> checkList = new ArrayList<CheckableItem>();
