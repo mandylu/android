@@ -262,6 +262,36 @@ public class Communication implements Comparator<String> {
 		  }
 	  }
 	  
+	  public static String getDataByUrlGet(String url)
+			  throws UnsupportedEncodingException, IOException, BXHttpException {
+			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
+			
+			HttpPost httpPost = new HttpPost(url);
+			HttpResponse response = httpClient.execute(httpPost);
+			
+			if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
+				BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
+				throw bxe;
+			}
+			BufferedReader reader = new BufferedReader(new InputStreamReader(
+			    response.getEntity().getContent(), "utf-8"));// 设置编码,否则中文乱码
+
+			String lines = "";
+			String temp = "";
+			while ((lines = reader.readLine()) != null) {
+				temp += lines;
+			}
+			reader.close();
+			// 断开连接
+			
+			httpClient.getConnectionManager().shutdown();
+			if(url.contains("adIds=")){
+				QuanleimuApplication.resetViewCounter();//counter sent successfully
+			}
+			System.out.println(temp);
+			return temp;		  
+	  }
+	  
 	//get提交数据方法
 	public static String getDataByUrl(String url)
 			throws UnsupportedEncodingException, IOException, BXHttpException {

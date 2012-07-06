@@ -553,7 +553,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						if(!city.equals("")){
 							String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
 							try{
-								String googleJsn = Communication.getDataByUrl(googleUrl);
+								String googleJsn = Communication.getDataByUrlGet(googleUrl);
 								String[] info = googleJsn.split(",");
 								if(info != null && info.length == 4){
 									String positions = 
