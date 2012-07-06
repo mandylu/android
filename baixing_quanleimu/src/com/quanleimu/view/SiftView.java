@@ -263,6 +263,12 @@ public class SiftView extends BaseView {
 					labelmap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionView.MultiLevelItem)obj).txt);
 					valuemap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionView.MultiLevelItem)obj).id);					
 				}
+				else{
+					if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
+						valuemap.remove(listFilterss.get(temp).getName());
+						labelmap.remove(listFilterss.get(temp).getName());
+					}					
+				}
 			}
 		}
 	}
