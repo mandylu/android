@@ -443,7 +443,14 @@ public class DiskLruCache {
                         BitmapUtils.getExternalCacheDir(context).getPath() :
                         context.getCacheDir().getPath();
 
-        return new File(cachePath + File.separator + uniqueName);
+        File diskCacheDir = new File(cachePath + File.separator + uniqueName);
+        
+        
+        if(BitmapUtils.getUsableSpace(diskCacheDir) < 0){
+        	diskCacheDir = new File(context.getCacheDir().getPath() + File.separator + uniqueName);
+        }
+        
+        return diskCacheDir;
     }
 
     /**

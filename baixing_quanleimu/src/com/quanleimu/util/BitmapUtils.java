@@ -101,13 +101,23 @@ public class BitmapUtils {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 //            return path.getUsableSpace();
 //        }
+    	long bytesRet = 0;
+    	boolean bPathExists = path.exists();
     	
-        if (!path.exists()) {
-        	path.mkdirs();
+        if (!bPathExists) {
+        	bPathExists = path.mkdirs();
         }
         
-        final StatFs stats = new StatFs(path.getPath());
-        return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
+        if(bPathExists){
+        	try{
+		        final StatFs stats = new StatFs(path.getPath());
+		        bytesRet = (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
+        	}catch(Exception e){
+        		bPathExists = false;
+        	}
+        }
+        
+        return bPathExists ? bytesRet : -1;
     }
 
     /**
