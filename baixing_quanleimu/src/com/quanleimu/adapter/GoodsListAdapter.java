@@ -28,7 +28,6 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import android.os.Handler;
 import android.graphics.Typeface;
-import android.graphics.drawable.AnimationDrawable;
 import android.database.DataSetObserver;
 
 public class GoodsListAdapter extends BaseAdapter {
@@ -40,7 +39,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	private Button btnDelete;
 	private boolean hasDelBtn = false;
 	private Bitmap defaultBk2;
-	private AnimationDrawable loadingBK;
+//	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
 	private boolean uiHold = false;
@@ -131,9 +130,9 @@ public class GoodsListAdapter extends BaseAdapter {
 				btnDelete.setVisibility(View.VISIBLE);
 			}
 	
-	        if(null == loadingBK){
-	        	loadingBK = (AnimationDrawable)(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-	        }
+//	        if(null == loadingBK){
+//	        	loadingBK = (AnimationDrawable)(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
+//	        }
 			if(null == defaultBk2){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;

@@ -42,7 +42,8 @@ public class ViewStack {
 				}				
 			}
 			
-			m_view.onResume();
+			if(null != m_view)
+				m_view.onResume();
 			
 			return m_view;
 		}

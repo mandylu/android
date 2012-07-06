@@ -11,6 +11,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
 
+import org.apache.commons.httpclient.HttpException;
+
 import com.quanleimu.activity.QuanleimuApplication;
 
 import android.graphics.Bitmap;
@@ -293,13 +295,19 @@ public class LazyImageLoader
 					if(null == url){
 						continue;
 					} 
-					Bitmap bitmap=imgManger.safeGetFromNetwork(url);
+					
+					Bitmap bitmap = imgManger.safeGetFromNetwork(url);
+					
 					if(null != bitmap){
 						Message msg=handler.obtainMessage(MESSAGE_ID);
 						Bundle bundle =msg.getData();
 						bundle.putSerializable(EXTRA_IMG_URL, url);
 						bundle.putParcelable(EXTRA_IMG, bitmap);
 						handler.sendMessage(msg);
+					}else{						
+						Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
+						
+						urlDequeDownload.add(url);
 					}
 				}
 			}

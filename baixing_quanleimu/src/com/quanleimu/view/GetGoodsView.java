@@ -5,6 +5,8 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.graphics.drawable.AnimationDrawable;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
@@ -16,6 +18,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import com.quanleimu.entity.GoodsDetail;
@@ -63,6 +66,17 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	@Override
 	public void onResume(){
 		this.lvGoodsList.requestFocus();//force cate view has focus
+		
+		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+			}
+		}
 	}
 	
 	@Override

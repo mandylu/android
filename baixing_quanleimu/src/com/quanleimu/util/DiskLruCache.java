@@ -159,7 +159,7 @@ public class DiskLruCache {
      */
     public void put(String key, Bitmap data) {
         synchronized (mLinkedHashMap) {
-            if (mLinkedHashMap.get(key) == null) {
+            /*if (mLinkedHashMap.get(key) == null)*/ {
                 try {
                     final String file = createFilePath(mCacheDir, key);
                     if (writeBitmapToFile(data, file)) {
@@ -177,7 +177,7 @@ public class DiskLruCache {
     
     public void put(String key, InputStream in){
         synchronized (mLinkedHashMap) {
-            if (mLinkedHashMap.get(key) == null) {	
+            /*if (mLinkedHashMap.get(key) == null)*/ {	
             	
 			BufferedInputStream bis = null;			
 			BufferedOutputStream bos = null;

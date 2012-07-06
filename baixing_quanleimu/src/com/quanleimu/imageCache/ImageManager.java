@@ -290,7 +290,8 @@ public class ImageManager
            	bitmapRet = imageDiskLruCache.get(key);
             
             return bitmapRet;
-		}catch (Exception e){			
+		}
+		catch (Exception e){			
 		}
 		finally
 		{			
