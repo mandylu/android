@@ -44,7 +44,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		
 		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
 		AccessToken token = null;
-		if(tokenWrapper != null && tokenWrapper.getToken() != null && tokenWrapper.getExpires() != null){
+		if(tokenWrapper != null && tokenWrapper.getToken() != null){
 			token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
 			token.setExpiresIn(tokenWrapper.getExpires());
 		}
