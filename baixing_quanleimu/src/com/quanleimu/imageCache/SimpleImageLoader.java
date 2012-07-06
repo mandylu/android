@@ -61,12 +61,6 @@ public class SimpleImageLoader
 	
 				@Override
 				protected Bitmap doInBackground(Bitmap... bitmaps) { 
-					try {
-						bitmaps[0] = Helper.toRoundCorner(bitmaps[0], 10);									
-					} catch (Exception e) {
-						// TODO Auto-generated catch block
-						e.printStackTrace();
-					}
 					return bitmaps[0];
 				}
 				
@@ -90,20 +84,7 @@ public class SimpleImageLoader
 			{
 					if(url.equals(view.getTag().toString()))
 					{
-						bitmap = Helper.toRoundCorner(bitmap, 10);
 						view.setImageBitmap(bitmap);
-//						
-//						Log.d("simple image loader: ", "url: "+url+"   => callback called with view: "+ view.toString());
-						
-//						view.post(new Runnable(){
-//							@Override
-//							public void run(){
-//								view.setImageBitmap(bitmap_rd);
-//								view.invalidate();
-//							}
-//						});
-//						
-//						bitmap = null;
 					}
 					else
 					{
@@ -121,7 +102,6 @@ public class SimpleImageLoader
 		
 		imageView.setTag(url);
 		Bitmap bmp = QuanleimuApplication.lazyImageLoader.get(url,createCallback(url, imageView,pb,btnBig));
-		bmp = Helper.toRoundCorner(bmp, 10);
 		imageView.setImageBitmap(bmp);
 	}
 	
@@ -139,7 +119,6 @@ public class SimpleImageLoader
 				btnBig.setVisibility(View.VISIBLE);
 				if (url.equals(imageView.getTag())) 
 				{
-					bitmap = Helper.toRoundCorner(bitmap, 10);
 					imageView.setImageBitmap(bitmap);
 				}
 				else

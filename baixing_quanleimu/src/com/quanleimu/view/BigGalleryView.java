@@ -1,10 +1,13 @@
 package com.quanleimu.view;
 
+import java.io.File;
+import java.io.FileOutputStream;
 import java.util.ArrayList;
 import java.util.List;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -21,6 +24,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Util;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
 
@@ -65,19 +69,18 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 					listUrl.add(b);
 				}
 				
-				ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
-				GalleryImageAdapter adapter = new GalleryImageAdapter(getContext(), listUrl);
-				vfCoupon.setAdapter(adapter, postIndex);
-				vfCoupon.setOnViewLazyInitializeListener(adapter);
-				vfCoupon.setOnViewSwitchListener(this);
-
-				CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
-				vfCoupon.setFlowIndicator(indic);
-				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
-                mb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);               
+                mb = BitmapFactory.decodeResource(BigGalleryView.this.getResources(),R.drawable.loading_210_black, o);  
+                
+				ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
+				GalleryImageAdapter adapter = new GalleryImageAdapter(getContext(), listUrl);
+				vfCoupon.setOnViewLazyInitializeListener(adapter);
+				vfCoupon.setOnViewSwitchListener(this);
+				vfCoupon.setAdapter(adapter, postIndex);
 
+				CircleFlowIndicator indic = (CircleFlowIndicator) findViewById(R.id.viewflowindic);
+				vfCoupon.setFlowIndicator(indic); 
 			}
 		} catch (Exception e) {
 			
@@ -275,7 +278,6 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 
 			if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 			{	
-				Log.d("BigGallery", "getView("+position+") and imageView image set!");
 				imageView.setImageBitmap(mb);
 				
 			    SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
@@ -315,7 +317,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 	@Override
 	public void onSwitched(View view, int position) {
 		// TODO Auto-generated method stub
-			if(null != m_viewInfoListener){
+		if(null != m_viewInfoListener){
 			TitleDef title = getTitleDef();
 			title.m_title = (position + 1)+"/"+listUrl.size();
 			m_viewInfoListener.onTitleChanged(title);

@@ -204,7 +204,7 @@ public class ImageManager
 		imageLruCache.evictAll();
 	}
 	
-	public Bitmap safeGetFromFileCache(String url)
+	public Bitmap safeGetFromFileCacheOrAssets(String url)
 	{
 		String fileName = getMd5(url);
 		Bitmap bitmap = this.getFromFileCache(url);
@@ -238,17 +238,24 @@ public class ImageManager
 	}
 	
 	
-	public Bitmap safeGet(String url) throws HttpException
+	public Bitmap safeGetFromDiskCache(String url)
 	{
 		Bitmap bitmap = this.getFromFileCache(url);
-		
-		if(null == bitmap){
-			bitmap = downloadImg(url);
+
+		if(null != bitmap)
+		{
+			synchronized (this)
+			{
+				imageLruCache.put(url, bitmap);
+			}
 		}
+		return bitmap;
+	}
+	
+	public Bitmap safeGetFromNetwork(String url) throws HttpException
+	{
+		Bitmap bitmap = downloadImg(url);
 		
-		if(null == bitmap){
-			bitmap = downloadImg(url);
-		}
 		if(null != bitmap)
 		{
 			synchronized (this)

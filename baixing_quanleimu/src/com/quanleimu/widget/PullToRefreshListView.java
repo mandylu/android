@@ -81,7 +81,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     
     private VelocityTracker mVelocityTracker;
 	private int mMaximumVelocity;
-    private static final int SNAP_VELOCITY = 500;
+    private static final int SNAP_VELOCITY = 1000;
 
     public PullToRefreshListView(Context context) {
         super(context);
