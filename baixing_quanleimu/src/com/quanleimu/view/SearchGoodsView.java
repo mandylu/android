@@ -17,6 +17,7 @@ import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
@@ -170,6 +171,20 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 //	public boolean onLeftActionPressed(){
 //		return onBack();
 //	}
+	
+	@Override
+	public void onResume(){
+		for(int i = 0; i < lvSearchResult.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvSearchResult.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+			}
+		}
+	}	
 	
 	@Override
 	public boolean onRightActionPressed(){

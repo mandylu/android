@@ -25,6 +25,7 @@ import android.widget.Toast;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
@@ -241,6 +242,20 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		buttonStatus = -1;
 	}
 
+	@Override
+	public void onResume(){
+		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+			}
+		}
+	}	
+	
 	private void init(){
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.personalcenterview, null);
