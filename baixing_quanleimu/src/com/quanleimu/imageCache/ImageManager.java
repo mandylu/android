@@ -1,5 +1,7 @@
 package com.quanleimu.imageCache;
 
+import java.io.BufferedInputStream;
+import java.io.BufferedOutputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -16,6 +18,7 @@ import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.LruCache;
+import android.util.Log;
 import android.app.ActivityManager;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.BitmapUtils;
@@ -31,7 +34,7 @@ public class ImageManager
 	//private Map<String, SoftReference<Bitmap>> imgCache ;
 	
 	private LruCache<String, Bitmap> imageLruCache;
-	private DiskLruCache imageDiskLruCache;
+	private DiskLruCache imageDiskLruCache = null;
 
 	
 	private Context context;	
@@ -50,10 +53,16 @@ public class ImageManager
 	    
 	    File fileCacheDir = DiskLruCache.getDiskCacheDir(context, "");
 	    long capacity_20M = 20*1024*1024;
-	    long capacity_halfFreeSpace = BitmapUtils.getUsableSpace(fileCacheDir) / 2;	    
-	    final long diskCacheSize =  capacity_20M > capacity_halfFreeSpace ? capacity_20M : capacity_halfFreeSpace;
+	    long capacity_halfFreeSpace = BitmapUtils.getUsableSpace(fileCacheDir) / 2;
+	    if(capacity_halfFreeSpace < 0){
+	    	Log.d("ImageManager", "FATAL error: disk cache dir is not valid!");
+	    }
+	    final long diskCacheSize =  capacity_20M < capacity_halfFreeSpace ? capacity_20M : capacity_halfFreeSpace;
 	    
 	    imageDiskLruCache = DiskLruCache.openCache(context, fileCacheDir, diskCacheSize);
+	    if(null == imageDiskLruCache){
+	    	Log.d("ImageManager", "FATAL error: disk cache is not correctly installed!");
+	    }
 
 	    // Use 1/8th of the available memory for this memory cache.
 	    final int cacheSize = 1024 * 1024 * memClass / 8;    
@@ -77,7 +86,7 @@ public class ImageManager
 	}
 	
 	public void enableSampleSize(boolean b){
-		imageDiskLruCache.enableSampleSize(b);
+		BitmapUtils.enableSampleSize(b);
 	}
 	
 	public boolean contains(String url)
@@ -148,7 +157,11 @@ public class ImageManager
 	public Bitmap getFromFileCache(String url)
 	{
 		//Log.d("LruDiskCache", "get from filecache: "+url+";");
-		return imageDiskLruCache.get(getMd5(url));
+		if(null != imageDiskLruCache){
+			return imageDiskLruCache.get(getMd5(url));
+		}
+		
+		return null;
 	}
 	
 	public Bitmap getFromMapCache(String url)
@@ -216,7 +229,10 @@ public class ImageManager
 	            o.inPurgeable = true;
 	            bitmap = BitmapFactory.decodeStream(is, null, o);
 	            
-	            imageDiskLruCache.put(fileName, bitmap);
+	            if(null != imageDiskLruCache){
+	            	imageDiskLruCache.put(fileName, bitmap);
+	            }
+	            
 			}catch(FileNotFoundException ee){
 				
 			}catch(IOException eee){
@@ -282,12 +298,18 @@ public class ImageManager
 	        HttpResponse response = httpClient.execute(httpPost);	
 	        
 	        String key = getMd5(urlStr);
-           	imageDiskLruCache.put(key, response.getEntity().getContent());
-           	
-           	httpClient.getConnectionManager().shutdown();
-           	httpClient = null;
-           	
-           	bitmapRet = imageDiskLruCache.get(key);
+	        if(null != imageDiskLruCache){
+	           	imageDiskLruCache.put(key, response.getEntity().getContent());
+	           	
+	           	httpClient.getConnectionManager().shutdown();
+	           	httpClient = null;
+	           	
+	           	bitmapRet = imageDiskLruCache.get(key);
+	        }else{
+	    		
+	    		InputStream inputStream = response.getEntity().getContent();
+	    		bitmapRet = BitmapUtils.decodeSampledBitmapFromFile(inputStream);	    		
+	        }
             
             return bitmapRet;
 		}
@@ -413,7 +435,11 @@ public class ImageManager
 	}
 
 	public String getFileInDiskCache(String url) {
-		return imageDiskLruCache.getFilePath(this.getMd5(url));
+		if(null != imageDiskLruCache){
+			return imageDiskLruCache.getFilePath(this.getMd5(url));
+		}else{
+			return "";
+		}
 	}
 }
 

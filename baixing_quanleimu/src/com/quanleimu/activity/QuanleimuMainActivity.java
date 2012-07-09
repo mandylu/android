@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -433,14 +434,19 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		// TODO Auto-generated method stub
 		LocationService.getInstance().stop();
 		super.onPause();
-		MobclickAgent.onPause(this);
+//		
+//		MobclickAgent.onPause(this);
+//		
+//		Log.d("Umeng SDK API call", "onPause() called from QuanleimuMainActivity:onPause()!!");
 	}
 	
 	@Override
 	protected void onResume() {
 		bundle.putString("backPageName", "");
 		super.onResume();
-		MobclickAgent.onResume(this);
+//		MobclickAgent.onResume(this);
+//		
+//		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
 	} 
 	
 	@Override

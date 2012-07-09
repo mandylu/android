@@ -20,16 +20,37 @@ import android.annotation.SuppressLint;
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.view.WindowManager;
 
 import java.io.File;
+import java.io.InputStream;
+
+import com.quanleimu.activity.QuanleimuApplication;
 
 /**
  * Class containing some static utility methods.
  */
 public class BitmapUtils {
+	
+    private static boolean useSampleSize = false;
+    
+    public static void enableSampleSize(boolean b){
+    	useSampleSize = b;
+    }
+    
+    public static class _Rect{
+    	public int width = 0;
+    	public int height =0;
+    	public _Rect(){
+    		this.width = 0;
+    		this.height = 0;
+    	}
+    };
+    
     public static final int IO_BUFFER_SIZE = 8 * 1024;
 
     private BitmapUtils() {};
@@ -101,23 +122,22 @@ public class BitmapUtils {
 //        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.GINGERBREAD) {
 //            return path.getUsableSpace();
 //        }
-    	long bytesRet = 0;
-    	boolean bPathExists = path.exists();
+        
+        try{
+	        final StatFs stats = new StatFs(path.getPath());
+	        return (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
+        }catch(Exception e){
+        	e.printStackTrace();
+        }
+        
+        return -1;
+    }
+    
+    public static boolean isPathValidForDiskCache(File path){
     	
-        if (!bPathExists) {
-        	bPathExists = path.mkdirs();
-        }
+    	boolean bPathExists = path.exists() && path.canWrite();
         
-        if(bPathExists){
-        	try{
-		        final StatFs stats = new StatFs(path.getPath());
-		        bytesRet = (long) stats.getBlockSize() * (long) stats.getAvailableBlocks();
-        	}catch(Exception e){
-        		bPathExists = false;
-        	}
-        }
-        
-        return bPathExists ? bytesRet : -1;
+        return bPathExists;
     }
 
     /**
@@ -158,4 +178,82 @@ public class BitmapUtils {
 //    public static boolean hasActionBar() {
 //        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 //    }
+	
+	public static Bitmap decodeSampledBitmapFromFile(String fileName) {
+	
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    if(useSampleSize){
+			_Rect rc = new _Rect();
+			rc.width = 200;
+			rc.height = 200;
+			WindowManager wm = 
+					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
+			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
+			
+		    options.inJustDecodeBounds = true;
+		    BitmapFactory.decodeFile(fileName,options);
+	
+		    // Calculate inSampleSize
+		    options.inSampleSize = calculateInSampleSize(options, rc.width, rc.height);
+	    }
+	    else{
+	    	options.inSampleSize = 1;
+	    }
+	    
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    options.inPurgeable = true;
+	    return BitmapFactory.decodeFile(fileName, options);
+	}
+	
+	public static Bitmap decodeSampledBitmapFromFile(InputStream stream){
+	
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    if(useSampleSize){	    	
+			_Rect rc = new _Rect();
+			rc.width = 200;
+			rc.height = 200;
+			WindowManager wm = 
+					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
+			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
+			
+		    options.inJustDecodeBounds = true;
+		    BitmapFactory.decodeStream(stream);
+	
+		    // Calculate inSampleSize
+		    options.inSampleSize = calculateInSampleSize(options, rc.width, rc.height);
+	    }
+	    else{
+	    	options.inSampleSize = 1;
+	    }
+	    
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    options.inPurgeable = true;
+	    return BitmapFactory.decodeStream(stream);
+	}
+	
+	public static int calculateInSampleSize(
+            BitmapFactory.Options options, int reqWidth, int reqHeight) {
+	    // Raw height and width of image
+	    final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (height > reqHeight || width > reqWidth) {
+	        inSampleSize = Math.round((float)height / (float)reqHeight);
+	        int t = Math.round((float)width / (float)reqWidth);
+	        if(t > inSampleSize) inSampleSize = t;
+	        
+	    }
+	    
+	    System.out.println("[decodeSampledBitmapFromFile] SampleSize = " + inSampleSize
+	    		+ " reqWidth/width =" + reqWidth + "/" + width 
+	    		+ " reqHeight/height = " + reqHeight + "/" + height);
+	    return inSampleSize;
+	}
 }

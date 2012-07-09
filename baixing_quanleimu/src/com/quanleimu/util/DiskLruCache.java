@@ -41,6 +41,7 @@ import java.io.OutputStream;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.Collections;
+import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.TimerTask;
@@ -58,7 +59,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 public class DiskLruCache {
     private static final String TAG = "DiskLruCache";
     private static final String CACHE_FILENAME_PREFIX = "__cache_";
-    private static final int MAX_REMOVALS = 32;
+    private static final int MAX_REMOVALS = 256;
     private static final int INITIAL_CAPACITY = 256;
     private static final float LOAD_FACTOR = 0.75f;
     
@@ -76,12 +77,6 @@ public class DiskLruCache {
     
     private boolean mNeedDumpToFile = false;
     private Timer timer = new Timer();
-    
-    private boolean useSampleSize = false;
-    
-    public void enableSampleSize(boolean b){
-    	useSampleSize = b;
-    }
 
     /**
      * A filename filter to use to identify the cache filenames which have CACHE_FILENAME_PREFIX
@@ -102,14 +97,14 @@ public class DiskLruCache {
      * @param maxByteSize
      * @return
      */
-    public static DiskLruCache openCache(Context context, File cacheDir, long maxByteSize) {
+    public static DiskLruCache openCache(Context context, File cacheDir, long maxFreeByteSize) {
         if (!cacheDir.exists()) {
             cacheDir.mkdirs();
         }
 
         if (cacheDir.isDirectory() && cacheDir.canWrite()
-                && BitmapUtils.getUsableSpace(cacheDir) > maxByteSize) {
-            return new DiskLruCache(cacheDir, maxByteSize);
+                && BitmapUtils.getUsableSpace(cacheDir) > maxFreeByteSize) {
+            return new DiskLruCache(cacheDir, maxFreeByteSize);
         }
 
         return null;
@@ -142,9 +137,9 @@ public class DiskLruCache {
      * @param cacheDir
      * @param maxByteSize
      */
-    private DiskLruCache(File cacheDir, long maxByteSize) {
+    private DiskLruCache(File cacheDir, long maxFreeByteSize) {
         mCacheDir = cacheDir;
-        maxCacheByteSize = maxByteSize;
+        maxCacheByteSize = maxFreeByteSize;
         
         rebuildFromExistingFiles(mCacheDir);
 
@@ -261,73 +256,8 @@ public class DiskLruCache {
         }
     }
 
-    class _Rect{
-    	public int width = 0;
-    	public int height =0;
-    	public _Rect(){
-    		this.width = 0;
-    		this.height = 0;
-    	}
-    }
-    
-	private static void screenDimension(_Rect rc){
-		WindowManager wm = 
-				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
-		rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
-				
-	}
-	public Bitmap decodeSampledBitmapFromFile(String fileName,
-	        int reqWidth, int reqHeight) {
-
-	    // First decode with inJustDecodeBounds=true to check dimensions
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    if(this.useSampleSize){
-		    options.inJustDecodeBounds = true;
-		    BitmapFactory.decodeFile(fileName,options);
-	
-		    // Calculate inSampleSize
-		    options.inSampleSize = calculateInSampleSize(options, reqWidth, reqHeight);
-	    }
-	    else{
-	    	options.inSampleSize = 1;
-	    }
-	    
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    options.inPurgeable = true;
-	    return BitmapFactory.decodeFile(fileName, options);
-	}
-
-	
 	public Bitmap decodeBitmapFromFile(String fileName){
-		int reqWidth = 200;
-		int reqHeight = 200;
-		_Rect rc = new _Rect();
-		rc.width = reqWidth;
-		rc.height = reqHeight;
-		screenDimension(rc);
-		return decodeSampledBitmapFromFile(fileName, rc.width, rc.height);
-	}
-	
-	public int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-	    // Raw height and width of image
-	    final int height = options.outHeight;
-	    final int width = options.outWidth;
-	    int inSampleSize = 1;
-	
-	    if (height > reqHeight || width > reqWidth) {
-	        inSampleSize = Math.round((float)height / (float)reqHeight);
-	        int t = Math.round((float)width / (float)reqWidth);
-	        if(t > inSampleSize) inSampleSize = t;
-	        
-	    }
-	    
-	    System.out.println("[decodeSampledBitmapFromFile] SampleSize = " + inSampleSize
-	    		+ " reqWidth/width =" + reqWidth + "/" + width 
-	    		+ " reqHeight/height = " + reqHeight + "/" + height);
-	    return inSampleSize;
+		return BitmapUtils.decodeSampledBitmapFromFile(fileName);
 	}
 	
 	public String getFilePath(String key){
@@ -445,8 +375,11 @@ public class DiskLruCache {
 
         File diskCacheDir = new File(cachePath + File.separator + uniqueName);
         
+        if (!diskCacheDir.exists()) {
+        	diskCacheDir.mkdirs();
+        }        
         
-        if(BitmapUtils.getUsableSpace(diskCacheDir) < 0){
+        if(!BitmapUtils.isPathValidForDiskCache(diskCacheDir) || BitmapUtils.getUsableSpace(diskCacheDir) < 0){
         	diskCacheDir = new File(context.getCacheDir().getPath() + File.separator + uniqueName);
         }
         
@@ -551,7 +484,26 @@ public class DiskLruCache {
     	ObjectInputStream ois = null;
 		try {
 			ois = new ObjectInputStream( new FileInputStream(mapIndex));
-			mLinkedHashMap = (Map<String, String>)ois.readObject();//Collections.synchronizedMap(() );	    	
+			mLinkedHashMap = (Map<String, String>)ois.readObject();//Collections.synchronizedMap(() );	  
+			
+			if(null != mLinkedHashMap){
+				Iterator<Entry<String, String>> iter = mLinkedHashMap.entrySet().iterator();
+				while (iter.hasNext()) {
+					Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+					String val = entry.getValue();
+					
+					File file = new File(val);
+					if(file.exists()){
+						cacheByteSize += file.length();
+					}else{
+						mLinkedHashMap.remove(entry.getKey());
+					}
+				}
+				
+				maxCacheByteSize += cacheByteSize;
+				mNeedDumpToFile = true;
+			}
+			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();

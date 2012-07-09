@@ -7,6 +7,7 @@ import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
@@ -121,6 +122,8 @@ public class BaseActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onPause();
 		MobclickAgent.onPause(this);
+		
+		//Log.d("Umeng SDK API call", "onPause() called from BaseActivity:onPause()!!");
 	}
 
 	@Override
@@ -128,6 +131,8 @@ public class BaseActivity extends Activity implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onResume();
 		MobclickAgent.onResume(this);
+		
+		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
 	}
 
 
