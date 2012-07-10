@@ -112,7 +112,7 @@ public class BXNotificationService extends Service {
 			switch (msg.what) {
 			case MSG_CHECK_UPDATE:
 				doGetPushInfo();
-				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 15000);
+				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 3600000);
 				break;
 			case MSG_PUSH_RETURN:
 				if (json != null) {
