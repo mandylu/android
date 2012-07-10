@@ -7,5 +7,5 @@
     	android:layout_height="fill_parent" 
     	android:layout_width="fill_parent"
     	android:id="@+id/ivHotDetail"
-    	android:scaleType="centerInside"/>
+    	android:scaleType="centerCrop"/>
 </LinearLayout>
