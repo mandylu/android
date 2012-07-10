@@ -8,6 +8,7 @@ import java.util.Map;
 import android.app.Application;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.graphics.Bitmap;
 import android.widget.Toast;
 
@@ -40,6 +41,7 @@ public class QuanleimuApplication extends Application {
 	public static boolean update = false;
 	public static boolean textMode = false;
 	private static AccessToken accessToken = null;
+	private static SharedPreferences preferences = null;
 	
 	public static void addViewCounter(String adId){
 		if(!ads_viewed.equals("")){
@@ -56,6 +58,10 @@ public class QuanleimuApplication extends Application {
 	
 	public static void setTextMode(boolean tMode){
 		QuanleimuApplication.textMode = tMode;
+		
+		SharedPreferences.Editor editor = preferences.edit();
+		editor.putBoolean("isTextMode", tMode);
+		editor.commit();
 	}
 	
 	public static boolean isTextMode(){
@@ -327,9 +333,15 @@ public class QuanleimuApplication extends Application {
 	}
 
 	static public QuanleimuApplication getApplication(){
+		if(null == preferences){
+			preferences = mDemoApp.getApplicationContext().getSharedPreferences("QuanleimuPreferences", MODE_PRIVATE);
+			textMode = preferences.getBoolean("isTextMode", false);
+		}
+		
 		return mDemoApp;
 	}
 	static QuanleimuApplication mDemoApp;
+
 	
 	protected ViewStack viewStack;
 	public ViewStack getViewStack(){
