@@ -10,8 +10,6 @@ import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.os.IBinder;
-import android.util.Log;
-import android.widget.Toast;
 import android.os.Handler;
 import android.os.Message;
 import android.app.NotificationManager;
@@ -163,9 +161,6 @@ public class BXNotificationService extends Service {
 
 	@Override
 	public void onCreate() {
-		Toast.makeText(this, "My Service created", Toast.LENGTH_LONG).show();
-		Log.i(TAG, "onCreate");
-
 		BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
 
 			@Override
@@ -188,15 +183,11 @@ public class BXNotificationService extends Service {
 
 	@Override
 	public void onDestroy() {
-		Toast.makeText(this, "My Service Stoped", Toast.LENGTH_LONG).show();
-		Log.i(TAG, "onDestroy");
 		myHandler.removeMessages(MSG_CHECK_UPDATE);
 	}
 
 	@Override
 	public void onStart(Intent intent, int startid) {
-		Toast.makeText(this, "My Service Start", Toast.LENGTH_LONG).show();
-		Log.i(TAG, "onStart");
 		if (isInternetConnected()) {
 			myHandler.sendEmptyMessage(MSG_CHECK_UPDATE);
 		}
