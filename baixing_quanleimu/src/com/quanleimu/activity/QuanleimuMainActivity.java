@@ -248,7 +248,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                    editor.putString("hasShowShortcut", "yes");
 		                    // Commit the edits!
 		                    editor.commit();
-		
+		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
+		            		QuanleimuMainActivity.this.startService(pushIntent);
 		                    System.exit(0);
 		                }
 		            });
@@ -433,6 +434,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onPause() {
 		// TODO Auto-generated method stub
 		LocationService.getInstance().stop();
+
 		super.onPause();
 //		
 //		MobclickAgent.onPause(this);
@@ -452,6 +454,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	@Override
 	protected void onCreate(Bundle savedInstanceState) { 
 		super.onCreate(savedInstanceState);
+				
+		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
+		this.stopService(pushIntent);
 
 		setContentView(R.layout.main_activity);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
