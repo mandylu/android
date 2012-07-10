@@ -36,8 +36,8 @@ public class CustomizedImageView extends ImageView {
 	@Override
 	protected void onMeasure(int widthMeasureSpec, int heightMeasureSpec) {
 		super.onMeasure(widthMeasureSpec, heightMeasureSpec);
-		if(MeasureSpec.UNSPECIFIED == MeasureSpec.getMode(heightMeasureSpec)
-				&& this.getScaleType() == ImageView.ScaleType.CENTER_INSIDE)
+		/*if(MeasureSpec.UNSPECIFIED == MeasureSpec.getMode(heightMeasureSpec)
+				&& this.getScaleType() == ImageView.ScaleType.CENTER_INSIDE)*/
 		{
 			if(0 != bitmapWidth){
 					int width = MeasureSpec.getSize(widthMeasureSpec);
