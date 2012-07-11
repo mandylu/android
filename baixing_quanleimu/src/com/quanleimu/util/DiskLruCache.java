@@ -44,6 +44,7 @@ import java.util.Collections;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.Map;
+import java.util.Set;
 import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.Timer;
@@ -487,16 +488,31 @@ public class DiskLruCache {
 			mLinkedHashMap = (Map<String, String>)ois.readObject();//Collections.synchronizedMap(() );	  
 			
 			if(null != mLinkedHashMap){
-				Iterator<Entry<String, String>> iter = mLinkedHashMap.entrySet().iterator();
-				while (iter.hasNext()) {
-					Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
-					String val = entry.getValue();
-					
-					File file = new File(val);
-					if(file.exists()){
-						cacheByteSize += file.length();
-					}else{
-						mLinkedHashMap.remove(entry.getKey());
+//				Iterator<Entry<String, String>> iter = mLinkedHashMap.entrySet().iterator();
+//				while (iter.hasNext()) {
+//					Map.Entry<String, String> entry = (Map.Entry<String, String>) iter.next();
+//					String val = entry.getValue();
+//					
+//					File file = new File(val);
+//					/*if(file.exists()){
+//						cacheByteSize += file.length();
+//					}else*/{
+//						mLinkedHashMap.remove(entry.getKey());
+//					}
+//				}
+//				
+				Object[] keyArray= mLinkedHashMap.keySet().toArray();
+				if(null != keyArray){
+					for(Object key : keyArray){
+						String fileName = mLinkedHashMap.get(key.toString());
+						if(null != fileName){
+							File file = new File(fileName);
+							if(file.exists()){
+								cacheByteSize += file.length();
+							}else{
+								mLinkedHashMap.remove(key.toString());
+							}
+						}
 					}
 				}
 				
