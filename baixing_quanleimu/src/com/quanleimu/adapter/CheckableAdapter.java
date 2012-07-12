@@ -10,18 +10,21 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.CheckBox;
+import com.quanleimu.adapter.BXAlphabetSortableAdapter;
+import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
 
-public class CheckableAdapter extends BaseAdapter {
+public class CheckableAdapter extends BXAlphabetSortableAdapter {
 	public static class CheckableItem extends Object{
 		public String txt;
 		public boolean checked;
+		public String id;
 		@Override
 		public String toString(){
 			return txt;
 		}
 	}
-	private Context context;
-	private List<? extends CheckableItem> list = new ArrayList<CheckableItem>();
+//	private Context context;
+//	private List<? extends CheckableItem> list = new ArrayList<CheckableItem>();
 	private Object tag;
 	private int checkedResourceId = -1;//R.drawable.pic_radio_normal_2x;
 	private int uncheckedResourceId = -1;//R.drawable.pic_radio_selected_2x;
@@ -43,15 +46,25 @@ public class CheckableAdapter extends BaseAdapter {
 		return tag;
 	}
 	
+	public void setItemCheckStatus(int position, boolean check){
+		CheckableItem item = getItem(position) instanceof BXPinyinSortItem ? 
+				(CheckableItem)((BXPinyinSortItem)getItem(position)).obj
+				: (CheckableItem)getItem(position);
+		item.checked = check;
+		this.list.remove(position);
+		this.list.add(position, item);
 
-	public CheckableAdapter(Context context,List<? extends CheckableItem> list) {
-		super();
-		this.context = context;
-		this.list = list;
+	}
+	
+
+	public CheckableAdapter(Context context,List<? extends CheckableItem> list, int sortIfMoreThan) {
+		super(context, list, list.size() > sortIfMoreThan);
+//		this.context = context;
+//		this.list = list;
 	}
 		
 	public void setList(List<? extends CheckableItem> list_){
-		this.list = list_;
+		this.list.addAll(list_);
 		this.notifyDataSetChanged();
 	}
 	
@@ -85,9 +98,13 @@ public class CheckableAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		View header = getHeaderIfItIs(position, convertView);
+		if(header != null){
+			return header;
+		}
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = null;
-		if(convertView == null)
+		if(convertView == null || convertView.findViewById(R.id.checkitem) == null)
 		{
 			v = inflater.inflate(R.layout.item_text_checkbox, null);
 		}else{
@@ -102,14 +119,25 @@ public class CheckableAdapter extends BaseAdapter {
 		tvCateName.setText(list.get(position).toString());
 		
 		CheckBox box = (CheckBox)v.findViewById(R.id.checkitem);
-		box.setChecked(list.get(position).checked);
-		if(this.checkedResourceId > 0 && this.uncheckedResourceId > 0){
-			if(((CheckableItem)list.get(position)).checked){
-				box.setButtonDrawable(this.checkedResourceId);
+		if(this.getItem(position) instanceof BXHeader){
+			box.setVisibility(View.GONE);
+			v.setBackgroundResource(R.drawable.alphabetheaderbk);
+		}
+		else{
+			box.setVisibility(View.VISIBLE);
+			CheckableItem item = (list.get(position) instanceof BXPinyinSortItem) ? 
+					(CheckableItem)((BXPinyinSortItem)list.get(position)).obj : (CheckableItem)list.get(position);
+			box.setChecked(item.checked);
+			if(this.checkedResourceId > 0 && this.uncheckedResourceId > 0){
+				if(item.checked){
+					box.setButtonDrawable(this.checkedResourceId);
+				}
+				else{
+					box.setButtonDrawable(this.uncheckedResourceId);
+				}
 			}
-			else{
-				box.setButtonDrawable(this.uncheckedResourceId);
-			}
+			v.setBackgroundColor(0x00000000);
+
 		}
 		return v;
 	}

@@ -10,10 +10,12 @@ import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
 import android.widget.ImageView;
-public class CommonItemAdapter extends BaseAdapter {
+import com.quanleimu.adapter.BXAlphabetSortableAdapter;
 
-	private Context context;
-	private List<? extends Object> list = new ArrayList<Object>();
+public class CommonItemAdapter extends BXAlphabetSortableAdapter {
+
+//	private Context context;
+//	private List<? extends Object> list = new ArrayList<Object>();
 	private Object tag;
 	private boolean hasArrow = true;
 	private int iconId = R.drawable.arrow;
@@ -35,10 +37,10 @@ public class CommonItemAdapter extends BaseAdapter {
 	}
 	
 
-	public CommonItemAdapter(Context context,List<? extends Object> list) {
-		super();
-		this.context = context;
-		this.list = list;
+	public CommonItemAdapter(Context context,List<? extends Object> list, int sortIfMoreThan) {
+		super(context, list, list.size() > sortIfMoreThan);
+//		this.context = context;
+//		this.list = list;
 	}
 	
 	public void setHasArrow(boolean has){
@@ -46,7 +48,8 @@ public class CommonItemAdapter extends BaseAdapter {
 	}
 	
 	public void setList(List<? extends Object> list_){
-		this.list = list_;
+		this.list.clear();
+		this.list.addAll(list_);
 		this.notifyDataSetChanged();
 	}
 	
@@ -79,9 +82,13 @@ public class CommonItemAdapter extends BaseAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		View header = getHeaderIfItIs(position, convertView);
+		if(header != null){
+			return header;
+		}		
 		LayoutInflater inflater = LayoutInflater.from(context);
 		View v = null;
-		if(convertView == null)
+		if(convertView == null || convertView.findViewById(R.id.tvCateName) == null)
 		{
 			v = inflater.inflate(R.layout.item_common, null);
 		}else{
@@ -96,12 +103,19 @@ public class CommonItemAdapter extends BaseAdapter {
 		tvCateName.setText(list.get(position).toString());
 		
 		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
-		if(this.hasArrow){
-			arrow.setVisibility(View.VISIBLE);
-			arrow.setImageResource(iconId);
+		if(this.getItem(position) instanceof BXHeader){
+			arrow.setVisibility(View.GONE);
+			v.setBackgroundResource(R.drawable.alphabetheaderbk);
 		}
 		else{
-			arrow.setVisibility(View.GONE);
+			if(this.hasArrow){
+				arrow.setVisibility(View.VISIBLE);
+				arrow.setImageResource(iconId);
+			}
+			else{
+				arrow.setVisibility(View.GONE);
+			}
+			v.setBackgroundColor(0x00000000);
 		}
 		
 		return v;

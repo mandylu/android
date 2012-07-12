@@ -13,6 +13,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
+import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
 import com.quanleimu.adapter.CheckableAdapter;
 import com.quanleimu.adapter.CheckableAdapter.CheckableItem;
 import android.widget.ListAdapter;
@@ -96,17 +97,19 @@ public class MultiLevelSelectionView extends BaseView {
 				CheckableItem t = new CheckableItem();
 				t.txt = items.get(i).txt;
 				t.checked = false;
+				t.id = items.get(i).id;
 				checkList.add(t);
 			}
-			adapter = new CheckableAdapter(this.getContext(), checkList);
+			adapter = new CheckableAdapter(this.getContext(), checkList, 10);
 		}
 		else{
-			adapter = new CommonItemAdapter(this.getContext(), items);
+			adapter = new CommonItemAdapter(this.getContext(), items, 10);
+//			adapter = new com.quanleimu.adapter.BXAlphabetAdapter(this.getContext(), items);
 		}
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
-				if(position == 0 && items.get(0).txt.equals("全部")){
+				if((position == 1 || position == 0) && items.get(0).txt.equals("全部")){
 					MultiLevelItem nItem = new MultiLevelItem();
 					nItem.id = MultiLevelSelectionView.this.id;
 					nItem.txt = MultiLevelSelectionView.this.title;
@@ -115,10 +118,13 @@ public class MultiLevelSelectionView extends BaseView {
 				}
 				if(hasNextLevel){
 					if(null != m_viewInfoListener){
+						MultiLevelItem item = adapter.getItem(position) instanceof BXPinyinSortItem ? 
+								(MultiLevelItem)((BXPinyinSortItem)adapter.getItem(position)).obj
+								: (MultiLevelItem)adapter.getItem(position);
 						MultiLevelSelectionView nextV = 
 								new MultiLevelSelectionView((BaseActivity)MultiLevelSelectionView.this.getContext(), 
-										items.get(position).
-										id, items.get(position).txt, 
+										item.id, 
+										item.txt, 
 										message,
 										MultiLevelSelectionView.this.remainLevel - 1); 
 						
@@ -126,13 +132,21 @@ public class MultiLevelSelectionView extends BaseView {
 					}
 				}
 				else{
-					CheckableItem item = (CheckableItem)adapter.getItem(position);
-					item.checked = !item.checked;
-					List<CheckableItem>lists = (List<CheckableItem>)((CheckableAdapter)adapter).getList();
-					lists.set(position, item);
-					((CheckableAdapter)adapter).setList(lists);
+					CheckableItem item = adapter.getItem(position) instanceof BXPinyinSortItem ? 
+							(CheckableItem)((BXPinyinSortItem)adapter.getItem(position)).obj
+							: (CheckableItem)adapter.getItem(position);
+
+					((CheckableAdapter)adapter).setItemCheckStatus(position, !item.checked);
+//					item.checked = !item.checked;
+//					List<CheckableItem>lists = (List<CheckableItem>)((CheckableAdapter)adapter).getList();
+//					lists.set(position, item);
+//					((CheckableAdapter)adapter).setList(lists);
+					MultiLevelItem mItem = new MultiLevelItem();
+					mItem.id = item.id;
+					mItem.txt = item.txt;
+
 					if(null != m_viewInfoListener){
-						m_viewInfoListener.onBack(message, items.get(position));
+						m_viewInfoListener.onBack(message, mItem);
 					}
 				}
 			}
