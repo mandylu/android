@@ -136,8 +136,6 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 					box.setButtonDrawable(this.uncheckedResourceId);
 				}
 			}
-			v.setBackgroundColor(0x00000000);
-
 		}
 		return v;
 	}

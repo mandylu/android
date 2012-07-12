@@ -115,7 +115,6 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 			else{
 				arrow.setVisibility(View.GONE);
 			}
-			v.setBackgroundColor(0x00000000);
 		}
 		
 		return v;
