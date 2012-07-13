@@ -96,8 +96,12 @@ public class Util {
 				e.printStackTrace();
 			} finally {
 				try {
-					oos.close();
-					fos.close();
+					if(null != oos){
+						oos.close();
+					}
+					if(null != fos){
+						fos.close();
+					}
 					res = "保存成功";
 				} catch (IOException e) {
 					res = "没有数据";
@@ -130,8 +134,12 @@ public class Util {
 				e.printStackTrace();
 			} finally {
 				try {
-					ois.close();
-					fis.close();
+					if(null != ois){
+						ois.close();
+					}
+					if(null != fis){
+						fis.close();
+					}
 				} catch (Exception e) {
 					obj = null;
 					e.printStackTrace();
@@ -164,8 +172,12 @@ public class Util {
 			e.printStackTrace();
 		} finally {
 			try {
-				oos.close();
-				fos.close();
+				if(null != oos){
+					oos.close();
+				}
+				if(null != fos){
+					fos.close();
+				}
 				res = "保存成功";
 			} catch (IOException e) {
 				res = "没有数据";
@@ -214,8 +226,12 @@ public class Util {
 			e.printStackTrace();
 		} finally {
 			try {
-				ois.close();
-				fis.close();
+				if(null != ois){
+					ois.close();
+				}
+				if(null != fis){
+					fis.close();
+				}
 			} catch (Exception e) {
 				obj = null;
 				e.printStackTrace();
