@@ -28,6 +28,8 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 	private Object tag;
 	private int checkedResourceId = -1;//R.drawable.pic_radio_normal_2x;
 	private int uncheckedResourceId = -1;//R.drawable.pic_radio_selected_2x;
+	private boolean sorted = false;
+	private boolean hasSearchBar = false;
 	
 	private int left = -1, right = -1, top = -1, bottom = -1;
 	
@@ -57,8 +59,13 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 	}
 	
 
-	public CheckableAdapter(Context context,List<? extends CheckableItem> list, int sortIfMoreThan) {
-		super(context, list, list.size() > sortIfMoreThan);
+	public CheckableAdapter(Context context,List<? extends CheckableItem> list, int sortIfMoreThan, boolean hasSearchBar) {
+		super(context, list, list != null && list.size() > sortIfMoreThan);
+		sorted = (list != null && list.size() > sortIfMoreThan);
+		if(sorted && hasSearchBar){
+			this.list.add(0, "placeholder");
+		}
+		this.hasSearchBar = hasSearchBar;
 //		this.context = context;
 //		this.list = list;
 	}
@@ -98,11 +105,17 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		LayoutInflater inflater = LayoutInflater.from(context);
+		
+		if(position == 0 && sorted && hasSearchBar){
+			return inflater.inflate(R.layout.searchbar, null);
+		}
+		
 		View header = getHeaderIfItIs(position, convertView);
 		if(header != null){
 			return header;
 		}
-		LayoutInflater inflater = LayoutInflater.from(context);
+
 		View v = null;
 		if(convertView == null || convertView.findViewById(R.id.checkitem) == null)
 		{

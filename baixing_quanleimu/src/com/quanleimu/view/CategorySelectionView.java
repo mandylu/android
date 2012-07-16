@@ -76,7 +76,8 @@ public class CategorySelectionView extends ListView {
 
 			
 			if(null == secondCateAdapter){
-				secondCateAdapter = new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren(), 0x1FFFFFFF);
+				secondCateAdapter = 
+						new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren(), 0x1FFFFFFF, false);
 			}
 			
 			CategorySelectionView.this.setOnItemClickListener(new AdapterView.OnItemClickListener() {

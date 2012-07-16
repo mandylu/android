@@ -30,8 +30,9 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 		}
 	}
 
-	public class BXPinyinSortItem extends Object {
+	static public class BXPinyinSortItem extends Object {
 		public String pinyin;
+		public String firstChars;
 		public Object obj;
 
 		@Override
@@ -42,6 +43,36 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 
 	private BXAlphabetSortableAdapter() {
 
+	}
+	
+	public void doFilter(String text){
+		if(backupList == null){
+			backupList = new ArrayList<Object>();
+			backupList.addAll(list);
+		}
+		list.clear();
+		
+		for(int i = 0; i < backupList.size(); ++ i){
+			if(backupList.get(i) instanceof BXHeader){
+				list.add(backupList.get(i));
+				if(i > 0){
+					if(list.size() > 1 && list.get(list.size() - 2) instanceof BXHeader){
+						list.remove(list.size() - 2);
+					}
+				}
+				continue;
+			}
+			if(!(backupList.get(i) instanceof BXPinyinSortItem)) continue;
+			
+			BXPinyinSortItem item = (BXPinyinSortItem)backupList.get(i);
+			if(item.firstChars.contains(text) || item.pinyin.contains(text) || item.obj.toString().contains(text)){
+				list.add(item);
+			}
+			if(list.size() > 0 && list.get(list.size() - 1) instanceof BXHeader){
+				list.remove(list.size() - 1);
+			}
+		}
+		this.notifyDataSetChanged();
 	}
 	
 	protected View getHeaderIfItIs(int index,  View convertView){
@@ -62,16 +93,30 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 	}
 
 	protected List<Object> list = new ArrayList<Object>();
+	protected List<Object> backupList = null;
 
 	public BXAlphabetSortableAdapter(Context context, List<? extends Object> list, boolean sort) {
 		super();
+		if(list == null) return;
 		this.context = context;
 		if (!sort) {
 			this.list.addAll(list);
 		} else {
 			for (int i = 0; i < list.size(); ++i) {
 				BXPinyinSortItem item = new BXPinyinSortItem();
-				item.pinyin = list.get(i).toString().equals("全部") ? "#" : BXHanzi2Pinyin.hanziToPinyin(list.get(i).toString());
+				item.pinyin = "";
+				item.firstChars = "";
+				if(list.get(i).toString().equals("全部")){
+					item.pinyin = "#";
+				}
+				else{
+					for(int j = 0; j < list.get(i).toString().length(); ++ j){
+						String py = BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)));
+						item.pinyin += py;
+						item.firstChars += py.charAt(0);
+					}
+				}
+				item.pinyin = item.pinyin.trim();
 				item.obj = list.get(i);
 				this.list.add(item);
 			}
@@ -84,7 +129,7 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 				if (item.pinyin.charAt(0) != prePinyin && item.pinyin.charAt(0) != (char)(prePinyin - ('A' - 'a'))) {
 					prePinyin = item.pinyin.charAt(0);
 					prePinyin = (prePinyin >= 'a' && prePinyin <= 'z') ? (char)(prePinyin + 'A' - 'a') : prePinyin;
-					if(prePinyin >= 'A' && prePinyin <= 'Z'){
+					if((prePinyin >= 'A' && prePinyin <= 'Z') || prePinyin == '#'){
 						BXHeader header = new BXHeader();
 						header.text = String.valueOf(prePinyin);
 						this.list.add(index, header);

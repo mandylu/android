@@ -37,7 +37,7 @@ public class SiftOptionListView extends BaseView {
 		lv = (ListView) findViewById(R.id.lv_test);
 		if(listFilterss != null && listFilterss.size() != 0)
 		{
-			CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), filterLabels, 10);
+			CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), filterLabels, 10, true);
 			adapter.setHasArrow(false);
 			lv.setAdapter(adapter);
 		}

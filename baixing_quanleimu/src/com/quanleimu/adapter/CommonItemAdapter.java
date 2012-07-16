@@ -20,6 +20,8 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 	private boolean hasArrow = true;
 	private int iconId = R.drawable.arrow;
 	private int left = -1, right = -1, top = -1, bottom = -1;
+	private boolean sorted = false;
+	private boolean hasSearchBar = true;
 	
 	public void setPadding(int left, int right, int top, int bottom){
 		this.left = left;
@@ -37,8 +39,13 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 	}
 	
 
-	public CommonItemAdapter(Context context,List<? extends Object> list, int sortIfMoreThan) {
-		super(context, list, list.size() > sortIfMoreThan);
+	public CommonItemAdapter(Context context,List<? extends Object> list, int sortIfMoreThan, boolean hasSearchBar) {
+		super(context, list, list != null && list.size() > sortIfMoreThan);
+		sorted = (list != null && list.size() > sortIfMoreThan);
+		if(sorted && hasSearchBar){
+			this.list.add(0, "placeholder");
+		}
+		this.hasSearchBar = hasSearchBar;
 //		this.context = context;
 //		this.list = list;
 	}
@@ -82,11 +89,17 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
+		LayoutInflater inflater = LayoutInflater.from(context);
+		
+		if(position == 0 && sorted && hasSearchBar){
+			return inflater.inflate(R.layout.searchbar, null);
+		}
+		
 		View header = getHeaderIfItIs(position, convertView);
 		if(header != null){
 			return header;
-		}		
-		LayoutInflater inflater = LayoutInflater.from(context);
+		}				
+		
 		View v = null;
 		if(convertView == null || convertView.findViewById(R.id.tvCateName) == null)
 		{
