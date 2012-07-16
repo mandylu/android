@@ -386,7 +386,14 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			userValidated = true;
 			mobile = user.getPhone();
 			password = user.getPassword();
-
+			String last = (String)Helper.loadDataFromLocate(PostGoodsView.this.getContext(), "lastcategorynames");
+			if(last != null && !last.equals(",")){
+				String[] lasts = last.split(",");
+				if(lasts != null && lasts.length == 2){
+					lastCategoryEnglishName = lasts[0];
+					lastCategoryShowName = lasts[1];
+				}
+			}
 			if((lastCategoryEnglishName == null || lastCategoryEnglishName.equals("")) 
 					&& (categoryEnglishName == null || categoryEnglishName.equals(""))){
 				this.addCategoryItem();
@@ -1068,6 +1075,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			this.categoryEnglishName = backMsg[0];
 			lastCategoryEnglishName = backMsg[0];
 			lastCategoryShowName = backMsg[1];
+			Helper.saveDataToLocate(PostGoodsView.this.getContext(), 
+					"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
+
 			this.usercheck();
 			
 			break;
