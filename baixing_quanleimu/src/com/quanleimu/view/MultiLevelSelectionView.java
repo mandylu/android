@@ -110,6 +110,7 @@ public class MultiLevelSelectionView extends BaseView {
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+				if(adapter.getItem(position) instanceof BXHeader) return;
 				if(position == 0 && (items.size() > 10 
 						&& !(adapter.getItem(0) instanceof BXHeader) && !(adapter.getItem(0) instanceof BXPinyinSortItem))){
 					if(m_viewInfoListener != null){
