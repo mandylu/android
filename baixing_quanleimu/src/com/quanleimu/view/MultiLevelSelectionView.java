@@ -91,6 +91,7 @@ public class MultiLevelSelectionView extends BaseView {
 
 		final ListView lv = (ListView) v.findViewById(R.id.post_other_list);
 		if(lv!=null) listView = lv;
+		lv.setDivider(null);
 
 		final List<CheckableItem> checkList = new ArrayList<CheckableItem>();
 		if(!hasNextLevel){

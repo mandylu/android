@@ -3,10 +3,12 @@
 	  xmlns:android="http://schemas.android.com/apk/res/android"
 	  android:layout_width="fill_parent"
 	  android:layout_height="fill_parent"
-	  android:background = "@drawable/list_selector">
+	  android:orientation="vertical"
+	  >
 	  <RelativeLayout 
 	       android:layout_width="fill_parent" 
-	       android:id="@+id/linearGpsCity" 
+	       android:id="@+id/linearGpsCity"
+	       android:background = "@drawable/list_selector" 
 	       android:layout_height="wrap_content">
 			<TextView 
 				android:textSize="18dip"
@@ -28,4 +30,9 @@
 			    android:src="@drawable/arrow" >
 			</ImageView>
       </RelativeLayout>
+      <TextView
+          android:layout_width="fill_parent"
+          android:layout_height="1dip"
+          android:background="@drawable/list_divider">
+      </TextView>
 </LinearLayout>
