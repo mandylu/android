@@ -647,9 +647,25 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;
 		}
 		case R.id.iv_del:{
-			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
-			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();			
+			new AlertDialog.Builder(GoodDetailView.this.getContext()).setTitle("提醒")
+			.setMessage("是否确定删除")
+			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					// TODO Auto-generated method stub
+					pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
+					pd.setCancelable(true);
+					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();			
+				}
+			})
+			.setNegativeButton(
+		     "取消", new DialogInterface.OnClickListener() {
+				@Override
+				public void onClick(DialogInterface dialog, int which) {
+					dialog.cancel();							
+				}
+			})
+		     .show();
 			break;
 		}
 		}
