@@ -3,8 +3,16 @@ package com.quanleimu.entity;
 import java.util.List;
 
 public class GoodsList {
+	private int count = 0;
 	
-	private int count;
+	public GoodsList(){}
+	
+	public GoodsList(List<GoodsDetail> data__){
+		data = data__;
+		if(null != data)
+			count = data.size();
+	}
+	
 	public int getCount() {
 		return count;
 	}

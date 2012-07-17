@@ -1,7 +1,5 @@
 package com.quanleimu.view;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
@@ -20,7 +18,6 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -29,6 +26,7 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.adapter.GoodsListAdapter;
 public class SearchGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
@@ -51,22 +49,19 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 	public String searchContent = "";
 	public String act_type = "";
 
-//	public GoodsListAdapter commonAdapter = null;
-	public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
-	public List<GoodsDetail> listCommonSearchGoods = new ArrayList<GoodsDetail>();
-	public GoodsList goodsList = new GoodsList();
+//	public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
+//	public List<GoodsDetail> listCommonSearchGoods = new ArrayList<GoodsDetail>();
+//	public GoodsList goodsList = new GoodsList();
+	
+	private GoodsListLoader mListLoader = null;
 
-	public String json = "";
 	public String fields = "";
-	public int startRow = 0;
 
-	public int isFirst = 0;
 	public GoodsListAdapter adapter;
-	public int totalCount = -1;
+	//public int totalCount = -1;
 	
 	private String backPageName = "";
 	private ProgressBar progressBar;
-	private TextView tvAddMore;
 	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
@@ -74,7 +69,13 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		
 		// 参数 用来过滤
 		fields = "";//"mobile,id,link,title,description,date,areaNames,categoryEnglishName,lat,lng,images_big,images_resize180,metaData";
-		
+		String url = "query="
+				+ Communication.urlEncode(URLEncoder
+						.encode("cityEnglishName:"
+								+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
+								+ searchContent));
+        mListLoader = new GoodsListLoader(url, myHandler, fields, null);
+        
 		LayoutParams WClayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
 		// findViewById
@@ -92,31 +93,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
         progressBar.setVisibility(View.GONE);
         
         layout.addView(progressBar, WClayoutParams);  
-        
-        tvAddMore = new TextView(getContext());  
-        tvAddMore.setTextSize(18);
-        tvAddMore.setText("更多...");  
-        tvAddMore.setGravity(Gravity.CENTER_VERTICAL);  
-        layout.addView(tvAddMore, WClayoutParams);  
         layout.setGravity(Gravity.CENTER);  
         
-        tvAddMore.setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				progressBar.setVisibility(View.VISIBLE);
-				tvAddMore.setText("加载中...");
-				
-				//点击获取更多 按钮布局消失
-				isFirst = -1;
-				startRow = listSearchGoods.size();
-				new Thread(new GetGoodsListThread()).start();
-			}
-		});
-
-		listSearchGoods = QuanleimuApplication.getApplication().getListSearchGoods();
-		totalCount = QuanleimuApplication.getApplication().getSearchCount();
-
 		lvSearchResult.setOnScrollListener(this);
 
 		lvSearchResult
@@ -126,23 +104,23 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					public void onItemClick(AdapterView<?> arg0, View arg1,
 							int arg2, long arg3) {
 						int index = arg2 - lvSearchResult.getHeaderViewsCount();
-						if(index < 0 || index > listSearchGoods.size() - 1)
+						if(index < 0 || index > mListLoader.getGoodsList().getData().size() - 1)
 							return;
 
 						if(null != m_viewInfoListener){
 							Bundle bundle = new Bundle();
-//							bundle.putString("backPageName", title);
-//							bundle.putString("detail_type", "searchgoods");
-//							bundle.putInt("detail_pos", arg2);
-							m_viewInfoListener.onNewView(new GoodDetailView(listSearchGoods.get(index), getContext(), bundle));
+							bundle.putString("backPageName", title);
+							bundle.putString("detail_type", "searchgoods");
+							bundle.putInt("detail_pos", arg2);
+							m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, mListLoader, index));
 						}
 					}
 				});
 
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
-		new Thread(new GetGoodsListThread()).start();
-
+		
+		mListLoader.startFetching(true);
 	}
 	
 	public SearchGoodsView(Context context, Bundle bundle){
@@ -184,6 +162,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
 			}
 		}
+		
+		lvSearchResult.setSelection(mListLoader.getSelection());
 	}	
 	
 	@Override
@@ -215,9 +195,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case 1://new
-				goodsList = JsonUtil.getGoodsListFromJson(json);
-				totalCount = goodsList.getCount();
+			case GoodsListLoader.ERROR_FIRST:
+				GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
 				if (goodsList == null || goodsList.getCount() == 0) {
 					if (pd != null) {
@@ -225,9 +204,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					}
 					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
-					listSearchGoods = goodsList.getData();
+					List<GoodsDetail> listSearchGoods = goodsList.getData();
 
-					QuanleimuApplication.getApplication().setSearchCount(totalCount);
+					QuanleimuApplication.getApplication().setSearchCount(listSearchGoods.size());
 
 					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
@@ -238,40 +217,47 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 						pd.dismiss();
 					}
 					
+					mListLoader.setGoodsList(goodsList);
+					mListLoader.setHasMore(true);
+					
 					lvSearchResult.onRefreshComplete();
 				}
 
 				break;
-			case 2:
+			case GoodsListLoader.ERROR_NOMORE:
 				if (pd != null) {
 					pd.dismiss();
 				}
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
 				Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+				
+				mListLoader.setHasMore(false);
 				break;
 				
-			case 3://more
+			case GoodsListLoader.ERROR_MORE:
 				if (pd != null) {
 					pd.dismiss();
 				}
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
-				goodsList = JsonUtil.getGoodsListFromJson(json);
+				
+				GoodsList goodsListMore = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
-				if (goodsList == null || goodsList.getCount() == 0) {
-					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+				if (goodsListMore == null || goodsListMore.getData().size() == 0) {
+					//Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 					
+					mListLoader.setHasMore(false);
 					lvSearchResult.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				} else {
-					listCommonSearchGoods = goodsList.getData();
+					List<GoodsDetail> listCommonSearchGoods = goodsListMore.getData();
 					for (int i = 0; i < listCommonSearchGoods.size(); i++) {
-						listSearchGoods.add(listCommonSearchGoods.get(i));
+						mListLoader.getGoodsList().getData().add(listCommonSearchGoods.get(i));
 					}
-					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
+					QuanleimuApplication.getApplication().setListSearchGoods(mListLoader.getGoodsList().getData());
 
-					adapter.setList(listSearchGoods);
+					adapter.setList(mListLoader.getGoodsList().getData());
 					adapter.notifyDataSetChanged();	
+					
+					mListLoader.setHasMore(true);
 					
 					lvSearchResult.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				}
@@ -281,7 +267,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					pd.dismiss();
 				}
 				progressBar.setVisibility(View.GONE);
-				tvAddMore.setText("更多...");
+
 				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
 				break;
 			}
@@ -289,46 +275,6 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 			super.handleMessage(msg);
 		}
 	};
-
-	class GetGoodsListThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "ad_list";
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("fields=" + URLEncoder.encode(fields));
-			list.add("query="
-					+ Communication.urlEncode(URLEncoder
-							.encode("cityEnglishName:"
-									+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
-									+ searchContent)));
-			list.add("start=" + startRow);
-			list.add("rows=" + 30);
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
-
-				if (json != null) {
-					if (isFirst == -1) {
-						isFirst = 0;
-						myHandler.sendEmptyMessage(3);
-					} else {
-						myHandler.sendEmptyMessage(1);
-					}
-
-				} else {
-					myHandler.sendEmptyMessage(2);
-				}
-			} catch (UnsupportedEncodingException e) {
-			} catch (IOException e) {
-				myHandler.sendEmptyMessage(10);
-			} catch (Communication.BXHttpException e){
-				
-			}
-
-		}
-	}
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
@@ -355,17 +301,11 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 
 	@Override
 	public void onGetMore() {
-		// TODO Auto-generated method stub
-		isFirst = -1;
-		startRow = listSearchGoods.size();
-		new Thread(new GetGoodsListThread()).start();		
+		mListLoader.startFetching(false);
 	}
 
 	@Override
 	public void onRefresh() {
-		// TODO Auto-generated method stub
-		isFirst = 0;
-		startRow = 0;
-		new Thread(new GetGoodsListThread()).start();	
+		mListLoader.startFetching(true);
 	}
 }

@@ -28,6 +28,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -50,12 +51,12 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private final int MCMESSAGE_NETWORKERROR = 10;
 
 	
-	private final int MCMESSAGE_MYPOST_GETMORE_SUCCESS = 11;
-	private final int MCMESSAGE_MYPOST_GETMORE_FAIL = 12;
-	private final int MCMESSAGE_MYHISTORY_GETMORE_SUCCESS = 13;
-	private final int MCMESSAGE_MYHISTORY_GETMORE_FAIL = 14;
-	private final int MCMESSAGE_MYFAV_GETMORE_SUCCESS = 15;
-	private final int MCMESSAGE_MYFAV_GETMORE_FAIL = 16;
+//	private final int MCMESSAGE_MYPOST_GETMORE_SUCCESS = 11;
+//	private final int MCMESSAGE_MYPOST_GETMORE_FAIL = 12;
+//	private final int MCMESSAGE_MYHISTORY_GETMORE_SUCCESS = 13;
+//	private final int MCMESSAGE_MYHISTORY_GETMORE_FAIL = 14;
+//	private final int MCMESSAGE_MYFAV_GETMORE_SUCCESS = 15;
+//	private final int MCMESSAGE_MYFAV_GETMORE_FAIL = 16;
 	
 	private final int MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY = 20;
 	private final int MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY = 21;	
@@ -66,6 +67,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 
 	private List<GoodsDetail> listMyPost = new ArrayList<GoodsDetail>();
 	private List<GoodsDetail> goodsList = new ArrayList<GoodsDetail>();
+	private GoodsListLoader mListLoader = null;
 	public GoodsListAdapter adapter = null;
 	private String mobile;
 	private String json;
@@ -76,7 +78,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private int buttonStatus = -1;//-1:edit 0:finish
 	private View loginItem = null;
 	
-	private boolean loginTried = false;
+	//private boolean loginTried = false;
 	
 	public PersonalCenterView(Context context, Bundle bundle){
 		super(context, bundle);
@@ -102,6 +104,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 						&& user != null && tmpBean.getPhone().equals(user.getPhone()))){
 				adapter.setList(listMyPost);
 				adapter.notifyDataSetChanged();
+				
+				mListLoader.setGoodsList(new GoodsList(listMyPost));
 			}
 			else{
 				user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
@@ -114,9 +118,13 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					mobile = user.getPhone();
 					password = user.getPassword();
 					listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+					
 					if(listMyPost != null){
 						adapter.setList(listMyPost);
+						
+						mListLoader.setGoodsList(new GoodsList(listMyPost));
 					}
+					
 					if((this.bundle != null && bundle.getInt("forceUpdate") == 1) 
 							|| QuanleimuApplication.getApplication().getListMyPost() == null
 							|| QuanleimuApplication.getApplication().getListMyPost().size() == 0){
@@ -125,7 +133,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 						}
 						pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
 						pd.setCancelable(true);
-						new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();
+						
+						new UpdateAndGetmoreThread(currentPage, true);
 					}
 				} else {
 					if(null == loginItem){
@@ -173,6 +182,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
 			
+			mListLoader.setGoodsList(new GoodsList(goodsList));
+			
 //			lvGoodsList.setPullToRefreshEnabled(false);
 		}
 		else{
@@ -193,6 +204,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			goodsList = QuanleimuApplication.getApplication().getListLookHistory();
 			adapter.setList(goodsList);
 			adapter.notifyDataSetChanged();
+			
+			mListLoader.setGoodsList(new GoodsList(goodsList));
 			
 //			lvGoodsList.setPullToRefreshEnabled(false);
 		}
@@ -215,7 +228,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				
 				if(null != detail){
-					GoodDetailView detailView = new GoodDetailView(detail, getContext(), bundle);
+					GoodDetailView detailView = new GoodDetailView(getContext(), bundle, mListLoader, index);
 					detailView.setInfoChangeListener(m_viewInfoListener);
 					m_viewInfoListener.onNewView(detailView);
 				}
@@ -254,6 +267,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
 			}
 		}
+		
+		lvGoodsList.setSelection(mListLoader.getSelection());
 	}	
 	
 	private void init(){
@@ -287,36 +302,35 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		adapter = new GoodsListAdapter(this.getContext(), this.listMyPost);
 		adapter.setMessageOutOnDelete(myHandler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
+		
+		mListLoader = new GoodsListLoader("", myHandler, null, null);
+		mListLoader.setHasMore(false);
 	}
 	
-	class UpdateAndGetmoreThread implements Runnable{
-		private int currentPage = -1;
+	class UpdateAndGetmoreThread{
 		private boolean update = false;
 		
 		public UpdateAndGetmoreThread(int currentPage, boolean update_){
-			this.currentPage = currentPage;
-			this.update = update_;
-		}
-		
-		@Override
-		public void run(){
-			String apiName = "ad_list";
-			ArrayList<String>list = new ArrayList<String>();
-			int msgToSend = -1;
+			update = update_;
+			
+			int msgToSendOnUpdate = -1;
+			int msgToSendOnGetmore = -1;
 			int msgToSendOnFail = -1;
 			
-			boolean needUpdateOrGetmore = true;
+			boolean needUpdate = update;
+			boolean needGetMore = !update;
+			String url = "";
+			
 			if(currentPage == -1){
-				list.add("query=userId:" + user.getId() + " AND status:0");
+				url += ("query=userId:" + user.getId() + " AND status:0");
 				if(update){
-					list.add("start=0");
-					msgToSend = MCMESSAGE_MYPOST_SUCCESS;
+					msgToSendOnUpdate = MCMESSAGE_MYPOST_SUCCESS;
 					msgToSendOnFail = MCMESSAGE_MYPOST_FAIL;
 				}
 //				else{
-//					list.add("start="+PersonalCenterView.this.listMyPost.size());
-//					msgToSend = MCMESSAGE_MYPOST_GETMORE_SUCCESS;
-//					msgToSendOnFail = MCMESSAGE_MYPOST_GETMORE_FAIL;
+//					url += ("start="+PersonalCenterView.this.listMyPost.size());
+//					msgToSendOnGetmore = MCMESSAGE_MYPOST_GETMORE_SUCCESS;
+//					msgToSendOnGetmoreFail = MCMESSAGE_MYPOST_GETMORE_FAIL;
 //				}
 			}
 			else{
@@ -324,74 +338,62 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if(currentPage == 0){
 					details = QuanleimuApplication.getApplication().getListMyStore();
 					if(update){		
-						list.add("start=0");
-						msgToSend = MCMESSAGE_MYFAV_UPDATE_SUCCESS;
+						msgToSendOnUpdate = MCMESSAGE_MYFAV_UPDATE_SUCCESS;
 						msgToSendOnFail = MCMESSAGE_MYFAV_UPDATE_FAIL;
 					}
 //					else{
-//						list.add("start="+PersonalCenterView.this.goodsList.size());
-//						msgToSend = MCMESSAGE_MYFAV_GETMORE_SUCCESS;
-//						msgToSendOnFail = MCMESSAGE_MYFAV_GETMORE_FAIL;						
+//						msgToSendOnGetmore = MCMESSAGE_MYFAV_GETMORE_SUCCESS;
+//						msgToSendOnGetmoreFail = MCMESSAGE_MYFAV_GETMORE_FAIL;						
 //					}
 				}
 				else if(currentPage == 1){
 					details = QuanleimuApplication.getApplication().getListLookHistory();
 					if(update){
-						list.add("start=0");
-						msgToSend = MCMESSAGE_MYHISTORY_UPDATE_SUCCESS;
+						msgToSendOnUpdate = MCMESSAGE_MYHISTORY_UPDATE_SUCCESS;
 						msgToSendOnFail = MCMESSAGE_MYHISTORY_UPDATE_FAIL;	
 					}
 //					else{
-//						list.add("start="+PersonalCenterView.this.goodsList.size());
-//						msgToSend = MCMESSAGE_MYHISTORY_GETMORE_SUCCESS;
-//						msgToSendOnFail = MCMESSAGE_MYHISTORY_GETMORE_FAIL;								
+//						msgToSendOnGetmore = MCMESSAGE_MYHISTORY_GETMORE_SUCCESS;
+//						msgToSendOnGetmoreFail = MCMESSAGE_MYHISTORY_GETMORE_FAIL;								
 //					}
 				}
+				
 				if(details != null && details.size() > 0){
 					String ids = "id:" + details.get(0).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
 					for(int i = 1; i < details.size(); ++ i){
 						ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);  
 					}
-					list.add("query=(" + ids + ")");
+					url += ("query=(" + ids + ")");
 				}
 				else{
-					needUpdateOrGetmore = false;
+					needUpdate = needGetMore = false;
 				}
 			}
 			
-			list.add("rt=1");	
-			list.add("rows=30");
+			url += "&rt=1";	
 			
-			if(needUpdateOrGetmore){
-				String url = Communication.getApiUrl(apiName, list);
-				try {
-					json = Communication.getDataByUrl(url);
-					if (json != null) {
-						myHandler.sendEmptyMessage(msgToSend);
-					} else {
-						myHandler.sendEmptyMessage(msgToSendOnFail);
-					}
-				} catch (UnsupportedEncodingException e) {
-					e.printStackTrace();
-				} catch (IOException e) {
-					e.printStackTrace();
-					myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
-				} catch (Communication.BXHttpException e){
-					
-				}	
+			if(needUpdate || needGetMore){
+				mListLoader.startFetching(needUpdate, msgToSendOnUpdate, msgToSendOnGetmore, msgToSendOnFail);
+			
 			}else{
-				try {
-					Thread.sleep(1000);
-				} catch (InterruptedException e) {
-					// TODO Auto-generated catch block
-					e.printStackTrace();
-				}
-				
-				if(update){
-					myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY);
-				}else{
-					myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY);
-				}
+				(new Thread(){
+					
+					@Override
+					public void run(){
+						try {
+							Thread.sleep(1000);
+						} catch (InterruptedException e) {
+							// TODO Auto-generated catch block
+							e.printStackTrace();
+						}
+						
+						if(update){
+							myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_UPDATE_NOTNECESSARY);
+						}else{
+							myHandler.sendEmptyMessage(MCMESSAGE_MYFAV_GETMORE_NOTNECESSARY);
+						}
+					}
+				}).start();
 			}
 		}
 	}
@@ -763,7 +765,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 
 	@Override
 	public void onRefresh() {
-		new Thread(new UpdateAndGetmoreThread(currentPage, true)).start();		
+		new UpdateAndGetmoreThread(currentPage, true);	
 	}
 
 	@Override

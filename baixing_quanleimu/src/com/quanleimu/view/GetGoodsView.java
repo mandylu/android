@@ -1,11 +1,7 @@
 package com.quanleimu.view;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
-
-import android.graphics.drawable.AnimationDrawable;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -25,8 +21,8 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -38,28 +34,20 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	private PullToRefreshListView lvGoodsList;
 	private ProgressDialog pd;
 	private ProgressBar progressBar;
-	//private LinearLayout loadingLayout;
 
 	private String categoryEnglishName = "";
 	private String siftResult = "";
 
-	private String json = "";
-	private int startRow = 0;
-	//private List<Bitmap> listBm = new ArrayList<Bitmap>();
-	private List<GoodsDetail> listGoods = new ArrayList<GoodsDetail>();
-	private List<GoodsDetail> listCommonGoods = new ArrayList<GoodsDetail>();
-	private GoodsList goodsList = new GoodsList();
 	private GoodsListAdapter adapter;
-	private boolean isFirst = true;
 	private String mUrl = "";
 	
 	private final static int ERROR_FIRST = 0;
 	private final static int ERROR_MORE = 1;
 	private final static int ERROR_NOMORE = 2;
-	
-	//TextView tvAddMore;
 
 	Bundle bundle;
+	
+	private GoodsListLoader goodsListLoader = null;
 	
 	
 	
@@ -77,6 +65,9 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
 			}
 		}
+		
+		lvGoodsList.setSelection(goodsListLoader.getSelection());
+		goodsListLoader.setHandler(myHandler);
 	}
 	
 	@Override
@@ -148,46 +139,8 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
         		new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);
         layout.addView(progressBar, WClayoutParams);  
         layout.setGravity(Gravity.CENTER);  
-//        loadingLayout = new LinearLayout(this.getContext());  
-//        loadingLayout.setBackgroundResource(R.drawable.alpha_bg);
-//        loadingLayout.addView(layout, WClayoutParams);  
-//        loadingLayout.setGravity(Gravity.CENTER); 
-        
-//        tvAddMore.setOnClickListener(new View.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(View v) {
-//				progressBar.setVisibility(View.VISIBLE);
-//				tvAddMore.setText("加载中...");
-//				
-//				//点击获取更多 按钮布局消失
-//				isFirst = false;
-//				startRow = listGoods.size();
-//				new Thread(new GetGoodsListThread()).start();
-//			}
-//		});
-		
-//        lvGoodsList.setDivider(null);
-//		lvGoodsList.addFooterView(loadingLayout);
 		
 		lvGoodsList.setOnScrollListener(this);
-
-		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				
-				int index = arg2 - lvGoodsList.getHeaderViewsCount();
-				if(index < 0 || index > listGoods.size() - 1)
-					return;
-
-				if(GetGoodsView.this.m_viewInfoListener != null){
-					bundle.putSerializable("currentGoodsDetail", listGoods.get(index));
-					bundle.putString("detail_type", "getgoods");
-					m_viewInfoListener.onNewView(new GoodDetailView(listGoods.get(index), getContext(), bundle));
-				}				
-			}
-		});
 
 		pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 		pd.setCancelable(true);
@@ -201,9 +154,26 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " AND status:0";
 		}
+		
+		goodsListLoader = new GoodsListLoader(mUrl, myHandler, null, new GoodsList());
+		goodsListLoader.startFetching(true);
+		
+		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				
+				int index = arg2 - lvGoodsList.getHeaderViewsCount();
+				if(index < 0 || index > goodsListLoader.getGoodsList().getData().size() - 1)
+					return;
 
-		new Thread(new GetGoodsListThread()).start();
-
+				if(GetGoodsView.this.m_viewInfoListener != null){
+					bundle.putSerializable("currentGoodsDetail", goodsListLoader.getGoodsList().getData().get(index));
+					bundle.putString("detail_type", "getgoods");
+					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, goodsListLoader, index));
+				}				
+			}
+		});
 	}
 
 		// 管理线程的Handler
@@ -212,9 +182,10 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case GetGoodsView.ERROR_FIRST:				 
-				goodsList = JsonUtil.getGoodsListFromJson(json);
-				if (goodsList == null || goodsList.getCount() == 0) {
+			case GoodsListLoader.ERROR_FIRST:				 
+				GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
+				goodsListLoader.setGoodsList(goodsList);
+				if (goodsList == null || goodsListLoader.getGoodsList().getCount() == 0) {
 					Message msg1 = Message.obtain();
 					msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
 					Bundle bundle = new Bundle();
@@ -222,20 +193,17 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					msg1.setData(bundle);
 					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 				} else {
-					listGoods = goodsList.getData();
-					QuanleimuApplication.getApplication().setListGoods(listGoods);
+					QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 					
-					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), listGoods);
+					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), goodsListLoader.getGoodsList().getData());
 					lvGoodsList.setAdapter(adapter);
 				}
 				
 				lvGoodsList.onRefreshComplete();
 				
 				break;
-			case GetGoodsView.ERROR_NOMORE:
+			case GoodsListLoader.ERROR_NOMORE:
 				progressBar.setVisibility(View.GONE);
-//				tvAddMore.setText("更多...");
-//				loadingLayout.setVisibility(View.GONE);
 				
 				Message msg1 = Message.obtain();
 				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
@@ -247,13 +215,11 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				
 				break;
-			case GetGoodsView.ERROR_MORE:
+			case GoodsListLoader.ERROR_MORE:
 				progressBar.setVisibility(View.GONE);
-//				tvAddMore.setText("更多...");
-//				loadingLayout.setVisibility(View.GONE);
 				
-				goodsList = JsonUtil.getGoodsListFromJson(json);
-				if (goodsList == null || goodsList.getCount() == 0) {
+				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
+				if (moreGoodsList == null || moreGoodsList.getCount() == 0) {
 					Message msg2 = Message.obtain();
 					msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
 					Bundle bundle1 = new Bundle();
@@ -261,14 +227,14 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					msg2.setData(bundle1);
 					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 				} else {
-					listCommonGoods =  goodsList.getData();
+					List<GoodsDetail> listCommonGoods =  moreGoodsList.getData();
 					for(int i=0;i<listCommonGoods.size();i++)
 					{
-						listGoods.add(listCommonGoods.get(i));
+						goodsListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
 					}
-					QuanleimuApplication.getApplication().setListGoods(listGoods);
+					QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 					
-					adapter.setList(listGoods);
+					adapter.setList(goodsListLoader.getGoodsList().getData());
 					adapter.notifyDataSetChanged();					
 				}
 				
@@ -277,9 +243,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				progressBar.setVisibility(View.GONE);
-//				tvAddMore.setText("更多...");
-//				loadingLayout.setVisibility(View.GONE);
-				
+
 				Message msg2 = Message.obtain();
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
@@ -290,54 +254,9 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				pd.dismiss();
 			}
 			
-//			// 判断总数是不是已经超出当前集合长度
-//			if (goodsList.getCount() > listGoods.size()) {
-//				loadingLayout.setVisibility(View.VISIBLE);
-//			} else {
-//				loadingLayout.setVisibility(View.GONE);
-//			}
-			
 			super.handleMessage(msg);
 		}
 	};
-
-	class GetGoodsListThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "ad_list";
-			ArrayList<String> list = new ArrayList<String>();
-
-//			list.add("fields=" + URLEncoder.encode(fields));
-			list.add(mUrl);
-			list.add("start=" + startRow);
-			list.add("rows=" + 30);
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
-
-				if (json != null) {
-					if (isFirst == false) {
-						//isFirst = 0;
-						myHandler.sendEmptyMessage(GetGoodsView.ERROR_MORE);
-					} else {
-						isFirst = false;
-						myHandler.sendEmptyMessage(GetGoodsView.ERROR_FIRST);
-					}
-
-				} else {
-					myHandler.sendEmptyMessage(GetGoodsView.ERROR_NOMORE);
-				}
-			} catch (UnsupportedEncodingException e) {
-				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (IOException e) {
-				myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (Communication.BXHttpException e){
-				
-			}
-
-		}
-	}
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
@@ -364,17 +283,11 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 
 	@Override
 	public void onGetMore() {
-		// TODO Auto-generated method stub
-		isFirst = false;
-		startRow = listGoods.size();
-		new Thread(new GetGoodsListThread()).start();
+		goodsListLoader.startFetching(false);
 	}
 
 	@Override
 	public void onRefresh() {
-		// TODO Auto-generated method stub
-		isFirst = true;
-		startRow = 0;
-		new Thread(new GetGoodsListThread()).start();		
+		goodsListLoader.startFetching(true);	
 	}
 }

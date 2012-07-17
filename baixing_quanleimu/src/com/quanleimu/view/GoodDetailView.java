@@ -18,7 +18,9 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
+import android.graphics.Canvas;
 import android.graphics.Bitmap.CompressFormat;
+import android.graphics.drawable.AnimationDrawable;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
@@ -29,6 +31,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.MotionEvent;
+import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter; 
@@ -36,6 +39,7 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -46,12 +50,15 @@ import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
+import com.quanleimu.widget.PullableScrollView;
 
 import android.net.Uri;
 import android.content.Intent;
@@ -63,7 +70,7 @@ import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
-public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, View.OnTouchListener*/{
+public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/{
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private int msgRefresh = 5;
@@ -83,6 +90,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	private ImageView iv_call, iv_sms;
 	private TextView txt_phone;
 	
+	private PullableScrollView scrollParent;
+	
 	public GoodsDetail detail = new GoodsDetail();
 	public Gallery glDetail;
 	public List<Bitmap> listBm = new ArrayList<Bitmap>();
@@ -94,7 +103,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private String json = "";
 	
-	private Bundle bundle;
+	private Bundle mBundle;
 	
 	private Bitmap mb_loading = null;
 	
@@ -103,22 +112,32 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private boolean keepSilent = false;
 	
+	private boolean mHasReseted = false;
+	
+	private GoodsListLoader mListLoader;
+	private int mCurIndex = 0;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
 		REQUEST_TYPE_DELETE
 	}
 	
-	public GoodDetailView(GoodsDetail detail, Context content, Bundle bundle){
+	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, int curIndex){
 		super(content, bundle);
-		this.detail = detail;
-		this.bundle = bundle;
+		
+		mListLoader = listLoader;
+		mCurIndex = curIndex;
+		detail = listLoader.getGoodsList().getData().get(curIndex);
+		mBundle = bundle;
+		
 		init();
 	}
 	
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
+		mHasReseted = false;
 		
 		if(null != listUrl && listUrl.size() > 0)
 			SimpleImageLoader.Cancel(listUrl);
@@ -139,6 +158,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		this.keepSilent = true;
 		this.removeTitleControls();
 		super.onPause();
+		
+		mHasReseted = false;
 	}
 	
 	@Override
@@ -184,6 +205,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	@Override
 	protected void onAttachedToWindow(){
+        
 		if(isMyAd()){
 			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
@@ -267,9 +289,24 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		return false;		
 	}
 	
+	private int mLastY = 0;
+	private int mLastExceedingY = 0;
 	public boolean onTouch (View v, MotionEvent event){
+		if(!keepSilent){
+			switch(event.getAction()){
+			case MotionEvent.ACTION_MOVE:
+				
+				break;
+			case MotionEvent.ACTION_CANCEL:
+			case MotionEvent.ACTION_UP:
+				mLastExceedingY = 0;
+				break;
+			}
+		}		
+		
 		return this.keepSilent;
 	}
+
 	
 	protected void init() {
 		
@@ -289,7 +326,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
-		this.addView(v);
+		this.addView(v);		
 		
 		if(detail.getImageList() != null){
 			String b = (detail.getImageList().getResize180()).substring(1, (detail.getImageList().getResize180()).length()-1);
@@ -382,8 +419,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			iv_sms.setOnClickListener(this);
 		} else {
 			rl_phone.setVisibility(View.GONE);
-//			txt_phone.setText("无");
-//			rl_phone.setBackgroundResource(R.drawable.iv_bg_unclickable);
 		}
 		
 		
@@ -414,6 +449,102 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		//the ad is viewed once
         QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
 		
+        scrollParent = (PullableScrollView)v.findViewById(R.id.svDetail);
+        scrollParent.setPullNotifier(this);
+        
+        mListLoader.setSelection(mCurIndex);
+        mListLoader.setHandler(new Handler(){
+				@Override
+				public void handleMessage(Message msg) {
+					switch (msg.what) {
+					case GoodsListLoader.ERROR_FIRST:				 
+						GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+						mListLoader.setGoodsList(goodsList);
+						if (goodsList == null || goodsList.getCount() == 0) {
+							Message msg1 = Message.obtain();
+							msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+							Bundle bundle = new Bundle();
+							bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
+							msg1.setData(bundle);
+							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+						} else {
+							QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
+						}
+						mListLoader.setHasMore(true);
+						
+						break;
+					case GoodsListLoader.ERROR_NOMORE:					
+//						Message msg1 = Message.obtain();
+//						msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+//						Bundle bundle = new Bundle();
+//						bundle.putString("popup_message", "数据下载失败，请稍后重试！");
+//						msg1.setData(bundle);
+//						QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+						
+						ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+						imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+						imageView.setVisibility(View.GONE);
+						
+						TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
+						textView.setText("后面没有啦！");
+						
+						mListLoader.setHasMore(false);
+						
+						break;
+					case GoodsListLoader.ERROR_MORE:	
+						GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+						if (goodsList1 == null || goodsList1.getCount() == 0) {
+							Message msg2 = Message.obtain();
+							msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
+							Bundle bundle1 = new Bundle();
+							bundle1.putString("popup_message", "后面没有啦！");
+							msg2.setData(bundle1);
+							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+						} else {
+							List<GoodsDetail> listCommonGoods =  goodsList1.getData();
+							for(int i=0;i<listCommonGoods.size();i++)
+							{
+								mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
+							}
+							QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());			
+						}
+						mListLoader.setHasMore(true);
+						
+						if(null != m_viewInfoListener){
+							mListLoader.setSelection(mCurIndex+1);
+							m_viewInfoListener.onExit(GoodDetailView.this);
+							m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
+						}
+						
+						break;
+					case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+						Message msg2 = Message.obtain();
+						msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+						QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+						break;
+					}
+					
+					super.handleMessage(msg);
+				}
+			});
+        
+        if(!hasPrev()){
+        	findViewById(R.id.pull_to_prev_image).setVisibility(View.GONE);
+        	findViewById(R.id.pull_to_prev_text).setVisibility(View.GONE);
+        }else{
+        	((TextView)findViewById(R.id.pull_to_prev_text)).setText("上一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex-1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+        }
+        
+        if(!hasNext()){
+        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
+        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
+        }else{
+        	if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
+        		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex+1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+        	}else{
+        		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n【尚未加载，向上拖动然后释放可以加载.】");
+        	}
+        }
 	}
 	
 	
@@ -466,7 +597,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 								case 0:
 									if(null != m_viewInfoListener){
 										m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)GoodDetailView.this.getContext(),
-												bundle, 
+												mBundle, 
 												detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME),
 												detail));			
 									}
@@ -627,7 +758,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		case R.id.jubaolayout:{
 			if(this.m_viewInfoListener != null){
-				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), bundle, true, detail.getValueByKey("id")));
+				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, true, detail.getValueByKey("id")));
 			}
 			break;
 		}
@@ -640,7 +771,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		case R.id.iv_edit:{
 			if(null != m_viewInfoListener){
 				m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)GoodDetailView.this.getContext(),
-						bundle, 
+						mBundle, 
 						detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME),
 						detail));			
 			}
@@ -1095,6 +1226,91 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
     {
         // TODO Auto-generated method stub
         
-    }
+    }	
+
+	@Override
+	public View getHeaderView() {
+		return findViewById(R.id.pull_to_prev_header);
+	}
+
+	@Override
+	public View getFooterView() {
+		return findViewById(R.id.pull_to_next_footer);
+	}
 	
+	@Override
+	public View getContentView() {
+		return findViewById(R.id.llDetail);
+	}
+
+	@Override
+	public void startAnnimation(Animation animation, boolean isHeader) {
+		if(isHeader){
+			findViewById(R.id.pull_to_prev_header).findViewById(R.id.pull_to_prev_image).startAnimation(animation);
+		}else{
+			findViewById(R.id.pull_to_next_footer).findViewById(R.id.pull_to_next_image).startAnimation(animation);
+		}		
+	}
+
+	@Override
+	public void stopAnimation() {
+		findViewById(R.id.pull_to_prev_header).findViewById(R.id.pull_to_prev_image).clearAnimation();
+		findViewById(R.id.pull_to_next_footer).findViewById(R.id.pull_to_next_image).clearAnimation();		
+	}
+
+
+	@Override
+	public void beginLoadingNextView() {
+		if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
+			scrollParent.onNewViewLoaded(false);
+			
+			if(null != m_viewInfoListener){
+				mListLoader.setSelection(mCurIndex+1);
+				m_viewInfoListener.onExit(this);
+				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
+			}
+		}else if(mListLoader.hasMore()){
+			mListLoader.startFetching(false);
+			
+			ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+			imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.loading_flower));
+			((AnimationDrawable)(imageView.getDrawable())).start();
+			
+			TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
+			textView.setText("正在加载更多条目。。。");
+		}		
+	}
+
+	@Override
+	public void beginLoadingPrevView() {
+		if(mCurIndex > 0){
+			scrollParent.onNewViewLoaded(true);
+			
+			if(null != m_viewInfoListener){
+				mListLoader.setSelection(mCurIndex-1);
+				m_viewInfoListener.onExit(this);
+				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex-1));
+			}
+		}else{
+			scrollParent.onNewViewLoaded(true);
+		}	
+	}
+
+	@Override
+	public boolean hasPrev() {
+		if(mCurIndex > 0){
+			return true;
+		}
+		
+		return false;
+	}
+
+	@Override
+	public boolean hasNext() {
+		if(mListLoader.hasMore() || mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
+			return true;
+		}
+		
+		return false;
+	}
 }
