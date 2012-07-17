@@ -209,6 +209,7 @@ public class MultiLevelSelectionView extends BaseView {
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_title = this.title;
+		title.m_leftActionHint = "返回";
 //		title.m_leftActionHint = "发布";
 //		if(!singleSelection){
 //			title.m_rightActionHint = "完成";
