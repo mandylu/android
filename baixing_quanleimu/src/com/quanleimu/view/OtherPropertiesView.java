@@ -65,7 +65,8 @@ public class OtherPropertiesView extends BaseView {
 		this.addView(v);
 
 		ListView lv = (ListView) v.findViewById(R.id.post_other_list);
-		final CheckableAdapter adapter = new CheckableAdapter(this.getContext(), others, 10, true);
+		lv.setDivider(null);
+		final CheckableAdapter adapter = new CheckableAdapter(this.getContext(), others, 0x1FFFFFFF, false);
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {

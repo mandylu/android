@@ -71,6 +71,7 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 	}
 		
 	public void setList(List<? extends CheckableItem> list_){
+		this.list.clear();
 		this.list.addAll(list_);
 		this.notifyDataSetChanged();
 	}
