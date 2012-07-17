@@ -57,6 +57,7 @@ public class SelectionSearchView extends BaseView implements View.OnClickListene
 
 		
 		lvSearchResult = (ListView) findViewById(R.id.lvSearchHistory);
+		lvSearchResult.setDivider(null);
 		lvSearchResult.setOnItemClickListener(new OnItemClickListener(){
 			
 			@Override
