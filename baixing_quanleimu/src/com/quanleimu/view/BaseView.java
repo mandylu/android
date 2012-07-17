@@ -54,6 +54,7 @@ public class BaseView extends LinearLayout{
 	};
 	
 	protected ProgressDialog pd;
+	protected boolean isActive = true;
 	
 	protected ViewInfoListener m_viewInfoListener = null;	
 	public void setInfoChangeListener(ViewInfoListener listener){m_viewInfoListener = listener;};
@@ -63,9 +64,9 @@ public class BaseView extends LinearLayout{
 	
 	public Bundle extracBundle(){return new Bundle();}//return a bundle that could be used to re-build the very BaseView
 	
-	public void onDestroy(){}//called before destruction
-	public void onPause(){}//called before put into stack
-	public void onResume(){}
+	public void onDestroy(){isActive = false;}//called before destruction
+	public void onPause(){isActive = false;}//called before put into stack
+	public void onResume(){isActive = true;}
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {}
 	

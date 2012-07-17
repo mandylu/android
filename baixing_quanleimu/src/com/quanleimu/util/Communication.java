@@ -95,7 +95,8 @@ public class Communication implements Comparator<String> {
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("adIds=" + QuanleimuApplication.ads_viewed);
+		if(null != QuanleimuApplication.ads_viewed && QuanleimuApplication.ads_viewed.length() > 0)
+			list.add("adIds=" + QuanleimuApplication.ads_viewed);
 		
 		Collections.sort(list, COMPARATOR);
 

@@ -70,8 +70,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	private GoodsListLoader mListLoader = null;
 	public GoodsListAdapter adapter = null;
 	private String mobile;
-	private String json;
 	private String password;
+	private String json;
 	UserBean user;
 	private int currentPage = -1;//-1:mypost, 0:myfav, 1:history
 	private Bundle bundle;
@@ -87,6 +87,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 	}
 
 	private void rebuildPage(boolean onResult){
+		if(!super.isActive)
+			return;
+		
 		LinearLayout lView = (LinearLayout)this.findViewById(R.id.linearListView);
 		
 		if(-1 == currentPage){
@@ -253,6 +256,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			adapter.notifyDataSetChanged();
 		}
 		buttonStatus = -1;
+		
+		super.onPause();
 	}
 
 	@Override
@@ -269,6 +274,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		}
 		
 		lvGoodsList.setSelection(mListLoader.getSelection());
+		
+		super.onResume();
 	}	
 	
 	private void init(){
@@ -332,6 +339,8 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 //					msgToSendOnGetmore = MCMESSAGE_MYPOST_GETMORE_SUCCESS;
 //					msgToSendOnGetmoreFail = MCMESSAGE_MYPOST_GETMORE_FAIL;
 //				}
+				
+				mListLoader.setRows(listMyPost.size() + 30);
 			}
 			else{
 				List<GoodsDetail> details = null;
@@ -364,6 +373,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 						ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);  
 					}
 					url += ("query=(" + ids + ")");
+					mListLoader.setRows(details.size());
 				}
 				else{
 					needUpdate = needGetMore = false;
@@ -371,6 +381,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			}
 			
 			url += "&rt=1";	
+			mListLoader.setUrl(url);
 			
 			if(needUpdate || needGetMore){
 				mListLoader.startFetching(needUpdate, msgToSendOnUpdate, msgToSendOnGetmore, msgToSendOnFail);
@@ -406,7 +417,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if (pd != null) {
 					pd.dismiss();
 				}
-				GoodsList gl = JsonUtil.getGoodsListFromJson(json); 
+				GoodsList gl = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson()); 
 				if (gl == null || gl.getCount() == 0) {
 //					Toast.makeText(PersonalCenterView.this.getContext(), "您尚未发布信息，", 0).show();
 //					TODO:how to check if delay occurred or there's really no info
@@ -416,6 +427,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					listMyPost = gl.getData();
 				}
 				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				//Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyPost", goodsList);
 				rebuildPage(true);
 				lvGoodsList.onRefreshComplete();
 				break;
@@ -440,9 +452,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if (pd != null) {
 					pd.dismiss();
 				}
-				GoodsList glFav = JsonUtil.getGoodsListFromJson(json); 
+				GoodsList glFav = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson()); 
 				if (glFav != null && glFav.getCount() > 0) {
 					QuanleimuApplication.getApplication().setListMyStore(glFav.getData());
+					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
 					rebuildPage(true);
 				}
 				
@@ -472,9 +485,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					pd.dismiss();
 				}
 				
-				GoodsList glHistory = JsonUtil.getGoodsListFromJson(json); 
+				GoodsList glHistory = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson()); 
 				if (glHistory != null && glHistory.getCount() > 0) {
 					QuanleimuApplication.getApplication().setListLookHistory(glHistory.getData());
+					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
 					rebuildPage(true);
 				}	
 				
@@ -549,8 +563,13 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				if(PersonalCenterView.this.currentPage != -1){
 					if(null == goodsList) break;
 					goodsList.clear();
-					QuanleimuApplication.getApplication().setListMyStore(goodsList);
-					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+					if(PersonalCenterView.this.currentPage == 0){
+						QuanleimuApplication.getApplication().setListMyStore(goodsList);
+						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
+					}else{
+						QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+						Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);						
+					}
 					adapter.setList(goodsList);
 					adapter.notifyDataSetChanged();
 					
