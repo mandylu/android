@@ -127,6 +127,9 @@ public class SelectionSearchView extends BaseView implements View.OnClickListene
 		switch(v.getId())
 		{
 			case R.id.btnCancel:
+				if(m_viewInfoListener != null){
+					m_viewInfoListener.onBack();
+				}
 				break;
 		}
 	}
