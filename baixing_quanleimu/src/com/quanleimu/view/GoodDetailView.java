@@ -457,7 +457,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				@Override
 				public void handleMessage(Message msg) {
 					switch (msg.what) {
-					case GoodsListLoader.ERROR_FIRST:				 
+					case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
 						GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 						mListLoader.setGoodsList(goodsList);
 						if (goodsList == null || goodsList.getCount() == 0) {
@@ -473,7 +473,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						mListLoader.setHasMore(true);
 						
 						break;
-					case GoodsListLoader.ERROR_NOMORE:					
+					case GoodsListLoader.MSG_FINISH_GET_MORE:					
 //						Message msg1 = Message.obtain();
 //						msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
 //						Bundle bundle = new Bundle();
@@ -491,7 +491,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						mListLoader.setHasMore(false);
 						
 						break;
-					case GoodsListLoader.ERROR_MORE:	
+					case GoodsListLoader.MSG_NO_MORE:	
 						GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 						if (goodsList1 == null || goodsList1.getCount() == 0) {
 							Message msg2 = Message.obtain();

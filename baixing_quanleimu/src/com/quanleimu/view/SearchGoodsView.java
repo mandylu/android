@@ -195,7 +195,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case GoodsListLoader.ERROR_FIRST:
+			case GoodsListLoader.MSG_FINISH_GET_FIRST:
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
 				if (goodsList == null || goodsList.getCount() == 0) {
@@ -224,7 +224,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				}
 
 				break;
-			case GoodsListLoader.ERROR_NOMORE:
+			case GoodsListLoader.MSG_NO_MORE:
 				if (pd != null) {
 					pd.dismiss();
 				}
@@ -234,7 +234,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				mListLoader.setHasMore(false);
 				break;
 				
-			case GoodsListLoader.ERROR_MORE:
+			case GoodsListLoader.MSG_FINISH_GET_MORE:
 				if (pd != null) {
 					pd.dismiss();
 				}

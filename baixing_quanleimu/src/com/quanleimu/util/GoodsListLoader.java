@@ -22,9 +22,10 @@ public class GoodsListLoader {
 	private static String mLastJson = null;
 	
 	
-	public final static int ERROR_FIRST = 0;
-	public final static int ERROR_MORE = 1;
-	public final static int ERROR_NOMORE = 2;
+	public final static int MSG_FINISH_GET_FIRST = 0;
+	public final static int MSG_FINISH_GET_MORE = 1;
+	public final static int MSG_NO_MORE = 2;
+	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
 	
 	public GoodsListLoader(String url, Handler handler, String fields, GoodsList goodsList){
 		mUrl = url;
@@ -89,22 +90,22 @@ public class GoodsListLoader {
 		new Thread(new GetmGoodsListThread()).start();
 	}	
 	
-	public void startFetching(boolean isFirst, int errFirst, int errMore, int errNoMore){
+	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore){
 		mIsFirst = isFirst;
-		new Thread(new GetmGoodsListThread(errFirst, errMore, errNoMore)).start();		
+		new Thread(new GetmGoodsListThread(msgGotFirst, msgGotMore, msgNoMore)).start();		
 	}
 	
 	class GetmGoodsListThread implements Runnable {
-		private int errorFirst = GoodsListLoader.ERROR_FIRST;
-		private int errorMore = GoodsListLoader.ERROR_MORE;
-		private int errorNoMore = GoodsListLoader.ERROR_NOMORE;
+		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
+		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
+		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
 		
 		GetmGoodsListThread(){}
 		
 		GetmGoodsListThread(int errFirst, int errMore, int errNoMore){
-			errorFirst = errFirst;
-			errorMore = errMore;
-			errorNoMore = errNoMore;
+			msgFirst = errFirst;
+			msgMore = errMore;
+			msgNoMore = errNoMore;
 		}
 		
 		@Override
@@ -126,22 +127,22 @@ public class GoodsListLoader {
 
 				if (mLastJson != null) {
 					if (!mIsFirst) {
-						mHandler.sendEmptyMessage(errorMore);
+						mHandler.sendEmptyMessage(msgMore);
 					} else {
 						mIsFirst = false;
-						mHandler.sendEmptyMessage(errorFirst);
+						mHandler.sendEmptyMessage(msgFirst);
 					}
 
 				} else {
-					mHandler.sendEmptyMessage(errorNoMore);
+					mHandler.sendEmptyMessage(msgNoMore);
 				}
 			} catch (UnsupportedEncodingException e) {
-				mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
 				mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (Communication.BXHttpException e){
 				
 			}
+			mHandler.sendEmptyMessage(MSG_EXCEPTION);
 		}
 	}
 }

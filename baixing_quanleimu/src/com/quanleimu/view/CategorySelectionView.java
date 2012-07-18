@@ -119,6 +119,7 @@ public class CategorySelectionView extends ListView {
 			}
 			
 			CategorySelectionView.this.setAdapter(secondCateAdapter);
+			CategorySelectionView.this.setDivider(null);
 			CategorySelectionView.this.curLevel = ECATE_LEVEL.ECATE_LEVEL_SUB;
 			
 			if(null != CategorySelectionView.this.selectionListener){
@@ -210,7 +211,10 @@ public class CategorySelectionView extends ListView {
 		} else {			
 			if(allCateAdapter == null){
 				allCateAdapter = new MainCateAdapter(getContext(), allCateList, firstItemOverlap);
-				this.setAdapter(allCateAdapter);	
+				this.setAdapter(allCateAdapter);
+				Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);
+				this.setDivider(divider);
+				this.setDividerHeight(1);
 			}
 			else{
 				allCateAdapter.setList(allCateList);
@@ -226,6 +230,10 @@ public class CategorySelectionView extends ListView {
 		if(curLevel == ECATE_LEVEL.ECATE_LEVEL_SUB){
 			this.setOnItemClickListener(new MainCateItemClickListener());
 			this.setAdapter(allCateAdapter);
+			Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);
+			this.setDivider(divider);
+			this.setDividerHeight(1);
+
 			curLevel = ECATE_LEVEL.ECATE_LEVEL_MAIN; 			
 			return true;
 		}

@@ -182,7 +182,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
-			case GoodsListLoader.ERROR_FIRST:				 
+			case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 				goodsListLoader.setGoodsList(goodsList);
 				if (goodsList == null || goodsListLoader.getGoodsList().getCount() == 0) {
@@ -202,7 +202,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				lvGoodsList.onRefreshComplete();
 				
 				break;
-			case GoodsListLoader.ERROR_NOMORE:
+			case GoodsListLoader.MSG_NO_MORE:
 				progressBar.setVisibility(View.GONE);
 				
 				Message msg1 = Message.obtain();
@@ -215,7 +215,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				
 				break;
-			case GoodsListLoader.ERROR_MORE:
+			case GoodsListLoader.MSG_FINISH_GET_MORE:
 				progressBar.setVisibility(View.GONE);
 				
 				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
