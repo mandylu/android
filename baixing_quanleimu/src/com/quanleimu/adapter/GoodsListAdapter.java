@@ -9,7 +9,9 @@ import java.util.Locale;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.os.Debug;
 import android.os.Message;
+import android.text.TextPaint;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -33,16 +35,14 @@ import android.database.DataSetObserver;
 public class GoodsListAdapter extends BaseAdapter {
 
 	private Context context;
-	private TextView tvDes, tvPrice, tvDateAndAddress;
-	private ImageView ivInfo;
 	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
-	private Button btnDelete;
 	private boolean hasDelBtn = false;
 	private Bitmap defaultBk2;
 //	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
 	private boolean uiHold = false;
+	private RelativeLayout.LayoutParams lp = null;
 	
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
@@ -77,6 +77,28 @@ public class GoodsListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
+		int type = Util.getWidthByContext(context);
+		
+		switch (type) {
+		case 240:
+			lp = new RelativeLayout.LayoutParams(45, 45);
+			break;
+		case 320:
+			lp = new RelativeLayout.LayoutParams(60, 60);
+			break;
+		case 480:
+			lp = new RelativeLayout.LayoutParams(90, 90);
+			break;
+		case 540:
+			lp = new RelativeLayout.LayoutParams(100, 100);
+			break;
+		case 640:
+			lp = new RelativeLayout.LayoutParams(120, 120);
+			break;
+		default:
+			 lp= new RelativeLayout.LayoutParams(140,140);
+			break;
+		}
 	}
 
 	@Override
@@ -97,6 +119,14 @@ public class GoodsListAdapter extends BaseAdapter {
 		return position;
 	}
 	
+	static class ViewHolder{
+		TextView tvDes;
+		TextView tvPrice;
+		TextView tvDateAndAddress;
+		Button btnDelete;
+		ImageView ivInfo;
+	}
+	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
 		if(list == null || 0 == list.size()){
@@ -110,65 +140,41 @@ public class GoodsListAdapter extends BaseAdapter {
 			
 			return v;
 		}else{
-			LayoutInflater inflater = LayoutInflater.from(context);
+			ViewHolder holder;
 			View v = convertView;
-			if(v == null || null == v.findViewById(R.id.tvDes)){
+			if(v == null || v.getTag() == null || !(v.getTag() instanceof ViewHolder)){
+				LayoutInflater inflater = LayoutInflater.from(context);
 				v = inflater.inflate(R.layout.item_goodslist, null);
-			}			
-	
-			tvDes = (TextView) v.findViewById(R.id.tvDes);
-			tvPrice = (TextView) v.findViewById(R.id.tvPrice);
-	//		tvPrice.setTextColor(Color.RED);
-			tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
-	//		tvDateAndAddress.setTextColor(R.color.hui);
-			btnDelete = (Button) v.findViewById(R.id.btnDelete);
-	
-			if (!hasDelBtn) {
-				btnDelete.setVisibility(View.GONE);
-			} 
+				holder = new ViewHolder();
+				holder.tvDes = (TextView) v.findViewById(R.id.tvDes);
+				holder.tvPrice = (TextView) v.findViewById(R.id.tvPrice);
+				holder.tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
+				holder.btnDelete = (Button) v.findViewById(R.id.btnDelete);
+				holder.ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+				v.setTag(holder);
+			}
 			else{
-				btnDelete.setVisibility(View.VISIBLE);
+				holder = (ViewHolder)v.getTag();
 			}
 	
-//	        if(null == loadingBK){
-//	        	loadingBK = (AnimationDrawable)(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-//	        }
+			if (!hasDelBtn) {
+				holder.btnDelete.setVisibility(View.GONE);
+			} 
+			else{
+				holder.btnDelete.setVisibility(View.VISIBLE);
+			}
+	
 			if(null == defaultBk2){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
 				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.home_bg_thumb_2x, o);
-	//			defaultBk2 = Helper.toRoundCorner(tmb1, 10);
-	//			defaultBk2 = Helper.addBorder(tmb1, 1);
-	//			tmb1.recycle();
 				defaultBk2 = tmb1;
 			}
-			int type = Util.getWidthByContext(context);
-			RelativeLayout.LayoutParams lp = null;
-			switch (type) {
-			case 240:
-				lp = new RelativeLayout.LayoutParams(45, 45);
-				break;
-			case 320:
-				lp = new RelativeLayout.LayoutParams(60, 60);
-				break;
-			case 480:
-				lp = new RelativeLayout.LayoutParams(90, 90);
-				break;
-			case 540:
-				lp = new RelativeLayout.LayoutParams(100, 100);
-				break;
-			case 640:
-				lp = new RelativeLayout.LayoutParams(120, 120);
-				break;
-			default:
-				 lp= new RelativeLayout.LayoutParams(140,140);
-				break;
-			}
-			ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
-			ivInfo.setScaleType(ImageView.ScaleType.CENTER);
+			
+			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER);
 				
 			if(QuanleimuApplication.isTextMode()){
-				ivInfo.setVisibility(View.GONE);
+				holder.ivInfo.setVisibility(View.GONE);
 			}
 			
 			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
@@ -177,9 +183,9 @@ public class GoodsListAdapter extends BaseAdapter {
 				List<String> listUrlsToCancel = new ArrayList<String>();
 				
 				String strTag = null;
-				if(null != ivInfo.getTag()) strTag = ivInfo.getTag().toString();
+				if(null != holder.ivInfo.getTag()) strTag = holder.ivInfo.getTag().toString();
 				
-				ivInfo.setLayoutParams(lp);
+				holder.ivInfo.setLayoutParams(lp);
 				
 				if (list.get(position).getImageList() == null
 						|| list.get(position).getImageList().equals("")
@@ -190,13 +196,9 @@ public class GoodsListAdapter extends BaseAdapter {
 					if(null != strTag && strTag.length() > 0)
 						listUrlsToCancel.add(strTag);
 					
-					ivInfo.setTag("");
-					ivInfo.setImageBitmap(defaultBk2);		
+					holder.ivInfo.setTag("");
+					holder.ivInfo.setImageBitmap(defaultBk2);		
 				} else {
-		//			if (isConnect == 0) {
-		//				ivInfo.setImageBitmap(defaultBk2);
-		//			}
-		//			else{
 						String b = (list.get(position).getImageList().getResize180())
 						.substring(1, (list.get(position).getImageList()
 								.getResize180()).length() - 1);
@@ -209,17 +211,17 @@ public class GoodsListAdapter extends BaseAdapter {
 								if(null != v.getTag() && v.getTag().toString().length() > 0)
 									listUrlsToCancel.add(v.getTag().toString());
 								
-								ivInfo.setTag("");
-								ivInfo.setImageBitmap(defaultBk2);
+								holder.ivInfo.setTag("");
+								holder.ivInfo.setImageBitmap(defaultBk2);
 	//							ivInfo.invalidate();
 							} else {
 								
 								if(null != strTag && strTag.length() > 0 && !strTag.equals(c[0]))
 									listUrlsToCancel.add(strTag);
 								
-								ivInfo.setTag(c[0]);
-								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-								SimpleImageLoader.showImg(ivInfo, c[0], this.context);
+								holder.ivInfo.setTag(c[0]);
+								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
+								SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context);
 							}
 						} else {
 							if (b == null || b.equals("")) {
@@ -227,16 +229,16 @@ public class GoodsListAdapter extends BaseAdapter {
 								if(null != strTag && strTag.length() > 0)
 									listUrlsToCancel.add(strTag);
 								
-								ivInfo.setTag("");
-								ivInfo.setImageBitmap(defaultBk2);
+								holder.ivInfo.setTag("");
+								holder.ivInfo.setImageBitmap(defaultBk2);
 							} else {
 								
 								if(null != strTag && strTag.length() > 0 && !strTag.equals(b))
 									listUrlsToCancel.add(strTag);
 								
-								ivInfo.setTag(b);
-								ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-								SimpleImageLoader.showImg(ivInfo, b, this.context);
+								holder.ivInfo.setTag(b);
+								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
+								SimpleImageLoader.showImg(holder.ivInfo, b, this.context);
 							}
 						}
 		//			}
@@ -248,20 +250,22 @@ public class GoodsListAdapter extends BaseAdapter {
 					SimpleImageLoader.Cancel(listUrlsToCancel);
 				}
 			}
-			String price = "";
-			try {
-				price = list.get(position).getMetaValueByKey("价格") + "";
-			} catch (Exception e) {
-				price = "";
-			}
-			if (price.equals("null") || price.equals("")) {
-				tvPrice.setVisibility(View.GONE);
+			String price = list.get(position).getMetaValueByKey("价格");
+			if (price == null || price.equals("")) {
+				holder.tvPrice.setVisibility(View.GONE);
 			} else {
-				tvPrice.setVisibility(View.VISIBLE);
-				tvPrice.setText(price);
+				holder.tvPrice.setVisibility(View.VISIBLE);
+				holder.tvPrice.setText(price);
 			}
-			tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-			tvDes.setTypeface(null, Typeface.BOLD);
+//			String title = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
+//			TextPaint tp = holder.tvDes.getPaint();
+//			int chars = tp.breakText(title, true, holder.tvDes.getWidth(), null);
+//			if(chars < title.length()){
+//				title = title.substring(0, chars);
+//			}
+			holder.tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+//			holder.tvDes.setText(title);
+			holder.tvDes.setTypeface(null, Typeface.BOLD);
 	
 			String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
 			if(dateV != null && !dateV.equals(""))
@@ -273,12 +277,12 @@ public class GoodsListAdapter extends BaseAdapter {
 				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				if(areaV != null && !areaV.equals(""))
 				{
-					tvDateAndAddress.setText(df.format(date) + " "
+					holder.tvDateAndAddress.setText(df.format(date) + " "
 							+ areaV);
 				}
 				else
 				{
-					tvDateAndAddress.setText(df.format(date));
+					holder.tvDateAndAddress.setText(df.format(date));
 				}
 			}
 			else
@@ -286,15 +290,15 @@ public class GoodsListAdapter extends BaseAdapter {
 				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				if(areaV != null && !areaV.equals(""))
 				{
-					tvDateAndAddress.setText(areaV);
+					holder.tvDateAndAddress.setText(areaV);
 				}
 				else
 				{
-					tvDateAndAddress.setVisibility(View.GONE);
+					holder.tvDateAndAddress.setVisibility(View.GONE);
 				}
 			}
 	
-			btnDelete.setOnClickListener(new View.OnClickListener() {
+			holder.btnDelete.setOnClickListener(new View.OnClickListener() {
 	
 				@Override
 				public void onClick(View v) {

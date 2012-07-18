@@ -12,6 +12,7 @@ import android.widget.TextView;
 import android.widget.CheckBox;
 import com.quanleimu.adapter.BXAlphabetSortableAdapter;
 import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
+import com.quanleimu.adapter.CommonItemAdapter.ViewHolder;
 
 public class CheckableAdapter extends BXAlphabetSortableAdapter {
 	public static class CheckableItem extends Object{
@@ -103,6 +104,11 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 		this.checkedResourceId = checkedId;
 		this.uncheckedResourceId = uncheckedId;
 	}
+	
+	class ViewHolder{
+		TextView tvCateName;
+		CheckBox box;
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
@@ -118,37 +124,34 @@ public class CheckableAdapter extends BXAlphabetSortableAdapter {
 		}
 
 		View v = null;
-		if(convertView == null || convertView.findViewById(R.id.checkitem) == null)
+		ViewHolder holder;
+		if(convertView == null || convertView.getTag() == null || !(convertView.getTag() instanceof ViewHolder))
 		{
 			v = inflater.inflate(R.layout.item_text_checkbox, null);
+			holder = new ViewHolder();
+			holder.tvCateName = (TextView)v.findViewById(R.id.checktext);
+			holder.box = (CheckBox)v.findViewById(R.id.checkitem);
+			v.setTag(holder);
 		}else{
 			v = (View)convertView; 
+			holder = (ViewHolder)v.getTag();
 		}
 		
 		if(left >= 0 && right >= 0 && top >= 0 && bottom >= 0){
 			v.setPadding(left, top, right, bottom);
 		}
 		
-		TextView tvCateName = (TextView)v.findViewById(R.id.checktext);
-		tvCateName.setText(list.get(position).toString());
+		holder.tvCateName.setText(list.get(position).toString());
 		
-		CheckBox box = (CheckBox)v.findViewById(R.id.checkitem);
-		if(this.getItem(position) instanceof BXHeader){
-			box.setVisibility(View.GONE);
-			v.setBackgroundResource(R.drawable.alphabetheaderbk);
-		}
-		else{
-			box.setVisibility(View.VISIBLE);
-			CheckableItem item = (list.get(position) instanceof BXPinyinSortItem) ? 
-					(CheckableItem)((BXPinyinSortItem)list.get(position)).obj : (CheckableItem)list.get(position);
-			box.setChecked(item.checked);
-			if(this.checkedResourceId > 0 && this.uncheckedResourceId > 0){
-				if(item.checked){
-					box.setButtonDrawable(this.checkedResourceId);
-				}
-				else{
-					box.setButtonDrawable(this.uncheckedResourceId);
-				}
+		CheckableItem item = (list.get(position) instanceof BXPinyinSortItem) ? 
+				(CheckableItem)((BXPinyinSortItem)list.get(position)).obj : (CheckableItem)list.get(position);
+		holder.box.setChecked(item.checked);
+		if(this.checkedResourceId > 0 && this.uncheckedResourceId > 0){
+			if(item.checked){
+				holder.box.setButtonDrawable(this.checkedResourceId);
+			}
+			else{
+				holder.box.setButtonDrawable(this.uncheckedResourceId);
 			}
 		}
 		return v;

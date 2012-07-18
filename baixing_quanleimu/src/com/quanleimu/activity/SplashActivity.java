@@ -198,7 +198,6 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 						Util.saveDataToLocate(SplashActivity.this, "saveFirstStepCate", postMu);
 	
 				}catch(ClassNotFoundException e){
-					System.out.println("类目列表数据转存不能转换成类目表！");
 				}catch (IOException e) {
 					// TODO Auto-generated catch block
 					valid = false;
@@ -213,7 +212,6 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 							is.close();
 						}
 					}catch(Exception e){
-						System.out.println("类目列表数据转存失败！");
 					}
 				}
 			}
@@ -225,7 +223,6 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 					AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
 					
 					if (allCates == null) {
-						System.out.println("类目列表数据有误！");
 					} else {
 						myApp.setListFirst(allCates.getChildren());
 					}
@@ -254,7 +251,6 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 					cityList = JsonUtil.parseCityListFromJson((content));
 					if (cityList == null || cityList.getListDetails() == null
 							|| cityList.getListDetails().size() == 0) {
-						System.out.println("无城市列表集合");
 					} else {
 						myApp.setListCityDetails(cityList.getListDetails());
 						

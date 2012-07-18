@@ -9,7 +9,6 @@ public class BXStartupIntentReceiver extends BroadcastReceiver {
 	public void onReceive(Context context, Intent intent) {
 		if (intent.getAction() != null
 				&& intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-			System.out.println("in onReceive of BXStartupIntentReceiver");
 			Intent serviceIntent = new Intent(context,
 					BXNotificationService.class);
 			context.startService(serviceIntent);

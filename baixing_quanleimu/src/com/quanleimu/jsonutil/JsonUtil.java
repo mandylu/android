@@ -176,9 +176,7 @@ public class JsonUtil {
 		GoodsList goodsList = new GoodsList();
 		JSONObject jsonObj;
 		try {
-			System.out.println("jsonData------------------->"+jsonData);
 			jsonObj = new JSONObject(jsonData);
-			System.out.println("jsonObj------------------->"+jsonObj);
 			goodsList.setCount(jsonObj.getInt("count"));
 			List<GoodsDetail> list = new ArrayList<GoodsDetail>();
 			JSONArray jsonArray = new JSONArray();

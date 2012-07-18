@@ -308,11 +308,9 @@ public class SearchView extends BaseView implements View.OnClickListener{
 			list.add("rows=" + 30);
 
 			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url ------ >" + url);
 			try {
 				json = Communication.getDataByUrl(url);
 
-				System.out.println("json --- >" + json);
 				if (json != null) {
 					myHandler.sendEmptyMessage(1);
 

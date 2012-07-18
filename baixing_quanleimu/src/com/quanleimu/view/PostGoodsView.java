@@ -586,7 +586,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		else if (check2()) {
 			//循环发布需提交的数据集合
 			extractInputData();
-			System.out.println("postMap---？"+postMap);
 			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 			pd.setCancelable(true);
 			new Thread(new UpdateThread()).start();
@@ -798,7 +797,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}
 			//发布图片
 			for (int i = 0; i < bitmap_url.size(); i++) {
-					//System.out.println("bitmap_url.keySet().toArray()[i]--?:"+bitmap_url.keySet().toArray()[i]);
 				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
 					list.add("image=" + bitmap_url.get(i));
 				}
@@ -810,7 +808,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url);
-				System.out.println("json---->" + json);
 				if (json != null) {
 					JSONObject jsonObject = new JSONObject(json);
 					JSONObject json = jsonObject.getJSONObject("error");
@@ -1002,7 +999,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			TextView tv = tvlist.get(displayname);
 			String txt = postList.get(displayname).getLabels().get(id);
 			String txtValue = postList.get(displayname).getValues().get(id);
-			System.out.println(id+" "+txt+" "+txtValue);
 			postMap.put(displayname, txtValue);
 			tv.setText(txt);
 			break;

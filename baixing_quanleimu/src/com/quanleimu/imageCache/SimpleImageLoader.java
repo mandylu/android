@@ -88,7 +88,6 @@ public class SimpleImageLoader
 					else
 					{
 //						view.setImageResource(R.drawable.moren);
-//						System.out.print("fjljsafljaljalfjl");
 					}
 				}
 		};

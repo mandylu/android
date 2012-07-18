@@ -47,12 +47,10 @@ public class QuanleimuApplication extends Application {
 			ads_viewed += ",";
 		}
 		ads_viewed += adId;
-		System.out.println("addViewCounter(" + adId + ") =============== " + ads_viewed );
 	}
 	
 	public static void resetViewCounter(){
 		QuanleimuApplication.ads_viewed = "";
-		System.out.println("resetViewCounter ================ " + ads_viewed );
 	}
 	
 	public static void setTextMode(boolean tMode){

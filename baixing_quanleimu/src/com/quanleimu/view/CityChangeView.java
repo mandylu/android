@@ -87,7 +87,6 @@ public class CityChangeView extends BaseView {
 						if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 						{
 							QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
-	//						System.out.println("CityChange cityName1----->" +cityName1);
 							break;
 						}
 					}

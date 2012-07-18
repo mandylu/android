@@ -120,7 +120,6 @@ public class RegisterView extends BaseView{
 			list.add("password=" + passwordEt.getText().toString());
 			list.add("isRegister=1");
 			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url ------ >" + url);
 			try {
 				json = Communication.getDataByUrl(url);
 				if (json != null) {
@@ -147,7 +146,6 @@ public class RegisterView extends BaseView{
 			case 1:
 				try {
 					JSONObject jsonObject = new JSONObject(json);
-					System.out.println("jsonObject--->" + jsonObject);
 					String id;
 					try {
 						id = jsonObject.getString("id");

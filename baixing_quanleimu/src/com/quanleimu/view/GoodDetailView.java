@@ -1048,7 +1048,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				}
 				if(requests != null){
 					String url = Communication.getApiUrl(apiName, requests);
-					System.out.println("url--->" + url);
 					try {
 						json = Communication.getDataByUrl(url);
 					} catch (UnsupportedEncodingException e) {

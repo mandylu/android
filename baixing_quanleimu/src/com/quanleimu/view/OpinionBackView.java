@@ -133,7 +133,6 @@ public class OpinionBackView extends BaseView {
 			}
 
 			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url--->" + url);
 			try {
 				result = Communication.getDataByUrl(url);
 				if (result != null) {

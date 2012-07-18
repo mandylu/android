@@ -86,8 +86,6 @@ public class Util {
 				fos = new FileOutputStream(f);
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(object);
-				System.out.println(fos + "fos");
-				System.out.println(oos + "oos");
 			} catch (FileNotFoundException e) {
 				res = "没有找到文件";
 				e.printStackTrace();
@@ -162,8 +160,6 @@ public class Util {
 			fos = context.openFileOutput(file, Activity.MODE_PRIVATE);
 			oos = new ObjectOutputStream(fos);
 			oos.writeObject(object);
-			System.out.println(fos + "fos");
-			System.out.println(oos + "oos");
 		} catch (FileNotFoundException e) {
 			res = "没有找到文件";
 			e.printStackTrace();
@@ -210,19 +206,15 @@ public class Util {
 			
 		} catch (FileNotFoundException e) {
 			obj = null;
-			System.out.println("文件没找到------>"+e.toString());
 			e.printStackTrace();
 		} catch (IOException e) {
 			obj = null;
-			System.out.println("输入输出错误------>"+e.toString());
 			e.printStackTrace();
 		} catch (ClassNotFoundException e) {
 			obj = null;
-			System.out.println("类型转换错误------>"+e.toString());
 			e.printStackTrace();
 		}catch (Exception e) {
 			obj = null;
-			System.out.println("异常------>"+e.toString());
 			e.printStackTrace();
 		} finally {
 			try {
@@ -269,10 +261,8 @@ public class Util {
 		vkey = vkey.substring(1);
 		String vkey1 = vkey;
 		vkey = vkey + Const.API_SECRET;
-		System.out.println("vkey--->" + vkey);
 		vkey1 = vkey1 + "&access_token=" + MD5(vkey);
 		
-		System.out.println(vkey1);
 		return vkey1;	
 	}
 
@@ -282,7 +272,6 @@ public class Util {
 		try {
 			md5 = MessageDigest.getInstance("MD5");
 		} catch (Exception e) {
-			//System.out.println(e.toString());
 			e.printStackTrace();
 			return "";
 		}
@@ -500,13 +489,10 @@ public class Util {
 		try {
 			fos = context.openFileOutput(fileName, Activity.MODE_PRIVATE);
 			fos.write(file);
-			System.out.println("存储成功");
 			fos.close();
 		} catch (FileNotFoundException e) {
-			System.out.println("FileNotFoundException ---- >" + e.toString());
 			e.printStackTrace();
 		} catch (IOException e) {
-			System.out.println("IOException ---- >" + e.toString());
 			e.printStackTrace();
 		}
 	}
@@ -524,7 +510,6 @@ public class Util {
 			fis.read(aa);
 		} catch (FileNotFoundException e) {
 			fis = null;
-System.out.println("没找到文件");
 			e.printStackTrace();
 		} catch (IOException e) {
 			e.printStackTrace();

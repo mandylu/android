@@ -239,7 +239,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 //    			heightList = getCount() * .getHeight();
 //    		}
 //    		if(heightParent < heightList){
-//    			System.out.println("jfklajlfja");
 //    		}
 //    	}
 //    	super.handleDataChanged();

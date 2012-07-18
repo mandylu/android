@@ -141,7 +141,6 @@ public class ForgetPasswordView extends BaseView {
 //	protected void parseResponse(String jsonString, Message msg){
 //		try {
 //			JSONObject jsonObject = new JSONObject(jsonString);
-//			System.out.println("jsonObject--->" + jsonObject);
 //			
 //			String id = "";
 //			try {

@@ -67,10 +67,8 @@ public class SiftView extends BaseView {
 		// AND 地区_s:m7259
 		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName);
 		if (postMu == null || postMu.getJson().equals("")) {
-			System.out.println("下载");
 			new Thread(new GetGoodsListThread(true)).start();
 		} else {
-			System.out.println("缓存");
 			json = postMu.getJson();
 			long time = postMu.getTime();
 			if(time + 24*3600*1000 < System.currentTimeMillis()){
@@ -287,7 +285,6 @@ public class SiftView extends BaseView {
 			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url ------ >" + url);
 			try {
 				json = Communication.getDataByUrl(url);
 				if (json != null) {

@@ -226,7 +226,6 @@ public class ViewFlow extends AdapterView<Adapter> {
 			int width_temp = getChildAt(i).getMeasuredHeight();
 			item_width = width_temp > item_width ? width_temp : item_width;
 			
-//			System.out.print("view flow item "+ i + "with height" + height);
 		}
 
 		if (mFirstLayout) {

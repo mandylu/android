@@ -192,7 +192,6 @@ public class ImageManager
 //			bitmap.recycle();
 //			bitmap = null;
 //		}else{
-//			System.out.println("============= bitmap missed in cache ======= by " + url);
 //		}
 //		
 		imageLruCache.remove(url);//anyway ,remove it from cache		
@@ -205,7 +204,6 @@ public class ImageManager
 //                Bitmap b = r.get();
 //                
 //                if(b != null && !b.isRecycled()){
-//                	    System.out.println("=============recycle bitmap======= " + b.toString());
 //	                b.recycle();
 //	                b = null;
 //            		}

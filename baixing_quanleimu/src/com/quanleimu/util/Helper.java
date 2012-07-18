@@ -57,8 +57,6 @@ public class Helper {
 				fos = new FileOutputStream(f);
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(object);
-				System.out.println(fos + "fos");
-				System.out.println(oos + "oos");
 			} catch (FileNotFoundException e) {
 				res = "没有找到文件";
 				e.printStackTrace();
@@ -162,16 +160,12 @@ public class Helper {
 			obj = ois.readObject();
 
 		} catch (FileNotFoundException e) {
-			System.out.println("文件没有找到");
 			obj = null;
 		} catch (IOException e) {
-			System.out.println("输入输出错误");
 			obj = null;
 		} catch (ClassNotFoundException e) {
-			System.out.println("类型没有找到");
 			obj = null;
 		} catch (Exception e) {
-			System.out.println("异常");
 			obj = null;
 		} finally {
 			try {

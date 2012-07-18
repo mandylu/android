@@ -39,7 +39,6 @@ public class BaseActivity extends Activity implements OnClickListener{
 	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-		System.out.println("onSaveInstanceState");
 		savedInstanceState.putString("cityEnglishName", myApp.getCityEnglishName());
 		savedInstanceState.putString("cityName", myApp.getCityName());
 		ArrayList<String>strDetails = new ArrayList<String>();
@@ -50,19 +49,13 @@ public class BaseActivity extends Activity implements OnClickListener{
 					+ ",name=" + detail.getName()
 					+ ",sheng=" + detail.getSheng(); 
 			strDetails.add(tstrDetail);
-//			System.out.println("in onSaveInstanceState, to put in: " + tstrDetail);
 		}
 		savedInstanceState.putStringArrayList("cityDetails", strDetails);
         super.onSaveInstanceState(savedInstanceState);
-        System.out.println("leave onSaveInstanceState");
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-    	System.out.println("onRestoreInstanceState");
-    	System.out.println("cityEnglishName is: " + savedInstanceState.getString("cityEnglishName"));
-    	System.out.println("cityName is: " + savedInstanceState.getString("cityName"));
-    	
         super.onRestoreInstanceState(savedInstanceState);
 		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
 		myApp.setCityName(savedInstanceState.getString("cityName"));
@@ -72,12 +65,10 @@ public class BaseActivity extends Activity implements OnClickListener{
 		List<CityDetail> cityDetails = new ArrayList<CityDetail>();
 		for(int i = 0; i < listDetails.size(); ++ i){
 			String strDetail = listDetails.get(i);
-//			System.out.println("current strDetail is: " + strDetail);
 			String[] strDetails = strDetail.split(",");
 			CityDetail detail = new CityDetail();
 			for(int j = 0; j < strDetails.length; ++ j){
 				String[] subItems = strDetails[j].split("=");
-//				System.out.println("current subItems is: " + subItems[0] + "and 1 is: " + subItems[1]);
 				if(subItems[0].equals("englishName")){
 					detail.setEnglishName(subItems[1]);
 				}
@@ -94,7 +85,6 @@ public class BaseActivity extends Activity implements OnClickListener{
 			cityDetails.add(detail);
 		}
 		myApp.setListCityDetails(cityDetails);
-		System.out.println("leave onRestoreInstanceState");
     }
 	
 	protected TextView tvAddMore ;

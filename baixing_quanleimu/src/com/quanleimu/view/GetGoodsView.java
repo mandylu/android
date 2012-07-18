@@ -6,6 +6,7 @@ import java.util.List;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.view.Gravity;
@@ -79,7 +80,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		this.categoryEnglishName = categoryEnglishName;
 
 		this.bundle = bundle;
-		
+//		Debug.startMethodTracing();
 		init();
 	}
 

@@ -158,7 +158,6 @@ public class LoginView extends BaseView implements OnClickListener{
 			list.add("password=" + passwordEt.getText().toString().trim());
 
 			String url = Communication.getApiUrl(apiName, list);
-			System.out.println("url ------ >" + url);
 			try {
 				String json = Communication.getDataByUrl(url);
 				if (json != null) {

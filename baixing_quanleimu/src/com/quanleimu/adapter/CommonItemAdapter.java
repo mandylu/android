@@ -84,48 +84,54 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 	public void setRightIcon(int resourceId){
 		iconId = resourceId;
 	}
+	
+	class ViewHolder{
+		public TextView tv;
+		public ImageView iv;
+	}
 
 	@Override
 	public View getView(int position, View convertView, ViewGroup parent) {
-		LayoutInflater inflater = LayoutInflater.from(context);
-		
 		if(position == 0 && sorted && hasSearchBar){
+			LayoutInflater inflater = LayoutInflater.from(context);
 			return inflater.inflate(R.layout.searchbar, null);
 		}
 		
-		View header = getHeaderIfItIs(position, convertView);
-		if(header != null){
-			return header;
-		}				
+		if(sorted){
+			View header = getHeaderIfItIs(position, convertView);
+			if(header != null){
+				return header;
+			}
+		}
 		
+		ViewHolder holder;
 		View v = null;
-		if(convertView == null || convertView.findViewById(R.id.tvCateName) == null)
+		if(convertView == null || convertView.getTag() == null || !(convertView.getTag() instanceof ViewHolder))
 		{
+			LayoutInflater inflater = LayoutInflater.from(context);
 			v = inflater.inflate(R.layout.item_common, null);
-		}else{
-			v = (View)convertView; 
+			holder = new ViewHolder();
+			holder.tv = (TextView)v.findViewById(R.id.tvCateName);
+			holder.iv = (ImageView)v.findViewById(R.id.ivChoose);
+			v.setTag(holder);
+		}
+		else{
+			v = (View)convertView;
+			holder = (ViewHolder)convertView.getTag();
 		}
 		
 		if(left >= 0 && right >= 0 && top >= 0 && bottom >= 0){
 			v.setPadding(left, top, right, bottom);
 		}
 		
-		TextView tvCateName = (TextView)v.findViewById(R.id.tvCateName);
-		tvCateName.setText(list.get(position).toString());
+		holder.tv.setText(list.get(position).toString());
 		
-		ImageView arrow = (ImageView)v.findViewById(R.id.ivChoose);
-		if(this.getItem(position) instanceof BXHeader){
-			arrow.setVisibility(View.GONE);
-			v.setBackgroundResource(R.drawable.alphabetheaderbk);
+		if(this.hasArrow){
+			holder.iv.setVisibility(View.VISIBLE);
+			holder.iv.setImageResource(iconId);
 		}
 		else{
-			if(this.hasArrow){
-				arrow.setVisibility(View.VISIBLE);
-				arrow.setImageResource(iconId);
-			}
-			else{
-				arrow.setVisibility(View.GONE);
-			}
+			holder.iv.setVisibility(View.GONE);
 		}
 		
 		return v;

@@ -308,7 +308,6 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
     		
     		if(view instanceof ImageView){
     			//recycle the bitmap referred by the view
-    			System.out.println("Recyled view: " + view.toString() + "with image url:" + (String)(((ImageView)view).getTag()));
     			QuanleimuApplication.lazyImageLoader.forceRecycle((String)(((ImageView)view).getTag()));
     		}
     	}

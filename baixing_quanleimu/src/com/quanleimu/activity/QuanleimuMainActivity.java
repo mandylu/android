@@ -6,6 +6,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.os.Debug;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -158,7 +159,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         while(leafFocusedView instanceof ViewGroup)
         {
             View focusedChild = ((ViewGroup)leafFocusedView).getFocusedChild();
-            System.out.println("!!!!!!!!!!!!!!!!!!!! got focused child " + focusedChild);
             if(focusedChild == null)
             {
                 break;
@@ -239,10 +239,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                        {
 		                            deleteFile(s);
 		                        }
-		                        for (int i = 0; i < fileList().length; i++)
-		                        {
-		                            System.out.println("fileList()[i]----------->" + fileList()[i]);
-		                        }
 		                    }
 		
 		                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
@@ -252,6 +248,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                    editor.commit();
 		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
 		            		QuanleimuMainActivity.this.startService(pushIntent);
+//		            		Debug.stopMethodTracing();
 		                    System.exit(0);
 		                }
 		            });
@@ -454,7 +451,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	} 
 	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) { 
+	protected void onCreate(Bundle savedInstanceState) {
+//		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
 				
 		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);

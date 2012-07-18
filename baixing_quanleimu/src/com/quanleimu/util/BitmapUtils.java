@@ -251,9 +251,6 @@ public class BitmapUtils {
 	        
 	    }
 	    
-	    System.out.println("[decodeSampledBitmapFromFile] SampleSize = " + inSampleSize
-	    		+ " reqWidth/width =" + reqWidth + "/" + width 
-	    		+ " reqHeight/height = " + reqHeight + "/" + height);
 	    return inSampleSize;
 	}
 }
