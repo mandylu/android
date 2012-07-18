@@ -1,0 +1,23 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearListView"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@drawable/home_bg">
+
+    <com.quanleimu.widget.PullToRefreshListView
+        android:id="@+id/plvlist"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@drawable/home_bg"
+        android:divider="@drawable/list_divider"
+        android:dividerHeight="1dp"
+        android:fastScrollEnabled="false"
+        android:focusable="true"
+        android:footerDividersEnabled="false"
+        android:headerDividersEnabled="false"
+        android:listSelector="#00000000"
+        android:scrollbars="none"
+        android:scrollingCache="false" />
+
+</LinearLayout>

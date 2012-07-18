@@ -25,6 +25,7 @@ import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
+import com.quanleimu.view.PersonalCenterEntryView;
 import com.quanleimu.view.SetMainView;
 
 import android.widget.ImageView;
@@ -74,7 +75,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_MINE)break;
 			
 			needClearViewStack = true;
-			onNewView(new PersonalCenterView(this, bundle));
+//			onNewView(new PersonalCenterView(this, bundle));
+			onNewView(new PersonalCenterEntryView(this, bundle));
 
 			break;
 		case ETAB_TYPE_SETTING:

@@ -1,0 +1,198 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:background="@drawable/home_bg"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:id="@+id/rl_wosent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:padding="10dip" >
+
+        <ImageView
+            android:id="@+id/senticon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/pic_wo_sent" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toRightOf="@id/senticon"
+            android:gravity="center_vertical"
+            android:text="已发布的信息"
+            android:textColor="#8F5262"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <ImageView
+            android:id="@+id/sentarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/arrow" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/tv_sentcount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:layout_toLeftOf="@id/sentarrow"
+            android:background="@drawable/personalcountbk"
+            android:gravity="center_vertical"
+            android:paddingLeft="3dip"
+            android:paddingRight="3dip"
+            android:textColor="#FFFFFF"
+            android:text="0"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/rl_wofav"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:padding="10dip" >
+
+        <ImageView
+            android:id="@+id/favicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/pic_wo_fav" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toRightOf="@id/favicon"
+            android:gravity="center_vertical"
+            android:text="收藏的信息"
+            android:textColor="#8F5262"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <ImageView
+            android:id="@+id/favarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/arrow" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/tv_favcount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:layout_toLeftOf="@id/favarrow"
+            android:background="@drawable/personalcountbk"
+            android:gravity="center_vertical"
+            android:paddingLeft="3dip"
+            android:paddingRight="3dip"
+            android:textColor="#FFFFFF"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/rl_wohistory"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:padding="10dip" >
+
+        <ImageView
+            android:id="@+id/historyicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/pic_wo_history" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toRightOf="@id/historyicon"
+            android:gravity="center_vertical"
+            android:text="浏览历史"
+            android:textColor="#8F5262"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <ImageView
+            android:id="@+id/historyarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/arrow" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/tv_historycount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:layout_toLeftOf="@id/historyarrow"
+            android:background="@drawable/personalcountbk"
+            android:gravity="center_vertical"
+            android:paddingLeft="3dip"
+            android:paddingRight="3dip"
+            android:textColor="#FFFFFF"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+</LinearLayout>
