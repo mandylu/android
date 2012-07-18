@@ -74,7 +74,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 						.encode("cityEnglishName:"
 								+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
 								+ searchContent));
-        mListLoader = new GoodsListLoader(url, myHandler, fields, null);
+		List<String> params = new ArrayList<String>();
+		params.add(url);
+        mListLoader = new GoodsListLoader(params, myHandler, fields, null);
         
 		LayoutParams WClayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		

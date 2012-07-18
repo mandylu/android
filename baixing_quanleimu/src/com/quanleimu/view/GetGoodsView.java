@@ -39,8 +39,6 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	private String siftResult = "";
 
 	private GoodsListAdapter adapter;
-	private String mUrl = "";
-	
 	private final static int ERROR_FIRST = 0;
 	private final static int ERROR_MORE = 1;
 	private final static int ERROR_NOMORE = 2;
@@ -145,17 +143,18 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 		pd.setCancelable(true);
 
+		List<String> params = new ArrayList<String>();
 		if (siftResult != null && !siftResult.equals("")) {
-			mUrl = "query="
+			params.add("query="
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-					+ categoryEnglishName + " " + siftResult;
+					+ categoryEnglishName + " " + siftResult);
 		} else {
-			mUrl = "query="
+			params.add("query="
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-					+ categoryEnglishName + " AND status:0";
+					+ categoryEnglishName + " AND status:0");
 		}
 		
-		goodsListLoader = new GoodsListLoader(mUrl, myHandler, null, new GoodsList());
+		goodsListLoader = new GoodsListLoader(params, myHandler, null, new GoodsList());
 		goodsListLoader.startFetching(true);
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {

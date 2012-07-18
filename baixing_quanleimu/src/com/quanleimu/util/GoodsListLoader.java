@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.List;
+
 import android.os.Handler;
 import com.quanleimu.entity.GoodsList;
 
 public class GoodsListLoader {
 	private GoodsList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
-	private String mUrl = "";
+	private List<String> params = null;
 	private String mFields = "";
 	private boolean mIsFirst = true;
 	private boolean mHasMore = true;
@@ -27,8 +29,8 @@ public class GoodsListLoader {
 	public final static int MSG_NO_MORE = 2;
 	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
 	
-	public GoodsListLoader(String url, Handler handler, String fields, GoodsList goodsList){
-		mUrl = url;
+	public GoodsListLoader(List<String> params, Handler handler, String fields, GoodsList goodsList){
+		this.params = params;
 		
 		mHandler = handler;
 		
@@ -41,8 +43,8 @@ public class GoodsListLoader {
 		}
 	}
 	
-	public void setUrl(String url){
-		mUrl = url;
+	public void setParams(List<String> params){
+		this.params = params;
 	}
 	
 	public void setHandler(Handler handler){
@@ -115,7 +117,9 @@ public class GoodsListLoader {
 			if(null != mFields && mFields.length() > 0)
 				list.add("fields=" + URLEncoder.encode(mFields));
 			
-			list.add(mUrl);			
+			if(params != null){
+				list.addAll(params);
+			}
 			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
 			
 			if(mRows > 0)

@@ -310,7 +310,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		adapter.setMessageOutOnDelete(myHandler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
 		
-		mListLoader = new GoodsListLoader("", myHandler, null, null);
+		mListLoader = new GoodsListLoader(null, myHandler, null, null);
 		mListLoader.setHasMore(false);
 	}
 	
@@ -326,10 +326,10 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 			
 			boolean needUpdate = update;
 			boolean needGetMore = !update;
-			String url = "";
 			
+			List<String> params = new ArrayList<String>();
 			if(currentPage == -1){
-				url += ("query=userId:" + user.getId() + " AND status:0");
+				params.add("query=userId:" + user.getId() + " AND status:0");
 				if(update){
 					msgToSendOnUpdate = MCMESSAGE_MYPOST_SUCCESS;
 					msgToSendOnFail = MCMESSAGE_MYPOST_FAIL;
@@ -372,16 +372,15 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 					for(int i = 1; i < details.size(); ++ i){
 						ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);  
 					}
-					url += ("query=(" + ids + ")");
+					params.add("query=(" + ids + ")");
 					mListLoader.setRows(details.size());
 				}
 				else{
 					needUpdate = needGetMore = false;
 				}
 			}
-			
-			url += "&rt=1";	
-			mListLoader.setUrl(url);
+			params.add("rt=1");
+			mListLoader.setParams(params);
 			
 			if(needUpdate || needGetMore){
 				mListLoader.startFetching(needUpdate, msgToSendOnUpdate, msgToSendOnGetmore, msgToSendOnFail);
