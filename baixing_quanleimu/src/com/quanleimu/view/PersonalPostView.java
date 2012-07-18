@@ -188,6 +188,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		ivMyads.setOnClickListener(this);
 		ivMyfav.setOnClickListener(this);
 		ivMyhistory.setOnClickListener(this);
+		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		adapter = new GoodsListAdapter(this.getContext(), this.listMyPost);
 		adapter.setMessageOutOnDelete(myHandler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
