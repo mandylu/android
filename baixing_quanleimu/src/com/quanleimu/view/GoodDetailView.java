@@ -860,15 +860,19 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		ll_meta.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		for (int i = 0; i < detail.getMetaData().size(); i++) {
+			String[] s = detail.getMetaData().get(i).split(" ");
+			if(s.length < 2) continue;
+
 			View v = null;
 			v = inflater.inflate(R.layout.item_meta, null);
 
 			TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
 			TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
 			tvmeta.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
-			
+
 			tvmetatxt.setText(detail.getMetaData().get(i).split(" ")[0].toString() + "：");
 			tvmeta.setText(detail.getMetaData().get(i).split(" ")[1].toString());
+
 			v.setTag(i);
 			ll_meta.addView(v);
 		}
