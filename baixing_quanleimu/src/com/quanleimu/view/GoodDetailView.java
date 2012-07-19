@@ -538,6 +538,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			});
         
         if(!hasPrev()){
+        	findViewById(R.id.pull_to_prev_header).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_prev_image).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_prev_text).setVisibility(View.GONE);
         }else{
@@ -545,6 +546,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         }
         
         if(!hasNext()){
+        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
         }else{
