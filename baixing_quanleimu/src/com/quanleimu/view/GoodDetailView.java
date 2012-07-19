@@ -473,7 +473,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						mListLoader.setHasMore(true);
 						
 						break;
-					case GoodsListLoader.MSG_FINISH_GET_MORE:					
+					case GoodsListLoader.MSG_NO_MORE:					
 //						Message msg1 = Message.obtain();
 //						msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
 //						Bundle bundle = new Bundle();
@@ -491,7 +491,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						mListLoader.setHasMore(false);
 						
 						break;
-					case GoodsListLoader.MSG_NO_MORE:	
+					case GoodsListLoader.MSG_FINISH_GET_MORE:	
 						GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 						if (goodsList1 == null || goodsList1.getCount() == 0) {
 							Message msg2 = Message.obtain();
@@ -500,22 +500,31 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							bundle1.putString("popup_message", "后面没有啦！");
 							msg2.setData(bundle1);
 							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+							
+							ImageView imageView1 = (ImageView)findViewById(R.id.pull_to_next_image);
+							imageView1.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+							imageView1.setVisibility(View.GONE);
+							
+							TextView textView1 = (TextView)findViewById(R.id.pull_to_next_text);
+							textView1.setText("后面没有啦！");
+							
+							mListLoader.setHasMore(false);
 						} else {
 							List<GoodsDetail> listCommonGoods =  goodsList1.getData();
 							for(int i=0;i<listCommonGoods.size();i++)
 							{
 								mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
 							}
-							QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());			
+							QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
+							
+							mListLoader.setHasMore(true);
+							
+							if(null != m_viewInfoListener){
+								mListLoader.setSelection(mCurIndex+1);
+								m_viewInfoListener.onExit(GoodDetailView.this);
+								m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
+							}
 						}
-						mListLoader.setHasMore(true);
-						
-						if(null != m_viewInfoListener){
-							mListLoader.setSelection(mCurIndex+1);
-							m_viewInfoListener.onExit(GoodDetailView.this);
-							m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
-						}
-						
 						break;
 					case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 						Message msg2 = Message.obtain();

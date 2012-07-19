@@ -6,6 +6,7 @@ import android.util.AttributeSet;
 import android.util.Log;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.MeasureSpec;
 import android.view.animation.Animation;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
@@ -99,21 +100,24 @@ public class PullableScrollView extends ScrollView
 		if (mPullNotifier == null)
 			return;
 		
-		int topPadding = (int)((motionevent.getY() - mLastMotionY) + mLastTopY);
-		if (topPadding < 0)
-			topPadding = 0;
-		else if (topPadding > MAX_PULL_DISTANCE_PIXEL)
-			topPadding = MAX_PULL_DISTANCE_PIXEL;
-		setHeaderTopPadding(topPadding);
+		if(mPullNotifier.hasPrev()){
+			int topPadding = (int)((motionevent.getY() - mLastMotionY) + mLastTopY);
+			if (topPadding < 0)
+				topPadding = 0;
+			else if (topPadding > MAX_PULL_DISTANCE_PIXEL)
+				topPadding = MAX_PULL_DISTANCE_PIXEL;
+			setHeaderTopPadding(topPadding);
+		}
 		
-		
-		int bottomPadding = (int)(((float)mViewHeight - mLastBottomY - motionevent.getY()) + mLastMotionY);
-		if (bottomPadding < 0)
-			bottomPadding = 0;
-		else if (bottomPadding > MAX_PULL_DISTANCE_PIXEL)
-			bottomPadding = MAX_PULL_DISTANCE_PIXEL;
-
-		setFooterBottomPadding(bottomPadding);
+		if(mPullNotifier.hasNext()){
+			int bottomPadding = (int)(((float)mViewHeight - mLastBottomY - motionevent.getY()) + mLastMotionY);
+			if (bottomPadding < 0)
+				bottomPadding = 0;
+			else if (bottomPadding > MAX_PULL_DISTANCE_PIXEL)
+				bottomPadding = MAX_PULL_DISTANCE_PIXEL;
+	
+			setFooterBottomPadding(bottomPadding);
+		}
 	}
 
 	private void updateTopAndBottom()
@@ -135,34 +139,35 @@ public class PullableScrollView extends ScrollView
 		mLastBottomY = mLastBottomY - scrollY;
 	}
 
-	public void draw(Canvas canvas)
+	/*public void draw(Canvas canvas)
 	{
 		if (!adjustContentPadding()){
 			super.draw(canvas);
 		}
-	}
+	}*/
 
 	
 	//view status: <0:totally visible 0:partly visible >0:totally invisible
 	protected int getFooterStatus()
 	{
-		View view = mPullNotifier.getFooterView();
-		
 		int status = 1;
 		
-		if (view != null)
-		{
-			int footerTop = view.getTop() - getScrollY();
-			int footerHeight = view.getHeight() - view.getPaddingBottom();
-			
-			status = footerTop  - mViewHeight;
-			int bottomStatus = status + footerHeight;
-			
-
-			if(status < 0 && bottomStatus + FLIP_DISTANCE_PIXEL > 0)
-				status = 0;
-			
-			Log.d("PullableScrollView", "footerTop = "+footerTop+", footHeight = "+footerHeight+"frameHeight = "+mViewHeight+"status ="+status);
+		if(null != mPullNotifier && mPullNotifier.hasNext()){
+			View view = mPullNotifier.getFooterView();
+			if (view != null)
+			{
+				int footerTop = view.getTop() - getScrollY();
+				int footerHeight = view.getHeight() - view.getPaddingBottom();
+				
+				status = footerTop  - mViewHeight;
+				int bottomStatus = status + footerHeight;
+				
+	
+				if(status < 0 && bottomStatus + FLIP_DISTANCE_PIXEL > 0)
+					status = 0;
+				
+				Log.d("PullableScrollView", "footerTop = "+footerTop+", footHeight = "+footerHeight+"frameHeight = "+mViewHeight+"status ="+status);
+			}
 		}
 		
 		return status;
@@ -170,16 +175,18 @@ public class PullableScrollView extends ScrollView
 
 	protected int getHeaderStatus()
 	{
-		View view = mPullNotifier.getHeaderView();
-		
 		int status = 1;
-		if (view != null)
-		{
-			status = getScrollY() - (view.getBottom() - view.getPaddingTop());
-			int statusTop = getScrollY() - view.getTop();
-			
-			if(status < 0 && (statusTop > 0 || status + FLIP_DISTANCE_PIXEL > 0))
-				status = 0;
+		
+		if(null != mPullNotifier && mPullNotifier.hasPrev()){
+			View view = mPullNotifier.getHeaderView();
+			if (view != null)
+			{
+				status = getScrollY() - (view.getBottom() - view.getPaddingTop());
+				int statusTop = getScrollY() - view.getTop();
+				
+				if(status < 0 && (statusTop > 0 || status + FLIP_DISTANCE_PIXEL > 0))
+					status = 0;
+			}
 		}
 		
 		return status;
@@ -200,13 +207,13 @@ public class PullableScrollView extends ScrollView
 		setSmoothScrollingEnabled(true);
 	}
 
-	protected void onDraw(Canvas canvas)
+/*	protected void onDraw(Canvas canvas)
 	{
 		if (!adjustContentPadding()){
 			super.onDraw(canvas);
 		}
 	}
-
+*/
 	public void onNewViewLoaded(boolean bPrev)
 	{		
 		if(bPrev)
@@ -215,6 +222,21 @@ public class PullableScrollView extends ScrollView
 			scrollToContentFooter();
 		
 		mState = PULL_STATE.PULL_STATE_IDLE;
+	}
+	
+	@Override
+	protected void onMeasure(int measureWidthSpec, int measureHeightSpec){
+
+		mViewHeight = MeasureSpec.getSize(measureHeightSpec);
+		adjustContentPadding();
+		super.onMeasure(measureWidthSpec, measureHeightSpec);
+	}
+	
+	
+	@Override 
+	protected void onLayout (boolean changed, int left, int top, int right, int bottom) {
+
+		super.onLayout(changed, left, top, right, bottom);
 	}
 
 	public boolean onTouchEvent(MotionEvent motionevent)
@@ -266,8 +288,7 @@ public class PullableScrollView extends ScrollView
 							if (mPullNotifier != null)
 								mPullNotifier.stopAnimation();
 						}
-					} else
-					if (mResponsePart == 1)
+					} else if (mResponsePart == 1)
 					{
 						if (mState == PULL_STATE.PULL_STATE_IDLE)
 							mState = PULL_STATE.PULL_STATE_PULLUP2NEXT;
@@ -279,8 +300,7 @@ public class PullableScrollView extends ScrollView
 									mPullNotifier.startAnnimation(mFlipAnimation, false);
 								mState = PULL_STATE.PULL_STATE_RELEASE2NEXT;
 							}
-						} else
-						if (mState == PULL_STATE.PULL_STATE_RELEASE2NEXT)
+						} else if (mState == PULL_STATE.PULL_STATE_RELEASE2NEXT)
 						{
 							if (getFooterStatus() == 0)
 							{
@@ -294,12 +314,12 @@ public class PullableScrollView extends ScrollView
 							if (mPullNotifier != null)
 								mPullNotifier.stopAnimation();
 						}
-					} else
+					}/* else
 					{
 						mState = PULL_STATE.PULL_STATE_IDLE;
 						if (mPullNotifier != null)
 							mPullNotifier.stopAnimation();
-					}
+					}*/
 				}
 				break;
 				
@@ -413,28 +433,17 @@ public class PullableScrollView extends ScrollView
 		mPullNotifier = pullnotifier;
 	}
 
-	private boolean adjustContentPadding(){
+	private void adjustContentPadding(){
     	if(!mHasReseted )
     	{   
-    		mViewHeight = getHeight();
-    		
     		if(null != mPullNotifier){
 		        View viewContent = mPullNotifier.getContentView();
-		        int contentHeight = viewContent.getHeight();
-		        if(contentHeight < mViewHeight){
+		        int contentHeight = viewContent.getMeasuredHeight();
+		        if(mViewHeight > 0 && contentHeight > 0 && contentHeight < mViewHeight){
 		        	viewContent.setPadding(viewContent.getPaddingLeft(), viewContent.getPaddingTop(), viewContent.getPaddingRight(), mViewHeight - contentHeight + 10);
+		        	mHasReseted = true;
 		        }
-		        
-		        mAvoidEndlessScrollAPICall = true;
-		        int height = mPullNotifier.getHeaderView().getHeight();
-		        scrollTo(height, height);
     		}
-	        
-	        mHasReseted = true;
-	        
-	        return true;
     	}
-    	
-    	return false;
 	}
 }
