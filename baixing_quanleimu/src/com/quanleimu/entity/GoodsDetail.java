@@ -158,8 +158,10 @@ public class GoodsDetail implements Serializable{
 	public String getMetaValueByKey(String key){
 		for(int i = 0; i < metaData.size(); ++ i){
 			String[] meta = metaData.get(i).split(" ");
-			if(meta[0].equals(key)){
-				return meta[1];
+			if(meta.length >= 2){
+				if(meta[0].equals(key)){
+					return meta[1];
+				}
 			}
 		}
 		return "";
