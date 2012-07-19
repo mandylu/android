@@ -347,6 +347,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			v.findViewById(R.id.jubaolayout).setEnabled(false);
 			v.findViewById(R.id.sms).setEnabled(false);
 			v.findViewById(R.id.call).setEnabled(false);
+			v.findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
 		if(detail.getImageList() != null){
@@ -690,6 +691,9 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
+		case R.id.appealbutton:
+			m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 1, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID)));
+			break;
 		case R.id.call:{
 			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
@@ -803,7 +807,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		case R.id.jubaolayout:{
 			if(this.m_viewInfoListener != null){
-				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, true, detail.getValueByKey("id")));
+				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 0, detail.getValueByKey("id")));
 			}
 			break;
 		}
@@ -1028,7 +1032,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					String message = js.getString("message");
 					int code = js.getInt("code");
 					if (code == 0) {
-						if(detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals("0")){
+						if(detail.getValueByKey("status").equals("0")){
 							List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 							for(int i = 0; i < listMyPost.size(); ++ i){
 								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)

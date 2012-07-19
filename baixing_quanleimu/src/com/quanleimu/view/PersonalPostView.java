@@ -661,6 +661,19 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					}
 				}
 			}
+		}else if(currentPage == -1){
+			if(glLoader.getGoodsList() != null 
+					&& glLoader.getGoodsList().getData() != null 
+					&& glLoader.getGoodsList().getData().size() > 0){
+				if(QuanleimuApplication.getApplication().getListMyPost() == null ||
+						QuanleimuApplication.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
+					GoodsList gl = new GoodsList();
+					gl.setData(QuanleimuApplication.getApplication().getListMyPost());
+					glLoader.setGoodsList(gl);
+					adapter.setList(QuanleimuApplication.getApplication().getListMyPost());
+					adapter.notifyDataSetChanged();
+				}
+			}
 		}
 	}
 }

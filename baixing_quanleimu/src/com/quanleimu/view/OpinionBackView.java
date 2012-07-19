@@ -27,7 +27,8 @@ public class OpinionBackView extends BaseView {
 	private String mobile = "";
 	private UserBean user;
 	private String result;
-	private boolean prosecute = false;
+	private int opinionType = -1;//-1 for feedback, 0 for prosecute, 1 for appeal
+//	private boolean prosecute = false;
 	private String adId = "";
 
 	protected void Init(){
@@ -46,8 +47,11 @@ public class OpinionBackView extends BaseView {
 
 		etOpinion = (EditText) findViewById(R.id.etOpinion);
 		etOpinion.findFocus();
-		if(prosecute){
+		if(0 == opinionType){
 			etOpinion.setHint("请留下举报原因");
+		}
+		else if(1 == opinionType){
+			etOpinion.setHint("请留下申诉原因");
 		}
 	}
 	
@@ -56,9 +60,10 @@ public class OpinionBackView extends BaseView {
 		Init();
 	}
 	
-	public OpinionBackView(Context context, Bundle bundle, boolean prosecute, String adId){
+	public OpinionBackView(Context context, Bundle bundle, int opinionType, String adId){
 		super(context, bundle);
-		this.prosecute = prosecute;
+//		this.prosecute = prosecute;
+		this.opinionType = opinionType;
 		this.adId = adId;
 		Init();
 	}
@@ -123,12 +128,12 @@ public class OpinionBackView extends BaseView {
 			// "http://www.baixing.com/iphone/feedback/v1/?device=android";
 			// url = url + "&content="+URLEncoder.encode(content)
 			// +"&androidUniqueIdentifier="+phoneMark+"&mobile="+mobile;
-			String apiName = prosecute ? "report" : "feedback";
+			String apiName = -1 == opinionType ? "report" : (0 == opinionType ? "feedback" : "appeal");
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("mobile=" + mobile);
-			list.add((prosecute ? "description=" : "feedback=") + URLEncoder.encode(etOpinion.getText().toString()));
-			if(prosecute){
+			list.add((-1 != opinionType ? "description=" : "feedback=") + URLEncoder.encode(etOpinion.getText().toString()));
+			if(-1 != opinionType){
 				list.add("adId=" + adId);
 			}
 
