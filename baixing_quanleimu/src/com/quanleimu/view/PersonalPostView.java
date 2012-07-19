@@ -189,12 +189,17 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		ivMyfav.setOnClickListener(this);
 		ivMyhistory.setOnClickListener(this);
 		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+		
 		adapter = new GoodsListAdapter(this.getContext(), this.listMyPost);
 		adapter.setMessageOutOnDelete(myHandler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
-		
+
+		GoodsList gl = new GoodsList();
+		gl.setData(listMyPost == null ? new ArrayList<GoodsDetail>() : listMyPost);
+	
 		glLoader = new GoodsListLoader(null, myHandler, null, null);
 		glLoader.setHasMore(false);
+		glLoader.setGoodsList(gl);
 	}
 	
 //	class GetPersonalAds implements Runnable{
