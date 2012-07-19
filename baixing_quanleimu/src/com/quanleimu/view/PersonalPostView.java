@@ -8,11 +8,14 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AbsListView;
@@ -23,6 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -43,13 +47,17 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	private final int MSG_DELETED = 3;
 	private final int MCMESSAGE_NETWORKERROR = 4;
 	private final int MCMESSAGE_DELETE = 5;
+	private final int MSG_DELETE_POST_SUCCESS = 6;
+	private final int MSG_DELETE_POST_FAIL = 7;
+	private final int MSG_RESTORE_POST_SUCCESS = 8;
+	private final int MSG_RESTORE_POST_FAIL = 9;
 
 	public PullToRefreshListView lvGoodsList;
 	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
-	private List<GoodsDetail> listMyPost = new ArrayList<GoodsDetail>();
-	private List<GoodsDetail> listInVerify = new ArrayList<GoodsDetail>();
-	private List<GoodsDetail> listDeleted = new ArrayList<GoodsDetail>();
+	private List<GoodsDetail> listMyPost = null;
+	private List<GoodsDetail> listInVerify = null;
+	private List<GoodsDetail> listDeleted = null;
 	
 	public GoodsListAdapter adapter = null;
 //	private String json;
@@ -59,6 +67,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	private int buttonStatus = -1;//-1:edit 0:finish
 	private GoodsListLoader glLoader = null;
 	
+	private String json = "";
+	
 	public PersonalPostView(Context context, Bundle bundle){
 		super(context, bundle);
 		this.bundle = bundle;
@@ -66,6 +76,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	}
 
 	private void rebuildPage(boolean onResult){
+		if(glLoader != null){
+			glLoader.setHandler(myHandler);
+		}
 		LinearLayout lView = (LinearLayout)this.findViewById(R.id.linearListView);
 		
 		if(-1 == currentPage){
@@ -77,6 +90,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				title.m_title = "已发布的信息";
 				m_viewInfoListener.onTitleChanged(title);
 			}
+			GoodsList gl = new GoodsList();
+			gl.setData(listMyPost);
+			glLoader.setGoodsList(gl);
 			adapter.setList(listMyPost);
 			adapter.notifyDataSetChanged();	
 		}
@@ -92,8 +108,19 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				title.m_rightActionHint = "编辑";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			adapter.setList(listInVerify);
-			adapter.notifyDataSetChanged();
+			if(listInVerify == null){
+				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+				pd.show();
+				this.onRefresh();
+			}
+			else{
+				adapter.setList(listInVerify);
+				adapter.notifyDataSetChanged();
+				GoodsList gl = new GoodsList();
+				gl.setData(listInVerify);
+				glLoader.setGoodsList(gl);
+
+			}
 		}
 		else{
 			lvGoodsList.setVisibility(View.VISIBLE);
@@ -106,26 +133,62 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				title.m_rightActionHint = "编辑";
 				m_viewInfoListener.onTitleChanged(title);
 			}
-			adapter.setList(listDeleted);
-			adapter.notifyDataSetChanged();
+			if(listDeleted == null){
+				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+				pd.show();
+				this.onRefresh();
+			}
+			else{
+				adapter.setList(listDeleted);
+				adapter.notifyDataSetChanged();
+			}
 		}		
 
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {			
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				int index = arg2 - lvGoodsList.getHeaderViewsCount();
+				final int index = arg2 - lvGoodsList.getHeaderViewsCount();
 				if(index < 0)
 					return;
 				
-				GoodsDetail detail = null;
 				if(currentPage == -1 && index < listMyPost.size() ){
-					detail = listMyPost.get(index);			
 					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index));
 				}
 				else if(null !=  listInVerify && index < listInVerify.size() && 0 == currentPage){
 //					detail = goodsList.get(index);
 					////TODO...... new verify view
+				}
+				else if(null != listDeleted && index < listDeleted.size() && 1 == currentPage){
+					final String[] names = {"彻底删除", "恢复"};
+					new AlertDialog.Builder(PersonalPostView.this.getContext()).setTitle("选择操作")
+					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							// TODO Auto-generated method stub
+							dialog.dismiss();
+						}
+					})
+					.setItems(names, new DialogInterface.OnClickListener(){
+						public void onClick(DialogInterface dialog, int which){
+							switch(which){
+								case 0:
+									String id = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+									pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+									pd.show();
+									(new Thread(new MyMessageDeleteThread(id))).start();
+									break;
+								case 1:
+									String id2 = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+									pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+									pd.show();
+									(new Thread(new MyMessageRestoreThread(id2))).start();
+									break;
+							}
+						}
+					}).show();
+
 				}
 			}
 		});
@@ -201,35 +264,6 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 	}
-	
-//	class GetPersonalAds implements Runnable{
-//		private int currentPage = -1;
-//		public GetPersonalAds(int currentPage){
-//			this.currentPage = currentPage;
-//		}
-//		
-//		@Override
-//		public void run(){
-//			String apiName = "ad_list";
-//			ArrayList<String>list = new ArrayList<String>();
-//			list.add("start=0");
-//			if(currentPage == -1){
-//				list.add("query=userId:" + user.getId() + " AND status:0");
-//			}
-//			else if(currentPage == 0){
-//				list.add("query=userId:" + user.getId() + " AND status:4");
-//			}
-//			else if(currentPage == 1){
-//				list.add("query=userId:" + user.getId() + " AND status:3");
-//			}
-//			list.add("rt=1");	
-//			
-//			String url = Communication.getApiUrl(apiName, list);
-//			glLoader.setUrl(url);
-//			int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
-//			glLoader.startFetching(true, msg, msg, msg);
-//		}
-//	}
 
 	Handler myHandler = new Handler() {
 		@Override
@@ -244,17 +278,52 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson()); 
 				if (gl == null || gl.getCount() == 0) {
 					if(msg.what == MSG_MYPOST) listMyPost.clear();
-					else if(msg.what == MSG_INVERIFY) listInVerify.clear();
-					else if(msg.what == MSG_DELETED) listDeleted.clear();
+					else if(msg.what == MSG_INVERIFY) {
+						if(listInVerify == null){
+							listInVerify = new ArrayList<GoodsDetail>();
+						}
+						listInVerify.clear();
+					}
+					else if(msg.what == MSG_DELETED){
+						if(listDeleted == null){
+							listDeleted = new ArrayList<GoodsDetail>();
+						}
+						listDeleted.clear();
+					}
 					glLoader.setGoodsList(new GoodsList());
 				}
 				else{
-					if(msg.what == MSG_MYPOST) listMyPost = gl.getData();
-					else if(msg.what == MSG_INVERIFY) listInVerify = gl.getData();
-					else if(msg.what == MSG_DELETED) listDeleted = gl.getData();
-					glLoader.setGoodsList(gl);
+					if(msg.what == MSG_MYPOST){
+						listMyPost = gl.getData();
+						glLoader.setGoodsList(gl);
+					}
+					else if(msg.what == MSG_INVERIFY) {
+						if(listInVerify == null){
+							listInVerify = new ArrayList<GoodsDetail>();
+						}
+						listInVerify.clear();
+						if(gl.getData() != null){
+							for(int i = 0; i < gl.getData().size(); ++ i){
+								if(gl.getData().get(i).getValueByKey("status").equals("4")){
+									listInVerify.add(gl.getData().get(i));
+								}
+								else{
+									Log.d("", "不是4啊啊啊啊啊啊啊啊啊啊啊啊啊");
+								}
+							}
+						}
+						GoodsList gl2 = new GoodsList();
+						gl2.setData(listInVerify);
+						glLoader.setGoodsList(gl2);
+					}
+					else if(msg.what == MSG_DELETED){
+						listDeleted = gl.getData();
+						glLoader.setGoodsList(gl);
+					}
 				}
-				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				if(msg.what == MSG_MYPOST){
+					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				}
 				rebuildPage(true);
 				lvGoodsList.onRefreshComplete();
 				break;
@@ -262,62 +331,103 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				if(pd != null){
 					pd.dismiss();
 				}
+				lvGoodsList.onRefreshComplete();
+				break;
 			}
 
-//			case MCMESSAGE_DELETE:
-//				int pos = msg.arg2;
-//				if(PersonalPostView.this.currentPage == -1){
-//					pd = ProgressDialog.show(PersonalCenterView.this.getContext(), "提示", "请稍候...");
-//					pd.setCancelable(true);
-//					pd.show();
-//
-//					new Thread(new MyMessageDeleteThread(pos)).start();
-//				}
-//				else if(0 == PersonalCenterView.this.currentPage){
-//					goodsList.remove(pos);
-//					QuanleimuApplication.getApplication().setListMyStore(goodsList);
-//					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listMyStore", goodsList);
-//					adapter.setList(goodsList);
-//					adapter.notifyDataSetChanged();
-//					adapter.setUiHold(false);
-//				}
-//				else if(1 == PersonalCenterView.this.currentPage){
-//					goodsList.remove(pos);
-//					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-//					Helper.saveDataToLocate(PersonalCenterView.this.getContext(), "listLookHistory", goodsList);
-//					adapter.setList(goodsList);
-//					adapter.notifyDataSetChanged();			
-//					adapter.setUiHold(false);
-//				}
-//				break;
-//
-//			case MCMESSAGE_DELETE_SUCCESS:
-//				if(pd != null){
-//					pd.dismiss();
-//				}
-//				int pos2 = msg.arg2;
-//				try {
-//					JSONObject jb = new JSONObject(json);
-//					JSONObject js = jb.getJSONObject("error");
-//					String message = js.getString("message");
-//					int code = js.getInt("code");
-//					if (code == 0) {
-//						// 删除成功
-//						listMyPost.remove(pos2);
-//						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-//						adapter.setList(listMyPost);
-//						adapter.notifyDataSetChanged();
-//						Toast.makeText(PersonalCenterView.this.getContext(), message, 0).show();
-//					} else {
-//						// 删除失败
-//						Toast.makeText(PersonalCenterView.this.getContext(), "删除失败,请稍后重试！", 0).show();
-//					}
-//				} catch (JSONException e) {
-//					// TODO Auto-generated catch block
-//					e.printStackTrace();
-//				}
-//				adapter.setUiHold(false);
-//				break;			
+			case MCMESSAGE_DELETE:
+				int pos = msg.arg2;
+//				pos = pos - lvGoodsList.getHeaderViewsCount();
+				String id = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+				new Thread(new MyMessageDeleteThread(id)).start();
+				break;
+			case MSG_DELETE_POST_FAIL:
+				if(pd != null){
+					pd.dismiss();
+				}
+				Toast.makeText(PersonalPostView.this.getContext(), "删除失败,请稍后重试！", 0).show();
+				break;
+			case MSG_DELETE_POST_SUCCESS:
+				if(pd != null){
+					pd.dismiss();
+				}
+				Object deletedId = msg.obj;
+				try {
+					JSONObject jb = new JSONObject(json);
+					JSONObject js = jb.getJSONObject("error");
+					String message = js.getString("message");
+					int code = js.getInt("code");
+					List<GoodsDetail> refList = null;
+					if(msg.arg1 == -1){
+						refList = listMyPost;
+					}
+					else if(msg.arg1 == 0){
+						refList = listInVerify;
+					}
+					else if(msg.arg1 == 1){
+						refList = listDeleted;
+					}
+					if(refList == null) break;
+					if (code == 0) {
+						for(int i = 0; i < refList.size(); ++ i){
+							if(refList.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)deletedId)){
+								refList.remove(i);
+								break;
+							}
+						}
+						if(msg.arg1 == -1){
+							QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+						}
+						adapter.setList(refList);
+						adapter.notifyDataSetChanged();
+						Toast.makeText(PersonalPostView.this.getContext(), message, 0).show();
+					} else {
+						Toast.makeText(PersonalPostView.this.getContext(), "删除失败,请稍后重试！", 0).show();
+					}
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				adapter.setUiHold(false);
+				break;	
+			case MSG_RESTORE_POST_FAIL:
+				if(pd != null){
+					pd.dismiss();
+				}
+				Toast.makeText(PersonalPostView.this.getContext(), "恢复失败,请稍后重试！", 0).show();
+				break;
+			case MSG_RESTORE_POST_SUCCESS:
+				if(pd != null){
+					pd.dismiss();
+				}
+				if(listDeleted == null) break;
+				try{
+					JSONObject jb = new JSONObject(json);
+					JSONObject js = jb.getJSONObject("error");
+					String message = js.getString("message");
+					int code = js.getInt("code");
+					if(code == 0){
+						for(int i = 0; i < listDeleted.size(); ++ i){
+							if(listDeleted.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)msg.obj)){
+								listDeleted.remove(i);
+								break;
+							}
+						}
+						if(currentPage == 1){
+							adapter.setList(listDeleted);
+							adapter.notifyDataSetChanged();
+						}
+						Toast.makeText(PersonalPostView.this.getContext(), message, 0).show();
+					}
+					else{
+						Toast.makeText(PersonalPostView.this.getContext(), "恢复失败,请稍后重试！", 0).show();
+					}
+				}catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+				break;
 //			case MCMESSAGE_NETWORKERROR:
 //				if (pd != null) {
 //					pd.dismiss();
@@ -328,61 +438,103 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 //				
 //				break;
 			}
-			super.handleMessage(msg);
+//			super.handleMessage(msg);
 		}
 	};
-
-//	class MyMessageDeleteThread implements Runnable {
-//		private int position;
-//
-//		public MyMessageDeleteThread(int position) {
-//			this.position = position;
-//		}
-//
-//		@Override
-//		public void run() {
-//			// TODO Auto-generated method stub
-//			json = "";
-//			String apiName = "ad_delete";
-//			ArrayList<String> list = new ArrayList<String>();
-//			list.add("mobile=" + mobile);
-//			String password1 = Communication.getMD5(password);
-//			password1 += Communication.apiSecret;
-//			String userToken = Communication.getMD5(password1);
-//			list.add("userToken=" + userToken);
-//			list.add("adId=" + listMyPost.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-//
-//			String url = Communication.getApiUrl(apiName, list);
-//			try {
-//				json = Communication.getDataByUrl(url);
-//				if (json != null) {
-//					Message msg = myHandler.obtainMessage();
-//					msg.arg2 = position;
-//					msg.what = MCMESSAGE_DELETE_SUCCESS;
-//					myHandler.sendMessage(msg);
-//					// myHandler.sendEmptyMessageDelayed(5, 3000);5
-//				} else {
-//					myHandler.sendEmptyMessage(MCMESSAGE_DELETE_FAIL);
-//				} 
-//
-//			} catch (UnsupportedEncodingException e) {
-//				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
-//			} catch (IOException e) {
-//				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
-//			} catch (Communication.BXHttpException e){
-//				
-//			}
-//		}
-//	}
-//	
-	@Override
-	public boolean onLeftActionPressed(){
-		if(currentPage != -1 && 0 == buttonStatus){
-//			myHandler.sendEmptyMessage(MCMESSAGE_DELETEALL);
-		}else{
-			m_viewInfoListener.onNewView(new SetMainView(getContext()));
+	
+	class MyMessageRestoreThread implements Runnable{
+		private String id;
+		public MyMessageRestoreThread(String id){
+			this.id = id;
 		}
-		return true;
+		
+		@Override
+		public void run(){
+			if(user == null)return;
+			json = "";
+			String apiName = "ad_undelete";
+			ArrayList<String> list = new ArrayList<String>();
+			list.add("mobile=" + user.getPhone());
+			String password1 = Communication.getMD5(user.getPassword());
+			password1 += Communication.apiSecret;
+			String userToken = Communication.getMD5(password1);
+			list.add("userToken=" + userToken);
+			list.add("adId=" + id);
+
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				json = Communication.getDataByUrl(url);
+				if (json != null) {
+					Message msg = myHandler.obtainMessage();
+					msg.obj = id;
+					msg.what = MSG_RESTORE_POST_SUCCESS;
+					myHandler.sendMessage(msg);
+				} else {
+					myHandler.sendEmptyMessage(MSG_RESTORE_POST_FAIL);
+				} 
+				return;
+
+			} catch (UnsupportedEncodingException e) {
+				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+			} catch (IOException e) {
+				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+			} catch (Communication.BXHttpException e){
+				
+			}
+			if(pd != null){
+				pd.dismiss();
+			}
+		}
+	}
+
+	class MyMessageDeleteThread implements Runnable {
+		private String id;
+		private int currengPage = -1;
+
+		public MyMessageDeleteThread(String id){
+			this.id = id;
+			this.currengPage = PersonalPostView.this.currentPage;
+		}
+
+		@Override
+		public void run() {
+			// TODO Auto-generated method stub
+			if(user == null)return;
+			json = "";
+			String apiName = "ad_delete";
+			ArrayList<String> list = new ArrayList<String>();
+			list.add("mobile=" + user.getPhone());
+			String password1 = Communication.getMD5(user.getPassword());
+			password1 += Communication.apiSecret;
+			String userToken = Communication.getMD5(password1);
+			list.add("userToken=" + userToken);
+			list.add("adId=" + id);
+
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				json = Communication.getDataByUrl(url);
+				if (json != null) {
+					Message msg = myHandler.obtainMessage();
+					msg.obj = id;
+					msg.arg1 = currengPage;
+					msg.what = MSG_DELETE_POST_SUCCESS;
+					myHandler.sendMessage(msg);
+				} else {
+					myHandler.sendEmptyMessage(MSG_DELETE_POST_FAIL);
+				} 
+				return;
+
+			} catch (UnsupportedEncodingException e) {
+				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+			} catch (IOException e) {
+				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+			} catch (Communication.BXHttpException e){
+				
+			}
+			if(pd != null){
+				pd.dismiss();
+			}
+		}
 	}
 
 	@Override
@@ -452,8 +604,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
-		title.m_leftActionHint = "设置";
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
+		title.m_leftActionHint = "返回";
+		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		title.m_rightActionHint = "编辑";
 		title.m_title = "个人中心";
 		title.m_visible = true;
