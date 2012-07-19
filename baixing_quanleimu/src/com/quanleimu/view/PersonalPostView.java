@@ -156,7 +156,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index));
 				}
 				else if(null !=  listInVerify && index < listInVerify.size() && 0 == currentPage){
-//					detail = goodsList.get(index);
+					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index));
 					////TODO...... new verify view
 				}
 				else if(null != listDeleted && index < listDeleted.size() && 1 == currentPage){
@@ -295,20 +295,23 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				else{
 					if(msg.what == MSG_MYPOST){
 						listMyPost = gl.getData();
-						glLoader.setGoodsList(gl);
+						if(listMyPost != null){
+							for(int i = listMyPost.size() - 1; i >= 0; -- i){
+								if(!listMyPost.get(i).getValueByKey("status").equals("0")){
+									listMyPost.remove(i);
+								}
+							}
+						}
+						GoodsList gl2 = new GoodsList();
+						gl2.setData(listMyPost);
+						glLoader.setGoodsList(gl2);
 					}
 					else if(msg.what == MSG_INVERIFY) {
-						if(listInVerify == null){
-							listInVerify = new ArrayList<GoodsDetail>();
-						}
-						listInVerify.clear();
-						if(gl.getData() != null){
-							for(int i = 0; i < gl.getData().size(); ++ i){
-								if(gl.getData().get(i).getValueByKey("status").equals("4")){
-									listInVerify.add(gl.getData().get(i));
-								}
-								else{
-									Log.d("", "不是4啊啊啊啊啊啊啊啊啊啊啊啊啊");
+						listInVerify = gl.getData();
+						if(listInVerify != null){
+							for(int i = listInVerify.size() - 1; i >= 0; -- i){
+								if(!listInVerify.get(i).getValueByKey("status").equals("4")){
+									listInVerify.remove(i);
 								}
 							}
 						}
@@ -545,7 +548,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				TitleDef title = getTitleDef();
 				title.m_rightActionHint = "完成";
 				if(currentPage != -1){
-					title.m_leftActionHint = "清空";
+//					title.m_leftActionHint = "清空";
 				}
 				m_viewInfoListener.onTitleChanged(title);
 			}
@@ -639,5 +642,25 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		glLoader.setParams(params);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg);
+	}
+	
+	@Override
+	public void onPreviousViewBack(int message, Object obj){
+		if(GoodDetailView.MSG_ADINVERIFY_DELETED == message){
+			if(obj != null){
+				if(this.listInVerify != null){
+					for(int i = 0; i < listInVerify.size(); ++ i){
+						if(listInVerify.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)obj)){
+							listInVerify.remove(i);
+							break;
+						}
+					}
+					if(currentPage == 0){
+						adapter.setList(listInVerify);
+						adapter.notifyDataSetChanged();
+					}
+				}
+			}
+		}
 	}
 }

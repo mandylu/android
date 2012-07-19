@@ -44,6 +44,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.WeiboAccessTokenWrapper;
@@ -76,6 +77,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	final private int msgRefresh = 5;
 	final private int msgUpdate = 6;
 	final private int msgDelete = 7;
+	
+	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 
 	// 定义控件
 	public MainAdapter adapter;
@@ -228,7 +231,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			else{
 				if(this.m_viewInfoListener != null){
 					TitleDef title = getTitleDef();
-					title.m_rightActionHint = strCollect;
+					title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
 					m_viewInfoListener.onTitleChanged(title);
 					btnStatus = -1;
 				}
@@ -326,7 +329,25 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
-		this.addView(v);		
+		this.addView(v);
+		if(!detail.getValueByKey("status").equals("4")){
+			v.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
+			v.findViewById(R.id.graymask).setVisibility(View.GONE);
+			v.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
+		}
+		else{
+			if(detail.getValueByKey("tips").equals("")){
+				((TextView)v.findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
+			}
+			else{
+				((TextView)v.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
+			}
+			v.findViewById(R.id.fenxianglayout).setEnabled(false);
+			v.findViewById(R.id.showmap).setEnabled(false);
+			v.findViewById(R.id.jubaolayout).setEnabled(false);
+			v.findViewById(R.id.sms).setEnabled(false);
+			v.findViewById(R.id.call).setEnabled(false);
+		}
 		
 		if(detail.getImageList() != null){
 			String b = (detail.getImageList().getResize180()).substring(1, (detail.getImageList().getResize180()).length()-1);
@@ -560,7 +581,20 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	
 	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
+	
+	private boolean handleRightBtnIfInVerify(){
+		if(!detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals("0")){
+			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
+			pd.setCancelable(true);
+			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+
+			return true;	
+		}
+		return false;
+	}
+	
 	private void handleStoreBtnClicked(){
+		if(handleRightBtnIfInVerify()) return;
 		if(-1 == btnStatus){
 			btnStatus = 0;
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
@@ -994,19 +1028,23 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					String message = js.getString("message");
 					int code = js.getInt("code");
 					if (code == 0) {
-						// 删除成功
-						List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
-						for(int i = 0; i < listMyPost.size(); ++ i){
-							if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-									.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
-								listMyPost.remove(i);
-								break;
+						if(detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals("0")){
+							List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+							for(int i = 0; i < listMyPost.size(); ++ i){
+								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+										.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+									listMyPost.remove(i);
+									break;
+								}
+							}
+	//						listMyPost.remove(pos);
+							QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+							if(m_viewInfoListener != null){
+								m_viewInfoListener.onBack();
 							}
 						}
-//						listMyPost.remove(pos);
-						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-						if(m_viewInfoListener != null){
-							m_viewInfoListener.onBack();
+						else{
+							m_viewInfoListener.onBack(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 						}
 //						finish();
 						Toast.makeText(GoodDetailView.this.getContext(), message, 0).show();
@@ -1205,7 +1243,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "收藏";
+		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		title.m_title = "详细信息";
 		title.m_visible = true;
 		return title;
