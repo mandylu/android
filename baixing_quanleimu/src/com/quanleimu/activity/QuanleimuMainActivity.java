@@ -267,6 +267,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
     	if(view == currentView ){
     		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+    		currentView.onPause();
     		scroll.removeAllViews();    		
     		currentView.onDestroy();
     		
