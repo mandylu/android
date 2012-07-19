@@ -159,14 +159,14 @@ public class PullableScrollView extends ScrollView
 				int footerTop = view.getTop() - getScrollY();
 				int footerHeight = view.getHeight() - view.getPaddingBottom();
 				
-				status = footerTop  - mViewHeight;
+				status = footerTop  - mViewHeight + 1;
 				int bottomStatus = status + footerHeight;
 				
 	
 				if(status < 0 && bottomStatus + FLIP_DISTANCE_PIXEL > 0)
 					status = 0;
 				
-				Log.d("PullableScrollView", "footerTop = "+footerTop+", footHeight = "+footerHeight+"frameHeight = "+mViewHeight+"status ="+status);
+				Log.d("PullableScrollView", "footerTop = "+footerTop+", footHeight = "+footerHeight+"frameHeight = "+mViewHeight+"status ="+status+"bottomStatus"+bottomStatus);
 			}
 		}
 		
@@ -181,11 +181,13 @@ public class PullableScrollView extends ScrollView
 			View view = mPullNotifier.getHeaderView();
 			if (view != null)
 			{
-				status = getScrollY() - (view.getBottom() - view.getPaddingTop());
+				status = getScrollY() - (view.getBottom() - view.getPaddingTop()) + 1;
 				int statusTop = getScrollY() - view.getTop();
 				
 				if(status < 0 && (statusTop > 0 || status + FLIP_DISTANCE_PIXEL > 0))
 					status = 0;
+				
+				Log.d("PullableScrollView", "status ="+status+"statusTop"+statusTop);
 			}
 		}
 		
@@ -217,7 +219,7 @@ public class PullableScrollView extends ScrollView
 	public void onNewViewLoaded(boolean bPrev)
 	{		
 		if(bPrev)
-			scrollToContentHeader();
+			scrollToContentHeader(true);
 		else
 			scrollToContentFooter();
 		
@@ -254,6 +256,8 @@ public class PullableScrollView extends ScrollView
 				applyHeaderPadding(motionevent);
 				
 				if(mState != PULL_STATE.PULL_STATE_LOADING_NEXT && mState != PULL_STATE.PULL_STATE_LOADING_PREV){
+					Log.d("PullableScrollView", "it is in onTouchEvent");
+					
 					if(getHeaderStatus() <= 0)
 						mResponsePart = -1;
 					else if(getFooterStatus() <= 0)
@@ -340,7 +344,7 @@ public class PullableScrollView extends ScrollView
 					}
 					else{
 				        if(mState == PULL_STATE.PULL_STATE_PULLDOWN2PREV){
-				        	scrollToContentHeader();
+				        	scrollToContentHeader(true);
 				        	mState = PULL_STATE.PULL_STATE_IDLE;
 				        }else if(mState == PULL_STATE.PULL_STATE_PULLUP2NEXT){
 				        	scrollToContentFooter();
@@ -348,69 +352,114 @@ public class PullableScrollView extends ScrollView
 				        } 
 					}
 				}
+				
 				mDuringTouch = false;
+				
+				Log.d("PullableScrollView", "ACTION_UP event is handled");
 
 				break;
 			}
 
-		Log.d("PullableScrollView", "event "+ motionevent.getAction()+" handled!!");
+		//Log.d("PullableScrollView", "event "+ motionevent.getAction()+" handled!!");
 		
 		return super.onTouchEvent(motionevent);
 	}
 
 	protected void scrollToContentFooter() {
-		mAvoidEndlessScrollAPICall = true;
+		//mAvoidEndlessScrollAPICall = true;
 		
 		int footerTop = mPullNotifier.getFooterView().getTop();
 		scrollTo(0, footerTop - mViewHeight);	
+		
+		Log.d("PullableScrollView", "scrollToContentFooter() called!!!");
 	}
 
-	protected void scrollToContentHeader() {
-		mAvoidEndlessScrollAPICall = true;
+	protected void scrollToContentHeader(boolean bSmoothScroll) {
+		//mAvoidEndlessScrollAPICall = true;
 		
 		int headerBottom = mPullNotifier.getHeaderView().getBottom();
-		scrollTo(0, headerBottom);		
+		if(bSmoothScroll)
+			scrollTo(0, headerBottom);	
+		else
+			this.smoothScrollTo(0, headerBottom);
+		
+		Log.d("PullableScrollView", "scrollToContentHeader() called!!!");
 	}	
 
-	private boolean mAvoidEndlessScrollAPICall = false;
-	 @Override
-	 public void onScrollChanged(int x, int y, int oldX, int oldY){
-		 Log.d("PullableScrollView", "in-touch-duration-state="+mDuringTouch+", and mAvoidEndlessScrollAPICall="+mAvoidEndlessScrollAPICall);
-		 
-		 if(	!mAvoidEndlessScrollAPICall 
-				 && (	mState == PULL_STATE.PULL_STATE_IDLE 
-				 		|| (	!mDuringTouch 
-				 				&& mState != PULL_STATE.PULL_STATE_LOADING_NEXT 
-				 				&& mState != PULL_STATE.PULL_STATE_LOADING_PREV) )){
-			 			 
-			 if(getHeaderStatus() <= 0){
-				 scrollToContentHeader();				 
-			 }else if(getFooterStatus() <= 0){
-				 scrollToContentFooter();
-			 }
-			 
-			 mState = PULL_STATE.PULL_STATE_IDLE;
-		 }
-		 
-		 mAvoidEndlessScrollAPICall = false;
-	 }
+	
+	@Override
+	public void computeScroll() {
+		super.computeScroll();
+		
+		if(!mDuringTouch && null != mPullNotifier){
+			if(getScrollY() > mPullNotifier.getFooterView().getTop()-mViewHeight)
+				scrollTo(0, mPullNotifier.getFooterView().getTop()-mViewHeight);
+			else if(getScrollY() < mPullNotifier.getHeaderView().getBottom())
+				scrollTo(0, mPullNotifier.getHeaderView().getBottom());
+		}
+	}
+//	private boolean mAvoidEndlessScrollAPICall = false;
+//	private boolean mInFling = false;
+//	 @Override
+//	 public void onScrollChanged(int x, int y, int oldX, int oldY){
+//		 Log.d("PullableScrollView", "duringTouch="+mDuringTouch+", scrollChanged("+x+", "+y+", "+oldX+", "+oldY+");");
+//		 
+//
+//				if(y > mPullNotifier.getFooterView().getTop()-mViewHeight || y < mPullNotifier.getHeaderView().getBottom()){
+//					
+//					int i = 0;
+//					int ii = i+i;
+//				}
+//					
+//
+//		 //Log.d("PullableScrollView", "it is in onScrollChange");
+//		 
+////		 if(	!mAvoidEndlessScrollAPICall 
+////				 && (	mState == PULL_STATE.PULL_STATE_IDLE 
+////				 		|| (	!mDuringTouch 
+////				 				&& mState != PULL_STATE.PULL_STATE_LOADING_NEXT 
+////				 				&& mState != PULL_STATE.PULL_STATE_LOADING_PREV) )){
+////			 			 
+////			 if(getHeaderStatus() <= 0){
+////				 scrollToContentHeader(true);				 
+////			 }else if(getFooterStatus() <= 0){
+////				 scrollToContentFooter();
+////			 }
+////			 
+////			 mState = PULL_STATE.PULL_STATE_IDLE;
+////		 }
+////		 
+////		 mAvoidEndlessScrollAPICall = false;
+//	 }
 
+//	@Override
+//	protected void onAnimationStart(){
+//		super.onAnimationStart();
+//	}
+//	
+//	@Override
+//	protected void onAnimationEnd(){
+//		super.onAnimationEnd();
+//	}
+	
 	@Override
 	public void scrollTo(int i, int j)
-	{
-		Log.d("PullableScrollView", "scrollTo("+i+","+j+") called()!!");
-		super.scrollTo(i, j);
-		if(!mDuringTouch 
-				&& mState != PULL_STATE.PULL_STATE_LOADING_NEXT  
-				&& mState != PULL_STATE.PULL_STATE_LOADING_PREV 
-				&& !mAvoidEndlessScrollAPICall){
-			this.onScrollChanged(i, j, 0, 0);
+	{	
+		if(!mDuringTouch && null != mPullNotifier){
+			if(j > mPullNotifier.getFooterView().getTop()-mViewHeight)
+				j = mPullNotifier.getFooterView().getTop();
+			else if(j < mPullNotifier.getHeaderView().getBottom())
+				j = mPullNotifier.getHeaderView().getBottom();
 		}
+		
+		Log.d("PullableScrollView", "scrollTo("+i+","+j+") when mDuringTouch"+mDuringTouch+"headerBottom="+mPullNotifier.getHeaderView().getBottom()+"&footerTop="+(mPullNotifier.getFooterView().getTop()-mViewHeight));
+		
+		super.scrollTo(i, j);
 	}
 	 
 	 @Override
 	 public void fling(int velocityY){
-		 Log.d("PullableScrollView", "fling("+velocityY+") called!!");
+		 //Log.d("PullableScrollView", "fling("+velocityY+") called!!");
 		 super.fling(velocityY);
 	 }
 
