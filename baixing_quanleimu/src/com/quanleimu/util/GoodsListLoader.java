@@ -121,7 +121,7 @@ public class GoodsListLoader {
 				list.addAll(params);
 			}
 			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
-			
+			list.add("rt=1");
 			if(mRows > 0)
 				list.add("rows=" + mRows);
 
@@ -140,6 +140,7 @@ public class GoodsListLoader {
 				} else {
 					mHandler.sendEmptyMessage(msgNoMore);
 				}
+				return;
 			} catch (UnsupportedEncodingException e) {
 			} catch (IOException e) {
 				mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
