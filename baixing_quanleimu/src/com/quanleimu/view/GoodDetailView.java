@@ -79,6 +79,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	final private int msgDelete = 7;
 	
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
+	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
 	// 定义控件
 	public MainAdapter adapter;
@@ -1044,7 +1045,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	//						listMyPost.remove(pos);
 							QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 							if(m_viewInfoListener != null){
-								m_viewInfoListener.onBack();
+								m_viewInfoListener.onBack(MSG_MYPOST_DELETED, null);
 							}
 						}
 						else{

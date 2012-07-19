@@ -661,7 +661,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					}
 				}
 			}
-		}else if(currentPage == -1){
+		}else if(GoodDetailView.MSG_MYPOST_DELETED == message){
 			if(glLoader.getGoodsList() != null 
 					&& glLoader.getGoodsList().getData() != null 
 					&& glLoader.getGoodsList().getData().size() > 0){
