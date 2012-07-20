@@ -585,7 +585,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
 	
 	private boolean handleRightBtnIfInVerify(){
-		if(!detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals("0")){
+		if(!detail.getValueByKey("status").equals("0")){
 			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
 			pd.setCancelable(true);
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
