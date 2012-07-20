@@ -12,6 +12,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
@@ -21,7 +22,12 @@ import android.widget.ListAdapter;
 import com.quanleimu.adapter.CommonItemAdapter;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Util;
+
 import java.util.LinkedHashMap;
+
+import org.json.JSONObject;
+
 import com.quanleimu.entity.PostGoodsBean;
 public class MultiLevelSelectionView extends BaseView {
 	public static class MultiLevelItem extends Object{
@@ -236,6 +242,9 @@ public class MultiLevelSelectionView extends BaseView {
 				if(json != null){
 					LinkedHashMap<String, PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
 					if(beans != null){
+						if(msg.obj != null){
+							QuanleimuApplication.putCacheNetworkRequest((String)msg.obj, json);
+						}
 						PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 						if(MultiLevelSelectionView.this.items == null || MultiLevelSelectionView.this.items.size() == 0){
 							MultiLevelSelectionView.this.items = new ArrayList<MultiLevelItem>();
@@ -287,13 +296,23 @@ public class MultiLevelSelectionView extends BaseView {
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("objIds=" + id);
 			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
+			String extractedUrl = Util.extractUrlWithoutSecret(url);
+			String result = QuanleimuApplication.getCacheNetworkRequest(extractedUrl);
+			if(result != null && !result.equals("")){
+				json = result;
 			}
-			catch(Exception e){
-				e.printStackTrace();
+			else{
+				try {
+					json = Communication.getDataByUrl(url);
+				}
+				catch(Exception e){
+					e.printStackTrace();
+				}
 			}
-			myHandler.sendEmptyMessage(MESSAGE_GET_METAOBJ);
+			Message msg = myHandler.obtainMessage();
+			msg.obj = extractedUrl;
+			msg.what = MESSAGE_GET_METAOBJ;
+			myHandler.sendMessage(msg);
 		}
 	}
 

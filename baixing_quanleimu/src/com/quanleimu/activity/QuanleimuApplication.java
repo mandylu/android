@@ -2,6 +2,7 @@ package com.quanleimu.activity;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Map;
 
@@ -41,6 +42,28 @@ public class QuanleimuApplication extends Application {
 	public static boolean textMode = false;
 	private static AccessToken accessToken = null;
 	private static SharedPreferences preferences = null;
+	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
+	
+	public static String getCacheNetworkRequest(String request){
+		if(cacheNetworkRequest == null) return null;
+		return cacheNetworkRequest.get(request);
+	}
+	
+	public static void putCacheNetworkRequest(String request, String result){
+		if(request ==  null || result == null || request.equals("")) return;
+		if(cacheNetworkRequest == null){
+			cacheNetworkRequest = new LinkedHashMap<String, String>();
+		}
+		if(cacheNetworkRequest.containsKey(request)){
+			cacheNetworkRequest.put(request, result);
+		}
+		else{
+			if(cacheNetworkRequest.size() >= 50){
+				cacheNetworkRequest.remove(cacheNetworkRequest.keySet().iterator().next());
+			}
+			cacheNetworkRequest.put(request, result);
+		}
+	}
 	
 	public static void addViewCounter(String adId){
 		if(!ads_viewed.equals("")){

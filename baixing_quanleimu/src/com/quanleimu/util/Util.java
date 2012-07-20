@@ -1007,4 +1007,24 @@ public class Util {
 //        };
 //        thread.start();
 //	}
+	
+	public static String extractUrlWithoutSecret(String url){
+		if(url == null || url.equals("")) return null;
+		int index1 = url.indexOf("access_token=");
+		int index2 = -1;
+		if(index1 >= 0){
+			index2 = url.indexOf("&", index1);
+			if(index2 > index1){
+				url = url.replace(url.substring(index1, index2), "");
+			}
+		}
+		index1 = url.indexOf("timestamp=");
+		if(index1 >= 0){
+			index2 = url.indexOf("&", index1);
+			if(index2 > index1){
+				url = url.replace(url.substring(index1, index2), "");
+			}
+		}
+		return url;
+	}
 }
