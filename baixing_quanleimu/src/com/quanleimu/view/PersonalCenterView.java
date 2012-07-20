@@ -93,9 +93,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 		LinearLayout lView = (LinearLayout)this.findViewById(R.id.linearListView);
 		
 		if(-1 == currentPage){
-			ivMyads.setImageResource(R.drawable.btn_posted_press);
-			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
-			ivMyhistory.setImageResource(R.drawable.btn_history_normal);
+			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
+			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
+			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "我发布的信息";
@@ -170,9 +170,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lView.removeView(loginItem);
 			}
 			lvGoodsList.setVisibility(View.VISIBLE);
-			ivMyads.setImageResource(R.drawable.btn_posted_normal);
-			ivMyfav.setImageResource(R.drawable.btn_fav_press);
-			ivMyhistory.setImageResource(R.drawable.btn_history_normal);
+			ivMyads.setImageResource(R.drawable.bg_segment_sent);
+			ivMyfav.setImageResource(R.drawable.bg_segment_approving_selected);
+			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
 			
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
@@ -194,9 +194,9 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				lView.removeView(loginItem);
 			}
 			lvGoodsList.setVisibility(View.VISIBLE);
-			ivMyads.setImageResource(R.drawable.btn_posted_normal);
-			ivMyfav.setImageResource(R.drawable.btn_fav_normal);
-			ivMyhistory.setImageResource(R.drawable.btn_history_press);
+			ivMyads.setImageResource(R.drawable.bg_segment_sent);
+			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
+			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted_selected);
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "我的历史";
