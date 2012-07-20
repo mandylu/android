@@ -54,7 +54,7 @@
 	        android:id="@+id/contentLayout"
 	        android:layout_width="fill_parent"
 	        android:layout_height="0dip"
-	        android:background="@drawable/bg" 
+ 
 	        android:layout_weight="1">
 	    </LinearLayout>
 	
@@ -77,8 +77,7 @@
          	android:layout_height="wrap_content"
          	android:layout_width="wrap_content"
          	android:layout_weight="1"
-         	android:layout_gravity="bottom"
-         	android:background="@drawable/blank">  
+         	android:layout_gravity="bottom">  
          	
             <ImageView
 		        android:id="@+id/ivHomePage"
@@ -95,8 +94,7 @@
          	android:layout_height="wrap_content"
          	android:layout_width="wrap_content"
          	android:layout_weight="1"
-         	android:baselineAligned="true"
-         	android:background="@drawable/blank">   
+         	android:baselineAligned="true">   
          	
 		    <ImageView
 		        android:id="@+id/ivPostGoods"
@@ -113,8 +111,7 @@
          	android:layout_height="wrap_content"
          	android:layout_width="wrap_content"
          	android:layout_weight="1"
-         	android:baselineAligned="true"
-         	android:background="@drawable/blank">            
+         	android:baselineAligned="true">            
 
 		    <ImageView
 		        android:id="@+id/ivMyCenter"

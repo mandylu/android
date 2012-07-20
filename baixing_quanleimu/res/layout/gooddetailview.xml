@@ -3,14 +3,13 @@
     android:id="@+id/gooddetaillayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/bg_home" >
+    android:background="@drawable/home_bg" >
 
     <com.quanleimu.widget.PullableScrollView
         android:id="@+id/svDetail"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/phonelayout"
-        android:background="@drawable/home_bg" >
+        android:layout_above="@+id/phonelayout">
 
         <LinearLayout
             android:layout_width="fill_parent"

@@ -9,8 +9,7 @@
 		android:layout_width="fill_parent"
 		android:layout_height="fill_parent"
 		android:layout_above="@+id/linearBottom"
-		android:layout_below="@+id/linearTop"
-		android:background="@drawable/bg" > 
+		android:layout_below="@+id/linearTop"> 
 		
 	        <LinearLayout
 	            android:id="@+id/linearLayoutAbout"

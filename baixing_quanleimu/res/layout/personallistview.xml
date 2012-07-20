@@ -9,7 +9,6 @@
         android:id="@+id/plvlist"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="@drawable/home_bg"
         android:divider="@drawable/list_divider"
         android:dividerHeight="1dp"
         android:fastScrollEnabled="false"
