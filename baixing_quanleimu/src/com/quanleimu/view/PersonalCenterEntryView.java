@@ -110,7 +110,11 @@ public class PersonalCenterEntryView extends BaseView implements
 			}
 			break;
 		case R.id.rl_wosent:
-			m_viewInfoListener.onNewView(new PersonalPostView(this.getContext(), bundle));
+			if(user == null){
+				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
+			}else{
+				m_viewInfoListener.onNewView(new PersonalPostView(this.getContext(), bundle));
+			}			
 			break;
 		default:
 			break;
