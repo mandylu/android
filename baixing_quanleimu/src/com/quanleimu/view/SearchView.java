@@ -241,11 +241,6 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	public void onAttachedToWindow(){
 		super.onAttachedToWindow();
 		etSearch.postDelayed(new Runnable(){
-			public void run(){
-				
-			}
-		}, 100);
-		etSearch.postDelayed(new Runnable(){
 			@Override
 			public void run(){
 				etSearch.requestFocus();
