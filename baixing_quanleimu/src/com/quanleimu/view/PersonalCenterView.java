@@ -231,7 +231,7 @@ public class PersonalCenterView extends BaseView implements OnScrollListener, Vi
 				}
 				
 				if(null != detail){
-					GoodDetailView detailView = new GoodDetailView(getContext(), bundle, mListLoader, index);
+					GoodDetailView detailView = new GoodDetailView(getContext(), bundle, mListLoader, index, null);
 					detailView.setInfoChangeListener(m_viewInfoListener);
 					m_viewInfoListener.onNewView(detailView);
 				}

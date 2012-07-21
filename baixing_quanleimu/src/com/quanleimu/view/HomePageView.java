@@ -560,7 +560,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					final ImageView iv_f = iv;
 					
 					bitmapReal = imgLoader.getWithImmediateIO(loadingList.get(position).getImgUrl(), new ImageLoaderCallback(){					
-						
+						@Override
 						public void refresh(final String url, final Bitmap bitmap){										
 							
 							if(position_f < curList.size()){
@@ -574,7 +574,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 							if(iv_f != null)	iv_f.setImageBitmap(bitmap);
 	
 							(new AdapterNotifyChange(thisAdapter)).execute(true);
-						}					
+						}	
+						
+						@Override
+						public Object getObject(){
+							return iv_f;
+						}
 					});
 					
 				}
@@ -608,6 +613,11 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 								}								
 								notifyChange();
 							}
+							
+							@Override
+							public Object getObject(){
+								return null;
+							}
 						});
 						
 						if(bitmapNext != null){
@@ -624,7 +634,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					
 						public void refresh(final String url, final Bitmap bitmap){	
 								Log.d( "HotList original image loader 1", "original hotlist picture missing!!");
-					    }					
+					    }	
+						
+						@Override
+						public Object getObject(){
+							return null;
+						}
 					});
 					
 					if(bitmap != null){

@@ -222,6 +222,7 @@ public class GoodsListAdapter extends BaseAdapter {
 								holder.ivInfo.setTag(c[0]);
 								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 								SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context);
+								//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 							}
 						} else {
 							if (b == null || b.equals("")) {
@@ -239,15 +240,19 @@ public class GoodsListAdapter extends BaseAdapter {
 								holder.ivInfo.setTag(b);
 								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
 								SimpleImageLoader.showImg(holder.ivInfo, b, this.context);
+								//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 							}
 						}
 		//			}
 				}
 				
 				if(listUrlsToCancel.size() > 0){
-					Log.d("in GoodsListAdapter", "canceled image loading: "+listUrlsToCancel.get(0));
 					
-					SimpleImageLoader.Cancel(listUrlsToCancel);
+					for(String url : listUrlsToCancel){
+						//Log.d("GoodsListAdapter canceled image", "canceled: "+url);
+						
+						SimpleImageLoader.Cancel(url, holder.ivInfo);
+					}
 				}
 			}
 			String price = list.get(position).getMetaValueByKey("价格");

@@ -10,6 +10,7 @@ import android.os.Handler;
 import com.quanleimu.entity.GoodsList;
 
 public class GoodsListLoader {
+	
 	private GoodsList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
 	private List<String> params = null;
 	private String mFields = "";
@@ -22,6 +23,7 @@ public class GoodsListLoader {
 	private static String mApiName = "ad_list";
 	
 	private static String mLastJson = null;
+	//private IListHolder mHolder = null;
 	
 	
 	public final static int MSG_FINISH_GET_FIRST = 0;
@@ -120,6 +122,7 @@ public class GoodsListLoader {
 			if(params != null){
 				list.addAll(params);
 			}
+			
 			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
 			list.add("rt=1");
 			if(mRows > 0)

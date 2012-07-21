@@ -153,10 +153,10 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					return;
 				
 				if(currentPage == -1 && index < listMyPost.size() ){
-					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index));
+					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index, null));
 				}
 				else if(null !=  listInVerify && index < listInVerify.size() && 0 == currentPage){
-					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index));
+					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index, null));
 					////TODO...... new verify view
 				}
 				else if(null != listDeleted && index < listDeleted.size() && 1 == currentPage){
@@ -205,15 +205,31 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	
 	@Override
 	public void onPause(){
+		super.onPause();
+		
 		if(adapter != null){
 			adapter.setHasDelBtn(false);
 			adapter.notifyDataSetChanged();
 		}
+		
 		buttonStatus = -1;
+		
+		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+			}
+		}		
 	}
 
 	@Override
 	public void onResume(){
+		super.onResume();
+		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
 			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
 			

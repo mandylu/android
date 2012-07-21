@@ -55,7 +55,7 @@ public class Communication implements Comparator<String> {
 	public static String getApiUrl(String apiName, ArrayList<String> parameters) {
 
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
-		System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> getApiUrl:" + url);
+		//System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> getApiUrl:" + url);
 		return url;
 	}
 
@@ -76,7 +76,7 @@ public class Communication implements Comparator<String> {
 		try {
 			packInfo = packageManager.getPackageInfo(QuanleimuApplication.context.getPackageName(), 0);
 			QuanleimuApplication.version = packInfo.versionName;
-			System.out.println("version--->" + QuanleimuApplication.version);
+			//System.out.println("version--->" + QuanleimuApplication.version);
 		} catch (NameNotFoundException e1) {
 			// TODO Auto-generated catch block
 			e1.printStackTrace();
@@ -289,7 +289,7 @@ public class Communication implements Comparator<String> {
 			if(url.contains("adIds=")){
 				QuanleimuApplication.resetViewCounter();//counter sent successfully
 			}
-			System.out.println(temp);
+			//System.out.println(temp);
 			return temp;		  
 	  }
 	  
@@ -338,7 +338,7 @@ public class Communication implements Comparator<String> {
 		if(url.contains("adIds=")){
 			QuanleimuApplication.resetViewCounter();//counter sent successfully
 		}
-		System.out.println(temp);
+		//System.out.println(temp);
 		return temp;
 	}
 
@@ -404,7 +404,7 @@ public class Communication implements Comparator<String> {
 	private static final String BOUNDARY = "---------------------------19861025304733";
 
 	public static String uploadPicture(Bitmap bmp) {
-		// System.out.println("uploadPicture");
+		// //System.out.println("uploadPicture");
 		try {
 
 			StringBuffer sb = new StringBuffer();
@@ -419,8 +419,8 @@ public class Communication implements Comparator<String> {
 			ByteArrayOutputStream bos = new ByteArrayOutputStream();
 			bmp.compress(Bitmap.CompressFormat.JPEG, (Communication.isWifi() ? 100:50), bos);
 			byte[] file = bos.toByteArray();
-			System.out.println(data.toString());
-			System.out.println("[Image upload] " + file.length + " bytes");
+			//System.out.println(data.toString());
+			//System.out.println("[Image upload] " + file.length + " bytes");
 			
 			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
             
@@ -464,7 +464,7 @@ public class Communication implements Comparator<String> {
 			while ((line = buffer.readLine()) != null) {
 				content += line;
 			}
-			System.out.println("uploaded image response: " + content);
+			//System.out.println("uploaded image response: " + content);
 			reader.close();
 			httpClient.getConnectionManager().shutdown();
 			String retUrl = null;

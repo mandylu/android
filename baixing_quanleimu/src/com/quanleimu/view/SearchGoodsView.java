@@ -114,7 +114,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 							bundle.putString("backPageName", title);
 							bundle.putString("detail_type", "searchgoods");
 							bundle.putInt("detail_pos", arg2);
-							m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, mListLoader, index));
+							m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, mListLoader, index, null));
 						}
 					}
 				});
@@ -154,6 +154,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 	
 	@Override
 	public void onResume(){
+		super.onResume();
+		
 		for(int i = 0; i < lvSearchResult.getChildCount(); ++i){
 			ImageView imageView = (ImageView)lvSearchResult.getChildAt(i).findViewById(R.id.ivInfo);
 			
@@ -162,6 +164,24 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
 				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+			}
+		}
+		
+		lvSearchResult.setSelection(mListLoader.getSelection());
+	}	
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		
+		for(int i = 0; i < lvSearchResult.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvSearchResult.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
 			}
 		}
 		

@@ -34,6 +34,10 @@ public class SimpleImageLoader
 	//	QuanleimuApplication.lazyImageLoader.forceRecycle();
 	}
 	
+	public static void Cancel(String url, Object object){
+		QuanleimuApplication.lazyImageLoader.Cancel(url, object);
+	}
+	
 	public static String getFileInDiskCache(String url){
 		return QuanleimuApplication.lazyImageLoader.getFileInDiskCache(url);
 	}
@@ -78,7 +82,7 @@ public class SimpleImageLoader
 	{		
 		return new ImageLoaderCallback()
 		{ 
-			
+			@Override
 			public void refresh(String url, Bitmap bitmap)
 			{
 					if(url.equals(view.getTag().toString()))
@@ -89,7 +93,12 @@ public class SimpleImageLoader
 					{
 //						view.setImageResource(R.drawable.moren);
 					}
-				}
+			}
+			
+			@Override
+			public Object getObject(){
+				return view;
+			}
 		};
 		
 	}
@@ -123,6 +132,12 @@ public class SimpleImageLoader
 				{
 //					imageView.setImageResource(R.drawable.moren);
 				}
+			}
+			
+			
+			@Override
+			public Object getObject(){
+				return btnBig;
 			}
 		};
 	}

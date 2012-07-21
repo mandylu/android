@@ -108,6 +108,14 @@ public class LazyImageLoader
 		}	
 	}
 	
+	public void Cancel(String url, Object object) {
+		if(callbackManager.remove(url, object)){
+			urlDequeDiskIO.remove(url);
+			urlDequeDownload.remove(url);
+			imgManger.forceRecycle(url);
+		}
+	}
+	
 	public boolean checkWithImmediateIO(String url){
 		
 		Bitmap result = null;
@@ -330,6 +338,5 @@ public class LazyImageLoader
 	public String getFileInDiskCache(String url) {
 		return imgManger.getFileInDiskCache(url);
 	}
-	
 	
 }

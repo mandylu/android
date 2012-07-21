@@ -72,6 +72,17 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	@Override
 	public void onPause(){
 		super.onPause();
+		
+		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+			}
+		}
 	}
 	
 		
@@ -170,7 +181,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				if(GetGoodsView.this.m_viewInfoListener != null){
 					bundle.putSerializable("currentGoodsDetail", goodsListLoader.getGoodsList().getData().get(index));
 					bundle.putString("detail_type", "getgoods");
-					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, goodsListLoader, index));
+					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, goodsListLoader, index, null));
 				}				
 			}
 		});

@@ -27,6 +27,29 @@ private ConcurrentHashMap<String, List<ImageLoaderCallback>> callbackMap;
 		callbackMap.remove(url);
 	}
 	
+	//return: true if passed url is no more valid and thus should be removed from request queues, false otherwise
+	public boolean remove(String url, Object object){
+		List<ImageLoaderCallback> callbackList = callbackMap.get(url);
+		
+		if(null != callbackList){
+			for(ImageLoaderCallback callback : callbackList){
+				if(null != callback && callback.getObject() == object){
+					callbackList.remove(callback);
+					break;
+				}
+			}
+			
+			if(0 == callbackList.size()){
+				callbackMap.remove(callbackList);
+				return true;
+			}
+			
+			return false;
+		}
+		
+		return true;
+	}
+	
 	public void put(String url,ImageLoaderCallback callback)
 	{
 		

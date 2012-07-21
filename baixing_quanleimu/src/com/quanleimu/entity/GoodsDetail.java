@@ -196,5 +196,17 @@ public class GoodsDetail implements Serializable{
 				+ metaData + "]";
 	}*/
 	
+	@Override
+	public boolean equals (Object o){
+		if(o instanceof GoodsDetail){
+			String idOfthis = getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+			String idOfo = ((GoodsDetail)o).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+			boolean bRet = idOfthis.equals(idOfo);
+			
+			return bRet;
+		}
+		
+		return false;
+	}
 	
 }

@@ -218,7 +218,7 @@ public class DiskLruCache {
     }
 
     private void put(String key, String file) {
-    	Log.d("LruDiskCache", "currently put key: "+key);
+    	//Log.d("LruDiskCache", "currently put key: "+key);
     	
         mLinkedHashMap.put(key, file);
         cacheSize = mLinkedHashMap.size();
@@ -242,7 +242,7 @@ public class DiskLruCache {
         while (count < MAX_REMOVALS &&
                 (cacheSize > maxCacheItemSize || cacheByteSize > maxCacheByteSize)) {
             eldestEntry = mLinkedHashMap.entrySet().iterator().next();
-            Log.d("LruDiskCache", "currently deleted key: "+ eldestEntry.getKey());
+            //Log.d("LruDiskCache", "currently deleted key: "+ eldestEntry.getKey());
             eldestFile = new File(eldestEntry.getValue());
             eldestFileSize = eldestFile.length();
             mLinkedHashMap.remove(eldestEntry.getKey());
@@ -251,7 +251,7 @@ public class DiskLruCache {
             cacheByteSize -= eldestFileSize;
             count++;
 //            if (BuildConfig.DEBUG) {
-//                Log.d(TAG, "flushCache - Removed cache file, " + eldestFile + ", "
+//                //Log.d(TAG, "flushCache - Removed cache file, " + eldestFile + ", "
 //                        + eldestFileSize);
 //            }           
         }
@@ -277,11 +277,11 @@ public class DiskLruCache {
             final String file = mLinkedHashMap.get(key);
             if (file != null) {
 //                if (BuildConfig.DEBUG) {
-//                    Log.d(TAG, "Disk cache hit");
+//                    //Log.d(TAG, "Disk cache hit");
 //                }
             	mNeedDumpToFile = true;
             	
-            	Log.d("LruDiskCache", "currently used key: "+key+", found in disk cache!");
+            	//Log.d("LruDiskCache", "currently used key: "+key+", found in disk cache!");
             	
                 return decodeBitmapFromFile(file);//BitmapFactory.decodeFile(file, o);
             } else {
@@ -289,15 +289,15 @@ public class DiskLruCache {
                 if (new File(existingFile).exists()) {
                     put(key, existingFile);
 //                    if (BuildConfig.DEBUG) {
-//                        Log.d(TAG, "Disk cache hit (existing file)");
+//                        //Log.d(TAG, "Disk cache hit (existing file)");
 //                    }
-                    Log.d("LruDiskCache", "currently used key: "+key+", found in file list!");
+                    //Log.d("LruDiskCache", "currently used key: "+key+", found in file list!");
                     
                     return decodeBitmapFromFile(file);//BitmapFactory.decodeFile(existingFile, o);
                 }
             }
             
-            Log.d("LruDiskCache", "currently used key: "+key+", not found!!");
+            //Log.d("LruDiskCache", "currently used key: "+key+", not found!!");
             return null;
         }
     }

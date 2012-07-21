@@ -18,7 +18,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.Canvas;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.BitmapFactory;
@@ -39,7 +38,6 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -72,6 +70,13 @@ import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
 public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/{
+	
+	public interface IListHolder{
+		public void startFecthingMore();
+		public boolean onResult(int msg, GoodsListLoader loader);//return true if getMore succeeded, else otherwise
+	};
+	
+	
 	final private String strCollect = "收藏";
 	final private String strCancelCollect = "取消收藏";
 	final private int msgRefresh = 5;
@@ -116,10 +121,10 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private boolean keepSilent = false;
 	
-	private boolean mHasReseted = false;
-	
 	private GoodsListLoader mListLoader;
 	private int mCurIndex = 0;
+	
+	private IListHolder mHolder = null;
 	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
@@ -127,13 +132,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		REQUEST_TYPE_DELETE
 	}
 	
-	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, int curIndex){
+	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, int curIndex, IListHolder holder){
 		super(content, bundle);
 		
 		mListLoader = listLoader;
 		mCurIndex = curIndex;
 		detail = listLoader.getGoodsList().getData().get(curIndex);
+		listLoader.setSelection(curIndex);
 		mBundle = bundle;
+		mHolder = holder;
 		
 		init();
 	}
@@ -141,7 +148,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
-		mHasReseted = false;
 		
 		if(null != listUrl && listUrl.size() > 0)
 			SimpleImageLoader.Cancel(listUrl);
@@ -162,8 +168,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		this.keepSilent = true;
 		this.removeTitleControls();
 		super.onPause();
-		
-		mHasReseted = false;
 	}
 	
 	@Override
@@ -204,7 +208,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			title2.removeView(titleControlView);
 		}
 //		title2.addView(title2.findViewById(R.id.tvTitle));
-		
 	}
 	
 	@Override
@@ -292,21 +295,21 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		return false;		
 	}
-	
-	private int mLastY = 0;
-	private int mLastExceedingY = 0;
+//	
+//	private int mLastY = 0;
+//	private int mLastExceedingY = 0;
 	public boolean onTouch (View v, MotionEvent event){
-		if(!keepSilent){
-			switch(event.getAction()){
-			case MotionEvent.ACTION_MOVE:
-				
-				break;
-			case MotionEvent.ACTION_CANCEL:
-			case MotionEvent.ACTION_UP:
-				mLastExceedingY = 0;
-				break;
-			}
-		}		
+//		if(!keepSilent){
+//			switch(event.getAction()){
+//			case MotionEvent.ACTION_MOVE:
+//				
+//				break;
+//			case MotionEvent.ACTION_CANCEL:
+//			case MotionEvent.ACTION_UP:
+//				//mLastExceedingY = 0;
+//				break;
+//			}
+//		}		
 		
 		return this.keepSilent;
 	}
@@ -330,25 +333,25 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
-		this.addView(v);
+		addView(v);
 		if(!detail.getValueByKey("status").equals("4")){
-			v.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
-			v.findViewById(R.id.graymask).setVisibility(View.GONE);
-			v.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
+			findViewById(R.id.ll_appeal).setVisibility(View.GONE);
+			findViewById(R.id.graymask).setVisibility(View.GONE);
+			findViewById(R.id.verifyseperator).setVisibility(View.GONE);
 		}
 		else{
 			if(detail.getValueByKey("tips").equals("")){
-				((TextView)v.findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
+				((TextView)findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
 			}
 			else{
-				((TextView)v.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
+				((TextView)findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
 			}
-			v.findViewById(R.id.fenxianglayout).setEnabled(false);
-			v.findViewById(R.id.showmap).setEnabled(false);
-			v.findViewById(R.id.jubaolayout).setEnabled(false);
-			v.findViewById(R.id.sms).setEnabled(false);
-			v.findViewById(R.id.call).setEnabled(false);
-			v.findViewById(R.id.appealbutton).setOnClickListener(this);
+			findViewById(R.id.fenxianglayout).setEnabled(false);
+			findViewById(R.id.showmap).setEnabled(false);
+			findViewById(R.id.jubaolayout).setEnabled(false);
+			findViewById(R.id.sms).setEnabled(false);
+			findViewById(R.id.call).setEnabled(false);
+			findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
 		if(detail.getImageList() != null){
@@ -479,84 +482,95 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         mListLoader.setHandler(new Handler(){
 				@Override
 				public void handleMessage(Message msg) {
-					switch (msg.what) {
-					case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
-						GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
-						mListLoader.setGoodsList(goodsList);
-						if (goodsList == null || goodsList.getCount() == 0) {
-							Message msg1 = Message.obtain();
-							msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-							Bundle bundle = new Bundle();
-							bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
-							msg1.setData(bundle);
-							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
-						} else {
-							QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
+					if(null != mHolder){
+						if(mHolder.onResult(msg.what, mListLoader)){
+							onGotMore();
+						}else{
+							onNoMore();
 						}
-						mListLoader.setHasMore(true);
-						
-						break;
-					case GoodsListLoader.MSG_NO_MORE:					
-//						Message msg1 = Message.obtain();
-//						msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-//						Bundle bundle = new Bundle();
-//						bundle.putString("popup_message", "数据下载失败，请稍后重试！");
-//						msg1.setData(bundle);
-//						QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
-						
-						ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-						imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-						imageView.setVisibility(View.GONE);
-						
-						TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
-						textView.setText("后面没有啦！");
-						
-						mListLoader.setHasMore(false);
-						
-						break;
-					case GoodsListLoader.MSG_FINISH_GET_MORE:	
-						GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
-						if (goodsList1 == null || goodsList1.getCount() == 0) {
-							Message msg2 = Message.obtain();
-							msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
-							Bundle bundle1 = new Bundle();
-							bundle1.putString("popup_message", "后面没有啦！");
-							msg2.setData(bundle1);
-							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-							
-							ImageView imageView1 = (ImageView)findViewById(R.id.pull_to_next_image);
-							imageView1.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-							imageView1.setVisibility(View.GONE);
-							
-							TextView textView1 = (TextView)findViewById(R.id.pull_to_next_text);
-							textView1.setText("后面没有啦！");
-							
-							mListLoader.setHasMore(false);
-						} else {
-							List<GoodsDetail> listCommonGoods =  goodsList1.getData();
-							for(int i=0;i<listCommonGoods.size();i++)
-							{
-								mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
+					}else{
+						switch (msg.what) {
+						case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
+							GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+							mListLoader.setGoodsList(goodsList);
+							if (goodsList == null || goodsList.getCount() == 0) {
+								Message msg1 = Message.obtain();
+								msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+								Bundle bundle = new Bundle();
+								bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
+								msg1.setData(bundle);
+								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+							} else {
+								QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
-							QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
-							
 							mListLoader.setHasMore(true);
 							
-							if(null != m_viewInfoListener){
-								mListLoader.setSelection(mCurIndex+1);
-								m_viewInfoListener.onExit(GoodDetailView.this);
-								m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
+							break;
+						case GoodsListLoader.MSG_NO_MORE:					
+	//						Message msg1 = Message.obtain();
+	//						msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+	//						Bundle bundle = new Bundle();
+	//						bundle.putString("popup_message", "数据下载失败，请稍后重试！");
+	//						msg1.setData(bundle);
+	//						QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+							
+							onNoMore();
+							
+							mListLoader.setHasMore(false);
+							
+							break;
+						case GoodsListLoader.MSG_FINISH_GET_MORE:	
+							GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+							if (goodsList1 == null || goodsList1.getCount() == 0) {
+								Message msg2 = Message.obtain();
+								msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
+								Bundle bundle1 = new Bundle();
+								bundle1.putString("popup_message", "后面没有啦！");
+								msg2.setData(bundle1);
+								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+								
+								onNoMore();
+								
+								mListLoader.setHasMore(false);
+							} else {
+								List<GoodsDetail> listCommonGoods =  goodsList1.getData();
+								for(int i=0;i<listCommonGoods.size();i++)
+								{
+									mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
+								}
+								QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
+								
+								mListLoader.setHasMore(true);
+								
+								onGotMore();
 							}
+							break;
+						case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+							Message msg2 = Message.obtain();
+							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+							break;
 						}
-						break;
-					case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-						Message msg2 = Message.obtain();
-						msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-						QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-						break;
 					}
 					
 					super.handleMessage(msg);
+				}
+
+				private void onGotMore() {
+					if(null != m_viewInfoListener){
+						mListLoader.setSelection(mCurIndex+1);
+						m_viewInfoListener.onExit(GoodDetailView.this);
+						m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1, mHolder));
+					}
+				}
+
+				private void onNoMore() {
+					ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+					imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+					imageView.setVisibility(View.GONE);
+					
+					TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
+					textView.setText("后面没有啦！");
 				}
 			});
         
@@ -1324,10 +1338,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(null != m_viewInfoListener){
 				mListLoader.setSelection(mCurIndex+1);
 				m_viewInfoListener.onExit(this);
-				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1));
+				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1, mHolder));
 			}
 		}else if(mListLoader.hasMore()){
-			mListLoader.startFetching(false);
+			if(null != mHolder){
+				mHolder.startFecthingMore();
+			}else{
+				mListLoader.startFetching(false);
+			}
 			
 			ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
 			imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.loading_flower));
@@ -1346,7 +1364,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(null != m_viewInfoListener){
 				mListLoader.setSelection(mCurIndex-1);
 				m_viewInfoListener.onExit(this);
-				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex-1));
+				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex-1, mHolder));
 			}
 		}else{
 			scrollParent.onNewViewLoaded(true);

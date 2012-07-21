@@ -14,6 +14,7 @@ import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Communication;
@@ -23,6 +24,7 @@ import com.quanleimu.view.BaseView.TitleDef;
 import com.quanleimu.view.PersonalCenterView.MyMessageDeleteThread;
 import com.quanleimu.view.PersonalCenterView.UpdateAndGetmoreThread;
 import com.quanleimu.widget.PullToRefreshListView;
+import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -41,18 +43,23 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class FavoriteAndHistoryView extends BaseView implements PullToRefreshListView.OnRefreshListener{
+public class FavoriteAndHistoryView extends BaseView implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailView.IListHolder{
 	private boolean isFav = false;
 	private String json = null;
 	static final int MSG_UPDATEFAV = 1;
 	static final int MSG_UPDATEHISTORY = 2;
 	static final int MSG_DELETEAD = 3;
 	static final int MSG_DELETEALL = 4;
+	static final int MSG_GOTMOREFAV = 5;
+	static final int MSG_GOTMOREHISTORY = 6;
+	static final int MSG_NOMOREFAV = 7;
+	static final int MSG_NOMOREHISTORY = 8;
 	private GoodsListAdapter adapter = new GoodsListAdapter(this.getContext(), null);
 	private PullToRefreshListView pullListView = null;
 	private Bundle bundle = null;
 	private int buttonStatus = -1;//-1:edit 0:finish
 	private GoodsListLoader glLoader = null;
+	private GoodsList tempGoodsList = null;
 	public FavoriteAndHistoryView(Context context, Bundle bundle, boolean isFav){
 		super(context);
 		this.isFav = isFav;
@@ -61,33 +68,69 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 	}
 	protected void Init() {
 		LayoutInflater inflater = LayoutInflater.from(getContext());
-		this.addView(inflater.inflate(R.layout.personallistview, null));
+		addView(inflater.inflate(R.layout.personallistview, null));
 		pullListView = (PullToRefreshListView)this.findViewById(R.id.plvlist);
 		pullListView.setOnRefreshListener(this);
+		pullListView.setOnGetMoreListener(this);
 		pullListView.setOnItemClickListener(new OnItemClickListener(){
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 				position = position - pullListView.getHeaderViewsCount();
 				if(position < 0 || (isFav && position >= QuanleimuApplication.getApplication().getListMyStore().size())
 						|| (!isFav && position >= QuanleimuApplication.getApplication().getListLookHistory().size())) return;
-//				GoodsDetail detail = isFav ? QuanleimuApplication.getApplication().getListMyStore().get(position)
-//						: QuanleimuApplication.getApplication().getListLookHistory().get(position);
-				m_viewInfoListener.onNewView(new GoodDetailView(FavoriteAndHistoryView.this.getContext(), bundle, glLoader, position));
+				m_viewInfoListener.onNewView(new GoodDetailView(FavoriteAndHistoryView.this.getContext(), bundle, glLoader, position, FavoriteAndHistoryView.this));
 			}
 			
 		});
 		adapter.setMessageOutOnDelete(myHandler, MSG_DELETEAD);
-		glLoader = new GoodsListLoader(null, myHandler, null, null);
+		glLoader = new GoodsListLoader(null, myHandler, null, tempGoodsList);
+		
+		tempGoodsList = new GoodsList(isFav ? QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
+		glLoader.setGoodsList(tempGoodsList);
 	}
 	
 	@Override
 	public void onAttachedToWindow(){			
-		adapter.setList(isFav ? 
-				QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
-		GoodsList gl = new GoodsList();
-		gl.setData(adapter.getList());
-		glLoader.setGoodsList(gl);
+		adapter.setList(tempGoodsList.getData());
+		
 		((ListView)this.findViewById(R.id.plvlist)).setAdapter(adapter);
 	}
+	
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		
+		for(int i = 0; i < pullListView.getChildCount(); ++i){
+			ImageView imageView = (ImageView)pullListView.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+			}
+		}
+		
+		pullListView.setSelection(glLoader.getSelection());
+	}	
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		
+		for(int i = 0; i < pullListView.getChildCount(); ++i){
+			ImageView imageView = (ImageView)pullListView.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView	
+					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
+					/*&& null != imageView.getDrawable()
+					&& imageView.getDrawable() instanceof AnimationDrawable*/){
+				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+			}
+		}
+		
+		pullListView.setSelection(glLoader.getSelection());
+	}	
 	
 	@Override
 	public boolean onRightActionPressed(){
@@ -144,6 +187,17 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		return tab;
 	}
 	
+	static private void removeGoods(GoodsDetail detail, List<GoodsDetail> fromList){
+		for(GoodsDetail o : fromList){
+			if(o.equals(detail)){
+				fromList.remove(o);
+				break;
+			}
+		}
+		
+		//fromList.remove(detail);
+	}
+	
 	Handler myHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -152,21 +206,50 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				if (pd != null) {
 					pd.dismiss();
 				}
-				if (json != null) {
-					GoodsList gl = JsonUtil.getGoodsListFromJson(json);
-					QuanleimuApplication.getApplication().setListMyStore(gl.getData());
-					adapter.setList(gl.getData());
+				
+				tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+				if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
+					//todo:add error handling messages
+				}else{
+					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
+						removeGoods(tempGoodsList.getData().get(i), favList);
+						favList.add(0, tempGoodsList.getData().get(i));
+					}
+					QuanleimuApplication.getApplication().setListMyStore(favList);
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", favList);
+					adapter.setList(tempGoodsList.getData());
+					glLoader.setGoodsList(tempGoodsList);
+					glLoader.setHasMore(tempGoodsList.getData().size() < favList.size());
 				}
+
+				pullListView.onRefreshComplete();
+				
 				break;
 			case MSG_UPDATEHISTORY:
 				if(pd != null){
 					pd.dismiss();
 				}
-				if(json != null){
-					GoodsList gl = JsonUtil.getGoodsListFromJson(json);
-					QuanleimuApplication.getApplication().setListLookHistory(gl.getData());
-					adapter.setList(gl.getData());					
+
+				tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+				if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
+					//todo:add error handling messages
+				}else{
+					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
+					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
+						GoodsDetail curDetail = tempGoodsList.getData().get(i);
+						removeGoods(curDetail, historyList);
+						historyList.add(0, curDetail);
+					}
+					QuanleimuApplication.getApplication().setListLookHistory(historyList);
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", historyList);
+					adapter.setList(tempGoodsList.getData());
+					glLoader.setGoodsList(tempGoodsList);
+					glLoader.setHasMore(tempGoodsList.getData().size() < historyList.size());
 				}
+				
+				pullListView.onRefreshComplete();
+				
 				break;
 			case MSG_DELETEAD:
 				int pos = msg.arg2;
@@ -175,19 +258,19 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					goodsList.remove(pos);
 					QuanleimuApplication.getApplication().setListMyStore(goodsList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", goodsList);
-					adapter.setList(goodsList);
-					adapter.notifyDataSetChanged();
-					adapter.setUiHold(false);
 				}
 				else{
 					List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListLookHistory();
 					goodsList.remove(pos);
 					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", goodsList);
-					adapter.setList(goodsList);
-					adapter.notifyDataSetChanged();			
-					adapter.setUiHold(false);
-				}				
+				}	
+				
+				tempGoodsList.getData().remove(pos);
+				
+				adapter.setList(tempGoodsList.getData());
+				adapter.notifyDataSetChanged();
+				adapter.setUiHold(false);
 				break;
 			case MSG_DELETEALL:
 				if(isFav){
@@ -198,7 +281,11 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					QuanleimuApplication.getApplication().setListLookHistory(new ArrayList<GoodsDetail>());
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", new ArrayList<GoodsDetail>());
 				}
-				adapter.setList(new ArrayList<GoodsDetail>());
+				
+				tempGoodsList = new GoodsList(new ArrayList<GoodsDetail>());
+				glLoader.setGoodsList(tempGoodsList);
+				glLoader.setHasMore(false);
+				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
 				
 				if(FavoriteAndHistoryView.this.m_viewInfoListener != null){
@@ -210,52 +297,57 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				adapter.setHasDelBtn(false);
 				buttonStatus = -1;
 				break;
+				
+			case MSG_GOTMOREFAV:
+			case MSG_GOTMOREHISTORY:
+				if (pd != null) {
+					pd.dismiss();
+				}
+				onResult(msg.what, glLoader);
+				break;
+			case MSG_NOMOREFAV:
+			case MSG_NOMOREHISTORY:
+				if (pd != null) {
+					pd.dismiss();
+				}
+				onResult(msg.what, glLoader);
+				break;
 			}
 		}
 	};
 	
-	class UpdateAdsThread implements Runnable{
-		private boolean isFav = false;
-		public UpdateAdsThread(boolean isFav){
-			this.isFav = isFav;
-		}
-		@Override
-		public void run(){
-			String apiName = "ad_list";
-			ArrayList<String> list = new ArrayList<String>();
-			List<GoodsDetail> details = isFav ? QuanleimuApplication.getApplication().getListMyStore() : 
-				QuanleimuApplication.getApplication().getListLookHistory();
-			list.add("start=0");
-			if (details != null && details.size() > 0) {
-				String ids = "id:" + details.get(0).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
-				for (int i = 1; i < details.size(); ++i) {
-					ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
-				}
-				list.add("query=(" + ids + ")");
-			}
-			list.add("rt=1");
-			list.add("rows=30");
+	private static int ITEMS_PER_REQUEST = 30;
+	public void updateAdsThread(boolean isFav, boolean isGetMore){
 
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url);
-				myHandler.sendEmptyMessage(isFav ? MSG_UPDATEFAV : MSG_UPDATEHISTORY);
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Communication.BXHttpException e) {
-
-			}
-			((BaseActivity)FavoriteAndHistoryView.this.getContext()).runOnUiThread(new Runnable(){
-				@Override
-				public void run()
-				{
-					pullListView.onRefreshComplete();
-				}
-			});
-			
+		ArrayList<String> list = new ArrayList<String>();
+		List<GoodsDetail> details = isFav ? QuanleimuApplication.getApplication().getListMyStore() : 
+		QuanleimuApplication.getApplication().getListLookHistory();
+		
+		int startIndex = 0;
+		if(isGetMore){//Notice: should ensure that tempGoodsList is shorter than whole list, Or unexpected results may occur
+			startIndex = tempGoodsList.getData().size();
 		}
+		//list.add("start=0");//this param is controled by param0 of startFetching()
+		if (details != null && details.size() > startIndex) {
+			String ids = "id:" + details.get(startIndex).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
+			for (int i = startIndex+1; i < details.size() && i < startIndex + ITEMS_PER_REQUEST; ++i) {
+				ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
+			}
+			list.add("query=(" + ids + ")");
+		}
+		//list.add("rt=1");
+		
+		int msgGotFirst = (isFav ? MSG_UPDATEFAV : MSG_UPDATEHISTORY);
+		int msgGotMore = (isFav ? MSG_GOTMOREFAV : MSG_GOTMOREHISTORY);
+		int msgNoMore = (isFav ? MSG_NOMOREFAV : MSG_NOMOREHISTORY);
+		
+		glLoader.setParams(list);
+		glLoader.setRows(ITEMS_PER_REQUEST);
+		
+		if(isGetMore)
+			glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore);//trick:: param0 is set to true to avoid setting of "start=n>0"
+		else
+			glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore);
 	}
 	
 	@Override
@@ -264,10 +356,96 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				&& QuanleimuApplication.getApplication().getListMyStore().size() > 0)
 			|| (!isFav && QuanleimuApplication.getApplication().getListLookHistory() != null
 				&& QuanleimuApplication.getApplication().getListLookHistory().size() > 0)){
-			new Thread(new UpdateAdsThread(isFav)).start();		
+			updateAdsThread(isFav, false);		
 		}
 		else{
 			this.pullListView.onRefreshComplete();
 		}
+	}
+	@Override
+	public void onGetMore() {
+		if((isFav && QuanleimuApplication.getApplication().getListMyStore() != null 
+				&& tempGoodsList != null
+				&& tempGoodsList.getData().size() < QuanleimuApplication.getApplication().getListMyStore().size())
+			|| (!isFav && QuanleimuApplication.getApplication().getListLookHistory() != null
+					&& tempGoodsList != null
+					&& tempGoodsList.getData().size() < QuanleimuApplication.getApplication().getListLookHistory().size())){
+			updateAdsThread(isFav, true);		
+		}
+		else{
+			this.pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+		}
+		
+	}
+	@Override
+	public void startFecthingMore() {
+		updateAdsThread(isFav, true);
+	}
+	
+	@Override
+	public boolean onResult(int msg, GoodsListLoader loader) {
+		if(msg == MSG_GOTMOREFAV || msg == MSG_GOTMOREHISTORY){
+			if(isFav){
+				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
+				if(null == moreGoodsList || 0 == moreGoodsList.getData().size()){
+					//todo:add error handling messages
+					if(isActive)
+						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+					
+					return false;
+				}else{
+					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+					for(int i = 0; i < moreGoodsList.getData().size() - 1; i++){
+						removeGoods(moreGoodsList.getData().get(i), favList);
+						tempGoodsList.getData().add(moreGoodsList.getData().get(i));
+						favList.add(tempGoodsList.getData().size()-1, moreGoodsList.getData().get(i));
+					}
+					QuanleimuApplication.getApplication().setListMyStore(favList);
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", favList);
+					
+					//adapter.setList(tempGoodsList.getData());
+					loader.setHasMore(tempGoodsList.getData().size() < favList.size());
+					
+					if(isActive)
+						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
+					
+					return true;
+				}
+			}else{
+				GoodsList moreGoodsList2 = JsonUtil.getGoodsListFromJson(loader.getLastJson());
+				if(null == moreGoodsList2 || 0 == moreGoodsList2.getData().size()){
+					//todo:add error handling messages
+					if(isActive)
+						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+					
+					return false;
+				}else{
+					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
+					for(int i = 0; i < moreGoodsList2.getData().size(); i++){
+						removeGoods(moreGoodsList2.getData().get(i), historyList);
+						tempGoodsList.getData().add(moreGoodsList2.getData().get(i));
+						historyList.add(tempGoodsList.getData().size()-1, moreGoodsList2.getData().get(i));
+					}
+					QuanleimuApplication.getApplication().setListLookHistory(historyList);
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", historyList);
+					
+					//adapter.setList(tempGoodsList.getData());
+					loader.setHasMore(tempGoodsList.getData().size() < historyList.size());
+					
+					if(isActive)
+						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
+					                                                                                                     
+					return true;
+				}
+			}
+		}else if(msg == MSG_NOMOREFAV || msg == MSG_NOMOREHISTORY){
+			glLoader.setHasMore(false);
+			if(isActive)
+				pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+			
+			return false;
+		}
+		
+		return false;
 	}
 }
