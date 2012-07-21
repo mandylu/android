@@ -45,44 +45,6 @@
                     android:textStyle="bold" />
             </RelativeLayout>
 
-            <LinearLayout
-                android:id="@+id/ll_appeal"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_marginBottom="10dip"
-                android:layout_marginLeft="10dip"
-                android:layout_marginRight="10dip"
-                android:layout_marginTop="15dip"
-                android:background="@drawable/verifyarea"
-                android:orientation="vertical" >
-
-                <TextView
-                    android:id="@+id/verifyreason"
-                    android:padding="3dip"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:textSize="18dip" >
-                </TextView>
-
-                <Button
-                    android:id="@+id/appealbutton"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginTop="10dip"
-                    android:text="申诉"
-                    android:textSize="16dip" >
-                </Button>
-            </LinearLayout>
-            
-            <ImageView
-                android:id="@+id/verifyseperator"
-                android:layout_marginTop="10dip"
-                android:layout_marginBottom="20dip"
-                android:layout_width="fill_parent"
-                android:layout_height="2dip"
-                android:src="#82C726">
-            </ImageView>
-
             <RelativeLayout
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content" >
@@ -92,6 +54,45 @@
                     android:layout_width="fill_parent"
                     android:layout_height="fill_parent"
                     android:orientation="vertical" >
+                    
+					<LinearLayout
+		                android:id="@+id/ll_appeal"
+		                android:layout_width="fill_parent"
+		                android:layout_height="wrap_content"
+		                android:layout_marginBottom="10dip"
+		                android:layout_marginLeft="10dip"
+		                android:layout_marginRight="10dip"
+		                android:layout_marginTop="15dip"
+		                android:background="@drawable/verifyarea"
+		                android:orientation="vertical" >
+		
+		                <TextView
+		                    android:id="@+id/verifyreason"
+		                    android:padding="3dip"
+		                    android:layout_width="fill_parent"
+		                    android:layout_height="wrap_content"
+		                    android:textSize="18dip" >
+		                </TextView>
+		
+		                <Button
+		                    android:id="@+id/appealbutton"
+		                    android:layout_width="wrap_content"
+		                    android:layout_height="wrap_content"
+		                    android:layout_marginTop="10dip"
+		                    android:text="申诉"
+		                    android:textSize="16dip" >
+		                </Button>
+		            </LinearLayout>
+		            
+		            <ImageView
+		                android:id="@+id/verifyseperator"
+		                android:layout_marginTop="10dip"
+		                android:layout_marginBottom="20dip"
+		                android:layout_width="fill_parent"
+		                android:layout_height="2dip"
+		                android:src="#82C726">
+		            </ImageView>
+            
 
                     <RelativeLayout
                         android:id="@+id/llgl"

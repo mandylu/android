@@ -392,12 +392,12 @@ public class PullableScrollView extends ScrollView
 		super.computeScroll();
 		
 		if(!mDuringTouch && null != mPullNotifier){
-			int maxY =  (mPullNotifier.getFooterView().getVisibility() == View.VISIBLE ? (mPullNotifier.getFooterView().getTop()-mViewHeight) : (mPullNotifier.getContentView().getBottom() - mViewHeight));
-			if(getScrollY() > maxY){
+			int maxY =  mPullNotifier.getFooterView().getTop()-mViewHeight;
+			if(mPullNotifier.hasNext() && mState != PULL_STATE.PULL_STATE_LOADING_NEXT  && getScrollY() > maxY){
 				Log.d("PullableScrollView", "force scroll back-up, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+"maxY="+maxY);
 				scrollTo(0, maxY);
 			}
-			else if(getScrollY() < mPullNotifier.getHeaderView().getBottom()){
+			else if(mPullNotifier.hasPrev() && mState != PULL_STATE.PULL_STATE_LOADING_PREV && getScrollY() < mPullNotifier.getHeaderView().getBottom()){
 				scrollTo(0, mPullNotifier.getHeaderView().getBottom());
 			}
 		}
@@ -450,12 +450,12 @@ public class PullableScrollView extends ScrollView
 	public void scrollTo(int i, int j)
 	{	
 		if(!mDuringTouch && null != mPullNotifier){
-			int maxY =  (mPullNotifier.getFooterView().getVisibility() == View.VISIBLE ? (mPullNotifier.getFooterView().getTop()-mViewHeight) : (mPullNotifier.getContentView().getBottom() - mViewHeight));
-			if(getScrollY() > maxY){
+			int maxY =  mPullNotifier.getFooterView().getTop()-mViewHeight;
+			if(mPullNotifier.hasNext() && mState != PULL_STATE.PULL_STATE_LOADING_NEXT && getScrollY() > maxY){
 				Log.d("PullableScrollView", "scroll_y modified to maxY, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+", contentBottom="+mPullNotifier.getContentView().getBottom()+", wholeHeight="+(getBottom()-getTop())+", maxY="+maxY);
 				j = maxY;
 			}
-			else if(getScrollY() < mPullNotifier.getHeaderView().getBottom()){
+			else if(mPullNotifier.hasPrev() && mState != PULL_STATE.PULL_STATE_LOADING_PREV && getScrollY() < mPullNotifier.getHeaderView().getBottom()){
 				j = mPullNotifier.getHeaderView().getBottom();
 			}
 		}

@@ -86,6 +86,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		
 		tempGoodsList = new GoodsList(isFav ? QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
 		glLoader.setGoodsList(tempGoodsList);
+		glLoader.setHasMore(false);
 	}
 	
 	@Override

@@ -392,7 +392,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	int visibleCount = getChildCount();
     	int allCount = 0;
     	if(null != getAdapter())
-    		allCount = getAdapter().getCount();
+    		allCount = getAdapter().getCount() - getHeaderViewsCount() - getFooterViewsCount();
     	
     	boolean bRet = (visibleCount < allCount);
     	return bRet;
