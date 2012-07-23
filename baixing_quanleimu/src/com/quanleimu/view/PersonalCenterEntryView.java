@@ -181,12 +181,16 @@ public class PersonalCenterEntryView extends BaseView implements
 			try {
 				json = Communication.getDataByUrl(url);
 				myHandler.sendEmptyMessage(MSG_GETPERSONALADS);
+				return;
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
 				e.printStackTrace();
 			} catch (Communication.BXHttpException e) {
 
+			}
+			if(pd != null){
+				pd.dismiss();
 			}
 		}
 	}
