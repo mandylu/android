@@ -54,6 +54,7 @@ public class MultiLevelSelectionView extends BaseView {
 		this.items = items;
 //		init();
 		this.remainLevel = remainLevel;
+		init();
 	}
 	
 	public MultiLevelSelectionView(BaseActivity context, String id, String name, int backMessage, int remainLevel){
@@ -62,6 +63,7 @@ public class MultiLevelSelectionView extends BaseView {
 		title = name;
 		message = backMessage;
 		this.remainLevel = remainLevel;
+		init();
 	}
 	
 	public void setTitle(String title){
@@ -79,7 +81,7 @@ public class MultiLevelSelectionView extends BaseView {
 				(new Thread(new GetMetaDataThread(id))).start();
 			}
 			else{
-				init(remainLevel > 0);
+				initContent(remainLevel > 0);
 			}
 		}
 		super.onAttachedToWindow();
@@ -89,16 +91,12 @@ public class MultiLevelSelectionView extends BaseView {
 		if(listView != null)
 			listView.requestFocus();
 	}
-
-	private void init(final boolean hasNextLevel){
-		LayoutInflater inflater = LayoutInflater.from(this.getContext());
-		View v = inflater.inflate(R.layout.post_othersview, null);
-		this.addView(v);
-
-		final ListView lv = (ListView) v.findViewById(R.id.post_other_list);
+	
+	private void initContent(final boolean hasNextLevel){
+		final ListView lv = (ListView) findViewById(R.id.post_other_list);
 		if(lv!=null) listView = lv;
 		lv.setDivider(null);
-
+		
 		final List<CheckableItem> checkList = new ArrayList<CheckableItem>();
 		if(!hasNextLevel){
 			for(int i = 0; i < items.size(); ++ i){
@@ -171,7 +169,13 @@ public class MultiLevelSelectionView extends BaseView {
 					}
 				}
 			}
-		});
+		});		
+	}
+
+	private void init(){
+		LayoutInflater inflater = LayoutInflater.from(this.getContext());
+		View v = inflater.inflate(R.layout.post_othersview, null);
+		this.addView(v);
 	}
 	
 	@Override
@@ -276,7 +280,7 @@ public class MultiLevelSelectionView extends BaseView {
 						else{
 //							MultiLevelSelectionView.this.init(bean.getSubMeta().equals("1") || bean.getLabels().size() > 0);
 						}
-						MultiLevelSelectionView.this.init(MultiLevelSelectionView.this.remainLevel > 0); 
+						MultiLevelSelectionView.this.initContent(MultiLevelSelectionView.this.remainLevel > 0); 
 					}
 				}
 				break;
