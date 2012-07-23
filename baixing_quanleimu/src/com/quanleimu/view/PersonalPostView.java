@@ -111,6 +111,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			}
 			if(listInVerify == null){
 				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+				pd.setCancelable(true);
 				pd.show();
 				this.onRefresh();
 			}
@@ -136,6 +137,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			}
 			if(listDeleted == null){
 				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
+				pd.setCancelable(true);
 				pd.show();
 				this.onRefresh();
 			}
