@@ -1,11 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity"
-    android:id="@+id/linearListView"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:orientation="vertical"
-    android:background="@drawable/home_bg">
+    android:background="@drawable/home_bg" >
 
     <com.quanleimu.widget.PullToRefreshListView
         android:id="@+id/plvlist"
@@ -19,6 +16,6 @@
         android:headerDividersEnabled="false"
         android:listSelector="#00000000"
         android:scrollbars="vertical"
-        android:scrollingCache="false"/>
+        android:scrollingCache="false" />
 
-</LinearLayout>
+</RelativeLayout>

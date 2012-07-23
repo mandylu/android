@@ -54,7 +54,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 	static final int MSG_GOTMOREHISTORY = 6;
 	static final int MSG_NOMOREFAV = 7;
 	static final int MSG_NOMOREHISTORY = 8;
-	private GoodsListAdapter adapter = new GoodsListAdapter(this.getContext(), null);
+	private GoodsListAdapter adapter = null;
 	private PullToRefreshListView pullListView = null;
 	private Bundle bundle = null;
 	private int buttonStatus = -1;//-1:edit 0:finish
@@ -67,6 +67,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		Init();
 	}
 	protected void Init() {
+		
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		addView(inflater.inflate(R.layout.personallistview, null));
 		pullListView = (PullToRefreshListView)this.findViewById(R.id.plvlist);
@@ -81,19 +82,23 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			}
 			
 		});
-		adapter.setMessageOutOnDelete(myHandler, MSG_DELETEAD);
+		
 		glLoader = new GoodsListLoader(null, myHandler, null, tempGoodsList);
 		
 		tempGoodsList = new GoodsList(isFav ? QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
 		glLoader.setGoodsList(tempGoodsList);
 		glLoader.setHasMore(false);
+		
+		adapter = new GoodsListAdapter(this.getContext(), tempGoodsList.getData());
+		adapter.setMessageOutOnDelete(myHandler, MSG_DELETEAD);
+//		adapter.setList(tempGoodsList.getData());		
+		pullListView.setAdapter(adapter);
+
 	}
 	
 	@Override
 	public void onAttachedToWindow(){			
-		adapter.setList(tempGoodsList.getData());
-		
-		((ListView)this.findViewById(R.id.plvlist)).setAdapter(adapter);
+		super.onAttachedToWindow();
 	}
 	
 	
