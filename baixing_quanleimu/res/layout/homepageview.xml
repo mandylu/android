@@ -7,6 +7,7 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:focusable="false"
+	    android:background="@drawable/home_bg"
     		android:focusableInTouchMode="false">
 	    	
 			<RelativeLayout
