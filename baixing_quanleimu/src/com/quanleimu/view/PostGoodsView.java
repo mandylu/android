@@ -1498,6 +1498,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 						// 3).show();
 						PostGoodsView.this.bundle.putInt("forceUpdate", 1);
+						if(goodsDetail == null){
+							PostGoodsView.this.bundle.putString("lastPost", id);
+						}
 						if(m_viewInfoListener != null){
 							m_viewInfoListener.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MINE);
 						}
