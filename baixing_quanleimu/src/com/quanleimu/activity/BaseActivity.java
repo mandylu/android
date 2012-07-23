@@ -17,6 +17,12 @@ import android.widget.TextView;
 import android.widget.LinearLayout.LayoutParams;
 
 import com.mobclick.android.MobclickAgent;
+
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import com.quanleimu.entity.CityDetail;
 import java.util.List;
@@ -39,8 +45,10 @@ public class BaseActivity extends Activity implements OnClickListener{
 	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+		
 		savedInstanceState.putString("cityEnglishName", myApp.getCityEnglishName());
 		savedInstanceState.putString("cityName", myApp.getCityName());
+		
 		ArrayList<String>strDetails = new ArrayList<String>();
 		for(int i = 0; i < myApp.getListCityDetails().size(); ++ i){
 			CityDetail detail = myApp.getListCityDetails().get(i);
@@ -50,7 +58,7 @@ public class BaseActivity extends Activity implements OnClickListener{
 					+ ",sheng=" + detail.getSheng(); 
 			strDetails.add(tstrDetail);
 		}
-		savedInstanceState.putStringArrayList("cityDetails", strDetails);
+		
         super.onSaveInstanceState(savedInstanceState);
     }
 

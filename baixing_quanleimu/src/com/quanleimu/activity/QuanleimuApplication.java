@@ -4,12 +4,9 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
-
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
-import android.graphics.Bitmap;
 import android.widget.Toast;
 
 import com.baidu.mapapi.BMapManager;
@@ -22,11 +19,11 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
-import com.quanleimu.imageCache2SD.LazyImageLoader2SD;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.ViewStack;
 import com.weibo.net.AccessToken;
-public class QuanleimuApplication extends Application {
+public class QuanleimuApplication extends Application{
+
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
@@ -34,10 +31,8 @@ public class QuanleimuApplication extends Application {
 	public static String ads_viewed="";
 	public static Context context;	
 	public static LazyImageLoader lazyImageLoader;
-	public static LazyImageLoader2SD lazyImageLoader2SD;
-	public static List<String> list;
+	public static List<String> list;//list of temporarily cache files
 	public static List<HotList> listHot;
-	public static List<Bitmap> listBm;
 	public static boolean update = false;
 	public static boolean textMode = false;
 	private static AccessToken accessToken = null;
@@ -79,6 +74,10 @@ public class QuanleimuApplication extends Application {
 	public static void setTextMode(boolean tMode){
 		QuanleimuApplication.textMode = tMode;
 		
+		if(null == preferences){
+			preferences = mDemoApp.getApplicationContext().getSharedPreferences("QuanleimuPreferences", MODE_PRIVATE);
+		} 
+		
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putBoolean("isTextMode", tMode);
 		editor.commit();
@@ -90,11 +89,14 @@ public class QuanleimuApplication extends Application {
 	
 	public static List<SecondStepCate> listUsualCates;
 	
-	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
-	
-	public List<Bitmap> getListBigBm() {
-		return listBigBm;
-	}
+//	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
+//	
+//	public List<Bitmap> getListBigBm() {
+//		return listBigBm;
+//	}
+//	public void setListBigBm(List<Bitmap> listBigBm) {
+//		this.listBigBm = listBigBm;
+//	}
 	
 	static public void setWeiboAccessToken(AccessToken token){
 		accessToken = token;
@@ -104,9 +106,7 @@ public class QuanleimuApplication extends Application {
 		return accessToken;
 	}
 
-	public void setListBigBm(List<Bitmap> listBigBm) {
-		this.listBigBm = listBigBm;
-	}
+
 
 	//浏览历史
 	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
@@ -140,27 +140,27 @@ public class QuanleimuApplication extends Application {
 	//我的收藏数据集合
 	public List<GoodsDetail> listMyStore = new ArrayList<GoodsDetail>();
 	
-	//搜索结果集合总数
-	public int searchCount = -1;
-	
-	public int getSearchCount() {
-		return searchCount;
-	}
+//	//搜索结果集合总数
+//	public int searchCount = -1;
+//	
+//	public int getSearchCount() {
+//		return searchCount;
+//	}
+//
+//	public void setSearchCount(int searchCount) {
+//		this.searchCount = searchCount;
+//	}
 
-	public void setSearchCount(int searchCount) {
-		this.searchCount = searchCount;
-	}
-
-	//搜索结果集合
-	public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
-	
-	public List<GoodsDetail> getListSearchGoods() {
-		return listSearchGoods;
-	}
-
-	public void setListSearchGoods(List<GoodsDetail> listSearchGoods) {
-		this.listSearchGoods = listSearchGoods;
-	}
+//	//搜索结果集合
+//	public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
+//	
+//	public List<GoodsDetail> getListSearchGoods() {
+//		return listSearchGoods;
+//	}
+//
+//	public void setListSearchGoods(List<GoodsDetail> listSearchGoods) {
+//		this.listSearchGoods = listSearchGoods;
+//	}
 
 	//搜索记录
 	private List<String> listRemark = new ArrayList<String>();
@@ -229,15 +229,15 @@ public class QuanleimuApplication extends Application {
 	}
 
 	// 添加Activity类型到全局变量
-	public String activity_type = "";
+	//public String activity_type = "";
 	// 添加图片流文件名
-	public List<String> listFileNames = new ArrayList<String>();
+	//public List<String> listFileNames = new ArrayList<String>();
 	// 所有类目的集合
 	public List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
-	// 二级类目集合
-	public List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
+//	// 二级类目集合
+//	public List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
 	// 数据集合
-	public List<GoodsDetail> listGoods = new ArrayList<GoodsDetail>();
+	//public List<GoodsDetail> listGoods = new ArrayList<GoodsDetail>();
 
 	// 筛选木板中的类型集合
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
@@ -253,16 +253,16 @@ public class QuanleimuApplication extends Application {
 		this.cityEnglishName = cityEnglishName;
 	}
 
-	// 筛选条件
-	public Map<Integer, String> savemap = new HashMap<Integer, String>();
-
-	public Map<Integer, String> getSavemap() {
-		return savemap;
-	}
-
-	public void setSavemap(Map<Integer, String> savemap) {
-		this.savemap = savemap;
-	}
+//	// 筛选条件
+//	public Map<Integer, String> savemap = new HashMap<Integer, String>();
+//
+//	public Map<Integer, String> getSavemap() {
+//		return savemap;
+//	}
+//
+//	public void setSavemap(Map<Integer, String> savemap) {
+//		this.savemap = savemap;
+//	}
 
 	public List<Filterss> getListFilterss() {
 		return listFilterss;
@@ -272,21 +272,21 @@ public class QuanleimuApplication extends Application {
 		this.listFilterss = listFilterss;
 	}
 
-	public List<GoodsDetail> getListGoods() {
-		return listGoods;
-	}
+//	public List<GoodsDetail> getListGoods() {
+//		return listGoods;
+//	}
+//
+//	public void setListGoods(List<GoodsDetail> listGoods) {
+//		this.listGoods = listGoods;
+//	}
 
-	public void setListGoods(List<GoodsDetail> listGoods) {
-		this.listGoods = listGoods;
-	}
-
-	public List<SecondStepCate> getListSecond() {
-		return listSecond;
-	}
-
-	public void setListSecond(List<SecondStepCate> listSecond) {
-		this.listSecond = listSecond;
-	}
+//	public List<SecondStepCate> getListSecond() {
+//		return listSecond;
+//	}
+//
+//	public void setListSecond(List<SecondStepCate> listSecond) {
+//		this.listSecond = listSecond;
+//	}
 
 	public List<FirstStepCate> getListFirst() {
 		return listFirst;
@@ -296,13 +296,13 @@ public class QuanleimuApplication extends Application {
 		this.listFirst = listFirst;
 	}
 
-	public List<String> getListFileNames() {
-		return listFileNames;
-	}
-
-	public void setListFileNames(List<String> listFileNames) {
-		this.listFileNames = listFileNames;
-	}
+//	public List<String> getListFileNames() {
+//		return listFileNames;
+//	}
+//
+//	public void setListFileNames(List<String> listFileNames) {
+//		this.listFileNames = listFileNames;
+//	}
 
 	public String cityName = "";
 	public String gpsCityName = "";
@@ -323,34 +323,34 @@ public class QuanleimuApplication extends Application {
 		this.cityName = cityName;
 	}
 
-	// 经纬度添加到全局变量
-	public double lat = 0;
+//	// 经纬度添加到全局变量
+//	public double lat = 0;
+//
+//	public double getLat() {
+//		return lat;
+//	}
+//
+//	public void setLat(double lat) {
+//		this.lat = lat;
+//	}
+//
+//	public double getLon() {
+//		return lon;
+//	}
+//
+//	public void setLon(double lon) {
+//		this.lon = lon;
+//	}
+//
+//	public double lon = 0;
 
-	public double getLat() {
-		return lat;
-	}
-
-	public void setLat(double lat) {
-		this.lat = lat;
-	}
-
-	public double getLon() {
-		return lon;
-	}
-
-	public void setLon(double lon) {
-		this.lon = lon;
-	}
-
-	public double lon = 0;
-
-	public String getActivity_type() {
-		return activity_type;
-	}
-
-	public void setActivity_type(String activity_type) {
-		this.activity_type = activity_type;
-	}
+//	public String getActivity_type() {
+//		return activity_type;
+//	}
+//
+//	public void setActivity_type(String activity_type) {
+//		this.activity_type = activity_type;
+//	}
 
 	static public QuanleimuApplication getApplication(){
 		if(null == preferences){

@@ -177,7 +177,7 @@ public class SearchView extends BaseView implements View.OnClickListener{
 	//public void onDestroy(){}//called before destruction
 	//public void onPause(){}//called before put into stack
 	public void onResume(){
-		QuanleimuApplication.getApplication().setActivity_type("search");
+		//QuanleimuApplication.getApplication().setActivity_type("search");
 	}
 	
 	public TitleDef getTitleDef(){
@@ -270,10 +270,10 @@ public class SearchView extends BaseView implements View.OnClickListener{
 				} else {
 					
 					//总数存入全局
-					QuanleimuApplication.getApplication().setSearchCount(totalCount);
+					//QuanleimuApplication.getApplication().setSearchCount(totalCount);
 					
 					listSearchGoods = goodsList.getData();
-					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
+					//QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 					
 					
 				}

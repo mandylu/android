@@ -204,7 +204,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					msg1.setData(bundle);
 					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 				} else {
-					QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
+					//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 					
 					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), goodsListLoader.getGoodsList().getData());
 					lvGoodsList.setAdapter(adapter);
@@ -243,7 +243,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					{
 						goodsListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
 					}
-					QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
+					//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 					
 					adapter.setList(goodsListLoader.getGoodsList().getData());
 					adapter.notifyDataSetChanged();					

@@ -106,7 +106,8 @@ public class SelectionSearchView extends BaseView implements View.OnClickListene
 	}
 	
 	public void onResume(){
-		QuanleimuApplication.getApplication().setActivity_type("search");
+		super.onResume();
+		//QuanleimuApplication.getApplication().setActivity_type("search");
 	}
 	
 	public TitleDef getTitleDef(){

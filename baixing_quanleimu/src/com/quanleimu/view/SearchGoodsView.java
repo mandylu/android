@@ -228,9 +228,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				} else {
 					List<GoodsDetail> listSearchGoods = goodsList.getData();
 
-					QuanleimuApplication.getApplication().setSearchCount(listSearchGoods.size());
+					//QuanleimuApplication.getApplication().setSearchCount(listSearchGoods.size());
 
-					QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
+					//QuanleimuApplication.getApplication().setListSearchGoods(listSearchGoods);
 
 					adapter = new GoodsListAdapter(getContext(), listSearchGoods);
 					adapter.setHasDelBtn(false);
@@ -274,7 +274,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					for (int i = 0; i < listCommonSearchGoods.size(); i++) {
 						mListLoader.getGoodsList().getData().add(listCommonSearchGoods.get(i));
 					}
-					QuanleimuApplication.getApplication().setListSearchGoods(mListLoader.getGoodsList().getData());
+					//QuanleimuApplication.getApplication().setListSearchGoods(mListLoader.getGoodsList().getData());
 
 					adapter.setList(mListLoader.getGoodsList().getData());
 					adapter.notifyDataSetChanged();	

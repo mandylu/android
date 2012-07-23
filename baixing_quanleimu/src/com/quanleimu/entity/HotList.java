@@ -1,7 +1,14 @@
 package com.quanleimu.entity;
 
-public class HotList {
+import java.io.Serializable;
 
+public class HotList implements Serializable{
+
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = 1494862624344532411L;
+	
 	public String imgUrl = "";
 	public int type = -1;
 	public HotData hotData = new HotData();

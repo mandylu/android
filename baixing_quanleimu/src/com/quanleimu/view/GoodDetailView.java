@@ -501,7 +501,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 								msg1.setData(bundle);
 								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 							} else {
-								QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
+								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
 							mListLoader.setHasMore(true);
 							
@@ -538,7 +538,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 								{
 									mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
 								}
-								QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
+								//QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
 								
 								mListLoader.setHasMore(true);
 								
