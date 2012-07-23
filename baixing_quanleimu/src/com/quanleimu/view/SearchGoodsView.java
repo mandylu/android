@@ -220,7 +220,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 			case GoodsListLoader.MSG_FINISH_GET_FIRST:
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
-				if (goodsList == null || goodsList.getCount() == 0) {
+				if (goodsList == null || goodsList.getData().size() == 0) {
 					if (pd != null) {
 						pd.dismiss();
 					}

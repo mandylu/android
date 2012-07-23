@@ -292,7 +292,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					pd.dismiss();
 				}
 				GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson()); 
-				if (gl == null || gl.getCount() == 0) {
+				if (gl == null || gl.getData().size() == 0) {
 					if(msg.what == MSG_MYPOST) listMyPost.clear();
 					else if(msg.what == MSG_INVERIFY) {
 						if(listInVerify == null){

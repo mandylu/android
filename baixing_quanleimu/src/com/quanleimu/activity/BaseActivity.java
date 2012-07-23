@@ -25,6 +25,8 @@ import java.io.IOException;
 import java.io.ObjectOutputStream;
 import java.util.ArrayList;
 import com.quanleimu.entity.CityDetail;
+import com.quanleimu.entity.GoodsDetail;
+
 import java.util.List;
 import android.app.Activity;
 /**
@@ -58,6 +60,8 @@ public class BaseActivity extends Activity implements OnClickListener{
 					+ ",sheng=" + detail.getSheng(); 
 			strDetails.add(tstrDetail);
 		}
+		
+		savedInstanceState.putStringArrayList("cityDetails", strDetails);
 		
         super.onSaveInstanceState(savedInstanceState);
     }

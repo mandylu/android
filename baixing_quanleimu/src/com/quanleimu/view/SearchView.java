@@ -264,8 +264,7 @@ public class SearchView extends BaseView implements View.OnClickListener{
 				}
 				goodsList = JsonUtil.getGoodsListFromJson(json);
 				
-				int totalCount = goodsList.getCount();
-				if (goodsList == null || goodsList.getCount() == 0) {
+				if (goodsList == null || goodsList.getData().size() == 0) {
 					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				} else {
 					
