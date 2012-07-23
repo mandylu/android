@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
@@ -32,6 +33,7 @@ public class BXNotificationService extends Service {
 	private static final int MSG_CHECK_UPDATE = 1;
 	private static final int MSG_PUSH_RETURN = 2;
 	private String json = null;
+	private BroadcastReceiver networkStateReceiver;
 
 	private void showNotification(String ticket, String title, String content) {
 		NotificationManager mNotificationManager = (NotificationManager) getSystemService(Context.NOTIFICATION_SERVICE);
@@ -161,7 +163,7 @@ public class BXNotificationService extends Service {
 
 	@Override
 	public void onCreate() {
-		BroadcastReceiver networkStateReceiver = new BroadcastReceiver() {
+		networkStateReceiver = new BroadcastReceiver() {
 
 			@Override
 			public void onReceive(Context context, Intent intent) {
@@ -184,6 +186,8 @@ public class BXNotificationService extends Service {
 	@Override
 	public void onDestroy() {
 		myHandler.removeMessages(MSG_CHECK_UPDATE);
+		unregisterReceiver(networkStateReceiver);
+		Log.d("service", "unregister receiver!!~~~~!!~~~");
 	}
 
 	@Override
