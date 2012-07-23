@@ -168,10 +168,15 @@ public class PersonalCenterEntryView extends BaseView implements
 		public void run() {
 			String apiName = "ad_list";
 			ArrayList<String> list = new ArrayList<String>();
+			 
 			list.add("query=userId:" + user.getId() + " AND status:0");
 			list.add("start=0");
 			list.add("rt=1");
 			list.add("rows=30");
+			
+			if(bundle != null && bundle.getString("lastpost") != null){
+				list.add("newAdIds=" + bundle.getString("lastpost"));
+			}
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url);
