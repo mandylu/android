@@ -6,6 +6,7 @@ import java.util.Comparator;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -15,6 +16,12 @@ import android.widget.TextView;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.BXHanzi2Pinyin;
 //import com.quanleimu.widget.BXAlphabetListView.PinnedListViewAdapter;
+import net.sourceforge.pinyin4j.PinyinHelper;
+import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
+import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
+import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
+import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator<Object> {
 
@@ -110,10 +117,27 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 					item.pinyin = "#";
 				}
 				else{
+					 HanyuPinyinOutputFormat outFormat = new HanyuPinyinOutputFormat();  
+				        outFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
+				        outFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
 					for(int j = 0; j < list.get(i).toString().length(); ++ j){
-						String py = BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)));
-						item.pinyin += py;
-						item.firstChars += py.charAt(0);
+//						String py = String.valueOf(list.get(i).toString().charAt(j));
+						try{
+							String[] py = PinyinHelper.toHanyuPinyinStringArray(list.get(i).toString().charAt(j), outFormat);
+	//						Log.d("pinyin", list.get(i).toString() + ": " + py);
+	//						String py = BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)));
+							if(py == null || py.length == 0){
+								char tp = list.get(i).toString().charAt(j) >= 'A' && list.get(i).toString().charAt(j) <= 'Z' ? 
+										(char)(list.get(i).toString().charAt(j) + 'a' - 'A') : list.get(i).toString().charAt(j);
+								item.pinyin += tp;//list.get(i).toString().charAt(j);
+								item.firstChars += tp;//list.get(i).toString().charAt(j);
+							}else{
+								item.pinyin += py[0];
+								item.firstChars += py[0].charAt(0);//py.charAt(0);							
+							}
+						}catch(BadHanyuPinyinOutputFormatCombination e){
+							e.printStackTrace();
+						}
 					}
 				}
 				item.pinyin = item.pinyin.trim();
