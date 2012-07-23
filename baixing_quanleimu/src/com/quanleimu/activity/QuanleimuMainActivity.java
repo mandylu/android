@@ -35,7 +35,6 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 
 import com.quanleimu.view.CateMainView;
-import com.quanleimu.view.PersonalCenterView;
 import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PostGoodsView;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{

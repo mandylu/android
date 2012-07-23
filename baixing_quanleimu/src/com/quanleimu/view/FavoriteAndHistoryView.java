@@ -1,34 +1,20 @@
 package com.quanleimu.view;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
-
-import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
-import com.quanleimu.entity.CityDetail;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.jsonutil.LocateJsonData;
-import com.quanleimu.util.Communication;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.PersonalCenterView.MyMessageDeleteThread;
-import com.quanleimu.view.PersonalCenterView.UpdateAndGetmoreThread;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
-import android.app.ProgressDialog;
 import android.content.Context;
-import android.content.res.TypedArray;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -37,15 +23,9 @@ import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.ListView;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
-import android.widget.TextView;
 
 public class FavoriteAndHistoryView extends BaseView implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailView.IListHolder{
 	private boolean isFav = false;
-	private String json = null;
 	static final int MSG_UPDATEFAV = 1;
 	static final int MSG_UPDATEHISTORY = 2;
 	static final int MSG_DELETEAD = 3;
