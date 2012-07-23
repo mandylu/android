@@ -26,8 +26,10 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.widget.PullToRefreshListView;
+import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.adapter.GoodsListAdapter;
 public class SearchGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
@@ -250,10 +252,11 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				if (pd != null) {
 					pd.dismiss();
 				}
-				progressBar.setVisibility(View.GONE);
-				Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+//				progressBar.setVisibility(View.GONE);
+//				Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
 				
 				mListLoader.setHasMore(false);
+				lvSearchResult.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 				break;
 				
 			case GoodsListLoader.MSG_FINISH_GET_MORE:
@@ -284,13 +287,15 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 					lvSearchResult.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				}
 				break;
-			case 10:
+			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				if (pd != null) {
 					pd.dismiss();
 				}
 				progressBar.setVisibility(View.GONE);
 
 				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
+				
+				lvSearchResult.onFail();
 				break;
 			}
 

@@ -29,6 +29,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.PullToRefreshListView;
+import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
 public class GetGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener{
 
@@ -40,9 +41,6 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	private String siftResult = "";
 
 	private GoodsListAdapter adapter;
-	private final static int ERROR_FIRST = 0;
-	private final static int ERROR_MORE = 1;
-	private final static int ERROR_NOMORE = 2;
 
 	Bundle bundle;
 	
@@ -208,6 +206,8 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					
 					adapter = new GoodsListAdapter(GetGoodsView.this.getContext(), goodsListLoader.getGoodsList().getData());
 					lvGoodsList.setAdapter(adapter);
+					
+					goodsListLoader.setHasMore(true);
 				}
 				
 				lvGoodsList.onRefreshComplete();
@@ -216,14 +216,15 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 			case GoodsListLoader.MSG_NO_MORE:
 				progressBar.setVisibility(View.GONE);
 				
-				Message msg1 = Message.obtain();
-				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-				Bundle bundle = new Bundle();
-				bundle.putString("popup_message", "数据下载失败，请重试！");
-				msg1.setData(bundle);
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+//				Message msg1 = Message.obtain();
+//				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
+//				Bundle bundle = new Bundle();
+//				bundle.putString("popup_message", "数据下载失败，请重试！");
+//				msg1.setData(bundle);
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 				
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
+				goodsListLoader.setHasMore(false);
 				
 				break;
 			case GoodsListLoader.MSG_FINISH_GET_MORE:
@@ -231,12 +232,15 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				
 				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 				if (moreGoodsList == null || moreGoodsList.getData().size() == 0) {
-					Message msg2 = Message.obtain();
-					msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
-					Bundle bundle1 = new Bundle();
-					bundle1.putString("popup_message", "没有更多啦！");
-					msg2.setData(bundle1);
-					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//					Message msg2 = Message.obtain();
+//					msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
+//					Bundle bundle1 = new Bundle();
+//					bundle1.putString("popup_message", "没有更多啦！");
+//					msg2.setData(bundle1);
+//					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+					
+					lvGoodsList.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+					goodsListLoader.setHasMore(false);
 				} else {
 					List<GoodsDetail> listCommonGoods =  moreGoodsList.getData();
 					for(int i=0;i<listCommonGoods.size();i++)
@@ -246,10 +250,11 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 					//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 					
 					adapter.setList(goodsListLoader.getGoodsList().getData());
-					adapter.notifyDataSetChanged();					
+					adapter.notifyDataSetChanged();		
+					
+					lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
+					goodsListLoader.setHasMore(true);
 				}
-				
-				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:

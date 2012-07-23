@@ -549,6 +549,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							Message msg2 = Message.obtain();
 							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+							
+							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+							
+							filloutHeader();
+							filloutFooter();
+							scrollParent.onNewViewFailed();
+							
 							break;
 						}
 					}
@@ -574,15 +582,23 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				}
 			});
         
-        if(!hasPrev()){
+        filloutHeader();
+        
+        filloutFooter();
+	}
+
+	private void filloutHeader() {
+		if(!hasPrev()){
         	findViewById(R.id.pull_to_prev_header).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_prev_image).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_prev_text).setVisibility(View.GONE);
         }else{
         	((TextView)findViewById(R.id.pull_to_prev_text)).setText("上一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex-1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
         }
-        
-        if(!hasNext()){
+	}
+
+	private void filloutFooter() {
+		if(!hasNext()){
         	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);

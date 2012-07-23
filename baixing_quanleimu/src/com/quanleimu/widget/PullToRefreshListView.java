@@ -666,6 +666,19 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 //        onRefreshComplete();
 //    }
 
+    public void onFail(){
+        if(mGetMoreState == GETTING_MORE){
+        	mGetMoreState = SCROLLDOWN_TO_GETMORE;
+        }
+        else if(mRefreshState ==  REFRESHING){
+        	
+        	setSelection(1);
+        	mRefreshState = PULL_TO_REFRESH;
+        }
+        
+        invalidate();
+    }
+    
     /**
      * Resets the list to a normal state after a refresh.
      */
