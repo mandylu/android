@@ -9,6 +9,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.widget.PullToRefreshListView;
@@ -286,13 +287,9 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				
 			case MSG_GOTMOREFAV:
 			case MSG_GOTMOREHISTORY:
-				if (pd != null) {
-					pd.dismiss();
-				}
-				onResult(msg.what, glLoader);
-				break;
 			case MSG_NOMOREFAV:
 			case MSG_NOMOREHISTORY:
+			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:	
 				if (pd != null) {
 					pd.dismiss();
 				}
@@ -430,8 +427,16 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 			
 			return false;
+		}else if(msg == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
+			Message msg2 = Message.obtain();
+			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+
+			pullListView.onFail();
+			
+			return false;
 		}
 		
-		return false;
+		return true;
 	}
 }

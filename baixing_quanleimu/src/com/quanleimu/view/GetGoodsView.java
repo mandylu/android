@@ -263,6 +263,8 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 				Message msg2 = Message.obtain();
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+				
+				lvGoodsList.onFail();
 				break;
 			}
 			

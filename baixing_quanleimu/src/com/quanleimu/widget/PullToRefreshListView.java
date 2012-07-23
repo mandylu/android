@@ -672,8 +672,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         }
         else if(mRefreshState ==  REFRESHING){
         	
-        	setSelection(1);
-        	mRefreshState = PULL_TO_REFRESH;
+            mRefreshState = TAP_TO_REFRESH;
+            
+            resetHeader();
         }
         
         invalidate();

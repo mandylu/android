@@ -32,6 +32,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
@@ -447,15 +448,18 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					e.printStackTrace();
 				}
 				break;
-//			case MCMESSAGE_NETWORKERROR:
-//				if (pd != null) {
-//					pd.dismiss();
-//				}
-//				Toast.makeText(PersonalPostView.this.getContext(), "网络连接失败，请检查设置！", 3).show();
-//				
-//				lvGoodsList.onRefreshComplete();
-//				
-//				break;
+			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+				if (pd != null) {
+					pd.dismiss();
+				}
+				
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+				
+				lvGoodsList.onFail();
+				
+				break;
 			}
 //			super.handleMessage(msg);
 		}

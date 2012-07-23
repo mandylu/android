@@ -1,7 +1,5 @@
 package com.quanleimu.view;
 
-import java.io.File;
-import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -18,7 +16,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
-import android.graphics.Bitmap.CompressFormat;
 import android.graphics.drawable.AnimationDrawable;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
@@ -451,26 +448,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren1, o);
-        {
-        	File file = new File("/sdcard/mb_loading.png");
-        	try{
-        		FileOutputStream stream = new FileOutputStream(file);
-        		mb_loading.compress(CompressFormat.PNG, 100, stream);
-        	}catch(Exception e){
-        		
-        	}        	
-        }
-        
-        mb_loading = Helper.toRoundCorner(mb_loading, 10);
-        {
-        	File file = new File("/sdcard/mb_loading_rounded.png");
-        	try{
-        		FileOutputStream stream = new FileOutputStream(file);
-        		mb_loading.compress(CompressFormat.PNG, 100, stream);
-        	}catch(Exception e){
-        		
-        	}        	
-        }
         
 		//the ad is viewed once
         QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
@@ -487,6 +464,16 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							onGotMore();
 						}else{
 							onNoMore();
+						}
+						
+						if(msg.what == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
+							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+							imageView.setVisibility(View.VISIBLE);
+							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+							
+							filloutHeader();
+							filloutFooter();
+							scrollParent.onNewViewFailed();
 						}
 					}else{
 						switch (msg.what) {

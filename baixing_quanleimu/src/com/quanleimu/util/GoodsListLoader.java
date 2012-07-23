@@ -147,9 +147,11 @@ public class GoodsListLoader {
 			} catch (UnsupportedEncodingException e) {
 			} catch (IOException e) {
 				mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				return;
 			} catch (Communication.BXHttpException e){
 				
 			}
+			
 			mHandler.sendEmptyMessage(MSG_EXCEPTION);
 		}
 	}
