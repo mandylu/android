@@ -780,6 +780,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			//根据goodsDetail判断是发布还是修改发布
 			if (goodsDetail != null) {
 				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+				apiName = "ad_update";
 			}
 			//发布发布集合
 			for (int i = 0; i < postMap.size(); i++) {
