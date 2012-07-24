@@ -485,6 +485,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 			list.add("adId=" + id);
+			list.add("rt=1");
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
@@ -534,6 +535,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 			list.add("adId=" + id);
+			list.add("rt=1");
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
