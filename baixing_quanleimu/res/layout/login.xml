@@ -24,11 +24,11 @@
                 android:id="@+id/textView1"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
+                android:layout_marginBottom="5dip"
+                android:layout_marginTop="5dip"
                 android:gravity="center_vertical"
                 android:text="手机号/昵称："
-                android:layout_marginBottom="5dip"
-                android:layout_marginTop="5dip"                
-                android:textColor="#000000"
+                android:textColor="#82807C"
                 android:textSize="16dip" />
 
             <requestFocus />
@@ -62,12 +62,12 @@
                 android:id="@+id/textView2"
                 android:layout_width="wrap_content"
                 android:layout_height="fill_parent"
-                android:gravity="center_vertical"
-                android:text="密  码："
-                android:singleLine="true"
                 android:layout_marginBottom="5dip"
-                android:layout_marginTop="5dip"                
-                android:textColor="#000000"
+                android:layout_marginTop="5dip"
+                android:gravity="center_vertical"
+                android:singleLine="true"
+                android:text="密  码："
+                android:textColor="#82807C"
                 android:textSize="16dip" />
 
             <EditText
@@ -108,9 +108,10 @@
             android:layout_marginBottom="10dip"
             android:layout_marginTop="10dip"
             android:layout_weight="1"
+            android:duplicateParentState="true"
             android:gravity="center_vertical"
             android:text="忘记密码"
-            android:textColor="#000000"
+            android:textColor="@drawable/list_textselector"
             android:textSize="16dip" />
 
         <ImageView
@@ -136,8 +137,8 @@
         android:layout_height="wrap_content"
         android:layout_below="@id/forget_layout"
         android:layout_marginTop="10dip"
-        android:gravity="center"
         android:background="@drawable/list_selector"
+        android:gravity="center"
         android:paddingLeft="10dip"
         android:paddingRight="10dip" >
 
@@ -145,12 +146,13 @@
             android:id="@+id/textView4"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_marginBottom="10dip"
+            android:layout_marginTop="10dip"
             android:layout_weight="1"
+            android:duplicateParentState="true"
             android:gravity="center_vertical"
             android:text="注册"
-            android:layout_marginTop="10dip"
-            android:layout_marginBottom="10dip"
-            android:textColor="#000000"
+            android:textColor="@drawable/list_textselector"
             android:textSize="16dip" />
 
         <ImageView
