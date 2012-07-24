@@ -169,7 +169,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 			}
 		}
 		
-		lvSearchResult.setSelection(mListLoader.getSelection());
+		mListLoader.setHandler(myHandler);
+		lvSearchResult.setSelectionFromHeader(mListLoader.getSelection());
 	}	
 	
 	@Override
@@ -186,8 +187,6 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
 			}
 		}
-		
-		lvSearchResult.setSelection(mListLoader.getSelection());
 	}	
 	
 	@Override

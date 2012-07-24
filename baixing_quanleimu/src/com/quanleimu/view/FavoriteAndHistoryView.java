@@ -98,7 +98,8 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			}
 		}
 		
-		pullListView.setSelection(glLoader.getSelection());
+		glLoader.setHandler(myHandler);
+		pullListView.setSelectionFromHeader(glLoader.getSelection());
 	}	
 	
 	@Override
@@ -115,8 +116,6 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
 			}
 		}
-		
-		pullListView.setSelection(glLoader.getSelection());
 	}	
 	
 	@Override
@@ -163,7 +162,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
-		title.m_title = isFav ? "收藏得信息" : "浏览历史";
+		title.m_title = isFav ? "收藏的信息" : "浏览历史";
 		title.m_rightActionHint = "编辑";
 		return title;
 	}
@@ -252,34 +251,36 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				if(isFav){
 					List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListMyStore();
 					goodsList.remove(pos);
-					QuanleimuApplication.getApplication().setListMyStore(goodsList);
+					if(goodsList != tempGoodsList.getData())	
+						tempGoodsList.getData().remove(pos);
+					//QuanleimuApplication.getApplication().setListMyStore(goodsList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", goodsList);
 				}
 				else{
 					List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListLookHistory();
 					goodsList.remove(pos);
-					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+					if(goodsList != tempGoodsList.getData())	
+						tempGoodsList.getData().remove(pos);
+					//QuanleimuApplication.getApplication().setListLookHistory(goodsList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", goodsList);
 				}	
-				
-				tempGoodsList.getData().remove(pos);
 				
 				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
 				adapter.setUiHold(false);
 				break;
 			case MSG_DELETEALL:
+				List<GoodsDetail> goodsList = new ArrayList<GoodsDetail>();
 				if(isFav){
-					QuanleimuApplication.getApplication().setListMyStore(new ArrayList<GoodsDetail>());
-					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", new ArrayList<GoodsDetail>());
+					QuanleimuApplication.getApplication().setListMyStore(new ArrayList<GoodsDetail>(goodsList));
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", new ArrayList<GoodsDetail>(goodsList));
 				}
 				else{
-					QuanleimuApplication.getApplication().setListLookHistory(new ArrayList<GoodsDetail>());
-					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", new ArrayList<GoodsDetail>());
+					QuanleimuApplication.getApplication().setListLookHistory(goodsList);
+					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", new ArrayList<GoodsDetail>(goodsList));
 				}
 				
-				tempGoodsList = new GoodsList(new ArrayList<GoodsDetail>());
-				glLoader.setGoodsList(tempGoodsList);
+				glLoader.getGoodsList().setData(goodsList);
 				glLoader.setHasMore(false);
 				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
@@ -448,8 +449,11 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			pullListView.onFail();
 			
 			return false;
+		}else if(msg == MSG_UPDATEHISTORY || msg == MSG_UPDATEFAV){
+			pullListView.onRefreshComplete();
+			return false;
 		}
 		
-		return true;
+		return false;
 	}
 }

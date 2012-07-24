@@ -181,6 +181,9 @@ public class BitmapUtils {
 	
 	public static Bitmap decodeSampledBitmapFromFile(String fileName) {
 	
+		if(null == fileName)	return null;
+		if(!(new File(fileName)).exists()) return null;
+		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
 	    if(useSampleSize){

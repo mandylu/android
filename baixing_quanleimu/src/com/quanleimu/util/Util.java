@@ -356,7 +356,7 @@ public class Util {
 			}
 //			urlCon.disconnect();
 		}
-		Log.d("json", "activityjson--->" + str);
+		//Log.d("json", "activityjson--->" + str);
 		return str;
 	}
 	
@@ -460,7 +460,7 @@ public class Util {
 	
 	//下载图片
 	public static Bitmap getImage(String strURL)throws OutOfMemoryError{	
-		Log.d("img", strURL);
+		//Log.d("img", strURL);
 				Bitmap img = null;
 				URLConnection conn = null;
 				try {
@@ -468,7 +468,7 @@ public class Util {
 					conn = (URLConnection) url.openConnection();
 					BitmapFactory.Options o =  new BitmapFactory.Options();
 					o.inPurgeable = true;
-					Log.e("o", o.toString());
+					//Log.e("o", o.toString());
 					img = BitmapFactory.decodeStream(conn.getInputStream(), null, o);
 				}
 				catch (Exception e) { 

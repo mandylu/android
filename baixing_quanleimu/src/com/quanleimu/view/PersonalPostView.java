@@ -191,6 +191,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		});
 		
 		lvGoodsList.setOnRefreshListener(this);	
+		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
 	
 	@Override
@@ -237,6 +238,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
 			}
 		}
+		
+		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}	
 	
 	private void init(){

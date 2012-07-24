@@ -558,7 +558,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 		mScroller.startScroll(getScrollX(), 0, delta, 0, durationMs);
 		invalidate();
 		
-		Log.d("timed scroll:", "snap to screen " + whichScreen + "/" + getViewsCount());
+		//Log.d("timed scroll:", "snap to screen " + whichScreen + "/" + getViewsCount());
 	}
 
 	@Override
@@ -861,11 +861,11 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 	private void logBuffer() {
 
-		Log.d("viewflow", "Size of mLoadedViews: " + mLoadedViews.size() +
-				", Size of mRecycledViews: " + 0/*mRecycledViews.size()*/ +
-				", X: " + mScroller.getCurrX() + ", Y: " + mScroller.getCurrY());
-		Log.d("viewflow", "IndexInAdapter: " + mCurrentAdapterIndex
-				+ ", IndexInBuffer: " + mCurrentBufferIndex);
+//		Log.d("viewflow", "Size of mLoadedViews: " + mLoadedViews.size() +
+//				", Size of mRecycledViews: " + 0/*mRecycledViews.size()*/ +
+//				", X: " + mScroller.getCurrX() + ", Y: " + mScroller.getCurrY());
+//		Log.d("viewflow", "IndexInAdapter: " + mCurrentAdapterIndex
+//				+ ", IndexInBuffer: " + mCurrentBufferIndex);
 	}
 	
 	

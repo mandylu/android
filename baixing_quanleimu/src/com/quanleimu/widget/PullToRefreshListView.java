@@ -181,13 +181,20 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	}
     }
     
-//    @Override
-//    protected void onAttachedToWindow() {
-//    	
-//    	if(mRefreshView.getBottom() > 0){
-//    		setSelectionFromTop(1, 0);
-//    	}
-//    }
+    @Override
+    protected void onAttachedToWindow() {
+        if(mGetMoreState == GETTING_MORE){
+        	mGetMoreState = SCROLLDOWN_TO_GETMORE;
+        }
+        else if(mRefreshState ==  REFRESHING){
+        	
+            mRefreshState = TAP_TO_REFRESH;
+        }
+        
+        resetHeader();
+        
+        invalidate();
+    }
 
 	@Override
 	protected void onDraw(Canvas canvas){
@@ -249,6 +256,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         super.setAdapter(adapter);
 
         setSelectionFromTop(1, 0);
+    }
+    
+
+    public void setSelectionFromHeader(int selection){
+    	setSelectionFromTop(selection, getHeaderViewsCount());
     }
 
     /**
