@@ -326,7 +326,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 						listInVerify = gl.getData();
 						if(listInVerify != null){
 							for(int i = listInVerify.size() - 1; i >= 0; -- i){
-								if(!listInVerify.get(i).getValueByKey("status").equals("4")){
+								if(!listInVerify.get(i).getValueByKey("status").equals("4") 
+										&& !listInVerify.get(i).getValueByKey("status").equals("20")){
 									listInVerify.remove(i);
 								}
 							}
@@ -337,7 +338,17 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					}
 					else if(msg.what == MSG_DELETED){
 						listDeleted = gl.getData();
-						glLoader.setGoodsList(gl);
+						
+						if(listDeleted != null){
+//							for(int i = listDeleted.size() - 1; i >= 0; -- i){
+//								if(!listDeleted.get(i).getValueByKey("status").equals("3")){
+//									listDeleted.remove(i);
+//								}
+//							}
+						}
+						GoodsList gl2 = new GoodsList();
+						gl2.setData(listDeleted);
+						glLoader.setGoodsList(gl2);
 					}
 				}
 				if(msg.what == MSG_MYPOST){
@@ -646,9 +657,10 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		List<String> params = new ArrayList<String>();
 		if(currentPage == -1){
 			params.add("query=userId:" + user.getId() + " AND status:0");
+			params.add("activeOnly=0");
 		}
 		else if(currentPage == 0){
-			params.add("query=userId:" + user.getId() + " AND status:4");
+			params.add("query=userId:" + user.getId() + " AND (status:4 OR status:20)");
 			params.add("activeOnly=0");
 		}
 		else if(currentPage == 1){

@@ -171,6 +171,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			ArrayList<String> list = new ArrayList<String>();
 			 
 			list.add("query=userId:" + user.getId() + " AND status:0");
+			list.add("activeOnly=0");
 			list.add("start=0");
 			list.add("rt=1");
 			list.add("rows=30");
