@@ -408,7 +408,7 @@ public class PullableScrollView extends ScrollView
 		if(!mDuringTouch && null != mPullNotifier){
 			int maxY =  mPullNotifier.getFooterView().getTop()-mViewHeight;
 			if(mPullNotifier.hasNext() && mState != PULL_STATE.PULL_STATE_LOADING_NEXT  && getScrollY() > maxY){
-				Log.d("PullableScrollView", "force scroll back-up, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+"maxY="+maxY);
+				//Log.d("PullableScrollView", "force scroll back-up, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+"maxY="+maxY);
 				scrollTo(0, maxY);
 			}
 			else if(mPullNotifier.hasPrev() && mState != PULL_STATE.PULL_STATE_LOADING_PREV && getScrollY() < mPullNotifier.getHeaderView().getBottom()){
@@ -466,7 +466,7 @@ public class PullableScrollView extends ScrollView
 		if(!mDuringTouch && null != mPullNotifier){
 			int maxY =  mPullNotifier.getFooterView().getTop()-mViewHeight;
 			if(mPullNotifier.hasNext() && mState != PULL_STATE.PULL_STATE_LOADING_NEXT && getScrollY() > maxY){
-				Log.d("PullableScrollView", "scroll_y modified to maxY, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+", contentBottom="+mPullNotifier.getContentView().getBottom()+", wholeHeight="+(getBottom()-getTop())+", maxY="+maxY);
+				//Log.d("PullableScrollView", "scroll_y modified to maxY, scrollY="+getScrollY()+", parentHeight="+mViewHeight+", footerTop="+mPullNotifier.getFooterView().getTop()+", contentBottom="+mPullNotifier.getContentView().getBottom()+", wholeHeight="+(getBottom()-getTop())+", maxY="+maxY);
 				j = maxY;
 			}
 			else if(mPullNotifier.hasPrev() && mState != PULL_STATE.PULL_STATE_LOADING_PREV && getScrollY() < mPullNotifier.getHeaderView().getBottom()){
@@ -474,7 +474,7 @@ public class PullableScrollView extends ScrollView
 			}
 		}
 		
-		Log.d("PullableScrollView", "scrollTo("+i+","+j+") when mDuringTouch="+mDuringTouch+",headerBottom="+mPullNotifier.getHeaderView().getBottom()+",footerTop="+(mPullNotifier.getFooterView().getTop()-mViewHeight));
+		//Log.d("PullableScrollView", "scrollTo("+i+","+j+") when mDuringTouch="+mDuringTouch+",headerBottom="+mPullNotifier.getHeaderView().getBottom()+",footerTop="+(mPullNotifier.getFooterView().getTop()-mViewHeight));
 		
 		super.scrollTo(i, j);
 	}

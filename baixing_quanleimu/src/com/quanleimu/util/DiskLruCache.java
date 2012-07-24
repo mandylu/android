@@ -239,10 +239,12 @@ public class DiskLruCache {
         long eldestFileSize;
         int count = 0;
 
+        Set< Entry<String, String> > entrySet = mLinkedHashMap.entrySet();
         while (count < MAX_REMOVALS &&
                 (cacheSize > maxCacheItemSize || cacheByteSize > maxCacheByteSize)) {
-            eldestEntry = mLinkedHashMap.entrySet().iterator().next();
-            //Log.d("LruDiskCache", "currently deleted key: "+ eldestEntry.getKey());
+        	if(!entrySet.iterator().hasNext())	break;
+        	
+            eldestEntry = entrySet.iterator().next();
             eldestFile = new File(eldestEntry.getValue());
             eldestFileSize = eldestFile.length();
             mLinkedHashMap.remove(eldestEntry.getKey());
@@ -250,6 +252,7 @@ public class DiskLruCache {
             cacheSize = mLinkedHashMap.size();
             cacheByteSize -= eldestFileSize;
             count++;
+            
 //            if (BuildConfig.DEBUG) {
 //                //Log.d(TAG, "flushCache - Removed cache file, " + eldestFile + ", "
 //                        + eldestFileSize);
