@@ -620,7 +620,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         mCurrentScrollState = scrollState;
 
         if (mCurrentScrollState == SCROLL_STATE_IDLE) {            
-        	Log.d("on fling: ", "onScrollStateChanged to SCROLL_STATE_IDLE, mRefreshState="+mRefreshState);
+        	//Log.d("on fling: ", "onScrollStateChanged to SCROLL_STATE_IDLE, mRefreshState="+mRefreshState);
         	
             if(mBounceHack && !mTouchDown &&mRefreshState == PULL_TO_REFRESH){
                 //resetHeader();
@@ -652,7 +652,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
 
     public void onRefresh() {
-        Log.d(TAG, "onRefresh");
+        //Log.d(TAG, "onRefresh");
 
         if (mOnRefreshListener != null) {
             mOnRefreshListener.onRefresh();
@@ -660,7 +660,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     }
     
     public void onGetMore(){
-        Log.d(TAG, "onRefresh");
+        //Log.d(TAG, "onGetMore");
 
         if (mHasMore && mGetMoreListener != null) {
         	mGetMoreListener.onGetMore();
@@ -696,7 +696,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
      * Resets the list to a normal state after a refresh.
      */
     public void onRefreshComplete() {        
-        Log.d(TAG, "onRefreshComplete");
+        //Log.d(TAG, "onRefreshComplete");
         
         mLastUpdateTimeMs = System.currentTimeMillis();
 

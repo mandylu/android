@@ -313,7 +313,7 @@ public class LazyImageLoader
 						bundle.putParcelable(EXTRA_IMG, bitmap);
 						handler.sendMessage(msg);
 					}else{						
-						Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
+						//Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
 						
 						urlDequeDownload.add(url);
 					}

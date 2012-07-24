@@ -1250,7 +1250,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				SimpleImageLoader.showImg(iv, listUrl.get(position), GoodDetailView.this.getContext());
 			}
 			
-			Log.d("GoodDetailView: ", "getView for position-" + position);
+			//Log.d("GoodDetailView: ", "getView for position-" + position);
 			
 			return iv;
 		}
