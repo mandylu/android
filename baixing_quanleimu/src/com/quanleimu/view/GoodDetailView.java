@@ -475,7 +475,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							
 							filloutHeader();
 							filloutFooter();
-							scrollParent.onNewViewFailed();
+							scrollParent.onNewViewFailed(true);
 						}
 					}else{
 						switch (msg.what) {
@@ -544,7 +544,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							
 							filloutHeader();
 							filloutFooter();
-							scrollParent.onNewViewFailed();
+							scrollParent.onNewViewFailed(true);
 							
 							break;
 						}
@@ -568,6 +568,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					
 					TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
 					textView.setText("后面没有啦！");
+					
+					scrollParent.onNewViewFailed(false);
 				}
 			});
         

@@ -57,8 +57,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		pullListView.setOnItemClickListener(new OnItemClickListener(){
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
 				position = position - pullListView.getHeaderViewsCount();
-				if(position < 0 || (isFav && position >= QuanleimuApplication.getApplication().getListMyStore().size())
-						|| (!isFav && position >= QuanleimuApplication.getApplication().getListLookHistory().size())) return;
+				if(position < 0 || position >= tempGoodsList.getData().size()) return;
 				m_viewInfoListener.onNewView(new GoodDetailView(FavoriteAndHistoryView.this.getContext(), bundle, glLoader, position, FavoriteAndHistoryView.this));
 			}
 			
@@ -99,6 +98,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		}
 		
 		glLoader.setHandler(myHandler);
+		adapter.setList(glLoader.getGoodsList().getData());
 		pullListView.setSelectionFromHeader(glLoader.getSelection());
 	}	
 	
@@ -241,9 +241,9 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					adapter.setList(tempGoodsList.getData());
 					glLoader.setGoodsList(tempGoodsList);
 					glLoader.setHasMore(tempGoodsList.getData().size() < historyList.size());
+					
+					pullListView.onRefreshComplete();
 				}
-				
-				pullListView.onRefreshComplete();
 				
 				break;
 			case MSG_DELETEAD:
@@ -381,16 +381,13 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			if(isFav){
 				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
 				if(null == moreGoodsList || 0 == moreGoodsList.getData().size()){
-					//todo:add error handling messages
-					if(isActive)
-						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
-					
-					glLoader.setHasMore(false);
 
+					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+					glLoader.setHasMore(false);
 					return false;
 				}else{
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-					for(int i = 0; i < moreGoodsList.getData().size() - 1; i++){
+					for(int i = 0; i < moreGoodsList.getData().size(); i++){
 						removeGoods(moreGoodsList.getData().get(i), favList);
 						tempGoodsList.getData().add(moreGoodsList.getData().get(i));
 						favList.add(tempGoodsList.getData().size()-1, moreGoodsList.getData().get(i));
@@ -401,20 +398,15 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					//adapter.setList(tempGoodsList.getData());
 					loader.setHasMore(tempGoodsList.getData().size() < favList.size());
 					
-					if(isActive)
-						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
-					
+					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
 					return true;
 				}
 			}else{
 				GoodsList moreGoodsList2 = JsonUtil.getGoodsListFromJson(loader.getLastJson());
 				if(null == moreGoodsList2 || 0 == moreGoodsList2.getData().size()){
-					//todo:add error handling messages
-					if(isActive)
-						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
-					
+
+					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 					glLoader.setHasMore(false);
-					
 					return false;
 				}else{
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
@@ -428,18 +420,13 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					
 					//adapter.setList(tempGoodsList.getData());
 					loader.setHasMore(tempGoodsList.getData().size() < historyList.size());
-					
-					if(isActive)
-						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
-					                                                                                                     
+					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);                                                                                                     
 					return true;
 				}
 			}
 		}else if(msg == MSG_NOMOREFAV || msg == MSG_NOMOREHISTORY){
 			glLoader.setHasMore(false);
-			if(isActive)
-				pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
-			
+			pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 			return false;
 		}else if(msg == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
 			Message msg2 = Message.obtain();
@@ -447,7 +434,6 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 
 			pullListView.onFail();
-			
 			return false;
 		}else if(msg == MSG_UPDATEHISTORY || msg == MSG_UPDATEFAV){
 			pullListView.onRefreshComplete();

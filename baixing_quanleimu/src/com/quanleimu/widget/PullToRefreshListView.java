@@ -184,14 +184,21 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     @Override
     protected void onAttachedToWindow() {
         if(mGetMoreState == GETTING_MORE){
-        	mGetMoreState = SCROLLDOWN_TO_GETMORE;
+        	if(null != getAdapter() && mAllowGetMore && getAdapter().getCount() == getLastVisiblePosition()){
+        		onGetMore();
+        	}else{
+        		mGetMoreState = SCROLLDOWN_TO_GETMORE;
+        	}
         }
         else if(mRefreshState ==  REFRESHING){
-        	
-            mRefreshState = TAP_TO_REFRESH;
+        	if(0 == getFirstVisiblePosition())
+        		onRefresh();
+        	else
+        		mRefreshState = PULL_TO_REFRESH;
         }
         
         resetHeader();
+        updateFooter(mHasMore);
         
         invalidate();
     }

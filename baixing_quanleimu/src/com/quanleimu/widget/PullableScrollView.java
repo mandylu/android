@@ -228,13 +228,15 @@ public class PullableScrollView extends ScrollView
 		mState = PULL_STATE.PULL_STATE_IDLE;
 	}
 	
-	public void onNewViewFailed()
+	public void onNewViewFailed(boolean scrollToContent)
 	{		
-		if(mState == PULL_STATE.PULL_STATE_LOADING_NEXT){
-			scrollToContentFooter();
-		}
-		else{
-			scrollToContentHeader(true);
+		if(scrollToContent){
+			if(mState == PULL_STATE.PULL_STATE_LOADING_NEXT){
+				scrollToContentFooter();
+			}
+			else{
+				scrollToContentHeader(true);
+			}
 		}
 		
 		mState = PULL_STATE.PULL_STATE_IDLE;

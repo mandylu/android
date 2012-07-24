@@ -239,6 +239,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			}
 		}
 		
+		adapter.setList(glLoader.getGoodsList().getData());
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}	
 	
