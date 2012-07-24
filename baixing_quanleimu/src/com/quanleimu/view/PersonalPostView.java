@@ -668,9 +668,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			params.add("activeOnly=0");
 		}
 //		list.add("rt=1");	
-		
+		glLoader.setRows(1000);
 		glLoader.setParams(params);
-		glLoader.setRows(300);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg);
 	}
