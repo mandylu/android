@@ -340,11 +340,11 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 						listDeleted = gl.getData();
 						
 						if(listDeleted != null){
-//							for(int i = listDeleted.size() - 1; i >= 0; -- i){
-//								if(!listDeleted.get(i).getValueByKey("status").equals("3")){
-//									listDeleted.remove(i);
-//								}
-//							}
+							for(int i = listDeleted.size() - 1; i >= 0; -- i){
+								if(!listDeleted.get(i).getValueByKey("status").equals("3")){
+									listDeleted.remove(i);
+								}
+							}
 						}
 						GoodsList gl2 = new GoodsList();
 						gl2.setData(listDeleted);
@@ -670,6 +670,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 //		list.add("rt=1");	
 		
 		glLoader.setParams(params);
+		glLoader.setRows(300);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg);
 	}
