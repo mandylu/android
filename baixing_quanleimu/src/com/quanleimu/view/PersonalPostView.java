@@ -15,14 +15,10 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.entity.GoodsDetail;
@@ -34,7 +30,6 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
@@ -46,7 +41,6 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	private final int MSG_MYPOST = 1;
 	private final int MSG_INVERIFY = 2;
 	private final int MSG_DELETED = 3;
-	private final int MCMESSAGE_NETWORKERROR = 4;
 	private final int MCMESSAGE_DELETE = 5;
 	private final int MSG_DELETE_POST_SUCCESS = 6;
 	private final int MSG_DELETE_POST_FAIL = 7;
@@ -252,9 +246,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		
 		try {
 			if (Util.JadgeConnection(this.getContext()) == false) {
-				Toast.makeText(this.getContext(), "网络连接异常", 3).show();
-//				isConnect = 0;
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -501,9 +493,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				return;
 
 			} catch (UnsupportedEncodingException e) {
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (Communication.BXHttpException e){
 				
 			}
@@ -552,9 +544,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				return;
 
 			} catch (UnsupportedEncodingException e) {
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
-				myHandler.sendEmptyMessage(MCMESSAGE_NETWORKERROR);
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (Communication.BXHttpException e){
 				
 			}
@@ -571,9 +563,6 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_rightActionHint = "完成";
-				if(currentPage != -1){
-//					title.m_leftActionHint = "清空";
-				}
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(adapter != null){

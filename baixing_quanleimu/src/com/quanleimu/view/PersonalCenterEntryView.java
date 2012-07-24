@@ -28,6 +28,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -183,12 +184,19 @@ public class PersonalCenterEntryView extends BaseView implements
 				myHandler.sendEmptyMessage(MSG_GETPERSONALADS);
 				return;
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			} catch (IOException e) {
-				e.printStackTrace();
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			} catch (Communication.BXHttpException e) {
-
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			}
+			
 			if(pd != null){
 				pd.dismiss();
 			}

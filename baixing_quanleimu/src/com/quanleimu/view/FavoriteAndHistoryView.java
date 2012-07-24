@@ -126,6 +126,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				TitleDef title = getTitleDef();
 				title.m_rightActionHint = "完成";
 				title.m_leftActionHint = "清空";
+				title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(adapter != null){
@@ -196,7 +197,11 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				
 				tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 				if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
-					//todo:add error handling messages
+					Message msg2 = Message.obtain();
+					msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+
+					pullListView.onFail();
 				}else{
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
 					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
@@ -220,7 +225,11 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 
 				tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 				if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
-					//todo:add error handling messages
+					Message msg2 = Message.obtain();
+					msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+					QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+
+					pullListView.onFail();
 				}else{
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
 					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
@@ -375,6 +384,8 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					if(isActive)
 						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 					
+					glLoader.setHasMore(false);
+
 					return false;
 				}else{
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
@@ -400,6 +411,8 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					//todo:add error handling messages
 					if(isActive)
 						pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+					
+					glLoader.setHasMore(false);
 					
 					return false;
 				}else{
