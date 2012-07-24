@@ -189,7 +189,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				}
 			}
 		});
-		
+		lvGoodsList.invalidateViews();
 		lvGoodsList.setOnRefreshListener(this);	
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
