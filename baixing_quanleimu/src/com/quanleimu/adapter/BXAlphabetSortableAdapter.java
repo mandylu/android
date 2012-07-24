@@ -123,7 +123,13 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 					for(int j = 0; j < list.get(i).toString().length(); ++ j){
 //						String py = String.valueOf(list.get(i).toString().charAt(j));
 						try{
-							String[] py = PinyinHelper.toHanyuPinyinStringArray(list.get(i).toString().charAt(j), outFormat);
+							String[] py = null;
+							if(list.get(i).toString().charAt(j) == '长'){
+								py = new String[]{"chang"};
+							}
+							else{
+								py = PinyinHelper.toHanyuPinyinStringArray(list.get(i).toString().charAt(j), outFormat);
+							}
 	//						Log.d("pinyin", list.get(i).toString() + ": " + py);
 	//						String py = BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)));
 							if(py == null || py.length == 0){
@@ -135,8 +141,10 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 								item.pinyin += py[0];
 								item.firstChars += py[0].charAt(0);//py.charAt(0);							
 							}
-						}catch(BadHanyuPinyinOutputFormatCombination e){
+						}catch(Exception e){
 							e.printStackTrace();
+							item.pinyin += list.get(i).toString().charAt(j);
+							item.firstChars += item.pinyin.charAt(0);
 						}
 					}
 				}
