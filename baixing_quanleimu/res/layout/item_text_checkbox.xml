@@ -18,6 +18,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
+            android:duplicateParentState="true"
             android:textColor="@drawable/list_textselector"
             android:textSize="18dip" >
         </TextView>
