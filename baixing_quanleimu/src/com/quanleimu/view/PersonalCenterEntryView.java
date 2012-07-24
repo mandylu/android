@@ -78,14 +78,14 @@ public class PersonalCenterEntryView extends BaseView implements
 		tvFav.setText(String.valueOf(favs == null ? 0 : favs.size()));
 
 		if(user != null && ((this.bundle != null && bundle.getInt("forceUpdate") == 1)
-			|| QuanleimuApplication.getApplication().getListMyPost() == null
-			|| QuanleimuApplication.getApplication().getListMyPost().size() == 0)){
+			|| QuanleimuApplication.getApplication().getListMyPost() == null)){
 			if (bundle != null) {
 				bundle.remove("forceUpdate");
 			}
 			pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
-				pd.setCancelable(true);
-				new Thread(new GetPersonalAdsThread()).start();
+			pd.setCancelable(true);
+			
+			new Thread(new GetPersonalAdsThread()).start();
 		}
 		else{
 			TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);

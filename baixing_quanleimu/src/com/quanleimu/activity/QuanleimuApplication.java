@@ -127,7 +127,7 @@ public class QuanleimuApplication extends Application{
 	}
 
 	//我的发布信息
-	public List<GoodsDetail> listMyPost = new ArrayList<GoodsDetail>();
+	public List<GoodsDetail> listMyPost = null;
 	
 	public List<GoodsDetail> getListMyPost() {
 		return listMyPost;

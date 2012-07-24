@@ -149,7 +149,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				if(index < 0)
 					return;
 				
-				if(currentPage == -1 && index < listMyPost.size() ){
+				if(currentPage == -1 && null != listMyPost && index < listMyPost.size() ){
 					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index, null));
 				}
 				else if(null !=  listInVerify && index < listInVerify.size() && 0 == currentPage){
@@ -291,7 +291,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				}
 				GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson()); 
 				if (gl == null || gl.getData().size() == 0) {
-					if(msg.what == MSG_MYPOST) listMyPost.clear();
+					if(msg.what == MSG_MYPOST) {
+						if(null != listMyPost) listMyPost.clear();
+					}
 					else if(msg.what == MSG_INVERIFY) {
 						if(listInVerify == null){
 							listInVerify = new ArrayList<GoodsDetail>();

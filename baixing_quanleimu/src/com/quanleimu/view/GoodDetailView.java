@@ -272,10 +272,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	private boolean isMyAd(){
 		if(detail == null) return false;
 		List<GoodsDetail> myPost = QuanleimuApplication.getApplication().getListMyPost();
-		for(int i = 0; i < myPost.size(); ++ i){
-			if(myPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
-				return true;
+		if(null != myPost){
+			for(int i = 0; i < myPost.size(); ++ i){
+				if(myPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+						.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+					return true;
+				}
 			}
 		}
 		return false;
@@ -1035,7 +1037,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							}
 						}
 					}
-					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+					//QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 				}
 
 				setMetaObject();
@@ -1052,15 +1054,17 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					if (code == 0) {
 						if(detail.getValueByKey("status").equals("0")){
 							List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
-							for(int i = 0; i < listMyPost.size(); ++ i){
-								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-										.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
-									listMyPost.remove(i);
-									break;
+							if(null != listMyPost){
+								for(int i = 0; i < listMyPost.size(); ++ i){
+									if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+											.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+										listMyPost.remove(i);
+										break;
+									}
 								}
 							}
 	//						listMyPost.remove(pos);
-							QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+							//QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 							if(m_viewInfoListener != null){
 								m_viewInfoListener.onBack(MSG_MYPOST_DELETED, null);
 							}
