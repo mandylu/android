@@ -175,8 +175,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			list.add("rt=1");
 			list.add("rows=30");
 			
-			if(bundle != null && bundle.getString("lastpost") != null){
-				list.add("newAdIds=" + bundle.getString("lastpost"));
+			if(bundle != null && bundle.getString("lastPost") != null){
+				list.add("newAdIds=" + bundle.getString("lastPost"));
 			}
 			String url = Communication.getApiUrl(apiName, list);
 			try {
