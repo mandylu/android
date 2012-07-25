@@ -155,9 +155,18 @@ public class PersonalCenterEntryView extends BaseView implements
 				}
 				if (json != null) {
 					GoodsList gl = JsonUtil.getGoodsListFromJson(json);
+					
+					List<GoodsDetail> listMyPost = gl.getData();
+					if(listMyPost != null){
+						for(int i = listMyPost.size() - 1; i >= 0; -- i){
+							if(!listMyPost.get(i).getValueByKey("status").equals("0")){
+								listMyPost.remove(i);
+							}
+						}
+					}
 					TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);
-					tvPersonalAds.setText(String.valueOf((gl == null || gl.getData() == null) ? 0 : gl.getData().size()));
-					QuanleimuApplication.getApplication().setListMyPost(gl.getData());
+					tvPersonalAds.setText(String.valueOf((listMyPost == null) ? 0 : listMyPost.size()));
+					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 				}
 				break;
 			}
