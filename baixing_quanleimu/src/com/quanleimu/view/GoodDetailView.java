@@ -333,7 +333,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
 		addView(v);
-		if(!detail.getValueByKey("status").equals("4")){
+		if(!detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20")){
 			findViewById(R.id.ll_appeal).setVisibility(View.GONE);
 			findViewById(R.id.graymask).setVisibility(View.GONE);
 			findViewById(R.id.verifyseperator).setVisibility(View.GONE);
