@@ -89,7 +89,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			gl.setData(listMyPost);
 			glLoader.setGoodsList(gl);
 			adapter.setList(listMyPost);
-			adapter.notifyDataSetChanged();	
+			adapter.notifyDataSetChanged();
+			lvGoodsList.invalidateViews();
 		}
 		else if(0 == currentPage){
 			lvGoodsList.setVisibility(View.VISIBLE);
@@ -112,6 +113,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			else{
 				adapter.setList(listInVerify);
 				adapter.notifyDataSetChanged();
+				lvGoodsList.invalidateViews();
 				GoodsList gl = new GoodsList();
 				gl.setData(listInVerify);
 				glLoader.setGoodsList(gl);
@@ -138,6 +140,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			else{
 				adapter.setList(listDeleted);
 				adapter.notifyDataSetChanged();
+				lvGoodsList.invalidateViews();
 			}
 		}		
 
@@ -208,6 +211,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		if(adapter != null){
 			adapter.setHasDelBtn(false);
 			adapter.notifyDataSetChanged();
+			lvGoodsList.invalidateViews();
 		}
 		
 		buttonStatus = -1;
@@ -410,8 +414,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 						if(msg.arg1 == -1){
 							QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 						}
-						adapter.setList(refList);
+						adapter.setList(refList);						
 						adapter.notifyDataSetChanged();
+						lvGoodsList.invalidateViews();
 						Toast.makeText(PersonalPostView.this.getContext(), message, 0).show();
 					} else {
 						Toast.makeText(PersonalPostView.this.getContext(), "删除失败,请稍后重试！", 0).show();
@@ -448,6 +453,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 						if(currentPage == 1){
 							adapter.setList(listDeleted);
 							adapter.notifyDataSetChanged();
+							lvGoodsList.invalidateViews();
 						}
 						Toast.makeText(PersonalPostView.this.getContext(), message, 0).show();
 					}
@@ -601,6 +607,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		if(adapter != null)
 		{
 			adapter.notifyDataSetChanged();
+			lvGoodsList.invalidateViews();
 		}		
 		return true;
 	}
@@ -689,6 +696,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					if(currentPage == 0){
 						adapter.setList(listInVerify);
 						adapter.notifyDataSetChanged();
+						lvGoodsList.invalidateViews();
 					}
 				}
 			}
@@ -703,6 +711,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					glLoader.setGoodsList(gl);
 					adapter.setList(QuanleimuApplication.getApplication().getListMyPost());
 					adapter.notifyDataSetChanged();
+					lvGoodsList.invalidateViews();
 				}
 			}
 		}
