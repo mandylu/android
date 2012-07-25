@@ -19,6 +19,7 @@ import android.widget.ListView;
 
 import com.quanleimu.adapter.BXAlphabetSortableAdapter;
 import com.quanleimu.adapter.CheckableAdapter;
+import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.quanleimu.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
 import com.quanleimu.adapter.CheckableAdapter.CheckableItem;
 import com.quanleimu.adapter.CommonItemAdapter;
@@ -63,7 +64,8 @@ public class SelectionSearchView extends BaseView implements View.OnClickListene
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				// TODO Auto-generated method stub
+				if(adapter.getItem(arg2) instanceof BXHeader) return;
+				
 				BXPinyinSortItem item = (BXPinyinSortItem)adapter.getItem(arg2);
 				if(m_viewInfoListener != null){
 					m_viewInfoListener.onBack(MSG_SELECTIONVIEW_BACK, item.obj);

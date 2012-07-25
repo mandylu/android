@@ -63,9 +63,15 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 			}
 		}
 		
-		goodsListLoader.setHandler(myHandler);
-		adapter.setList(goodsListLoader.getGoodsList().getData());
-		lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
+		if(null != goodsListLoader){
+			goodsListLoader.setHasMoreListener(null);
+			goodsListLoader.setHandler(myHandler);
+			if(null != adapter){
+				adapter.setList(goodsListLoader.getGoodsList().getData());
+			}
+			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
+		}
+		
 	}
 	
 	@Override

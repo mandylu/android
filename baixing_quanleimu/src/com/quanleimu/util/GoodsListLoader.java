@@ -12,6 +12,10 @@ import com.quanleimu.entity.GoodsList;
 
 public class GoodsListLoader {
 	
+	public interface HasMoreListener{
+		public void onHasMoreStatusChanged();
+	};
+	
 	private GoodsList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
 	private List<String> params = null;
 	private String mFields = "";
@@ -26,6 +30,8 @@ public class GoodsListLoader {
 	private static String mLastJson = null;
 	
 	private GetmGoodsListThread mCurThread = null;
+	
+	private HasMoreListener hasMoreListener = null;
 	
 	
 	public final static int MSG_FINISH_GET_FIRST = 0;
@@ -79,7 +85,12 @@ public class GoodsListLoader {
 	}
 
 	public void setHasMore(boolean hasMore){
-		mHasMore = hasMore;
+		if(mHasMore != hasMore){
+			mHasMore = hasMore;
+			if(null != hasMoreListener){
+				hasMoreListener.onHasMoreStatusChanged();
+			}
+		}
 	}
 	
 	public boolean hasMore(){
@@ -98,6 +109,10 @@ public class GoodsListLoader {
 		if(null != mCurThread){
 			mCurThread.cancel();
 		}
+	}
+	
+	public void setHasMoreListener(HasMoreListener listener){
+		hasMoreListener = listener;
 	}
 	
 	public void startFetching(boolean isFirst){

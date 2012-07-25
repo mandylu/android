@@ -66,7 +66,7 @@ import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
-public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/{
+public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -139,6 +139,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		mBundle = bundle;
 		mHolder = holder;
 		
+		listLoader.setHasMoreListener(this);
 		init();
 	}
 	
@@ -589,16 +590,16 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	}
 
 	private void filloutFooter() {
-		if(!hasNext()){
+    	if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
+    		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex+1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+    	}else{
+    		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n【尚未加载，向上拖动然后释放可以加载.】");
+    	}
+
+    	if(!hasNext()){
         	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
         	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
-        }else{
-        	if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
-        		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex+1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-        	}else{
-        		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n【尚未加载，向上拖动然后释放可以加载.】");
-        	}
         }
 	}
 	
@@ -1396,5 +1397,18 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		
 		return false;
+	}
+
+	@Override
+	public void onHasMoreStatusChanged() {
+		if(!hasNext()){
+        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
+        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
+        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
+        }else{
+        	findViewById(R.id.pull_to_next_footer).setVisibility(View.VISIBLE);
+        	findViewById(R.id.pull_to_next_image).setVisibility(View.VISIBLE);
+        	findViewById(R.id.pull_to_next_text).setVisibility(View.VISIBLE);
+        }
 	}
 }

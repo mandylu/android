@@ -108,6 +108,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			}
 		}
 		
+		glLoader.setHasMoreListener(null);
 		glLoader.setHandler(myHandler);
 		adapter.setList(glLoader.getGoodsList().getData());
 		pullListView.setSelectionFromHeader(glLoader.getSelection());

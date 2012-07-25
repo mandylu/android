@@ -115,6 +115,9 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 				item.firstChars = "";
 				if(list.get(i).toString().equals("全部")){
 					item.pinyin = "#";
+				}else if(list.get(i).toString().equals("重庆")){
+					item.pinyin = "chongqing";
+					item.firstChars = "cq";
 				}
 				else{
 					 HanyuPinyinOutputFormat outFormat = new HanyuPinyinOutputFormat();  
