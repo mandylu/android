@@ -79,6 +79,17 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 	@Override
 	public void onAttachedToWindow(){			
 		super.onAttachedToWindow();
+		TitleDef title = new TitleDef();
+		title.m_visible = true;
+		title.m_leftActionHint = "返回";
+		title.m_title = isFav ? "收藏的信息" : "浏览历史";
+		title.m_rightActionHint = "编辑";
+		m_viewInfoListener.onTitleChanged(title);
+		adapter.setHasDelBtn(false);
+		adapter.notifyDataSetChanged();
+		pullListView.invalidateViews();
+		this.buttonStatus = -1;
+
 	}
 	
 	
@@ -143,6 +154,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			buttonStatus = -1;
 		}
 		adapter.notifyDataSetChanged();
+		pullListView.invalidateViews();
 		return true;
 	}
 
@@ -267,6 +279,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				
 				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
+				pullListView.invalidateViews();
 				adapter.setUiHold(false);
 				break;
 			case MSG_DELETEALL:
@@ -284,6 +297,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				glLoader.setHasMore(false);
 				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
+				pullListView.invalidateViews();
 				
 				if(FavoriteAndHistoryView.this.m_viewInfoListener != null){
 					TitleDef title = getTitleDef();
