@@ -169,10 +169,14 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 			}
 		}
 		
-		mListLoader.setHasMoreListener(null);
-		mListLoader.setHandler(myHandler);
-		adapter.setList(mListLoader.getGoodsList().getData());
-		lvSearchResult.setSelectionFromHeader(mListLoader.getSelection());
+		if(null != mListLoader){
+			mListLoader.setHasMoreListener(null);
+			mListLoader.setHandler(myHandler);
+			if(null != adapter){
+				adapter.setList(mListLoader.getGoodsList().getData());
+			}
+			lvSearchResult.setSelectionFromHeader(mListLoader.getSelection());
+		}
 	}	
 	
 	@Override

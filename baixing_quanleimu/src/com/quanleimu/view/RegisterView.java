@@ -167,7 +167,7 @@ public class RegisterView extends BaseView{
 						Util.saveDataToLocate(getContext(), "user", user);
 						
 						if(null != m_viewInfoListener){
-							m_viewInfoListener.onExit(RegisterView.this);
+							m_viewInfoListener.onBack();
 							m_viewInfoListener.onSetResult(1212, 1212, null);
 						}
 					}

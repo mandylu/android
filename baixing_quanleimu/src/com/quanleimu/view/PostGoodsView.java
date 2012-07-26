@@ -179,7 +179,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 								public void onClick(DialogInterface dialog,
 										int which) {
 									if(m_viewInfoListener != null){
-										m_viewInfoListener.onExit(PostGoodsView.this);									
+										m_viewInfoListener.onExit(PostGoodsView.this);
+										m_viewInfoListener.onBack();								
 									}
 								}
 							});
@@ -373,7 +374,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		if (user == null) {
 			if(loginTried){
 				if(this.m_viewInfoListener != null){
-					m_viewInfoListener.onExit(this);
+					m_viewInfoListener.onBack();
 				}
 			}else{
 				if(this.m_viewInfoListener != null){
@@ -615,7 +616,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	 * @return
 	 */
 	private boolean filled() {
-		if(layout_txt == null || layout_txt.getChildCount() == 2) return false;
+		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2) return false;
+		
 		return true;
 		
 //		boolean bRet = false;

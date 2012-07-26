@@ -177,30 +177,38 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 
 		try{
-			if(!currentView.onBack()){
+			if(null == currentView || !currentView.onBack()){
 		    	if(QuanleimuApplication.getApplication().getViewStack().size() > 0){
 		    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
-		    		scroll.removeAllViews();
-		    		currentView.onDestroy();
+		    		
+		    		//remove current view on screen
+		    		if(null != currentView){
+			    		currentView.onPause();
+			    		scroll.removeAllViews();
+			    		currentView.onDestroy();
+		    		}
+		    		
+		    		//recover last view to screen
 		    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
+		    		currentView.onResume();
 		    		setBaseLayout(currentView);  
 		    		scroll.addView(currentView);
 		    		
 		    		
 		    	 	 final View leafFocusedView = currentView.hasFocus() ? getLeafFocusedView(currentView) : null;
 			    	 View rootView = currentView.getRootView();
-		         if (leafFocusedView == null)
-		         {
-		        	 	 if(!currentView.isInTouchMode())
-		             {
-		                 rootView.requestFocus(View.FOCUS_FORWARD);
-		             }
-		         }
-		         else
-		         {
-		             leafFocusedView.clearFocus();
-		             leafFocusedView.requestFocus();
-		         }
+			         if (leafFocusedView == null)
+			         {
+			        	 	 if(!currentView.isInTouchMode())
+			             {
+			                 rootView.requestFocus(View.FOCUS_FORWARD);
+			             }
+			         }
+			         else
+			         {
+			             leafFocusedView.clearFocus();
+			             leafFocusedView.requestFocus();
+			         }
 		     	
 		    		
 		    	}else{
@@ -270,12 +278,16 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
     		scroll.removeAllViews();    		
     		currentView.onDestroy();
     		
-    		currentView = QuanleimuApplication.getApplication().getViewStack().pop();
+    		currentView = null;
+    		
+    		
+    		/*currentView = QuanleimuApplication.getApplication().getViewStack().pop();
     		if(null != currentView){
 	    		setBaseLayout(currentView);
 	    		scroll.addView(currentView);
 	    		
-    		}/*else{
+    		}*/
+    		/*else{
     			onNewView(new HomePageView(this));
     		}*/
     	}

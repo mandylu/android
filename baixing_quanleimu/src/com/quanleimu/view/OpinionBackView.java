@@ -109,7 +109,7 @@ public class OpinionBackView extends BaseView {
 			case 0:
 				Toast.makeText(getContext(), "提交成功！", Toast.LENGTH_SHORT)
 						.show();
-				m_viewInfoListener.onExit(OpinionBackView.this);
+				m_viewInfoListener.onBack();
 				break;
 			case 1:
 				Toast.makeText(getContext(), "提交失败！", Toast.LENGTH_SHORT)

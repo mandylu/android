@@ -17,7 +17,7 @@ public class BaseView extends LinearLayout{
 		public void onBack();
 		public void onBack(int message, Object obj);
 		public void onNewView(BaseView view);
-		public void onExit(BaseView view);
+		public void onExit(BaseView view);//means remove current view from screen content
 		public void onSwitchToTab(ETAB_TYPE tabType);
 		public void onPopView(String viewClassName);
 		public void onSetResult(int requestCode, int resultCode, Bundle data);

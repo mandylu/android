@@ -94,7 +94,7 @@ public class CityChangeView extends BaseView {
 					Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
 					
 					if(null != m_viewInfoListener){
-						m_viewInfoListener.onExit(CityChangeView.this);
+						m_viewInfoListener.onBack();
 					}		
 				}
 			});
@@ -152,7 +152,7 @@ public class CityChangeView extends BaseView {
 					}
 					
 					if(null != m_viewInfoListener){
-						m_viewInfoListener.onExit(CityChangeView.this);
+						m_viewInfoListener.onBack();
 					}
 				}
 			});
@@ -310,6 +310,7 @@ public class CityChangeView extends BaseView {
 											
 											if(null != m_viewInfoListener){
 												m_viewInfoListener.onExit(CityChangeView.this);
+												m_viewInfoListener.onBack();
 											}
 										}
 									});
