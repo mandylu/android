@@ -183,6 +183,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     
     @Override
     protected void onAttachedToWindow() {
+    	super.onAttachedToWindow();
+    	
         if(mGetMoreState == GETTING_MORE){
         	if(null != getAdapter() && mAllowGetMore && getAdapter().getCount() == getLastVisiblePosition()){
         		onGetMore();
