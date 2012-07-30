@@ -201,7 +201,7 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 			case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 				goodsListLoader.setGoodsList(goodsList);
-				if (goodsList == null || goodsList.getData().size() == 0) {
+				if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
 					Message msg1 = Message.obtain();
 					msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
 					Bundle bundle = new Bundle();

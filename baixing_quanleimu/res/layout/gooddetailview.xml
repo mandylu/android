@@ -191,14 +191,14 @@
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:background="@drawable/icon_map" />
-		
+<!-- 		
 		                            <TextView
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:layout_marginLeft="1dip"
 		                                android:text="具体地点"
 		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" />
+		                                android:textSize="16dip" /> -->
 		                        </LinearLayout>
 		
 		                        <LinearLayout
@@ -216,15 +216,32 @@
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:background="@drawable/icon_share" />
-		
+<!-- 		
 		                            <TextView
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:layout_marginLeft="1dip"
 		                                android:text="分享"
 		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" />
+		                                android:textSize="16dip" /> -->
 		                        </LinearLayout>
+		                        
+		                        <LinearLayout
+		                            android:id="@+id/wxlayout"
+		                            android:layout_width="wrap_content"
+		                            android:layout_height="wrap_content"
+		                            android:layout_marginLeft="10dip"
+		                            android:background="@drawable/btn_bg"
+		                            android:clickable="true"
+		                            android:gravity="center_vertical"
+		                            android:paddingLeft="5dip"
+		                            android:paddingRight="5dip" >
+		
+		                            <ImageView
+		                                android:layout_width="wrap_content"
+		                                android:layout_height="wrap_content"
+		                                android:background="@drawable/micro_messenger" />
+		                        </LinearLayout>		                        
 		
 		                        <LinearLayout
 		                            android:id="@+id/jubaolayout"

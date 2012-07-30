@@ -33,11 +33,21 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
+import android.widget.Toast;
 
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PostGoodsView;
-public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener{
+import com.tencent.mm.sdk.openapi.BaseReq;
+import com.tencent.mm.sdk.openapi.BaseResp;
+import com.tencent.mm.sdk.openapi.ConstantsAPI;
+import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.ShowMessageFromWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXAppExtendObject;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener, IWXAPIEventHandler{
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
 	
@@ -105,6 +115,30 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			currentView.onActivityResult(requestCode, resultCode, data);
 		}
 		super.onActivityResult(requestCode, resultCode, data);
+	
+//		switch (requestCode) {
+//
+//		case 0x101: {
+//			final WXAppExtendObject appdata = new WXAppExtendObject();
+//			final String path = CameraUtil.getResultPhotoPath(this, data, "/mnt/sdcard/tencent/");
+//			appdata.filePath = path;
+//			appdata.extInfo = "this is ext info";
+//
+//			final WXMediaMessage msg = new WXMediaMessage();
+//			msg.setThumbImage(Util.extractThumbNail(path, 150, 150, true));
+//			msg.title = "this is title";
+//			msg.description = "this is description";
+//			msg.mediaObject = appdata;
+//			
+//			SendMessageToWX.Req req = new SendMessageToWX.Req();
+//			req.transaction = buildTransaction("appdata");
+//			req.message = msg;
+//			api.sendReq(req);
+//			break;
+//		}
+//		default:
+//			break;
+//		}
 	}
 
 	@Override
@@ -462,6 +496,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
 	} 
 	
+//	static private final String WX_APP_ID = "wxd930ea5d5a258f4f";
+//	static private final String WX_APP_ID = "wx862b30c868401dbc";
+	static private final String WX_APP_ID = "wx47a12013685c6d3b";
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 //		Debug.startMethodTracing();
@@ -503,6 +541,61 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		childView.setInfoChangeListener(this);		
 		setBaseLayout(childView);
 		scroll.addView(childView);		
+		
+		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
+		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
+		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
+	}
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
+		
+		setIntent(intent);
+        QuanleimuApplication.wxapi.handleIntent(intent, this);
+	}
+
+	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
+	@Override
+	public void onReq(BaseReq req) {
+		int i = 0;
+		if(i == 1)
+			return;
+//		switch (req.getType()) {
+//		case ConstantsAPI.COMMAND_GETMESSAGE_FROM_WX:
+//			goToGetMsg();		
+//			break;
+//		case ConstantsAPI.COMMAND_SHOWMESSAGE_FROM_WX:
+//			goToShowMsg((ShowMessageFromWX.Req) req);
+//			break;
+//		default:
+//			break;
+//		}
+	}
+
+	// ����Ӧ�÷��͵�΢�ŵ�����������Ӧ����ص����÷���
+	@Override
+	public void onResp(BaseResp resp) {
+		
+		int result = 0;
+		if(result == 1)
+			return;
+//		switch (resp.errCode) {
+//		case BaseResp.ErrCode.ERR_OK:
+//			result = R.string.errcode_success;
+//			break;
+//		case BaseResp.ErrCode.ERR_USER_CANCEL:
+//			result = R.string.errcode_cancel;
+//			break;
+//		case BaseResp.ErrCode.ERR_AUTH_DENIED:
+//			result = R.string.errcode_deny;
+//			break;
+//		default:
+//			result = R.string.errcode_unknown;
+//			break;
+//		}
+//		
+		Toast.makeText(this, result, Toast.LENGTH_LONG).show();
 	}
 	
 	private void setBaseLayout(BaseView view){

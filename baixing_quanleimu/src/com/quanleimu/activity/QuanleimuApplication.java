@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+
+//import net.sourceforge.simcpux.Constants;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -21,6 +23,9 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.ViewStack;
+import com.tencent.mm.sdk.openapi.SendMessageToWX;
+import com.tencent.mm.sdk.openapi.WXAPIFactory;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.weibo.net.AccessToken;
 public class QuanleimuApplication extends Application{
 
@@ -415,6 +420,7 @@ public class QuanleimuApplication extends Application{
 		}
 
 	}
+	static public com.tencent.mm.sdk.openapi.IWXAPI wxapi;
 
 	@Override
 	public void onCreate() {
@@ -425,6 +431,14 @@ public class QuanleimuApplication extends Application{
 		context = this.getApplicationContext();
 		lazyImageLoader = new LazyImageLoader();
 		super.onCreate();
+	}
+	
+	static public void sendWXRequest(WXMediaMessage msg){
+		SendMessageToWX.Req req = new SendMessageToWX.Req();
+		req.transaction = String.valueOf(System.currentTimeMillis());
+		req.message = msg;
+		boolean b = wxapi.sendReq(req);
+		b = false;
 	}
 
 	@Override
