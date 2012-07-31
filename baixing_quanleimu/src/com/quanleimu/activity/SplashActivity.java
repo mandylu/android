@@ -4,6 +4,7 @@ package com.quanleimu.activity;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.ObjectInputStream;
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -23,10 +24,12 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.CategorySelectionView;
 public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
 
 	// 定义经纬度
@@ -216,6 +219,25 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 				}
 			}
 
+			if(postMu != null){
+				long time = postMu.getTime();
+				if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
+					String apiName = "category_list";
+					ArrayList<String> list = new ArrayList<String>();
+					String url = Communication.getApiUrl(apiName, list);
+					try {
+						String json = Communication.getDataByUrl(url);
+						if (json != null) {
+							postMu.setJson(json);
+							postMu.setTime(System.currentTimeMillis());
+							Util.saveDataToLocate(SplashActivity.this, "saveFirstStepCate", postMu);
+							valid = true;
+						}
+					} catch(Exception e){
+						
+					}
+				}
+			}
 			if(valid){
 				String json = postMu.getJson();
 				

@@ -19,6 +19,7 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
+import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.view.BaseView;
@@ -26,6 +27,7 @@ import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
+import com.quanleimu.view.GridCategoryView;
 import com.quanleimu.view.PersonalCenterEntryView;
 import com.quanleimu.view.SetMainView;
 
@@ -78,7 +80,13 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			
 			needClearViewStack = false;
 //			onNewView(new PostGoodsCateMainView(this, bundle));
-			onNewView(new PostGoodsView(this, bundle, ""));
+//			onNewView(new PostGoodsView(this, bundle, ""));
+			String last = (String)Helper.loadDataFromLocate(this, "lastcategorynames");
+			if(last != null && last.contains(",")){
+				onNewView(new PostGoodsView(this, bundle, last));
+			}else{
+				onNewView(new GridCategoryView(this, bundle));
+			}
 			
 			break;
 		case ETAB_TYPE_MINE:

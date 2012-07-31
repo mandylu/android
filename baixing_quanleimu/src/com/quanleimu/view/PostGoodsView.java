@@ -57,13 +57,13 @@ import com.quanleimu.util.Util;
 
 import android.view.ViewGroup;
 import com.quanleimu.view.MultiLevelSelectionView;
-import com.quanleimu.view.PostGoodsCateMainView;
 
 import android.text.InputType;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
+	public String categoryName = "";
 	public String json = "";
 	public LinearLayout layout_txt;
 	public LinkedHashMap<String, PostGoodsBean> postList;		//发布模板每一项的集合
@@ -107,18 +107,26 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	private List<String> otherProperties = new ArrayList<String>();
 
 	
-	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName){
+	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryNames){
 		super(context, bundle);
 		this.baseActivity = context;
-		this.categoryEnglishName = categoryEnglishName;
+		String[] names = categoryNames.split(",");
+		if(names.length == 2){
+			this.categoryEnglishName = names[0];
+			this.categoryName = names[1];
+		}
 		this.bundle = bundle;
 		init();
 	}
 
-	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryEnglishName, GoodsDetail detail){
+	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryNames, GoodsDetail detail){
 		super(context, bundle);
 		this.baseActivity = context;
-		this.categoryEnglishName = categoryEnglishName;
+		String[] names = categoryNames.split(",");
+		if(names.length == 2){
+			this.categoryEnglishName = names[0];
+			this.categoryName = names[1];
+		}
 		this.goodsDetail = detail;
 		this.bundle = bundle;
 		init();
@@ -395,16 +403,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					lastCategoryShowName = lasts[1];
 				}
 			}
-			if((lastCategoryEnglishName == null || lastCategoryEnglishName.equals("")) 
-					&& (categoryEnglishName == null || categoryEnglishName.equals(""))){
-				this.addCategoryItem();
-				if(m_viewInfoListener != null){
-					PostGoodsCateMainView pview = 
-							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
-					m_viewInfoListener.onNewView(pview);
-				}
-				return; 
-			}
+//			if((lastCategoryEnglishName == null || lastCategoryEnglishName.equals("")) 
+//					&& (categoryEnglishName == null || categoryEnglishName.equals(""))){
+//				this.addCategoryItem();
+//				if(m_viewInfoListener != null){
+//					PostGoodsCateMainView pview = 
+//							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
+//					m_viewInfoListener.onNewView(pview);
+//				}
+//				return; 
+//			}
 			//获取发布模板
 			String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 			if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
@@ -1379,17 +1387,17 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			@Override
 			public void onClick(View v) {
 				if(m_viewInfoListener != null){
-					PostGoodsCateMainView pview = 
-							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
-					m_viewInfoListener.onNewView(pview);
+					GridCategoryView gview = new GridCategoryView(PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
+//					PostGoodsCateMainView pview = 
+//							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
+					m_viewInfoListener.onNewView(gview);
 				}
 			}				
 		});
 		layout_txt.addView(v);
 		
-		if(categoryEnglishName != null && !categoryEnglishName.equals("") 
-				&& lastCategoryEnglishName != null && lastCategoryEnglishName.equals(categoryEnglishName)){
-			 ((TextView)v.findViewById(R.id.posthint)).setText(lastCategoryShowName);
+		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
+			 ((TextView)v.findViewById(R.id.posthint)).setText(categoryName);
 		}
 		
 		TextView border = new TextView(PostGoodsView.this.getContext());

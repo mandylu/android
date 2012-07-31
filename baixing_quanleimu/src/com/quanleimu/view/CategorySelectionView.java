@@ -166,23 +166,7 @@ public class CategorySelectionView extends ListView {
 		
 		if(null != allCates && allCates.size() > 0)
 		{	
-			this.ApplyAllCates(allCates);
-			
-			PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), mainCateCacheTag);
-	
-			if (postMu != null && !postMu.getJson().equals("")) {
-				
-				long time = postMu.getTime();
-				if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
-					(new AllCateTask()).execute(true);
-				} 
-			} 
-		}
-		else {
-			progressDialog = ProgressDialog.show(getContext(), "提示", "正在更新分类列表,请稍候...");			
-			progressDialog.setCancelable(true);
-			
-			(new AllCateTask()).execute(true);
+			this.ApplyAllCates(allCates);			
 		}
 	}
 	
@@ -194,15 +178,6 @@ public class CategorySelectionView extends ListView {
 		TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
 				R.styleable.CategorySelectionView);
 		firstItemOverlap = styledAttrs.getBoolean(R.styleable.CategorySelectionView_firstitemoverlap, false);
-	}
-
-	protected void parseCategory(String json) {
-		
-		mainCate = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
-		
-		((QuanleimuApplication)((BaseActivity)getContext()).getApplication()).setListFirst(mainCate.getChildren());
-		
-		ApplyAllCates(mainCate.getChildren());
 	}
 
 	protected void ApplyAllCates(List<FirstStepCate> allCateList) {
@@ -299,15 +274,6 @@ public class CategorySelectionView extends ListView {
 			
 			return null;
 		}
-		
-		protected void onPostExecute(String json) { 
-			if(null != json && json.length() > 0){
-				parseCategory(json);
-			}
-			
-			if(progressDialog != null){
-				progressDialog.dismiss();
-			}
-		}
+
 	};
 }
