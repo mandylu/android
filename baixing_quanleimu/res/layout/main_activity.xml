@@ -15,6 +15,12 @@
             android:background="@drawable/top_bg"
             android:gravity="center_vertical|top">
 
+            <LinearLayout 
+                android:id="@+id/linearTitleControls"
+                android:layout_centerInParent="true"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"/>
+                
             <TextView
                 android:id="@+id/tvTitle"
                 android:layout_width="wrap_content"

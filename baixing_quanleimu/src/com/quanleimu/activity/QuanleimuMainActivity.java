@@ -218,6 +218,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		    		//remove current view on screen
 		    		if(null != currentView){
 			    		currentView.onPause();
+			    		((LinearLayout)findViewById(R.id.linearTitleControls)).removeAllViews();
 			    		scroll.removeAllViews();
 			    		currentView.onDestroy();
 		    		}
@@ -307,8 +308,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
 		
     	if(view == currentView ){
-    		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
+    		LinearLayout scroll = (LinearLayout)findViewById(R.id.contentLayout);
     		currentView.onPause();
+    		((LinearLayout)findViewById(R.id.linearTitleControls)).removeAllViews();
     		scroll.removeAllViews();    		
     		currentView.onDestroy();
     		
@@ -344,6 +346,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		if(null != currentView){
 			currentView.onPause();
 			QuanleimuApplication.getApplication().getViewStack().push(currentView);
+			((LinearLayout)findViewById(R.id.linearTitleControls)).removeAllViews();
 			
 //			Animation hyperspaceJumpAnimation_vanishing = AnimationUtils.loadAnimation(this, R.anim.animation_vanishing);
 //			currentView.startAnimation(hyperspaceJumpAnimation_vanishing);
@@ -402,8 +405,25 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		RelativeLayout top = (RelativeLayout)findViewById(R.id.linearTop);
 		if(title.m_visible){
 			top.setVisibility(View.VISIBLE);
-			TextView tTitle = (TextView)findViewById(R.id.tvTitle);
-			tTitle.setText(title.m_title);
+			
+			//center of title bar settings
+			{
+				LinearLayout llTitleControls = (LinearLayout)top.findViewById(R.id.linearTitleControls);
+				TextView tTitle = (TextView)findViewById(R.id.tvTitle);
+				
+				if(null != title.m_titleControls){
+					llTitleControls.setVisibility(View.VISIBLE);
+					tTitle.setVisibility(View.GONE);
+					llTitleControls.removeAllViews();
+					llTitleControls.addView(title.m_titleControls);
+				}else{
+					llTitleControls.setVisibility(View.GONE);
+					tTitle.setVisibility(View.VISIBLE);
+					tTitle.setText(title.m_title);
+				}
+			}
+			
+			//left action bar settings
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				Button left = (Button)findViewById(R.id.btnLeft);
 
@@ -422,6 +442,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 				left.setVisibility(View.GONE);
 			}
 			
+			
+			//right action bar settings
 			if(null != title.m_rightActionHint && !title.m_rightActionHint.equals("")){
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setText(title.m_rightActionHint);

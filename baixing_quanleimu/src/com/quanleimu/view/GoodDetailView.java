@@ -66,10 +66,6 @@ import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
-import com.tencent.mm.sdk.openapi.WXImageObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
 public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
 	public interface IListHolder{
@@ -160,15 +156,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public boolean onBack(){
 		this.keepSilent = false;
-	
-		this.removeTitleControls();
+
 		return false;
 	}
 
 	@Override
 	public void onPause() {
 		this.keepSilent = true;
-		this.removeTitleControls();
 		super.onPause();
 	}
 	
@@ -180,67 +174,18 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		super.onPause();
 	}
 	
-	private void addTitleControls(){
-		RelativeLayout title2 = (RelativeLayout)this.getRootView().findViewById(R.id.linearTop);
-		if(null != title2.findViewById(R.layout.myad_title)){
-			return;
-		}
-		
-		if(titleControlView == null){
-			LayoutInflater inflater = LayoutInflater.from(this.getContext());
-			titleControlView = inflater.inflate(R.layout.myad_title, null);
-			RelativeLayout.LayoutParams lp = 
-					new RelativeLayout.LayoutParams(RelativeLayout.LayoutParams.WRAP_CONTENT, RelativeLayout.LayoutParams.WRAP_CONTENT);
-			lp.addRule(RelativeLayout.CENTER_IN_PARENT);
-			titleControlView.setLayoutParams(lp);
-			View refresh = titleControlView.findViewById(R.id.iv_refresh);
-			refresh.setOnClickListener(this);
-			View edit = titleControlView.findViewById(R.id.iv_edit);
-			edit.setOnClickListener(this);
-			View del = titleControlView.findViewById(R.id.iv_del);
-			del.setOnClickListener(this);
-		}
-		title2.addView(titleControlView);
-		((TextView)title2.findViewById(R.id.tvTitle)).setText("");
-	}
-	
-	private void removeTitleControls(){
-		RelativeLayout title2 = (RelativeLayout)this.getRootView().findViewById(R.id.linearTop);
-		if(titleControlView != null){
-			title2.removeView(titleControlView);
-		}
-//		title2.addView(title2.findViewById(R.id.tvTitle));
-	}
-	
 	@Override
 	protected void onAttachedToWindow(){
         
 		if(isMyAd()){
-			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "";//strManager;
-				m_viewInfoListener.onTitleChanged(title);
-				addTitleControls();
-				btnStatus = 1;
-			}
+			btnStatus = 1;
 		}
 		else{
-			removeTitleControls();
 			if(isInMyStore()){
-				if(this.m_viewInfoListener != null){
-					TitleDef title = getTitleDef();
-					title.m_rightActionHint = strCancelCollect;
-					m_viewInfoListener.onTitleChanged(title);
-					btnStatus = 0;
-				}
+				btnStatus = 0;
 			}
 			else{
-				if(this.m_viewInfoListener != null){
-					TitleDef title = getTitleDef();
-					title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
-					m_viewInfoListener.onTitleChanged(title);
-					btnStatus = -1;
-				}
+				btnStatus = -1;
 			}
 		}
 		
@@ -415,13 +360,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		View fenxiang = findViewById(R.id.fenxianglayout);
 		fenxiang.setOnClickListener(this);
-		
-		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
-			findViewById(R.id.wxlayout).setOnClickListener(this);
-		}
-		else{
-			findViewById(R.id.wxlayout).setVisibility(View.GONE);
-		}
 
 		View jubao = findViewById(R.id.jubaolayout);
 		if(isMyAd()){
@@ -795,10 +733,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 
 			}
 			break;
-		case R.id.wxlayout:{
-			doShare2WX();
-			break;
-		}
 		case R.id.fenxianglayout:{
 			Weibo weibo = Weibo.getInstance();
 			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
@@ -887,40 +821,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;
 		}
 		}
-	}
-	
-	private void doShare2WX(){
-		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
-			"我在百姓网看到：" + detail.getValueByKey("title");
-		
-		WXWebpageObject webObj = new WXWebpageObject();
-		webObj.webpageUrl = detail.getValueByKey("link");
-		
-		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
-
-		WXMediaMessage obj = new WXMediaMessage();
-		
-		String description = "";
-		if(detail.getMetaData() != null){
-			for(int i = 0; i < detail.getMetaData().size(); ++ i){
-				String meta = detail.getMetaData().get(i);
-				String [] ms = meta.split(" ");
-				if(ms != null && ms.length == 2){
-					description += "，" + ms[1];
-				}
-			}
-		}
-		if(description.charAt(0) == '，'){
-			description = description.substring(1);
-		}
-		obj.description = description;
-		obj.title = title;
-		obj.mediaObject = webObj;
-		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
-		if(thumbnail != null){
-			obj.setThumbImage(thumbnail);
-		}
-		QuanleimuApplication.sendWXRequest(obj);
 	}
 	
 	private void doShare2Weibo(AccessToken accessToken){
@@ -1324,6 +1224,31 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		title.m_title = "详细信息";
 		title.m_visible = true;
+		
+		if(isMyAd()){
+			if(titleControlView == null){
+				LayoutInflater inflater = LayoutInflater.from(this.getContext());
+				titleControlView = inflater.inflate(R.layout.myad_title, null);
+				View refresh = titleControlView.findViewById(R.id.iv_refresh);
+				refresh.setOnClickListener(this);
+				View edit = titleControlView.findViewById(R.id.iv_edit);
+				edit.setOnClickListener(this);
+				View del = titleControlView.findViewById(R.id.iv_del);
+				del.setOnClickListener(this);
+			}
+			
+			title.m_rightActionHint = "";
+			title.m_titleControls = titleControlView;
+		}
+		else{
+			if(isInMyStore()){
+				title.m_rightActionHint = strCancelCollect;
+			}
+			else{
+				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
+			}
+		}
+		
 		return title;
 	}
 	

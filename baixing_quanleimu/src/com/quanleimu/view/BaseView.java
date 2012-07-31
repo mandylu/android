@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.View;
 import android.widget.LinearLayout;
 
 public class BaseView extends LinearLayout{
@@ -33,7 +34,10 @@ public class BaseView extends LinearLayout{
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
 		public EBUTT_STYLE m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
+		
 		public String m_title = null;
+		public View m_titleControls = null;
+		
 		public String m_rightActionHint = null;
 		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 	};
