@@ -31,7 +31,26 @@
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/btnDelete"
-            android:background="@drawable/bg_picholder" />
+            android:background="@drawable/bg_picholder"/>
+        
+        
+        <RelativeLayout 		        
+            android:layout_width="fill_parent"
+		    android:layout_height="fill_parent"
+		    android:layout_alignLeft="@+id/ivInfo"
+		    android:layout_alignRight="@+id/ivInfo"
+		    android:layout_alignTop="@+id/ivInfo"
+		    android:layout_alignBottom="@+id/ivInfo"
+		    android:id="@+id/pbLoadingProgress"
+		    android:background="@drawable/bg_picholder"
+		    android:visibility="gone">
+			<ProgressBar 
+		        android:indeterminate="true"
+		        android:layout_width="wrap_content"
+		        android:layout_height="wrap_content"
+		        style="?android:attr/progressBarStyleSmall"
+		        android:layout_centerInParent="true"/>
+		</RelativeLayout>
 
         <TextView
             android:id="@+id/tvDes"
