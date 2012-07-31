@@ -9,18 +9,19 @@ import java.util.Locale;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.os.Debug;
 import android.os.Message;
-import android.text.TextPaint;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.os.Handler;
+import android.graphics.Typeface;
+import android.database.DataSetObserver;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -28,9 +29,8 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-import android.os.Handler;
-import android.graphics.Typeface;
-import android.database.DataSetObserver;
+import com.quanleimu.widget.AnimatingImageView;
+
 
 public class GoodsListAdapter extends BaseAdapter {
 
@@ -125,6 +125,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		TextView tvDateAndAddress;
 		Button btnDelete;
 		ImageView ivInfo;
+		View pbView;
 	}
 	
 	@Override
@@ -151,6 +152,8 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
 				holder.btnDelete = (Button) v.findViewById(R.id.btnDelete);
 				holder.ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
+				holder.pbView = v.findViewById(R.id.pbLoadingProgress);
+				((AnimatingImageView)holder.ivInfo).setForefrontView(holder.pbView);
 				v.setTag(holder);
 			}
 			else{
@@ -196,8 +199,10 @@ public class GoodsListAdapter extends BaseAdapter {
 					if(null != strTag && strTag.length() > 0)
 						listUrlsToCancel.add(strTag);
 					
-					holder.ivInfo.setTag("");
-					holder.ivInfo.setImageBitmap(defaultBk2);		
+					if(strTag == null || strTag.length() > 0){
+						holder.ivInfo.setTag("");
+						holder.ivInfo.setImageBitmap(defaultBk2);	
+					}
 				} else {
 						String b = (list.get(position).getImageList().getResize180())
 						.substring(1, (list.get(position).getImageList()
@@ -211,18 +216,23 @@ public class GoodsListAdapter extends BaseAdapter {
 								if(null != v.getTag() && v.getTag().toString().length() > 0)
 									listUrlsToCancel.add(v.getTag().toString());
 								
-								holder.ivInfo.setTag("");
-								holder.ivInfo.setImageBitmap(defaultBk2);
-	//							ivInfo.invalidate();
+								if(strTag == null || strTag.length() > 0){
+									holder.ivInfo.setTag("");
+									holder.ivInfo.setImageBitmap(defaultBk2);
+		//							ivInfo.invalidate();
+								}
 							} else {
 								
 								if(null != strTag && strTag.length() > 0 && !strTag.equals(c[0]))
 									listUrlsToCancel.add(strTag);
 								
-								holder.ivInfo.setTag(c[0]);
-								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-								SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context);
-								//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
+								if(null == strTag || !strTag.equals(c[0])){
+									holder.ivInfo.setTag(c[0]);
+									holder.ivInfo.setVisibility(View.INVISIBLE);
+									holder.pbView.setVisibility(View.VISIBLE);
+									SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context);
+									//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
+								}
 							}
 						} else {
 							if (b == null || b.equals("")) {
@@ -230,17 +240,22 @@ public class GoodsListAdapter extends BaseAdapter {
 								if(null != strTag && strTag.length() > 0)
 									listUrlsToCancel.add(strTag);
 								
-								holder.ivInfo.setTag("");
-								holder.ivInfo.setImageBitmap(defaultBk2);
+								if(strTag == null || strTag.length() > 0){
+									holder.ivInfo.setTag("");
+									holder.ivInfo.setImageBitmap(defaultBk2);
+								}
 							} else {
 								
 								if(null != strTag && strTag.length() > 0 && !strTag.equals(b))
 									listUrlsToCancel.add(strTag);
 								
-								holder.ivInfo.setTag(b);
-								holder.ivInfo.setImageDrawable(GoodsListAdapter.this.context.getResources().getDrawable(R.drawable.loading_flower));
-								SimpleImageLoader.showImg(holder.ivInfo, b, this.context);
-								//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
+								if(null == strTag || !strTag.equals(b)){
+									holder.ivInfo.setTag(b);
+									holder.ivInfo.setVisibility(View.INVISIBLE);
+									holder.pbView.setVisibility(View.VISIBLE);
+									SimpleImageLoader.showImg(holder.ivInfo, b, this.context);
+									//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
+								}
 							}
 						}
 		//			}
