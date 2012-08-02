@@ -98,10 +98,10 @@ public class FillMoreDetailView extends BaseView {
 					String[] values = value.split(",");
 					String displayName = "";
 					if(bean.getLabels() != null){
-						for(int j = 0; j < bean.getLabels().size(); ++ j){
+						for(int j = 0; j < bean.getValues().size(); ++ j){
 							for(int m = 0; m < values.length; ++ m){
-								if(bean.getLabels().get(j).equals(values[m])){
-									displayName += "," + bean.getValues().get(j);
+								if(bean.getValues().get(j).equals(values[m])){
+									displayName += "," + bean.getLabels().get(j);
 								}
 							}
 						}
