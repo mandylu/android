@@ -61,6 +61,8 @@ import com.quanleimu.view.MultiLevelSelectionView;
 import android.text.InputType;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
+	static final private int HASH_POST_BEAN = "postBean".hashCode();
+	static final private int HASH_CONTROL = "control".hashCode();
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
 	public String categoryName = "";
@@ -78,12 +80,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final int MSG_CATEGORY_SEL_BACK = 11;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
-	private LinkedHashMap<String, TextView> tvlist;
-	private String displayname;
 	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合	
-	private LinkedHashMap<String, String> initialValueMap;
-//	private LinkedHashMap<Integer, Object> btMap;				//根据postList集添加对应的控件View
-	private LinkedHashMap<String, Object> editMap;				
 	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
 	private ArrayList<String>bitmap_url;
@@ -105,6 +102,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	static private String lastCategoryShowName = null;
 	
 	private List<String> otherProperties = new ArrayList<String>();
+	
+	private View categoryItem = null;
 
 	
 	public PostGoodsView(BaseActivity context, Bundle bundle, String categoryNames){
@@ -143,35 +142,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			file = null;
 		}
 		super.onDestroy();
-	}
-	
-//	private String getEditMapKeyDisplayName(String keyName){
-//		if(null == editMap) return null;
-//		Set<String>keySet = editMap.keySet();
-//		if(null == keySet) return null;
-//		Object[] keys = (Object[])keySet.toArray();
-//		for(int i = 0; i < keys.length; ++ i){
-//			String[] subKeys = ((String)keys[i]).split(" ");
-//			if(subKeys.length != 2) continue;
-//			if(subKeys[1].equals(keyName)) return subKeys[0];
-//		}
-//		return null;	
-//	}
-	
-	private Object getEditMapValue(String key){
-		if(null == editMap) return null;
-		Set<String>keySet = editMap.keySet();
-		if(null == keySet) return null;
-		Object[] keys = (Object[])keySet.toArray();
-		for(int i = 0; i < keys.length; ++ i){
-			String[] subKeys = ((String)keys[i]).split(" ");
-			for(int j = 0; j < subKeys.length; ++ j){
-				if(subKeys[j].equals(key)){
-					return editMap.get(keys[i]);
-				}
-			}
-		}
-		return null;
 	}
 
 	private void ConfirmAbortAlert(){
@@ -271,112 +241,79 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	
 	private void editpostUI() {
 		// TODO Auto-generated method stub
-
-		if (goodsDetail != null) {
-			Set<String> sets = editMap.keySet();
-			if(sets != null){
-				Object[] objKeys = sets.toArray();
-				for(int i = 0; i < objKeys.length; ++ i){
-					String key = (String)objKeys[i];
-					String[] subs = key.split(" ");
-					
-					PostGoodsBean bean = postList.get(subs[0]);
-					String displayValue = getDisplayValue(bean, goodsDetail, subs[1]);					
-					String value = goodsDetail.getValueByKey(subs[1]);
-					
-					Object obj = this.getEditMapValue(subs[0]);
-				 	if (obj != null && value != null && !value.equals("")) {
-				 		if (obj instanceof CheckBox) {
-							String v = (String) ((CheckBox)obj).getTag();
-							if (displayValue.contains(v)) {
-								((CheckBox)obj).setChecked(true);
-							} else {
-								((CheckBox)obj).setChecked(false);
-							}
-						}
-				 		else if (obj instanceof EditText) {
-							((EditText) obj).setText(displayValue);
-						}
-				 		else if (obj instanceof TextView) {
-							((TextView) obj).setText(displayValue);
-						}
-						postMap.put(subs[0], value);
-					}
+		if(goodsDetail == null) return;
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			View v = layout_txt.getChildAt(i);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			if(bean == null) continue;
+			String detailValue = goodsDetail.getValueByKey(bean.getName());
+			if(detailValue == null || detailValue.equals(""))continue;
+			String displayValue = getDisplayValue(bean, goodsDetail, bean.getName());
+			View control = (View)v.getTag(HASH_CONTROL);
+			if(control instanceof CheckBox){
+				if(displayValue.contains(((CheckBox)control).getText())){
+					((CheckBox)control).setChecked(true);
 				}
+				else{
+					((CheckBox)control).setChecked(false);
+				}
+			}else if(control instanceof TextView){
+				((TextView)control).setText(displayValue);
 			}
-
-			Object objArea = this.getEditMapValue("地区");
-			if(objArea != null){
+			postMap.put(bean.getDisplayName(), detailValue);
+			
+		
+			if(bean.getDisplayName().equals("地区")){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){
-					if(objArea instanceof TextView){
-						((TextView)objArea).setText(areas[areas.length - 1]);
+					if(control instanceof TextView){
+						((TextView)control).setText(areas[areas.length - 1]);
 					}
-					else if(objArea instanceof EditText){
-						((EditText)objArea).setText(areas[areas.length - 1]);
-					}
-					PostGoodsBean areaBean = postList.get("地区");
-					if(areaBean != null && areaBean.getValues() != null && areaBean.getLabels() != null){
-						List<String> areaLabels = areaBean.getLabels();
-						for(int i = 0; i < areaLabels.size(); ++ i){
+					if(bean.getValues() != null && bean.getLabels() != null){
+						List<String> areaLabels = bean.getLabels();
+						for(int t = 0; t < areaLabels.size(); ++ t){
 							if(areaLabels.get(i).equals(areas[1])){
-								postMap.put("地区", areaBean.getValues().get(i));
+								postMap.put("地区", bean.getValues().get(i));
 								break;
 							}
 						}
 					}
 				}
 			}
+		}
 
-			if (goodsDetail.getImageList() != null) {
-				String b = (goodsDetail.getImageList().getResize180())
-						.substring(1, (goodsDetail.getImageList()
-								.getResize180()).length() - 1);
-				b = Communication.replace(b);
-				if (b.contains(",")) {
-					String[] c = b.split(",");
-					for (int k = 0; k < c.length; k++) {
-						listUrl.add(c[k]);
-					}
-				}else{
-					listUrl.add(b);
+		if (goodsDetail.getImageList() != null) {
+			String b = (goodsDetail.getImageList().getResize180())
+					.substring(1, (goodsDetail.getImageList()
+							.getResize180()).length() - 1);
+			b = Communication.replace(b);
+			if (b.contains(",")) {
+				String[] c = b.split(",");
+				for (int k = 0; k < c.length; k++) {
+					listUrl.add(c[k]);
 				}
-				
-				String big = (goodsDetail.getImageList().getBig())
-						.substring(1, (goodsDetail.getImageList()
-								.getBig()).length() - 1);
-				big = Communication.replace(big);
-				String[] cbig = big.split(",");
-				List<String> smalls = new ArrayList<String>();
-				List<String> bigs = new ArrayList<String>();
-				for (int j = 0; j < listUrl.size(); j++) {
-					String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-					if(j > 2)break;
-					smalls.add(listUrl.get(j));
-					bigs.add(bigUrl);
-				}
-				new Thread(new Imagethread(smalls, bigs)).start();
+			}else{
+				listUrl.add(b);
 			}
-		}
-		
-		//copy to initial value map
-		for(int j = 0; j < postMap.size(); ++j)
-		{
-			String key = (String) postMap.keySet().toArray()[j];
-			initialValueMap.put(key, postMap.get(key).toString());
-		}
-		
-		for(int i = 0; i < listUrl.size(); ++i){
-			if(listUrl.get(i) != null && listUrl.get(i).length() > 0){
-				initialValueMap.put(listUrl.get(i), "existingTag");
+			
+			String big = (goodsDetail.getImageList().getBig())
+					.substring(1, (goodsDetail.getImageList()
+							.getBig()).length() - 1);
+			big = Communication.replace(big);
+			String[] cbig = big.split(",");
+			List<String> smalls = new ArrayList<String>();
+			List<String> bigs = new ArrayList<String>();
+			for (int j = 0; j < listUrl.size(); j++) {
+				String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+				if(j > 2)break;
+				smalls.add(listUrl.get(j));
+				bigs.add(bigUrl);
 			}
+			new Thread(new Imagethread(smalls, bigs)).start();
 		}
 	}
 
-	/**
-	 * 用户登录进发布页、否则进登陆页
-	 */
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		if (user == null) {
@@ -426,16 +363,12 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				json = postMu.getJson();
 				Long time = postMu.getTime();
 				if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
-					//更新界面
 					myHandler.sendEmptyMessage(1);
-					//下载新数据	false-不更新界面
 					new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 				} else {
-					//更新界面
 					myHandler.sendEmptyMessage(1);
 				}
 			} else {
-				//下载新数据	true--更新界面
 				pd.show();
 				new Thread(new GetCategoryMetaThread(true,cityEnglishName)).start();
 			}
@@ -443,25 +376,15 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 	}
 
-	/**
-	 * 初始化
-	 */
 	private void initial() {
-		tvlist = new LinkedHashMap<String, TextView>();
 		postList = new LinkedHashMap<String, PostGoodsBean>();
 		postMap = new LinkedHashMap<String, String>();
-		initialValueMap = new LinkedHashMap<String, String>();
 		
 		listUrl = new ArrayList<String>();
-		// textViewMap = new LinkedHashMap<Integer, TextView>();
-		// checkBoxMap = new LinkedHashMap<Integer, List<CheckBox>>();
 		bitmap_url = new ArrayList<String>();
 		bitmap_url.add(null);
 		bitmap_url.add(null);
 		bitmap_url.add(null);
-//		btMap = new LinkedHashMap<Integer, Object>();
-		editMap = new LinkedHashMap<String, Object>();
-		
 	}
 	
 	enum ImageStatus{
@@ -480,7 +403,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		// TODO Auto-generated method stub
 
 		if (v == img1 || v == img2 || v == img3) {
-			// 3张图片点击事件
 			for (int i = 0; i < imgs.length; i++) {
 				if (imgs[i].equals(v)) {
 					currentImgView = i;
@@ -555,7 +477,6 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					PHOTOZOOM);
 
 		} else if (v == photomake) {
-			// 拍照
 			if (ad.isShowing()) {
 				ad.dismiss();
 			}
@@ -592,9 +513,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			Toast.makeText(this.getContext(),"图片正在上传" + "!", 0).show();
 		}
 		// 提交
-		else if (check2()) {
-			//循环发布需提交的数据集合
-			extractInputData();
+		else{
+			extractPostData();
+			if(!check2()){
+				return false;
+			}
 			pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 			pd.setCancelable(true);
 			new Thread(new UpdateThread()).start();
@@ -603,18 +526,42 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 
 
-	private void extractInputData() {
-		for (int i = 0; i < postList.size(); i++) {
-			String key = (String) postList.keySet().toArray()[i];
-			PostGoodsBean postGoodsBean = postList.get(key);
+	private void extractPostData(){
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			PostGoodsBean postGoodsBean = (PostGoodsBean)layout_txt.getChildAt(i).getTag(HASH_POST_BEAN);
+			if(postGoodsBean == null) continue;
+			
 			if (postGoodsBean.getControlType().equals("input") 
 					|| postGoodsBean.getControlType().equals("textarea")) {
-				//文本框
-				EditText et = (EditText)getEditMapValue(postGoodsBean.getDisplayName());
+				EditText et = (EditText)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
 				if(et != null){
 					postMap.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit());
 				}
+			}else if(postGoodsBean.getControlType().equals("select")){
+				TextView tv = (TextView)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
+				if(tv != null){
+					for(int t = 0; t < postGoodsBean.getValues().size(); ++ t){
+						if(postGoodsBean.getValues().get(t).equals(tv.getText().toString())){
+							postMap.put(postGoodsBean.getDisplayName(), postGoodsBean.getLabels().get(t));
+							break;
+						}
+					}
+					
+				}
+			}else if(postGoodsBean.getControlType().equals("checkbox")){
+				if(postGoodsBean.getValues().size() == 1){
+					CheckBox box = (CheckBox)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
+					if(box != null){
+						if(box.isChecked()){
+							postMap.put(postGoodsBean.getDisplayName(), postGoodsBean.getValues().get(0));
+						}
+						else{
+							postMap.remove(postGoodsBean.getDisplayName());
+						}
+					}
+				}
 			}
+			
 		}
 	}
 	
@@ -627,64 +574,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2) return false;
 		
 		return true;
-		
-//		boolean bRet = false;
-//		
-//		for(int i = 0; i < bitmap_url.size(); ++i){
-//			if(bitmap_url.get(i) != null && bitmap_url.get(i).length() > 0 && initialValueMap.get(bitmap_url.get(i)) == null)
-//				return true;
-//		}
-//		
-//		extractInputData();
-//		
-//		for (int i = 0; i < postList.size(); i++) {
-//			String key = (String) postList.keySet().toArray()[i];
-//			PostGoodsBean postGoodsBean = postList.get(key);
-//			
-//			String displayName = postGoodsBean.getDisplayName();
-//			
-//			String value = postMap.get(displayName);
-//			String initialValue = initialValueMap.get(displayName)+postGoodsBean.getUnit();
-//			
-//			if(initialValue == null || !initialValue.equals(value)){
-//				bRet = true;
-//				break;
-//			}
-//		}			
-//			
-//		return bRet;
 	}
 
-	/**
-	 * 检查必填内容是否填写
-	 * 
-	 * @return
-	 */
 	private boolean check2() {
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getRequired().endsWith("required")) {
-				if (postGoodsBean.getControlType().equals("select")) {
-//					TextView obj = (TextView) btMap.get(i);
-					TextView obj = (TextView) this.getEditMapValue(postGoodsBean.getDisplayName());
-					if (obj.getText().toString().trim().length() == 0
-							|| obj.getText().toString().trim().equals("请选择")) {
-						
-						Toast.makeText(this.getContext(),
-								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
-								.show();
-						return false;
-					}
-				} else if (postGoodsBean.getControlType().equals("input")) {
-					EditText obj = (EditText)getEditMapValue(postGoodsBean.getDisplayName());
-//					EditText obj = (EditText) btMap.get(i);
-					if (obj.getText().toString().trim().length() == 0) {
-						Toast.makeText(this.getContext(),
-								"请填写" + postGoodsBean.getDisplayName() + "!", 0)
-								.show();
-						return false;
-					}
+				if(!postMap.containsKey(postGoodsBean.getDisplayName()) || postMap.get(postGoodsBean.getDisplayName()).equals("")){
+					Toast.makeText(this.getContext(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
+					return false;
 				}
 			}
 		}
@@ -734,30 +633,26 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					}
 				}
 			}
-			if(editMap != null && PostGoodsView.this.getEditMapValue("地区") != null){
-				Object objArea = PostGoodsView.this.getEditMapValue("地区");
-				String tvText = null;
-				if(objArea instanceof TextView){
-					tvText = ((TextView)objArea).getText().toString();
-				}
-				else if(objArea instanceof EditText){
-					tvText = ((EditText)objArea).getText().toString();
-				}
-				if(tvText != null && !tvText.equals("")){
-					city = city + "," + tvText;
+			for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+				View v = layout_txt.getChildAt(m);
+				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+				if(bean == null) continue;
+				if(bean.getDisplayName().equals("地区")){
+					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+					if(tv != null && !tv.getText().toString().equals("")){
+						city += "," + tv.getText();
+					}
 				}
 			}
-			if(editMap != null && PostGoodsView.this.getEditMapValue("具体地点") != null){
-				Object objArea = PostGoodsView.this.getEditMapValue("具体地点");
-				String tvText = null;
-				if(objArea instanceof TextView){
-					tvText = ((TextView)objArea).getText().toString();
-				}
-				else if(objArea instanceof EditText){
-					tvText = ((EditText)objArea).getText().toString();
-				}
-				if(tvText != null && !tvText.equals("")){
-					city = city + "," + tvText;
+			for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+				View v = layout_txt.getChildAt(m);
+				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+				if(bean == null) continue;
+				if(bean.getDisplayName().equals("具体地点")){
+					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+					if(tv != null && !tv.getText().toString().equals("")){
+						city += "," + tv.getText();
+					}
 				}
 			}
 			if(!city.equals("")){
@@ -1003,17 +898,57 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 	
 	@Override
-	public void onPreviousViewBack(int message, Object obj){		
-		switch(message){
-		case POST_LIST:{
-			int id = (Integer)obj;
-			TextView tv = tvlist.get(displayname);
-			String txt = postList.get(displayname).getLabels().get(id);
-			String txtValue = postList.get(displayname).getValues().get(id);
-			postMap.put(displayname, txtValue);
-			tv.setText(txt);
-			break;
+	public void onPreviousViewBack(int message, Object obj){	
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			View v = layout_txt.getChildAt(i);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			if(bean == null) continue;
+			if(bean.getName().hashCode() == message){
+				if(obj instanceof Integer){
+					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+					String txt = bean.getLabels().get((Integer)obj);
+					String txtValue = bean.getValues().get((Integer)obj);
+					postMap.put(bean.getDisplayName(), txtValue);
+					if(tv != null){
+						tv.setText(txt);
+					}
+				}
+				else if(obj instanceof String){
+					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+					String check = (String)obj;
+					String[] checks = check.split(",");
+					String value = "";
+					String txt = "";
+					for(int t = 0; t < checks.length; ++ t){
+						if(checks[t].equals(""))continue;
+		 				txt += "," + bean.getLabels().get(Integer.parseInt(checks[t]));
+						value += "," + bean.getValues().get(Integer.parseInt(checks[t]));
+					}
+					if(txt.length() > 0){
+						txt = txt.substring(1);
+					}
+					if(value.length() > 0){
+						value = value.substring(1);
+					}
+					postMap.put(bean.getDisplayName(), value);
+					if(tv != null){
+						tv.setWidth(layout_txt.getWidth() * 2 / 3);
+						tv.setText(txt);
+					}
+				}
+				else if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
+					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+					if(tv != null){
+						tv.setWidth(layout_txt.getWidth() * 2 / 3);
+						tv.setText(((MultiLevelSelectionView.MultiLevelItem)obj).txt);
+					}
+					postMap.put(bean.getDisplayName(), ((MultiLevelSelectionView.MultiLevelItem)obj).id);
+
+				}
+			}
+					
 		}
+		switch(message){
 		case POST_OTHERPROPERTIES:
 			String list = (String)obj;
 			if(!list.equals("")){
@@ -1021,51 +956,17 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				appendSelectedProperties(lists);
 			}
 			break;
-		case POST_CHECKSELECT:{
-			TextView tv = tvlist.get(displayname);
-			String check = (String)obj;
-			String[] checks = check.split(",");
-			String value = "";
-			String txt = "";
-			for(int i = 0; i < checks.length; ++ i){
-				if(checks[i].equals(""))continue;
- 				txt += "," + postList.get(displayname).getLabels().get(Integer.parseInt(checks[i]));
-				value += "," + postList.get(displayname).getValues().get(Integer.parseInt(checks[i]));
-			}
-			if(txt.length() > 0){
-				txt = txt.substring(1);
-			}
-			if(value.length() > 0){
-				value = value.substring(1);
-			}
-			postMap.put(displayname, value);
-			tv.setWidth(layout_txt.getWidth() * 2 / 3);
-			tv.setText(txt);	
-			break;
-		}
-		case MSG_MULTISEL_BACK:{
-			if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
-				TextView tv = tvlist.get(displayname);
-				if(tv != null){
-					tv.setWidth(layout_txt.getWidth() * 2 / 3);
-					tv.setText(((MultiLevelSelectionView.MultiLevelItem)obj).txt);
-				}
-				postMap.put(displayname, ((MultiLevelSelectionView.MultiLevelItem)obj).id);
-			}
-			break;
-		}
+	
 		case MSG_CATEGORY_SEL_BACK:{
 			layout_txt.removeAllViews();
-			tvlist.clear();
 			otherProperties.clear();
 			postList.clear();
 			postMap.clear();
-			initialValueMap.clear();
-			editMap.clear();
 			bitmap_url.clear();
 			bitmap_url.add(null);
 			bitmap_url.add(null);
 			bitmap_url.add(null);
+			categoryItem = null;
 
 			listUrl.clear();
 			imgs = null;
@@ -1073,7 +974,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			uploadCount = 0;
 						
 			this.addCategoryItem();
-			TextView tv = tvlist.get(displayname);
+			TextView tv = (TextView)categoryItem.getTag(HASH_CONTROL);
 			String[] backMsg = ((String)obj).split(",");
 			if(backMsg == null || backMsg.length != 2) break;
 			if(tv != null){
@@ -1178,15 +1079,16 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 	}
 	
-	private void appendBeanToLayout(PostGoodsBean postBean){
+	public static ViewGroup createItemByPostBean(PostGoodsBean postBean, final BaseActivity activity, final ViewInfoListener vListener){
 		ViewGroup layout = null;
 		
 		if (postBean.getControlType().equals("input")) {
-			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = inflater.inflate(R.layout.item_post_edit, null);
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-//			btMap.put(position, v.findViewById(R.id.postinput));
-			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.postinput));
+
+			v.setTag(HASH_POST_BEAN, postBean);
+			v.setTag(HASH_CONTROL, v.findViewById(R.id.postinput));
 			if(postBean.getNumeric() != 0){
 				((EditText)v.findViewById(R.id.postinput)).setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}
@@ -1194,36 +1096,34 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
 			layout = (ViewGroup)v;
-			if(postBean.getName().equals("contact")){
-				((EditText)v.findViewById(R.id.postinput)).setText(mobile);
-			}
 		} else if (postBean.getControlType().equals("select")) {
-			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = inflater.inflate(R.layout.item_post_select, null);
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-			tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
-			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+			v.setTag(HASH_POST_BEAN, postBean);
+			v.setTag(HASH_CONTROL, v.findViewById(R.id.posthint));
 			layout = (ViewGroup)v;
 		}
 		else if (postBean.getControlType().equals("checkbox")) {
-			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			LayoutInflater inflater = LayoutInflater.from(activity);
 
 			if(postBean.getLabels().size() > 1){
 				View v = inflater.inflate(R.layout.item_post_select, null);
 				((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-				tvlist.put(postBean.getDisplayName(), (TextView)v.findViewById(R.id.posthint));
-				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.posthint));						
+				v.setTag(HASH_POST_BEAN, postBean);
+				v.setTag(HASH_CONTROL, v.findViewById(R.id.posthint));
 				layout = (ViewGroup)v;
 			}
 			else{
 				View v = inflater.inflate(R.layout.item_text_checkbox, null);
 				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
 				v.findViewById(R.id.checkitem).setTag(postBean.getDisplayName());
-				editMap.put(postBean.getDisplayName() + " " + postBean.getName(), v.findViewById(R.id.checkitem));						
+				v.setTag(HASH_POST_BEAN, postBean);
+				v.setTag(HASH_CONTROL, v.findViewById(R.id.checkitem));	
 				layout = (ViewGroup)v;				
 			}
 		} else if (postBean.getControlType().equals("textarea")) {
-			LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
+			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = inflater.inflate(R.layout.item_post_description, null);
 			((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
 
@@ -1234,77 +1134,17 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				personalMark = "\n\n" + personalMark;
 				descriptionEt.setText(personalMark);
 			}
-			// textViewMap.put(position, descriptionEt);
-//			btMap.put(position, descriptionEt);
-			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), descriptionEt);
-			
+			v.setTag(HASH_POST_BEAN, postBean);
+			v.setTag(HASH_CONTROL, descriptionEt);
 			layout = (ViewGroup)v;
-		} else if (postBean.getControlType().equals("image")) {
-			layout = new LinearLayout(PostGoodsView.this.getContext());
-			((LinearLayout)layout).setOrientation(HORIZONTAL);
-			layout.setPadding(10, 10, 10, 10);
-			layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
-
-		    int height = baseActivity.getWindowManager().getDefaultDisplay().getHeight();
-            int fixHotHeight = height * 15 / 100;
-            if(fixHotHeight < 50)
-            {
-                fixHotHeight = 50;
-            }
-			img1 = new ImageView(PostGoodsView.this.getContext());
-			img2 = new ImageView(PostGoodsView.this.getContext());
-			img3 = new ImageView(PostGoodsView.this.getContext());
-			imgs = new ImageView[] { img1, img2, img3 };
-            //fixHotHeight = layout.getHeight() - 5 * 2;
-            img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            img1.setAdjustViewBounds(true);                       
-            img1.setMaxHeight(fixHotHeight);
-            img1.setMaxWidth(fixHotHeight);
-            LinearLayout l1 = new LinearLayout(PostGoodsView.this.getContext());
-            l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-            l1.addView(img1);
-            
-            img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            img2.setAdjustViewBounds(true);
-            img2.setMaxHeight(fixHotHeight);
-            img2.setMaxWidth(fixHotHeight);
-            LinearLayout l2 = new LinearLayout(PostGoodsView.this.getContext());
-            l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-            l2.addView(img2);
-            
-            img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-            img3.setAdjustViewBounds(true);
-            img3.setMaxHeight(fixHotHeight);
-            img3.setMaxWidth(fixHotHeight);
-            LinearLayout l3 = new LinearLayout(PostGoodsView.this.getContext());
-            l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-            l3.addView(img3);
-            
-			img1.setImageResource(R.drawable.d);
-			img2.setImageResource(R.drawable.d);
-			img3.setImageResource(R.drawable.d);
-			img1.setOnClickListener(PostGoodsView.this);
-			img2.setOnClickListener(PostGoodsView.this);
-			img3.setOnClickListener(PostGoodsView.this);
-			layout.addView(l1);
-			layout.addView(l2);
-			layout.addView(l3);
-			editMap.put(postBean.getDisplayName() + " " + postBean.getName(), imgs);
 		}
-
-		if(postMap.get(postBean.getDisplayName()) == null)
-			postMap.put(postBean.getDisplayName(), "");
-
-		layout.setTag(postBean);
 		if(postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")){
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					PostGoodsBean postBean = (PostGoodsBean) v.getTag();
-					TextView txview = tvlist.get(postBean.getDisplayName());
+					PostGoodsBean postBean = (PostGoodsBean) v.getTag(HASH_POST_BEAN);
 
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
-						displayname = postBean.getDisplayName();
-						if(m_viewInfoListener != null){
+						if(vListener != null){
 							if(postBean.getLevelCount() > 0){
 								List<MultiLevelSelectionView.MultiLevelItem> items = 
 										new ArrayList<MultiLevelSelectionView.MultiLevelItem>();
@@ -1315,47 +1155,101 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 									items.add(t);
 								}
 								MultiLevelSelectionView nextView = 
-										new MultiLevelSelectionView((BaseActivity)PostGoodsView.this.getContext(), items, MSG_MULTISEL_BACK, postBean.getLevelCount() - 1);
-								m_viewInfoListener.onNewView(nextView);
+										new MultiLevelSelectionView(activity, items, postBean.getName().hashCode(), postBean.getLevelCount() - 1);
+								vListener.onNewView(nextView);
 								
 							}
 							else{
-								OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_LIST, true);
+								OtherPropertiesView next = new OtherPropertiesView(activity, postBean.getLabels(), postBean.getName().hashCode(), true);
 								next.setTitle(postBean.getDisplayName());
+								TextView txview = (TextView)v.getTag(HASH_CONTROL);
 								if(txview !=  null){
 									next.setSelectedItems(txview.getText().toString());
 								}
-								m_viewInfoListener.onNewView(next);
+								vListener.onNewView(next);
 							}
 						}
 					}
 					else if(postBean.getControlType().equals("checkbox")){
-						displayname = postBean.getDisplayName();
 						if(postBean.getLabels().size() > 1){
-							if(m_viewInfoListener != null){
-								OtherPropertiesView next = new OtherPropertiesView(baseActivity, postBean.getLabels(), POST_CHECKSELECT, false);
+							if(vListener != null){
+								OtherPropertiesView next = new OtherPropertiesView(activity, postBean.getLabels(), postBean.getName().hashCode(), false);
 								next.setTitle(postBean.getDisplayName());
+								TextView txview = (TextView)v.getTag(HASH_CONTROL);
 								if(txview !=  null){
 									next.setSelectedItems(txview.getText().toString());
 								}							
-								m_viewInfoListener.onNewView(next);
+								vListener.onNewView(next);
 							}
 						}
 						else{
 							View checkV = v.findViewById(R.id.checkitem);
 							if(checkV != null && checkV instanceof CheckBox){
 								((CheckBox)checkV).setChecked(!((CheckBox)checkV).isChecked());
-								if(((CheckBox)checkV).isChecked()){
-									postMap.put(displayname, postBean.getValues().get(0));
-								}
-								else{
-									postMap.remove(displayname);
-								}
 							}
 						}
 					}
 				}
 			});
+		}
+		return layout;
+	}
+	
+	private void appendBeanToLayout(PostGoodsBean postBean){
+		ViewGroup layout = createItemByPostBean(postBean, (BaseActivity)getContext(), m_viewInfoListener);
+		if(postBean.getName().equals("contact") && layout != null){
+			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
+		}
+		if (postBean.getControlType().equals("image")) {
+			layout = new LinearLayout(this.getContext());
+			((LinearLayout)layout).setOrientation(HORIZONTAL);
+			layout.setPadding(10, 10, 10, 10);
+			layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
+			
+			int height = baseActivity.getWindowManager().getDefaultDisplay().getHeight();
+			int fixHotHeight = height * 15 / 100;
+			if(fixHotHeight < 50)
+			{
+			    fixHotHeight = 50;
+			}
+			img1 = new ImageView(PostGoodsView.this.getContext());
+			img2 = new ImageView(PostGoodsView.this.getContext());
+			img3 = new ImageView(PostGoodsView.this.getContext());
+			imgs = new ImageView[] { img1, img2, img3 };
+		//fixHotHeight = layout.getHeight() - 5 * 2;
+		    img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		    img1.setAdjustViewBounds(true);                       
+		    img1.setMaxHeight(fixHotHeight);
+		    img1.setMaxWidth(fixHotHeight);
+		    LinearLayout l1 = new LinearLayout(PostGoodsView.this.getContext());
+		    l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+		    l1.addView(img1);
+		    
+		    img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		    img2.setAdjustViewBounds(true);
+		    img2.setMaxHeight(fixHotHeight);
+		    img2.setMaxWidth(fixHotHeight);
+		    LinearLayout l2 = new LinearLayout(PostGoodsView.this.getContext());
+		    l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+		    l2.addView(img2);
+		    
+		    img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
+		    img3.setAdjustViewBounds(true);
+		    img3.setMaxHeight(fixHotHeight);
+		    img3.setMaxWidth(fixHotHeight);
+		    LinearLayout l3 = new LinearLayout(PostGoodsView.this.getContext());
+		    l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
+		    l3.addView(img3);
+		    
+			img1.setImageResource(R.drawable.d);
+			img2.setImageResource(R.drawable.d);
+			img3.setImageResource(R.drawable.d);
+			img1.setOnClickListener(PostGoodsView.this);
+			img2.setOnClickListener(PostGoodsView.this);
+			img3.setOnClickListener(PostGoodsView.this);
+			layout.addView(l1);
+			layout.addView(l2);
+			layout.addView(l3);
 		}
 		
 		TextView border = new TextView(PostGoodsView.this.getContext());
@@ -1377,27 +1271,24 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 	
 	private void addCategoryItem(){
-		if(this.goodsDetail != null || tvlist.get("分类") != null)return;
+		if(this.goodsDetail != null || categoryItem != null)return;
 		LayoutInflater inflater = LayoutInflater.from(PostGoodsView.this.getContext());
-		View v = inflater.inflate(R.layout.item_post_select, null);
-		((TextView)v.findViewById(R.id.postshow)).setText("分类");
-		this.displayname = "分类";
-		tvlist.put(displayname, (TextView)v.findViewById(R.id.posthint));
-		v.setOnClickListener(new OnClickListener(){
+		categoryItem = inflater.inflate(R.layout.item_post_select, null);
+		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
+		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
+		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				if(m_viewInfoListener != null){
 					GridCategoryView gview = new GridCategoryView(PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
-//					PostGoodsCateMainView pview = 
-//							new PostGoodsCateMainView((BaseActivity)PostGoodsView.this.getContext(), bundle, MSG_CATEGORY_SEL_BACK);
 					m_viewInfoListener.onNewView(gview);
 				}
 			}				
 		});
-		layout_txt.addView(v);
+		layout_txt.addView(categoryItem);
 		
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
-			 ((TextView)v.findViewById(R.id.posthint)).setText(categoryName);
+			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
 		}
 		
 		TextView border = new TextView(PostGoodsView.this.getContext());
