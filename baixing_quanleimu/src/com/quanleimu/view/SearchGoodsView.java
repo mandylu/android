@@ -31,7 +31,7 @@ import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.adapter.GoodsListAdapter;
-public class SearchGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
+public class SearchGoodsView extends BaseView implements OnScrollListener, View.OnClickListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
 	// 定义控件
 	public Button btnSearch, btnBack;
@@ -40,6 +40,10 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 
 	public ProgressDialog pd;
 	public String title = "";
+	
+	private View titleControl = null;
+	
+	
 	/**
 	 * 设置布局显示目标最大化
 	 */
@@ -65,6 +69,10 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 	private String backPageName = "";
 	private ProgressBar progressBar;
 	
+	private List<String> basicParams = null;
+	
+	private int titleControlStatus = 0;//0: Left(Recent), 1: Right(Nearby)
+	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView(inflater.inflate(R.layout.searchgoods, null));
@@ -76,9 +84,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 						.encode("cityEnglishName:"
 								+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
 								+ searchContent));
-		List<String> params = new ArrayList<String>();
-		params.add(url);
-        mListLoader = new GoodsListLoader(params, myHandler, fields, null);
+		basicParams = new ArrayList<String>();
+		basicParams.add(url);
+        mListLoader = new GoodsListLoader(basicParams, myHandler, fields, null);
         
 		LayoutParams WClayoutParams = new LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT);
 		
@@ -209,6 +217,14 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 		title.m_leftActionHint = backPageName;
 		title.m_title = this.title;
 		title.m_rightActionHint = "重新搜索";
+		
+		if(null == titleControl){
+			LayoutInflater inflater = LayoutInflater.from(this.getContext());
+			titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
+			titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
+			titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
+		}
+		title.m_titleControls = titleControl;
 		return title;
 	}
 	
@@ -339,5 +355,36 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, PullT
 	@Override
 	public void onRefresh() {
 		mListLoader.startFetching(true);
+	}
+
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
+		case R.id.btnRecent:
+			if(titleControlStatus != 0){
+				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
+				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				mListLoader.setParams(basicParams);
+				lvSearchResult.fireRefresh();
+				
+				titleControlStatus = 0;
+			}
+			break;
+		case R.id.btnNearby:
+			if(titleControlStatus != 1){
+				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				List<String> params = new ArrayList<String>();
+				params.addAll(basicParams);
+				params.add("nearby=true");
+				params.add("lat=31.2222");
+				params.add("lng=121.4444");
+				mListLoader.setParams(params);
+				lvSearchResult.fireRefresh();
+				
+				titleControlStatus = 1;
+			}
+			break;
+		}
 	}
 }

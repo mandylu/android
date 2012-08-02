@@ -6,8 +6,13 @@ import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.apache.http.client.HttpClient;
+
 import android.os.Handler;
+import android.util.Log;
+
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.util.NetworkProtocols;
 
 
 public class GoodsListLoader {
@@ -29,7 +34,7 @@ public class GoodsListLoader {
 	
 	private static String mLastJson = null;
 	
-	private GetmGoodsListThread mCurThread = null;
+	private GetGoodsListThread mCurThread = null;
 	
 	private HasMoreListener hasMoreListener = null;
 	
@@ -118,27 +123,28 @@ public class GoodsListLoader {
 	public void startFetching(boolean isFirst){
 		mIsFirst = isFirst;
 
-		mCurThread = new GetmGoodsListThread();		
+		mCurThread = new GetGoodsListThread();		
 		new Thread(mCurThread).start();	
 	}	
 	
 	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore){
 		mIsFirst = isFirst;
-		mCurThread = new GetmGoodsListThread(msgGotFirst, msgGotMore, msgNoMore);		
+		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore);		
 		
 		new Thread(mCurThread).start();	
 	}
 	
-	class GetmGoodsListThread implements Runnable {
+	class GetGoodsListThread implements Runnable {
 		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
 		
 		private boolean mCancel = false;
+		private HttpClient mHttpClient = null;
 		
-		GetmGoodsListThread(){}
+		GetGoodsListThread(){}
 		
-		GetmGoodsListThread(int errFirst, int errMore, int errNoMore){
+		GetGoodsListThread(int errFirst, int errMore, int errNoMore){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
@@ -146,6 +152,12 @@ public class GoodsListLoader {
 		
 		public void cancel(){
 			mCancel = true;
+			
+			if(null != mHttpClient){
+				mHttpClient.getConnectionManager().shutdown();
+			}
+			
+			Log.d("GoodsListLoader", "http connection has been shutdown!!");
 		}
 		
 		private void exit(){
@@ -179,13 +191,18 @@ public class GoodsListLoader {
 			}
 			
 			String url = Communication.getApiUrl(mApiName, list);
+			
+			Log.d("kkkkkk", "start requesting url: "+url);
+			
+			mHttpClient = NetworkProtocols.getInstance().getHttpClient();
+			
 			try {
 				if(mCancel) {
 					exit();
 					return;
 				}
 				
-				mLastJson = Communication.getDataByUrl(url);
+				mLastJson = Communication.getDataByUrl(mHttpClient, url);
 
 				if(mCancel) {
 					exit();
@@ -208,14 +225,18 @@ public class GoodsListLoader {
 				return;
 			} catch (UnsupportedEncodingException e) {
 			} catch (IOException e) {
-				mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				if(!mCancel){
+					mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				}
 				exit();
 				return;
 			} catch (Communication.BXHttpException e){
 				
 			}
 			
-			mHandler.sendEmptyMessage(MSG_EXCEPTION);
+			if(!mCancel){
+				mHandler.sendEmptyMessage(MSG_EXCEPTION);
+			}
 			exit();
 		}
 	}

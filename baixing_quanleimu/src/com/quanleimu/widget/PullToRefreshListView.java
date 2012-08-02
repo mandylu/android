@@ -219,6 +219,16 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		super.onDraw(canvas);
     }
     
+	public void fireRefresh(){
+		prepareForRefresh();
+		setSelection(0);
+		
+		if(null != mOnRefreshListener){
+			mOnRefreshListener.onRefresh();
+		}
+	}
+	
+	
     public void setPullToRefreshEnabled(boolean enable){
     	if(mEnableHeader != enable){
     		if(enable){

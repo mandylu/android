@@ -31,7 +31,7 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
-public class GetGoodsView extends BaseView implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener{
+public class GetGoodsView extends BaseView implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener{
 
 	private PullToRefreshListView lvGoodsList;
 	private ProgressDialog pd;
@@ -46,7 +46,11 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	
 	private GoodsListLoader goodsListLoader = null;
 	
+	private View titleControl = null;
 	
+	private List<String> basicParams = null;
+	
+	private int titleControlStatus = 0;//0:Left(Recent), 1: Right(Nearby)
 	
 	@Override
 	public void onResume(){
@@ -128,6 +132,15 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		title.m_leftActionHint = bundle.getString("backPageName");
 		title.m_title = bundle.getString("name");
 		title.m_rightActionHint = "筛选";
+		
+		if(null == titleControl){
+			LayoutInflater inflater = LayoutInflater.from(this.getContext());
+			titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
+			titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
+			titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
+		}
+		title.m_titleControls = titleControl;
+		
 		return title;
 	}
 	public TabDef getTabDef(){
@@ -160,18 +173,18 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 		pd = ProgressDialog.show(this.getContext(), "提示", "请稍候...");
 		pd.setCancelable(true);
 
-		List<String> params = new ArrayList<String>();
+		basicParams = new ArrayList<String>();
 		if (siftResult != null && !siftResult.equals("")) {
-			params.add("query="
+			basicParams.add("query="
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " " + siftResult);
 		} else {
-			params.add("query="
+			basicParams.add("query="
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " AND status:0");
 		}
 		
-		goodsListLoader = new GoodsListLoader(params, myHandler, null, new GoodsList());
+		goodsListLoader = new GoodsListLoader(basicParams, myHandler, null, new GoodsList());
 		goodsListLoader.startFetching(true);
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -314,5 +327,37 @@ public class GetGoodsView extends BaseView implements OnScrollListener, PullToRe
 	@Override
 	public void onRefresh() {
 		goodsListLoader.startFetching(true);	
+	}
+	
+	
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()){
+		case R.id.btnRecent:
+			if(titleControlStatus != 0){
+				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
+				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				goodsListLoader.setParams(basicParams);
+				lvGoodsList.fireRefresh();
+				
+				titleControlStatus = 0;
+			}
+			break;
+		case R.id.btnNearby:
+			if(titleControlStatus != 1){
+				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				List<String> params = new ArrayList<String>();
+				params.addAll(basicParams);
+				params.add("nearby=true");
+				params.add("lat=31.2222");
+				params.add("lng=121.4444");
+				goodsListLoader.setParams(params);
+				lvGoodsList.fireRefresh();
+				
+				titleControlStatus = 1;
+			}
+			break;
+		}
 	}
 }

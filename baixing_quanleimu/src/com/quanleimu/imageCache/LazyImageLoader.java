@@ -213,8 +213,7 @@ public class LazyImageLoader
 		{
 			
 			switch(msg.what)
-			{
-			
+			{	
 				case MESSAGE_ID :
 				{
 					
@@ -235,12 +234,20 @@ public class LazyImageLoader
 	private  class DiskIOImageThread extends Thread
 	{		
 		private boolean isRun=true;
+		private String mCurrentUrl = null;
 		
 		public void shutDown()
 		{
 			isRun =false;
 		}
 		
+//		public void cancel(String url){
+//			synchronized(mCurrentUrl){
+//				if(mCurrentUrl != null && mCurrentUrl.equals(url)){
+//					
+//				}
+//			}
+//		}
 		
 		public void run()
 		{
@@ -248,19 +255,22 @@ public class LazyImageLoader
 			{
 				while(isRun && urlDequeDiskIO.size() > 0)
 				{
-					String url= urlDequeDiskIO.remove(0);
+//					synchronized(mCurrentUrl){
+						mCurrentUrl = urlDequeDiskIO.remove(0);
+//					}
 					
-					if(null == url){
+					if(null == mCurrentUrl){
 						continue;
 					} 
-					Bitmap bitmap=imgManger.safeGetFromDiskCache(url);
+					
+					Bitmap bitmap=imgManger.safeGetFromDiskCache(mCurrentUrl);
 					if(bitmap==null){//if not in disk cache, put the url to download-deque for further downloading
-						putToDownloadDeque(url);
+						putToDownloadDeque(mCurrentUrl);
 						startDownloadingTread();
 					}else{
 						Message msg=handler.obtainMessage(MESSAGE_ID);
 						Bundle bundle =msg.getData();
-						bundle.putSerializable(EXTRA_IMG_URL, url);
+						bundle.putSerializable(EXTRA_IMG_URL, mCurrentUrl);
 						bundle.putParcelable(EXTRA_IMG, bitmap);
 						handler.sendMessage(msg);
 					}

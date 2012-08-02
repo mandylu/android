@@ -22,6 +22,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.provider.Settings.Secure;
+import android.util.Log;
 
 import android.net.ConnectivityManager;
 import android.content.Context; 
@@ -291,6 +292,49 @@ public class Communication implements Comparator<String> {
 			}
 			//System.out.println(temp);
 			return temp;		  
+	  }
+
+	  //get提交数据方法
+	  public static String getDataByUrl(HttpClient httpClient, String url)
+	  	  throws UnsupportedEncodingException, IOException, BXHttpException {
+	  	
+	  	HttpPost httpPost = new HttpPost(url.substring(0, url.indexOf("/?") + 2));
+	  	StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+	  	httpPost.setEntity(se);
+	  	se.setContentType("application/x-www-form-urlencoded");
+
+		HttpResponse response = null;
+
+		try{
+			response = httpClient.execute(httpPost);
+		}catch(IllegalStateException e){
+			//Log.d("kkkkkk", "network request has been canceled: "+url+" !!!");
+			return null;
+		}
+	  	
+	  	if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
+	  	  BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
+	  	  throw bxe;
+	  	}
+
+	  	// 取得输入流，并使用Reader读取
+	  	BufferedReader reader = new BufferedReader(new InputStreamReader(
+	  	    response.getEntity().getContent(), "utf-8"));// 设置编码,否则中文乱码
+
+	  	String lines = "";
+	  	String temp = "";
+	  	while ((lines = reader.readLine()) != null) {
+	  	  temp += lines;
+	  	}
+	  	reader.close();
+	  	// 断开连接
+	  	
+	  	httpClient.getConnectionManager().shutdown();
+	  	if(url.contains("adIds=")){
+	  	  QuanleimuApplication.resetViewCounter();//counter sent successfully
+	  	}
+	  	//System.out.println(temp);
+	  	return temp;
 	  }
 	  
 	//get提交数据方法
