@@ -66,6 +66,12 @@ import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
+
+import com.tencent.mm.sdk.openapi.WXImageObject;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXTextObject;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
+
 public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
 	public interface IListHolder{
@@ -361,6 +367,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		View fenxiang = findViewById(R.id.fenxianglayout);
 		fenxiang.setOnClickListener(this);
 
+		
+		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
+			findViewById(R.id.wxlayout).setOnClickListener(this);
+		}
+		else{
+			findViewById(R.id.wxlayout).setVisibility(View.GONE);
+		}
+		
 		View jubao = findViewById(R.id.jubaolayout);
 		if(isMyAd()){
 			jubao.setVisibility(View.GONE);
@@ -733,6 +747,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 
 			}
 			break;
+			
+		case R.id.wxlayout:{
+			doShare2WX();
+			break;
+		}
+		
 		case R.id.fenxianglayout:{
 			Weibo weibo = Weibo.getInstance();
 			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
@@ -821,6 +841,40 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;
 		}
 		}
+	}
+	
+	private void doShare2WX(){
+		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
+			"我在百姓网看到：" + detail.getValueByKey("title");
+		
+		WXWebpageObject webObj = new WXWebpageObject();
+		webObj.webpageUrl = detail.getValueByKey("link");
+		
+		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
+
+		WXMediaMessage obj = new WXMediaMessage();
+		
+		String description = "";
+		if(detail.getMetaData() != null){
+			for(int i = 0; i < detail.getMetaData().size(); ++ i){
+				String meta = detail.getMetaData().get(i);
+				String [] ms = meta.split(" ");
+				if(ms != null && ms.length == 2){
+					description += "，" + ms[1];
+				}
+			}
+		}
+		if(description.charAt(0) == '，'){
+			description = description.substring(1);
+		}
+		obj.description = description;
+		obj.title = title;
+		obj.mediaObject = webObj;
+		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
+		if(thumbnail != null){
+			obj.setThumbImage(thumbnail);
+		}
+		QuanleimuApplication.sendWXRequest(obj);
 	}
 	
 	private void doShare2Weibo(AccessToken accessToken){
