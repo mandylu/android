@@ -128,6 +128,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		if(names.length == 2){
 			this.categoryEnglishName = names[0];
 			this.categoryName = names[1];
+		}else if(names.length == 1){
+			this.categoryEnglishName = names[0];
 		}
 		this.goodsDetail = detail;
 		this.bundle = bundle;
