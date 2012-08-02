@@ -30,6 +30,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -63,6 +64,7 @@ import android.text.InputType;
 public class PostGoodsView extends BaseView implements OnClickListener {
 	static final private int HASH_POST_BEAN = "postBean".hashCode();
 	static final private int HASH_CONTROL = "control".hashCode();
+	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
 	public String categoryName = "";
@@ -80,7 +82,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	public static final int MSG_CATEGORY_SEL_BACK = 11;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
-	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合	
+	private LinkedHashMap<String, String> postMap;				//发布需要提交的参数集合
+	private LinkedHashMap<String, String> moreDetailPostMap;
 	private AlertDialog ad; 
 	private Button photoalbum, photomake, photocancle;
 	private ArrayList<String>bitmap_url;
@@ -514,7 +517,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 		// 提交
 		else{
-			extractPostData();
+			postMap.putAll(extractInputData(layout_txt));
 			if(!check2()){
 				return false;
 			}
@@ -525,51 +528,37 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		return true;
 	}
 
-
-	private void extractPostData(){
-		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
-			PostGoodsBean postGoodsBean = (PostGoodsBean)layout_txt.getChildAt(i).getTag(HASH_POST_BEAN);
+	static public LinkedHashMap<String, String> extractInputData(ViewGroup vg){
+		if(vg == null) return null;
+		LinkedHashMap<String, String> toRet = new LinkedHashMap<String, String>();
+		for(int i = 0; i < vg.getChildCount(); ++ i){
+			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(HASH_POST_BEAN);
 			if(postGoodsBean == null) continue;
 			
 			if (postGoodsBean.getControlType().equals("input") 
 					|| postGoodsBean.getControlType().equals("textarea")) {
-				EditText et = (EditText)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
+				EditText et = (EditText)vg.getChildAt(i).getTag(HASH_CONTROL);
 				if(et != null){
-					postMap.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit());
+					toRet.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit());
 				}
-			}else if(postGoodsBean.getControlType().equals("select")){
-				TextView tv = (TextView)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
-				if(tv != null){
-					for(int t = 0; t < postGoodsBean.getValues().size(); ++ t){
-						if(postGoodsBean.getValues().get(t).equals(tv.getText().toString())){
-							postMap.put(postGoodsBean.getDisplayName(), postGoodsBean.getLabels().get(t));
-							break;
-						}
-					}
-					
-				}
-			}else if(postGoodsBean.getControlType().equals("checkbox")){
+			}
+			else if(postGoodsBean.getControlType().equals("checkbox")){
 				if(postGoodsBean.getValues().size() == 1){
-					CheckBox box = (CheckBox)layout_txt.getChildAt(i).getTag(HASH_CONTROL);
+					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
 					if(box != null){
 						if(box.isChecked()){
-							postMap.put(postGoodsBean.getDisplayName(), postGoodsBean.getValues().get(0));
+							toRet.put(postGoodsBean.getDisplayName(), postGoodsBean.getValues().get(0));
 						}
 						else{
-							postMap.remove(postGoodsBean.getDisplayName());
+							toRet.remove(postGoodsBean.getDisplayName());
 						}
 					}
 				}
 			}
-			
 		}
+		return toRet;		
 	}
-	
-	/**
-	 * check whether any content has been filled
-	 * 
-	 * @return
-	 */
+
 	private boolean filled() {
 		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2) return false;
 		
@@ -897,10 +886,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 	}
 	
-	@Override
-	public void onPreviousViewBack(int message, Object obj){	
-		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
-			View v = layout_txt.getChildAt(i);
+	static public Pair<String, String> fetchResultFromViewBack(int message, Object obj, ViewGroup vg){
+		if(vg == null) return null;
+		Pair<String, String> toRet = null;
+		for(int i = 0; i < vg.getChildCount(); ++ i){
+			View v = vg.getChildAt(i);
 			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
 			if(bean == null) continue;
 			if(bean.getName().hashCode() == message){
@@ -908,10 +898,11 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
 					String txt = bean.getLabels().get((Integer)obj);
 					String txtValue = bean.getValues().get((Integer)obj);
-					postMap.put(bean.getDisplayName(), txtValue);
+//					postMap.put(bean.getDisplayName(), txtValue);
 					if(tv != null){
 						tv.setText(txt);
 					}
+					toRet = new Pair<String, String>(bean.getDisplayName(), txtValue);
 				}
 				else if(obj instanceof String){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -930,25 +921,36 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					if(value.length() > 0){
 						value = value.substring(1);
 					}
-					postMap.put(bean.getDisplayName(), value);
 					if(tv != null){
-						tv.setWidth(layout_txt.getWidth() * 2 / 3);
+						tv.setWidth(vg.getWidth() * 2 / 3);
 						tv.setText(txt);
 					}
+					toRet = new Pair<String, String>(bean.getDisplayName(), value);
 				}
 				else if(obj instanceof MultiLevelSelectionView.MultiLevelItem){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
 					if(tv != null){
-						tv.setWidth(layout_txt.getWidth() * 2 / 3);
+						tv.setWidth(vg.getWidth() * 2 / 3);
 						tv.setText(((MultiLevelSelectionView.MultiLevelItem)obj).txt);
 					}
-					postMap.put(bean.getDisplayName(), ((MultiLevelSelectionView.MultiLevelItem)obj).id);
-
+					toRet = new Pair<String, String>(bean.getDisplayName(), ((MultiLevelSelectionView.MultiLevelItem)obj).id);	
 				}
 			}
-					
+		}
+		return toRet;
+	}
+	
+	@Override
+	public void onPreviousViewBack(int message, Object obj){	
+		Pair<String, String> result = fetchResultFromViewBack(message, obj, layout_txt);
+		if(result != null){
+			postMap.put(result.first, result.second);
+			return;
 		}
 		switch(message){
+		case MSG_MORE_DETAIL_BACK:
+			postMap.putAll((LinkedHashMap<String, String>)obj);
+			break;
 		case POST_OTHERPROPERTIES:
 			String list = (String)obj;
 			if(!list.equals("")){
@@ -1116,6 +1118,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			}
 			else{
 				View v = inflater.inflate(R.layout.item_text_checkbox, null);
+				v.findViewById(R.id.divider).setVisibility(View.GONE);
 				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
 				v.findViewById(R.id.checkitem).setTag(postBean.getDisplayName());
 				v.setTag(HASH_POST_BEAN, postBean);
@@ -1337,7 +1340,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				@Override
 				public void onClick(View v) {
 					if(m_viewInfoListener != null){
-						m_viewInfoListener.onNewView(new OtherPropertiesView(baseActivity, otherProperties, POST_OTHERPROPERTIES, false));
+//						m_viewInfoListener.onNewView(new OtherPropertiesView(baseActivity, otherProperties, POST_OTHERPROPERTIES, false));
+						m_viewInfoListener.onNewView(new FillMoreDetailView(baseActivity, postList, otherProperties, MSG_MORE_DETAIL_BACK, postMap));
 					}
 				}	
 			});
