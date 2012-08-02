@@ -2,7 +2,10 @@ package com.quanleimu.view;
 
 import android.util.Pair;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.ViewGroup;
+import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.content.Context;
@@ -74,6 +77,40 @@ public class FillMoreDetailView extends BaseView {
 						LayoutParams.FILL_PARENT, 1, 1));
 				border.setBackgroundResource(R.drawable.list_divider);
 				llDetails.addView(border);
+			}
+			if(postMap.containsKey(bean.getDisplayName())){
+				String value = postMap.get(bean.getDisplayName());
+				if(value == null || value.equals(""))continue;
+				if(bean.getUnit() != null && !bean.getUnit().equals("")){
+					value = value.replace(bean.getUnit(), "");
+				}
+				View control = (View)layout.getTag(PostGoodsView.HASH_CONTROL);
+				if(control instanceof CheckBox){
+					if(value.contains(((CheckBox)control).getText())){
+						((CheckBox)control).setChecked(true);
+					}
+					else{
+						((CheckBox)control).setChecked(false);
+					}
+				}else if(control instanceof EditText){					
+					((EditText)control).setText(value);
+				}else if(control instanceof TextView){
+					String[] values = value.split(",");
+					String displayName = "";
+					if(bean.getLabels() != null){
+						for(int j = 0; j < bean.getLabels().size(); ++ j){
+							for(int m = 0; m < values.length; ++ m){
+								if(bean.getLabels().get(j).equals(values[m])){
+									displayName += "," + bean.getValues().get(j);
+								}
+							}
+						}
+					}
+					if(displayName.length() > 0 && displayName.charAt(0) == ','){
+						displayName = displayName.substring(1);
+					}
+					((TextView)control).setText(displayName);
+				}
 			}
 		}		
 	}

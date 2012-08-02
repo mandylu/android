@@ -62,8 +62,8 @@ import com.quanleimu.view.MultiLevelSelectionView;
 import android.text.InputType;
 
 public class PostGoodsView extends BaseView implements OnClickListener {
-	static final private int HASH_POST_BEAN = "postBean".hashCode();
-	static final private int HASH_CONTROL = "control".hashCode();
+	static final public int HASH_POST_BEAN = "postBean".hashCode();
+	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
 	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
