@@ -131,7 +131,7 @@ public class MultiLevelSelectionView extends BaseView {
 				if((position == 1 || position == 0 || position == 2) && adapter.getItem(position).toString().equals("全部")){
 					MultiLevelItem nItem = new MultiLevelItem();
 					nItem.id = MultiLevelSelectionView.this.id;
-					nItem.txt = MultiLevelSelectionView.this.title;
+					nItem.txt = MultiLevelSelectionView.this.title.equals("请选择") ? "全部" : MultiLevelSelectionView.this.title;
 					m_viewInfoListener.onBack(message, nItem);
 					return;
 				}

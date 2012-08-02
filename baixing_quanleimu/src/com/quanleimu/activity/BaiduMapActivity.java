@@ -6,6 +6,8 @@ import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
 import android.os.Bundle;
+import android.view.View;
+import android.widget.TextView;
 
 import com.baidu.mapapi.MapActivity;
 
@@ -74,6 +76,21 @@ public class BaiduMapActivity extends MapActivity{
 		{
 			mBMapMan = new BMapManager(QuanleimuApplication.getApplication());
 			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
+		}
+		this.findViewById(R.id.btnLeft).setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				BaiduMapActivity.this.finish();
+			}
+		});
+		Bundle bundle = this.getIntent().getExtras();
+		if(bundle != null){
+			String title = bundle.getString("title");
+			if(title != null && !title.equals("")){
+				((TextView)findViewById(R.id.tvTitle)).setText(title);
+			}
 		}
 		
         super.initMapActivity(mBMapMan);

@@ -702,7 +702,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
 				Bundle bundle = new Bundle();
 				bundle.putString("detailPosition", positions);
-				
+				bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
 				//TODO:
 				BaseActivity baseActivity = (BaseActivity)getContext();
 				baseActivity.getIntent().putExtras(bundle);
@@ -727,7 +727,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 											+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
 									Bundle bundle = new Bundle();
 									bundle.putString("detailPosition", positions);
-									
+									bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
 									//TODO:
 									BaseActivity baseActivity = (BaseActivity)getContext();
 									baseActivity.getIntent().putExtras(bundle);
