@@ -220,7 +220,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		if(null == listLookHistory){
 			listLookHistory = new ArrayList<GoodsDetail>();
 		}
-		listLookHistory.add(detail);
+		listLookHistory.add(0, detail);
 		QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
 		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
 	}
