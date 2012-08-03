@@ -434,6 +434,16 @@ public class QuanleimuApplication extends Application{
 	
 	public void ClearCache(){
 		listHot = null;
+		SQLiteDatabase db = dbManager.getWritableDatabase();
+		try{
+			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME, new String[]{});
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		db.close();		
 	}
 
 	// 百度MapAPI的管理类
