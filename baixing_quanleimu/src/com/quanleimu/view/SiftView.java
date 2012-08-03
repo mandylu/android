@@ -270,7 +270,7 @@ public class SiftView extends BaseView {
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);

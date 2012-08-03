@@ -132,7 +132,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
 		
-		mListLoader.startFetching(true);
+		mListLoader.startFetching(true, false);
 	}
 	
 	public SearchGoodsView(Context context, Bundle bundle){
@@ -349,12 +349,12 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 
 	@Override
 	public void onGetMore() {
-		mListLoader.startFetching(false);
+		mListLoader.startFetching(false, false);
 	}
 
 	@Override
 	public void onRefresh() {
-		mListLoader.startFetching(true);
+		mListLoader.startFetching(true, true);
 	}
 
 	@Override

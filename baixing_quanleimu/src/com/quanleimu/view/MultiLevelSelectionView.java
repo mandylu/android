@@ -246,9 +246,9 @@ public class MultiLevelSelectionView extends BaseView {
 				if(json != null){
 					LinkedHashMap<String, PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
 					if(beans != null){
-						if(msg.obj != null){
-							QuanleimuApplication.putCacheNetworkRequest((String)msg.obj, json);
-						}
+//						if(msg.obj != null){
+//							QuanleimuApplication.putCacheNetworkRequest((String)msg.obj, json);
+//						}
 						PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 						if(MultiLevelSelectionView.this.items == null || MultiLevelSelectionView.this.items.size() == 0){
 							MultiLevelSelectionView.this.items = new ArrayList<MultiLevelItem>();
@@ -300,21 +300,21 @@ public class MultiLevelSelectionView extends BaseView {
 			ArrayList<String> list = new ArrayList<String>();
 			list.add("objIds=" + id);
 			String url = Communication.getApiUrl(apiName, list);
-			String extractedUrl = Util.extractUrlWithoutSecret(url);
-			String result = QuanleimuApplication.getCacheNetworkRequest(extractedUrl);
-			if(result != null && !result.equals("")){
-				json = result;
-			}
-			else{
+//			String extractedUrl = Util.extractUrlWithoutSecret(url);
+//			String result = QuanleimuApplication.getCacheNetworkRequest(extractedUrl);
+//			if(result != null && !result.equals("")){
+//				json = result;
+//			}
+//			else{
 				try {
-					json = Communication.getDataByUrl(url);
+					json = Communication.getDataByUrl(url, false);
 				}
 				catch(Exception e){
 					e.printStackTrace();
 				}
-			}
+//			}
 			Message msg = myHandler.obtainMessage();
-			msg.obj = extractedUrl;
+//			msg.obj = extractedUrl;
 			msg.what = MESSAGE_GET_METAOBJ;
 			myHandler.sendMessage(msg);
 		}

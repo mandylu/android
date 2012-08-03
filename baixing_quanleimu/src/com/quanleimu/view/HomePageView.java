@@ -387,7 +387,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 			list.add("v=_v2");
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					myHandler.sendEmptyMessage(1);
 				} else {

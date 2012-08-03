@@ -353,9 +353,9 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		glLoader.setRows(ITEMS_PER_REQUEST);
 		
 		if(isGetMore)
-			glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore);//trick:: param0 is set to true to avoid setting of "start=n>0"
+			glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore, false);//trick:: param0 is set to true to avoid setting of "start=n>0"
 		else
-			glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore);
+			glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore, true);
 	}
 	
 	@Override

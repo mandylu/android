@@ -159,7 +159,7 @@ public class LoginView extends BaseView implements OnClickListener{
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				String json = Communication.getDataByUrl(url);
+				String json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					parseLoginResponse(json);
 				} else {

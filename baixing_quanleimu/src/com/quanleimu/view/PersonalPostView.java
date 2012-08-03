@@ -506,7 +506,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					Message msg = myHandler.obtainMessage();
 					msg.obj = id;
@@ -556,7 +556,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					Message msg = myHandler.obtainMessage();
 					msg.obj = id;
@@ -681,7 +681,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
-		glLoader.startFetching(true, msg, msg, msg);
+		glLoader.startFetching(true, msg, msg, msg, true);
 	}
 	
 	@Override

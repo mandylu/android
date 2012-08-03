@@ -9,6 +9,9 @@ import java.util.List;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.database.Cursor;
+import android.database.SQLException;
+import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
 import com.baidu.mapapi.BMapManager;
@@ -27,6 +30,7 @@ import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.weibo.net.AccessToken;
+import com.quanleimu.util.BXDatabaseHelper;
 public class QuanleimuApplication extends Application{
 
 	public static final String kWBBaixingAppKey = "3747392969";
@@ -43,26 +47,68 @@ public class QuanleimuApplication extends Application{
 	private static AccessToken accessToken = null;
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
+	private static BXDatabaseHelper dbManager = null;
 	
 	public static String getCacheNetworkRequest(String request){
-		if(cacheNetworkRequest == null) return null;
-		return cacheNetworkRequest.get(request);
+//		if(cacheNetworkRequest == null) return null;
+//		return cacheNetworkRequest.get(request);
+		
+		SQLiteDatabase db = dbManager.getReadableDatabase();
+		String response = null;
+		try{
+		Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
+		
+		while(c.moveToNext()){
+			response = c.getString(c.getColumnIndex("response"));
+			break;
+		}
+		}catch(SQLException e){
+			e.printStackTrace();
+		}
+		db.close();
+		return response;
 	}
 	
+	public static void deleteOldRecorders(int intervalInSec){
+		SQLiteDatabase db = dbManager.getWritableDatabase();
+		try{
+			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME + " WHERE timestamp<?", new String[]{String.valueOf(System.currentTimeMillis()/1000 - intervalInSec)});
+			
+		}catch(SQLException e){
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		db.close();		
+	}
+
 	public static void putCacheNetworkRequest(String request, String result){
-		if(request ==  null || result == null || request.equals("")) return;
-		if(cacheNetworkRequest == null){
-			cacheNetworkRequest = new LinkedHashMap<String, String>();
+		SQLiteDatabase db = dbManager.getWritableDatabase();
+		try{
+			String encodedRequest = "'" + request + "'";
+			String encodedResult = "'" + result + "'";
+			String timestamp = String.valueOf(System.currentTimeMillis()/1000);
+			String queryString = ("insert into " + BXDatabaseHelper.TABLENAME + "(url,response,timestamp) values(" + encodedRequest + "," + encodedResult + "," + timestamp + ")"); 
+			db.execSQL(queryString);
+		}catch(SQLException e){
+			e.printStackTrace();
 		}
-		if(cacheNetworkRequest.containsKey(request)){
-			cacheNetworkRequest.put(request, result);
-		}
-		else{
-			if(cacheNetworkRequest.size() >= 50){
-				cacheNetworkRequest.remove(cacheNetworkRequest.keySet().iterator().next());
-			}
-			cacheNetworkRequest.put(request, result);
-		}
+		db.close();
+//		if(request ==  null || result == null || request.equals("")) return;
+//		if(cacheNetworkRequest == null){
+//			cacheNetworkRequest = new LinkedHashMap<String, String>();
+//		}
+//		
+//		if(cacheNetworkRequest.containsKey(request)){
+//			cacheNetworkRequest.put(request, result);
+//		}
+//		else{
+//			if(cacheNetworkRequest.size() >= 500){
+//				cacheNetworkRequest.remove(cacheNetworkRequest.keySet().iterator().next());
+//				
+//			}
+//			cacheNetworkRequest.put(request, result);
+//		}
 	}
 	
 	public static void addViewCounter(String adId){
@@ -430,6 +476,8 @@ public class QuanleimuApplication extends Application{
 
 		context = this.getApplicationContext();
 		lazyImageLoader = new LazyImageLoader();
+		
+		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
 		super.onCreate();
 	}
 	

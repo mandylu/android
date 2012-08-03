@@ -298,6 +298,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                    editor.commit();
 		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
 		            		QuanleimuMainActivity.this.startService(pushIntent);
+		            		QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
 		                    System.exit(0);
 		                }

@@ -1130,7 +1130,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				if(requests != null){
 					String url = Communication.getApiUrl(apiName, requests);
 					try {
-						json = Communication.getDataByUrl(url);
+						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
 						e.printStackTrace();
 					} catch (IOException e) {
@@ -1382,7 +1382,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(null != mHolder){
 				mHolder.startFecthingMore();
 			}else{
-				mListLoader.startFetching(false);
+				mListLoader.startFetching(false, false);
 			}
 			
 			ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);

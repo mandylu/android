@@ -89,7 +89,7 @@ public class BXNotificationService extends Service {
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, true);
 				myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
 
 			} catch (UnsupportedEncodingException e) {

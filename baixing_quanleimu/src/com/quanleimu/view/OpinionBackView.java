@@ -140,7 +140,7 @@ public class OpinionBackView extends BaseView {
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				result = Communication.getDataByUrl(url);
+				result = Communication.getDataByUrl(url, true);
 				if (result != null) {
 					myHandler.sendEmptyMessage(0);
 				} else {

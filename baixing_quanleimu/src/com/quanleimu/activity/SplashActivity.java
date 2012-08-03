@@ -226,7 +226,7 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 					ArrayList<String> list = new ArrayList<String>();
 					String url = Communication.getApiUrl(apiName, list);
 					try {
-						String json = Communication.getDataByUrl(url);
+						String json = Communication.getDataByUrl(url, false);
 						if (json != null) {
 							postMu.setJson(json);
 							postMu.setTime(System.currentTimeMillis());

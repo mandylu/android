@@ -190,7 +190,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			}
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, false);
 				myHandler.sendEmptyMessage(MSG_GETPERSONALADS);
 				return;
 			} catch (UnsupportedEncodingException e) {

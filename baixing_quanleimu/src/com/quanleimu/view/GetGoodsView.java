@@ -185,7 +185,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		}
 		
 		goodsListLoader = new GoodsListLoader(basicParams, myHandler, null, new GoodsList());
-		goodsListLoader.startFetching(true);
+		goodsListLoader.startFetching(true, false);
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -321,12 +321,12 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 
 	@Override
 	public void onGetMore() {
-		goodsListLoader.startFetching(false);
+		goodsListLoader.startFetching(false, false);
 	}
 
 	@Override
 	public void onRefresh() {
-		goodsListLoader.startFetching(true);	
+		goodsListLoader.startFetching(true, true);	
 	}
 	
 	

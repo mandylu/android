@@ -120,16 +120,16 @@ public class GoodsListLoader {
 		hasMoreListener = listener;
 	}
 	
-	public void startFetching(boolean isFirst){
+	public void startFetching(boolean isFirst, boolean forceUpdate){
 		mIsFirst = isFirst;
 
-		mCurThread = new GetGoodsListThread();		
+		mCurThread = new GetGoodsListThread(forceUpdate);		
 		new Thread(mCurThread).start();	
 	}	
 	
-	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore){
+	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, boolean forceUpdate){
 		mIsFirst = isFirst;
-		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore);		
+		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, forceUpdate);		
 		
 		new Thread(mCurThread).start();	
 	}
@@ -138,16 +138,20 @@ public class GoodsListLoader {
 		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
+		private boolean forceUpdate = false;
 		
 		private boolean mCancel = false;
 		private HttpClient mHttpClient = null;
 		
-		GetGoodsListThread(){}
+		GetGoodsListThread(boolean forceUpdate){
+			this.forceUpdate = forceUpdate;
+		}
 		
-		GetGoodsListThread(int errFirst, int errMore, int errNoMore){
+		GetGoodsListThread(int errFirst, int errMore, int errNoMore, boolean forceUpdate){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
+			this.forceUpdate = forceUpdate;
 		}
 		
 		public void cancel(){
@@ -202,7 +206,7 @@ public class GoodsListLoader {
 					return;
 				}
 				
-				mLastJson = Communication.getDataByUrl(mHttpClient, url);
+				mLastJson = Communication.getDataByUrl(mHttpClient, url, forceUpdate);
 
 				if(mCancel) {
 					exit();

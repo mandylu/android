@@ -228,7 +228,7 @@ public class CategorySelectionView extends ListView {
 			ArrayList<String> list = new ArrayList<String>();
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				String json = Communication.getDataByUrl(url);
+				String json = Communication.getDataByUrl(url, false);
 
 				if (json != null) {
 					

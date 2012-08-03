@@ -21,6 +21,7 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
+import android.os.Message;
 import android.provider.Settings.Secure;
 import android.util.Log;
 
@@ -295,8 +296,13 @@ public class Communication implements Comparator<String> {
 	  }
 
 	  //get提交数据方法
-	  public static String getDataByUrl(HttpClient httpClient, String url)
+	  public static String getDataByUrl(HttpClient httpClient, String url, boolean forceUpdate)
 	  	  throws UnsupportedEncodingException, IOException, BXHttpException {
+		  
+		  if(!forceUpdate){
+			String cached = getCacheRequestIfExist(url);
+			if (cached != null) return cached;
+		  }
 	  	
 	  	HttpPost httpPost = new HttpPost(url.substring(0, url.indexOf("/?") + 2));
 	  	StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
@@ -334,15 +340,28 @@ public class Communication implements Comparator<String> {
 	  	  QuanleimuApplication.resetViewCounter();//counter sent successfully
 	  	}
 	  	//System.out.println(temp);
+	  	QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
 	  	return temp;
 	  }
 	  
+	public static String getCacheRequestIfExist(String url){
+		String extractedUrl = Util.extractUrlWithoutSecret(url);
+		String result = QuanleimuApplication.getCacheNetworkRequest(extractedUrl);
+		if(result != null && !result.equals("")){
+			return result;
+		}
+		return null;
+	}
+	  
 	//get提交数据方法
-	public static String getDataByUrl(String url)
+	public static String getDataByUrl(String url, boolean forceUpdate)
 			throws UnsupportedEncodingException, IOException, BXHttpException {
 
 //		URL getUrl = new URL(url);
-
+		if(!forceUpdate){
+			String cached = getCacheRequestIfExist(url);
+			if(cached != null) return cached;
+		}
 		
 		HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
 		
@@ -383,6 +402,7 @@ public class Communication implements Comparator<String> {
 			QuanleimuApplication.resetViewCounter();//counter sent successfully
 		}
 		//System.out.println(temp);
+		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
 		return temp;
 	}
 

@@ -121,7 +121,7 @@ public class RegisterView extends BaseView{
 			list.add("isRegister=1");
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					myHandler.sendEmptyMessage(1);
 				} else {

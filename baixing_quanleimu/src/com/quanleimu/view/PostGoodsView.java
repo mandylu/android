@@ -704,7 +704,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String errorMsg = "内部错误，发布失败";
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					JSONObject jsonObject = new JSONObject(json);
 					JSONObject json = jsonObject.getJSONObject("error");
@@ -771,7 +771,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url);
+				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					// 获取数据成功
 					PostMu postMu = new PostMu();
