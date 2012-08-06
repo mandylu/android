@@ -548,7 +548,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 					}
 					GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
 					glLoader.setGoodsList(gl);
-					glLoader.setHasMore(false);								
+					glLoader.setHasMore(false);		
+					for(int t = 0; t < QuanleimuApplication.getApplication().getViewStack().size() - 1; ++ t){
+						QuanleimuApplication.getApplication().getViewStack().pop();
+					}
 					onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
 				}
 			}
