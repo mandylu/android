@@ -302,6 +302,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		            		QuanleimuMainActivity.this.startService(pushIntent);
 		            		QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
+		            		QuanleimuApplication.mDemoApp = null;
 		                    System.exit(0);
 		                }
 		            });
@@ -522,6 +523,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onResume() {
 		bundle.putString("backPageName", "");
 		super.onResume();
+
 //		MobclickAgent.onResume(this);
 //		
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
@@ -539,20 +541,18 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
 					
 					GoodsList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
-					if(gl.getData() != null){
-						Log.d("hahaha", "gl.getData() is not nulL!!!!");
-						if(gl.getData().get(0) != null){
-							Log.d("hahaha", "gl.getData().get(0) is not nulL!!!!");
-							Log.d("hhahaha", gl.getData().get(0).toString());
+					if(gl != null){
+						GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
+						glLoader.setGoodsList(gl);
+						glLoader.setHasMore(false);		
+						BaseView pb = QuanleimuApplication.getApplication().getViewStack().peer();
+						if(pb != null && currentView != null){
+							if((currentView instanceof GoodDetailView) && (pb instanceof GoodDetailView)){
+								this.onBack();
+							}
 						}
+						onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
 					}
-					GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
-					glLoader.setGoodsList(gl);
-					glLoader.setHasMore(false);		
-					for(int t = 0; t < QuanleimuApplication.getApplication().getViewStack().size() - 1; ++ t){
-						QuanleimuApplication.getApplication().getViewStack().pop();
-					}
-					onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
 				}
 			}
 		}		
@@ -602,7 +602,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
 		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
 		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
-		
 		showDetailViewFromWX();
 	}
 	
@@ -612,6 +611,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		setIntent(intent);
         QuanleimuApplication.wxapi.handleIntent(intent, this);
+		showDetailViewFromWX();
 	}
 
 	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���

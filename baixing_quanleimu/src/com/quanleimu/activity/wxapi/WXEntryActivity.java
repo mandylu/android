@@ -3,6 +3,12 @@ import java.io.BufferedReader;
 import java.io.FileInputStream;
 import java.io.InputStream;
 import java.io.InputStreamReader;
+import java.util.List;
+
+import android.app.ActivityManager;
+import android.app.ActivityManager.RunningAppProcessInfo;
+import android.app.ActivityManager.RunningTaskInfo;
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.widget.Toast;
@@ -28,7 +34,24 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler{
 		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
 		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
 		super.onCreate(savedInstanceState);
+		this.setVisible(false);
 	}
+	
+	public boolean isRunning() {
+	    ActivityManager activityManager = (ActivityManager) getSystemService(Context.ACTIVITY_SERVICE);
+	    List<RunningTaskInfo> tasks = activityManager.getRunningTasks(Integer.MAX_VALUE);
+	    
+	    for (RunningTaskInfo task : tasks) {
+	    	String tas = task.topActivity.toString();
+	    	Log.d("packagename", tas);
+	        if (tas.equals("ComponentInfo{com.quanleimu.activity/com.quanleimu.activity.QuanleimuMainActivity}"))
+	            return true;                                  
+	    }
+	    return false;
+
+//	    return false;
+	}
+	
 	@Override
 	public void onReq(BaseReq req) {
 		switch (req.getType()) {
@@ -80,13 +103,22 @@ public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler{
 			}
 			
 			Log.d("on Req, mediaObject", obj.toString());
-			
-			Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.quanleimu.activity");
+
 			Bundle bundle = new Bundle();
 			bundle.putBoolean("isFromWX", true);
 			bundle.putString("detailFromWX", result);
-			launchIntent.putExtras(bundle);
-			startActivity(launchIntent);
+
+			if(!isRunning()){
+				Log.d("", "not running!!!!");
+				Intent launchIntent = getPackageManager().getLaunchIntentForPackage("com.quanleimu.activity");
+				launchIntent.putExtras(bundle);
+				startActivity(launchIntent);
+			}else{
+				Log.d("", "running~~~!!~!~!~!~");
+				Intent intent = new Intent(this, QuanleimuMainActivity.class);
+				intent.putExtras(bundle);
+				startActivity(intent);
+			}
 			finish();
 			break;
 		default:
