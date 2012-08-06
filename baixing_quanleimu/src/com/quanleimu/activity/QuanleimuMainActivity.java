@@ -1,5 +1,8 @@
 package com.quanleimu.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -19,6 +22,10 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
+import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsList;
+import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
@@ -27,6 +34,8 @@ import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
+import com.quanleimu.view.GoodDetailView.IListHolder;
+import com.quanleimu.view.GoodDetailView;
 import com.quanleimu.view.GridCategoryView;
 import com.quanleimu.view.PersonalCenterEntryView;
 import com.quanleimu.view.SetMainView;
@@ -35,20 +44,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Button;
 import android.widget.RelativeLayout;
-import android.widget.Toast;
-
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PostGoodsView;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.ConstantsAPI;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.ShowMessageFromWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener, IWXAPIEventHandler{
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
@@ -529,13 +531,36 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 //	static private final String WX_APP_ID = "wxd930ea5d5a258f4f";
 //	static private final String WX_APP_ID = "wx862b30c868401dbc";
-	static private final String WX_APP_ID = "wx47a12013685c6d3b";
+	static public final String WX_APP_ID = "wx47a12013685c6d3b";
+	
+	private void showDetailViewFromWX(){
+		Intent intent = this.getIntent();
+		if(intent != null){
+			Bundle bundle = intent.getExtras();
+			if(bundle != null){
+				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
+					
+					GoodsList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
+					if(gl.getData() != null){
+						Log.d("hahaha", "gl.getData() is not nulL!!!!");
+						if(gl.getData().get(0) != null){
+							Log.d("hahaha", "gl.getData().get(0) is not nulL!!!!");
+							Log.d("hhahaha", gl.getData().get(0).toString());
+						}
+					}
+					GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
+					glLoader.setGoodsList(gl);
+					glLoader.setHasMore(false);								
+					onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
+				}
+			}
+		}		
+	}
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-				
 		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);
 
@@ -576,6 +601,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
 		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
 		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
+		
+		showDetailViewFromWX();
 	}
 	
 	@Override
@@ -626,7 +653,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //			break;
 //		}
 //		
-		Toast.makeText(this, result, Toast.LENGTH_LONG).show();
 	}
 	
 	private void setBaseLayout(BaseView view){

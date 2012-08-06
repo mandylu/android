@@ -53,7 +53,7 @@ public class GoodsListLoader {
 			mFields = fields;
 		}
 		
-		if(null != mGoodsList){
+		if(null != goodsList){
 			mGoodsList = goodsList;
 		}
 	}

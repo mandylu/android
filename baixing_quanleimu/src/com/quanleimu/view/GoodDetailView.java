@@ -7,7 +7,9 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
+import java.util.Set;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -67,6 +69,7 @@ import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
 
+import com.tencent.mm.sdk.openapi.WXAppExtendObject;
 import com.tencent.mm.sdk.openapi.WXImageObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXTextObject;
@@ -843,12 +846,59 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 	}
 	
+	private String convert2JSONString(GoodsDetail detail){
+		JSONObject obj = new JSONObject();
+		Set<String> keys = detail.getKeys();
+		Object[] keyAry = keys.toArray();
+		JSONArray jsonAry = new JSONArray();
+		JSONObject subObj = new JSONObject();
+		try{
+			for(int i = 0; i < keyAry.length; ++ i){				
+				String key = (String)keyAry[i];
+				String value = detail.getValueByKey((String)keyAry[i]); 
+				if(value == null) value = "";
+				subObj.put(key, value);
+			}			
+			
+			if(detail.getImageList() != null){
+				JSONObject jsonImgs = new JSONObject();
+				if(detail.getImageList().getBig() != null && !detail.getImageList().getBig().equals("")){
+					jsonImgs.put("big", detail.getImageList().getBig());
+				}
+				if(detail.getImageList().getResize180() != null && !detail.getImageList().getResize180().equals("")){
+					jsonImgs.put("resize180", detail.getImageList().getResize180());
+				}
+				subObj.put("images", jsonImgs);
+			}
+			
+			if(detail.getMetaData() != null && detail.getMetaData().size() > 0){
+				JSONArray jsonMetaAry = new JSONArray();
+				for(int t = 0; t < detail.getMetaData().size(); ++ t){
+					jsonMetaAry.put(detail.getMetaData().get(t));
+				}
+				subObj.put("metaData", jsonMetaAry);
+			}
+			jsonAry.put(subObj);
+			obj.put("data", jsonAry);
+			obj.put("count", 1);
+		} catch(JSONException e){
+			e.printStackTrace();
+		}
+		
+//		GoodsList gl = JsonUtil.getGoodsListFromJson(obj.toString());
+		return obj.toString();
+	}
+	
 	private void doShare2WX(){
+		String detailJson = convert2JSONString(this.detail);
 		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
 			"我在百姓网看到：" + detail.getValueByKey("title");
 		
-		WXWebpageObject webObj = new WXWebpageObject();
-		webObj.webpageUrl = detail.getValueByKey("link");
+//		WXWebpageObject webObj = new WXWebpageObject();
+//		webObj.webpageUrl = detail.getValueByKey("link");
+		WXAppExtendObject appObj = new WXAppExtendObject();
+		byte[] ttt = detailJson.getBytes();
+		appObj.fileData = detailJson.getBytes();
 		
 		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
 
@@ -869,7 +919,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		obj.description = description;
 		obj.title = title;
-		obj.mediaObject = webObj;
+		obj.mediaObject = appObj;
 		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
 		if(thumbnail != null){
 			obj.setThumbImage(thumbnail);
