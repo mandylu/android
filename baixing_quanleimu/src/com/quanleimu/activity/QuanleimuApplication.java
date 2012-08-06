@@ -9,14 +9,17 @@ import java.util.List;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.location.Location;
+import android.os.AsyncTask;
+import android.util.Log;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.widget.Toast;
 
-import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.FirstStepCate;
@@ -25,13 +28,15 @@ import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.LocationService;
+import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewStack;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.weibo.net.AccessToken;
 import com.quanleimu.util.BXDatabaseHelper;
-public class QuanleimuApplication extends Application{
+public class QuanleimuApplication extends Application implements LocationService.BXLocationServiceListener{
 
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
@@ -358,17 +363,92 @@ public class QuanleimuApplication extends Application{
 //		this.listFileNames = listFileNames;
 //	}
 
+	BXLocation location = null;
+	boolean location_updated = false;
+
+	public BXLocation getCurrentPosition(boolean bRealLocality) {
+		if(null == location){
+			location = (BXLocation)Util.loadDataFromLocate(context, "location_data");
+			
+			if(null == location){
+				location = new BXLocation(true);
+			}
+		}
+		
+		return location_updated ? 	location : 
+									bRealLocality ? null : location;
+	}
+	
+	public interface onLocationFetchedListener{
+		public void onLocationFetched(BXLocation location);//null==location means location-fetching failed
+	}
+	
+	public boolean getCurrentLocation(final onLocationFetchedListener listener){
+		if(null == listener)
+			return false;
+		
+		final BXLocation curLocation = getCurrentPosition(true);
+		if(null == curLocation){
+			return false;
+		}
+		
+		(new AsyncTask<BXLocation, Boolean, BXLocation>(){
+			
+			@Override
+			protected BXLocation doInBackground(BXLocation... locations) { 
+				if(null != locations[0] && !locations[0].geocoded){
+					return LocationService.geocodeAddr(Float.toString(curLocation.fLat), Float.toString(curLocation.fLon));
+				}else{
+					try {
+						Thread.sleep(50);
+					} catch (InterruptedException e) {
+						e.printStackTrace();
+					}
+					return locations[0];
+				}
+			}
+			
+			@Override
+			protected void onPostExecute(BXLocation location_) {  
+				if(null != location_){
+					setLocation(location_);
+				}
+				
+				listener.onLocationFetched(location_);
+			}
+		}).execute(curLocation);
+		
+		return true;
+	}
+
+	public void setLocation(BXLocation location_) {
+		if(null == location)
+			getCurrentPosition(false);
+		
+		if(null != location_){
+			if(location_.geocoded){
+				location = location_;
+			}else{
+				location.fLat = location_.fLat;
+				location.fLon = location_.fLon;
+				
+				if(location.geocoded == true){
+					float results[] = {0, 0, 0};
+					Location.distanceBetween(location.fGeoCodedLat, location.fGeoCodedLon, location_.fLat, location_.fLon, results);
+					if(results[0] > 50){
+						location.geocoded = false;
+						Log.d("kkkkkk", "location geocoding has been invalidated, since location distance is: "+results[0]+">50m");
+					}
+				}
+			}
+			
+			Util.saveDataToLocate(context, "location_data", location);
+
+			location_updated = true;
+		}
+	}
+
 	public String cityName = "";
-	public String gpsCityName = "";
-
-	public String getGpsCityName() {
-		return gpsCityName;
-	}
-
-	public void setGpsCityName(String gpsCityName) {
-		this.gpsCityName = gpsCityName;
-	}
-
 	public String getCityName() {
 		return cityName;
 	}
@@ -450,7 +530,7 @@ public class QuanleimuApplication extends Application{
 	}
 
 	// 百度MapAPI的管理类
-	BMapManager mBMapMan = null;
+	//BMapManager mBMapMan = null;
 
 	// 授权Key
 	// TODO: 请输入您的Key,
@@ -484,13 +564,17 @@ public class QuanleimuApplication extends Application{
 	@Override
 	public void onCreate() {
 		mDemoApp = this;
-		mBMapMan = new BMapManager(this);
-		mBMapMan.init(this.mStrKey, new MyGeneralListener());
+		
+//		mBMapMan = new BMapManager(this);
+//		mBMapMan.init(this.mStrKey, new MyGeneralListener());
 
 		context = this.getApplicationContext();
 		lazyImageLoader = new LazyImageLoader();
 		
 		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
+		
+		LocationService.getInstance().start(context, this);
+		
 		super.onCreate();
 	}
 	
@@ -505,11 +589,23 @@ public class QuanleimuApplication extends Application{
 	@Override
 	// 建议在您app的退出之前调用mapadpi的destroy()函数，避免重复初始化带来的时间消耗
 	public void onTerminate() {
-		// TODO Auto-generated method stub
-		if (mBMapMan != null) {
-			mBMapMan.destroy();
-			mBMapMan = null;
-		}
+		LocationService.getInstance().stop();
+		
+//		if (mBMapMan != null) {
+//			mBMapMan.destroy();
+//			mBMapMan = null;
+//		}
 		super.onTerminate();
+	}
+
+	@Override
+	public void onLocationUpdated(Location location_) {
+		BXLocation newLocation = new BXLocation(false);
+		newLocation.fLat = (float)location_.getLatitude();
+		newLocation.fLon = (float)location_.getLongitude();
+		
+		setLocation(newLocation);
+		
+		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
 	}
 }
