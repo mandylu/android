@@ -29,5 +29,71 @@
             android:headerDividersEnabled="false"
             android:footerDividersEnabled="false"/>
     </LinearLayout>
+    
+    <RelativeLayout 
+        android:id="@+id/linearStatusbar"
+        android:layout_height="wrap_content"
+        android:layout_width="fill_parent"
+        android:background="#dd222222"
+        android:layout_alignParentTop="true"
+        android:gravity="center_vertical">
+        
+        <TextView
+            android:id="@+id/tvSpaceOrTimeNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:gravity="center"
+            android:text="1"
+            android:textSize="20dip"
+            android:textColor="#ffffff"
+            android:textStyle="bold"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="5dip"/>
+        
+        <TextView 
+            android:id="@+id/tvSpaceOrTimeUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15dip"
+            android:textColor="#ffffff"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeNumber"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeNumber"
+            android:layout_alignTop="@+id/tvSpaceOrTimeNumber"
+            android:text="小时"/>
+        	
+       <TextView 
+            android:id="@+id/tvSpaceOrTimeScope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textSize="15dip"
+            android:textColor="#ffffff"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeUnit"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeUnit"
+            android:layout_alignTop="@+id/tvSpaceOrTimeUnit"
+            android:text="以内搜索："/>
+       
+		<TextView 
+            android:id="@+id/tvSearchKeyword"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center_vertical|left"
+            android:textSize="16dip"
+            android:textColor="#ffffff"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeScope"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeScope"
+            android:layout_alignTop="@+id/tvSpaceOrTimeScope"
+            android:layout_toLeftOf="@+id/imageQuickIndicator"
+            android:text="xxxx"
+            android:textStyle="bold"/>
+		
+		<ImageView 
+		    android:id="@+id/imageQuickIndicator"
+		    android:layout_width="wrap_content"
+		    android:layout_height="wrap_content"
+		    android:layout_alignParentRight="true"/>		
+    </RelativeLayout>
 
 </RelativeLayout>

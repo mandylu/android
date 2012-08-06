@@ -7,6 +7,7 @@ import java.util.Stack;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
@@ -21,7 +22,7 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
-public class CityChangeView extends BaseView {
+public class CityChangeView extends BaseView implements QuanleimuApplication.onLocationFetchedListener {
 
 	// 定义控件名
 	public ScrollView parentView;
@@ -63,55 +64,12 @@ public class CityChangeView extends BaseView {
 		
 		linearListInfo = (LinearLayout) findViewById(R.id.linearList);
 		activeView = linearListInfo;
+
+		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
+		tvGPSCityName.setText("定位中...");
 		
 		ivGPSChoose = (ImageView) findViewById(R.id.ivGPSChoose);
-		
-		//ivGPSChoose.setClickable(true); 
-		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
-		tvGPSCityName.setText(QuanleimuApplication.getApplication().getGpsCityName());
-		boolean isLocated = !tvGPSCityName.getText().toString().equals("");
-		if(!isLocated){
-			tvGPSCityName.setText("定位中...");
-		}
-		ivGPSChoose.setVisibility(isLocated ? View.VISIBLE : View.INVISIBLE);
-//		linearGpsCity.setClickable(false);
-		if(isLocated){
-			RelativeLayout linearGpsCity = (RelativeLayout)findViewById(R.id.linearGpsCityItem);
-			linearGpsCity.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-
-					for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++)
-					{
-						if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
-						{
-							QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
-							break;
-						}
-					}
-					QuanleimuApplication.getApplication().setCityName(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
-					Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
-					
-					if(null != m_viewInfoListener){
-						m_viewInfoListener.onBack();
-					}		
-				}
-			});
-		}
-		//ivGPSChoose.setOnClickListener
-		
-		
-		if(QuanleimuApplication.getApplication().getGpsCityName() == null || QuanleimuApplication.getApplication().getGpsCityName().equals(""))
-		{
-			QuanleimuApplication.getApplication().setGpsCityName("上海");
-		}
-		
-		if (!cityName.equals(QuanleimuApplication.getApplication().getGpsCityName())) {
-			ivGPSChoose.setVisibility(View.INVISIBLE);
-		} else {
-			ivGPSChoose.setVisibility(View.VISIBLE);
-		}
+		ivGPSChoose.setVisibility(View.INVISIBLE);
 		
 		final LinearLayout linearHotCities = (LinearLayout)findViewById(R.id.linearHotCities); 
 		for (int i = 0; i < listHotCity.size(); i++) {
@@ -330,6 +288,8 @@ public class CityChangeView extends BaseView {
 				parentView.addView(activeView);
 			}
 		});
+		
+		QuanleimuApplication.getApplication().getCurrentLocation(this);
 	}
 	
 	public CityChangeView(Context context, String backPageName_){
@@ -389,5 +349,44 @@ public class CityChangeView extends BaseView {
 		TabDef tab = new TabDef();
 		tab.m_visible = false;
 		return tab;
+	}
+
+	@Override
+	public void onLocationFetched(BXLocation location) {
+		if(null == location || !location.geocoded)
+			return;
+		
+		if (!cityName.equals(location.cityName)) {
+			ivGPSChoose.setVisibility(View.INVISIBLE);
+		} else {
+			ivGPSChoose.setVisibility(View.VISIBLE);
+		}
+
+		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
+		tvGPSCityName.setText(location.cityName);
+		
+		ivGPSChoose.setVisibility(View.VISIBLE);
+
+		RelativeLayout linearGpsCity = (RelativeLayout)findViewById(R.id.linearGpsCityItem);
+		linearGpsCity.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+
+				for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++){
+					if(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
+					{
+						QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
+						break;
+					}
+				}
+				QuanleimuApplication.getApplication().setCityName(((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
+				Helper.saveDataToLocate(getContext(), "cityName", ((TextView) findViewById(R.id.tvGPSCityName)).getText().toString());
+				
+				if(null != m_viewInfoListener){
+					m_viewInfoListener.onBack();
+				}		
+			}
+		});	
 	}
 }

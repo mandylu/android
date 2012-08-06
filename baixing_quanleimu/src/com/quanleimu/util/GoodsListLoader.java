@@ -196,7 +196,7 @@ public class GoodsListLoader {
 			
 			String url = Communication.getApiUrl(mApiName, list);
 			
-			Log.d("kkkkkk", "start requesting url: "+url);
+			//Log.d("kkkkkk", "start requesting url: "+url);
 			
 			mHttpClient = NetworkProtocols.getInstance().getHttpClient();
 			

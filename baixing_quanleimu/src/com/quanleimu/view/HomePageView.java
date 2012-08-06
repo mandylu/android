@@ -35,6 +35,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.HotList;
@@ -49,7 +50,13 @@ import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
 
-public class HomePageView extends BaseView implements LocationService.BXLocationServiceListener, DialogInterface.OnClickListener,  CategorySelectionView.ICateSelectionListener{
+public class HomePageView 
+			extends BaseView 
+			implements 	LocationService.BXLocationServiceListener, 
+						DialogInterface.OnClickListener,  
+						CategorySelectionView.ICateSelectionListener, 
+						QuanleimuApplication.onLocationFetchedListener{
+	
 	private ViewFlow glDetail;
 	private CircleFlowIndicator indicator;
 	LinearLayout hotlistView = null;
@@ -121,20 +128,50 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 		((TextView)findViewById(R.id.tvCityName)).setText(cityName);
 	}
 
+	@Override
+	public void onLocationFetched(BXLocation location) {
+		if(null == location || !location.geocoded || (locationAddr != null && !locationAddr.equals("")))
+			return;
+		
+		if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(location.cityName)){
+			final AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
+			builder.setMessage("检测到您在" + location.cityName + "，" + "需要切换吗?")
+					.setCancelable(false)  
+					.setPositiveButton("是", HomePageView.this)  
+					.setNegativeButton("否", new DialogInterface.OnClickListener() {  
+						public void onClick(DialogInterface dialog, int id) {  
+									dialog.cancel();  
+									LocationService.getInstance().removeLocationListener(HomePageView.this);
+						}  
+					});
+			
+			if(HomePageView.this.isShown()){
+				AlertDialog alert = builder.create();
+				alert.show();
+				locationAddr = location.cityName;
+			}
+		}		
+	}
 	
 	@Override
 	public void onLocationUpdated(final Location location){
-		if(location == null || (locationAddr != null && !locationAddr.equals(""))) return;
+		if(location == null || (locationAddr != null && !locationAddr.equals(""))) 
+			return;
+		
 		(new Thread(new Runnable(){
 			@Override
 			public void run(){
 				final String preLocation = locationAddr;
-				locationAddr = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
-				if(null == locationAddr) return;
-				int index = locationAddr.indexOf("市");
-				locationAddr = (-1 == index ? locationAddr : locationAddr.substring(0, index));
-				QuanleimuApplication.getApplication().setGpsCityName(locationAddr);
-				LocationService.getInstance().stop();
+				
+				BXLocation locationBX = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
+				
+				if(null == locationBX.cityName) return;
+				
+				locationAddr = locationBX.cityName;
+				
+				QuanleimuApplication.getApplication().setLocation(locationBX);
+				
+				LocationService.getInstance().removeLocationListener(HomePageView.this);
 				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
 					final AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
 					builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
@@ -143,7 +180,7 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 					.setNegativeButton("否", new DialogInterface.OnClickListener() {  
 						public void onClick(DialogInterface dialog, int id) {  
 							dialog.cancel();  
-							LocationService.getInstance().stop();
+							LocationService.getInstance().removeLocationListener(HomePageView.this);
 						}  
 					});
 					
@@ -181,29 +218,31 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 //			Util.saveDataToLocate(getContext(), "listUsualCates", listUsualCates);
 //		}
 
-		final Location lastLocation = LocationService.getInstance().getLastKnownLocation();
-		if(lastLocation != null){
-			(new Thread(new Runnable(){
-				@Override
-				public void run(){
-					String lastAddr = LocationService.geocodeAddr(Double.toString(lastLocation.getLatitude()), Double.toString(lastLocation.getLongitude()));
-					lastAddr = lastAddr == null ? "" : lastAddr;
-					int index = lastAddr.indexOf("市");
-					lastAddr = (-1 == index ? lastAddr : lastAddr.substring(0, index));
-					if(!lastAddr.equals(locationAddr)){
-						((BaseActivity)(HomePageView.this.getContext())).runOnUiThread(new Runnable(){
-							@Override
-							public void run(){
-								LocationService.getInstance().start(getContext(), HomePageView.this);
-							}
-						});
-					}
-				}					
-			})).start();
+		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
+			LocationService.getInstance().addLocationListener(getContext(), this);
 		}
-		else{
-			LocationService.getInstance().start(getContext(), this);
-		}	
+		
+//		final Location lastLocation = LocationService.getInstance().getLastKnownLocation();
+//		if(lastLocation != null){
+//			(new Thread(new Runnable(){
+//				@Override
+//				public void run(){
+//					BXLocation location = LocationService.geocodeAddr(Double.toString(lastLocation.getLatitude()), Double.toString(lastLocation.getLongitude()));
+//					
+//					if(!location.cityName.equals(locationAddr)){
+//						((BaseActivity)(HomePageView.this.getContext())).runOnUiThread(new Runnable(){
+//							@Override
+//							public void run(){
+//								LocationService.getInstance().addLocationListener(HomePageView.this.getContext(), HomePageView.this);
+//							}
+//						});
+//					}
+//				}					
+//			})).start();
+//		}
+//		else{
+//			LocationService.getInstance().addLocationListener(getContext(), this);
+//		}	
 		
 		((TextView)findViewById(R.id.tvCityName)).setText(cityName);
 		
@@ -665,12 +704,12 @@ public class HomePageView extends BaseView implements LocationService.BXLocation
 	
 	@Override
 	public void onDestroy(){
-		LocationService.getInstance().stop();
+		LocationService.getInstance().removeLocationListener(this);
 	}
 	
 	@Override
 	public void onPause(){
-		LocationService.getInstance().stop();
+		LocationService.getInstance().removeLocationListener(this);
 	}
 	
 	protected void SwitchCateLevel(boolean toSubCate){

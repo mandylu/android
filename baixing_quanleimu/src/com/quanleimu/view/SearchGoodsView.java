@@ -8,6 +8,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,8 +19,10 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
@@ -128,6 +131,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 						}
 					}
 				});
+		
+		((TextView)findViewById(R.id.tvSearchKeyword)).setText(searchContent);
 
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
@@ -364,7 +369,12 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 			if(titleControlStatus != 0){
 				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
 				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				
+				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+				
+				mListLoader.cancelFetching();
 				mListLoader.setParams(basicParams);
+				
 				lvSearchResult.fireRefresh();
 				
 				titleControlStatus = 0;
@@ -374,11 +384,18 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 			if(titleControlStatus != 1){
 				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				
+				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
+				
+				mListLoader.cancelFetching();
+				
 				List<String> params = new ArrayList<String>();
 				params.addAll(basicParams);
 				params.add("nearby=true");
-				params.add("lat=31.2222");
-				params.add("lng=121.4444");
+				BXLocation location = QuanleimuApplication.getApplication().getCurrentPosition(false);
+				Log.d("kkkkkk", "search goods nearby: ("+location.fLat+", "+location.fLon+") !!");
+				params.add("lat="+location.fLat);
+				params.add("lng="+location.fLon);
 				mListLoader.setParams(params);
 				lvSearchResult.fireRefresh();
 				

@@ -510,8 +510,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
-		LocationService.getInstance().stop();
 
 		super.onPause();
 //		

@@ -19,6 +19,7 @@ import android.provider.Settings.Secure;
 import android.widget.Toast;
 
 import com.quanleimu.entity.AllCates;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
@@ -30,7 +31,7 @@ import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
-public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener{
+public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener, QuanleimuApplication.onLocationFetchedListener{
 
 	// 定义经纬度
 	public double Lat = 0;
@@ -102,43 +103,49 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 //	}
 	
 	public void onPause(){
-		LocationService.getInstance().stop();
+		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
 	}
 	
-	public void onLocationUpdated(Location location){
-		String add = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
-		if(null == add) return;
-		int index = add.indexOf("市");
-		String cityName = (-1 == index ? add : add.substring(0, index));
-		boolean found = false;
-		for(int i=0;i<myApp.getListCityDetails().size();i++)
-		{
-			if(cityName.equals(myApp.getListCityDetails().get(i).getName()))
-			{
-				found = true;
-				cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-				myApp.setCityEnglishName(cityName1);
-				LocationService.getInstance().stop();
-				break;
+	
+	@Override
+	public void onLocationFetched(BXLocation location) {
+		if(null != location){
+			if(location.cityName.length() > 0){
+				for(int i=0;i<myApp.getListCityDetails().size();i++)
+				{
+					if(location.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
+							location.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
+					{
+						cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+						myApp.setCityEnglishName(cityName1);
+						LocationService.getInstance().removeLocationListener(this);
+						break;
+					}
+				}
 			}
 		}
-		if(!found){
+	}
+	
+	public void onLocationUpdated(Location location){
+		BXLocation locationBX  = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
+		
+		if(locationBX.cityName.length() > 0){
 			for(int i=0;i<myApp.getListCityDetails().size();i++)
 			{
-				if(cityName.contains(myApp.getListCityDetails().get(i).getName()))
+				if(locationBX.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
+						locationBX.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
 				{
 					cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
 					myApp.setCityEnglishName(cityName1);
-					LocationService.getInstance().stop();
+					LocationService.getInstance().removeLocationListener(this);
 					break;
 				}
 			}
-			
 		}
-		myApp.setCityName(cityName);
-		myApp.setGpsCityName(cityName);
-		
+	
+		//myApp.setCityName(locationBX.cityName);
+		myApp.setLocation(locationBX);
 	}
 
 	Handler myHandler = new Handler() {
@@ -162,7 +169,9 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 			}
 			
 			if(1 == record1 && 1 == record2 && 1 == record3){
-				LocationService.getInstance().start(SplashActivity.this, SplashActivity.this);
+//				if(!QuanleimuApplication.getApplication().getCurrentLocation(SplashActivity.this)){
+//					LocationService.getInstance().addLocationListener(SplashActivity.this, SplashActivity.this);
+//				}
 				intent.setClass(SplashActivity.this, QuanleimuMainActivity.class);
 				// bundle.putString("cityName", cityName);
 				intent.putExtras(bundle);

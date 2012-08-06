@@ -1,14 +1,17 @@
 package com.quanleimu.view;
 
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.location.Location;
 import android.os.Bundle;
 import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,6 +21,8 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
+import android.widget.TextView;
+
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -26,6 +31,7 @@ import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.adapter.GoodsListAdapter;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.widget.PullToRefreshListView;
@@ -51,6 +57,11 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	private List<String> basicParams = null;
 	
 	private int titleControlStatus = 0;//0:Left(Recent), 1: Right(Nearby)
+	
+	private BXLocation curLocation = null;
+
+    private static final int HOUR_MS = 60*60*1000;
+    private static final int MINUTE_MS = 60*1000;
 	
 	@Override
 	public void onResume(){
@@ -203,6 +214,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				}				
 			}
 		});
+		
+		((TextView)findViewById(R.id.tvSubCateName)).setText(bundle.getString("name"));
 	}
 
 		// 管理线程的Handler
@@ -295,11 +308,74 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			super.handleMessage(msg);
 		}
 	};
+	
 
 	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
-		//Log.d("GetGoodsView: ", "on scroll called!");
+		if(		null == goodsListLoader || 
+				null == goodsListLoader.getGoodsList() || 
+				null == goodsListLoader.getGoodsList().getData() || 
+				goodsListLoader.getGoodsList().getData().size() <= firstVisibleItem){
+			return;
+		}
+		
+    	String number = "";
+    	String unit = "";
+    	
+		if(0 == titleControlStatus){//time-sequenced
+			Date date = new Date(Long.parseLong(goodsListLoader.getGoodsList().getData().get(firstVisibleItem).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
+			long time_first_item = date.getTime();
+			//Log.d("kkkkkk", "item:"+firstVisibleItem+", dateTime: "+time_first_item);
+
+	    	long time_diff = System.currentTimeMillis() - time_first_item;
+	    	
+	    	long nHours = time_diff / HOUR_MS;
+	    	time_diff %= HOUR_MS;
+	    	long nMinutes = time_diff / MINUTE_MS;
+	    	time_diff %= MINUTE_MS;
+
+	    	if(nHours > 0){
+	    		unit = "小时";
+	    		number += nHours;
+	    		int fractorHours = (int)(nMinutes/6.0f);
+	    		if(fractorHours > 0){
+	    			number += "."+fractorHours;
+	    		}
+	    	}else{
+	    		unit = "分钟";
+	    		number += nMinutes;
+	    	}
+		}else{
+			GoodsDetail detail = goodsListLoader.getGoodsList().getData().get(firstVisibleItem);
+			String lat = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+			String lon = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+			
+			if(null == lat || 0 == lat.length() || null == lon || 0 == lon.length()){
+				Log.d("GetGoodView", "ad nearby lacks lat & lon");
+				unit = "米";
+				number = "0";
+			}else{
+
+				float results[] = {0.0f, 0.0f, 0.0f};
+				Location.distanceBetween(Double.valueOf(lat), Double.valueOf(lon), curLocation.fLat, curLocation.fLon, results);
+				
+				if(results[0] < 1000){
+					unit = "米";
+					number += (int)(results[0]);
+				}else{
+					unit = "公里";
+					int kilo_number = (int)(results[0]/1000);
+					int fractor_kilo_number = (int)((results[0]-(kilo_number*1000))/100);
+					number = ""+kilo_number+"."+fractor_kilo_number;
+				}
+			}
+		}
+		
+		((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
+		((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
+		
+		//Log.d("kkkkkk", "first visible item: "+firstVisibleItem+", visibleItemCount: "+visibleItemCount+", totalItemCount: "+totalItemCount);
 	}
 	@Override
 	public void onScrollStateChanged(AbsListView view, int scrollState) {
@@ -337,7 +413,13 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			if(titleControlStatus != 0){
 				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
 				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				
+				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+				
+				goodsListLoader.cancelFetching();
 				goodsListLoader.setParams(basicParams);
+				
 				lvGoodsList.fireRefresh();
 				
 				titleControlStatus = 0;
@@ -347,12 +429,21 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			if(titleControlStatus != 1){
 				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				
+				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
+				
+				goodsListLoader.cancelFetching();
+				
 				List<String> params = new ArrayList<String>();
 				params.addAll(basicParams);
 				params.add("nearby=true");
-				params.add("lat=31.2222");
-				params.add("lng=121.4444");
+				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
+				Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
+				params.add("lat="+curLocation.fLat);
+				params.add("lng="+curLocation.fLon);
 				goodsListLoader.setParams(params);
+				
 				lvGoodsList.fireRefresh();
 				
 				titleControlStatus = 1;
