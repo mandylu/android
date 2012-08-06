@@ -148,9 +148,10 @@ public class HomePageView
 			if(HomePageView.this.isShown()){
 				AlertDialog alert = builder.create();
 				alert.show();
-				locationAddr = location.cityName;
 			}
-		}		
+		}	
+		
+		locationAddr = location.cityName;
 	}
 	
 	@Override
