@@ -116,6 +116,12 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		if(names.length == 2){
 			this.categoryEnglishName = names[0];
 			this.categoryName = names[1];
+			
+			lastCategoryEnglishName = names[0];
+			lastCategoryShowName = names[1];
+			Helper.saveDataToLocate(PostGoodsView.this.getContext(), 
+					"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
+
 		}
 		this.bundle = bundle;
 		init();
