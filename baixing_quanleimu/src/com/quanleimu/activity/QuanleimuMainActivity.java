@@ -529,9 +529,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
 	} 
 	
-	static public final String WX_APP_ID = "wx862b30c868401dbc";
+//	static public final String WX_APP_ID = "wx862b30c868401dbc";
 //	static public final String WX_APP_ID = "wx47a12013685c6d3b";
-//	static public final String WX_APP_ID = "wxc54c9e29fcd6993d";////burizado, baixingwang2
+	static public final String WX_APP_ID = "wxc54c9e29fcd6993d";////burizado, baixingwang2
 	
 	private void showDetailViewFromWX(){
 		Intent intent = this.getIntent();
