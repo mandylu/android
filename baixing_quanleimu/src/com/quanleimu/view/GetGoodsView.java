@@ -323,6 +323,9 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
     	String number = "";
     	String unit = "";
     	
+    	firstVisibleItem -= ((PullToRefreshListView)view).getHeaderViewsCount();
+    	if(firstVisibleItem < 0)	firstVisibleItem = 0;
+    	
 		if(0 == titleControlStatus){//time-sequenced
 			Date date = new Date(Long.parseLong(goodsListLoader.getGoodsList().getData().get(firstVisibleItem).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
 			long time_first_item = date.getTime();
@@ -411,8 +414,15 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		switch(v.getId()){
 		case R.id.btnRecent:
 			if(titleControlStatus != 0){
-				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
-				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
+				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
+				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+				
+				View btnRecent = titleControl.findViewById(R.id.btnRecent);
+				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
 				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
@@ -427,8 +437,15 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			break;
 		case R.id.btnNearby:
 			if(titleControlStatus != 1){
-				titleControl.findViewById(R.id.btnNearby).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
-				titleControl.findViewById(R.id.btnRecent).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
+				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
+				
+				View btnRecent = titleControl.findViewById(R.id.btnRecent);
+				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
 				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
@@ -439,7 +456,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				params.addAll(basicParams);
 				params.add("nearby=true");
 				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
-				Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
+				//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
 				params.add("lat="+curLocation.fLat);
 				params.add("lng="+curLocation.fLon);
 				goodsListLoader.setParams(params);
