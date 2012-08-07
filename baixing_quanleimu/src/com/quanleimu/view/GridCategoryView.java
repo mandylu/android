@@ -93,6 +93,12 @@ public class GridCategoryView extends BaseView implements OnItemClickListener {
 	public void onPreviousViewBack(int message, Object obj){
 		m_viewInfoListener.onBack(message, obj);
 	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		this.requestFocus();
+	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
