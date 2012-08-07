@@ -1,0 +1,43 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:background="#000000">
+  	
+<!--   	<Gallery  -->
+<!-- 		android:layout_height="fill_parent"		 -->
+<!--     	android:layout_width="fill_parent"  -->
+<!--     	android:id="@+id/vfCoupon"  -->
+<!--     	android:spacing="2.7dp" -->
+<!--     	android:unselectedAlpha="1" -->
+<!--     	android:fadingEdge="none" -->
+<!--     	android:layout_alignParentTop="true"> -->
+<!-- 	</Gallery> -->
+	
+	<FrameLayout 
+    	android:orientation="vertical" 
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent">					
+					
+    	<com.quanleimu.widget.ViewFlow
+    		android:id="@+id/vfCoupon" 
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		app:sidebuffer="1"/>	
+    		
+    	<com.quanleimu.widget.CircleFlowIndicator 
+    		android:padding="5dip"
+    		android:layout_height="wrap_content"
+    		android:layout_width="wrap_content"
+    		android:id="@+id/viewflowindic"
+    		android:layout_gravity="center_horizontal"
+    		app:radius="5dip"
+    		app:inactiveType="fill"
+    		app:activeColor="#dddddd"
+    		app:inactiveColor="#777777"/>    		    
+	</FrameLayout>
+	
+</RelativeLayout>
