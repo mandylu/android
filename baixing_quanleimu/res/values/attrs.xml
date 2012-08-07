@@ -54,6 +54,7 @@
     </declare-styleable>  
     <declare-styleable name="PullToRefreshListView">
         <attr name="getmore" format="boolean" />
+        <attr name="need_gap_header" format="boolean" />
     </declare-styleable>
         <declare-styleable name="CategorySelectionView">
         <attr name="firstitemoverlap" format="boolean" />
