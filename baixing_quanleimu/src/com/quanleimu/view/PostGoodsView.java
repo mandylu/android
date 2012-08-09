@@ -47,6 +47,7 @@ import android.widget.Toast;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
@@ -60,7 +61,6 @@ import android.view.ViewGroup;
 import com.quanleimu.view.MultiLevelSelectionView;
 
 import android.text.InputType;
-
 public class PostGoodsView extends BaseView implements OnClickListener {
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
@@ -481,20 +481,33 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			if (ad.isShowing()) {
 				ad.dismiss();
 			}
-			Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
-			intent3.addCategory(Intent.CATEGORY_OPENABLE);
-			intent3.setType(IMAGEUNSPECIFIED);
-			baseActivity.startActivityForResult(Intent.createChooser(intent3, "选择图片"),
-					PHOTOZOOM);
+			Intent thirdparty = new Intent(this.getContext(), ThirdpartyTransitActivity.class);
+			Bundle ext = new Bundle();
+			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Albam);
+			thirdparty.putExtras(ext);
+			baseActivity.startActivity(thirdparty);
+			
+//			Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+//			intent3.addCategory(Intent.CATEGORY_OPENABLE);
+//			intent3.setType(IMAGEUNSPECIFIED);
+//			baseActivity.startActivityForResult(Intent.createChooser(intent3, "选择图片"),
+//					PHOTOZOOM);
 
 		} else if (v == photomake) {
 			if (ad.isShowing()) {
 				ad.dismiss();
 			}
-			Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-			intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-					Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg")));
-			baseActivity.startActivityForResult(intent2, PHOTOHRAPH);
+			Intent thirdparty = new Intent(this.getContext(), ThirdpartyTransitActivity.class);
+			Bundle ext = new Bundle();
+			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Photo);
+			ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, this.currentImgView);
+			thirdparty.putExtras(ext);
+			baseActivity.startActivity(thirdparty);
+//
+//			Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//			intent2.putExtra(MediaStore.EXTRA_OUTPUT,
+//					Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg")));
+//			baseActivity.startActivityForResult(intent2, PHOTOHRAPH);
 
 		} else if (v == photocancle) {
 			ad.dismiss();
@@ -813,7 +826,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		if (resultCode == NONE) {
 			return;
 		}
-		// 拍照
+		// 拍照 
 		if (requestCode == PHOTOHRAPH) {
 			// 设置文件保存路径这里放在跟目录下
 			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg");

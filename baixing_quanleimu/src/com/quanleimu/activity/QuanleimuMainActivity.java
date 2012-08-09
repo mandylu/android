@@ -605,6 +605,18 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		showDetailViewFromWX();
 	}
 	
+	private void showDataFromAlbamOrPhoto(){
+		Intent intent = this.getIntent();
+		Bundle bd = intent.getExtras();
+		if(bd != null && bd.containsKey(ThirdpartyTransitActivity.isFromPhotoOrAlbam) && bd.getBoolean(ThirdpartyTransitActivity.isFromPhotoOrAlbam)){
+			if(this.currentView instanceof PostGoodsView){
+				((PostGoodsView)currentView).onActivityResult(bd.getInt(ThirdpartyTransitActivity.Key_RequestCode),
+						bd.getInt(ThirdpartyTransitActivity.Key_RequestResult),
+						(Intent)bd.getParcelable(ThirdpartyTransitActivity.Key_Data));
+			}
+		}
+	}
+	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
@@ -612,6 +624,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		setIntent(intent);
         QuanleimuApplication.wxapi.handleIntent(intent, this);
 		showDetailViewFromWX();
+		showDataFromAlbamOrPhoto();
 	}
 
 	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
