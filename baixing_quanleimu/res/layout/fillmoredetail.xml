@@ -1,28 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/home_bg"
-    android:orientation="vertical" >
+    android:background="@drawable/home_bg" >
 
     <ScrollView
         android:id="@+id/fillmorescroll"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:fastScrollEnabled="true"
-        android:focusable="true"
-        android:listSelector="#00000000"
-        android:scrollbars="none"
-        android:scrollingCache="false" >
+        android:clickable="true"
+        android:focusableInTouchMode="true" >
 
         <LinearLayout
             android:id="@+id/layoutdetails"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:clickable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical" >
         </LinearLayout>
     </ScrollView>
 
-</LinearLayout>
+</RelativeLayout>
