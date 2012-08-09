@@ -13,17 +13,20 @@ public class ForgetPasswordView extends BaseView {
 
 	public class ForgetPasswordWebClient extends WebViewClient{
 		public ForgetPasswordView mView;
-		
+		private boolean resetted = false;
 		ForgetPasswordWebClient(ForgetPasswordView view){
 			mView = view;
 		}
 		
 		@Override
 		public void onPageStarted (WebView view, String url, Bitmap favicon){
-			if(url != null && url.startsWith("http://www.baixing.com/auth/denglu/?username=")){
-				if(mView.m_viewInfoListener != null){
-//					Toast.makeText(mView.getContext(), "重置密码成功，请重新登陆", 2);
+			if(url != null && url.startsWith("http://www.baixing.com/auth/password/reset/")){
+				resetted = true;
+			}
+			if(url != null && resetted && !url.startsWith("http://www.baixing.com/auth/password/reset/")){
+				if(mView != null && mView.m_viewInfoListener != null){
 					mView.m_viewInfoListener.onBack(1, null);
+					mView.doFinish();
 				}
 			}
 		}
@@ -45,6 +48,11 @@ public class ForgetPasswordView extends BaseView {
 		Init();
 	}
 	
+	public void doFinish(){	
+		web.setWebViewClient(null);
+		web.stopLoading();
+	}
+	
 	protected void Init(){
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView(inflater.inflate(R.layout.forget_password, null));		
@@ -54,7 +62,7 @@ public class ForgetPasswordView extends BaseView {
 		
 		web = (WebView) findViewById(R.id.web);
 		web.setWebViewClient(new ForgetPasswordWebClient(this));
-		web.loadUrl("http://www.baixing.com/auth/findPassword/");
+		web.loadUrl("http://www.baixing.com/auth/password/?redirect=http%3A%2F%2Fshanghai.baixing.com%2F");
 		web.getSettings().setJavaScriptEnabled(true);
 		web.requestFocus();
 	}
