@@ -601,12 +601,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			
 			if (myStore == null){
 				myStore = new ArrayList<GoodsDetail>();
-				myStore.add(detail);
+				myStore.add(0, detail);
 			} else {
 				if (myStore.size() >= 100) {
 					myStore.remove(0);
 				}
-				myStore.add(detail);
+				myStore.add(0, detail);
 			}		
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getContext(), "listMyStore", myStore);
