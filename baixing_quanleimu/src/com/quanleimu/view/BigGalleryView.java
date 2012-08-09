@@ -1,15 +1,26 @@
 package com.quanleimu.view;
 
 import java.io.File;
-import java.io.FileOutputStream;
+import java.io.FileInputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.io.OutputStream;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Locale;
+import java.util.Vector;
+
+import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.BitmapDrawable;
+import android.media.MediaScannerConnection.MediaScannerConnectionClient;
+import android.net.Uri;
 import android.os.Bundle;
-import android.util.Log;
+import android.os.Environment;
+import android.provider.MediaStore;
+import android.provider.MediaStore.Images;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,18 +35,21 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.Util;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
 
-public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener{
+public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient{
 
-	int index = 0;
+	//int index = 0;
 	private int postIndex = -1;
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
 	private Bitmap mb;
 //	private HashMap<String, byte[]> imageData;
+	
+	private android.media.MediaScannerConnection scannerConnection = null;
+	static private String mediaPath = Environment.getExternalStorageDirectory().getPath()+"/quanleimu/favorites/百姓网收藏图片/";
+	private Vector<String> unScannedFiles = new Vector<String>();
 	
 	protected void Init(){
 		QuanleimuApplication.lazyImageLoader.enableSampleSize();
@@ -102,6 +116,8 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 		title.m_visible = true;
 		title.m_title = (postIndex+1)+"/"+listUrl.size();
 		title.m_leftActionHint = "返回";
+		
+		title.m_rightActionHint = "保存";
 		return title;
 	}
 	public TabDef getTabDef(){
@@ -144,6 +160,88 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 //    public void onPause(){
 //    	
 //    }
+    
+    @Override
+    public boolean onRightActionPressed(){
+    	ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
+    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
+    	
+    	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
+
+        int index = filePath.lastIndexOf("/");
+        String fileName = filePath.substring(index+1)+".png";
+        ContentValues values = new ContentValues(8);
+        String newname = (new SimpleDateFormat("MM月dd日 HH:mm:ss", Locale.SIMPLIFIED_CHINESE)).format(System.currentTimeMillis()).toString();
+        values.put(MediaStore.Images.Media.TITLE, newname);//名称，随便
+        values.put(MediaStore.Images.Media.DISPLAY_NAME, newname);
+        values.put(MediaStore.Images.Media.DESCRIPTION, title);//描述，随便
+        values.put(MediaStore.Images.Media.DATE_TAKEN, System.currentTimeMillis());//图像的拍摄时间，显示时根据这个排序
+        values.put(MediaStore.Images.Media.MIME_TYPE, "image/png");//默认为jpg格式
+        values.put(MediaStore.Images.Media.ORIENTATION, 0);//
+        values.put(MediaStore.Images.Media.IS_PRIVATE, 1);
+        
+        String mediaFileName = mediaPath+fileName.hashCode()+".png";
+        values.put(Images.Media.DATA, mediaFileName);
+
+        // 先得到新的URI
+        Uri uri = null;
+        try{
+        	uri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+        }catch(Exception e){
+        	Toast.makeText(getContext(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+        	return true;
+        }
+
+        OutputStream outStream = null;
+        InputStream inStream = null;
+        
+        try {
+            outStream = getContext().getContentResolver().openOutputStream(uri);
+            inStream = new FileInputStream(new File(filePath));
+            
+            //new BufferedInputStream(
+            byte buffer[] = new byte[1024];
+            int nRead = 0;
+            while((nRead = inStream.read(buffer)) > 0){
+            	outStream.write(buffer, 0, nRead);
+            }
+            
+            //Log.d("BigGalleryView", "uri.path: "+uri.getPath()+", outStream.toString()"+outStream.toString());
+            
+            if(null == scannerConnection)
+            	scannerConnection = new android.media.MediaScannerConnection(getContext(), this);
+            
+            if(!scannerConnection.isConnected()){
+            	unScannedFiles.add(mediaFileName);
+            	scannerConnection.connect();
+            }else{
+            	scannerConnection.scanFile(mediaFileName, "image/png");
+            }
+            
+            Toast.makeText(getContext(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
+        } catch (Exception e) {
+            e.printStackTrace();
+            Toast.makeText(getContext(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+        }finally{
+        	if(outStream != null){
+        		try {
+					outStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        	
+        	if(inStream != null){
+        		try {
+					inStream.close();
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+        	}
+        }
+        
+    	return true;
+    }
 
     class GalleryImageAdapter extends BaseAdapter implements ViewFlow.ViewLazyInitializeListener
     {
@@ -315,7 +413,8 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 
 	@Override
 	public void onSwitched(View view, int position) {
-		// TODO Auto-generated method stub
+		postIndex = position;
+		
 		if(null != m_viewInfoListener){
 			TitleDef title = getTitleDef();
 			title.m_title = (position + 1)+"/"+listUrl.size();
@@ -333,6 +432,23 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 				urls.add(listUrl.get(position-index));				
 		}
 		SimpleImageLoader.AdjustPriority(urls);		
+	}
+
+	@Override
+	public void onMediaScannerConnected() {
+		//Log.d("BigGalleryView", "onMediaScannerConnected() !!!");
+		
+		while(unScannedFiles.size() > 0){
+			String mediaFileName = unScannedFiles.remove(0);
+			if(mediaFileName != null && mediaFileName.length() > 0){
+				scannerConnection.scanFile(mediaFileName, "image/png");
+			}
+		}
+	}
+
+	@Override
+	public void onScanCompleted(String path, Uri uri) {
+		//Log.d("BigGalleryView", "onScanCompleted(), path: "+path+", uri: "+uri.getPath());
 	}
 
 //    @Override
