@@ -30,6 +30,7 @@ import com.weibo.android.R;
 public class WXEntryActivity extends BaseActivity implements IWXAPIEventHandler{
 	@Override 
 	protected void onCreate(Bundle savedInstanceState) {
+		this.getWindow().setBackgroundDrawable(null);
 		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, QuanleimuMainActivity.WX_APP_ID, false);
 		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
 		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
