@@ -14,19 +14,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.AlertDialog;
+import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.AnimationDrawable;
+import android.graphics.drawable.ColorDrawable;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.Window;
 import android.view.WindowManager;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
@@ -131,6 +135,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	private int mCurIndex = 0;
 	
 	private IListHolder mHolder = null;
+	
+	private Dialog manageDlg = null;
 	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
@@ -676,6 +682,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		handleStoreBtnClicked();
 		return true;
 	}
+	
+	class ManagerAlertDialog extends AlertDialog{
+		public ManagerAlertDialog(Context context, int theme){
+			super(context, theme);
+		}
+	}
 
 	@Override
 	public void onClick(View v) {
@@ -806,22 +818,34 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			}
 			break;
 		}
-		case R.id.iv_refresh:{
+		case R.id.managebtn:
+			showManageDialog();
+			break;
+		case R.id.manager_refresh:{
+//		case R.id.iv_refresh:{
+			manageDlg.dismiss();
 			pd = ProgressDialog.show(GoodDetailView.this.getContext(), "提示", "请稍候...");
 			pd.setCancelable(true);
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
+			
 			break;
 		}
-		case R.id.iv_edit:{
+//		case R.id.
+		case R.id.manager_edit:{
+			manageDlg.dismiss();
+//		case R.id.iv_edit:{
 			if(null != m_viewInfoListener){
 				m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)GoodDetailView.this.getContext(),
 						mBundle, 
 						detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME),
 						detail));			
 			}
+			
 			break;
 		}
-		case R.id.iv_del:{
+		case R.id.manager_delete:{
+			manageDlg.dismiss();
+//		case R.id.iv_del:{
 			new AlertDialog.Builder(GoodDetailView.this.getContext()).setTitle("提醒")
 			.setMessage("是否确定删除")
 			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
@@ -844,6 +868,32 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;
 		}
 		}
+	}
+	
+	private void showManageDialog(){
+		if(manageDlg != null && manageDlg.isShowing()){
+			manageDlg.dismiss();
+			return;
+		}
+		manageDlg = new Dialog(this.getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+		manageDlg.setContentView(R.layout.managerpost);
+		manageDlg.findViewById(R.id.manager_refresh).setOnClickListener(this);
+		manageDlg.findViewById(R.id.manager_edit).setOnClickListener(this);
+		manageDlg.findViewById(R.id.manager_delete).setOnClickListener(this);
+
+		manageDlg.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
+	    
+	    int location[] = new int[]{0, 0};
+	    this.getChildAt(0).getLocationOnScreen(location);
+	    WindowManager.LayoutParams lp = manageDlg.getWindow().getAttributes();
+	    lp.y = location[1];
+	    manageDlg.getWindow().setAttributes(lp);
+	    manageDlg.getWindow().setGravity(Gravity.TOP);
+	    manageDlg.getWindow().setBackgroundDrawable(new ColorDrawable(0));
+	    
+	    manageDlg.setCancelable(true);
+	    manageDlg.setCanceledOnTouchOutside(true);
+	    manageDlg.show();
 	}
 	
 	private String convert2JSONString(GoodsDetail detail){
@@ -897,7 +947,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 //		WXWebpageObject webObj = new WXWebpageObject();
 //		webObj.webpageUrl = detail.getValueByKey("link");
 		WXAppExtendObject appObj = new WXAppExtendObject();
-		byte[] ttt = detailJson.getBytes();
 		appObj.fileData = detailJson.getBytes();
 		
 		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
@@ -1332,13 +1381,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		if(isMyAd()){
 			if(titleControlView == null){
 				LayoutInflater inflater = LayoutInflater.from(this.getContext());
-				titleControlView = inflater.inflate(R.layout.myad_title, null);
-				View refresh = titleControlView.findViewById(R.id.iv_refresh);
-				refresh.setOnClickListener(this);
-				View edit = titleControlView.findViewById(R.id.iv_edit);
-				edit.setOnClickListener(this);
-				View del = titleControlView.findViewById(R.id.iv_del);
-				del.setOnClickListener(this);
+//				titleControlView = inflater.inflate(R.layout.myad_title, null);
+//				View refresh = titleControlView.findViewById(R.id.iv_refresh);
+//				refresh.setOnClickListener(this);
+//				View edit = titleControlView.findViewById(R.id.iv_edit);
+//				edit.setOnClickListener(this);
+//				View del = titleControlView.findViewById(R.id.iv_del);
+//				del.setOnClickListener(this);
+				titleControlView = inflater.inflate(R.layout.managebtn, null);
+				titleControlView.setOnClickListener(this);
 			}
 			
 			title.m_rightActionHint = "";

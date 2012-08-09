@@ -1,0 +1,16 @@
+<?xml version="1.0" encoding="utf-8"?>
+<Button xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/managebtn"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingTop="3dip"
+    android:paddingBottom="3dip"
+    android:paddingLeft="5dip"
+    android:paddingRight="5dip"
+    android:background="@drawable/managebtnbk"
+    android:drawableRight="@drawable/home_pic_downward"
+    android:text="管理信息"
+    android:textColor="#FFFFFF"
+    android:textSize="22dip" >
+
+</Button>
