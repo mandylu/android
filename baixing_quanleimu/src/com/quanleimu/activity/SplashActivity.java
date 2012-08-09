@@ -31,7 +31,7 @@ import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
-public class SplashActivity extends BaseActivity implements LocationService.BXLocationServiceListener, QuanleimuApplication.onLocationFetchedListener{
+public class SplashActivity extends BaseActivity{
 
 	// 定义经纬度
 	public double Lat = 0;
@@ -103,50 +103,50 @@ public class SplashActivity extends BaseActivity implements LocationService.BXLo
 //	}
 	
 	public void onPause(){
-		LocationService.getInstance().removeLocationListener(this);
+		//LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
 	}
 	
 	
-	@Override
-	public void onLocationFetched(BXLocation location) {
-		if(null != location){
-			if(location.cityName.length() > 0){
-				for(int i=0;i<myApp.getListCityDetails().size();i++)
-				{
-					if(location.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
-							location.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
-					{
-						cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-						myApp.setCityEnglishName(cityName1);
-						LocationService.getInstance().removeLocationListener(this);
-						break;
-					}
-				}
-			}
-		}
-	}
-	
-	public void onLocationUpdated(Location location){
-		BXLocation locationBX  = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
-		
-		if(locationBX.cityName.length() > 0){
-			for(int i=0;i<myApp.getListCityDetails().size();i++)
-			{
-				if(locationBX.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
-						locationBX.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
-				{
-					cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
-					myApp.setCityEnglishName(cityName1);
-					LocationService.getInstance().removeLocationListener(this);
-					break;
-				}
-			}
-		}
-	
-		//myApp.setCityName(locationBX.cityName);
-		myApp.setLocation(locationBX);
-	}
+//	@Override
+//	public void onLocationFetched(BXLocation location) {
+//		if(null != location){
+//			if(location.cityName.length() > 0){
+//				for(int i=0;i<myApp.getListCityDetails().size();i++)
+//				{
+//					if(location.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
+//							location.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
+//					{
+//						cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+//						myApp.setCityEnglishName(cityName1);
+//						LocationService.getInstance().removeLocationListener(this);
+//						break;
+//					}
+//				}
+//			}
+//		}
+//	}
+//	
+//	public void onLocationUpdated(Location location){
+//		BXLocation locationBX  = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
+//		
+//		if(locationBX.cityName.length() > 0){
+//			for(int i=0;i<myApp.getListCityDetails().size();i++)
+//			{
+//				if(locationBX.cityName.equals(myApp.getListCityDetails().get(i).getName()) ||
+//						locationBX.cityName.contains(myApp.getListCityDetails().get(i).getName())	)
+//				{
+//					cityName1 = myApp.getListCityDetails().get(i).getEnglishName();
+//					myApp.setCityEnglishName(cityName1);
+//					LocationService.getInstance().removeLocationListener(this);
+//					break;
+//				}
+//			}
+//		}
+//	
+//		//myApp.setCityName(locationBX.cityName);
+//		myApp.setLocation(locationBX);
+//	}
 
 	Handler myHandler = new Handler() {
 		private int record1 = 0;//flag city list

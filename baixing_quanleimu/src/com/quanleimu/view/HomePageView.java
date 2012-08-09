@@ -158,47 +158,48 @@ public class HomePageView
 	public void onLocationUpdated(final Location location){
 		if(location == null || (locationAddr != null && !locationAddr.equals(""))) 
 			return;
-		
-		(new Thread(new Runnable(){
-			@Override
-			public void run(){
+
 				final String preLocation = locationAddr;
 				
-				BXLocation locationBX = LocationService.geocodeAddr(Double.toString(location.getLatitude()), Double.toString(location.getLongitude()));
-				
-				if(null == locationBX.cityName) return;
-				
-				locationAddr = locationBX.cityName;
-				
-				QuanleimuApplication.getApplication().setLocation(locationBX);
-				
-				LocationService.getInstance().removeLocationListener(HomePageView.this);
-				if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
-					final AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
-					builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
-					.setCancelable(false)  
-					.setPositiveButton("是", HomePageView.this)  
-					.setNegativeButton("否", new DialogInterface.OnClickListener() {  
-						public void onClick(DialogInterface dialog, int id) {  
-							dialog.cancel();  
-							LocationService.getInstance().removeLocationListener(HomePageView.this);
-						}  
-					});
+				LocationService.getInstance().reverseGeocode((float)location.getLatitude(), (float)location.getLongitude(), new LocationService.BXRgcListener() {
 					
-					((BaseActivity)HomePageView.this.getContext()).runOnUiThread(new Runnable(){
-						@Override
-						public void run(){
-							if(HomePageView.this.isShown()){
-								AlertDialog alert = builder.create();
-								alert.show();
-							}else{
-								locationAddr = preLocation;
-							}
+					@Override
+					public void onRgcUpdated(BXLocation locationBX) {
+						if(null == locationBX.cityName) return;
+						
+						locationAddr = locationBX.cityName;
+						
+						QuanleimuApplication.getApplication().setLocation(locationBX);
+						
+						LocationService.getInstance().removeLocationListener(HomePageView.this);
+						if(HomePageView.this.cityName != null && !QuanleimuApplication.getApplication().cityName.equals(locationAddr)){
+							final AlertDialog.Builder builder = new AlertDialog.Builder((BaseActivity)HomePageView.this.getContext());  
+							builder.setMessage("检测到您在" + locationAddr + "，" + "需要切换吗?")
+							.setCancelable(false)  
+							.setPositiveButton("是", HomePageView.this)  
+							.setNegativeButton("否", new DialogInterface.OnClickListener() {  
+								public void onClick(DialogInterface dialog, int id) {  
+									dialog.cancel();  
+									LocationService.getInstance().removeLocationListener(HomePageView.this);
+								}  
+							});
+							
+							((BaseActivity)HomePageView.this.getContext()).runOnUiThread(new Runnable(){
+								@Override
+								public void run(){
+									if(HomePageView.this.isShown()){
+										AlertDialog alert = builder.create();
+										alert.show();
+									}else{
+										locationAddr = preLocation;
+									}
+								}
+							});
 						}
-					});
-				}				
-			}
-		})).start();
+						
+					}
+				});
+				
 	}
 	
 	@Override

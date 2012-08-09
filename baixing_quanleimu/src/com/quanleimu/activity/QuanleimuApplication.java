@@ -372,6 +372,8 @@ public class QuanleimuApplication extends Application implements LocationService
 			
 			if(null == location){
 				location = new BXLocation(true);
+			}else if(null == location.cityName || 0 == location.cityName.length()){
+				location.geocoded = false;
 			}
 		}
 		
@@ -392,11 +394,12 @@ public class QuanleimuApplication extends Application implements LocationService
 			return false;
 		}
 		
+		/*
 		(new AsyncTask<BXLocation, Boolean, BXLocation>(){
 			
 			@Override
 			protected BXLocation doInBackground(BXLocation... locations) { 
-				if(null != locations[0] && !locations[0].geocoded){
+				if(null != locations[0] && (!locations[0].geocoded || null == locations[0].cityName || 0 == locations[0].cityName.length())){
 					return LocationService.geocodeAddr(Float.toString(curLocation.fLat), Float.toString(curLocation.fLon));
 				}else{
 					try {
@@ -416,7 +419,29 @@ public class QuanleimuApplication extends Application implements LocationService
 				
 				listener.onLocationFetched(location_);
 			}
-		}).execute(curLocation);
+		}).execute(curLocation);*/
+
+		if(!curLocation.geocoded){
+			LocationService.getInstance().reverseGeocode(curLocation.fLat, curLocation.fLon, new LocationService.BXRgcListener() {
+				
+				@Override
+				public void onRgcUpdated(BXLocation location) {
+					if(null != location){
+						curLocation.address = location.address;
+						curLocation.adminArea = location.adminArea;
+						curLocation.cityName = location.cityName;
+						curLocation.detailAddress = location.detailAddress;
+						curLocation.address = location.address;
+						curLocation.geocoded = location.geocoded;
+						curLocation.postCode = location.postCode;
+						
+						listener.onLocationFetched(curLocation);
+					}
+				}
+			});
+		}else{
+			listener.onLocationFetched(curLocation);
+		}
 		
 		return true;
 	}

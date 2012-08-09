@@ -19,6 +19,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.BXLocation;
 
 import android.location.Location;
+import android.util.Log;
 
 
 import org.json.JSONException;
@@ -30,10 +31,14 @@ public class LocationService{
 	private BMapManager bMapManager;
 	private MKLocationManager mkLocationManager;
 	private Location lastKnownLocation;
-	private BXLocationListener locationListener;	
+	private BXLocationListener locationListener;
 	
 	public interface BXLocationServiceListener{
 		abstract void onLocationUpdated(Location location);
+	}
+	
+	public interface BXRgcListener{
+		abstract void onRgcUpdated(BXLocation location);
 	}
 	
 	private static LocationService s_instance;
@@ -44,126 +49,178 @@ public class LocationService{
 		return s_instance;
 	}
 	
-	public static BXLocation geocodeAddr(String latitude, String longitude) { 
-	    BXLocation location = new BXLocation(false);
-	    location.fLat = Float.valueOf(latitude);
-	    location.fLon = Float.valueOf(longitude);
-	    
-	    String url = String.format("http://ditu.google.cn/maps/geo?output=json&q=%s,%s",latitude, longitude);
-	    URL myURL = null; 
-	    URLConnection httpsConn = null; 
-	    try { 
-	        myURL = new URL(url); 
-	    } catch (MalformedURLException e) { 
-	        e.printStackTrace(); 
-	        return null; 
-	    } 
-	    
-	    try { 
-	        httpsConn = (URLConnection) myURL.openConnection(); 
-	        if (httpsConn != null) {
-	            InputStreamReader insr = new InputStreamReader(httpsConn 
-	            .getInputStream(), "UTF-8"); 
-	            BufferedReader br = new BufferedReader(insr);
-	            StringBuffer buffer=new StringBuffer();
-	            String str;
-	            while ((str=br.readLine())!=null) {
-	                buffer.append(str);
-	            }
-	            
-	            /*Sample response (regulated) as below:
-					{  
-						"name": "31.204357147216797,121.44161224365234",  
-						"Status": {    
-									"code": 200,    
-									"request": "geocode"  
-								},  
-						"Placemark": [ 
-										{    
-											"id": "p1",    
-											"address": "÷–π˙…œ∫£ ––Ïª„«¯Õ∆Ω¬∑11∫≈ ” ’˛±‡¬Î: 200030",    
-											"AddressDetails": {   
-																"Accuracy" : 8,   
-																"Country" : {      
-																				"AdministrativeArea" : {         
-																											"AdministrativeAreaName" : "…œ∫£ –",         
-																											"Locality" : {            
-																															"DependentLocality" : {               
-																																						"DependentLocalityName" : "–Ïª„«¯",               
-																																						"PostalCode" : {                  
-																																											"PostalCodeNumber" : "200030"
-																																										},               
-																																						"Thoroughfare" : { 
-																																											"ThoroughfareName" : "Õ∆Ω¬∑11∫≈"               
-																																										}
-																																					},
-																															"LocalityName" : "…œ∫£ –" 
-																														}
-																										},      
-																				"CountryName" : "÷–π˙",
-																				"CountryNameCode" : "CN"
-																			}
-															},
-											"ExtendedData": {
-																"LatLonBox": {
-																				"north": 31.2053010,
-																				"south": 31.2026030,
-																				"east": 121.4426710,
-																				"west": 121.4399730
-																			}
-															},    
-											"Point": {
-														"coordinates": [ 
-																			121.4413220, 
-																			31.2039520, 
-																			0
-																		]
-													}
-										}
-								]
-					}
-	             */
-	            if(buffer.length() > 0){
-		            JSONObject jsObj = new JSONObject(buffer.toString());
-		            
-		            if(null != jsObj.getJSONObject("Status") && jsObj.getJSONObject("Status").getInt("code") == 200){
-		            	
-		            	JSONArray placemarkArray = jsObj.getJSONArray("Placemark");  
-		            	if(placemarkArray.length() > 0){
-		            		location.geocoded = true;
-		            		
-		            		//parent node for place description -- take the first matching result
-			            	JSONObject jsonDataPlacemark = placemarkArray.getJSONObject(0);
-				            location.detailAddress = jsonDataPlacemark.getString("address");  
-				            
-				            JSONArray coord = jsonDataPlacemark.getJSONObject("Point").getJSONArray("coordinates");
-				            location.fGeoCodedLon = (float)coord.getDouble(0);
-				            location.fGeoCodedLat = (float)coord.getDouble(1);
-				            
-				            JSONObject jsonAdministrativeArea = jsonDataPlacemark.getJSONObject("AddressDetails").getJSONObject("Country").getJSONObject("AdministrativeArea");
-				            location.adminArea = jsonAdministrativeArea.getString("AdministrativeAreaName");
-				            
-				            JSONObject jsonLocality = jsonAdministrativeArea.getJSONObject("Locality");
-				            location.cityName = jsonLocality.getString("LocalityName").replace("市", "");
-				            
-				            JSONObject jsonDependentLocality = jsonLocality.getJSONObject("DependentLocality"); 
-				            location.subCityName = jsonDependentLocality.getString("DependentLocalityName");
-				            location.postCode = jsonDependentLocality.getJSONObject("PostalCode").getString("PostalCodeNumber");
-				            location.address = jsonDependentLocality.getJSONObject("Thoroughfare").getString("ThoroughfareName");
-		            	}
-		            }
-	            }
-	        } 
-	    }
-		catch(JSONException e){
-			e.printStackTrace();
+	public void reverseGeocode(final float lat, final float lon, BXRgcListener callback){
+		
+		class BXSearchListener implements MKSearchListener {
+			BXRgcListener rgcCallback = null;
+			
+			BXSearchListener(BXRgcListener listener){
+				rgcCallback = listener;
+			}
+			
+		    @Override
+		    public void onGetAddrResult(MKAddrInfo result, int iError) {
+		    	BXLocation location = null;
+		    	if(0 == iError){//succeeded!
+		    		location = new BXLocation(false);
+		    		location.fLat = lat;
+		    		location.fLon = lon;
+		    		location.address = result.strBusiness;
+		    		location.detailAddress=result.strAddr;
+		    		location.cityName=result.addressComponents.city.replace("市", "");
+		    		location.subCityName=result.addressComponents.district;
+		    		location.adminArea=result.addressComponents.province;
+		    		if(null != location.cityName && location.cityName.length() > 0)
+		    			location.geocoded = true;
+		    		location.fGeoCodedLat=(float)(1.0f*result.geoPt.getLatitudeE6()/1e6);
+		    		location.fGeoCodedLon=(float)(1.0f*result.geoPt.getLongitudeE6()/1e6);
+		    	}
+		    	
+		    	if(null != rgcCallback){
+		    		rgcCallback.onRgcUpdated(location);
+		    	}
+		    }
+		 
+		    @Override
+		    public void onGetDrivingRouteResult(MKDrivingRouteResult result, int iError) {
+		    }
+		 
+		    @Override
+		    public void onGetPoiResult(MKPoiResult result, int type, int iError) {
+		    }
+		 
+		    @Override
+		    public void onGetTransitRouteResult(MKTransitRouteResult result, int iError) {
+		    }
+		 
+		    @Override
+		    public void onGetWalkingRouteResult(MKWalkingRouteResult result, int iError) {
+		    }
+		 
+		    @Override
+		    public void onGetBusDetailResult(MKBusLineResult result, int iError) {
+		    }
+		 
+		    @Override
+		    public void onGetSuggestionResult(MKSuggestionResult result, int iError) {
+		    }
 		}
-		catch (IOException e) { 
-	        e.printStackTrace(); 
-	    } 
-	    
-	    return location; 
+		
+		MKSearch searcher = new MKSearch();
+		searcher.init(bMapManager, new BXSearchListener(callback));
+			
+		searcher.reverseGeocode(new GeoPoint((int)(lat*1e6), (int)(lon*1e6)));
 	}
+	
+	
+//	public static BXLocation geocodeAddr(String latitude, String longitude) { 
+//	    BXLocation location = new BXLocation(false);
+//	    location.fLat = Float.valueOf(latitude);
+//	    location.fLon = Float.valueOf(longitude);
+//
+//	    String url = String.format("http://ditu.google.cn/maps/geo?output=json&q=%s,%s",latitude, longitude);
+//	    URL myURL = null; 
+//	    URLConnection httpsConn = null; 
+//	    try { 
+//	        myURL = new URL(url); 
+//	    } catch (MalformedURLException e) { 
+//	        e.printStackTrace(); 
+//	        return null; 
+//	    } 
+//	    
+//	    try { 
+//	        httpsConn = (URLConnection) myURL.openConnection(); 
+//	        if (httpsConn != null) {
+//	            InputStreamReader insr = new InputStreamReader(httpsConn 
+//	            .getInputStream(), "UTF-8"); 
+//	            BufferedReader br = new BufferedReader(insr);
+//	            StringBuffer buffer=new StringBuffer();
+//	            String str;
+//	            while ((str=br.readLine())!=null) {
+//	                buffer.append(str);
+//	            }
+//	            
+//	            /*{
+//					  "name": "31.2087610008053180, 121.4526269709240723094",
+//					  "Status": {
+//					    "code": 200,
+//					    "request": "geocode"
+//					  },
+//					  "Placemark": [ {
+//					    "id": "p1",
+//					    "address": "华氏大药房 Xuhui, Shanghai, China, 200031",
+//					    "AddressDetails": {
+//					   "Accuracy" : 9,
+//					   "Country" : {
+//					      "CountryName" : "中国",
+//					      "CountryNameCode" : "CN",
+//					      "Locality" : {
+//					         "DependentLocality" : {
+//					            "AddressLine" : [ "华氏大药房" ],
+//					            "DependentLocalityName" : "徐汇区",
+//					            "PostalCode" : {
+//					               "PostalCodeNumber" : "200031"
+//					            }
+//					         },
+//					         "LocalityName" : "上海市"
+//					      }
+//					   }
+//					},
+//					    "ExtendedData": {
+//					      "LatLonBox": {
+//					        "north": 31.2186897,
+//					        "south": 31.1996033,
+//					        "east": 121.4683644,
+//					        "west": 121.4363496
+//					      }
+//					    },
+//					    "Point": {
+//					      "coordinates": [ 121.4523570, 31.2091470, 0 ]
+//					    }
+//					  } ]
+//					}
+//	             */
+//	            if(buffer.length() > 0){
+//		            JSONObject jsObj = new JSONObject(buffer.toString());
+//		            
+//		            if(null != jsObj.getJSONObject("Status") && jsObj.getJSONObject("Status").getInt("code") == 200){
+//		            	
+//		            	JSONArray placemarkArray = jsObj.getJSONArray("Placemark");  
+//		            	if(placemarkArray.length() > 0){
+//		            		location.geocoded = true;
+//		            		
+//		            		//parent node for place description -- take the first matching result
+//			            	JSONObject jsonDataPlacemark = placemarkArray.getJSONObject(0);
+//				            location.detailAddress = jsonDataPlacemark.getString("address");  
+//				            
+//				            JSONArray coord = jsonDataPlacemark.getJSONObject("Point").getJSONArray("coordinates");
+//				            location.fGeoCodedLon = (float)coord.getDouble(0);
+//				            location.fGeoCodedLat = (float)coord.getDouble(1);
+//				            
+//				            JSONObject jsonAdministrativeArea = jsonDataPlacemark.getJSONObject("AddressDetails").getJSONObject("Country").getJSONObject("AdministrativeArea");
+//				            location.adminArea = jsonAdministrativeArea.getString("AdministrativeAreaName");
+//				            
+//				            JSONObject jsonLocality = jsonAdministrativeArea.getJSONObject("Locality");
+//				            location.cityName = jsonLocality.getString("LocalityName").replace("市", "");
+//				            
+//				            JSONObject jsonDependentLocality = jsonLocality.getJSONObject("DependentLocality"); 
+//				            location.subCityName = jsonDependentLocality.getString("DependentLocalityName");
+//				            location.postCode = jsonDependentLocality.getJSONObject("PostalCode").getString("PostalCodeNumber");
+//				            location.address = jsonDependentLocality.getJSONObject("Thoroughfare").getString("ThoroughfareName");
+//		            	}
+//		            }
+//	            }
+//	        } 
+//	    }
+//		catch(JSONException e){
+//			e.printStackTrace();
+//		}
+//		catch (IOException e) { 
+//	        e.printStackTrace(); 
+//	    } 
+//	    
+//	    return location; 
+//	}
 	
 	
 	public android.location.Location getLastKnownLocation(){
@@ -210,7 +267,17 @@ public class LocationService{
 		@Override
 		public void onLocationChanged (Location location){
 			if(location != null){
+				
+				//纠偏以后的经纬度  
+				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));  
+				
+				Log.d("LocationService", "gps encrypted from("+location.getLatitude()+", "+location.getLongitude()+") to ("+point.getLatitudeE6()/1000000.0+", "+point.getLongitudeE6()/1000000.0+") !!");
+				
+				location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+				location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
+				
 				lastKnownLocation = location;
+				
 				for(BXLocationServiceListener listener : userListeners){
 					listener.onLocationUpdated(location);
 				}
