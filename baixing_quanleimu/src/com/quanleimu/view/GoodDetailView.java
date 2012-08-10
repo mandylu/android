@@ -1249,9 +1249,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					try {
 						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
-						e.printStackTrace();
+						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						if(pd != null){
+							pd.dismiss();
+						}
 					} catch (IOException e) {
-						e.printStackTrace();
+						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						if(pd != null){
+							pd.dismiss();
+						}						
 					} catch (Communication.BXHttpException e){
 						
 					}

@@ -581,7 +581,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 	}
 
 	private boolean filled() {
-		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2) return false;
+		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2 || layout_txt.getChildCount() == 0) return false;
 		
 		return true;
 	}

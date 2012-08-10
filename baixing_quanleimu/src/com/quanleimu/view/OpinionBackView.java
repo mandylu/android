@@ -5,9 +5,11 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
 
 import android.app.ProgressDialog;
@@ -147,9 +149,15 @@ public class OpinionBackView extends BaseView {
 					myHandler.sendEmptyMessage(1);
 				}
 			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				if(pd != null){
+					pd.dismiss();
+				}
 			} catch (IOException e) {
-				e.printStackTrace();
+				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				if(pd != null){
+					pd.dismiss();
+				}				
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
