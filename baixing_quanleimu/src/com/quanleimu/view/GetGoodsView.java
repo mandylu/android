@@ -464,6 +464,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				goodsListLoader.cancelFetching();
 				goodsListLoader.setParams(basicParams);
+				goodsListLoader.setRuntime(true);
 				
 				mRefreshUsingLocal = true;
 				lvGoodsList.onFail();
@@ -497,6 +498,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				params.add("lat="+curLocation.fLat);
 				params.add("lng="+curLocation.fLon);
 				goodsListLoader.setParams(params);
+				goodsListLoader.setRuntime(false);
 				
 				mRefreshUsingLocal = true;
 				lvGoodsList.onFail();

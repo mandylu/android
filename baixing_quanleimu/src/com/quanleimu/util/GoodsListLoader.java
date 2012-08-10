@@ -51,6 +51,7 @@ public class GoodsListLoader {
 	public final static int MSG_NO_MORE = 2;
 	public final static int MSG_FIRST_FAIL = 0x0FFFFFFF;
 	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
+	private boolean mRt = true;
 	
 	public GoodsListLoader(List<String> params, Handler handler, String fields, GoodsList goodsList){
 		this.params = params;
@@ -158,6 +159,10 @@ public class GoodsListLoader {
 		new Thread(mCurThread).start();	
 	}
 	
+	public void setRuntime(boolean rt){
+		mRt = rt;
+	}
+	
 	class GetGoodsListThread implements Runnable {
 		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
@@ -209,7 +214,9 @@ public class GoodsListLoader {
 			}
 			
 			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
-			//list.add("rt=1");
+			if(mRt){
+				list.add("rt=1");
+			}
 			if(mRows > 0)
 				list.add("rows=" + mRows);
 
