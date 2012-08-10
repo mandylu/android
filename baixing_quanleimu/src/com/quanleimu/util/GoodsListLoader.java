@@ -38,10 +38,18 @@ public class GoodsListLoader {
 	
 	private HasMoreListener hasMoreListener = null;
 	
+	public enum E_LISTDATA_STATUS{
+		E_LISTDATA_STATUS_OFFLINE,
+		
+		E_LISTDATA_STATUS_ONLINE
+	};
+	private E_LISTDATA_STATUS mStatusListdataExisting = E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE;
+	private E_LISTDATA_STATUS mStatusListdataRequesting = E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE;
 	
 	public final static int MSG_FINISH_GET_FIRST = 0;
 	public final static int MSG_FINISH_GET_MORE = 1;
 	public final static int MSG_NO_MORE = 2;
+	public final static int MSG_FIRST_FAIL = 0x0FFFFFFF;
 	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
 	
 	public GoodsListLoader(List<String> params, Handler handler, String fields, GoodsList goodsList){
@@ -120,16 +128,32 @@ public class GoodsListLoader {
 		hasMoreListener = listener;
 	}
 	
-	public void startFetching(boolean isFirst, boolean forceUpdate){
+	public E_LISTDATA_STATUS getDataStatus(){
+		return mStatusListdataExisting;
+	}
+	
+	public E_LISTDATA_STATUS getRequestDataStatus(){
+		return mStatusListdataRequesting;
+	}
+	
+	public void startFetching(boolean isFirst, Communication.E_DATA_POLICY dataPolicy_){
+		cancelFetching();
+		
+		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
+		
 		mIsFirst = isFirst;
 
-		mCurThread = new GetGoodsListThread(forceUpdate);		
+		mCurThread = new GetGoodsListThread(dataPolicy_);		
 		new Thread(mCurThread).start();	
 	}	
 	
-	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, boolean forceUpdate){
+	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, Communication.E_DATA_POLICY dataPolicy_){
+		cancelFetching();
+		
+		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
+		
 		mIsFirst = isFirst;
-		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, forceUpdate);		
+		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_);		
 		
 		new Thread(mCurThread).start();	
 	}
@@ -138,20 +162,20 @@ public class GoodsListLoader {
 		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
-		private boolean forceUpdate = false;
+		private Communication.E_DATA_POLICY dataPolicy = Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL;
 		
 		private boolean mCancel = false;
 		private HttpClient mHttpClient = null;
 		
-		GetGoodsListThread(boolean forceUpdate){
-			this.forceUpdate = forceUpdate;
+		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_){
+			dataPolicy = dataPolicy_;
 		}
 		
-		GetGoodsListThread(int errFirst, int errMore, int errNoMore, boolean forceUpdate){
+		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
-			this.forceUpdate = forceUpdate;
+			dataPolicy = dataPolicy_;
 		}
 		
 		public void cancel(){
@@ -161,7 +185,7 @@ public class GoodsListLoader {
 				mHttpClient.getConnectionManager().shutdown();
 			}
 			
-			Log.d("GoodsListLoader", "http connection has been shutdown!!");
+			//Log.d("GoodsListLoader", "http connection has been shutdown!!");
 		}
 		
 		private void exit(){
@@ -185,7 +209,7 @@ public class GoodsListLoader {
 			}
 			
 			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
-			list.add("rt=1");
+			//list.add("rt=1");
 			if(mRows > 0)
 				list.add("rows=" + mRows);
 
@@ -196,7 +220,9 @@ public class GoodsListLoader {
 			
 			String url = Communication.getApiUrl(mApiName, list);
 			
-			//Log.d("kkkkkk", "start requesting url: "+url);
+//			if(Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL != dataPolicy){
+//				Log.d("ListViewUrl", url);
+//			}
 			
 			mHttpClient = NetworkProtocols.getInstance().getHttpClient();
 			
@@ -206,7 +232,7 @@ public class GoodsListLoader {
 					return;
 				}
 				
-				mLastJson = Communication.getDataByUrl(mHttpClient, url, forceUpdate);
+				mLastJson = Communication.getDataByUrl(mHttpClient, url, dataPolicy);
 
 				if(mCancel) {
 					exit();
@@ -220,9 +246,17 @@ public class GoodsListLoader {
 						mIsFirst = false;
 						mHandler.sendEmptyMessage(msgFirst);
 					}
-
+					
+					//only when data is valid, do we need to updata listdata status
+					GoodsListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
+															E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
+															E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	GoodsListLoader.this.mStatusListdataExisting;
 				} else {
-					mHandler.sendEmptyMessage(msgNoMore);
+					if(!mIsFirst){
+						mHandler.sendEmptyMessage(msgNoMore);
+					}else{
+						mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
+					}
 				}
 				
 				exit();

@@ -506,7 +506,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	
     	int header_top_gap = 0;
     	if(mNeedBlankGapHeader){
-    		header_top_gap = mGapHeaderView.getMeasuredHeight();
+    		header_top_gap = mGapHeaderView.getMeasuredHeight() + mGapHeaderView.getPaddingBottom() + mGapHeaderView.getPaddingTop();
     	}
     	
         mRefreshView.setPadding(
@@ -753,7 +753,8 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
         if(mGetMoreState == GETTING_MORE){
         	mGetMoreState = SCROLLDOWN_TO_GETMORE;
         }
-        else if(mRefreshState ==  REFRESHING){
+        
+        if(mRefreshState ==  REFRESHING){
         	
             mRefreshState = TAP_TO_REFRESH;
             

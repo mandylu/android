@@ -8,7 +8,6 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.location.Location;
 import android.os.Bundle;
-import android.os.Debug;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
@@ -22,11 +21,13 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -62,6 +63,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 
     private static final int HOUR_MS = 60*60*1000;
     private static final int MINUTE_MS = 60*1000;
+    
+	private boolean mRefreshUsingLocal = false;
 	
 	@Override
 	public void onResume(){
@@ -196,7 +199,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		}
 		
 		goodsListLoader = new GoodsListLoader(basicParams, myHandler, null, new GoodsList());
-		goodsListLoader.startFetching(true, false);
+		goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
@@ -224,6 +227,17 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case GoodsListLoader.MSG_FIRST_FAIL:
+				if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
+					goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
+				else{
+					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
+					
+					if (pd != null) {
+						pd.dismiss();
+					}
+				}
+				break;
 			case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 				goodsListLoader.setGoodsList(goodsList);
@@ -245,6 +259,15 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				lvGoodsList.onRefreshComplete();
 				
+				//if currently using offline data, start fetching online data
+				if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus())
+					lvGoodsList.fireRefresh();
+					//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
+				
+				if (pd != null) {
+					pd.dismiss();
+				}
+				
 				break;
 			case GoodsListLoader.MSG_NO_MORE:
 				progressBar.setVisibility(View.GONE);
@@ -258,6 +281,10 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 				goodsListLoader.setHasMore(false);
+				
+				if (pd != null) {
+					pd.dismiss();
+				}
 				
 				break;
 			case GoodsListLoader.MSG_FINISH_GET_MORE:
@@ -289,6 +316,10 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 					goodsListLoader.setHasMore(true);
 				}
 				
+				if (pd != null) {
+					pd.dismiss();
+				}
+				
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				progressBar.setVisibility(View.GONE);
@@ -298,11 +329,12 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 				
 				lvGoodsList.onFail();
+				
+				if (pd != null) {
+					pd.dismiss();
+				}
+				
 				break;
-			}
-			
-			if (pd != null) {
-				pd.dismiss();
 			}
 			
 			super.handleMessage(msg);
@@ -400,12 +432,15 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 
 	@Override
 	public void onGetMore() {
-		goodsListLoader.startFetching(false, false);
+		goodsListLoader.startFetching(false, ((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
+												Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
+												Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 	}
 
 	@Override
 	public void onRefresh() {
-		goodsListLoader.startFetching(true, true);	
+		goodsListLoader.startFetching(true, mRefreshUsingLocal ? Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL : Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);	
+		mRefreshUsingLocal = false;
 	}
 	
 	
@@ -430,6 +465,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				goodsListLoader.cancelFetching();
 				goodsListLoader.setParams(basicParams);
 				
+				mRefreshUsingLocal = true;
+				lvGoodsList.onFail();
 				lvGoodsList.fireRefresh();
 				
 				titleControlStatus = 0;
@@ -461,6 +498,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				params.add("lng="+curLocation.fLon);
 				goodsListLoader.setParams(params);
 				
+				mRefreshUsingLocal = true;
+				lvGoodsList.onFail();
 				lvGoodsList.fireRefresh();
 				
 				titleControlStatus = 1;

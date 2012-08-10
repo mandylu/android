@@ -48,6 +48,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 	
 	private View titleControl = null;
 	
+	private boolean mRefreshUsingLocal = false;
 	
 	/**
 	 * 设置布局显示目标最大化
@@ -141,7 +142,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
 		
-		mListLoader.startFetching(true, false);
+		mListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 	}
 	
 	public SearchGoodsView(Context context, Bundle bundle){
@@ -249,6 +250,16 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case GoodsListLoader.MSG_FIRST_FAIL:
+				if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == mListLoader.getRequestDataStatus())
+					mListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
+				else{
+					if (pd != null) {
+						pd.dismiss();
+					}
+					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
+				}
+				break;
 			case GoodsListLoader.MSG_FINISH_GET_FIRST:
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
@@ -256,7 +267,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 					if (pd != null) {
 						pd.dismiss();
 					}
-					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+					Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 				} else {
 					List<GoodsDetail> listSearchGoods = goodsList.getData();
 
@@ -276,6 +287,11 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 					
 					lvSearchResult.onRefreshComplete();
 				}
+				
+				//if currently using offline data, start fetching online data
+				if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == mListLoader.getDataStatus())
+					lvSearchResult.fireRefresh();
+					//mListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 
 				break;
 			case GoodsListLoader.MSG_NO_MORE:
@@ -323,7 +339,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 				}
 				progressBar.setVisibility(View.GONE);
 
-				Toast.makeText(getContext(), "网络连接失败，请检查设置！", 3).show();
+				Toast.makeText(getContext(), "网络连接失败，请检查设置！", Toast.LENGTH_LONG).show();
 				
 				lvSearchResult.onFail();
 				break;
@@ -424,12 +440,15 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 
 	@Override
 	public void onGetMore() {
-		mListLoader.startFetching(false, false);
+		mListLoader.startFetching(false, ((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader.getDataStatus()) ? 
+											Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
+											Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 	}
 
 	@Override
 	public void onRefresh() {
-		mListLoader.startFetching(true, true);
+		mListLoader.startFetching(true, mRefreshUsingLocal ? Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL : Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
+		mRefreshUsingLocal = true;
 	}
 
 	@Override
@@ -452,6 +471,8 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 				mListLoader.cancelFetching();
 				mListLoader.setParams(basicParams);
 				
+				mRefreshUsingLocal = true;
+				lvSearchResult.onFail();
 				lvSearchResult.fireRefresh();
 				
 				titleControlStatus = 0;
@@ -481,6 +502,9 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 				params.add("lat="+curLocation.fLat);
 				params.add("lng="+curLocation.fLon);
 				mListLoader.setParams(params);
+				
+				mRefreshUsingLocal = true;
+				lvSearchResult.onFail();
 				lvSearchResult.fireRefresh();
 				
 				titleControlStatus = 1;

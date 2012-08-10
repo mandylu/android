@@ -25,12 +25,10 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.view.WindowManager;
 import android.view.MotionEvent;
 import android.view.animation.Animation;
@@ -44,6 +42,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
@@ -74,10 +73,7 @@ import com.weibo.net.WeiboParameters;
 import com.quanleimu.entity.AuthDialogListener;
 
 import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXImageObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.openapi.WXTextObject;
-import com.tencent.mm.sdk.openapi.WXWebpageObject;
 
 public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
@@ -710,6 +706,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		case R.id.showmap:
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+			BXLocation location = QuanleimuApplication.getApplication().getCurrentPosition(true);
+			if(null != location){
+				latV = ""+location.fLat;
+				lonV = ""+location.fLon;
+				
+				Toast.makeText(getContext(), "现在用的是百度api位置，不是帖子位置！！", Toast.LENGTH_LONG);
+			}
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
 			{
 				double lat = Double.valueOf(latV);
@@ -1498,7 +1501,10 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(null != mHolder){
 				mHolder.startFecthingMore();
 			}else{
-				mListLoader.startFetching(false, false);
+				mListLoader.startFetching(	false, 
+											((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader.getDataStatus()) ? 
+													Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
+													Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 			}
 			
 			ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);

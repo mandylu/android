@@ -9,6 +9,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
@@ -343,7 +344,8 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 			}
 			list.add("query=(" + ids + ")");
 		}
-		//list.add("rt=1");
+		
+		list.add("rt=1");
 		
 		int msgGotFirst = (isFav ? MSG_UPDATEFAV : MSG_UPDATEHISTORY);
 		int msgGotMore = (isFav ? MSG_GOTMOREFAV : MSG_GOTMOREHISTORY);
@@ -353,9 +355,9 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 		glLoader.setRows(ITEMS_PER_REQUEST);
 		
 		if(isGetMore)
-			glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore, false);//trick:: param0 is set to true to avoid setting of "start=n>0"
+			glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);//trick:: param0 is set to true to avoid setting of "start=n>0"
 		else
-			glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore, true);
+			glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
 	}
 	
 	@Override

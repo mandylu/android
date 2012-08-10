@@ -295,53 +295,63 @@ public class Communication implements Comparator<String> {
 			return temp;		  
 	  }
 
+	  public enum E_DATA_POLICY{
+		  E_DATA_POLICY_ONLY_LOCAL,
+		  //E_DATA_POLICY_PREFER_LOCAL,
+		  E_DATA_POLICY_NETWORK_CACHEABLE,
+		  E_DATA_POLICY_NETWORK_UNCACHEABLE
+	  };
 	  //get提交数据方法
-	  public static String getDataByUrl(HttpClient httpClient, String url, boolean forceUpdate)
+	  public static String getDataByUrl(HttpClient httpClient, String url, E_DATA_POLICY dataPolicy)
 	  	  throws UnsupportedEncodingException, IOException, BXHttpException {
 		  
-		  if(!forceUpdate){
-			String cached = getCacheRequestIfExist(url);
-			if (cached != null) return cached;
+		  if(/*E_DATA_POLICY.E_DATA_POLICY_PREFER_LOCAL == dataPolicy || */E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy){
+			  	String cached = getCacheRequestIfExist(url);
+			  	if (E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy || cached != null) return cached;
 		  }
 	  	
-	  	HttpPost httpPost = new HttpPost(url.substring(0, url.indexOf("/?") + 2));
-	  	StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
-	  	httpPost.setEntity(se);
-	  	se.setContentType("application/x-www-form-urlencoded");
-
-		HttpResponse response = null;
-
-		try{
-			response = httpClient.execute(httpPost);
-		}catch(IllegalStateException e){
-			//Log.d("kkkkkk", "network request has been canceled: "+url+" !!!");
-			return null;
-		}
-	  	
-	  	if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
-	  	  BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
-	  	  throw bxe;
-	  	}
-
-	  	// 取得输入流，并使用Reader读取
-	  	BufferedReader reader = new BufferedReader(new InputStreamReader(
-	  	    response.getEntity().getContent(), "utf-8"));// 设置编码,否则中文乱码
-
-	  	String lines = "";
-	  	String temp = "";
-	  	while ((lines = reader.readLine()) != null) {
-	  	  temp += lines;
-	  	}
-	  	reader.close();
-	  	// 断开连接
-	  	
-	  	httpClient.getConnectionManager().shutdown();
-	  	if(url.contains("adIds=")){
-	  	  QuanleimuApplication.resetViewCounter();//counter sent successfully
-	  	}
-	  	//System.out.println(temp);
-	  	QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
-	  	return temp;
+		  HttpPost httpPost = new HttpPost(url.substring(0, url.indexOf("/?") + 2));
+		  StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+		  httpPost.setEntity(se);
+		  se.setContentType("application/x-www-form-urlencoded");
+	
+		  HttpResponse response = null;
+	
+		  try{
+				response = httpClient.execute(httpPost);
+		  }catch(IllegalStateException e){
+				//Log.d("kkkkkk", "network request has been canceled: "+url+" !!!");
+			  return null;
+		  }
+		  
+		  if(response.getStatusLine() != null && response.getStatusLine().getStatusCode() >= 400){
+		    BXHttpException bxe = new BXHttpException(response.getStatusLine().getStatusCode(), response.getStatusLine().getReasonPhrase()); 
+		    throw bxe;
+		  }
+	
+		  // 取得输入流，并使用Reader读取
+		  BufferedReader reader = new BufferedReader(new InputStreamReader(
+		      response.getEntity().getContent(), "utf-8"));// 设置编码,否则中文乱码
+	
+		  String lines = "";
+		  String temp = "";
+		  while ((lines = reader.readLine()) != null) {
+		    temp += lines;
+		  }
+		  reader.close();
+		  // 断开连接
+		  
+		  httpClient.getConnectionManager().shutdown();
+		  if(url.contains("adIds=")){
+		    QuanleimuApplication.resetViewCounter();//counter sent successfully
+		  }
+		  
+		  //System.out.println(temp);
+		  if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
+			  QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
+		  }
+		  
+		  return temp;
 	  }
 	  
 	public static String getCacheRequestIfExist(String url){

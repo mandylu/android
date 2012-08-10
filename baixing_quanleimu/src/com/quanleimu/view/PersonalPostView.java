@@ -677,11 +677,11 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			params.add("query=userId:" + user.getId() + " AND status:3");
 			params.add("activeOnly=0");
 		}
-//		list.add("rt=1");	
+		params.add("rt=1");	
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
-		glLoader.startFetching(true, msg, msg, msg, true);
+		glLoader.startFetching(true, msg, msg, msg, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
 	}
 	
 	@Override
