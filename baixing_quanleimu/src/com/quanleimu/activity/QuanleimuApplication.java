@@ -465,7 +465,7 @@ public class QuanleimuApplication extends Application implements LocationService
 					Location.distanceBetween(location.fGeoCodedLat, location.fGeoCodedLon, location_.fLat, location_.fLon, results);
 					if(results[0] > 50){
 						location.geocoded = false;
-						Log.d("kkkkkk", "location geocoding has been invalidated, since location distance is: "+results[0]+">50m");
+						//Log.d("kkkkkk", "location geocoding has been invalidated, since location distance is: "+results[0]+">50m");
 					}
 				}
 			}

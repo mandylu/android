@@ -271,7 +271,7 @@ public class LocationService{
 				//纠偏以后的经纬度  
 				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));  
 				
-				Log.d("LocationService", "gps encrypted from("+location.getLatitude()+", "+location.getLongitude()+") to ("+point.getLatitudeE6()/1000000.0+", "+point.getLongitudeE6()/1000000.0+") !!");
+				//Log.d("LocationService", "gps encrypted from("+location.getLatitude()+", "+location.getLongitude()+") to ("+point.getLatitudeE6()/1000000.0+", "+point.getLongitudeE6()/1000000.0+") !!");
 				
 				location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
 				location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
