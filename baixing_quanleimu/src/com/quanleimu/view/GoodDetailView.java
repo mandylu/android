@@ -57,6 +57,7 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.widget.PullableScrollView;
@@ -958,6 +959,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	}
 	
 	private void doShare2WX(){
+		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
 		String detailJson = convert2JSONString(this.detail);
 		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
 			"我在百姓网看到：" + detail.getValueByKey("title");
