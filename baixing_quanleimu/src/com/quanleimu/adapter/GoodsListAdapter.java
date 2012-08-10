@@ -230,7 +230,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(c[0]);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context);
+									SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context, R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 								}
 							}
@@ -253,7 +253,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(b);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, b, this.context);
+									SimpleImageLoader.showImg(holder.ivInfo, b, this.context, R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 								}
 							}

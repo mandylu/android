@@ -13,6 +13,8 @@ public interface ImageLoaderCallback
 
 	void refresh(String url,Bitmap bitmap);
 	
+	void fail(String url);
+	
 	Object getObject();
 	
 }

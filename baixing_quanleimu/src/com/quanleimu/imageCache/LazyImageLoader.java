@@ -27,6 +27,7 @@ public class LazyImageLoader
 {
 
 	private static final int MESSAGE_ID =1;
+	public static final int MESSAGE_FAIL = 2;
 	public static final String EXTRA_IMG_URL="extra_img_url";
 	public static final String EXTRA_IMG="extra_img";
 	
@@ -52,6 +53,31 @@ public class LazyImageLoader
 	
 	public void disableSampleSize(){
 		this.imgManger.enableSampleSize(false);
+	}
+	
+	public Bitmap get(String url,ImageLoaderCallback callback, final int defaultImgRes)
+	{
+		Bitmap bitmap = null;//ImageManager.userDefualtHead;
+		
+		//1. try to get from memory cache
+		if(imgManger.contains(url))
+		{
+			bitmap = imgManger.getFromMemoryCache(url);
+//			if(bitmap!=null && bitmap.isRecycled()){
+//				Log.d("imageCache", "bitmap in cache, but it is recycled and reclaimed, oOH...");
+//			}
+		}
+		
+		
+		if(bitmap!=null){//if found in memory cache, just return that to the caller
+			return bitmap;
+		}else
+		{//else, try try to load from disk cache
+			callbackManager.put(url, callback);			
+			startFetchingTread(url);
+	    }
+		
+		return bitmap;
 	}
 	
 	public Bitmap get(String url,ImageLoaderCallback callback)
@@ -226,10 +252,26 @@ public class LazyImageLoader
 					
 					break;
 				}
+				case MESSAGE_FAIL:
+				{
+					Bundle bundle = msg.getData();
+					String url =bundle.getString(EXTRA_IMG_URL);
+					
+					callbackManager.fail(url);
+					
+					break;
+				}
+				
 			}
 			
 		};
 	};
+	
+	
+	private void notifyFail(String url)
+	{
+		callbackManager.fail(url);
+	}
 	
 	private  class DiskIOImageThread extends Thread
 	{		
@@ -326,6 +368,13 @@ public class LazyImageLoader
 						//Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
 						
 						urlDequeDownload.add(url);
+						
+						notifyFail(url);
+//						Message msg = handler.obtainMessage(MESSAGE_FAIL);
+//						Bundle bundle =msg.getData();
+//						bundle.putSerializable(EXTRA_IMG_URL, url);
+//						
+//						handler.sendMessage(msg);
 					}
 				}
 			}

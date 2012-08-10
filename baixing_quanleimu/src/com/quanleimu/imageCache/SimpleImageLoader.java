@@ -42,11 +42,10 @@ public class SimpleImageLoader
 		return QuanleimuApplication.lazyImageLoader.getFileInDiskCache(url);
 	}
 
-	
-	public static void showImg(final ImageView view,final String url,Context con)
+	public static void showImg(final ImageView view,final String url,Context con, final int defaultResImgId)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,view));
+		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,view,defaultResImgId));
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
@@ -77,17 +76,22 @@ public class SimpleImageLoader
 		}	
 	}
 	
-	 
-	private static ImageLoaderCallback getCallback(final String url,final ImageView view)
+	public static void showImg(final ImageView view,final String url,Context con)
+	{
+		showImg(view, url, con, -1);
+	}
+	
+	private static ImageLoaderCallback getCallback(final String url,final ImageView view, final int defaultImgRes)
 	{		
 		return new ImageLoaderCallback()
 		{ 
-			@Override
+			private boolean inFailStatus = false;
 			public void refresh(String url, Bitmap bitmap)
 			{
 					if(url.equals(view.getTag().toString()))
 					{
 						view.setImageBitmap(bitmap);
+						inFailStatus = false;
 					}
 					else
 					{
@@ -98,6 +102,20 @@ public class SimpleImageLoader
 			@Override
 			public Object getObject(){
 				return view;
+			}
+
+			@Override
+			public void fail(String url) {
+				if(url.equals(view.getTag().toString()) && defaultImgRes != -1 && !inFailStatus)
+				{
+					//method #fail(String url) maybe not called on main thread(UI thread), we should make sure the UI update on main thread
+					view.postDelayed(new Runnable() {
+						public void run() {
+							view.setImageResource(defaultImgRes);
+						}
+					}, 100);
+					inFailStatus = true;
+				}
 			}
 		};
 		
@@ -139,10 +157,14 @@ public class SimpleImageLoader
 			public Object getObject(){
 				return btnBig;
 			}
+
+
+			@Override
+			public void fail(String url) {
+				// TODO Auto-generated method stub
+				
+			}
 		};
 	}
-	
-	
-	
 	
 }

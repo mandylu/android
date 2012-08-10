@@ -70,6 +70,22 @@ public class AnimatingImageView extends ImageView {
 		}
 	}
 	
+	
+	
+	@Override
+	public void setImageResource(int resId) {
+		super.setImageResource(resId);
+		
+		if(getVisibility() != View.VISIBLE)
+		{
+			setVisibility(View.VISIBLE);
+		}
+		
+		if(null != mForefrontView && resId != -1){
+			mForefrontView.setVisibility(View.GONE);
+		}
+	}
+
 	public void setForefrontView(View view){
 		mForefrontView = view;
 	}

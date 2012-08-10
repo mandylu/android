@@ -92,4 +92,21 @@ private ConcurrentHashMap<String, List<ImageLoaderCallback>> callbackMap;
 		callbackMap.remove(url);
 		
 	}
+	
+	public void fail(String url)
+	{
+		
+		List<ImageLoaderCallback> callbacks =callbackMap.get(url);
+		
+		if(null == callbacks)
+			return;
+		
+		
+		for (ImageLoaderCallback callback : callbacks)
+		{
+			if(null != callback){
+				callback.fail(url);
+			}
+		}
+	}
 }

@@ -621,6 +621,12 @@ public class HomePageView
 						public Object getObject(){
 							return iv_f;
 						}
+
+						@Override
+						public void fail(String url) {
+							// TODO Auto-generated method stub
+							
+						}
 					});
 					
 				}
@@ -659,6 +665,12 @@ public class HomePageView
 							public Object getObject(){
 								return null;
 							}
+
+							@Override
+							public void fail(String url) {
+								// TODO Auto-generated method stub
+								
+							}
 						});
 						
 						if(bitmapNext != null){
@@ -680,6 +692,12 @@ public class HomePageView
 						@Override
 						public Object getObject(){
 							return null;
+						}
+
+						@Override
+						public void fail(String url) {
+							// TODO Auto-generated method stub
+							
 						}
 					});
 					
