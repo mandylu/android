@@ -61,15 +61,18 @@ public class QuanleimuApplication extends Application implements LocationService
 		SQLiteDatabase db = dbManager.getReadableDatabase();
 		String response = null;
 		try{
-		Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
-		
-		while(c.moveToNext()){
-			response = c.getString(c.getColumnIndex("response"));
-			break;
-		}
+			Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
+			
+			while(c.moveToNext()){
+				response = c.getString(c.getColumnIndex("response"));
+				break;
+			}
+			c.close();
+			
 		}catch(SQLException e){
 			e.printStackTrace();
 		}
+		
 		db.close();
 		return response;
 	}
