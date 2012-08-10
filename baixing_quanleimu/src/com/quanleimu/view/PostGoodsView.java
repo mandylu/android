@@ -1063,7 +1063,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 		cursor.moveToFirst();
 
-		return cursor.getString(column_index);
+		String ret = cursor.getString(column_index);
+		cursor.close();
+		return ret;
 	}
 
 	public void startPhotoZoom(Uri uri) {

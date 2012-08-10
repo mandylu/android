@@ -78,10 +78,12 @@ public class NetworkProtocols
                     String port = cursor_current.getString(cursor_current.getColumnIndex("port"));
                     if (CTWAP.equals(apn) || CMWAP.equals(apn) || UNIWAP.equals(apn) || THREEGWAP.equals(apn))
                     {
+                    	cursor_current.close();
                         return new String[]
                         { proxy, port };
                     }
                 }
+                cursor_current.close();
             }
         }
         catch (Throwable e)
