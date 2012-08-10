@@ -913,10 +913,25 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			if(detail.getImageList() != null){
 				JSONObject jsonImgs = new JSONObject();
 				if(detail.getImageList().getBig() != null && !detail.getImageList().getBig().equals("")){
-					jsonImgs.put("big", detail.getImageList().getBig());
+					JSONArray imgAry = new JSONArray();
+					String big = detail.getImageList().getBig();
+					String[] bigs = big.split(",");
+					for(int m = 0; m < bigs.length; ++ m){
+						imgAry.put(bigs[m].substring(1, bigs[m].length() - 1));
+					}
+//					jsonImgs.put("big", detail.getImageList().getBig());
+					jsonImgs.put("big", imgAry);
 				}
 				if(detail.getImageList().getResize180() != null && !detail.getImageList().getResize180().equals("")){
-					jsonImgs.put("resize180", detail.getImageList().getResize180());
+//					jsonImgs.put("resize180", detail.getImageList().getResize180());
+					JSONArray imgAry = new JSONArray();
+					String resize = detail.getImageList().getResize180();
+					String[] resizes = resize.split(",");
+					for(int m = 0; m < resizes.length; ++ m){
+						imgAry.put(resizes[m].substring(1, resizes[m].length() - 1));
+					}
+					jsonImgs.put("resize180", imgAry);
+					
 				}
 				subObj.put("images", jsonImgs);
 			}
