@@ -25,6 +25,7 @@ import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -716,18 +717,66 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 //			}
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
 			{
-				double lat = Double.valueOf(latV);
-				double lon = Double.valueOf(lonV);
-				String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
-				Bundle bundle = new Bundle();
-				bundle.putString("detailPosition", positions);
-				bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-				//TODO:
-				BaseActivity baseActivity = (BaseActivity)getContext();
-				baseActivity.getIntent().putExtras(bundle);
-				
-				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-				baseActivity.startActivity(baseActivity.getIntent());
+				final double lat = Double.valueOf(latV);
+				final double lon = Double.valueOf(lonV);
+				Thread convertThread = new Thread(new Runnable(){
+					@Override
+					public void run(){
+						String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+								String.valueOf(lat), String.valueOf(lon));
+						try{
+							String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+							JSONObject js = new JSONObject(baiduJsn);
+							Object errorCode = js.get("error");
+							if(errorCode instanceof Integer && (Integer)errorCode == 0){
+								String x = (String)js.get("x");
+								String y = (String)js.get("y");
+								byte[] bytes = Base64.decode(x, Base64.DEFAULT);
+								x = new String(bytes, "UTF-8");
+								
+								bytes = Base64.decode(y, Base64.DEFAULT);
+								y = new String(bytes, "UTF-8");
+								
+								Double dx = Double.valueOf(x);
+								Double dy = Double.valueOf(y);
+								
+								int ix = (int)(dx * 1E6);
+								int iy = (int)(dy * 1E6);
+								
+								x = String.valueOf(ix);
+								y = String.valueOf(iy);
+								
+								Bundle bundle = new Bundle();
+								bundle.putString("detailPosition", x +"," + y);
+								bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+								//TODO:
+								BaseActivity baseActivity = (BaseActivity)getContext();
+								baseActivity.getIntent().putExtras(bundle);
+								
+								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+								baseActivity.startActivity(baseActivity.getIntent());
+								return;
+							}
+
+						}catch(UnsupportedEncodingException e){
+							e.printStackTrace();
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+						String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
+						Bundle bundle = new Bundle();
+						bundle.putString("detailPosition", positions);
+						bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+						//TODO:
+						BaseActivity baseActivity = (BaseActivity)getContext();
+						baseActivity.getIntent().putExtras(bundle);
+						
+						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+						baseActivity.startActivity(baseActivity.getIntent());
+
+					}
+				});
+				convertThread.start();
 			}
 			else{
 				Thread getCoordinate = new Thread(new Runnable(){

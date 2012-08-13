@@ -202,7 +202,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		super.onAttachedToWindow();
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		this.rebuildPage(false);
-		this.lvGoodsList.fireRefresh();
+
 //		onRefresh();
 	}
 	
@@ -286,6 +286,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		glLoader = new GoodsListLoader(null, myHandler, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
+		
+		this.lvGoodsList.fireRefresh();
 	}
 
 	Handler myHandler = new Handler() {
