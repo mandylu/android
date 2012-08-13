@@ -380,6 +380,9 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	    	}else{
 	    		unit = "分钟";
 	    		number += nMinutes;
+	    		if(number.equals("0")){
+	    			number = "1";
+	    		}
 	    	}
 		}else{
 			GoodsDetail detail = goodsListLoader.getGoodsList().getData().get(firstVisibleItem);
