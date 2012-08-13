@@ -216,11 +216,21 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 
 					pullListView.onFail();
 				}else{
+					List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
-						removeGoods(tempGoodsList.getData().get(i), favList);
-						favList.add(0, tempGoodsList.getData().get(i));
+					if(tempGoodsList.getData().size() <= favList.size()){
+						for(int i =0; i < tempGoodsList.getData().size(); ++ i){
+							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
+								if(favList.get(i).equals(tempGoodsList.getData().get(j))){
+									tmp.add(tempGoodsList.getData().get(j));
+									favList.set(i, tempGoodsList.getData().get(j));
+									break;
+								}
+							}
+						}
 					}
+					tempGoodsList.setData(tmp);
+					
 					QuanleimuApplication.getApplication().setListMyStore(favList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", favList);
 					adapter.setList(tempGoodsList.getData());
@@ -244,12 +254,21 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 
 					pullListView.onFail();
 				}else{
+					List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
-					for(int i = tempGoodsList.getData().size() - 1; i >= 0; i--){
-						GoodsDetail curDetail = tempGoodsList.getData().get(i);
-						removeGoods(curDetail, historyList);
-						historyList.add(0, curDetail);
-					}
+					if(tempGoodsList.getData().size() <= historyList.size()){
+						for(int i =0; i < tempGoodsList.getData().size(); ++ i){
+							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
+								if(historyList.get(i).equals(tempGoodsList.getData().get(j))){
+									tmp.add(tempGoodsList.getData().get(j));
+									historyList.set(i, tempGoodsList.getData().get(j));
+									break;
+								}
+							}
+						}
+					}					
+					tempGoodsList.setData(tmp);
+					
 					QuanleimuApplication.getApplication().setListLookHistory(historyList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", historyList);
 					adapter.setList(tempGoodsList.getData());
@@ -395,47 +414,70 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 	@Override
 	public boolean onResult(int msg, GoodsListLoader loader) {
 		if(msg == MSG_GOTMOREFAV || msg == MSG_GOTMOREHISTORY){
-			if(isFav){
-				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
+			GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
+			if(isFav){	
 				if(null == moreGoodsList || 0 == moreGoodsList.getData().size()){
 
 					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 					glLoader.setHasMore(false);
 					return false;
-				}else{
+				}else{					
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-					for(int i = 0; i < moreGoodsList.getData().size(); i++){
-						removeGoods(moreGoodsList.getData().get(i), favList);
-						tempGoodsList.getData().add(moreGoodsList.getData().get(i));
-						favList.add(tempGoodsList.getData().size()-1, moreGoodsList.getData().get(i));
+					if(tempGoodsList.getData().size() < favList.size()){
+						List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+						for(int i = tempGoodsList.getData().size(); i < favList.size(); ++ i){
+							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
+								if(favList.get(i).equals(moreGoodsList.getData().get(j))){
+									tmp.add(moreGoodsList.getData().get(j));
+									favList.set(i, moreGoodsList.getData().get(j));
+									break;
+								}
+							}
+						}
+						List<GoodsDetail> prev = tempGoodsList.getData();
+						prev.addAll(tmp);
+						tempGoodsList.setData(prev);
 					}
+					
 					QuanleimuApplication.getApplication().setListMyStore(favList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listMyStore", favList);
 					
-					//adapter.setList(tempGoodsList.getData());
+					adapter.setList(tempGoodsList.getData());
+					adapter.notifyDataSetChanged();
 					loader.setHasMore(tempGoodsList.getData().size() < favList.size());
 					
 					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
 					return true;
 				}
 			}else{
-				GoodsList moreGoodsList2 = JsonUtil.getGoodsListFromJson(loader.getLastJson());
-				if(null == moreGoodsList2 || 0 == moreGoodsList2.getData().size()){
+				if(null == moreGoodsList || 0 == moreGoodsList.getData().size()){
 
 					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 					glLoader.setHasMore(false);
 					return false;
 				}else{
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
-					for(int i = 0; i < moreGoodsList2.getData().size(); i++){
-						removeGoods(moreGoodsList2.getData().get(i), historyList);
-						tempGoodsList.getData().add(moreGoodsList2.getData().get(i));
-						historyList.add(tempGoodsList.getData().size()-1, moreGoodsList2.getData().get(i));
+					if(tempGoodsList.getData().size() < historyList.size()){
+						List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+						for(int i = tempGoodsList.getData().size(); i < historyList.size(); ++ i){
+							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
+								if(historyList.get(i).equals(moreGoodsList.getData().get(j))){
+									tmp.add(moreGoodsList.getData().get(j));
+									historyList.set(i, moreGoodsList.getData().get(j));
+									break;
+								}
+							}
+						}
+						List<GoodsDetail> prev = tempGoodsList.getData();
+						prev.addAll(tmp);
+						tempGoodsList.setData(prev);
 					}
+
 					QuanleimuApplication.getApplication().setListLookHistory(historyList);
 					Helper.saveDataToLocate(FavoriteAndHistoryView.this.getContext(), "listLookHistory", historyList);
 					
-					//adapter.setList(tempGoodsList.getData());
+					adapter.setList(tempGoodsList.getData());
+					adapter.notifyDataSetChanged();
 					loader.setHasMore(tempGoodsList.getData().size() < historyList.size());
 					pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);                                                                                                     
 					return true;
