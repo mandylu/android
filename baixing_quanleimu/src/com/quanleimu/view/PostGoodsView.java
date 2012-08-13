@@ -1064,7 +1064,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		cursor.moveToFirst();
 
 		String ret = cursor.getString(column_index);
-		cursor.close();
+//		cursor.close();
 		return ret;
 	}
 
