@@ -380,7 +380,10 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	    	}else{
 	    		unit = "分钟";
 	    		number += nMinutes;
-	    		if(number.equals("0")){
+	    		if(number.contains("-")){
+	    			number = "1";
+	    		}
+	    		else if(number.equals("0")){
 	    			number = "1";
 	    		}
 	    	}

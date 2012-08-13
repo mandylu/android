@@ -708,12 +708,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			BXLocation location = QuanleimuApplication.getApplication().getCurrentPosition(true);
-			if(null != location){
-				latV = ""+location.fLat;
-				lonV = ""+location.fLon;
-				
-				Toast.makeText(getContext(), "现在用的是百度api位置，不是帖子位置！！", Toast.LENGTH_LONG);
-			}
+//			if(null != location){
+//				latV = ""+location.fLat;
+//				lonV = ""+location.fLon;
+//				
+//				Toast.makeText(getContext(), "现在用的是百度api位置，不是帖子位置！！", Toast.LENGTH_LONG);
+//			}
 			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
 			{
 				double lat = Double.valueOf(latV);
