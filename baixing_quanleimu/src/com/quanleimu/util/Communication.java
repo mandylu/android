@@ -347,9 +347,9 @@ public class Communication implements Comparator<String> {
 		  }
 		  
 		  //System.out.println(temp);
-		  if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
+//		  if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
 			  QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
-		  }
+//		  }
 		  
 		  return temp;
 	  }

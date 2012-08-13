@@ -202,6 +202,8 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		super.onAttachedToWindow();
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
 		this.rebuildPage(false);
+		this.lvGoodsList.fireRefresh();
+//		onRefresh();
 	}
 	
 	@Override
@@ -475,7 +477,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				Message msg2 = Message.obtain();
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-				
+				lvGoodsList.onRefreshComplete();
 				lvGoodsList.onFail();
 				
 				break;
@@ -677,7 +679,6 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			params.add("query=userId:" + user.getId() + " AND status:3");
 			params.add("activeOnly=0");
 		}
-		params.add("rt=1");	
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
 		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);

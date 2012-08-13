@@ -183,7 +183,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			list.add("activeOnly=0");
 			list.add("start=0");
 			list.add("rt=1");
-			list.add("rows=30");
+			list.add("rows=1000");
 			
 			if(bundle != null && bundle.getString("lastPost") != null){
 				list.add("newAdIds=" + bundle.getString("lastPost"));
