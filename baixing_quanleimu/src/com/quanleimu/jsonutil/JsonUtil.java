@@ -174,6 +174,7 @@ public class JsonUtil {
 	// 获取附近的Goods信息
 	public static GoodsList getGoodsListFromJson(String jsonData) {
 		GoodsList goodsList = new GoodsList();
+		if(jsonData == null) return goodsList;
 		JSONObject jsonObj;
 		try {
 			jsonObj = new JSONObject(jsonData);
