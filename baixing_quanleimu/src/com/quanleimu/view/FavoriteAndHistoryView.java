@@ -224,7 +224,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 							boolean exist = false;
 							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
 								if(favList.get(i).equals(tempGoodsList.getData().get(j))){
-									tmp.add(tempGoodsList.getData().get(j));
+									tmp.add(0, tempGoodsList.getData().get(j));
 									favList.set(i, tempGoodsList.getData().get(j));
 									exist = true;
 									break;
@@ -268,7 +268,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 							boolean exist = false;
 							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
 								if(historyList.get(i).equals(tempGoodsList.getData().get(j))){
-									tmp.add(tempGoodsList.getData().get(j));
+									tmp.add(0, tempGoodsList.getData().get(j));
 									historyList.set(i, tempGoodsList.getData().get(j));
 									exist = true;
 									break;
@@ -442,7 +442,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 							boolean exist = false;
 							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
 								if(favList.get(i).equals(moreGoodsList.getData().get(j))){
-									tmp.add(moreGoodsList.getData().get(j));
+									tmp.add(0, moreGoodsList.getData().get(j));
 									favList.set(i, moreGoodsList.getData().get(j));
 									exist = true;
 									break;
@@ -481,7 +481,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 							boolean exist = false;
 							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
 								if(historyList.get(i).equals(moreGoodsList.getData().get(j))){
-									tmp.add(moreGoodsList.getData().get(j));
+									tmp.add(0, moreGoodsList.getData().get(j));
 									historyList.set(i, moreGoodsList.getData().get(j));
 									exist = true;
 									break;
