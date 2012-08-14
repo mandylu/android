@@ -23,6 +23,7 @@ public class SecondCategoryView extends BaseView implements OnItemClickListener 
 	private Bundle bundle;
 	private boolean isPost = false;
 	private FirstStepCate cate = null;
+	private ListView lvContent = null;
 	private int msgBack = 0xFFFFFFFF;
 
 	public SecondCategoryView(Context content, Bundle bundle, FirstStepCate cate, boolean isPost) {
@@ -48,8 +49,14 @@ public class SecondCategoryView extends BaseView implements OnItemClickListener 
 		this.addView(v);
 
 		CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), cate.getChildren(), 0x1FFFFFFF, false);
-		((ListView)v.findViewById(R.id.post_other_list)).setAdapter(adapter);
-		((ListView)v.findViewById(R.id.post_other_list)).setOnItemClickListener(this);
+		lvContent = (ListView)v.findViewById(R.id.post_other_list);
+		lvContent.setAdapter(adapter);
+		lvContent.setOnItemClickListener(this);
+	}
+	
+	@Override
+	public void onResume(){
+		lvContent.requestFocus();
 	}
 
 	@Override
