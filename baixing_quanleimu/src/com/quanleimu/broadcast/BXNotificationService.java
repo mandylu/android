@@ -41,7 +41,7 @@ public class BXNotificationService extends Service {
 		String tickerText = (ticket == null || ticket.equals("")) ? "百姓网客户端有新版本更新"
 				: ticket;
 		// Notification的图标，一般不要用彩色的
-		int icon = R.drawable.app_icon;
+		int icon = R.drawable.push_icon;
 
 		// contentTitle和contentText都是标准的Notification View的内容
 		// Notification的内容标题，拖下来后看到的标题
