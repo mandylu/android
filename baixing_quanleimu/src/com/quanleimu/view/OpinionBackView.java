@@ -131,7 +131,7 @@ public class OpinionBackView extends BaseView {
 			// "http://www.baixing.com/iphone/feedback/v1/?device=android";
 			// url = url + "&content="+URLEncoder.encode(content)
 			// +"&androidUniqueIdentifier="+phoneMark+"&mobile="+mobile;
-			String apiName = -1 == opinionType ? "report" : (0 == opinionType ? "feedback" : "appeal");
+			String apiName = -1 == opinionType ? "feedback" : (0 == opinionType ? "report" : "appeal");
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("mobile=" + mobile);
