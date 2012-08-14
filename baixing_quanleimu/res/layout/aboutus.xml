@@ -130,7 +130,7 @@
 				        android:layout_below="@+id/textView7"
 				        android:layout_marginTop="8dp"
 				        android:textColor="#595959"
-				        android:text="微博：http://weibo.com/baixingmobile/" 
+				        android:text="微博：http://weibo.com/baixingmobile" 
 						android:linksClickable = "true"
 						android:autoLink = "all"/>
 				   
