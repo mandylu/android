@@ -218,14 +218,20 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				}else{
 					List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+					
 					if(tempGoodsList.getData().size() <= favList.size()){
-						for(int i =0; i < tempGoodsList.getData().size(); ++ i){
+						for(int i = tempGoodsList.getData().size() - 1; i >= 0; -- i){
+							boolean exist = false;
 							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
 								if(favList.get(i).equals(tempGoodsList.getData().get(j))){
 									tmp.add(tempGoodsList.getData().get(j));
 									favList.set(i, tempGoodsList.getData().get(j));
+									exist = true;
 									break;
 								}
+							}
+							if(!exist){
+								favList.remove(i);
 							}
 						}
 					}
@@ -256,14 +262,20 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				}else{
 					List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
+					
 					if(tempGoodsList.getData().size() <= historyList.size()){
-						for(int i =0; i < tempGoodsList.getData().size(); ++ i){
+						for(int i = tempGoodsList.getData().size() - 1; i >= 0; -- i){
+							boolean exist = false;
 							for(int j = 0; j < tempGoodsList.getData().size(); ++ j){
 								if(historyList.get(i).equals(tempGoodsList.getData().get(j))){
 									tmp.add(tempGoodsList.getData().get(j));
 									historyList.set(i, tempGoodsList.getData().get(j));
+									exist = true;
 									break;
 								}
+							}
+							if(!exist){
+								historyList.remove(i);
 							}
 						}
 					}					
@@ -425,13 +437,19 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
 					if(tempGoodsList.getData().size() < favList.size()){
 						List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
-						for(int i = tempGoodsList.getData().size(); i < favList.size(); ++ i){
+						 
+						for(int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); -- i){
+							boolean exist = false;
 							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
 								if(favList.get(i).equals(moreGoodsList.getData().get(j))){
 									tmp.add(moreGoodsList.getData().get(j));
 									favList.set(i, moreGoodsList.getData().get(j));
+									exist = true;
 									break;
 								}
+							}
+							if(!exist){
+								favList.remove(i);
 							}
 						}
 						List<GoodsDetail> prev = tempGoodsList.getData();
@@ -459,13 +477,18 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 					List<GoodsDetail> historyList = QuanleimuApplication.getApplication().getListLookHistory();
 					if(tempGoodsList.getData().size() < historyList.size()){
 						List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
-						for(int i = tempGoodsList.getData().size(); i < historyList.size(); ++ i){
+						for(int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); -- i){
+							boolean exist = false;
 							for(int j = 0; j < moreGoodsList.getData().size(); ++ j){
 								if(historyList.get(i).equals(moreGoodsList.getData().get(j))){
 									tmp.add(moreGoodsList.getData().get(j));
 									historyList.set(i, moreGoodsList.getData().get(j));
+									exist = true;
 									break;
 								}
+							}
+							if(!exist){
+								historyList.remove(i);
 							}
 						}
 						List<GoodsDetail> prev = tempGoodsList.getData();
