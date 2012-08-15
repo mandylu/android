@@ -291,7 +291,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				progressBar.setVisibility(View.GONE);
 				
 				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
-				if (moreGoodsList == null || moreGoodsList.getData().size() == 0) {
+				if (moreGoodsList == null || moreGoodsList.getData() == null || moreGoodsList.getData().size() == 0) {
 //					Message msg2 = Message.obtain();
 //					msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
 //					Bundle bundle1 = new Bundle();
