@@ -97,11 +97,11 @@ public class QuanleimuApplication extends Application implements LocationService
 			SQLiteDatabase db = dbManager.getWritableDatabase();
 			try{
 	//			String encodedRequest = "'" + request + "'";
-				String encodedRequest = request;
+//				String encodedRequest = request;
 	//			String encodedResult = "'" + result + "'";
-				String encodedResult = result;
+//				String encodedResult = result;
 				String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-				String queryString = ("insert into " + BXDatabaseHelper.TABLENAME + "(url,response,timestamp) values(" + encodedRequest + "," + encodedResult + "," + timestamp + ")"); 
+//				String queryString = ("insert into " + BXDatabaseHelper.TABLENAME + "(url,response,timestamp) values(" + encodedRequest + "," + encodedResult + "," + timestamp + ")"); 
 	//			db.execSQL(queryString);
 				db.execSQL("insert into " + BXDatabaseHelper.TABLENAME + "(url, response, timestamp) values(?,?,?)", new String[]{request, result, timestamp});
 			}catch(SQLException e){
