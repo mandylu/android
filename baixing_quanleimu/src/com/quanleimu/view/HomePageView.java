@@ -428,7 +428,7 @@ public class HomePageView
 			list.add("v=_v2");
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url, false);
+				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					myHandler.sendEmptyMessage(1);
 				} else {
