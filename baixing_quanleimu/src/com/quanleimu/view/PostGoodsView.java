@@ -597,6 +597,15 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 			}
 		}
+		if(categoryEnglishName.equals("nvzhaonan")){
+			for (int i = 0; i < bitmap_url.size(); i++) {
+				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
+					return true;
+				}
+			}
+			Toast.makeText(this.getContext(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
+			return false;
+		}
 		return true;
 	}
 
