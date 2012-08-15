@@ -318,9 +318,13 @@ public class Communication implements Comparator<String> {
 		  HttpResponse response = null;
 	
 		  try{
+//			  Log.d("getdatabyurl", httpClient == null ? "null!!!!!!!!!!!!!!!!!!!" : "gooooooooooooood");
 				response = httpClient.execute(httpPost);
 		  }catch(IllegalStateException e){
 				//Log.d("kkkkkk", "network request has been canceled: "+url+" !!!");
+			  return null;
+		  }catch(NullPointerException e){
+//			  Log.d("nullexception", "nullllllllllexception~~~~~~~~~~");
 			  return null;
 		  }
 		  
