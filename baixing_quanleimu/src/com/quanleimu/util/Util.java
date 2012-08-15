@@ -196,6 +196,11 @@ public class Util {
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){
 			file = "_" + file;
 		}
+		File testfile = new File(file); 
+		if(!testfile.exists()){
+			return null;
+		}
+
 		Object obj = null;
 		FileInputStream fis = null;
 		ObjectInputStream ois = null;
