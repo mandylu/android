@@ -165,6 +165,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
     public boolean onRightActionPressed(){
     	ViewFlow vfCoupon = (ViewFlow)findViewById(R.id.vfCoupon);
     	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
+    	if(filePath == null) return true;
     	
     	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
 
