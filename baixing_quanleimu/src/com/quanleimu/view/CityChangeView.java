@@ -363,6 +363,7 @@ public class CityChangeView extends BaseView implements QuanleimuApplication.onL
 		}
 
 		TextView tvGPSCityName = (TextView) findViewById(R.id.tvGPSCityName);
+		if(null == tvGPSCityName) return;
 		tvGPSCityName.setText(location.cityName);
 		
 		ivGPSChoose.setVisibility(View.VISIBLE);
