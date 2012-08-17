@@ -127,13 +127,13 @@ public class BXNotificationService extends Service {
 				int index = url.indexOf("udid=");
 				index += 5;
 				if(index >= url.length()){
-					url += getUdid();
+					url += QuanleimuApplication.getDeviceUdid(BXNotificationService.this);
 				}
 				else{
 					char version = url.charAt(index);
 					if(version == '&'){
 						StringBuffer sb = new StringBuffer(url);
-						sb = sb.insert(index, getUdid());
+						sb = sb.insert(index, QuanleimuApplication.getDeviceUdid(BXNotificationService.this));
 						url = sb.toString();
 					}
 				}

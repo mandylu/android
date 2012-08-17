@@ -1,9 +1,11 @@
 package com.quanleimu.activity;
 
+import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.UUID;
 
 //import net.sourceforge.simcpux.Constants;
 import android.app.Application;
@@ -11,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.database.Cursor;
 import android.database.SQLException;
@@ -36,6 +39,7 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.weibo.net.AccessToken;
 import com.quanleimu.util.BXDatabaseHelper;
+import android.telephony.TelephonyManager;
 public class QuanleimuApplication extends Application implements LocationService.BXLocationServiceListener{
 
 	public static final String kWBBaixingAppKey = "3747392969";
@@ -53,6 +57,30 @@ public class QuanleimuApplication extends Application implements LocationService
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
+	
+	protected static final String PREFS_FILE = "device_id.xml";
+    protected static final String PREFS_DEVICE_ID = "device_id";
+
+
+    static public String getDeviceUdid(Context context) {
+    	final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+        // Use the Android ID unless it's broken, in which case fallback on deviceId,
+        // unless it's not available, then fallback on a random number which we store
+        // to a prefs file
+        try {
+            if ("9774d56d682e549c".equals(androidId)) {
+                final String deviceId = ((TelephonyManager) context.getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
+                String uuid = deviceId!=null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")).toString() : UUID.randomUUID().toString();
+                return uuid;
+            }
+        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+        	e.printStackTrace();
+        }
+        return androidId;
+
+    }
+
 	
 	public static String getCacheNetworkRequest(String request){
 //		if(cacheNetworkRequest == null) return null;
@@ -399,34 +427,7 @@ public class QuanleimuApplication extends Application implements LocationService
 		final BXLocation curLocation = getCurrentPosition(true);
 		if(null == curLocation){
 			return false;
-		}
-		
-		/*
-		(new AsyncTask<BXLocation, Boolean, BXLocation>(){
-			
-			@Override
-			protected BXLocation doInBackground(BXLocation... locations) { 
-				if(null != locations[0] && (!locations[0].geocoded || null == locations[0].cityName || 0 == locations[0].cityName.length())){
-					return LocationService.geocodeAddr(Float.toString(curLocation.fLat), Float.toString(curLocation.fLon));
-				}else{
-					try {
-						Thread.sleep(50);
-					} catch (InterruptedException e) {
-						e.printStackTrace();
-					}
-					return locations[0];
-				}
-			}
-			
-			@Override
-			protected void onPostExecute(BXLocation location_) {  
-				if(null != location_){
-					setLocation(location_);
-				}
-				
-				listener.onLocationFetched(location_);
-			}
-		}).execute(curLocation);*/
+		}		
 
 		if(!curLocation.geocoded){
 			LocationService.getInstance().reverseGeocode(curLocation.fLat, curLocation.fLon, new LocationService.BXRgcListener() {
