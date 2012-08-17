@@ -17,6 +17,7 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
@@ -26,6 +27,8 @@ import com.quanleimu.util.Util;
 import android.net.ConnectivityManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
 
 public class BXNotificationService extends Service {
 	private static final String TAG = "BXService";
@@ -73,6 +76,19 @@ public class BXNotificationService extends Service {
 		// 显示这个notification
 		mNotificationManager.notify(HELLO_ID, notification);
 	}
+	
+	private String getVersion(){
+		PackageManager packageManager = getPackageManager();
+		PackageInfo packInfo;
+		try {
+			packInfo = packageManager.getPackageInfo(getPackageName(), 0);
+			return packInfo.versionName;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return "";
+	}
+
 
 	class GetNotificationThread implements Runnable {
 		@Override
@@ -88,6 +104,21 @@ public class BXNotificationService extends Service {
 			}
 
 			String url = Communication.getApiUrl(apiName, list);
+			if(url.contains("version=")){
+				int index = url.indexOf("version=");
+				index += 8;
+				if(index >= url.length()){
+					url += getVersion();
+				}
+				else{
+					char version = url.charAt(index);
+					if(version == '&'){
+						StringBuffer sb = new StringBuffer(url);
+						sb = sb.insert(index, getVersion());
+						url = sb.toString();
+					}
+				}
+			}
 			try {
 				json = Communication.getDataByUrl(url, true);
 				myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
@@ -117,7 +148,7 @@ public class BXNotificationService extends Service {
 				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 3600000);
 				break;
 			case MSG_PUSH_RETURN:
-				if (json != null) {
+				if (json != null && !json.toString().equals("null")) {
 					String time = null, ticket = null, title = null, content = null;
 					try {
 						JSONObject jsonObject = new JSONObject(json);
@@ -187,7 +218,6 @@ public class BXNotificationService extends Service {
 	public void onDestroy() {
 		myHandler.removeMessages(MSG_CHECK_UPDATE);
 		unregisterReceiver(networkStateReceiver);
-		Log.d("service", "unregister receiver!!~~~~!!~~~");
 	}
 
 	@Override
