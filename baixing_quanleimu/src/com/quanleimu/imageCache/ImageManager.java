@@ -10,6 +10,7 @@ import java.io.InputStream;
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 
 import android.content.Context;
@@ -292,8 +293,8 @@ public class ImageManager
 		{
 			httpClient = NetworkProtocols.getInstance().getHttpClient();
 	        
-	        HttpPost httpPost = new HttpPost(urlStr); 
-	        HttpResponse response = httpClient.execute(httpPost);	
+	        HttpGet httpGet = new HttpGet(urlStr); 
+	        HttpResponse response = httpClient.execute(httpGet);	
 	        
 	        String key = getMd5(urlStr);
 	        if(null != imageDiskLruCache){

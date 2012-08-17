@@ -15,6 +15,7 @@ import java.util.zip.GZIPInputStream;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
+import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.json.JSONObject;
@@ -292,8 +293,8 @@ public class Communication implements Comparator<String> {
 			throws UnsupportedEncodingException, IOException, BXHttpException {
 		HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
 
-		HttpPost httpPost = new HttpPost(url);
-		HttpResponse response = httpClient.execute(httpPost);
+		HttpGet httpGet = new HttpGet(url);
+		HttpResponse response = httpClient.execute(httpGet);
 
 		if (response.getStatusLine() != null
 				&& response.getStatusLine().getStatusCode() >= 400) {
