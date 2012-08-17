@@ -12,6 +12,7 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.Settings.Secure;
 import android.util.Log;
 import android.app.NotificationManager;
 import android.app.Notification;
@@ -89,6 +90,9 @@ public class BXNotificationService extends Service {
 		return "";
 	}
 
+	private String getUdid(){
+		return Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
+	}
 
 	class GetNotificationThread implements Runnable {
 		@Override
@@ -119,6 +123,21 @@ public class BXNotificationService extends Service {
 					}
 				}
 			}
+			if(url.contains("udid=")){
+				int index = url.indexOf("udid=");
+				index += 5;
+				if(index >= url.length()){
+					url += getUdid();
+				}
+				else{
+					char version = url.charAt(index);
+					if(version == '&'){
+						StringBuffer sb = new StringBuffer(url);
+						sb = sb.insert(index, getUdid());
+						url = sb.toString();
+					}
+				}
+			}			
 			try {
 				json = Communication.getDataByUrl(url, true);
 				myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
