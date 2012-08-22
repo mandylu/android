@@ -83,12 +83,12 @@ public class QuanleimuApplication extends Application implements LocationService
 
 	
 	public static String getCacheNetworkRequest(String request){
-//		if(cacheNetworkRequest == null) return null;
-//		return cacheNetworkRequest.get(request);
 		synchronized(dbManager){
-			SQLiteDatabase db = dbManager.getReadableDatabase();
 			String response = null;
+			SQLiteDatabase db = null;
 			try{
+				db = dbManager.getReadableDatabase();
+				
 				Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
 				
 				while(c.moveToNext()){
@@ -96,20 +96,21 @@ public class QuanleimuApplication extends Application implements LocationService
 					break;
 				}
 				c.close();
-				
 			}catch(SQLException e){
 				e.printStackTrace();
 			}
-			
-			db.close();
+			if(db != null){
+				db.close();
+			}
 			return response;
 		}
 		
 	}
 	
 	public static void deleteOldRecorders(int intervalInSec){
-		SQLiteDatabase db = dbManager.getWritableDatabase();
+		SQLiteDatabase db = null;
 		try{
+			db = dbManager.getWritableDatabase();
 			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME + " WHERE timestamp<?", new String[]{String.valueOf(System.currentTimeMillis()/1000 - intervalInSec)});
 			
 		}catch(SQLException e){
@@ -117,41 +118,25 @@ public class QuanleimuApplication extends Application implements LocationService
 		}catch(Exception e){
 			e.printStackTrace();
 		}
-		db.close();		
+		if(db != null){
+			db.close();
+		}
 	}
 
 	public static void putCacheNetworkRequest(String request, String result){
 		synchronized(dbManager){
-			SQLiteDatabase db = dbManager.getWritableDatabase();
+			SQLiteDatabase db = null; 
 			try{
-	//			String encodedRequest = "'" + request + "'";
-//				String encodedRequest = request;
-	//			String encodedResult = "'" + result + "'";
-//				String encodedResult = result;
+				db = dbManager.getWritableDatabase();
 				String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-//				String queryString = ("insert into " + BXDatabaseHelper.TABLENAME + "(url,response,timestamp) values(" + encodedRequest + "," + encodedResult + "," + timestamp + ")"); 
-	//			db.execSQL(queryString);
 				db.execSQL("insert into " + BXDatabaseHelper.TABLENAME + "(url, response, timestamp) values(?,?,?)", new String[]{request, result, timestamp});
 			}catch(SQLException e){
 				e.printStackTrace();
 			}
-			db.close();
+			if(db != null){
+				db.close();
+			}
 		}
-//		if(request ==  null || result == null || request.equals("")) return;
-//		if(cacheNetworkRequest == null){
-//			cacheNetworkRequest = new LinkedHashMap<String, String>();
-//		}
-//		
-//		if(cacheNetworkRequest.containsKey(request)){
-//			cacheNetworkRequest.put(request, result);
-//		}
-//		else{
-//			if(cacheNetworkRequest.size() >= 500){
-//				cacheNetworkRequest.remove(cacheNetworkRequest.keySet().iterator().next());
-//				
-//			}
-//			cacheNetworkRequest.put(request, result);
-//		}
 	}
 	
 	public static void addViewCounter(String adId){
