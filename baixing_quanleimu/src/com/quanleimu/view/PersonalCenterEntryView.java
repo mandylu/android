@@ -2,9 +2,13 @@ package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,9 +26,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.UserProfile;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
@@ -47,7 +53,14 @@ public class PersonalCenterEntryView extends BaseView implements
 	private Bundle bundle = null;
 	private UserBean user = null;
 	private String json = null;
+	private String upJson = null;
+	private String locationJson = null;
+	private String sessionsJson = null;
 	static final int MSG_GETPERSONALADS = 1;
+	static final int MSG_GETPERSONALPROFILE = 2;
+	static final int MSG_GETPERSONALLOCATION = 3;
+	static final int MSG_GETPERSONALSESSIONS = 4;
+	private List<ChatSession> sessions = null;
 
 	public PersonalCenterEntryView(Context context, Bundle bundle) {
 		super(context);
@@ -62,6 +75,7 @@ public class PersonalCenterEntryView extends BaseView implements
 		this.findViewById(R.id.rl_wofav).setOnClickListener(this);
 		this.findViewById(R.id.rl_wohistory).setOnClickListener(this);
 		this.findViewById(R.id.rl_wosent).setOnClickListener(this);
+		this.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
 	}
 
 	@Override
@@ -86,6 +100,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			pd.setCancelable(true);
 			
 			new Thread(new GetPersonalAdsThread()).start();
+			new Thread(new GetPersonalProfileThread()).start();
+			new Thread(new GetPersonalSessionsThread()).start();
 		}
 		else{
 			TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);
@@ -116,6 +132,13 @@ public class PersonalCenterEntryView extends BaseView implements
 				m_viewInfoListener.onNewView(new PersonalPostView(this.getContext(), bundle));
 			}			
 			break;
+		case R.id.rl_woprivatemsg:
+			if(user == null){
+				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
+			}else{
+				m_viewInfoListener.onNewView(new SessionListView(this.getContext(), this.sessions));
+			}						
+			break;
 		default:
 			break;
 		}
@@ -144,6 +167,42 @@ public class PersonalCenterEntryView extends BaseView implements
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
 		return tab;
 	}
+	
+	private void fillProfile(UserProfile up){
+		if(up.nickName != null){
+			((TextView)this.findViewById(R.id.personalNick)).setText(up.nickName);
+		}
+		if(up.gender != null && !up.equals("")){
+			if(up.gender.equals("男")){
+				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
+			}else if(up.gender.equals("女")){
+				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_female);
+			}
+		}
+		if(up.location != null && !up.location.equals("")){
+			(new Thread(new GetLocationThread(up.location))).start();
+		}
+		
+		if(up.createTime != null && !up.equals("")){
+			try{
+				Date date = new Date(Long.parseLong(up.createTime) * 1000);
+				SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月", Locale.SIMPLIFIED_CHINESE);
+				((TextView)this.findViewById(R.id.personalRegisterTime)).setText(df.format(date) + "注册");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
+		String image = null;
+//		if(up.squareImage != null && !up.squareImage.equals("")){
+//			image = up.squareImage;
+//		}
+		if(up.resize180Image != null && !up.resize180Image.equals("")){
+			image = up.resize180Image;
+		}
+		if(image != null){
+			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), image, this.getContext());
+		}
+	}
 
 	Handler myHandler = new Handler() {
 		@Override
@@ -167,6 +226,42 @@ public class PersonalCenterEntryView extends BaseView implements
 					TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);
 					tvPersonalAds.setText(String.valueOf((listMyPost == null) ? 0 : listMyPost.size()));
 					QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				}
+				break;
+			case MSG_GETPERSONALPROFILE:
+				if(upJson != null){
+					UserProfile up = UserProfile.from(upJson);
+					if(up != null){
+						fillProfile(up);
+					}
+				}
+				break;
+			case MSG_GETPERSONALLOCATION:
+				if(locationJson != null){
+					try{
+						JSONArray metaAry = new JSONArray(locationJson);
+						if(metaAry != null && metaAry.length() > 0){
+							JSONObject meta = metaAry.getJSONObject(0);
+							if(meta != null){
+								if(meta.has("displayName")){
+									String location = meta.getString("displayName");
+									if(location != null){
+										((TextView)PersonalCenterEntryView.this.findViewById(R.id.personalLocation)).setText("(" + location + ")");
+									}
+								}								
+							}
+						}
+					}catch(JSONException e){
+						e.printStackTrace();
+					}
+				}
+				break;
+			case MSG_GETPERSONALSESSIONS:
+				if(sessionsJson != null){
+					sessions = ChatSession.fromJson(sessionsJson);
+					if(sessions != null){
+						((TextView)PersonalCenterEntryView.this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+					}
 				}
 				break;
 			}
@@ -212,4 +307,108 @@ public class PersonalCenterEntryView extends BaseView implements
 			}
 		}
 	}
+	
+	class GetLocationThread implements Runnable{
+		public GetLocationThread(String objId){
+			this.objId = objId;
+		}
+		private String objId = "";
+		@Override
+		public void run() {
+			String apiName = "metaobject";
+			ArrayList<String> list = new ArrayList<String>();
+			 
+			list.add("objIds=" + objId);
+			
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				locationJson = Communication.getDataByUrl(url, false);
+				myHandler.sendEmptyMessage(MSG_GETPERSONALLOCATION);
+				return;
+			} catch (UnsupportedEncodingException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (IOException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (Communication.BXHttpException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			}
+			
+			if(pd != null){
+				pd.dismiss();
+			}
+		}		
+	}
+	
+	class GetPersonalProfileThread implements Runnable {
+		@Override
+		public void run() {
+			String apiName = "user_profile";
+			ArrayList<String> list = new ArrayList<String>();
+			 
+			list.add("rt=1");
+			list.add("userId=" + user.getId());
+			
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				upJson = Communication.getDataByUrl(url, false);
+				myHandler.sendEmptyMessage(MSG_GETPERSONALPROFILE);
+				return;
+			} catch (UnsupportedEncodingException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (IOException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (Communication.BXHttpException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			}
+			
+			if(pd != null){
+				pd.dismiss();
+			}
+		}
+	}	
+
+	class GetPersonalSessionsThread implements Runnable {
+		@Override
+		public void run() {
+			String apiName = "read_session";
+			ArrayList<String> list = new ArrayList<String>();
+			 
+			list.add("u_id=" + user.getId());
+			
+			String url = Communication.getApiUrl(apiName, list);
+			try {
+				sessionsJson = Communication.getDataByUrl(url, true);
+				myHandler.sendEmptyMessage(MSG_GETPERSONALSESSIONS);
+				return;
+			} catch (UnsupportedEncodingException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (IOException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			} catch (Communication.BXHttpException e) {
+				Message msg2 = Message.obtain();
+				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			}
+			
+			if(pd != null){
+				pd.dismiss();
+			}
+		}
+	}	
 }

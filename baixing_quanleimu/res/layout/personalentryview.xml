@@ -6,6 +6,78 @@
     android:orientation="vertical" >
 
     <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:paddingBottom="15dip"
+        android:paddingTop="10dip" >
+
+        <ImageView
+            android:id="@+id/personalImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="15dip"
+            android:src="@drawable/huodong" >
+        </ImageView>
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@id/personalImage"
+            android:layout_toRightOf="@id/personalImage"
+            android:orientation="horizontal"
+            android:paddingBottom="15dip"
+            android:paddingLeft="10dip"
+            android:paddingTop="10dip" >
+
+            <TextView
+                android:id="@+id/personalNick"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:textColor="#82807C"
+                android:textSize="20dip"
+                android:textStyle="bold" >
+            </TextView>
+
+            <ImageView
+                android:id="@+id/personalGenderImage"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:paddingLeft="5dip" >
+            </ImageView>
+
+            <TextView
+                android:id="@+id/personalLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dip"
+                android:textColor="#82807C"
+                android:textSize="20dip"
+                android:textStyle="bold" >
+            </TextView>
+        </LinearLayout>
+
+        <TextView
+            android:id="@+id/personalRegisterTime"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/personalImage"
+            android:layout_marginBottom="10dip"
+            android:layout_toRightOf="@id/personalImage"
+            android:paddingLeft="10dip"
+            android:textColor="#82807C"
+            android:textSize="20dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+    <RelativeLayout
         android:id="@+id/rl_wosent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -193,6 +265,73 @@
             android:paddingRight="3dip"
             android:textColor="#FFFFFF"
             android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+    <RelativeLayout
+        android:id="@+id/rl_woprivatemsg"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:clickable="true"
+        android:gravity="center_vertical"
+        android:padding="10dip" >
+
+        <ImageView
+            android:id="@+id/privatemsgicon"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:src="@drawable/pic_my_buzz" >
+        </ImageView>
+
+        <TextView
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="20dip"
+            android:layout_toRightOf="@id/privatemsgicon"
+            android:duplicateParentState="true"
+            android:gravity="center_vertical"
+            android:text="私信"
+            android:textColor="@drawable/list_textselector"
+            android:textSize="18dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <ImageView
+            android:id="@+id/buzzarrow"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:src="@drawable/arrow" >
+        </ImageView>
+
+        <TextView
+            android:id="@+id/tv_buzzcount"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dip"
+            android:layout_toLeftOf="@id/buzzarrow"
+            android:background="@drawable/personalcountbk"
+            android:gravity="center_vertical"
+            android:paddingLeft="3dip"
+            android:paddingRight="3dip"
+            android:textColor="#FFFFFF"
+            android:textSize="18dip"
+            android:text="0"
             android:textStyle="bold" >
         </TextView>
     </RelativeLayout>
