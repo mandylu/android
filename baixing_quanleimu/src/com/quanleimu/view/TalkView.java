@@ -385,7 +385,10 @@ public class TalkView extends BaseView
 			ArrayList<String> cmdOpts = new ArrayList<String>();
 			cmdOpts.add("u_id_from=" + URLEncoder.encode(myUserId));
 			cmdOpts.add("u_id_to=" + URLEncoder.encode(targetUserId));
-			cmdOpts.add("ad_id=" + URLEncoder.encode(adId));
+			if (adId != null)
+			{
+				cmdOpts.add("ad_id=" + URLEncoder.encode(adId));
+			}
 			cmdOpts.add("message=" + URLEncoder.encode(message));
 			
 			String url = Communication.getApiUrl(apiName, cmdOpts);
