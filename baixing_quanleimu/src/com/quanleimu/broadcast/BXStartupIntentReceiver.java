@@ -12,6 +12,9 @@ public class BXStartupIntentReceiver extends BroadcastReceiver {
 			Intent serviceIntent = new Intent(context,
 					BXNotificationService.class);
 			context.startService(serviceIntent);
+			
+	        Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+	        context.startService(startPush);
 		}
 	}
 }

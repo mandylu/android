@@ -10,7 +10,9 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.AllCates;
+import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.Filters;
@@ -52,6 +54,27 @@ public class JsonUtil {
 			e1.printStackTrace();
 		}
 		return cityList;
+	}
+	
+	public static List<ChatMessage> parseChatMessages(JSONArray msgs)
+	{
+		final List<ChatMessage> list = new ArrayList<ChatMessage>();
+		final int count = msgs.length();
+		
+		for (int i=0; i<count; i++)
+		{
+			try
+			{
+				ChatMessage tmp = ChatMessage.fromJson(msgs.getJSONObject(i));
+				list.add(tmp);
+			} 
+			catch(Throwable t)
+			{
+				//Ignor.
+			}
+		}
+		
+		return list;
 	}
 	
 	// 获取热点集合

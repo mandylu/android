@@ -51,8 +51,7 @@ public class SessionListAdapter extends BaseAdapter {
 
 	@Override
 	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
-		return arg0;
+		return list.get(arg0);
 	}
 
 	@Override

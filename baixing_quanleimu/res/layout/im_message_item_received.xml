@@ -1,0 +1,35 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal"
+    android:paddingTop="10dp" >
+
+    <LinearLayout
+        android:id="@+id/im_message_content_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+		android:gravity="center_vertical"
+        android:background="@drawable/chat_bubble_white"
+        android:minWidth="100dp"
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/linearLayout2"
+            android:layout_width="fill_parent"
+            android:layout_weight="0.85"
+            android:layout_height="wrap_content" >
+            
+        <TextView
+            android:id="@+id/im_message_content"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:autoLink="map|phone|web"
+            android:text="Your message"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#000000" />
+
+        </LinearLayout>
+    </LinearLayout>
+
+</LinearLayout>

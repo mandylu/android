@@ -20,11 +20,8 @@ public class ChatMessage implements Serializable
 	private String from;//u_id_from
 	private String to;//u_id_to
 	private String id;//id
-	private String senderNick;//u_nick_from
-	private String receiverNick; //u_nick_to
 	private String adId;//ad_id
 	private long timestamp;//timestamp
-	private String adTitle;//ad_title
 	private String message;//message
 	private String session;//session_id
 	
@@ -49,14 +46,14 @@ public class ChatMessage implements Serializable
 	{
 		ChatMessage chatMsg = new ChatMessage();
 		try {
-			chatMsg.setAdId(obj.getString("ad_id"));
+			if (obj.has("adId"))
+			{
+				chatMsg.setAdId(obj.getString("ad_id"));
+			}
 			chatMsg.setFrom(obj.getString("u_id_from"));
 			chatMsg.setTo(obj.getString("u_id_to"));
 			chatMsg.setId(obj.getString("id"));
-			chatMsg.setSenderNick(obj.getString("u_nick_from"));
-			chatMsg.setReceiverNick(obj.getString("u_nick_to"));
 			chatMsg.setTimestamp(obj.getLong("timestamp"));
-			chatMsg.setAdTitle(obj.getString("ad_title"));
 			chatMsg.setMessage(obj.getString("message"));
 			chatMsg.setSession(obj.getString("session_id"));
 		} catch (JSONException e) {
@@ -64,6 +61,30 @@ public class ChatMessage implements Serializable
 		}
 		
 		return chatMsg;
+	}
+	
+	public String toJson()
+	{
+		JSONObject obj = new JSONObject();
+		try
+		{
+			if (adId != null)
+			{
+				obj.put("ad_id", getAdId());
+			}
+			obj.put("u_id_from", getFrom());
+			obj.put("u_id_to", getTo());
+			obj.put("id", getId());
+			obj.put("timestamp", "" + getTimestamp());
+			obj.put("message", getMessage());
+			obj.put("session_id", getSession());
+		}
+		catch(Throwable t)
+		{
+			
+		}
+		
+		return obj.toString();
 	}
 
 	public String getFrom() {
@@ -90,22 +111,6 @@ public class ChatMessage implements Serializable
 		this.id = id;
 	}
 
-	public String getSenderNick() {
-		return senderNick;
-	}
-
-	public void setSenderNick(String senderNick) {
-		this.senderNick = senderNick;
-	}
-
-	public String getReceiverNick() {
-		return receiverNick;
-	}
-
-	public void setReceiverNick(String receiverNick) {
-		this.receiverNick = receiverNick;
-	}
-
 	public String getAdId() {
 		return adId;
 	}
@@ -120,14 +125,6 @@ public class ChatMessage implements Serializable
 
 	public void setTimestamp(long timestamp) {
 		this.timestamp = timestamp;
-	}
-
-	public String getAdTitle() {
-		return adTitle;
-	}
-
-	public void setAdTitle(String adTitle) {
-		this.adTitle = adTitle;
 	}
 
 	public String getMessage() {

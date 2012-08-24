@@ -3,8 +3,12 @@ package com.quanleimu.view;
 import java.util.List;
 
 import android.content.Context;
+import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.Adapter;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
 import com.quanleimu.activity.R;
@@ -12,7 +16,7 @@ import com.quanleimu.entity.ChatSession;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.adapter.SessionListAdapter;
 
-public class SessionListView extends BaseView implements View.OnClickListener, PullToRefreshListView.OnRefreshListener{
+public class SessionListView extends BaseView implements View.OnClickListener, PullToRefreshListView.OnRefreshListener, OnItemClickListener{
 	private List<ChatSession> sessions = null;
 	public SessionListView(Context ctx, List<ChatSession> sessions){
 		super(ctx);
@@ -28,6 +32,7 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		ListView plv = (ListView)this.findViewById(R.id.lv_sessionlist);
 		SessionListAdapter adapter = new SessionListAdapter(this.getContext(), sessions);
 		plv.setAdapter(adapter);
+		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
 	}
 	
@@ -61,5 +66,19 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 
 	@Override
 	public void onRefresh() {
+	}
+
+	@Override
+	public void onItemClick(AdapterView<?> arg0, View item, int pos, long id) 
+	{
+		ChatSession session = (ChatSession) arg0.getAdapter().getItem(pos);
+		Bundle bundle = new Bundle();
+		bundle.putString("sessionId", session.getSessionId());
+		bundle.putString("receiverId", session.getOppositeId());
+		bundle.putString("adId", session.getAdId());
+		bundle.putString("adTitle", session.getAdTitle());
+		bundle.putBoolean("forceSync", true);
+		
+		m_viewInfoListener.onNewView(new TalkView(getContext(), bundle));
 	}
 }

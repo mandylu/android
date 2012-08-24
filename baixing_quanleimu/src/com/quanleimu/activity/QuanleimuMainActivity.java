@@ -22,8 +22,12 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
+import com.quanleimu.broadcast.CommonIntentAction;
+import com.quanleimu.broadcast.PushMessageService;
+import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
@@ -39,6 +43,7 @@ import com.quanleimu.view.GoodDetailView;
 import com.quanleimu.view.GridCategoryView;
 import com.quanleimu.view.PersonalCenterEntryView;
 import com.quanleimu.view.SetMainView;
+import com.quanleimu.view.TalkView;
 
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -54,6 +59,8 @@ import com.tencent.mm.sdk.openapi.WXAPIFactory;
 public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener, IWXAPIEventHandler{
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
+	
+	public static boolean isInActiveStack;
 	
 	public QuanleimuMainActivity(){
 		super();
@@ -300,9 +307,13 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                    editor.commit();
 		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
 		            		QuanleimuMainActivity.this.startService(pushIntent);
+		            		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		            		QuanleimuMainActivity.this.startService(startPush);
+		            		
 		            		QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
 		            		QuanleimuApplication.mDemoApp = null;
+		            		isInActiveStack = false;
 		                    System.exit(0);
 		                }
 		            });
@@ -314,6 +325,14 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		}
 	}
 	
+	
+	
+	@Override
+	protected void onDestroy() {
+		super.onDestroy();
+		isInActiveStack = false;
+	}
+
 	@Override
 	public void onExit(BaseView view){
         InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
@@ -523,7 +542,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onResume() {
 		bundle.putString("backPageName", "");
 		super.onResume();
-
+		isInActiveStack = true;
+		startTalking(getIntent());
 //		MobclickAgent.onResume(this);
 //		
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
@@ -564,6 +584,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		super.onCreate(savedInstanceState);
 		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);
+		
+		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		this.startService(startPush);
 
 		setContentView(R.layout.main_activity);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
@@ -625,6 +648,23 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         QuanleimuApplication.wxapi.handleIntent(intent, this);
 		showDetailViewFromWX();
 		showDataFromAlbamOrPhoto();
+		
+		startTalking(intent);
+	}
+	
+	private void startTalking(Intent intent)
+	{
+		if (intent.getBooleanExtra("isTalking", false))
+		{
+			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+			Bundle bundle = new Bundle();
+			bundle.putString("receiverId", msg.getFrom());
+			bundle.putString("adId", msg.getAdId());
+			bundle.putString("sessionId", msg.getSession());
+			bundle.putSerializable("message", msg);
+			onNewView(new TalkView(this,bundle));
+			intent.removeExtra("isTalking"); //Only use this flag once.
+		}
 	}
 
 	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
