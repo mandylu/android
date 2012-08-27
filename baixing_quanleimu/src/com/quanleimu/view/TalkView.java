@@ -11,6 +11,9 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.text.Editable;
+import android.text.TextWatcher;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -19,6 +22,7 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.R;
 import com.quanleimu.broadcast.ChatMessageManager.ChatMessageListener;
@@ -187,9 +191,11 @@ public class TalkView extends BaseView
 		addView(root, new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		UIControl ctrl = new UIControl();
-		View sendBtn = (View) findViewById(R.id.im_send_btn);
+		final View sendBtn = (View) findViewById(R.id.im_send_btn);
 		sendBtn.setOnClickListener(ctrl);
 		findViewById(R.id.im_input_box).setOnClickListener(ctrl);
+		
+		initInputBox();
 		
 		//Show the message right now.
 		if (msg != null)
@@ -197,6 +203,56 @@ public class TalkView extends BaseView
 			receiveAndUpdateUI(msg);
 		}
 
+	}
+	
+	private void initInputBox()
+	{
+		final EditText inputBox = (EditText) findViewById(R.id.im_input_box);
+		inputBox.setPadding(inputBox.getPaddingLeft(), 2, inputBox.getPaddingRight(), 2);//For nine-patch.
+		
+		inputBox.setEnabled(false);//Disable send by default.
+		inputBox.setOnEditorActionListener(new OnEditorActionListener() {
+
+			@Override
+			public boolean onEditorAction(TextView arg0, int arg1, KeyEvent arg2) {
+				if (arg2 != null && arg2.getAction() == KeyEvent.ACTION_DOWN
+						&& arg2.getKeyCode() == KeyEvent.KEYCODE_ENTER
+						&& arg0.getText().length() > 0)
+				{
+					sendAndUpdateUI(arg0.getText().toString());
+					arg0.setText("");
+					return true;
+				}
+				return false;
+			}});
+		
+		
+		inputBox.addTextChangedListener(new TextWatcher(){
+
+			@Override
+			public void afterTextChanged(Editable edit) {
+				View sendBtn = (View) findViewById(R.id.im_send_btn);
+				if (edit == null || edit.length() == 0)
+				{
+					sendBtn.setEnabled(false);
+				}
+				else
+				{
+					sendBtn.setEnabled(true);
+				}
+			}
+
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+			}
+			
+			public void onTextChanged(CharSequence s, int start, int before,
+					int count) {
+				
+			}
+			
+		});
+		
 	}
 	
 	private void sendAndUpdateUI(final String message)
@@ -213,7 +269,7 @@ public class TalkView extends BaseView
 		postScrollDelay();
 		
 		//Send the text to server.
-		Thread t = new Thread(new SendMsgCmd("send_message", message));
+		Thread t = new Thread(new SendMsgCmd(message));
 		t.start();
 	}
 	
@@ -372,11 +428,10 @@ public class TalkView extends BaseView
 	
 	class SendMsgCmd implements Runnable 
 	{
-		private String apiName;
+		private final String apiName = "send_message";
 		private String message;
-		public SendMsgCmd(String apiName, String messageToSend)
+		public SendMsgCmd(String messageToSend)
 		{
-			this.apiName = apiName;
 			this.message = messageToSend;
 		}
 

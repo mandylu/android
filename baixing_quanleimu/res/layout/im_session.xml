@@ -25,15 +25,20 @@
 
     <RelativeLayout
         android:id="@+id/im_input_action_bar"
+        android:background="@drawable/bg_talk_send"
+        android:layout_marginBottom="2dp"
         android:layout_width="fill_parent"
-        android:layout_height="52dp" >
+        android:layout_height="41dp" >
 
         <EditText
             android:id="@+id/im_input_box"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
+            android:background="@drawable/bg_talk_input"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
+            android:layout_marginLeft="4dp"
+            android:layout_marginRight="4dp"
             android:layout_toLeftOf="@+id/im_send_btn">
 
             <requestFocus />
@@ -41,11 +46,14 @@
 
         <ImageButton
             android:id="@+id/im_send_btn"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="51dp"
+            android:layout_height="36dp"
+            android:scaleType="fitCenter"
+            android:layout_marginRight="4dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
-            android:src="@android:drawable/btn_star" />
+            android:background="@android:color/transparent"
+            android:src="@drawable/draw_send_btn" />
     </RelativeLayout>
 
 </LinearLayout>
