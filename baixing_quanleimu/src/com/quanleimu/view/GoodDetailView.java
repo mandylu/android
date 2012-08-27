@@ -394,13 +394,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						}
 						
 						if(msg.what == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
-//							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-//							imageView.setVisibility(View.VISIBLE);
-//							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-//							
-//							filloutHeader();
-//							filloutFooter();
-//							scrollParent.onNewViewFailed(true);
 							onLoadMoreFailed();
 						}
 					}else{
@@ -820,6 +813,9 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
+		case R.id.retry_load_more:
+			retryLoadMore();
+			break;
 		case R.id.appealbutton:
 			m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 1, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID)));
 			break;
@@ -1621,35 +1617,42 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
     public void onNothingSelected(AdapterView<?> arg0)
     {
         // TODO Auto-generated method stub
-        
     }	
 
-//    private boolean hasNext()
-//    {
-//    	return true;
-//    }
 
 	@Override
 	public void onHasMoreStatusChanged() {
-//		if(!hasNext()){
-//			//TODO:
-//        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
-//        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
-//        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
-//        }else{
-//        	findViewById(R.id.pull_to_next_footer).setVisibility(View.VISIBLE);
-//        	findViewById(R.id.pull_to_next_image).setVisibility(View.VISIBLE);
-//        	findViewById(R.id.pull_to_next_text).setVisibility(View.VISIBLE);
-//        }
 	}
 	
 	private void onLoadMoreFailed()
 	{
-		//TODO:
+		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
+		if (page != null)
+		{
+			page.findViewById(R.id.retry_load_more).setOnClickListener(GoodDetailView.this);
+			page.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
+					page.findViewById(R.id.retry_more_parent).setVisibility(View.VISIBLE);
+					page.findViewById(R.id.llDetail).setVisibility(View.GONE);
+				}
+				
+			}, 10);
+		}
+		Log.d("PAGER", "fail to load more.");
 	}
 	
-	private void loadMore(View page) {
-		loadingMorePage = new WeakReference(page);
+	private void retryLoadMore()
+	{
+		//We assume that this action always on UI thread.
+		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
+		if (page != null)
+		{
+			page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
+			page.findViewById(R.id.retry_more_parent).setVisibility(View.GONE);
+			page.findViewById(R.id.llDetail).setVisibility(View.GONE);
+		}
 		
 		if (null != mHolder) {
 			mHolder.startFecthingMore();
@@ -1661,6 +1664,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
 									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 		}
+	}
+	
+	private void loadMore(View page) {
+		loadingMorePage = new WeakReference(page);
+		
+		retryLoadMore();
 	}
 	
 	private static List<String> getImageUrls(GoodsDetail goodDetail)

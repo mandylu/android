@@ -12,13 +12,13 @@
                 android:id="@+id/loading_more_progress_parent"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:gravity="center"
                 android:visibility="gone"
                 android:paddingBottom="15dip"
                 android:paddingTop="10dip" >
 
                 <ProgressBar
                     android:id="@+id/progressBar1"
+                    android:layout_centerVertical="true"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_marginLeft="14dp" />
@@ -31,6 +31,36 @@
                     android:layout_centerVertical="true"
                     android:paddingTop="5dip"
                     android:text="正在加载更多，请耐心等待"
+                    android:textAppearance="?android:attr/textAppearanceMedium"
+                    android:textStyle="bold" />
+
+            </RelativeLayout>
+            
+            
+            <RelativeLayout
+                android:id="@+id/retry_more_parent"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:visibility="gone"
+                android:paddingBottom="15dip"
+                android:paddingTop="10dip" >
+
+                <Button
+                    android:id="@+id/retry_load_more"
+                    android:text="重试"
+                    android:layout_centerVertical="true"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="14dp" />
+
+                <TextView
+                    android:id="@+id/retry_tips"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_toRightOf="@+id/retry_load_more"
+                    android:paddingTop="5dip"
+                    android:text="请求失败，请检查网络然后重试"
                     android:textAppearance="?android:attr/textAppearanceMedium"
                     android:textStyle="bold" />
 
