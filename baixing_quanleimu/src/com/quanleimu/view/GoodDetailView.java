@@ -2,6 +2,7 @@ package com.quanleimu.view;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -18,31 +19,41 @@ import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.drawable.AnimationDrawable;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.ColorDrawable;
+import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.view.PagerAdapter;
+import android.support.v4.view.ViewPager;
+import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
-import android.view.MotionEvent;
-import android.view.animation.Animation;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.BaseAdapter; 
+import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.QuickContactBadge;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.quanleimu.activity.BaiduMapActivity;
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.QuanleimuMainActivity;
+import com.quanleimu.activity.R;
+import com.quanleimu.entity.AuthDialogListener;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
@@ -56,28 +67,17 @@ import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.QuanleimuMainActivity;
-import com.quanleimu.activity.R;
-import com.quanleimu.activity.BaiduMapActivity;
-import com.quanleimu.widget.PullableScrollView;
-
-import android.net.Uri;
-import android.content.Intent;
-
+import com.tencent.mm.sdk.openapi.WXAppExtendObject;
+import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.platformtools.Log;
 import com.weibo.net.AccessToken;
 import com.weibo.net.Oauth2AccessTokenHeader;
 import com.weibo.net.Utility;
 import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
-import com.quanleimu.entity.AuthDialogListener;
 
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-
-public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, PullableScrollView.PullNotifier/*, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
+public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -94,29 +94,9 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
-	// 定义控件
-	public MainAdapter adapter;
-
-	// 定义变量
-	private LinearLayout ll_meta;
-	private TextView txt_tittle;
-	private TextView txt_message1;
-	private LinearLayout rl_address;
-	private RelativeLayout llgl;
-	private LinearLayout rl_phone;
-	private ImageView iv_call, iv_sms;
-	private TextView txt_phone;
-	
-	private PullableScrollView scrollParent;
-	
 	public GoodsDetail detail = new GoodsDetail();
-	public Gallery glDetail;
-	public List<Bitmap> listBm = new ArrayList<Bitmap>();
-	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
-	public String mycenter_type = "";
 	private View titleControlView = null;
-	
-	private List<String> listUrl = null;
+	private AuthController authCtrl;
 	
 	private String json = "";
 	
@@ -130,11 +110,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	private boolean keepSilent = false;
 	
 	private GoodsListLoader mListLoader;
-	private int mCurIndex = 0;
+//	private int mCurIndex = 0;
 	
 	private IListHolder mHolder = null;
 	
 	private Dialog manageDlg = null;
+	
+	private WeakReference<View> loadingMorePage;
 	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
@@ -142,26 +124,25 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		REQUEST_TYPE_DELETE
 	}
 	
-	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, int curIndex, IListHolder holder){
+	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, final int curIndex, IListHolder holder){
 		super(content, bundle);
 		
 		mListLoader = listLoader;
-		mCurIndex = curIndex;
 		detail = listLoader.getGoodsList().getData().get(curIndex);
 		listLoader.setSelection(curIndex);
 		mBundle = bundle;
 		mHolder = holder;
 		
 		listLoader.setHasMoreListener(this);
-		init();
+		init(curIndex);
 	}
 	
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
 		
-		if(null != listUrl && listUrl.size() > 0)
-			SimpleImageLoader.Cancel(listUrl);
+//		if(null != listUrl && listUrl.size() > 0)
+//			SimpleImageLoader.Cancel(listUrl);
 		
 		super.onDestroy();
 	}
@@ -208,6 +189,11 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				GoodDetailView.this.saveToHistory();
 			}
 		})).start();
+		
+		if (authCtrl != null)
+		{
+			authCtrl.checkAfterAuth(getContext());
+		}
 		
 		super.onAttachedToWindow();
 	}
@@ -275,9 +261,19 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		return this.keepSilent;
 	}
+	
+	private String getMyId()
+	{
+		UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+		if (user == null)
+		{
+			return null;
+		}
+		return user.getId();
+	}
 
 	
-	protected void init() {
+	protected void init(final int mCurIndex) {
 		
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
@@ -296,128 +292,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.gooddetailview, null);
 		addView(v);
-		if(!detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20")){
-			findViewById(R.id.ll_appeal).setVisibility(View.GONE);
-			findViewById(R.id.graymask).setVisibility(View.GONE);
-			findViewById(R.id.verifyseperator).setVisibility(View.GONE);
-		}
-		else{
-			if(detail.getValueByKey("tips").equals("")){
-				((TextView)findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
-			}
-			else{
-				((TextView)findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
-			}
-			findViewById(R.id.fenxianglayout).setEnabled(false);
-			findViewById(R.id.showmap).setEnabled(false);
-			findViewById(R.id.jubaolayout).setEnabled(false);
-			findViewById(R.id.sms).setEnabled(false);
-			findViewById(R.id.call).setEnabled(false);
-			findViewById(R.id.appealbutton).setOnClickListener(this);
-		}
-		
-		if(detail.getImageList() != null){
-			String b = (detail.getImageList().getResize180()).substring(1, (detail.getImageList().getResize180()).length()-1);
-			b = Communication.replace(b);
-			listUrl = new ArrayList<String>();
-			String[] c = b.split(",");
-			for(int i=0;i<c.length;i++) 
-			{
-				listUrl.add(c[i]);
-			}
-			if(listUrl.size() == 0){
-				llgl = (RelativeLayout) findViewById(R.id.llgl);
-				llgl.setVisibility(View.GONE);
-			}else{
-				glDetail = (Gallery) findViewById(R.id.glDetail);
-				glDetail.setOnItemSelectedListener(this);
-				glDetail.setFadingEdgeLength(10);
-				glDetail.setSpacing(40);
-				
-				adapter = new MainAdapter(this.getContext(), listUrl);
-				glDetail.setAdapter(adapter);
-				glDetail.setOnTouchListener(this);
-				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						Bundle bundle = new Bundle();
-						bundle.putInt("postIndex", arg2);
-						bundle.putSerializable("goodsDetail", detail);
-						
-						if(null != m_viewInfoListener){
-							m_viewInfoListener.onNewView(new BigGalleryView(getContext(), bundle));
-						}
-					}
-				});
-				
-			}
-		}else{
-			llgl = (RelativeLayout) findViewById(R.id.llgl);
-			llgl.setVisibility(View.GONE);
-		}
-//		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
-		llgl = (RelativeLayout) findViewById(R.id.llgl);
-
-		txt_tittle = (TextView) findViewById(R.id.goods_tittle);
-		txt_message1 = (TextView) findViewById(R.id.sendmess1);
-		txt_phone = (TextView) findViewById(R.id.number);
-		iv_call = (ImageView)findViewById(R.id.call);
-		iv_sms = (ImageView)findViewById(R.id.sms);
-		rl_address = (LinearLayout) findViewById(R.id.showmap);
-//		rl_address.setOnTouchListener(this);
-		rl_phone = (LinearLayout)findViewById(R.id.phonelayout);
-
-		ll_meta = (LinearLayout) findViewById(R.id.meta);
-		
-		View fenxiang = findViewById(R.id.fenxianglayout);
-		fenxiang.setOnClickListener(this);
-
-		
-		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
-			findViewById(R.id.wxlayout).setOnClickListener(this);
-		}
-		else{
-			findViewById(R.id.wxlayout).setVisibility(View.GONE);
-		}
-		
-		View jubao = findViewById(R.id.jubaolayout);
-		if(isMyAd()){
-			jubao.setVisibility(View.GONE);
-		}
-		else{			
-			jubao.setOnClickListener(this);			
-		}
-
-		this.setMetaObject();
-		
-		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
-		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-
-		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-		if (areaNamesV != null && !areaNamesV.equals("")) 
-		{		
-			rl_address.setOnClickListener(this);
-//			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-//			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-//			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
-//			{
-//				
-//			}
-		} 
-		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
-		if (mobileV != null
-				&& !mobileV.equals("")
-				&& !mobileV.equals("无")) {
-			txt_phone.setText(mobileV);
-			iv_call.setOnClickListener(this);
-			iv_sms.setOnClickListener(this);
-		} else {
-			rl_phone.setVisibility(View.GONE);
-		}
-		
-		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren1, o);
@@ -425,8 +300,87 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		//the ad is viewed once
         QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
 		
-        scrollParent = (PullableScrollView)v.findViewById(R.id.svDetail);
-        scrollParent.setPullNotifier(this);
+        
+        final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
+        vp.setAdapter(new PagerAdapter() {
+			
+			public Object instantiateItem(View arg0, int position) 
+			{
+				Integer posObj = Integer.valueOf(position);
+				View detail = LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
+				detail.setTag(posObj);
+				((ViewPager) arg0).addView(detail, 0);
+				if (position == mListLoader.getGoodsList().getData().size())
+				{
+					findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
+					findViewById(R.id.llDetail).setVisibility(View.GONE);
+					loadMore(detail);
+				}
+				else
+				{
+					initContent(detail, mListLoader.getGoodsList().getData().get(position), position);
+				}
+				return detail;
+			}
+			
+            public void destroyItem(View arg0, int index, Object arg2)
+            {
+                ((ViewPager) arg0).removeView((View) arg2);
+                
+                final Integer pos = (Integer) ((View) arg2).getTag();
+                if (pos < mListLoader.getGoodsList().getData().size())
+                {
+                	List<String> listUrl = getImageUrls(mListLoader.getGoodsList().getData().get(pos));
+                	if(null != listUrl && listUrl.size() > 0)
+                		SimpleImageLoader.Cancel(listUrl);
+                }
+                
+                
+            }
+
+			public boolean isViewFromObject(View arg0, Object arg1) {
+				return arg0 == arg1;
+			}
+			
+			public int getCount() {
+				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
+			}
+		});
+        
+        
+        vp.setOnPageChangeListener(new OnPageChangeListener() {
+			
+			public void onPageSelected(int pos) {
+				keepSilent = false;//magic flag to refuse unexpected touch event
+				
+				Log.d("PAGER", "current page is changed to " + pos);
+				if (pos != mListLoader.getGoodsList().getData().size())
+				{
+					detail = mListLoader.getGoodsList().getData().get(pos);
+					updateContactBar(false);
+					
+					//the ad is viewed once
+			        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+				}
+				else
+				{
+					updateContactBar(true);
+				}
+			}
+			
+			public void onPageScrolled(int arg0, float arg1, int arg2) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			public void onPageScrollStateChanged(int arg0) {
+				// TODO Auto-generated method stub
+				
+				
+			}
+		});
+        
+        vp.setCurrentItem(mCurIndex);
         
         mListLoader.setSelection(mCurIndex);
         mListLoader.setHandler(new Handler(){
@@ -440,13 +394,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 						}
 						
 						if(msg.what == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
-							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-							imageView.setVisibility(View.VISIBLE);
-							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-							
-							filloutHeader();
-							filloutFooter();
-							scrollParent.onNewViewFailed(true);
+//							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+//							imageView.setVisibility(View.VISIBLE);
+//							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+//							
+//							filloutHeader();
+//							filloutFooter();
+//							scrollParent.onNewViewFailed(true);
+							onLoadMoreFailed();
 						}
 					}else{
 						switch (msg.what) {
@@ -510,12 +465,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 							
-							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-							
-							filloutHeader();
-							filloutFooter();
-							scrollParent.onNewViewFailed(true);
+//							ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+//							imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+//							
+//							filloutHeader();
+//							filloutFooter();
+//							scrollParent.onNewViewFailed(true);
+							onLoadMoreFailed();
 							
 							break;
 						}
@@ -525,52 +481,226 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				}
 
 				private void onGotMore() {
-					if(null != m_viewInfoListener){
-						mListLoader.setSelection(mCurIndex+1);
-						m_viewInfoListener.onExit(GoodDetailView.this);
-						m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1, mHolder));
+					final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
+					if (page != null)
+					{
+						page.postDelayed(new Runnable() {
+
+							@Override
+							public void run() {
+								page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
+								page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
+								final Integer tag = (Integer)page.getTag();
+								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue());
+							}
+							
+						}, 10);
 					}
+					Log.d("PAGER", "more goods return.");
 				}
 
 				private void onNoMore() {
-					ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-					imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
-					imageView.setVisibility(View.GONE);
-					
-					TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
-					textView.setText("后面没有啦！");
-					
-					scrollParent.onNewViewFailed(false);
+//					ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
+//					imageView.setImageResource(R.drawable.ic_pulltorefresh_arrow_upsidedown);
+//					imageView.setVisibility(View.GONE);
+//					
+//					TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
+//					textView.setText("后面没有啦！");
+//					
+//					scrollParent.onNewViewFailed(false);
+					//TODO:
 				}
 			});
-        
-        filloutHeader();
-        
-        filloutFooter();
 	}
+	
+	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex)
+	{
+		Log.d("PAGER", "init content view with detail " + detail.getValueByKey("title"));
+		
+		WindowManager wm = 
+				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+		type = wm.getDefaultDisplay().getWidth();
+		
+		//different padding for meta value to avoid overlapping display
+		if (type < 480) {
+			this.paddingLeftMetaPixel = 0;
+		}else{
+			this.paddingLeftMetaPixel = 16;
+		}
+		
+		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+		
+		if(!detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20")){
+			contentView.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
+			contentView.findViewById(R.id.graymask).setVisibility(View.GONE);
+			contentView.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
+		}
+		else{
+			if(detail.getValueByKey("tips").equals("")){
+				((TextView)contentView.findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
+			}
+			else{
+				((TextView)contentView.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
+			}
+			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
+			contentView.findViewById(R.id.showmap).setEnabled(false);
+			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
+			contentView.findViewById(R.id.sms).setEnabled(false);
+			contentView.findViewById(R.id.call).setEnabled(false);
+			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
+		}
+		
+		if(detail.getImageList() != null){
+			List<String>listUrl = getImageUrls(detail);
+			
+			if(listUrl.size() == 0){
+				llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+				llgl.setVisibility(View.GONE);
+			}else{
+				Gallery glDetail = (Gallery) contentView.findViewById(R.id.glDetail);
+				glDetail.setOnItemSelectedListener(this);
+				glDetail.setFadingEdgeLength(10);
+				glDetail.setSpacing(40);
+				
+				MainAdapter adapter = new MainAdapter(this.getContext(), listUrl);
+				glDetail.setAdapter(adapter);
+				glDetail.setOnTouchListener(this);
+				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
-	private void filloutHeader() {
-		if(!hasPrev()){
-        	findViewById(R.id.pull_to_prev_header).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_prev_image).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_prev_text).setVisibility(View.GONE);
-        }else{
-        	((TextView)findViewById(R.id.pull_to_prev_text)).setText("上一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex-1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-        }
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						Bundle bundle = new Bundle();
+						bundle.putInt("postIndex", arg2);
+						bundle.putSerializable("goodsDetail", detail);
+						
+						if(null != m_viewInfoListener){
+							m_viewInfoListener.onNewView(new BigGalleryView(getContext(), bundle));
+						}
+					}
+				});
+				
+			}
+		}else{
+			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+			llgl.setVisibility(View.GONE);
+		}
+//		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
+		
+
+		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
+		TextView txt_message1 = (TextView) contentView.findViewById(R.id.sendmess1);
+		LinearLayout rl_address = (LinearLayout) contentView.findViewById(R.id.showmap);
+//		rl_address.setOnTouchListener(this);
+
+		LinearLayout ll_meta = (LinearLayout) contentView.findViewById(R.id.meta);
+		
+		View fenxiang = contentView.findViewById(R.id.fenxianglayout);
+		fenxiang.setOnClickListener(this);
+
+		
+		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
+			contentView.findViewById(R.id.wxlayout).setOnClickListener(this);
+		}
+		else{
+			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
+		}
+		
+		View jubao = contentView.findViewById(R.id.jubaolayout);
+		if(isMyAd()){
+			jubao.setVisibility(View.GONE);
+		}
+		else{			
+			jubao.setOnClickListener(this);			
+		}
+
+		this.setMetaObject();
+		
+		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
+		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+
+		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+		if (areaNamesV != null && !areaNamesV.equals("")) 
+		{		
+			rl_address.setOnClickListener(this);
+//			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+//			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+//			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
+//			{
+//				
+//			}
+		} 
+		
+		final ViewPager vp = (ViewPager) findViewById(R.id.svDetail);
+		if (pageIndex == vp.getCurrentItem())
+		{
+			updateContactBar(false);
+		}
+		
 	}
-
-	private void filloutFooter() {
-    	if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
-    		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n"+mListLoader.getGoodsList().getData().get(mCurIndex+1).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-    	}else{
-    		((TextView)findViewById(R.id.pull_to_next_text)).setText("下一条：\n【尚未加载，向上拖动然后释放可以加载.】");
-    	}
-
-    	if(!hasNext()){
-        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
-        }
+	
+	private void updateContactBar(boolean forceHide)
+	{
+		LinearLayout rl_phone = (LinearLayout)findViewById(R.id.phonelayout);
+		if (forceHide || isMyAd())
+		{
+			rl_phone.setVisibility(View.GONE);
+			return;
+		}
+		
+		TextView txt_phone = (TextView) findViewById(R.id.number);
+		QuickContactBadge iv_call = (QuickContactBadge)findViewById(R.id.call);
+		ImageView iv_sms = (ImageView)findViewById(R.id.sms);
+		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
+		rl_phone.setVisibility(View.VISIBLE);
+		
+		if (mobileV != null
+				&& !mobileV.equals("")
+				&& !mobileV.equals("无")) {
+			txt_phone.setVisibility(View.VISIBLE);
+			iv_call.setVisibility(View.VISIBLE);
+			txt_phone.setText(mobileV);
+			iv_call.assignContactFromPhone(mobileV, false);
+			iv_sms.setOnClickListener(this);
+		} else {
+			txt_phone.setVisibility(View.INVISIBLE);
+			iv_call.setVisibility(View.INVISIBLE);
+		}
+	}
+	
+	private void requireAuth4Talk()
+	{
+		if(null != m_viewInfoListener){
+			m_viewInfoListener.onNewView(new LoginView(getContext(), "返回"));
+			
+			if (authCtrl != null)
+			{
+				authCtrl.cancelAuth();
+			}
+			
+			authCtrl = new AuthController();
+			authCtrl.startWaitingAuth(new Runnable() {
+				public void run() {
+					startChat();
+				}
+				
+			}, null);
+			
+		}
+	}
+	
+	private void startChat()
+	{
+		if (m_viewInfoListener != null && this.detail != null)
+		{
+			Bundle bundle = new Bundle();
+//			bundle.putString("senderId", myUserId);
+			bundle.putString("receiverId", detail.getValueByKey("userId"));
+			bundle.putString("adId", detail.getValueByKey("adId"));
+			bundle.putString("adTitle", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+			
+			m_viewInfoListener.onNewView(new TalkView(getContext(), bundle));
+		}
 	}
 	
 	
@@ -694,15 +824,22 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 1, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID)));
 			break;
 		case R.id.call:{
+			TextView txt_phone = (TextView) findViewById(R.id.number);
 			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
 			this.getContext().startActivity(intent);
 			break;	
 		}
 		case R.id.sms:{
-			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-			this.getContext().startActivity(intent);			
+			String userId = getMyId();
+			if (userId == null)
+			{
+				requireAuth4Talk();
+			}
+			else
+			{
+				startChat();
+			}
 			break;
 		}
 		case R.id.showmap:
@@ -1018,6 +1155,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		WXAppExtendObject appObj = new WXAppExtendObject();
 		appObj.fileData = detailJson.getBytes();
 		
+		List<String> listUrl = getImageUrls(this.detail);
 		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
 
 		WXMediaMessage obj = new WXMediaMessage();
@@ -1047,6 +1185,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private void doShare2Weibo(AccessToken accessToken){
 		try{ 
+			List<String> listUrl = getImageUrls(this.detail);
 		Weibo.getInstance().share2weibo((BaseActivity)GoodDetailView.this.getContext(),
 				accessToken.getToken(),
 				accessToken.getSecret(), 
@@ -1059,46 +1198,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 	}
 	
-//	class AuthDialogListener implements WeiboDialogListener {
-//
-//		@Override
-//		public void onComplete(Bundle values) {		
-//			if(!inAuthorize) return;
-//			inAuthorize = false;
-//			String token = values.getString("access_token");
-//			String expires_in = values.getString("expires_in");
-////			mToken.setText("access_token : " + token + "  expires_in: "+ expires_in);
-//			AccessToken accessToken = new AccessToken(token, QuanleimuApplication.kWBBaixingAppSecret);
-//			accessToken.setExpiresIn(expires_in);
-//			Weibo.getInstance().setAccessToken(accessToken);
-//			doShare2Weibo(accessToken);
-//		}
-//
-//		@Override
-//		public void onError(DialogError e) {
-//			inAuthorize = false;
-//			Toast.makeText(GoodDetailView.this.getContext(),
-//					"Auth error : " + e.getMessage(), Toast.LENGTH_LONG).show();
-//		}
-//
-//		@Override
-//		public void onCancel() {
-//			inAuthorize = false;
-//			Toast.makeText(GoodDetailView.this.getContext(), "Auth cancel",
-//					Toast.LENGTH_LONG).show();
-//		}
-//
-//		@Override
-//		public void onWeiboException(WeiboException e) {
-//			inAuthorize = false;
-//			Toast.makeText(GoodDetailView.this.getContext(),
-//					"Auth exception : " + e.getMessage(), Toast.LENGTH_LONG)
-//					.show();
-//		}
-//
-//	}
-	
 	private void setMetaObject(){
+		LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
 		if(ll_meta == null) return;
 		ll_meta.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
@@ -1391,10 +1492,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		public int getCount() {
 			return listUrl.size();
 		}
+		
+		public List<String> getImages()
+		{
+			return listUrl;
+		}
 
 		@Override
 		public Object getItem(int arg0) {
-			return null;
+			return listUrl.get(arg0);
 		}
 
 		@Override
@@ -1493,17 +1599,22 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
     {
-		//adjust download sequence
-		ArrayList<String> urls = new ArrayList<String>();
-		urls.add(listUrl.get(position));
-		for(int index = 0; (index + position < listUrl.size() || position - index >= 0); ++index){
-			if(index + position < listUrl.size())
-				urls.add(listUrl.get(index+position));
-			
-			if(position - index >= 0)
-				urls.add(listUrl.get(position-index));				
-		}
-		SimpleImageLoader.AdjustPriority(urls);
+    	if (parent.getAdapter() instanceof MainAdapter)
+    	{
+    		MainAdapter mainAdapter = (MainAdapter) parent.getAdapter();
+    		
+    		List<String> listUrl = mainAdapter.getImages();
+    		ArrayList<String> urls = new ArrayList<String>();
+    		urls.add(listUrl.get(position));
+    		for(int index = 0; (index + position < listUrl.size() || position - index >= 0); ++index){
+    			if(index + position < listUrl.size())
+    				urls.add(listUrl.get(index+position));
+    			
+    			if(position - index >= 0)
+    				urls.add(listUrl.get(position-index));				
+    		}
+    		SimpleImageLoader.AdjustPriority(urls);
+    	}
     }
 
     @Override
@@ -1513,109 +1624,61 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         
     }	
 
-	@Override
-	public View getHeaderView() {
-		return findViewById(R.id.pull_to_prev_header);
-	}
-
-	@Override
-	public View getFooterView() {
-		return findViewById(R.id.pull_to_next_footer);
-	}
-	
-	@Override
-	public View getContentView() {
-		return findViewById(R.id.llDetail);
-	}
-
-	@Override
-	public void startAnnimation(Animation animation, boolean isHeader) {
-		if(isHeader){
-			findViewById(R.id.pull_to_prev_header).findViewById(R.id.pull_to_prev_image).startAnimation(animation);
-		}else{
-			findViewById(R.id.pull_to_next_footer).findViewById(R.id.pull_to_next_image).startAnimation(animation);
-		}		
-	}
-
-	@Override
-	public void stopAnimation() {
-		findViewById(R.id.pull_to_prev_header).findViewById(R.id.pull_to_prev_image).clearAnimation();
-		findViewById(R.id.pull_to_next_footer).findViewById(R.id.pull_to_next_image).clearAnimation();		
-	}
-
-
-	@Override
-	public void beginLoadingNextView() {
-		if(mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
-			scrollParent.onNewViewLoaded(false);
-			
-			if(null != m_viewInfoListener){
-				mListLoader.setSelection(mCurIndex+1);
-				m_viewInfoListener.onExit(this);
-				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex+1, mHolder));
-			}
-		}else if(mListLoader.hasMore()){
-			if(null != mHolder){
-				mHolder.startFecthingMore();
-			}else{
-				mListLoader.startFetching(	false, 
-											((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader.getDataStatus()) ? 
-													Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
-													Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
-			}
-			
-			ImageView imageView = (ImageView)findViewById(R.id.pull_to_next_image);
-			imageView.setImageDrawable(getContext().getResources().getDrawable(R.drawable.loading_flower));
-			((AnimationDrawable)(imageView.getDrawable())).start();
-			
-			TextView textView = (TextView)findViewById(R.id.pull_to_next_text);
-			textView.setText("正在加载更多条目。。。");
-		}		
-	}
-
-	@Override
-	public void beginLoadingPrevView() {
-		if(mCurIndex > 0){
-			scrollParent.onNewViewLoaded(true);
-			
-			if(null != m_viewInfoListener){
-				mListLoader.setSelection(mCurIndex-1);
-				m_viewInfoListener.onExit(this);
-				m_viewInfoListener.onNewView(new GoodDetailView(getContext(), mBundle, mListLoader, mCurIndex-1, mHolder));
-			}
-		}else{
-			scrollParent.onNewViewLoaded(true);
-		}	
-	}
-
-	@Override
-	public boolean hasPrev() {
-		if(mCurIndex > 0){
-			return true;
-		}
-		
-		return false;
-	}
-
-	@Override
-	public boolean hasNext() {
-		if(mListLoader.hasMore() || mCurIndex < mListLoader.getGoodsList().getData().size() - 1){
-			return true;
-		}
-		
-		return false;
-	}
+//    private boolean hasNext()
+//    {
+//    	return true;
+//    }
 
 	@Override
 	public void onHasMoreStatusChanged() {
-		if(!hasNext()){
-        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
-        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
-        }else{
-        	findViewById(R.id.pull_to_next_footer).setVisibility(View.VISIBLE);
-        	findViewById(R.id.pull_to_next_image).setVisibility(View.VISIBLE);
-        	findViewById(R.id.pull_to_next_text).setVisibility(View.VISIBLE);
-        }
+//		if(!hasNext()){
+//			//TODO:
+//        	findViewById(R.id.pull_to_next_footer).setVisibility(View.GONE);
+//        	findViewById(R.id.pull_to_next_image).setVisibility(View.GONE);
+//        	findViewById(R.id.pull_to_next_text).setVisibility(View.GONE);
+//        }else{
+//        	findViewById(R.id.pull_to_next_footer).setVisibility(View.VISIBLE);
+//        	findViewById(R.id.pull_to_next_image).setVisibility(View.VISIBLE);
+//        	findViewById(R.id.pull_to_next_text).setVisibility(View.VISIBLE);
+//        }
+	}
+	
+	private void onLoadMoreFailed()
+	{
+		//TODO:
+	}
+	
+	private void loadMore(View page) {
+		loadingMorePage = new WeakReference(page);
+		
+		if (null != mHolder) {
+			mHolder.startFecthingMore();
+		} else {
+			mListLoader
+					.startFetching(
+							false,
+							((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
+									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
+									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+		}
+	}
+	
+	private static List<String> getImageUrls(GoodsDetail goodDetail)
+	{
+		List<String> listUrl = null;
+		
+		if (goodDetail.getImageList() != null)
+		{
+			listUrl = new ArrayList<String>();
+			String b = (goodDetail.getImageList().getResize180()).substring(1, (goodDetail.getImageList().getResize180()).length()-1);
+			b = Communication.replace(b);
+			String[] c = b.split(",");
+			for(int i=0;i<c.length;i++) 
+			{
+				listUrl.add(c[i]);
+			}
+		}
+		
+		return listUrl;
 	}
 }

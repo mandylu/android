@@ -82,10 +82,10 @@ public class TalkView extends BaseView
 			
 			alwaysSync = bundle.getBoolean("forceSync", false);
 			
-			if (bundle.containsKey("adTitle"))
-			{
-				adTitle = bundle.getString("adTitle");
-			}
+//			if (bundle.containsKey("adTitle"))
+//			{
+//				adTitle = bundle.getString("adTitle");
+//			}
 			
 		}
 		
