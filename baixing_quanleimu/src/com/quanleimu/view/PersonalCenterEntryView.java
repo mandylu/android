@@ -61,6 +61,7 @@ public class PersonalCenterEntryView extends BaseView implements
 	static final int MSG_GETPERSONALLOCATION = 3;
 	static final int MSG_GETPERSONALSESSIONS = 4;
 	private List<ChatSession> sessions = null;
+	private UserProfile up = null;
 
 	public PersonalCenterEntryView(Context context, Bundle bundle) {
 		super(context);
@@ -76,6 +77,7 @@ public class PersonalCenterEntryView extends BaseView implements
 		this.findViewById(R.id.rl_wohistory).setOnClickListener(this);
 		this.findViewById(R.id.rl_wosent).setOnClickListener(this);
 		this.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
+		this.findViewById(R.id.personalEdit).setOnClickListener(this);
 	}
 
 	@Override
@@ -106,7 +108,18 @@ public class PersonalCenterEntryView extends BaseView implements
 		else{
 			TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);
 			tvPersonalAds.setText(String.valueOf(QuanleimuApplication.getApplication().getListMyPost() == null ?
-					0 : QuanleimuApplication.getApplication().getListMyPost().size()));					
+					0 : QuanleimuApplication.getApplication().getListMyPost().size()));		
+			if(up == null){
+				new Thread(new GetPersonalProfileThread()).start();
+			}
+			else{
+				this.fillProfile(up);
+			}
+			if(this.sessions == null){
+				new Thread(new GetPersonalSessionsThread()).start();
+			}else{
+				((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+			}
 		}
 	}
 
@@ -138,6 +151,9 @@ public class PersonalCenterEntryView extends BaseView implements
 			}else{
 				m_viewInfoListener.onNewView(new SessionListView(this.getContext(), this.sessions));
 			}						
+			break;
+		case R.id.personalEdit:
+			
 			break;
 		default:
 			break;
@@ -230,7 +246,7 @@ public class PersonalCenterEntryView extends BaseView implements
 				break;
 			case MSG_GETPERSONALPROFILE:
 				if(upJson != null){
-					UserProfile up = UserProfile.from(upJson);
+					up = UserProfile.from(upJson);
 					if(up != null){
 						fillProfile(up);
 					}
