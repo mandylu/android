@@ -36,6 +36,15 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 //		plv.setPullToRefreshEnabled(false);
 	}
 	
+	
+	
+	@Override
+	protected void onAttachedToWindow() {
+		super.onAttachedToWindow();
+		ListView plv = (ListView)this.findViewById(R.id.lv_sessionlist);
+		plv.requestFocus();
+	}
+
 	@Override
 	public void onClick(View v) {
 		switch(v.getId())
