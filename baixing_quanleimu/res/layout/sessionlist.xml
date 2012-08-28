@@ -4,7 +4,7 @@
     android:layout_height="fill_parent"
     android:background="@drawable/home_bg" >
 
-    <com.quanleimu.widget.PullToRefreshListView
+    <ListView
         android:id="@+id/lv_sessionlist"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
