@@ -44,7 +44,7 @@ public class XMPPManager {
     public static final int WAITING_FOR_NETWORK = 6;
     
 	
-	public static final String SERVER = "192.168.5.243";//192.168.4.145
+	public static final String SERVER = "192.168.5.243";//192.168.4.145"message.baixing.com";//
 	private static XMPPManager manager;
 	
 	private XMPPConnection mConnection;
@@ -346,6 +346,9 @@ public class XMPPManager {
     	ConfigureProviderManager.configureProviderManager();
     	ConnectionConfiguration conf = new ConnectionConfiguration(SERVER, 5222);
     	XMPPConnection.DEBUG_ENABLED = true;
+    	conf.setServiceName("localhost");
+    	conf.setSecurityMode(ConnectionConfiguration.SecurityMode.disabled);
+    	conf.setSASLAuthenticationEnabled(false);
         
         // disable the built-in ReconnectionManager
         // since we handle this
