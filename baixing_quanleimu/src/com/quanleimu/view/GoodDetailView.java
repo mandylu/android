@@ -312,8 +312,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				((ViewPager) arg0).addView(detail, 0);
 				if (position == mListLoader.getGoodsList().getData().size())
 				{
-					findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
-					findViewById(R.id.llDetail).setVisibility(View.GONE);
+					detail.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
+					detail.findViewById(R.id.llDetail).setVisibility(View.GONE);
 					loadMore(detail);
 				}
 				else
@@ -607,7 +607,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			jubao.setOnClickListener(this);			
 		}
 
-		this.setMetaObject();
+		this.setMetaObject(contentView, detail);
 		
 		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
 		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
@@ -646,6 +646,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		ImageView iv_sms = (ImageView)findViewById(R.id.sms);
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
 		rl_phone.setVisibility(View.VISIBLE);
+		iv_sms.setOnClickListener(this);
 		
 		if (mobileV != null
 				&& !mobileV.equals("")
@@ -654,7 +655,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			iv_call.setVisibility(View.VISIBLE);
 			txt_phone.setText(mobileV);
 			iv_call.assignContactFromPhone(mobileV, false);
-			iv_sms.setOnClickListener(this);
 		} else {
 			txt_phone.setVisibility(View.INVISIBLE);
 			iv_call.setVisibility(View.INVISIBLE);
@@ -689,7 +689,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			Bundle bundle = new Bundle();
 //			bundle.putString("senderId", myUserId);
 			bundle.putString("receiverId", detail.getValueByKey("userId"));
-			bundle.putString("adId", detail.getValueByKey("adId"));
+			bundle.putString("adId", detail.getValueByKey("id"));
 			bundle.putString("adTitle", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
 			
 			m_viewInfoListener.onNewView(new TalkView(getContext(), bundle));
@@ -1194,8 +1194,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 	}
 	
-	private void setMetaObject(){
-		LinearLayout ll_meta = (LinearLayout) findViewById(R.id.meta);
+	private void setMetaObject(View currentPage, GoodsDetail detail){
+		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
 		if(ll_meta == null) return;
 		ll_meta.removeAllViews();
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
@@ -1311,7 +1311,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					//QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 				}
 
-				setMetaObject();
+//				setMetaObject(); FIXME: should update current UI.
 				break;
 			case msgDelete:
 				if(pd!=null){

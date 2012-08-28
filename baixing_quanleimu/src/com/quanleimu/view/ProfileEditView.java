@@ -24,10 +24,10 @@ public class ProfileEditView extends BaseView {
 		init();
 	}
 	
-	private void init(){
-		
-	}
-	
+//	private void init(){
+//		
+//	}
+//	
 	@Override
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
@@ -49,20 +49,20 @@ public class ProfileEditView extends BaseView {
 	
 	protected void init(){
 	
-		LayoutInflater inflator = LayoutInflater.from(context);
-		RelativeLayout relAbout = (RelativeLayout)
-		this.addView(inflator.inflate(R.layout.aboutus, null););		
-		
-//		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
-		rlVersion = (TextView) findViewById(R.id.rlVersion);
-		try {
-			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
-			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-			String pt = (String)ai.metaData.get("publishTime");
-			rlVersion.setText("版本信息：v" + this.getVersionName() + (pt == null ? "" : (" " + pt)));
-		} catch (Exception ex) {
-			rlVersion.setText("版本信息：v1.01 ");
-		}
+//		LayoutInflater inflator = LayoutInflater.from(context);
+//		RelativeLayout relAbout = (RelativeLayout)
+//		this.addView(inflator.inflate(R.layout.aboutus, null););		
+//		
+////		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
+//		rlVersion = (TextView) findViewById(R.id.rlVersion);
+//		try {
+//			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
+//			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+//			String pt = (String)ai.metaData.get("publishTime");
+//			rlVersion.setText("版本信息：v" + this.getVersionName() + (pt == null ? "" : (" " + pt)));
+//		} catch (Exception ex) {
+//			rlVersion.setText("版本信息：v1.01 ");
+//		}
 	}
 	
 	private String getVersionName() throws Exception

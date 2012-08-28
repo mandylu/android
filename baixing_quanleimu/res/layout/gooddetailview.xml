@@ -5,11 +5,7 @@
     android:layout_height="fill_parent"
     android:background="@drawable/home_bg" >
     
-     <android.support.v4.view.ViewPager
-        android:layout_width="fill_parent" android:layout_height="fill_parent"
-        android:id="@+id/svDetail" />
     <LinearLayout
-    
         android:id="@+id/phonelayout"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
@@ -56,5 +52,11 @@
 
 
     </LinearLayout>
+    
+    <android.support.v4.view.ViewPager
+        android:layout_width="fill_parent" android:layout_height="fill_parent"
+        android:id="@+id/svDetail"
+        android:layout_above="@+id/phonelayout"
+         />
 
 </RelativeLayout>
