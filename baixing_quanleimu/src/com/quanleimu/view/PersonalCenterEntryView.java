@@ -364,6 +364,11 @@ public class PersonalCenterEntryView extends BaseView implements
 	class GetPersonalProfileThread implements Runnable {
 		@Override
 		public void run() {
+			if (user == null)
+			{
+				return;
+			}
+			
 			String apiName = "user_profile";
 			ArrayList<String> list = new ArrayList<String>();
 			 
@@ -398,6 +403,11 @@ public class PersonalCenterEntryView extends BaseView implements
 	class GetPersonalSessionsThread implements Runnable {
 		@Override
 		public void run() {
+			if (user == null)
+			{
+				return;
+			}
+			
 			String apiName = "read_session";
 			ArrayList<String> list = new ArrayList<String>();
 			 
