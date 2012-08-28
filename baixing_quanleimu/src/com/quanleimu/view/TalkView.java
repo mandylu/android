@@ -210,7 +210,8 @@ public class TalkView extends BaseView
 		final EditText inputBox = (EditText) findViewById(R.id.im_input_box);
 		inputBox.setPadding(inputBox.getPaddingLeft(), 2, inputBox.getPaddingRight(), 2);//For nine-patch.
 		
-		inputBox.setEnabled(false);//Disable send by default.
+		final View sendBtn = (View) findViewById(R.id.im_send_btn);
+		sendBtn.setEnabled(false);//Disable send by default.
 		inputBox.setOnEditorActionListener(new OnEditorActionListener() {
 
 			@Override
@@ -231,7 +232,7 @@ public class TalkView extends BaseView
 
 			@Override
 			public void afterTextChanged(Editable edit) {
-				View sendBtn = (View) findViewById(R.id.im_send_btn);
+				
 				if (edit == null || edit.length() == 0)
 				{
 					sendBtn.setEnabled(false);
