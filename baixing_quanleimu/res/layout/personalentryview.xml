@@ -69,6 +69,26 @@
             android:textSize="20dip"
             android:textStyle="bold" >
         </TextView>
+
+        <LinearLayout
+            android:id="@+id/personalEdit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@id/personalImage"
+            android:layout_alignParentRight="true"
+            android:layout_marginRight="10dip"
+            android:background="@drawable/edit_btn_bg"
+            android:clickable="true"
+            android:gravity="center_vertical" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="编辑"
+                android:textColor="#82807C"
+                android:textSize="18dip" >
+            </TextView>
+        </LinearLayout>
     </RelativeLayout>
 
     <TextView
@@ -329,9 +349,9 @@
             android:gravity="center_vertical"
             android:paddingLeft="3dip"
             android:paddingRight="3dip"
+            android:text="0"
             android:textColor="#FFFFFF"
             android:textSize="18dip"
-            android:text="0"
             android:textStyle="bold" >
         </TextView>
     </RelativeLayout>
