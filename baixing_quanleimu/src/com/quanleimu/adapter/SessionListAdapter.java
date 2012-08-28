@@ -17,6 +17,7 @@ import android.widget.TextView;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GridAdapter.GridHolder;
 import com.quanleimu.adapter.GridAdapter.GridInfo;
+import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -61,6 +62,7 @@ public class SessionListAdapter extends BaseAdapter {
 	}
 
 	class SessionHolder {
+		public ImageView readStatus;
 		public TextView userAndAd;
 		public TextView lastChat;
 		public TextView lastTime;
@@ -77,19 +79,31 @@ public class SessionListAdapter extends BaseAdapter {
 			holder.lastChat = (TextView) convertView.findViewById(R.id.tvLastMsg);
 			holder.lastTime = (TextView) convertView.findViewById(R.id.tvTimeAndDate);
 			holder.image = (ImageView) convertView.findViewById(R.id.userImage);
+			holder.readStatus = (ImageView) convertView.findViewById(R.id.unreadicon);
 			convertView.setTag(holder);
 
 		} else {
 			holder = (SessionHolder) convertView.getTag();
 
 		}
+		
+		
 		ChatSession info = list.get(position);
 		if (info != null) {
 			holder.userAndAd.setText(info.getOppositeNick() + "-" + info.getAdTitle());
 			holder.lastChat.setText(info.getLastMsg());
+			holder.image.setImageResource(R.drawable.moren);
 			if(info.getImageUrl() != null && !info.getImageUrl().equals("")){
 				holder.image.setTag(info.getImageUrl());
 				SimpleImageLoader.showImg(holder.image, info.getImageUrl(), this.context);
+			}
+			try
+			{
+				holder.readStatus.setVisibility(hasNewMessageOnServer(info.getSessionId(), Long.parseLong(info.getTimeStamp())) ? View.VISIBLE : View.INVISIBLE);
+			}
+			catch(Throwable t)
+			{
+				
 			}
 			SimpleDateFormat sf = new SimpleDateFormat("MM-dd HH:mm", Locale.SIMPLIFIED_CHINESE);
 			Date date = new Date(Long.parseLong(info.getTimeStamp()) * 1000);
@@ -97,5 +111,12 @@ public class SessionListAdapter extends BaseAdapter {
 			holder.lastTime.setText(time);
 		}
 		return convertView;
+	}
+	
+	private boolean hasNewMessageOnServer(String sid, long lastTime)
+	{
+		ChatMessageDatabase.prepareDB(context);
+		final long cachedTime = ChatMessageDatabase.getLastMsgTime(sid);
+		return  cachedTime == -1 || cachedTime < lastTime;
 	}
 }

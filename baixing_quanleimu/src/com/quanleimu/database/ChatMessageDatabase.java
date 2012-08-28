@@ -1,6 +1,8 @@
 package com.quanleimu.database;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import android.content.ContentValues;
@@ -8,6 +10,7 @@ import android.content.Context;
 import android.database.Cursor;
 
 import com.quanleimu.entity.ChatMessage;
+import com.quanleimu.entity.compare.MsgTimeComparator;
 
 /**
  * 
@@ -62,6 +65,19 @@ public class ChatMessageDatabase extends Database
 		}
 		
 		return list;
+	}
+	
+	public static long getLastMsgTime(String sid)
+	{
+		List<ChatMessage> msglist = queryMessageBySession(sid);
+		if (msglist.size() == 0)
+		{
+			return -1;
+		}
+		
+		Collections.sort(msglist, new MsgTimeComparator());
+		
+		return msglist.get(msglist.size()-1).getTimestamp();
 	}
 	
 	public static String getSessionId(String from, String to, String adId)

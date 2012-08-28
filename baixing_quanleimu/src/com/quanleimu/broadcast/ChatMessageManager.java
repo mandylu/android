@@ -33,7 +33,14 @@ public class ChatMessageManager
 		//TODO: check if the msg is chat message.
 		try {
 			JSONObject jsonObj = new JSONObject(msgJson);
+			if (jsonObj == null || !jsonObj.has("type") || !"bxmessage".equals(jsonObj.get("type")))
+			{
+				return;
+			}
+			
 			ChatMessage msg = ChatMessage.fromJson(jsonObj.getString("data"));
+			
+			final String titleText = jsonObj.getString("text");
 			
 			ChatMessageDatabase.prepareDB(context);
 			ChatMessageDatabase.storeMessage(msg);
@@ -44,7 +51,7 @@ public class ChatMessageManager
 			}
 			else
 			{
-				showNotification(msg);
+				showNotification(msg, titleText);
 			}
 			
 		} catch (JSONException e) {
@@ -72,13 +79,13 @@ public class ChatMessageManager
 		void onNewMessage(ChatMessage msg);
 	}
 	
-	private void showNotification(ChatMessage message) {
+	private void showNotification(ChatMessage message, String notifyTitle) {
 		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
 		
 		String tickerText = message.getMessage();
 		int icon = R.drawable.push_icon;
 
-		String contentTitle = "私信提醒";
+		String contentTitle = notifyTitle == null ? "私信提醒" : notifyTitle;
 		String contentText = message.getMessage();
 
 		Intent notificationIntent = new Intent(CommonIntentAction.ACTION_NOTIFICATION_MESSAGE);
