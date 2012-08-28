@@ -2,6 +2,7 @@ package com.quanleimu.entity;
 
 import java.io.Serializable;
 
+import org.jivesoftware.smack.util.StringUtils;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +11,7 @@ import org.json.JSONObject;
  * @author liuchong
  *
  */
-public class ChatMessage implements Serializable
+public class ChatMessage implements Serializable, Cloneable
 {
 	/**
 	 * 
@@ -46,7 +47,7 @@ public class ChatMessage implements Serializable
 	{
 		ChatMessage chatMsg = new ChatMessage();
 		try {
-			if (obj.has("adId"))
+			if (obj.has("ad_id"))
 			{
 				chatMsg.setAdId(obj.getString("ad_id"));
 			}
@@ -142,6 +143,5 @@ public class ChatMessage implements Serializable
 	public void setSession(String session) {
 		this.session = session;
 	}
-	
 	
 }

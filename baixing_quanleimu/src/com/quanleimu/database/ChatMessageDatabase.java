@@ -25,7 +25,10 @@ public class ChatMessageDatabase extends Database
 	
 	public static void prepareDB(Context ctx)
 	{
-		new ChatMessageDatabase(ctx);
+		if (database == null)
+		{
+			new ChatMessageDatabase(ctx);
+		}
 	}
 	
 	/**
@@ -127,6 +130,7 @@ public class ChatMessageDatabase extends Database
 		values.put("receiver", msg.getTo());
 		values.put("msgJson", msg.toJson());
 		values.put("sessionId", msg.getSession());
+		values.put("timestamp", msg.getTimestamp());
 		
 		if (hasMessage(msg.getId()))
 		{
@@ -136,6 +140,20 @@ public class ChatMessageDatabase extends Database
 		{
 			database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
 		}
+	}
+	
+	/**
+	 * 
+	 * @param olderThan time in seconds.
+	 */
+	public static void deleteMsgOlderthan(long olderThan)
+	{
+		database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, "timestamp < " + olderThan, null);
+	}
+	
+	public static void clearDatabase()
+	{
+		database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
 	}
 	
 	public static void storeMessage(String msg)
