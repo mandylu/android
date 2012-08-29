@@ -98,6 +98,11 @@ public class ChatMessageDatabase extends Database
 		if (cur != null && cur.moveToFirst())
 		{
 			sid = cur.getString(0);
+		}
+		
+		if (cur != null)
+		{
+			cur.deactivate();
 			cur.close();
 		}
 		
@@ -114,6 +119,10 @@ public class ChatMessageDatabase extends Database
 		if (cur != null && cur.moveToFirst())
 		{
 			exists = true;
+		}
+		
+		if (cur != null)
+		{
 			cur.deactivate();
 			cur.close();
 		}
