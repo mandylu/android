@@ -23,12 +23,15 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.util.ViewUtil;
 
 public class XMPPManager {
 	
 	public static final String TAG = "XmppManager";
 	
     public static final int DISCON_TIMEOUT = 1000 * 10; // 10s
+    
+    public static boolean DEBUG_MODE = false;
     
 
 	public static final int DISCONNECTED = 1;
@@ -44,7 +47,7 @@ public class XMPPManager {
     public static final int WAITING_FOR_NETWORK = 6;
     
 	
-	public static final String SERVER = "192.168.5.243";//192.168.4.145"message.baixing.com";//
+	public static final String SERVER = "192.168.8.56";//192.168.4.145//"message.baixing.com";
 	private static XMPPManager manager;
 	
 	private XMPPConnection mConnection;
@@ -282,6 +285,7 @@ public class XMPPManager {
 
         try {
 //            informListeners(mConnection);
+        	handleOfflineMessages(mConnection, context);
             mPacketListener = new PkgListener();
             mConnection.addPacketListener(mPacketListener, mPacketListener);
 
@@ -397,6 +401,10 @@ public class XMPPManager {
             mStatus = status;  
             Log.d(TAG, "broadcasting state transition from " + statusAsString(old) + " to " + statusAsString(status) + " via Intent " + PushMessageService.ACTION_XMPP_CONNECTION_CHANGED);
 //            broadcastStatus(context, old, status);
+            if (DEBUG_MODE)
+            {
+            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, "XMPPStatus", statusAsString(status), null, true);
+            }
         }
     }
     
@@ -453,7 +461,7 @@ public class XMPPManager {
 	        return res;                        
 	    }
 
-	    public static void handleOfflineMessages(XMPPConnection connection, String notifiedAddress, Context ctx) throws XMPPException {
+	    public static void handleOfflineMessages(XMPPConnection connection, Context ctx) throws XMPPException {
 	        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(connection);
 
 	        if (!offlineMessageManager.supportsFlexibleRetrieval())

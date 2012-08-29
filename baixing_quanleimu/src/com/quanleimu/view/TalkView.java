@@ -446,6 +446,10 @@ public class TalkView extends BaseView
 				cmdOpts.add("ad_id=" + URLEncoder.encode(adId));
 			}
 			cmdOpts.add("message=" + URLEncoder.encode(message));
+			if (sessionId != null)
+			{
+				cmdOpts.add("session_id=" + URLEncoder.encode(sessionId));
+			}
 			
 			String url = Communication.getApiUrl(apiName, cmdOpts);
 			

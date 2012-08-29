@@ -1,8 +1,5 @@
 package com.quanleimu.broadcast;
 
-import com.quanleimu.broadcast.ChatMessageManager.ChatMessageListener;
-import com.quanleimu.entity.ChatMessage;
-
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -14,6 +11,13 @@ import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+
+import com.quanleimu.broadcast.ChatMessageManager.ChatMessageListener;
+import com.quanleimu.entity.UserBean;
+import com.quanleimu.util.Communication;
+import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.Util;
+import com.tencent.mm.sdk.platformtools.Log;
 
 /**
  * 
@@ -136,6 +140,9 @@ public class PushMessageService extends Service
             // redirect the intent to the service handler thread
             sendToServiceHandler(startId, intent);
         }
+        
+        registeDevice(); //
+        
         return START_STICKY;
     }
     
@@ -250,7 +257,40 @@ public class PushMessageService extends Service
         return currentState;
     }
 	
+    
+    private void registeDevice()
+    {
+		RegisterCommandListener cmdListener = new RegisterCommandListener();
+		ParameterHolder parameters = new ParameterHolder();
+		UserBean user = (UserBean) Util.loadDataFromLocate(
+				PushMessageService.this, "user");
+		if (user != null) {
+			parameters.addParameter("userId", user.getId());
+		}
+    	
+		Communication.executeAsyncTask("tokenupdate", parameters, cmdListener);
+		
+    }
+    
+    class RegisterCommandListener implements Communication.CommandListener
+    {
+    	
+		public void onServerResponse(String serverMessage) {
+			Log.d("PushMesssageService", serverMessage);
+		}
 
+		@Override
+		public void onException(Exception ex) {
+			try {
+				this.wait(10 * 1000);
+			} catch (InterruptedException e) {
+				e.printStackTrace();
+			}
+			
+			registeDevice();
+		}
+    	
+    }
 
 }
 

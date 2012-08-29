@@ -7,9 +7,9 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
-import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
+import java.util.List;
 import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
@@ -18,31 +18,34 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
+import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
-import com.quanleimu.activity.QuanleimuApplication;
-
+import android.content.Context;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
-import android.os.Message;
-import android.provider.Settings.Secure;
-import android.util.Log;
-
 import android.net.ConnectivityManager;
-import android.content.Context;
 import android.net.NetworkInfo;
+import android.provider.Settings.Secure;
 
-import org.apache.http.entity.StringEntity;
+import com.quanleimu.activity.QuanleimuApplication;
 
 public class Communication implements Comparator<String> {
 
+	public static interface CommandListener
+	{
+		void onServerResponse(String serverMessage);
+		void onException(Exception ex);
+	}
+	
 	private final static Communication COMPARATOR = new Communication();
 
 	public static String apiKey = "api_mobile_android";
 	// public static String apiKey = "baixing_ios";
-	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";
+	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";//PRD
+//	public static String apiSecret = "844126bb93c99897817531d7b84cd028";//DEV
 	// public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
 	public static String apiUrl = "http://www.baixing.com/api/mobile.";
@@ -61,7 +64,7 @@ public class Communication implements Comparator<String> {
 		return false;
 	}
 
-	public static String getApiUrl(String apiName, ArrayList<String> parameters) {
+	public static String getApiUrl(String apiName, List<String> parameters) {
 
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
 		// System.out.println(">>>>>>>>>>>>>>>>>>>>>>>> getApiUrl:" + url);
@@ -97,7 +100,7 @@ public class Communication implements Comparator<String> {
 	}
 
 	// 业务逻辑API URL
-	private static String getPostParameters(ArrayList<String> list) {
+	private static String getPostParameters(List<String> list) {
 		/*
 		 * if(MyApplication.udid.equals("") ||
 		 * MyApplication.version.equals("")){ getudid(); getversion(); }
@@ -608,16 +611,30 @@ public class Communication implements Comparator<String> {
 
 		return o1.compareTo(o2);
 	}
-	//
-	// private static String[] sortUrl(String[] urls) {
-	// Vector<String> vector = new Vector<String>();
-	// for (int i = 0; i < urls.length; i++) {
-	// if (urls[i] != null) {
-	// vector.add(urls[i]);
-	// }
-	// }
-	// String[] ret = vector.toArray(new String[0]);
-	// Arrays.sort(ret);
-	// return ret;
-	// }
+
+	public static void executeAsyncTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
+		
+		Thread t = new Thread(
+				new Runnable() {
+					public void run() {
+						
+						String url = Communication.getApiUrl(apiName, params.toParameterList());
+						
+						try {
+							String result = Communication.getDataByUrlGet(url);
+							if (listener != null)
+							{
+								listener.onServerResponse(result);
+							}
+						} catch (Exception e) {
+							if (listener != null)
+							{
+								listener.onException(e);
+							}
+						}
+					}
+				});
+		
+		t.start();
+	}
 }

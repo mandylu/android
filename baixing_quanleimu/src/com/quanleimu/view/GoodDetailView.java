@@ -67,6 +67,7 @@ import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.ViewUtil;
 import com.tencent.mm.sdk.openapi.WXAppExtendObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.platformtools.Log;
@@ -369,13 +370,10 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				// TODO Auto-generated method stub
 				
 			}
 			
 			public void onPageScrollStateChanged(int arg0) {
-				// TODO Auto-generated method stub
-				
 				
 			}
 		});
@@ -501,7 +499,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 //					textView.setText("后面没有啦！");
 //					
 //					scrollParent.onNewViewFailed(false);
-					//TODO:
+					ViewUtil.postShortToastMessage(GoodDetailView.this, "后面没有啦！", 0);
 				}
 			});
 	}
