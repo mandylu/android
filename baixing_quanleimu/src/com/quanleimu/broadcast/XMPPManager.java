@@ -47,7 +47,7 @@ public class XMPPManager {
     public static final int WAITING_FOR_NETWORK = 6;
     
 	
-	public static final String SERVER = "192.168.8.56";//192.168.4.145//"message.baixing.com";
+	public static final String SERVER = "message.baixing.com";//192.168.4.145//"192.168.8.56";
 	private static XMPPManager manager;
 	
 	private XMPPConnection mConnection;
@@ -403,7 +403,7 @@ public class XMPPManager {
 //            broadcastStatus(context, old, status);
             if (DEBUG_MODE)
             {
-            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, "XMPPStatus", statusAsString(status), null, true);
+            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, "XMPPStatus", statusAsString(status) + ":" +  QuanleimuApplication.udid, null, true);
             }
         }
     }
