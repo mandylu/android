@@ -42,7 +42,6 @@ public class PushMessageService extends Service
     
     
 	public static final String TAG = "PushMessageService";
-	public static final String SERVER = "192.168.5.243";//192.168.4.145
 	
     private long mHandlerThreadId;
 	private static XMPPManager sXmppMgr;
@@ -224,7 +223,7 @@ public class PushMessageService extends Service
         } 
         else if (action.equals(ACTION_XMPP_MESSAGE_RECEIVED)) {
         	String msg = intent.getStringExtra("message");
-        	if (msg != null)
+        	if (msg != null && getMyId() != null) //User should in login status.
         	{
 //        		ServerMessageHandler.onNewMessage(this, msg, intent.getStringExtra("from"));
         		chatManager.handleChatMessage(msg);
@@ -262,10 +261,9 @@ public class PushMessageService extends Service
     {
 		RegisterCommandListener cmdListener = new RegisterCommandListener();
 		ParameterHolder parameters = new ParameterHolder();
-		UserBean user = (UserBean) Util.loadDataFromLocate(
-				PushMessageService.this, "user");
-		if (user != null) {
-			parameters.addParameter("userId", user.getId());
+		String userId = getMyId();
+		if (userId != null) {
+			parameters.addParameter("userId", userId);
 		}
     	
 		Communication.executeAsyncTask("tokenupdate", parameters, cmdListener);
@@ -291,6 +289,17 @@ public class PushMessageService extends Service
 		}
     	
     }
+    
+	private String getMyId()
+	{
+		UserBean user = (UserBean) Util.loadDataFromLocate(this, "user");
+		if (user != null)
+		{
+			return user.getId();
+		}
+		
+		return null;
+	}
 
 }
 
