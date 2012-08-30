@@ -153,7 +153,11 @@ public class PersonalCenterEntryView extends BaseView implements
 			}						
 			break;
 		case R.id.personalEdit:
-			
+			if(user == null){
+				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
+			}else{
+				m_viewInfoListener.onNewView(new ProfileEditView(this.getContext(), up));
+			}	
 			break;
 		default:
 			break;
@@ -377,7 +381,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				upJson = Communication.getDataByUrl(url, false);
+				upJson = Communication.getDataByUrl(url, true);
 				myHandler.sendEmptyMessage(MSG_GETPERSONALPROFILE);
 				return;
 			} catch (UnsupportedEncodingException e) {

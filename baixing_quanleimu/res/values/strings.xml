@@ -11,4 +11,5 @@
     <string name="pull_to_refresh_release_label">松开刷新。。。</string>
     <string name="scrolldown_to_getmore">正在加载更多，请耐心等待~</string>
     <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
+    <string name="nickname_empty">请输入昵称</string>
 </resources>

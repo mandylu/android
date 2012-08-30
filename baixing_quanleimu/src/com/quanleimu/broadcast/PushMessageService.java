@@ -281,7 +281,7 @@ public class PushMessageService extends Service
 		public void onException(Exception ex) {
 			try {
 				this.wait(10 * 1000);
-			} catch (InterruptedException e) {
+			} catch (Throwable e) {
 				e.printStackTrace();
 			}
 			
