@@ -41,7 +41,6 @@
             android:layout_marginRight="4dp"
             android:layout_toLeftOf="@+id/im_send_btn">
 
-            <requestFocus />
         </EditText>
 
         <ImageButton
