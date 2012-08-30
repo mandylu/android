@@ -3,7 +3,7 @@ package com.quanleimu.entity;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserProfile {
+public class UserProfile implements Cloneable {
 	public String userId = "";
 	public String mobile = "";
 	public String nickName = "";

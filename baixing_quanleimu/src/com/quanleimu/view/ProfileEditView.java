@@ -1,5 +1,6 @@
 package com.quanleimu.view;
 
+import java.io.File;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
@@ -12,11 +13,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
+import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
@@ -25,9 +30,12 @@ import com.quanleimu.activity.R;
 import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.UserProfile;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.UploadImageCommand;
+import com.quanleimu.util.UploadImageCommand.ProgressListener;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.MultiLevelSelectionView.MultiLevelItem;
 
@@ -35,15 +43,25 @@ public class ProfileEditView extends BaseView {
 
 	final int BACK_EVENT_ID = 100;
 	
+	public static final int NONE = 0;
+	public static final int PHOTOHRAPH = 1;
+	public static final int PHOTOZOOM = 2; 
+	public static final int PHOTORESOULT = 3;
+	
 	final int MSG_UPDATE_SUCCED = 1;
 	final int MSG_UPDATE_FAIL = 2;
 	final int MSG_UPDATE_ERROR = 3;
 	final int MSG_GOT_CITY_LIST = 4;
+	final int MSG_NEW_IMAGE = 5;
+	final int MSG_UPLOAD_IMG_FAIL = 6;
+	final int MSG_UPLOAD_IMG_DONE = 7;
 			
 	
 	private UserProfile up;
 	private LinkedHashMap<String, PostGoodsBean> beans;
 	private String newCityId;
+	private Uri profileUri;
+	private String newServerImage;
 	
 	public ProfileEditView(Context context, UserProfile up){
 		super(context);
@@ -78,7 +96,6 @@ public class ProfileEditView extends BaseView {
 		newCityId = up.location;
 		updateText(up.nickName, R.id.username);
 		updateText(up.gender, R.id.gender);
-//		updateText(up.location, R.id.city);
 		findViewById(R.id.change_city).setOnClickListener(
 				new OnClickListener() {
 
@@ -102,6 +119,16 @@ public class ProfileEditView extends BaseView {
 		{
 			loadCityMapping(newCityId);
 		}
+		
+		findViewById(R.id.personalImage).setOnClickListener(new OnClickListener() {
+
+			public void onClick(View v) {
+				ViewUtil.pickupPhoto(getContext(), 0);
+			}
+			
+		});
+		
+		updateImage(up.resize180Image);
 		
 	}
 	
@@ -153,6 +180,17 @@ public class ProfileEditView extends BaseView {
 				beans = (LinkedHashMap) msg.obj;
 				updateText(findCityName(up.location), R.id.city);
 				break;
+			case MSG_NEW_IMAGE:
+				profileUri = (Uri) msg.obj;
+				//TODO:
+				break;
+			case MSG_UPLOAD_IMG_DONE:
+				newServerImage = (String) msg.obj;
+				continueUpdateProfile();
+				break;
+			case MSG_UPLOAD_IMG_FAIL:
+				ViewUtil.postShortToastMessage(ProfileEditView.this, "上传图片失败", 10);
+				break;
 			}
 		}
 	};
@@ -168,15 +206,65 @@ public class ProfileEditView extends BaseView {
 	{
 		if (validate())
 		{
-			pd = ProgressDialog.show(getContext(),"提示", "更新中，请稍等...");
-			
-			updateProfile();
+			if (profileUri != null)
+			{
+				pd = ProgressDialog.show(getContext(), "提示", "图片上传中，请稍等。。。");
+				new UploadImageCommand(getContext(), profileUri.toString()).startUpload(new ProgressListener() {
+					public void onStart(String imagePath) {
+						myHandler.sendEmptyMessage(MSG_UPLOAD_IMG_FAIL);
+					}
+
+					public void onCancel(String imagePath) {
+						myHandler.sendEmptyMessage(MSG_UPLOAD_IMG_FAIL);
+					}
+
+					public void onFinish(Bitmap bmp, String imagePath) {
+						Message msg = myHandler.obtainMessage(MSG_UPLOAD_IMG_DONE, imagePath);
+						myHandler.sendMessage(msg);
+					}
+					
+				});
+			}
+			else
+			{
+				continueUpdateProfile();
+			}
 			
 			return true;
 		}
 		
 		return false;
 	}
+	
+	private void continueUpdateProfile()
+	{
+		pd = ProgressDialog.show(getContext(),"提示", "更新中，请稍等...");
+		
+		updateProfile();
+	}
+	
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+
+		if (resultCode == NONE || data == null) {
+			return;
+		}
+		
+		Uri uri = null;
+		if (requestCode == PHOTOHRAPH) {
+			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + 0 + ".jpg");
+			uri = Uri.fromFile(picture);
+		}
+		else if (requestCode == PHOTOZOOM) {
+			uri = data.getData();
+		}
+		
+		if (uri != null)
+		{
+			Message msg = myHandler.obtainMessage(MSG_NEW_IMAGE, uri);
+			myHandler.sendMessage(msg);
+		}
+	}
+	
 	
 	private boolean validate()
 	{
@@ -199,6 +287,10 @@ public class ProfileEditView extends BaseView {
 		params.addParameter("gender", getTextData(R.id.gender));
 		params.addParameter("所在地", newCityId);
 		params.addParameter("userId", up.userId);
+		if (profileUri != null)
+		{
+			params.addParameter("image_i", newServerImage);
+		}
 		
 		
 		Communication.executeAsyncTask("user_profile_update", params, new Communication.CommandListener() {
@@ -234,6 +326,7 @@ public class ProfileEditView extends BaseView {
 		up.nickName = getTextData(R.id.username);
 		up.gender = getTextData(R.id.gender);
 		up.location = newCityId;
+		//TODO: how about the image url?
 		
 		if(null != m_viewInfoListener){
 			m_viewInfoListener.onBack();
@@ -260,13 +353,11 @@ public class ProfileEditView extends BaseView {
 	}
 	
 	
-	private void startPickupPhoto()
+	private void updateImage(String imageUrl)
 	{
-		Intent thirdparty = new Intent(this.getContext(), ThirdpartyTransitActivity.class);
-		Bundle ext = new Bundle();
-		ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Albam);
-		thirdparty.putExtras(ext);
-		getContext().startActivity(thirdparty);
+		if(imageUrl != null){
+			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), imageUrl, this.getContext());
+		}
 	}
 	
 }

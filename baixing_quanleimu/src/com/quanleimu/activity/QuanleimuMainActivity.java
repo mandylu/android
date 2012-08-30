@@ -632,8 +632,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		Intent intent = this.getIntent();
 		Bundle bd = intent.getExtras();
 		if(bd != null && bd.containsKey(ThirdpartyTransitActivity.isFromPhotoOrAlbam) && bd.getBoolean(ThirdpartyTransitActivity.isFromPhotoOrAlbam)){
-			if(this.currentView instanceof PostGoodsView){
-				((PostGoodsView)currentView).onActivityResult(bd.getInt(ThirdpartyTransitActivity.Key_RequestCode),
+//			if(this.currentView instanceof PostGoodsView)
+			{
+				currentView.onActivityResult(bd.getInt(ThirdpartyTransitActivity.Key_RequestCode),
 						bd.getInt(ThirdpartyTransitActivity.Key_RequestResult),
 						(Intent)bd.getParcelable(ThirdpartyTransitActivity.Key_Data));
 			}
