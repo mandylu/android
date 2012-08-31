@@ -640,22 +640,30 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		
 		TextView txt_phone = (TextView) findViewById(R.id.number);
-		QuickContactBadge iv_call = (QuickContactBadge)findViewById(R.id.call);
+		QuickContactBadge iv_contact = (QuickContactBadge) findViewById(R.id.contact);
+		View iv_call = (View)findViewById(R.id.call);
 		ImageView iv_sms = (ImageView)findViewById(R.id.sms);
+		View iv_buzz = findViewById(R.id.buzz);
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
+		
 		rl_phone.setVisibility(View.VISIBLE);
+		txt_phone.setOnClickListener(this);
 		iv_sms.setOnClickListener(this);
+		iv_call.setOnClickListener(this);
+		iv_buzz.setOnClickListener(this);
 		
 		if (mobileV != null
 				&& !mobileV.equals("")
 				&& !mobileV.equals("无")) {
 			txt_phone.setVisibility(View.VISIBLE);
 			iv_call.setVisibility(View.VISIBLE);
+			iv_sms.setVisibility(View.VISIBLE);
 			txt_phone.setText(mobileV);
-			iv_call.assignContactFromPhone(mobileV, false);
+			iv_contact.assignContactFromPhone(mobileV, false);
 		} else {
 			txt_phone.setVisibility(View.INVISIBLE);
 			iv_call.setVisibility(View.INVISIBLE);
+			iv_sms.setVisibility(View.INVISIBLE);
 		}
 	}
 	
@@ -811,6 +819,10 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
+		case R.id.number:{
+			findViewById(R.id.contact).performClick();
+			break;
+		}
 		case R.id.retry_load_more:
 			retryLoadMore();
 			break;
@@ -824,7 +836,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			this.getContext().startActivity(intent);
 			break;	
 		}
-		case R.id.sms:{
+		case R.id.buzz: {
 			String userId = getMyId();
 			if (userId == null)
 			{
@@ -834,6 +846,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			{
 				startChat();
 			}
+			break;
+		}
+		case R.id.sms:{
+			TextView txt_phone = (TextView) findViewById(R.id.number);
+			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+			this.getContext().startActivity(intent);			
 			break;
 		}
 		case R.id.showmap:

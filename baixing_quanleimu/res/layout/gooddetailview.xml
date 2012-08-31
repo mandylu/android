@@ -18,25 +18,38 @@
             android:layout_width="fill_parent"
             android:layout_height="match_parent" >
 
+
+
+            <QuickContactBadge
+                android:id="@+id/contact"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_alignParentLeft="true"
+                android:visibility="gone"
+                android:src="@android:color/transparent"
+                />
+            
             <TextView
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:paddingLeft="20dip"
+                android:paddingLeft="10dip"
                 android:text="12345678909"
                 android:textColor="#FFFFFF"
                 android:textSize="30dip" >
             </TextView>
-
-            <QuickContactBadge
+            
+           <ImageView
                 android:id="@+id/call"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:paddingLeft="10dip"
                 android:layout_centerVertical="true"
-                android:layout_alignParentLeft="true"
-                android:paddingLeft="220dip"
+                android:layout_toRightOf="@+id/number"
                 android:src="@drawable/icon_call" />
+            
 
           <ImageView
             android:id="@+id/sms"
@@ -44,8 +57,17 @@
             android:layout_height="wrap_content"
              android:layout_centerVertical="true"
             android:layout_toRightOf="@+id/call"
-            android:paddingLeft="20dip"
+            android:paddingLeft="10dip"
             android:src="@drawable/icon_sms" />
+          
+          <ImageView
+            android:id="@+id/buzz"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+             android:layout_centerVertical="true"
+             android:layout_alignParentRight="true"
+            android:paddingRight="10dp"
+            android:src="@drawable/btn_viewad_buzz" />
           
         </RelativeLayout>
 
