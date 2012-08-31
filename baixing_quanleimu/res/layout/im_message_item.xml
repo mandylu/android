@@ -3,37 +3,38 @@
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="5dp" >
+    android:paddingBottom="5dip"
+    android:paddingTop="5dip" >
+
+    <ImageView
+        android:id="@+id/myIcon"
+        android:layout_width="40dip"
+        android:layout_height="40dip"
+        android:layout_alignBottom="@+id/im_message_content_parent"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/pic_my_avator_boy" >
+    </ImageView>
 
     <LinearLayout
         android:id="@+id/im_message_content_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_alignParentRight="true"
-        android:gravity="center_vertical"
+        android:layout_toLeftOf="@id/myIcon"
         android:background="@drawable/chat_bubble_green"
-        android:minWidth="100dp"
-        android:orientation="vertical" >
+        android:gravity="center_vertical"
+        android:minWidth="100dip"
+        android:orientation="horizontal" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="match_parent"
+        <TextView
+            android:id="@+id/im_message_content"
+            android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_weight="0.85"
-            android:orientation="horizontal" >
-
-            <TextView
-                android:id="@+id/im_message_content"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_gravity="top"
-                android:autoLink="map|phone|web"
-                android:text="my message"
-                android:textAppearance="?android:attr/textAppearanceMedium"
-                android:textColor="#000000" />
-
-        </LinearLayout>
+            android:layout_gravity="center_vertical"
+            android:autoLink="map|phone|web"
+            android:text="my message"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:textColor="#000000" />
     </LinearLayout>
 
 </RelativeLayout>

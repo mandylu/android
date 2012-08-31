@@ -1,25 +1,30 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="wrap_content"
     android:orientation="horizontal"
-    android:paddingTop="10dp" >
+    android:paddingBottom="5dip"
+    android:paddingTop="5dip" >
+
+    <ImageView
+        android:id="@+id/targetIcon"
+        android:layout_width="40dip"
+        android:layout_height="40dip"
+        android:layout_alignBottom="@+id/im_message_content_parent"
+        android:layout_alignParentLeft="true"
+        android:src="@drawable/pic_my_avator_boy" >
+    </ImageView>
 
     <LinearLayout
         android:id="@+id/im_message_content_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-		android:gravity="center_vertical"
+        android:layout_toRightOf="@id/targetIcon"
         android:background="@drawable/chat_bubble_white"
+        android:gravity="center_vertical"
         android:minWidth="100dp"
         android:orientation="vertical" >
 
-        <LinearLayout
-            android:id="@+id/linearLayout2"
-            android:layout_width="fill_parent"
-            android:layout_weight="0.85"
-            android:layout_height="wrap_content" >
-            
         <TextView
             android:id="@+id/im_message_content"
             android:layout_width="wrap_content"
@@ -28,8 +33,6 @@
             android:text="Your message"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
-
-        </LinearLayout>
     </LinearLayout>
 
-</LinearLayout>
+</RelativeLayout>

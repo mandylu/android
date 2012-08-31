@@ -21,6 +21,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
@@ -34,6 +35,7 @@ import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.entity.compare.MsgTimeComparator;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
@@ -43,13 +45,17 @@ public class TalkView extends BaseView
 {
 	public static final int MAX_REQ_COUNT = 100;
 	private static final int MSG_GETPROFILE = 1;
+	private static final int MSG_GETTARGETICON = 2;
+	private static final int MSG_GETMYICON = 3;
 	
 	private String targetUserId;
+	private String targetIcon = null;
 	private String adId;
 	private String adTitle = "对话";
 	private ChatMessageListener msgListener;
 	private String sessionId;
 	private String myUserId;
+	private String myIcon = null;
 	private long lastupdateTime = 0;
 	private boolean alwaysSync;
 	
@@ -65,19 +71,20 @@ public class TalkView extends BaseView
 		if (bundle != null)
 		{
 			targetUserId = bundle.getString("receiverId");
+			myUserId = getMyId(); //FIXME: this is load from file, may cost times to load it on main thread.
 			adId = bundle.getString("adId");
 			if(bundle.containsKey("receiverNick")){
 				adTitle = bundle.getString("receiverNick");
-			}else{
-				(new Thread(new GetPersonalProfileThread(targetUserId))).start();
 			}
+			(new Thread(new GetPersonalProfileThread(targetUserId))).start();
+			(new Thread(new GetPersonalProfileThread(myUserId))).start();
 			if (bundle.containsKey("message"))
 			{
 				msg = (ChatMessage) bundle.getSerializable("message");
 				lastupdateTime = msg.getTimestamp();
 			}
 			
-			myUserId = getMyId(); //FIXME: this is load from file, may cost times to load it on main thread.
+			
 			
 			if (bundle.containsKey("sessionId"))
 			{
@@ -512,6 +519,16 @@ public class TalkView extends BaseView
 	{
 		LayoutInflater inflator = LayoutInflater.from(getContext());
 		View msgItem = inflator.inflate(isMine ? R.layout.im_message_item : R.layout.im_message_item_received, null);
+		ImageView iv = isMine ? (ImageView)msgItem.findViewById(R.id.myIcon) : (ImageView)msgItem.findViewById(R.id.targetIcon);
+		if(iv != null){
+			if(isMine && this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
+				iv.setTag(myIcon);
+				SimpleImageLoader.showImg(iv, myIcon, this.getContext());
+			}else if(!isMine && this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
+				iv.setTag(targetIcon);
+				SimpleImageLoader.showImg(iv, targetIcon, this.getContext());				
+			}
+		}
 		View msgParent = msgItem.findViewById(R.id.im_message_content_parent);
 		msgParent.setPadding(msgParent.getPaddingLeft(), msgParent.getPaddingTop()/10, msgParent.getPaddingRight(), msgParent.getPaddingBottom()/10);
 		
@@ -550,6 +567,23 @@ public class TalkView extends BaseView
 		}
 	}
 	
+	private void setPreviousIcon(boolean isMine){
+		if(isMine && (myIcon == null || myIcon.equals("") || myIcon.equals("null")))
+			return;
+		if(!isMine && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null")))
+			return;
+		ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
+		if(vp != null){
+			for(int i = 0; i < vp.getChildCount(); ++ i){
+				ImageView iv = 
+						(ImageView)(isMine ? vp.getChildAt(i).findViewById(R.id.myIcon) : vp.getChildAt(i).findViewById(R.id.targetIcon));
+				if(iv == null) continue;
+				iv.setTag(isMine ? myIcon : targetIcon);
+				SimpleImageLoader.showImg(iv, isMine ? myIcon : targetIcon, this.getContext());
+			}
+		}
+	}
+	
 	Handler myHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -563,6 +597,12 @@ public class TalkView extends BaseView
 					m_viewInfoListener.onTitleChanged(title);
 
 				}
+				break;
+			case MSG_GETTARGETICON:
+				setPreviousIcon(false);
+				break;
+			case MSG_GETMYICON:
+				setPreviousIcon(true);
 				break;
 			}
 		}
@@ -583,6 +623,13 @@ public class TalkView extends BaseView
 			if(upJson != null){
 				UserProfile up = UserProfile.from(upJson);
 				if(up != null){
+					if(usrId.equals(targetUserId)){
+						targetIcon = up.squareImage;
+						myHandler.sendEmptyMessage(MSG_GETTARGETICON);
+					}else{
+						myIcon = up.squareImage;
+						myHandler.sendEmptyMessage(MSG_GETMYICON);
+					}
 					Message msg = Message.obtain();
 					msg.what = MSG_GETPROFILE;
 					msg.obj = up.nickName;
