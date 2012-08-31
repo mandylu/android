@@ -11,23 +11,21 @@ import org.json.JSONObject;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
+import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -112,6 +110,33 @@ public class ProfileEditView extends BaseView {
 
 				});
 
+		findViewById(R.id.gender).setOnClickListener(new View.OnClickListener() {
+			
+			public void onClick(View v) {
+				findViewById(R.id.gender_selector).performClick();
+			}
+		});
+		
+		Spinner selector = (Spinner) findViewById(R.id.gender_selector);
+		if (up.gender!=null && up.gender.length()>0)
+		{
+			selector.setSelection("男".equals(up.gender)?0 : 1);
+		}
+		selector.setOnItemSelectedListener(new OnItemSelectedListener(){
+
+			@Override
+			public void onItemSelected(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				// TODO Auto-generated method stub
+				updateText(arg2 == 0? "男" : "女", R.id.gender);
+			}
+
+			@Override
+			public void onNothingSelected(AdapterView<?> arg0) {
+				// TODO Auto-generated method stub
+				
+			}});
+		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
 		updateText(format.format(new Date(Long.parseLong(up.createTime) * 1000)), R.id.create_time);
 		
@@ -211,7 +236,7 @@ public class ProfileEditView extends BaseView {
 				pd = ProgressDialog.show(getContext(), "提示", "图片上传中，请稍等。。。");
 				new UploadImageCommand(getContext(), profileUri.toString()).startUpload(new ProgressListener() {
 					public void onStart(String imagePath) {
-						myHandler.sendEmptyMessage(MSG_UPLOAD_IMG_FAIL);
+						//Do nothing.
 					}
 
 					public void onCancel(String imagePath) {
@@ -245,7 +270,7 @@ public class ProfileEditView extends BaseView {
 	
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		if (resultCode == NONE || data == null) {
+		if (resultCode == NONE) {
 			return;
 		}
 		
@@ -254,7 +279,8 @@ public class ProfileEditView extends BaseView {
 			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + 0 + ".jpg");
 			uri = Uri.fromFile(picture);
 		}
-		else if (requestCode == PHOTOZOOM) {
+		else if (data != null && requestCode == PHOTOZOOM)
+		{
 			uri = data.getData();
 		}
 		
