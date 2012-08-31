@@ -158,7 +158,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			if(user == null){
 				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
 			}else if (up != null){
-				m_viewInfoListener.onNewView(new ProfileEditView(this.getContext(), up));
+				m_viewInfoListener.onNewView(new ProfileEditView(this.getContext(), bundle, up));
 			}	
 			break;
 		default:
@@ -193,6 +193,8 @@ public class PersonalCenterEntryView extends BaseView implements
 	private void fillProfile(UserProfile up){
 		if(up.nickName != null){
 			((TextView)this.findViewById(R.id.personalNick)).setText(up.nickName);
+		}else{
+			((TextView)this.findViewById(R.id.personalNick)).setText("");
 		}
 		if(up.gender != null && !up.equals("")){
 			if(up.gender.equals("男")){
@@ -203,6 +205,8 @@ public class PersonalCenterEntryView extends BaseView implements
 		}
 		if(up.location != null && !up.location.equals("")){
 			(new Thread(new GetLocationThread(up.location))).start();
+		}else{
+			((TextView)PersonalCenterEntryView.this.findViewById(R.id.personalLocation)).setText("");
 		}
 		
 		if(up.createTime != null && !up.equals("")){
@@ -213,6 +217,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			}catch(Exception e){
 				e.printStackTrace();
 			}
+		}else{
+			((TextView)this.findViewById(R.id.personalRegisterTime)).setText("");
 		}
 		String image = null;
 //		if(up.squareImage != null && !up.squareImage.equals("")){
@@ -274,7 +280,7 @@ public class PersonalCenterEntryView extends BaseView implements
 								if(meta.has("displayName")){
 									String location = meta.getString("displayName");
 									if(location != null){
-										((TextView)PersonalCenterEntryView.this.findViewById(R.id.personalLocation)).setText("(" + location + ")");
+										((TextView)PersonalCenterEntryView.this.findViewById(R.id.personalLocation)).setText(location);
 									}
 								}								
 							}
@@ -389,7 +395,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				upJson = Communication.getDataByUrl(url, false);
+				upJson = Communication.getDataByUrl(url, true);
 				myHandler.sendEmptyMessage(MSG_GETPERSONALPROFILE);
 				return;
 			} catch (UnsupportedEncodingException e) {

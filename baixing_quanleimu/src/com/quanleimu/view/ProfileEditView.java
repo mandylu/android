@@ -14,6 +14,7 @@ import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
@@ -61,10 +62,12 @@ public class ProfileEditView extends BaseView {
 	private String newCityId;
 	private Uri profileUri;
 	private String newServerImage;
+	private Bundle bundle = null;
 	
-	public ProfileEditView(Context context, UserProfile up){
+	public ProfileEditView(Context context, Bundle bundle, UserProfile up){
 		super(context);
 		this.up = up;
+		this.bundle = bundle;
 		init();
 	}
 	
@@ -355,6 +358,9 @@ public class ProfileEditView extends BaseView {
 		//TODO: how about the image url?
 		
 		if(null != m_viewInfoListener){
+			if(bundle != null){
+				bundle.putInt("forceUpdate", 1);
+			}
 			m_viewInfoListener.onBack();
 		}
 	

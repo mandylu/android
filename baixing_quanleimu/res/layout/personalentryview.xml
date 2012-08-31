@@ -9,7 +9,7 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:paddingBottom="15dip"
-        android:paddingTop="10dip" >
+        android:paddingTop="5dip" >
 
         <ImageView
             android:id="@+id/personalImage"
@@ -26,9 +26,7 @@
             android:layout_alignTop="@id/personalImage"
             android:layout_toRightOf="@id/personalImage"
             android:orientation="horizontal"
-            android:paddingBottom="10dip"
-            android:paddingLeft="10dip"
-            android:paddingTop="10dip" >
+            android:paddingLeft="10dip" >
 
             <TextView
                 android:id="@+id/personalNick"
@@ -46,27 +44,29 @@
                 android:layout_gravity="center_vertical"
                 android:paddingLeft="5dip" >
             </ImageView>
-
-            <TextView
-                android:id="@+id/personalLocation"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="5dip"
-                android:textColor="#82807C"
-                android:textSize="22dip"
-                android:textStyle="bold" >
-            </TextView>
         </LinearLayout>
+
+        <TextView
+            android:id="@+id/personalLocation"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignLeft="@id/llprofile"
+            android:layout_below="@id/llprofile"
+            android:paddingLeft="10dip"
+            android:textColor="#82807C"
+            android:textSize="16dip"
+            android:textStyle="bold" >
+        </TextView>
 
         <TextView
             android:id="@+id/personalRegisterTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/llprofile"
+            android:layout_below="@id/personalLocation"
             android:layout_toRightOf="@id/personalImage"
             android:paddingLeft="10dip"
             android:textColor="#82807C"
-            android:textSize="18dip"
+            android:textSize="16dip"
             android:textStyle="bold" >
         </TextView>
 
