@@ -13,8 +13,10 @@ import android.widget.ListView;
 
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.ChatSession;
+import com.quanleimu.util.ViewUtil;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.adapter.SessionListAdapter;
+import com.quanleimu.broadcast.NotificationIds;
 
 public class SessionListView extends BaseView implements View.OnClickListener, PullToRefreshListView.OnRefreshListener, OnItemClickListener{
 	private List<ChatSession> sessions = null;
@@ -34,6 +36,8 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		plv.setAdapter(adapter);
 		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
+		
+		ViewUtil.removeNotification(getContext(), NotificationIds.NOTIFICATION_ID_CHAT_MESSAGE);
 	}
 	
 	

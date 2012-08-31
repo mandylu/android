@@ -454,7 +454,7 @@ public class TalkView extends BaseView
 			String url = Communication.getApiUrl(apiName, cmdOpts);
 			
 			try {
-				String result = Communication.getDataByUrlGet(url);
+				String result = Communication.getDataByUrl(url,true);
 				try {
 					JSONObject json = new JSONObject(result);
 					if (sessionId == null)

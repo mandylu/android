@@ -65,6 +65,16 @@ public class ViewUtil {
 		}, delayTime);
 	}
 	
+	public static void removeNotification(Context context, final int notificationid)
+	{
+		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
+		WakeLock wk = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "NOTIFY_WAKEUP");
+		wk.acquire(1000);
+		
+		NotificationManager mNotificationManager = (NotificationManager) context.getSystemService(Context.NOTIFICATION_SERVICE);
+		mNotificationManager.cancel(notificationid);
+	}
+	
 	public static void putOrUpdateNotification(final Context context, final int notificationId, String title, String msg, final Bundle extras, final boolean isPersistant)
 	{
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);

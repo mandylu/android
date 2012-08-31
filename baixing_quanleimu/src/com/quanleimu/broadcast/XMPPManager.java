@@ -422,7 +422,7 @@ public class XMPPManager {
 			{
 				Message message = (Message) msg;
 				final Intent i = new Intent(PushMessageService.ACTION_XMPP_MESSAGE_RECEIVED, null, context, PushMessageService.class);
-		        i.putExtra("message", message.getBody());
+		        i.putExtra("message", filterXml(message.getBody()));
 		        i.putExtra("from", message.getFrom());
 		        PushMessageService.sendToServiceHandler(i);
 			}
@@ -474,7 +474,7 @@ public class XMPPManager {
 	            String messageBody = msg.getBody();
 	            if (messageBody != null) {
 	                final Intent intent = new Intent(PushMessageService.ACTION_XMPP_MESSAGE_RECEIVED, null, ctx, PushMessageService.class);
-	                intent.putExtra("message", messageBody);
+	                intent.putExtra("message", filterXml(messageBody));
 	                intent.putExtra("from", fullJid);
 	                PushMessageService.sendToServiceHandler(intent);
 	            }
@@ -482,4 +482,16 @@ public class XMPPManager {
 	        offlineMessageManager.deleteMessages();
 	    }
 	
+	    static String filterXml(String message)
+	    {
+	    	String[] from = new String[] {"&amp;", "&lt;", "&gt;", "&quot;", "&apos;"};
+	    	String[] to	= new String[] {  "&", 		"<", 	">",	"\"",	  "'"};
+	    	String result = message;
+	    	for (int i=0; i<from.length; i++)
+	    	{
+	    		result = result.replaceAll(from[i], to[i]);
+	    	}
+	    	
+	    	return result;
+	    }
 }
