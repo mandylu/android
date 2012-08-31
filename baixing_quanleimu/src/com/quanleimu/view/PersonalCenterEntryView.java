@@ -111,16 +111,22 @@ public class PersonalCenterEntryView extends BaseView implements
 			TextView tvPersonalAds = (TextView) PersonalCenterEntryView.this.findViewById(R.id.tv_sentcount);
 			tvPersonalAds.setText(String.valueOf(QuanleimuApplication.getApplication().getListMyPost() == null ?
 					0 : QuanleimuApplication.getApplication().getListMyPost().size()));		
-			if(up == null){
-				new Thread(new GetPersonalProfileThread()).start();
-			}
-			else{
-				this.fillProfile(up);
-			}
-			if(this.sessions == null){
-				new Thread(new GetPersonalSessionsThread()).start();
+			if(user == null){
+				clearProfile();
+				((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0");
 			}else{
-				((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+				if(up == null){
+					new Thread(new GetPersonalProfileThread()).start();
+				}
+				else{
+					this.fillProfile(up);
+				}
+				if(this.sessions == null){
+					((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0");
+					new Thread(new GetPersonalSessionsThread()).start();
+				}else{
+					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+				}
 			}
 		}
 	}
@@ -188,6 +194,14 @@ public class PersonalCenterEntryView extends BaseView implements
 		tab.m_visible = true;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
 		return tab;
+	}
+	
+	private void clearProfile(){
+		((TextView)this.findViewById(R.id.personalNick)).setText("");
+		((ImageView)this.findViewById(R.id.personalGenderImage)).setImageDrawable(null);
+		((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+		((TextView)PersonalCenterEntryView.this.findViewById(R.id.personalLocation)).setText("");
+		((TextView)this.findViewById(R.id.personalRegisterTime)).setText("");
 	}
 	
 	private void fillProfile(UserProfile up){
