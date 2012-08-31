@@ -19,10 +19,12 @@ import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.ImageView;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -220,6 +222,12 @@ public class PersonalCenterEntryView extends BaseView implements
 			image = up.resize180Image;
 		}
 		if(image != null){
+			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
+			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
+			ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
+			lp.height = height;
+			lp.width = width;
+			this.findViewById(R.id.personalImage).setLayoutParams(lp);
 			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), image, this.getContext());
 		}
 	}

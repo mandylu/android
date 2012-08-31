@@ -16,16 +16,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="15dip"
-            android:src="@drawable/huodong" >
+            android:src="@drawable/pic_my_avator_boy" >
         </ImageView>
 
         <LinearLayout
+            android:id="@+id/llprofile"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/personalImage"
             android:layout_toRightOf="@id/personalImage"
             android:orientation="horizontal"
-            android:paddingBottom="15dip"
+            android:paddingBottom="10dip"
             android:paddingLeft="10dip"
             android:paddingTop="10dip" >
 
@@ -34,7 +35,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:textColor="#82807C"
-                android:textSize="20dip"
+                android:textSize="22dip"
                 android:textStyle="bold" >
             </TextView>
 
@@ -52,7 +53,7 @@
                 android:layout_height="wrap_content"
                 android:paddingLeft="5dip"
                 android:textColor="#82807C"
-                android:textSize="20dip"
+                android:textSize="22dip"
                 android:textStyle="bold" >
             </TextView>
         </LinearLayout>
@@ -61,12 +62,11 @@
             android:id="@+id/personalRegisterTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignBottom="@id/personalImage"
-            android:layout_marginBottom="10dip"
+            android:layout_below="@id/llprofile"
             android:layout_toRightOf="@id/personalImage"
             android:paddingLeft="10dip"
             android:textColor="#82807C"
-            android:textSize="20dip"
+            android:textSize="18dip"
             android:textStyle="bold" >
         </TextView>
 
