@@ -670,6 +670,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 	public void onRefresh() {
 		List<String> params = new ArrayList<String>();
 		if(currentPage == -1){
+			if(bundle != null && bundle.getString("lastPost") != null){
+				params.add("newAdIds=" + bundle.getString("lastPost"));
+			}
 			params.add("query=userId:" + user.getId() + " AND status:0");
 			params.add("activeOnly=0");
 		}
