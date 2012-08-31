@@ -12,6 +12,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
@@ -127,13 +128,11 @@ public class ProfileEditView extends BaseView {
 			@Override
 			public void onItemSelected(AdapterView<?> arg0, View arg1,
 					int arg2, long arg3) {
-				// TODO Auto-generated method stub
 				updateText(arg2 == 0? "男" : "女", R.id.gender);
 			}
 
 			@Override
 			public void onNothingSelected(AdapterView<?> arg0) {
-				// TODO Auto-generated method stub
 				
 			}});
 		
@@ -207,7 +206,8 @@ public class ProfileEditView extends BaseView {
 				break;
 			case MSG_NEW_IMAGE:
 				profileUri = (Uri) msg.obj;
-				//TODO:
+//				Bitmap bp = BitmapFactory.decodeFile(profileUri.toString());
+				((ImageView) findViewById(R.id.personalImage)).setImageURI(profileUri);
 				break;
 			case MSG_UPLOAD_IMG_DONE:
 				newServerImage = (String) msg.obj;
