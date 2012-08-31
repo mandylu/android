@@ -11,6 +11,8 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.view.KeyEvent;
@@ -30,14 +32,17 @@ import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.UserProfile;
 import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Util;
 
 public class TalkView extends BaseView 
 {
 	public static final int MAX_REQ_COUNT = 100;
+	private static final int MSG_GETPROFILE = 1;
 	
 	private String targetUserId;
 	private String adId;
@@ -61,6 +66,11 @@ public class TalkView extends BaseView
 		{
 			targetUserId = bundle.getString("receiverId");
 			adId = bundle.getString("adId");
+			if(bundle.containsKey("receiverNick")){
+				adTitle = bundle.getString("receiverNick");
+			}else{
+				(new Thread(new GetPersonalProfileThread(targetUserId))).start();
+			}
 			if (bundle.containsKey("message"))
 			{
 				msg = (ChatMessage) bundle.getSerializable("message");
@@ -537,6 +547,48 @@ public class TalkView extends BaseView
 //			{
 //			}
 			return false;
+		}
+	}
+	
+	Handler myHandler = new Handler() {
+		@Override
+		public void handleMessage(Message msg) {
+			switch (msg.what) {
+			case MSG_GETPROFILE:
+				if(msg.obj != null){
+					TitleDef title = new TitleDef();
+					title.m_visible = true;
+					title.m_title = msg.obj.toString();				
+					title.m_leftActionHint = "返回";
+					m_viewInfoListener.onTitleChanged(title);
+
+				}
+				break;
+			}
+		}
+	};
+				
+	class GetPersonalProfileThread implements Runnable {
+		private String usrId = null;
+		public GetPersonalProfileThread(String usrId){
+			this.usrId = usrId;
+		}
+		@Override
+		public void run() {
+			if (usrId == null)
+			{
+				return;
+			}
+			String upJson = Util.requestUserProfile(usrId);
+			if(upJson != null){
+				UserProfile up = UserProfile.from(upJson);
+				if(up != null){
+					Message msg = Message.obtain();
+					msg.what = MSG_GETPROFILE;
+					msg.obj = up.nickName;
+					myHandler.sendMessage(msg);
+				}
+			}
 		}
 	}
 	

@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -26,6 +27,9 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.UserProfile;
+
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -38,6 +42,7 @@ import android.graphics.Bitmap.CompressFormat;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Environment;
+import android.os.Message;
 import android.util.Log;
 import android.view.Display;
 import android.graphics.Canvas;
@@ -296,6 +301,31 @@ public class Util {
 		return hexValue.toString();
 	}
 	
+	public static String requestUserProfile(String usrId){
+		String apiName = "user_profile";
+		ArrayList<String> list = new ArrayList<String>();
+		 
+		list.add("rt=1");
+		list.add("userId=" + usrId);
+		
+		String url = Communication.getApiUrl(apiName, list);
+		try {
+			return Communication.getDataByUrl(url, true);
+		} catch (UnsupportedEncodingException e) {
+			Message msg2 = Message.obtain();
+			msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+		} catch (IOException e) {
+			Message msg2 = Message.obtain();
+			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+		} catch (Communication.BXHttpException e) {
+			Message msg2 = Message.obtain();
+			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+		}
+		return null;
+	}
 	
 	
 	

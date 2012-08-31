@@ -405,31 +405,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			{
 				return;
 			}
-			
-			String apiName = "user_profile";
-			ArrayList<String> list = new ArrayList<String>();
-			 
-			list.add("rt=1");
-			list.add("userId=" + user.getId());
-			
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				upJson = Communication.getDataByUrl(url, true);
-				myHandler.sendEmptyMessage(MSG_GETPERSONALPROFILE);
-				return;
-			} catch (UnsupportedEncodingException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (IOException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (Communication.BXHttpException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			}
+			upJson = Util.requestUserProfile(user.getId());
+			myHandler.sendEmptyMessage(MSG_GETPERSONALPROFILE);
 			
 			if(pd != null){
 				pd.dismiss();

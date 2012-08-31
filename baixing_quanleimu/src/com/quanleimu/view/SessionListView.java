@@ -91,6 +91,7 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		bundle.putString("adId", session.getAdId());
 		bundle.putString("adTitle", session.getAdTitle());
 		bundle.putBoolean("forceSync", true);
+		bundle.putString("receiverNick", session.getOppositeNick());
 		
 		m_viewInfoListener.onNewView(new TalkView(getContext(), bundle));
 	}
