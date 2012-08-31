@@ -199,10 +199,15 @@ public class PersonalCenterEntryView extends BaseView implements
 		if(up.gender != null && !up.equals("")){
 			if(up.gender.equals("男")){
 				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
+				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
 			}else if(up.gender.equals("女")){
 				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_female);
+				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
 			}
+		}else{
+			((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
 		}
+		
 		if(up.location != null && !up.location.equals("")){
 			(new Thread(new GetLocationThread(up.location))).start();
 		}else{

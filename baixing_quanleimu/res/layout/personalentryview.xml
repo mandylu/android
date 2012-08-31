@@ -19,50 +19,53 @@
             android:src="@drawable/pic_my_avator_boy" >
         </ImageView>
 
-        <LinearLayout
-            android:id="@+id/llprofile"
+        <TextView
+            android:id="@+id/personalNick"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
             android:layout_alignTop="@id/personalImage"
             android:layout_toRightOf="@id/personalImage"
+            android:paddingLeft="10dip"
+            android:textColor="#82807C"
+            android:textSize="22dip"
+            android:textStyle="bold" >
+        </TextView>
+
+        <LinearLayout
+            android:id="@+id/llprofile"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@id/personalNick"
+            android:layout_marginTop="3dip"
+            android:layout_toRightOf="@id/personalImage"
+            android:gravity="center_vertical"
             android:orientation="horizontal"
             android:paddingLeft="10dip" >
-
-            <TextView
-                android:id="@+id/personalNick"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:textColor="#82807C"
-                android:textSize="22dip"
-                android:textStyle="bold" >
-            </TextView>
 
             <ImageView
                 android:id="@+id/personalGenderImage"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_gravity="center_vertical"
-                android:paddingLeft="5dip" >
+                android:layout_gravity="center_vertical" >
             </ImageView>
-        </LinearLayout>
 
-        <TextView
-            android:id="@+id/personalLocation"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignLeft="@id/llprofile"
-            android:layout_below="@id/llprofile"
-            android:paddingLeft="10dip"
-            android:textColor="#82807C"
-            android:textSize="16dip"
-            android:textStyle="bold" >
-        </TextView>
+            <TextView
+                android:id="@+id/personalLocation"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="5dip"
+                android:textColor="#82807C"
+                android:textSize="16dip"
+                android:textStyle="bold" >
+            </TextView>
+        </LinearLayout>
 
         <TextView
             android:id="@+id/personalRegisterTime"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_below="@id/personalLocation"
+            android:layout_below="@id/llprofile"
+            android:layout_marginTop="2dip"
             android:layout_toRightOf="@id/personalImage"
             android:paddingLeft="10dip"
             android:textColor="#82807C"

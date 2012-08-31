@@ -155,7 +155,15 @@ public class ProfileEditView extends BaseView {
 			
 		});
 		
-		updateImage(up.resize180Image);
+		if(up.resize180Image != null && !up.resize180Image.equals("") && !up.resize180Image.equals("null")){
+			updateImage(up.resize180Image);
+		}else{
+			if(up.gender != null && up.gender.equals("女")){
+				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
+			}else{
+				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+			}
+		}
 		
 	}
 	
