@@ -281,13 +281,36 @@ public class JsonUtil {
 						imageList = null;
 					} else {
 						try {
-							imageList.setBig(jsonImages.getString("big"));
+							JSONArray bigAry = jsonImages.getJSONArray("big");
+							if(bigAry != null){
+								String bigStr = "";
+								for(int s = 0; s < bigAry.length(); ++ s){
+									bigStr += "," + bigAry.getString(s);
+								}
+								if(!bigStr.equals("") && bigStr.charAt(0) == ','){
+									bigStr = bigStr.substring(1);
+								}
+								imageList.setBig(bigStr);
+							}
+//							imageList.setBig(jsonImages.getJSONArray("big").toString());
+//							imageList.setBig(jsonImages.get("big").toString());
 						} catch (Exception e1) {
 							imageList.setBig("");
 						}
 						try {
-							imageList.setResize180(jsonImages
-									.getString("resize180"));
+							JSONArray resize180Ary = jsonImages.getJSONArray("resize180");
+							if(resize180Ary != null){
+								String r180Str = "";
+								for(int s = 0; s < resize180Ary.length(); ++ s){
+									r180Str += "," + resize180Ary.getString(s);
+								}
+								if(!r180Str.equals("") && r180Str.charAt(0) == ','){
+									r180Str = r180Str.substring(1);
+								}
+								imageList.setResize180(r180Str);
+							}
+							
+//							imageList.setResize180(jsonImages.getString("resize180"));
 						} catch (Exception e1) {
 							imageList.setResize180("");
 						}

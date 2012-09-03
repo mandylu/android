@@ -68,7 +68,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 			}
 			else
 			{
-				String b = (goodsDetail.getImageList().getBig()).substring(1, (goodsDetail.getImageList().getBig()).length()-1);
+				String b = goodsDetail.getImageList().getBig();//).substring(1, (goodsDetail.getImageList().getBig()).length()-1);
 				b = Communication.replace(b);
 				if(b.contains(","))
 				{

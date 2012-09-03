@@ -663,7 +663,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			txt_phone.setText(mobileV);
 			iv_contact.assignContactFromPhone(mobileV, false);
 		} else {
-			txt_phone.setVisibility(View.INVISIBLE);
+			txt_phone.setText("无手机号码");
+//			txt_phone.setVisibility(View.INVISIBLE);
 			iv_call.setVisibility(View.INVISIBLE);
 			iv_sms.setVisibility(View.INVISIBLE);
 		}
@@ -1122,7 +1123,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					String big = detail.getImageList().getBig();
 					String[] bigs = big.split(",");
 					for(int m = 0; m < bigs.length; ++ m){
-						imgAry.put(bigs[m].substring(1, bigs[m].length() - 1));
+						imgAry.put(bigs[m]);//.substring(1, bigs[m].length() - 1));
 					}
 //					jsonImgs.put("big", detail.getImageList().getBig());
 					jsonImgs.put("big", imgAry);
@@ -1133,7 +1134,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					String resize = detail.getImageList().getResize180();
 					String[] resizes = resize.split(",");
 					for(int m = 0; m < resizes.length; ++ m){
-						imgAry.put(resizes[m].substring(1, resizes[m].length() - 1));
+						imgAry.put(resizes[m]);//.substring(1, resizes[m].length() - 1));
 					}
 					jsonImgs.put("resize180", imgAry);
 					
@@ -1707,7 +1708,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		if (goodDetail.getImageList() != null)
 		{
 			listUrl = new ArrayList<String>();
-			String b = (goodDetail.getImageList().getResize180()).substring(1, (goodDetail.getImageList().getResize180()).length()-1);
+			String b = (goodDetail.getImageList().getResize180());//.substring(1, (goodDetail.getImageList().getResize180()).length()-1);
 			b = Communication.replace(b);
 			String[] c = b.split(",");
 			for(int i=0;i<c.length;i++) 

@@ -204,9 +204,9 @@ public class GoodsListAdapter extends BaseAdapter {
 						holder.ivInfo.setImageBitmap(defaultBk2);	
 					}
 				} else {
-						String b = (list.get(position).getImageList().getResize180())
-						.substring(1, (list.get(position).getImageList()
-								.getResize180()).length() - 1);
+						String b = (list.get(position).getImageList().getResize180());
+//						.substring(1, (list.get(position).getImageList()
+//								.getResize180()).length() - 1);
 						b = Communication.replace(b);
 				
 						if (b.contains(",")) {

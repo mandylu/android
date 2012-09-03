@@ -295,9 +295,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 		}
 
 		if (goodsDetail.getImageList() != null) {
-			String b = (goodsDetail.getImageList().getResize180())
-					.substring(1, (goodsDetail.getImageList()
-							.getResize180()).length() - 1);
+			String b = (goodsDetail.getImageList().getResize180());
+//					.substring(1, (goodsDetail.getImageList()
+//							.getResize180()).length() - 1);
 			b = Communication.replace(b);
 			if (b.contains(",")) {
 				String[] c = b.split(",");
@@ -308,9 +308,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				listUrl.add(b);
 			}
 			
-			String big = (goodsDetail.getImageList().getBig())
-					.substring(1, (goodsDetail.getImageList()
-							.getBig()).length() - 1);
+			String big = (goodsDetail.getImageList().getBig());
+//					.substring(1, (goodsDetail.getImageList()
+//							.getBig()).length() - 1);
 			big = Communication.replace(big);
 			String[] cbig = big.split(",");
 			List<String> smalls = new ArrayList<String>();
