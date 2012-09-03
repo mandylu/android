@@ -313,6 +313,7 @@ public class SiftView extends BaseView {
 
 					HashMap<String, String> preValues = null;
 					HashMap<String, String> preLabels = null;
+					String keyWords = null;
 					if(bundle != null){
 						String preEncResult = bundle.getString("siftresult");
 						if(null != preEncResult){
@@ -323,10 +324,14 @@ public class SiftView extends BaseView {
 							}
 							for(int x = 0; x < pairs.length; ++ x){
 								String[] subPairs = pairs[x].split(":");
-								if(subPairs.length != 2)continue;
-								subPairs[0] = subPairs[0].trim();
-								subPairs[1] = subPairs[1].trim();
-								preValues.put(subPairs[0], subPairs[1]);
+								if(subPairs.length <= 0 || subPairs.length > 2)continue;
+								if(subPairs.length == 1 && subPairs[0] != null && !subPairs[0].equals("") && !subPairs[0].equals(" ")){
+									keyWords = subPairs[0];
+								}else if(subPairs.length == 2){
+									subPairs[0] = subPairs[0].trim();
+									subPairs[1] = subPairs[1].trim();
+									preValues.put(subPairs[0], subPairs[1]);
+								}
 							}
 						}
 						
@@ -339,7 +344,7 @@ public class SiftView extends BaseView {
 							}
 							for(int x = 0; x < pairs.length; ++ x){
 								String[] subPairs = pairs[x].split(":");
-								if(subPairs.length != 2)continue;
+								if(subPairs.length != 2) continue;
 								subPairs[0] = subPairs[0].trim();
 								subPairs[1] = subPairs[1].trim();
 								preLabels.put(subPairs[0], subPairs[1]);
@@ -447,6 +452,10 @@ public class SiftView extends BaseView {
 						
 						ll_meta.addView(v);
 						ll_meta.addView(border);
+					}
+					
+					if(keyWords != null){
+						((TextView)SiftView.this.findViewById(R.id.edsift)).setText(keyWords);
 					}
 
 				}
