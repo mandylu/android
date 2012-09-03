@@ -626,14 +626,14 @@ public class TalkView extends BaseView
 					if(usrId.equals(targetUserId)){
 						targetIcon = up.squareImage;
 						myHandler.sendEmptyMessage(MSG_GETTARGETICON);
+						Message msg = Message.obtain();
+						msg.what = MSG_GETPROFILE;
+						msg.obj = up.nickName;
+						myHandler.sendMessage(msg);
 					}else{
 						myIcon = up.squareImage;
 						myHandler.sendEmptyMessage(MSG_GETMYICON);
 					}
-					Message msg = Message.obtain();
-					msg.what = MSG_GETPROFILE;
-					msg.obj = up.nickName;
-					myHandler.sendMessage(msg);
 				}
 			}
 		}
