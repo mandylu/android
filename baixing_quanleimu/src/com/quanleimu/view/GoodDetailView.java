@@ -40,6 +40,7 @@ import android.view.WindowManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
+import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -359,6 +360,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					updateContactBar(false);
+					updateTitleInfo();
 					
 					//the ad is viewed once
 			        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
@@ -1599,6 +1601,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		
 		return title;
+	}
+	
+	private void updateTitleInfo()
+	{
+		TitleDef def =  getTitleDef();
+		if (m_viewInfoListener != null)
+		{
+			m_viewInfoListener.onTitleChanged(def);
+		}
 	}
 	
 	@Override
