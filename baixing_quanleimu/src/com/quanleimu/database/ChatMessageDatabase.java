@@ -70,17 +70,30 @@ public class ChatMessageDatabase extends Database
 		return list;
 	}
 	
-	public static long getLastMsgTime(String sid)
+//	public static long getLastMsgTime(String sid)
+//	{
+//		List<ChatMessage> msglist = queryMessageBySession(sid);
+//		if (msglist.size() == 0)
+//		{
+//			return -1;
+//		}
+//		
+//		Collections.sort(msglist, new MsgTimeComparator());
+//		
+//		return msglist.get(msglist.size()-1).getTimestamp();
+//	}
+	
+	public static ChatMessage getLastMessage(String sid)
 	{
 		List<ChatMessage> msglist = queryMessageBySession(sid);
 		if (msglist.size() == 0)
 		{
-			return -1;
+			return null;
 		}
 		
 		Collections.sort(msglist, new MsgTimeComparator());
 		
-		return msglist.get(msglist.size()-1).getTimestamp();
+		return msglist.get(msglist.size()-1);
 	}
 	
 	public static String getSessionId(String from, String to, String adId)

@@ -4,6 +4,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 
 import com.quanleimu.database.ChatMessageDatabase;
@@ -36,10 +37,16 @@ public class ChatMessageManager
 			
 			ChatMessage msg = ChatMessage.fromJson(jsonObj.getString("data"));
 			
-			
+			//Store it
 			ChatMessageDatabase.prepareDB(context);
 			ChatMessageDatabase.storeMessage(msg);
 			
+			//Broadcast in application.
+			Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_NEW_MSG);
+			intent.putExtra(CommonIntentAction.EXTRA_MSG_MESSAGE, msg);
+			context.sendBroadcast(intent);
+			
+			//Update UI
 			if (listener != null && listener.getUserId().equals(msg.getTo()))
 			{
 				listener.onNewMessage(msg);

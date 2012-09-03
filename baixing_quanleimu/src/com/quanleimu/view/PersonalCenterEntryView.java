@@ -13,21 +13,23 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AbsListView;
-import android.widget.AbsListView.OnScrollListener;
-import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.broadcast.CommonIntentAction;
+import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
@@ -37,18 +39,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
-import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.quanleimu.adapter.GoodsListAdapter;
-import com.quanleimu.view.BaseView;
-import com.quanleimu.view.BaseView.EBUTT_STYLE;
-import com.quanleimu.view.BaseView.ETAB_TYPE;
-import com.quanleimu.view.BaseView.TabDef;
-import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.widget.PullToRefreshListView;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
-import android.widget.LinearLayout;
 
 public class PersonalCenterEntryView extends BaseView implements
 		View.OnClickListener {
@@ -64,6 +55,7 @@ public class PersonalCenterEntryView extends BaseView implements
 	static final int MSG_GETPERSONALSESSIONS = 4;
 	private List<ChatSession> sessions = null;
 	private UserProfile up = null;
+	private BroadcastReceiver chatMessageReceiver;
 
 	public PersonalCenterEntryView(Context context, Bundle bundle) {
 		super(context);
@@ -128,6 +120,47 @@ public class PersonalCenterEntryView extends BaseView implements
 					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
 				}
 			}
+		}
+		
+		registerReceiver();
+	}
+	
+	
+	
+	@Override
+	protected void onDetachedFromWindow() {
+		super.onDetachedFromWindow();
+		
+		unregisterReceiver();
+	}
+
+	private void registerReceiver()
+	{
+		if (chatMessageReceiver == null)
+		{
+			chatMessageReceiver = new BroadcastReceiver() {
+
+				public void onReceive(Context outerContext, Intent outerIntent) {
+					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
+					{
+						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+						if (!hasSession(msg.getSession()))
+						{
+							new Thread(new GetPersonalSessionsThread()).start();
+						}
+					}
+				}
+			};
+		}
+		
+		getContext().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+	}
+	
+	private void unregisterReceiver()
+	{
+		if (chatMessageReceiver != null)
+		{
+			getContext().unregisterReceiver(chatMessageReceiver);
 		}
 	}
 
@@ -196,6 +229,25 @@ public class PersonalCenterEntryView extends BaseView implements
 		return tab;
 	}
 	
+
+	private boolean hasSession(String sessionId)
+	{
+		if (this.sessions == null || this.sessions.size() == 0)
+		{
+			return false;
+		}
+		
+		for (ChatSession session : this.sessions)
+		{
+			if (sessionId.equals(session.getSessionId()))
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+
 	private void clearProfile(){
 		((TextView)this.findViewById(R.id.personalNick)).setText("");
 		((ImageView)this.findViewById(R.id.personalGenderImage)).setImageDrawable(null);
@@ -204,6 +256,7 @@ public class PersonalCenterEntryView extends BaseView implements
 		((TextView)this.findViewById(R.id.personalRegisterTime)).setText("");
 	}
 	
+
 	private void fillProfile(UserProfile up){
 		if(up.nickName != null){
 			((TextView)this.findViewById(R.id.personalNick)).setText(up.nickName);
