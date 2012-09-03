@@ -1,9 +1,15 @@
 package com.quanleimu.entity;
 
+import java.io.Serializable;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
-public class UserProfile implements Cloneable {
+public class UserProfile implements Cloneable, Serializable{
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -5763571391927393475L;
 	public String userId = "";
 	public String mobile = "";
 	public String nickName = "";

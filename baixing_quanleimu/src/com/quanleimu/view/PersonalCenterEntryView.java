@@ -78,7 +78,7 @@ public class PersonalCenterEntryView extends BaseView implements
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
 		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
-		
+		up = (UserProfile) Util.loadDataFromLocate(this.getContext(), "userProfile");
 		List<GoodsDetail> history = QuanleimuApplication.getApplication().getListLookHistory();
 		TextView tvHistory = (TextView)this.findViewById(R.id.tv_historycount);
 		tvHistory.setText(String.valueOf(history == null ? 0 : history.size()));
@@ -212,11 +212,22 @@ public class PersonalCenterEntryView extends BaseView implements
 	}
 
 	@Override
+	public boolean onRightActionPressed(){
+		new Thread(new GetPersonalAdsThread()).start();
+		new Thread(new GetPersonalProfileThread()).start();
+		new Thread(new GetPersonalSessionsThread()).start();
+		return true;
+	}
+	
+	@Override
 	public TitleDef getTitleDef() {
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "设置";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "用户中心";
+		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_CUSTOM;
+		title.m_rightActionHint = "";
+		title.rightCustomResourceId = R.drawable.btn_refresh;
 		title.m_visible = true;
 		return title;
 	}
@@ -263,13 +274,15 @@ public class PersonalCenterEntryView extends BaseView implements
 		}else{
 			((TextView)this.findViewById(R.id.personalNick)).setText("");
 		}
+		boolean showBoy = true;
 		if(up.gender != null && !up.equals("")){
 			if(up.gender.equals("男")){
 				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
-				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+//				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
 			}else if(up.gender.equals("女")){
 				((ImageView)this.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_female);
-				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
+				showBoy = false;
+//				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
 			}
 		}else{
 			((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
@@ -293,20 +306,20 @@ public class PersonalCenterEntryView extends BaseView implements
 			((TextView)this.findViewById(R.id.personalRegisterTime)).setText("");
 		}
 		String image = null;
-//		if(up.squareImage != null && !up.squareImage.equals("")){
-//			image = up.squareImage;
-//		}
 		if(up.resize180Image != null && !up.resize180Image.equals("")){
 			image = up.resize180Image;
 		}
 		if(image != null){
-			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
-			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
-			ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
-			lp.height = height;
-			lp.width = width;
-			this.findViewById(R.id.personalImage).setLayoutParams(lp);
-			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), image, this.getContext());
+//			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
+//			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
+//			ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
+//			lp.height = height;
+//			lp.width = width;
+//			this.findViewById(R.id.personalImage).setLayoutParams(lp);
+			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), 
+					image, this.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+		}else{
+			((ImageView)this.findViewById(R.id.personalImage)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
 		}
 	}
 
@@ -337,6 +350,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			case MSG_GETPERSONALPROFILE:
 				if(upJson != null){
 					up = UserProfile.from(upJson);
+					Util.saveDataToLocate(PersonalCenterEntryView.this.getContext(), "userProfile", up);
 					if(up != null){
 						fillProfile(up);
 					}

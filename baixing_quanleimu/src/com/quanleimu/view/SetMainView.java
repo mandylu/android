@@ -157,6 +157,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 						changePhoneDialog.dismiss();
 
 						Util.clearData(getContext(), "user");
+						Util.clearData(getContext(), "userProfile");
 						
 						QuanleimuApplication.getApplication().setListMyPost(null);
 						

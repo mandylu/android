@@ -469,6 +469,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 				
 				left.setText(title.m_leftActionHint);				
 				left.setVisibility(View.VISIBLE);				
+			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
+				Button left = (Button)findViewById(R.id.btnLeft);
+				left.setBackgroundResource(title.leftCustomResourceId);
+				left.setText("");
+				left.setVisibility(View.VISIBLE);
 			}else{
 				Button left = (Button)findViewById(R.id.btnLeft);
 				left.setVisibility(View.GONE);
@@ -488,6 +493,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 				{
 					right.setBackgroundResource(R.drawable.btn_search);
 				}
+			}else if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
+				Button right = (Button)findViewById(R.id.btnRight);
+				right.setBackgroundResource(title.rightCustomResourceId);
+				right.setText("");
+				right.setVisibility(View.VISIBLE);
 			}else{
 				Button right = (Button)findViewById(R.id.btnRight);
 				right.setVisibility(View.GONE);

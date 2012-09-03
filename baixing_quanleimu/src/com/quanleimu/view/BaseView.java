@@ -28,6 +28,7 @@ public class BaseView extends LinearLayout{
 	public enum EBUTT_STYLE{
 		EBUTT_STYLE_BACK,
 		EBUTT_STYLE_NORMAL,
+		EBUTT_STYLE_CUSTOM
 		//EBUTT_STYLE_FORWARD
 	};
 	
@@ -35,12 +36,14 @@ public class BaseView extends LinearLayout{
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
 		public EBUTT_STYLE m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
+		public int leftCustomResourceId = -1;
 		
 		public String m_title = null;
 		public View m_titleControls = null;
 		
 		public String m_rightActionHint = null;
 		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
+		public int rightCustomResourceId = -1;
 	};
 	
 	public enum ETAB_TYPE{
