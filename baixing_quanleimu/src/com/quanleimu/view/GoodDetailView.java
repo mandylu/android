@@ -120,6 +120,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	private WeakReference<View> loadingMorePage;
 	
+	private boolean initCalled = false;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
@@ -196,7 +198,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		{
 			authCtrl.checkAfterAuth(getContext());
 		}
-		
+//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		super.onAttachedToWindow();
 	}
 	
@@ -300,8 +302,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren1, o);
         
 		//the ad is viewed once
-//        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
-		
+        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
+        initCalled = true;
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
         vp.setAdapter(new PagerAdapter() {
@@ -361,9 +363,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					updateContactBar(false);
 					updateTitleInfo();
-					
-					//the ad is viewed once
-			        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+					if(!initCalled){
+						//the ad is viewed once
+				        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+					}else{
+						initCalled = false;
+					}
+				
 				}
 				else
 				{
