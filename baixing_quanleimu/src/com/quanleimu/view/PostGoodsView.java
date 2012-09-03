@@ -591,7 +591,9 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getRequired().endsWith("required")) {
-				if(!postMap.containsKey(postGoodsBean.getDisplayName()) || postMap.get(postGoodsBean.getDisplayName()).equals("")){
+				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
+						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
+						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
 					Toast.makeText(this.getContext(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
 					return false;
 				}
