@@ -295,6 +295,7 @@ public class XMPPManager {
         }
 
         mCurrentRetryCount = 0;
+        context.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_XMPP_CONNECTED));
         updateStatus(CONNECTED);
     }
     

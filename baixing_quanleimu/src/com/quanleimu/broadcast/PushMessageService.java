@@ -1,5 +1,6 @@
 package com.quanleimu.broadcast;
 
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -140,7 +141,7 @@ public class PushMessageService extends Service
             sendToServiceHandler(startId, intent);
         }
         
-        registeDevice(); //
+        registeDevice(null); //
         
         return START_STICKY;
     }
@@ -257,13 +258,18 @@ public class PushMessageService extends Service
     }
 	
     
-    private void registeDevice()
+    private void registeDevice(BroadcastReceiver receiver)
     {
 		RegisterCommandListener cmdListener = new RegisterCommandListener();
 		ParameterHolder parameters = new ParameterHolder();
 		String userId = getMyId();
 		if (userId != null) {
 			parameters.addParameter("userId", userId);
+		}
+		
+		if (receiver != null)
+		{
+			this.unregisterReceiver(receiver);
 		}
     	
 		Communication.executeAsyncTask("tokenupdate", parameters, cmdListener);
@@ -279,13 +285,12 @@ public class PushMessageService extends Service
 
 		@Override
 		public void onException(Exception ex) {
-			try {
-				this.wait(10 * 1000);
-			} catch (Throwable e) {
-				e.printStackTrace();
-			}
-			
-			registeDevice();
+			final BroadcastReceiver receiver = new BroadcastReceiver() {
+				public void onReceive(Context arg0, Intent arg1) {
+					registeDevice(this);
+				}
+			};
+			PushMessageService.this.registerReceiver(receiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_XMPP_CONNECTED));
 		}
     	
     }
