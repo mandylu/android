@@ -175,9 +175,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		super.onPause();
 	}
 	
-	@Override
-	protected void onAttachedToWindow(){
-        
+	private void updateButtonStatus()
+	{
 		if(isMyAd()){
 			btnStatus = 1;
 		}
@@ -189,6 +188,12 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				btnStatus = -1;
 			}
 		}
+	}
+	
+	@Override
+	protected void onAttachedToWindow(){
+        
+		updateButtonStatus();
 		
 		(new Thread(new Runnable(){
 			@Override
@@ -372,6 +377,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					}else{
 						initCalled = false;
 					}
+					
+					updateButtonStatus();
 				
 				}
 				else
