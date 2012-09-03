@@ -58,6 +58,8 @@ public class TalkView extends BaseView
 	private String myIcon = null;
 	private long lastupdateTime = 0;
 	private boolean alwaysSync;
+	private boolean targetIsBoy = true;
+	private boolean iamBoy = true;
 	
 	public TalkView(Context context) {
 		super(context);
@@ -521,12 +523,20 @@ public class TalkView extends BaseView
 		View msgItem = inflator.inflate(isMine ? R.layout.im_message_item : R.layout.im_message_item_received, null);
 		ImageView iv = isMine ? (ImageView)msgItem.findViewById(R.id.myIcon) : (ImageView)msgItem.findViewById(R.id.targetIcon);
 		if(iv != null){
-			if(isMine && this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
-				iv.setTag(myIcon);
-				SimpleImageLoader.showImg(iv, myIcon, this.getContext());
-			}else if(!isMine && this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
-				iv.setTag(targetIcon);
-				SimpleImageLoader.showImg(iv, targetIcon, this.getContext());				
+			if(isMine){
+				if(this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
+					iv.setTag(myIcon);
+					SimpleImageLoader.showImg(iv, myIcon, this.getContext());
+				}else if(!iamBoy){
+					iv.setImageResource(R.drawable.pic_my_avator_girl);
+				}
+			}else if(!isMine){
+				if(this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
+					iv.setTag(targetIcon);
+					SimpleImageLoader.showImg(iv, targetIcon, this.getContext());
+				}else if(!targetIsBoy){
+					iv.setImageResource(R.drawable.pic_my_avator_girl);
+				}
 			}
 		}
 		View msgParent = msgItem.findViewById(R.id.im_message_content_parent);
@@ -568,9 +578,10 @@ public class TalkView extends BaseView
 	}
 	
 	private void setPreviousIcon(boolean isMine){
-		if(isMine && (myIcon == null || myIcon.equals("") || myIcon.equals("null")))
+		if(isMine && (iamBoy && (myIcon == null || myIcon.equals("") || myIcon.equals("null"))))
 			return;
-		if(!isMine && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null")))
+			
+		if(!isMine && (targetIsBoy && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null"))))
 			return;
 		ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
 		if(vp != null){
@@ -578,8 +589,18 @@ public class TalkView extends BaseView
 				ImageView iv = 
 						(ImageView)(isMine ? vp.getChildAt(i).findViewById(R.id.myIcon) : vp.getChildAt(i).findViewById(R.id.targetIcon));
 				if(iv == null) continue;
-				iv.setTag(isMine ? myIcon : targetIcon);
-				SimpleImageLoader.showImg(iv, isMine ? myIcon : targetIcon, this.getContext());
+				if(isMine && (myIcon == null || myIcon.equals("") || myIcon.equals("null"))){
+					if(!iamBoy){
+						iv.setImageResource(R.drawable.pic_my_avator_girl);
+					}
+				}else if(!isMine && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null"))){
+					if(!targetIsBoy){
+						iv.setImageResource(R.drawable.pic_my_avator_girl);
+					}
+				}else{
+					iv.setTag(isMine ? myIcon : targetIcon);
+					SimpleImageLoader.showImg(iv, isMine ? myIcon : targetIcon, this.getContext());
+				}
 			}
 		}
 	}
@@ -625,12 +646,18 @@ public class TalkView extends BaseView
 				if(up != null){
 					if(usrId.equals(targetUserId)){
 						targetIcon = up.squareImage;
+						if(up.gender != null && up.gender.equals("女")){
+							targetIsBoy = false;
+						}
 						myHandler.sendEmptyMessage(MSG_GETTARGETICON);
 						Message msg = Message.obtain();
 						msg.what = MSG_GETPROFILE;
 						msg.obj = up.nickName;
 						myHandler.sendMessage(msg);
 					}else{
+						if(up.gender != null && up.gender.equals("女")){
+							iamBoy = false;
+						}						
 						myIcon = up.squareImage;
 						myHandler.sendEmptyMessage(MSG_GETMYICON);
 					}

@@ -309,7 +309,7 @@ public class PersonalCenterEntryView extends BaseView implements
 		if(up.resize180Image != null && !up.resize180Image.equals("")){
 			image = up.resize180Image;
 		}
-		if(image != null){
+		if(image != null && !image.equals("") && !image.equals("null")){
 //			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
 //			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
 //			ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
