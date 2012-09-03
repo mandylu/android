@@ -538,8 +538,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
 			contentView.findViewById(R.id.showmap).setEnabled(false);
 			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
-			contentView.findViewById(R.id.sms).setEnabled(false);
-			contentView.findViewById(R.id.call).setEnabled(false);
+			findViewById(R.id.sms).setEnabled(false);
+			findViewById(R.id.call).setEnabled(false);
 			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
