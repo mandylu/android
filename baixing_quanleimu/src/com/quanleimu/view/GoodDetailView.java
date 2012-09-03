@@ -299,7 +299,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
         mb_loading = BitmapFactory.decodeResource(getContext().getResources(), R.drawable.moren1, o);
         
 		//the ad is viewed once
-        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
+//        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
 		
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
