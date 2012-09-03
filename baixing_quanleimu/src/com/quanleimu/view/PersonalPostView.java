@@ -105,6 +105,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(listInVerify == null){
+				adapter.setList(new ArrayList<GoodsDetail>());
+				adapter.notifyDataSetChanged();
+				lvGoodsList.invalidateViews();
 				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
 				pd.setCancelable(true);
 				pd.show();
@@ -132,6 +135,9 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(listDeleted == null){
+				adapter.setList(new ArrayList<GoodsDetail>());
+				adapter.notifyDataSetChanged();
+				lvGoodsList.invalidateViews();
 				pd = ProgressDialog.show(PersonalPostView.this.getContext(), "提示", "请稍候...");
 				pd.setCancelable(true);
 				pd.show();
