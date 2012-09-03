@@ -27,12 +27,14 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.ContactsContract;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Base64;
 import android.view.Gravity;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
@@ -44,7 +46,6 @@ import android.widget.Button;
 import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.QuickContactBadge;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -69,6 +70,7 @@ import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
+import com.quanleimu.widget.ContextMenuItem;
 import com.tencent.mm.sdk.openapi.WXAppExtendObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.platformtools.Log;
@@ -127,6 +129,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		REQUEST_TYPE_UPDATE,
 		REQUEST_TYPE_DELETE
 	}
+	
 	
 	public GoodDetailView(Context content, Bundle bundle, GoodsListLoader listLoader, final int curIndex, IListHolder holder){
 		super(content, bundle);
@@ -648,7 +651,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 		
 		TextView txt_phone = (TextView) findViewById(R.id.number);
-		QuickContactBadge iv_contact = (QuickContactBadge) findViewById(R.id.contact);
+		ContextMenuItem iv_contact = (ContextMenuItem) findViewById(R.id.contact);
 		View iv_call = (View)findViewById(R.id.call);
 		ImageView iv_sms = (ImageView)findViewById(R.id.sms);
 		View iv_buzz = findViewById(R.id.buzz);
@@ -664,18 +667,57 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				&& !mobileV.equals("")
 				&& !mobileV.equals("无")) {
 			txt_phone.setVisibility(View.VISIBLE);
-			iv_call.setVisibility(View.VISIBLE);
-			iv_sms.setVisibility(View.VISIBLE);
+//			iv_call.setVisibility(View.VISIBLE);
+//			iv_sms.setVisibility(View.VISIBLE);
 			txt_phone.setText(mobileV);
-			iv_contact.assignContactFromPhone(mobileV, false);
+			iv_contact.updateOptionList(mobileV, 
+					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
+					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
+//			iv_contact.assignContactFromPhone(mobileV, false);
 		} else {
 			txt_phone.setText("无手机号码");
 //			txt_phone.setVisibility(View.INVISIBLE);
-			iv_call.setVisibility(View.INVISIBLE);
-			iv_sms.setVisibility(View.INVISIBLE);
 		}
+		iv_call.setVisibility(View.GONE);
+		iv_sms.setVisibility(View.GONE);
 	}
 	
+	
+	
+	@Override
+	public boolean handleContextMenuSelect(MenuItem menuItem) {
+		switch (menuItem.getItemId())
+		{
+		case R.id.contact + 0: {
+			TextView txt_phone = (TextView) findViewById(R.id.number);
+			Intent intent = new Intent(
+		            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
+		            Uri.parse("tel:" + txt_phone.getText()));
+		        intent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true);
+		        this.getContext().startActivity(intent);
+			return true;
+		}
+		case R.id.contact + 1: {
+			TextView txt_phone = (TextView) findViewById(R.id.number);
+			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
+			this.getContext().startActivity(intent);
+			return true;
+		}
+		case R.id.contact + 2: {
+			TextView txt_phone = (TextView) findViewById(R.id.number);
+			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
+			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+			this.getContext().startActivity(intent);			
+			return true;
+		}
+		case R.id.contact + 4:
+			return true;
+		}
+		
+		return super.handleContextMenuSelect(menuItem);
+	}
+
 	private void requireAuth4Talk()
 	{
 		if(null != m_viewInfoListener){
@@ -829,7 +871,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	public void onClick(View v) {
 		switch (v.getId()) {
 		case R.id.number:{
-			findViewById(R.id.contact).performClick();
+			findViewById(R.id.contact).performLongClick();
 			break;
 		}
 		case R.id.retry_load_more:

@@ -4,6 +4,7 @@ import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
+import android.view.MenuItem;
 import android.view.View;
 import android.widget.LinearLayout;
 
@@ -82,5 +83,7 @@ public class BaseView extends LinearLayout{
 	
 	public TitleDef getTitleDef(){return new TitleDef();}
 	public TabDef getTabDef(){return new TabDef();}
+	
+	public boolean handleContextMenuSelect(MenuItem  menuItem) { return false;};
 	
 };

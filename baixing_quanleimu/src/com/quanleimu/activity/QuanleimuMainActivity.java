@@ -13,6 +13,7 @@ import android.os.Debug;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
@@ -578,6 +579,18 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		}		
 	}
 	
+	
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		if (currentView != null)
+		{
+			return currentView.handleContextMenuSelect(item);
+		}
+		
+		return super.onContextItemSelected(item);
+	}
+
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 //		Debug.startMethodTracing();

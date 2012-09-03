@@ -19,17 +19,15 @@
             android:layout_height="match_parent" >
 
 
-
-            <QuickContactBadge
+            <com.quanleimu.widget.ContextMenuItem
                 android:id="@+id/contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:visibility="gone"
-                android:src="@android:color/transparent"
-                />
-            
+                android:src="@android:color/transparent" />
+
             <TextView
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
@@ -68,6 +66,7 @@
              android:layout_alignParentRight="true"
             android:paddingRight="10dp"
             android:src="@drawable/btn_viewad_buzz" />
+
           
         </RelativeLayout>
 

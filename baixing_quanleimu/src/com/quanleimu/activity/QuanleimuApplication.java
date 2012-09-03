@@ -13,6 +13,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.location.Location;
 import android.os.AsyncTask;
+import android.os.Bundle;
 import android.provider.Settings.Secure;
 import android.util.Log;
 import android.database.Cursor;
@@ -47,6 +48,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	public static String udid="";
 	public static String version="";
 	public static String ads_viewed="";
+	public static String channelId;
 	public static Context context;	
 	public static LazyImageLoader lazyImageLoader;
 	public static List<String> list;//list of temporarily cache files
@@ -592,6 +594,12 @@ public class QuanleimuApplication extends Application implements LocationService
 		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
 		
 		LocationService.getInstance().start(context, this);
+		
+		Bundle bundle = this.getApplicationInfo().metaData;
+		if (bundle != null)
+		{
+			channelId = bundle.getString("UMENG_CHANNEL");
+		}
 		
 		super.onCreate();
 	}
