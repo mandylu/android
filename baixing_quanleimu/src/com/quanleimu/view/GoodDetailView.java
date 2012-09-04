@@ -271,7 +271,15 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 //				break;
 //			}
 //		}		
-		
+	    switch (event.getAction()) {
+	    case MotionEvent.ACTION_MOVE: 
+	    	((ViewPager)findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
+	        break;
+	    case MotionEvent.ACTION_UP:
+	    case MotionEvent.ACTION_CANCEL:
+	    	((ViewPager)findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
+	        break;		
+	    }
 		return this.keepSilent;
 	}
 	
