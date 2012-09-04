@@ -284,8 +284,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 					if(bean.getValues() != null && bean.getLabels() != null){
 						List<String> areaLabels = bean.getLabels();
 						for(int t = 0; t < areaLabels.size(); ++ t){
-							if(areaLabels.get(i).equals(areas[1])){
-								postMap.put("地区", bean.getValues().get(i));
+							if(areaLabels.get(t).equals(areas[1])){
+								postMap.put("地区", bean.getValues().get(t));
 								break;
 							}
 						}
