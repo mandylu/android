@@ -11,6 +11,8 @@ import java.util.UUID;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
 import android.location.Location;
 import android.os.AsyncTask;
 import android.os.Bundle;
@@ -600,12 +602,20 @@ public class QuanleimuApplication extends Application implements LocationService
 		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
 		
 		LocationService.getInstance().start(context, this);
-		
-		Bundle bundle = this.getApplicationInfo().metaData;
-		if (bundle != null)
-		{
-			channelId = bundle.getString("UMENG_CHANNEL");
-		}
+
+		try{
+			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
+			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+			channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+		}catch(Exception e){
+			e.printStackTrace();
+		}		
+//		
+//		Bundle bundle = this.getApplicationInfo().metaData;
+//		if (bundle != null)
+//		{
+//			channelId = bundle.getString("UMENG_CHANNEL");
+//		}
 		
 		super.onCreate();
 	}
