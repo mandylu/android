@@ -514,7 +514,7 @@ public class TalkView extends BaseView
 	private String getMyId()
 	{
 		UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
-		return user.getId();
+		return user != null ? user.getId() : "";
 	}
 	
 	private View loadMessageItem(boolean isMine)
@@ -636,7 +636,7 @@ public class TalkView extends BaseView
 		}
 		@Override
 		public void run() {
-			if (usrId == null)
+			if (usrId == null || usrId.equals(""))
 			{
 				return;
 			}
