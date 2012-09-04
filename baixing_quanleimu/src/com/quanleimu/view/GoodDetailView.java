@@ -676,7 +676,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
 		
 		rl_phone.setVisibility(View.VISIBLE);
-		txt_phone.setOnClickListener(this);
+		
 		iv_sms.setOnClickListener(this);
 		iv_call.setOnClickListener(this);
 		iv_buzz.setOnClickListener(this);
@@ -691,9 +691,11 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			iv_contact.updateOptionList(mobileV, 
 					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
 					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
+			txt_phone.setOnClickListener(this);
 //			iv_contact.assignContactFromPhone(mobileV, false);
 		} else {
 			txt_phone.setText("无手机号码");
+			txt_phone.setOnClickListener(null);
 //			txt_phone.setVisibility(View.INVISIBLE);
 		}
 		iv_call.setVisibility(View.GONE);
