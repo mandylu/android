@@ -378,6 +378,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				if (pos != mListLoader.getGoodsList().getData().size())
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
+					mListLoader.setSelection(pos);
 					updateContactBar(false);
 					updateTitleInfo();
 					saveToHistory();
