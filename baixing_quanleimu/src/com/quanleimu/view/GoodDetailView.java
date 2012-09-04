@@ -372,6 +372,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					updateContactBar(false);
 					updateTitleInfo();
+					saveToHistory();
 					if(!initCalled){
 						//the ad is viewed once
 				        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
@@ -386,6 +387,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 				{
 					updateContactBar(true);
 				}
+				
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
