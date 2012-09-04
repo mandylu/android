@@ -1438,7 +1438,14 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						// 3).show();
 						PostGoodsView.this.bundle.putInt("forceUpdate", 1);
 						if(goodsDetail == null){
-							PostGoodsView.this.bundle.putString("lastPost", id);
+							String lp = PostGoodsView.this.bundle.getString("lastPost");
+							if(lp != null && !lp.equals("")){
+								lp += "," + id;
+							}else{
+								lp = id;
+							}
+//							Log.d("lastpost", lp + "    ***********************************");
+							PostGoodsView.this.bundle.putString("lastPost", lp);
 						}
 						if(m_viewInfoListener != null){
 							m_viewInfoListener.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_MINE);
