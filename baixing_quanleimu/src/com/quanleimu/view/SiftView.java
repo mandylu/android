@@ -9,6 +9,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
@@ -67,12 +68,22 @@ public class SiftView extends BaseView {
 		// AND 地区_s:m7259
 		PostMu postMu = (PostMu) Util.loadDataFromLocate(getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName);
 		if (postMu == null || postMu.getJson().equals("")) {
+			pd = new ProgressDialog(this.getContext());
+			pd.setTitle("提示");
+			pd.setMessage("请稍候...");
+			pd.setCancelable(true);
+			pd.show();
 			new Thread(new GetGoodsListThread(true)).start();
 		} else {
 			json = postMu.getJson();
 			long time = postMu.getTime();
 			if(time + 24*3600*1000 < System.currentTimeMillis()){
 				myHandler.sendEmptyMessage(1);
+				pd = new ProgressDialog(this.getContext());
+				pd.setTitle("提示");
+				pd.setMessage("请稍候...");
+				pd.setCancelable(true);
+				pd.show();
 				new Thread(new GetGoodsListThread(false)).start();
 			}else{
 				myHandler.sendEmptyMessage(1);
@@ -289,7 +300,9 @@ public class SiftView extends BaseView {
 			} catch (Communication.BXHttpException e){
 				
 			}
-
+			if(pd != null){
+				pd.dismiss();
+			}
 		}
 	}
 
