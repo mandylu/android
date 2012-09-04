@@ -17,6 +17,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -213,6 +214,7 @@ public class PersonalCenterEntryView extends BaseView implements
 
 	@Override
 	public boolean onRightActionPressed(){
+		if(user == null) return true;
 		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();
 		new Thread(new GetPersonalSessionsThread()).start();
@@ -310,12 +312,22 @@ public class PersonalCenterEntryView extends BaseView implements
 			image = up.resize180Image;
 		}
 		if(image != null && !image.equals("") && !image.equals("null")){
-//			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
-//			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
-//			ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
-//			lp.height = height;
-//			lp.width = width;
-//			this.findViewById(R.id.personalImage).setLayoutParams(lp);
+			int height = this.findViewById(R.id.personalImage).getMeasuredHeight();
+			int width = this.findViewById(R.id.personalImage).getMeasuredWidth();
+			if(height <= 0 || width <= 0){
+				Drawable img = ((ImageView)this.findViewById(R.id.personalImage)).getDrawable();
+				if(img != null){
+					height = img.getIntrinsicHeight();
+					width = img.getIntrinsicWidth();
+				}
+			}
+			if(height > 0 && width > 0){
+				ViewGroup.LayoutParams lp = this.findViewById(R.id.personalImage).getLayoutParams();
+				lp.height = height;
+				lp.width = width;
+				this.findViewById(R.id.personalImage).setLayoutParams(lp);
+			}
+				
 			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), 
 					image, this.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
 		}else{
