@@ -335,7 +335,7 @@ public class FavoriteAndHistoryView extends BaseView implements PullToRefreshLis
 				if(FavoriteAndHistoryView.this.m_viewInfoListener != null){
 					TitleDef title = getTitleDef();
 					title.m_rightActionHint = "编辑";
-					title.m_leftActionHint = "设置";
+					title.m_leftActionHint = "返回";
 					m_viewInfoListener.onTitleChanged(title);
 				}
 				adapter.setHasDelBtn(false);
