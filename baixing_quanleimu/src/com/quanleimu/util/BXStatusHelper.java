@@ -94,8 +94,7 @@ public class BXStatusHelper {
 		
 		if (totalCount() > SEND_POINT)
 		{
-			List<BXStatus> sendList = prepareSendData();
-			send(sendList);
+			send();
 		}
 	}
 	
@@ -153,8 +152,9 @@ public class BXStatusHelper {
 		}
 	}
 	
-	private void send(final List<BXStatus> data)
+	public void send()
 	{
+		final List<BXStatus> data = prepareSendData();
 		ParameterHolder params = new ParameterHolder();
 		for (BXStatus d : data)
 		{

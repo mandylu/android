@@ -30,6 +30,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BXStatusHelper;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
@@ -315,6 +316,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //		            		Debug.stopMethodTracing();
 		            		QuanleimuApplication.mDemoApp = null;
 		            		isInActiveStack = false;
+		            		
+		            		BXStatusHelper.getInstance().store(QuanleimuMainActivity.this);
 		                    System.exit(0);
 		                }
 		            });
@@ -543,6 +546,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onPause() {
 
 		super.onPause();
+		
+		BXStatusHelper.getInstance().send();
 //		
 //		MobclickAgent.onPause(this);
 //		
