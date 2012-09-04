@@ -94,8 +94,11 @@ public class QuanleimuApplication extends Application implements LocationService
 				Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
 				
 				while(c.moveToNext()){
-					response = c.getString(c.getColumnIndex("response"));
-					break;
+					int index = c.getColumnIndex("response");
+					if(index >= 0){
+						response = c.getString(index);
+						break;
+					}
 				}
 				c.close();
 			}catch(SQLException e){
