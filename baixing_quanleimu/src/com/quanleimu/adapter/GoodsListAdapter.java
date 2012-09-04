@@ -174,7 +174,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				defaultBk2 = tmb1;
 			}
 			
-			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER);
+			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				
 			if(QuanleimuApplication.isTextMode()){
 				holder.ivInfo.setVisibility(View.GONE);
