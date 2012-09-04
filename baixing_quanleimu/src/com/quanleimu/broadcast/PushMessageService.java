@@ -272,7 +272,7 @@ public class PushMessageService extends Service
 			this.unregisterReceiver(receiver);
 		}
     	
-		Communication.executeAsyncTask("tokenupdate", parameters, cmdListener);
+		Communication.executeAsyncGetTask("tokenupdate", parameters, cmdListener);
 		
     }
     

@@ -31,6 +31,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
+import com.quanleimu.util.BXStatusHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
@@ -149,6 +150,8 @@ public class QuanleimuApplication extends Application implements LocationService
 			ads_viewed += ",";
 		}
 		ads_viewed += adId;
+		
+		BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_AD_VIEW, adId);
 	}
 	
 	public static void resetViewCounter(){

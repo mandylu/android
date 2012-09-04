@@ -613,8 +613,11 @@ public class Communication implements Comparator<String> {
 		return o1.compareTo(o2);
 	}
 
-	public static void executeAsyncTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
-		
+	public static void executeAsyncGetTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
+		executeAsyncTask(true, apiName, params, listener);
+	}
+	
+	private static void executeAsyncTask(final boolean isGet, final String apiName, final ParameterHolder params, final CommandListener listener) {
 		Thread t = new Thread(
 				new Runnable() {
 					public void run() {
@@ -622,7 +625,7 @@ public class Communication implements Comparator<String> {
 						String url = Communication.getApiUrl(apiName, params.toParameterList());
 						
 						try {
-							String result = Communication.getDataByUrlGet(url);
+							String result = isGet ? Communication.getDataByUrlGet(url) : Communication.getDataByUrl(url, true);
 							if (listener != null)
 							{
 								listener.onServerResponse(result);
@@ -637,5 +640,11 @@ public class Communication implements Comparator<String> {
 				});
 		
 		t.start();
+	
+	}
+	
+	public static void executeAsyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
+		
+		executeAsyncTask(false, apiName, params, listener);
 	}
 }

@@ -204,7 +204,7 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		ParameterHolder params = new ParameterHolder();
 		params.addParameter("u_id", msg.getTo());
 		
-		Communication.executeAsyncTask("read_session", params, new Communication.CommandListener() {
+		Communication.executeAsyncGetTask("read_session", params, new Communication.CommandListener() {
 			
 			@Override
 			public void onServerResponse(String serverMessage) {

@@ -330,7 +330,7 @@ public class ProfileEditView extends BaseView {
 		}
 		
 		
-		Communication.executeAsyncTask("user_profile_update", params, new Communication.CommandListener() {
+		Communication.executeAsyncGetTask("user_profile_update", params, new Communication.CommandListener() {
 			
 			@Override
 			public void onServerResponse(String serverMessage) {
@@ -379,7 +379,7 @@ public class ProfileEditView extends BaseView {
 		ParameterHolder params = new ParameterHolder();
 		params.addParameter("objIds", cityId);
 		
-		Communication.executeAsyncTask("metaobject", params, new Communication.CommandListener() {
+		Communication.executeAsyncGetTask("metaobject", params, new Communication.CommandListener() {
 			
 			public void onServerResponse(String serverMessage) {
 				Message msg = myHandler.obtainMessage(MSG_GOT_CITY_LIST, JsonUtil.getPostGoodsBean(serverMessage));
