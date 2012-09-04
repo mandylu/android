@@ -14,6 +14,7 @@ import android.view.View;
 import android.widget.Adapter;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -72,6 +73,10 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		plv.requestFocus();
 		
 		registerReceiver();
+		BaseAdapter adapter = this.getAdapter();
+		if(adapter != null){
+			adapter.notifyDataSetChanged();
+		}
 	}
 	
 	protected void onDetachedFromWindow()
