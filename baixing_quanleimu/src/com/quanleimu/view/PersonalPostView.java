@@ -659,7 +659,13 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 		title.m_leftActionHint = "返回";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		title.m_rightActionHint = "编辑";
-		title.m_title = "个人中心";
+		if(this.currentPage == -1){
+			title.m_title = "已发布的信息";
+		}else if(currentPage == 0){
+			title.m_title = "审核中";
+		}else if(currentPage == 1){
+			title.m_title = "已删除";
+		}		
 		title.m_visible = true;
 		return title;
 	}
