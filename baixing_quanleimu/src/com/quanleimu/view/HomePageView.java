@@ -648,7 +648,7 @@ public class HomePageView
 					//if this is the last seen item, try to load next
 					int position_cur = position + 1;
 					while(position_cur == curList.size() && position_cur < loadingList.size()){										
-						
+						System.out.println("stuck in the loop for ever....................");
 						final int position_next = position_cur;
 						Bitmap bitmapNext = imgLoader.getWithImmediateIO(loadingList.get(position_next).getImgUrl(), new ImageLoaderCallback(){
 										
@@ -678,8 +678,14 @@ public class HomePageView
 							tempUpdated.set(position_next, true);
 							needNotify = true;
 							position_cur++;
+						}else{
+							position_cur++;
 						}
-						
+						try{
+							Thread.sleep(1000);
+						}catch(Exception e){
+							e.printStackTrace();
+						}
 					}
 				}else if(position < curList.size()){				
 					
@@ -710,6 +716,7 @@ public class HomePageView
 				}
 				
 				if(needNotify)	notifyChange();
+				
 			}
 			//this.imgLoader.enableSampleSize();
 			return v;
