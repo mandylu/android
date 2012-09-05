@@ -13,7 +13,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
-import com.quanleimu.broadcast.ChatMessageManager.ChatMessageListener;
+import com.quanleimu.broadcast.push.PushDispatcher;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
@@ -50,7 +50,8 @@ public class PushMessageService extends Service
     private static volatile Looper sServiceLooper;
     public static boolean IsRunning = false;
     private static volatile ServiceHandler sServiceHandler;
-    private static ChatMessageManager chatManager;
+//    private static ChatMessageManager chatManager;
+    private PushDispatcher pushHandler;
     private final class ServiceHandler extends Handler {
         public ServiceHandler(Looper looper) {
             super(looper);
@@ -66,22 +67,6 @@ public class PushMessageService extends Service
 		return null;
 	}
 	
-	public static void registerMessageListener(ChatMessageListener listener)
-	{
-		if (chatManager != null)
-		{
-			chatManager.setMessageListener(listener);
-		}
-	}
-	
-	public static void unregisterMessageListener(ChatMessageListener listener)
-	{
-		if (chatManager != null)
-		{
-			chatManager.removeMessageListener(listener);
-		}
-	}
-	
 	public void onCreate() 
 	{
 		super.onCreate();
@@ -90,7 +75,8 @@ public class PushMessageService extends Service
         sServiceLooper = thread.getLooper();
 		sServiceHandler = new ServiceHandler(sServiceLooper);
         mHandlerThreadId = thread.getId();
-        chatManager = new ChatMessageManager(this);
+//        chatManager = new ChatMessageManager(this);
+        pushHandler = new PushDispatcher(this);
         
         IsRunning = true;
 	}
@@ -109,7 +95,7 @@ public class PushMessageService extends Service
             sXmppMgr = null;
         }
         
-        chatManager = null;
+        pushHandler = null;
         
         sServiceLooper.quit();
         
@@ -224,11 +210,11 @@ public class PushMessageService extends Service
         } 
         else if (action.equals(ACTION_XMPP_MESSAGE_RECEIVED)) {
         	String msg = intent.getStringExtra("message");
-        	if (msg != null && getMyId() != null) //User should in login status.
-        	{
+        	pushHandler.dispatch(msg);
+//        	if (msg != null && getMyId() != null) //User should in login status.
+//        	{
 //        		ServerMessageHandler.onNewMessage(this, msg, intent.getStringExtra("from"));
-        		chatManager.handleChatMessage(msg);
-        	}
+//        	}
         }  else if (action.equals(ACTION_NETWORK_CHANGED)) {
             boolean available = intent.getBooleanExtra("available", true);
             boolean failover = intent.getBooleanExtra("failover", false);

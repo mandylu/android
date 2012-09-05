@@ -13,7 +13,6 @@ import org.jivesoftware.smack.XMPPException;
 import org.jivesoftware.smack.filter.PacketFilter;
 import org.jivesoftware.smack.packet.Message;
 import org.jivesoftware.smack.packet.Packet;
-import org.jivesoftware.smack.util.StringUtils;
 import org.jivesoftware.smackx.ConfigureProviderManager;
 import org.jivesoftware.smackx.OfflineMessageManager;
 
@@ -404,7 +403,7 @@ public class XMPPManager {
 //            broadcastStatus(context, old, status);
             if (DEBUG_MODE)
             {
-            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, "XMPPStatus", statusAsString(status) + ":" +  QuanleimuApplication.udid, null, true);
+            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, null, "XMPPStatus", statusAsString(status) + ":" +  QuanleimuApplication.udid, null, true);
             }
         }
     }
@@ -463,10 +462,14 @@ public class XMPPManager {
 	    }
 
 	    public static void handleOfflineMessages(XMPPConnection connection, Context ctx) throws XMPPException {
+	    	Log.d(TAG, "start to handle offline message");
 	        OfflineMessageManager offlineMessageManager = new OfflineMessageManager(connection);
 
 	        if (!offlineMessageManager.supportsFlexibleRetrieval())
-	            return;
+	        {
+	        	Log.d(TAG, "server do not suport flexible retrieval");
+	        	return;
+	        }
 
 	        Iterator<Message> i = offlineMessageManager.getMessages();
 	        while (i.hasNext()) {
@@ -481,6 +484,8 @@ public class XMPPManager {
 	            }
 	        }
 	        offlineMessageManager.deleteMessages();
+	        
+	        Log.d(TAG, "handle offline message done.");
 	    }
 	
 	    static String filterXml(String message)

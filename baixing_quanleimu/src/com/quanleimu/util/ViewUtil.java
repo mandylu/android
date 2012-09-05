@@ -75,7 +75,7 @@ public class ViewUtil {
 		mNotificationManager.cancel(notificationid);
 	}
 	
-	public static void putOrUpdateNotification(final Context context, final int notificationId, String title, String msg, final Bundle extras, final boolean isPersistant)
+	public static void putOrUpdateNotification(final Context context, final int notificationId, String notificationType, String title, String msg, final Bundle extras, final boolean isPersistant)
 	{
 		PowerManager pm = (PowerManager) context.getSystemService(Context.POWER_SERVICE);
 		WakeLock wk = pm.newWakeLock(PowerManager.FULL_WAKE_LOCK, "NOTIFY_WAKEUP");
@@ -89,7 +89,7 @@ public class ViewUtil {
 		String contentTitle = title == null ? "" : title;
 		String contentText = msg;
 
-		Intent notificationIntent = new Intent(CommonIntentAction.ACTION_NOTIFICATION_MESSAGE);
+		Intent notificationIntent = notificationType == null ? new Intent() : new Intent(notificationType);
 		if (extras != null)
 		{
 			notificationIntent.putExtras(extras);

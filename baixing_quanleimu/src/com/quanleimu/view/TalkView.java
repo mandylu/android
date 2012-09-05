@@ -9,7 +9,10 @@ import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.BroadcastReceiver;
 import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -28,8 +31,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.R;
-import com.quanleimu.broadcast.ChatMessageManager.ChatMessageListener;
-import com.quanleimu.broadcast.PushMessageService;
+import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.UserBean;
@@ -38,11 +40,13 @@ import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Util;
 
 public class TalkView extends BaseView 
 {
+	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
+	public static String CURRENT_RECEIVER_RRICKY = null;
+	
 	public static final int MAX_REQ_COUNT = 100;
 	private static final int MSG_GETPROFILE = 1;
 	private static final int MSG_GETTARGETICON = 2;
@@ -52,7 +56,8 @@ public class TalkView extends BaseView
 	private String targetIcon = null;
 	private String adId;
 	private String adTitle = "对话";
-	private ChatMessageListener msgListener;
+//	private ChatMessageListener msgListener;
+	private BroadcastReceiver msgListener;
 	private String sessionId;
 	private String myUserId;
 	private String myIcon = null;
@@ -132,52 +137,61 @@ public class TalkView extends BaseView
 			Thread t = new Thread(new LoadLocalMsgCmd());
 			t.start();
 		}
+		
+		
+		registerMsgListener();
+		
+		CURRENT_RECEIVER_RRICKY = targetUserId;
 	}
 
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
 		
+		unregisterReceiver();
+		
+		CURRENT_RECEIVER_RRICKY = null;
 	}
 
 	public void onResume()
 	{
 		super.onResume();
-		
-		initMsgListener();
 	}
 	
-	private void initMsgListener()
+	private void registerMsgListener()
 	{
 		if (msgListener == null)
 		{
-			msgListener = new ChatMessageListener() {
-				
-				public void onNewMessage(ChatMessage msg) {
-					receiveAndUpdateUI(msg);
+			msgListener = new BroadcastReceiver() {
+
+				public void onReceive(Context outerContext, Intent outerIntent) {
+					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
+					{
+						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+						if (msg.getTo().equals(myUserId))
+						{
+							receiveAndUpdateUI(msg);
+						}
+					}
 				}
 				
-				public String getUserId() {
-					return getMyId();
-				}
-				
-				public String getSessionId() {
-					return sessionId;
-				}
 			};
 		}
 		
-		
-		PushMessageService.registerMessageListener(msgListener);
+		getContext().registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+	}
+	
+	protected void unregisterReceiver()
+	{
+		if (msgListener != null)
+		{
+			getContext().unregisterReceiver(msgListener);
+		}
 	}
 	
 	public void onPause()
 	{
 		super.onPause();
-		if (msgListener != null)
-		{
-			PushMessageService.unregisterMessageListener(msgListener);
-		}
 	}
 	
 	@Override
@@ -201,8 +215,6 @@ public class TalkView extends BaseView
 	
 	private void doInit(Context context, ChatMessage msg)
 	{
-		initMsgListener();
-		
 		this.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		LayoutInflater inflator = LayoutInflater.from(context);
