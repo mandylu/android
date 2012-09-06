@@ -218,6 +218,10 @@ public class PersonalCenterEntryView extends BaseView implements
 	@Override
 	public boolean onRightActionPressed(){
 		if(user == null) return true;
+		pd = ProgressDialog.show(this.getContext(), "提示", "正在下载数据，请稍候...");
+		pd.setCancelable(true);
+		pd.show();
+
 		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();
 		new Thread(new GetPersonalSessionsThread()).start();
