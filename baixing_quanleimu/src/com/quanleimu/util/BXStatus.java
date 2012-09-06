@@ -27,8 +27,8 @@ public class BXStatus implements Serializable, Cloneable {
 //		}
 //	};
 	
-	private String statusType;
-	private int count;
+	protected String statusType;
+	protected int count;
 	protected List events = new ArrayList();
 	
 	public BXStatus(String name, int initialCount)

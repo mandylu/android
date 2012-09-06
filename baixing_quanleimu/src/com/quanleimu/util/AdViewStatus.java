@@ -23,5 +23,14 @@ public class AdViewStatus extends BXStatus {
 	}
 
 
-
+	public Object clone()
+	{
+		BXStatus newObj = new AdViewStatus(statusType, count);
+		if (this.events != null && this.events.size() > 0)
+		{
+			newObj.events.addAll(this.events);
+		}
+		
+		return newObj;
+	}
 }

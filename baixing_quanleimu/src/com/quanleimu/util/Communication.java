@@ -42,16 +42,13 @@ public class Communication implements Comparator<String> {
 	
 	private final static Communication COMPARATOR = new Communication();
 
-	//public static String apiKey = "api_mobile_android";
-	public static String apiKey = "baixing_ios";
-	//public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";//PRD
-	//public static String apiSecret = "844126bb93c99897817531d7b84cd028";//DEV
-	public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
+	public static String apiKey = "api_mobile_android";
+//	public static String apiKey = "baixing_ios";
+	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";//PRD
+//	public static String apiSecret = "844126bb93c99897817531d7b84cd028";//DEV
+//	public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
-	//public static String apiUrl = "http://www.baixing.com/api/mobile.";
-
-	 public static String apiUrl =
-	 "http://www.liuweili.baixing.com/api/mobile.";
+	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
 
 	private static boolean isWifi() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context

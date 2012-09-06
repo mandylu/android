@@ -14,7 +14,8 @@ public class BXStatusHelper {
 	public static final String TYPE_SIXIN_SEND = "sixin";
 	public static final String TYPE_WEIBO_SEND = "weibo";
 	public static final String TYPE_WEIXIN_SEND = "weixin";
-	
+
+	private static final String TYPE_ADS_ID = "adIds";
 	
 	public static final String SERIALIZABLE_PATH = "bx_status.ser";
 	
@@ -26,10 +27,10 @@ public class BXStatusHelper {
 	private BXStatusHelper()
 	{
 		BXStatus[] array = new BXStatus[] {
-			new BXStatus(TYPE_CALL, 0), new AdViewStatus(TYPE_AD_VIEW, 0),
+			new BXStatus(TYPE_CALL, 0), new BXStatus(TYPE_AD_VIEW, 0),
 			new BXStatus(TYPE_ADD_CONTACT, 0), new BXStatus(TYPE_SMS_SEND, 0),
 			new BXStatus(TYPE_SIXIN_SEND, 0), new BXStatus(TYPE_WEIBO_SEND, 0),
-			new BXStatus(TYPE_WEIXIN_SEND, 0)
+			new BXStatus(TYPE_WEIXIN_SEND, 0), new AdViewStatus(TYPE_ADS_ID, 0)
 		};
 		
 		statusList = new ArrayList<BXStatus>();
@@ -90,7 +91,19 @@ public class BXStatusHelper {
 			return;
 		}
 		
-		s.increase(eventObj);
+		if (TYPE_AD_VIEW.equals(type))
+		{
+			s.increase(null); //Do not need record event for vad count.
+			BXStatus ssub = findStatus(TYPE_ADS_ID);
+			if (ssub != null)
+			{
+				ssub.increase(eventObj);
+			}
+		}
+		else
+		{
+			s.increase(eventObj);
+		}
 		
 		if (totalCount() > SEND_POINT)
 		{
@@ -126,9 +139,9 @@ public class BXStatusHelper {
 	private int totalCount()
 	{
 		int t = 0;
-		for (BXStatus s : statusList)
-		{
-			t+=s.getCount();
+		BXStatus s = findStatus(TYPE_AD_VIEW);
+		if (s != null) {
+			t += s.getCount();
 		}
 		
 		return t;
@@ -154,6 +167,11 @@ public class BXStatusHelper {
 	
 	public void send()
 	{
+		if (totalCount() == 0) //If we have nothing.
+		{
+			return;
+		}
+		
 		final List<BXStatus> data = prepareSendData();
 		ParameterHolder params = new ParameterHolder();
 		for (BXStatus d : data)
