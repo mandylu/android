@@ -912,7 +912,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;	
 		}
 		case R.id.buzz: {
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_AD_VIEW, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
 			String userId = getMyId();
 			if (userId == null)
 			{

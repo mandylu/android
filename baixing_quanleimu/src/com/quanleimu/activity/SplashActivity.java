@@ -365,6 +365,7 @@ public class SplashActivity extends BaseActivity{
 			myHandler.sendEmptyMessage(2);
 			
 			BXStatsHelper.getInstance().load(SplashActivity.this);
+			BXStatsHelper.getInstance().send();//Send log each startup.
 		}
 
 	}

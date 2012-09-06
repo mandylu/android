@@ -167,7 +167,7 @@ public class BXStatsHelper {
 	
 	public void send()
 	{
-		if (totalCount() < SEND_POINT) //Do send for each 50 records. 
+		if (totalCount() < 0) //do not send if no log.
 		{
 			return;
 		}

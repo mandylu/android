@@ -547,7 +547,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 
 		super.onPause();
 		
-		BXStatsHelper.getInstance().send();
 //		
 //		MobclickAgent.onPause(this);
 //		
