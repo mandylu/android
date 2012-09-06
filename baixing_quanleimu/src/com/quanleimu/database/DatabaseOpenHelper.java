@@ -42,7 +42,8 @@ public class DatabaseOpenHelper extends SQLiteOpenHelper {
 		if (newVersion == 2)
 		{
 			Log.e("db", "clear database");
-			db.equals("delete * from " + CHAT_MESSAGE_TABLE);
+			db.execSQL("drop TABLE " + CHAT_MESSAGE_TABLE);
+			db.execSQL(CHAT_MESSAGE_TABLE_CREATE);
 		}
 	}
 
