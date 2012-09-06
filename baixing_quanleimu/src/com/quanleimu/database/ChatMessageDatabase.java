@@ -259,6 +259,37 @@ public class ChatMessageDatabase extends Database
 		}
 	}
 	
+	public static void clearOldMessage(long keepCount)
+	{
+		Cursor cur;
+		long time = 0;
+		
+		try
+		{
+			cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
+					new String[] {"timestamp"}, null, null, null, null, "timestamp", null);
+			if (cur.getCount() > keepCount)
+			{
+				int i = 0;
+				while (i<keepCount)
+				{
+					cur.moveToNext();
+					time = cur.getLong(0);
+					i++;
+				}
+			}
+		} 
+		catch(Throwable t)
+		{
+			
+		}
+		
+		if (time != 0)
+		{
+			deleteMsgOlderthan(time);
+		}
+	}
+	
 	public static void clearDatabase()
 	{
 		try{
