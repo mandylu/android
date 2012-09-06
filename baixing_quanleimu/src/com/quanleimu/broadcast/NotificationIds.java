@@ -8,4 +8,5 @@ package com.quanleimu.broadcast;
 public interface NotificationIds {
 	int NOTIFICATION_ID_CHAT_MESSAGE = 1001;
 	int NOTIFICATION_XMPP_CONNECTION_STATUS = 2001;
+	int NOTIFICATION_ID_BXINFO = 3001;
 }

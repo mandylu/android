@@ -91,6 +91,7 @@
 		<receiver android:name="com.quanleimu.broadcast.NotificationHandler" android:enabled="true">
              <intent-filter>
                  <action android:name="com.baixing.action.notify.msg" />
+                 <action android:name="com.baixing.action.notify.bxinfo" />
                   <action android:name="com.baixing.action.notify.hot" />
              </intent-filter>
         </receiver>
