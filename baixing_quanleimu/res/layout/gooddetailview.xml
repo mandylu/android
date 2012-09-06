@@ -28,44 +28,50 @@
                 android:visibility="gone"
                 android:src="@android:color/transparent" />
 
+            <ImageView
+                android:id="@+id/call_img"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:paddingLeft="10dip"
+                android:layout_centerVertical="true"
+                android:src="@drawable/icon_call" />
+                       
             <TextView
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerVertical="true"
-                android:paddingLeft="20dip"
+                android:layout_toRightOf="@+id/call_img"
                 android:text="12345678909"
                 android:textColor="#FFFFFF"
                 android:textSize="25dip" >
             </TextView>
             
-           <ImageView
-                android:id="@+id/call"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:paddingLeft="10dip"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/number"
-                android:src="@drawable/icon_call" />
-            
-
-          <ImageView
-            android:id="@+id/sms"
+           
+          
+          
+         <TextView
+            android:id="@+id/buzz_txt"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
              android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/call"
-            android:paddingLeft="10dip"
-            android:src="@drawable/icon_sms" />
-          
+             android:layout_alignParentRight="true"
+            android:text="私信"
+            android:textSize="15sp"
+            android:paddingRight="10dp"
+            android:textColor="@color/white"
+            />
+                    
           <ImageView
             android:id="@+id/buzz"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
              android:layout_centerVertical="true"
-             android:layout_alignParentRight="true"
-            android:paddingRight="10dp"
+             android:layout_toLeftOf="@+id/buzz_txt"
+             android:paddingLeft="10dip"
             android:src="@drawable/btn_viewad_buzz" />
+          
+
 
           
         </RelativeLayout>

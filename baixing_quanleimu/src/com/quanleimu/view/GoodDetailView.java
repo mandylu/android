@@ -566,8 +566,8 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
 			contentView.findViewById(R.id.showmap).setEnabled(false);
 			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
-			findViewById(R.id.sms).setEnabled(false);
-			findViewById(R.id.call).setEnabled(false);
+//			findViewById(R.id.sms).setEnabled(false);
+//			findViewById(R.id.call).setEnabled(false);
 			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
@@ -671,23 +671,19 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		
 		TextView txt_phone = (TextView) findViewById(R.id.number);
 		ContextMenuItem iv_contact = (ContextMenuItem) findViewById(R.id.contact);
-		View iv_call = (View)findViewById(R.id.call);
-		ImageView iv_sms = (ImageView)findViewById(R.id.sms);
+		findViewById(R.id.buzz_txt).setOnClickListener(this);
 		View iv_buzz = findViewById(R.id.buzz);
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
 		
 		rl_phone.setVisibility(View.VISIBLE);
 		
-		iv_sms.setOnClickListener(this);
-		iv_call.setOnClickListener(this);
 		iv_buzz.setOnClickListener(this);
+		findViewById(R.id.call_img).setOnClickListener(this);
 		
 		if (mobileV != null
 				&& !mobileV.equals("")
 				&& !mobileV.equals("无")) {
 			txt_phone.setVisibility(View.VISIBLE);
-//			iv_call.setVisibility(View.VISIBLE);
-//			iv_sms.setVisibility(View.VISIBLE);
 			txt_phone.setText(mobileV);
 			iv_contact.updateOptionList(mobileV, 
 					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
@@ -699,8 +695,6 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			txt_phone.setOnClickListener(null);
 //			txt_phone.setVisibility(View.INVISIBLE);
 		}
-		iv_call.setVisibility(View.GONE);
-		iv_sms.setVisibility(View.GONE);
 	}
 	
 	
@@ -904,12 +898,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		case R.id.appealbutton:
 			m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 1, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID)));
 			break;
-		case R.id.call:{
-			TextView txt_phone = (TextView) findViewById(R.id.number);
-			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-			this.getContext().startActivity(intent);
+		case R.id.call_img:{
+			findViewById(R.id.contact).performLongClick();
 			break;	
+		}
+		case R.id.buzz_txt:
+		{
+			findViewById(R.id.buzz).performClick();
+			break;
 		}
 		case R.id.buzz: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
@@ -924,13 +920,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			}
 			break;
 		}
-		case R.id.sms:{
-			TextView txt_phone = (TextView) findViewById(R.id.number);
-			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-			this.getContext().startActivity(intent);			
-			break;
-		}
+//		case R.id.sms:{
+//			TextView txt_phone = (TextView) findViewById(R.id.number);
+//			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
+//			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
+//			this.getContext().startActivity(intent);			
+//			break;
+//		}
 		case R.id.showmap:
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
