@@ -90,6 +90,7 @@ public class PersonalCenterEntryView extends BaseView implements
 
 		if(user != null && ((this.bundle != null && bundle.getInt("forceUpdate") == 1)
 			|| QuanleimuApplication.getApplication().getListMyPost() == null)){
+			((TextView)findViewById(R.id.btn_editprofile)).setText("编辑");
 			if (bundle != null) {
 				bundle.remove("forceUpdate");
 			}
@@ -105,9 +106,11 @@ public class PersonalCenterEntryView extends BaseView implements
 			tvPersonalAds.setText(String.valueOf(QuanleimuApplication.getApplication().getListMyPost() == null ?
 					0 : QuanleimuApplication.getApplication().getListMyPost().size()));		
 			if(user == null){
+			    ((TextView)findViewById(R.id.btn_editprofile)).setText("登陆");
 				clearProfile();
 				((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0");
 			}else{
+				((TextView)findViewById(R.id.btn_editprofile)).setText("编辑");
 				if(up == null){
 					new Thread(new GetPersonalProfileThread()).start();
 				}
