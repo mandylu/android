@@ -1,13 +1,13 @@
 package com.quanleimu.util;
 
-public class AdViewStatus extends BXStatus {
+public class AdViewStats extends BXStats {
 
 	/**
 	 * 
 	 */
 	private static final long serialVersionUID = 1462792102773629750L;
 	
-	public AdViewStatus(String name, int initialCount) {
+	public AdViewStats(String name, int initialCount) {
 		super(name, initialCount);
 	}
 	
@@ -25,7 +25,7 @@ public class AdViewStatus extends BXStatus {
 
 	public Object clone()
 	{
-		BXStatus newObj = new AdViewStatus(statusType, count);
+		BXStats newObj = new AdViewStats(statusType, count);
 		if (this.events != null && this.events.size() > 0)
 		{
 			newObj.events.addAll(this.events);

@@ -5,7 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 
-public class BXStatusHelper {
+public class BXStatsHelper {
 
 	public static final String TYPE_CALL = "call";
 	public static final String TYPE_AD_VIEW = "vad";
@@ -19,34 +19,34 @@ public class BXStatusHelper {
 	
 	public static final String SERIALIZABLE_PATH = "bx_status.ser";
 	
-	private List<BXStatus> statusList;
+	private List<BXStats> statusList;
 	
 	public static final int SEND_POINT = 50;
 	
 	
-	private BXStatusHelper()
+	private BXStatsHelper()
 	{
-		BXStatus[] array = new BXStatus[] {
-			new BXStatus(TYPE_CALL, 0), new BXStatus(TYPE_AD_VIEW, 0),
-			new BXStatus(TYPE_ADD_CONTACT, 0), new BXStatus(TYPE_SMS_SEND, 0),
-			new BXStatus(TYPE_SIXIN_SEND, 0), new BXStatus(TYPE_WEIBO_SEND, 0),
-			new BXStatus(TYPE_WEIXIN_SEND, 0), new AdViewStatus(TYPE_ADS_ID, 0)
+		BXStats[] array = new BXStats[] {
+			new BXStats(TYPE_CALL, 0), new BXStats(TYPE_AD_VIEW, 0),
+			new BXStats(TYPE_ADD_CONTACT, 0), new BXStats(TYPE_SMS_SEND, 0),
+			new BXStats(TYPE_SIXIN_SEND, 0), new BXStats(TYPE_WEIBO_SEND, 0),
+			new BXStats(TYPE_WEIXIN_SEND, 0), new AdViewStats(TYPE_ADS_ID, 0)
 		};
 		
-		statusList = new ArrayList<BXStatus>();
-		for (BXStatus s : array)
+		statusList = new ArrayList<BXStats>();
+		for (BXStats s : array)
 		{
 			statusList.add(s);
 		}
 	}
 	
-	private static BXStatusHelper instance;
+	private static BXStatsHelper instance;
 
-	public static BXStatusHelper getInstance()
+	public static BXStatsHelper getInstance()
 	{
 		if(instance == null)
 		{
-			instance = new BXStatusHelper();
+			instance = new BXStatsHelper();
 		}
 		
 		return instance;
@@ -57,7 +57,7 @@ public class BXStatusHelper {
 		Object data = Util.loadDataFromLocate(context, SERIALIZABLE_PATH);
 		if (data != null)
 		{
-			ArrayList<BXStatus> listData = (ArrayList) data;
+			ArrayList<BXStats> listData = (ArrayList) data;
 			
 			if(statusList.size() == 0) //Assign
 			{
@@ -72,7 +72,7 @@ public class BXStatusHelper {
 	
 	public void clearData()
 	{
-		for (BXStatus s : statusList)
+		for (BXStats s : statusList)
 		{
 			s.clear();
 		}
@@ -85,7 +85,7 @@ public class BXStatusHelper {
 	
 	public void increase(String type, Object eventObj)
 	{
-		BXStatus s = findStatus(type);
+		BXStats s = findStatus(type);
 		if (s == null)
 		{
 			return;
@@ -94,7 +94,7 @@ public class BXStatusHelper {
 		if (TYPE_AD_VIEW.equals(type))
 		{
 			s.increase(null); //Do not need record event for vad count.
-			BXStatus ssub = findStatus(TYPE_ADS_ID);
+			BXStats ssub = findStatus(TYPE_ADS_ID);
 			if (ssub != null)
 			{
 				ssub.increase(eventObj);
@@ -111,21 +111,21 @@ public class BXStatusHelper {
 		}
 	}
 	
-	private List<BXStatus> prepareSendData()
+	private List<BXStats> prepareSendData()
 	{
-		List<BXStatus> sending = new ArrayList<BXStatus>();
-		for (BXStatus s : statusList)
+		List<BXStats> sending = new ArrayList<BXStats>();
+		for (BXStats s : statusList)
 		{
-			sending.add((BXStatus) s.clone());
+			sending.add((BXStats) s.clone());
 			s.clear();
 		}
 		
 		return sending;
 	}
 	
-	public BXStatus findStatus(String type)
+	public BXStats findStatus(String type)
 	{
-		for (BXStatus s : statusList)
+		for (BXStats s : statusList)
 		{
 			if (s.getTypeName().equals(type))
 			{
@@ -139,7 +139,7 @@ public class BXStatusHelper {
 	private int totalCount()
 	{
 		int t = 0;
-		BXStatus s = findStatus(TYPE_AD_VIEW);
+		BXStats s = findStatus(TYPE_AD_VIEW);
 		if (s != null) {
 			t += s.getCount();
 		}
@@ -147,14 +147,14 @@ public class BXStatusHelper {
 		return t;
 	}
 	
-	private void mergeList(List<BXStatus> listData)
+	private void mergeList(List<BXStats> listData)
 	{
 		for (int i=0; i<statusList.size(); i++)//Merge
 		{
-			BXStatus outer = statusList.get(i);
+			BXStats outer = statusList.get(i);
 			for (int j=0; j<listData.size(); j++)
 			{
-				BXStatus inner = listData.get(j);
+				BXStats inner = listData.get(j);
 				if (outer.getTypeName().equals(inner.getTypeName()))
 				{
 					outer.merge(inner);
@@ -167,14 +167,14 @@ public class BXStatusHelper {
 	
 	public void send()
 	{
-		if (totalCount() == 0) //If we have nothing.
+		if (totalCount() < SEND_POINT) //Do send for each 50 records. 
 		{
 			return;
 		}
 		
-		final List<BXStatus> data = prepareSendData();
+		final List<BXStats> data = prepareSendData();
 		ParameterHolder params = new ParameterHolder();
-		for (BXStatus d : data)
+		for (BXStats d : data)
 		{
 			params.addParameter(d.getTypeName(), d.description());
 		}

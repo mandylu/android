@@ -4,7 +4,7 @@ import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.List;
 
-public class BXStatus implements Serializable, Cloneable {
+public class BXStats implements Serializable, Cloneable {
 
 //	public static enum BX_STATUS_TYPE {
 //		STATUS_AD_VIEW("vad"),
@@ -31,7 +31,7 @@ public class BXStatus implements Serializable, Cloneable {
 	protected int count;
 	protected List events = new ArrayList();
 	
-	public BXStatus(String name, int initialCount)
+	public BXStats(String name, int initialCount)
 	{
 		this.statusType = name;
 		if (initialCount > 0)
@@ -70,7 +70,7 @@ public class BXStatus implements Serializable, Cloneable {
 		this.events.clear();
 	}
 	
-	public void merge(BXStatus outer)
+	public void merge(BXStats outer)
 	{
 		if (outer != null && getTypeName().equals(outer.getTypeName()))
 		{
@@ -89,7 +89,7 @@ public class BXStatus implements Serializable, Cloneable {
 	
 	public Object clone()
 	{
-		BXStatus newObj = new BXStatus(this.statusType, this.count);
+		BXStats newObj = new BXStats(this.statusType, this.count);
 		if (this.events != null && this.events.size() > 0)
 		{
 			newObj.events.addAll(this.events);
