@@ -16,10 +16,16 @@ public class ChatMessageDbTest extends AndroidTestCase {
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
+		
+		ChatMessageDatabase.prepareDB(getContext());
+		ChatMessageDatabase.clearDatabase();
 	}
 	
 	public void testStoreAndQuery()
 	{
+		ChatMessageDatabase.prepareDB(getContext());
+		ChatMessageDatabase.clearDatabase();
+		
 		final long timestamp = System.currentTimeMillis()/1000 - 5 * 3600 * 24; //Five days ago
 		ChatMessage originalMessage = new ChatMessage();
 		originalMessage.setFrom("123456");
@@ -33,19 +39,57 @@ public class ChatMessageDbTest extends AndroidTestCase {
 		ChatMessageDatabase.prepareDB(getContext());
 		ChatMessageDatabase.storeMessage(originalMessage);
 		
-		List<ChatMessage> msgList = ChatMessageDatabase.queryMessageBySession("999999");
-		assertTrue("should have message after store", msgList.size() > 0);
-		assertEquals(originalMessage.getAdId(), msgList.get(0).getAdId());
-		assertEquals(originalMessage.getFrom(), msgList.get(0).getFrom());
-		assertEquals(originalMessage.getId(), msgList.get(0).getId());
-		assertEquals(originalMessage.getMessage(), msgList.get(0).getMessage());
-		assertEquals(originalMessage.getSession(), msgList.get(0).getSession());
-		assertEquals(originalMessage.getTimestamp(), msgList.get(0).getTimestamp());
-		assertEquals(originalMessage.getTo(), msgList.get(0).getTo());
+		ChatMessage msg = ChatMessageDatabase.queryMessageByMsgId("999999");
+		assertNotNull(msg);
+		assertEquals(originalMessage.getAdId(), msg.getAdId());
+		assertEquals(originalMessage.getFrom(), msg.getFrom());
+		assertEquals(originalMessage.getId(), msg.getId());
+		assertEquals(originalMessage.getMessage(), msg.getMessage());
+		assertEquals(originalMessage.getSession(), msg.getSession());
+		assertEquals(originalMessage.getTimestamp(), msg.getTimestamp());
+		assertEquals(originalMessage.getTo(), msg.getTo());
 		
-		ChatMessageDatabase.deleteMsgOlderthan(timestamp + 10); 
-		msgList = ChatMessageDatabase.queryMessageBySession("999999");
-		assertTrue("should have message after store", msgList.size() == 0);
+//		ChatMessageDatabase.deleteMsgOlderthan(timestamp + 10); 
+//		msgList = ChatMessageDatabase.queryMessageBySession("999999");
+//		assertTrue("should have message after store", msgList.size() == 0);
+	}
+	
+	
+	public void testRemoveOlderThan()
+	{
+		ChatMessage msg1 = mock("111", 111);
+		ChatMessage msg2 = mock("222", 222);
+		ChatMessage msg3 = mock("333", 333);
+		
+		ChatMessageDatabase.storeMessage(msg1);
+		ChatMessageDatabase.storeMessage(msg2);
+		ChatMessageDatabase.storeMessage(msg3);
+		
+		ChatMessage cha1 = ChatMessageDatabase.queryMessageByMsgId("111");
+		ChatMessage cha2 = ChatMessageDatabase.queryMessageByMsgId("222");
+		assertNotNull(cha1);
+		assertNotNull(cha2);
+		
+		ChatMessageDatabase.clearOldMessage(2);
+		cha1 = ChatMessageDatabase.queryMessageByMsgId("111");
+		cha2 = ChatMessageDatabase.queryMessageByMsgId("222");
+		assertNull(cha1);
+		assertNotNull(cha2);
+		
+	}
+	
+	static ChatMessage mock(String msgId, long timestamp)
+	{
+		ChatMessage originalMessage = new ChatMessage();
+		originalMessage.setFrom("123456");
+		originalMessage.setTo("456789");
+		originalMessage.setId(msgId);
+		originalMessage.setAdId("111");
+		originalMessage.setMessage("message");
+		originalMessage.setSession("999999");
+		originalMessage.setTimestamp(timestamp);
+		
+		return originalMessage;
 	}
 	
 

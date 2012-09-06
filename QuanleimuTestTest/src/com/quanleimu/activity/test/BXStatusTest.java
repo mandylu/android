@@ -1,7 +1,7 @@
 package com.quanleimu.activity.test;
 
-import com.quanleimu.util.AdViewStatus;
-import com.quanleimu.util.BXStatus;
+import com.quanleimu.util.AdViewStats;
+import com.quanleimu.util.BXStats;
 
 import android.test.AndroidTestCase;
 
@@ -18,13 +18,13 @@ public class BXStatusTest extends AndroidTestCase {
 	
 	public void testDescription()
 	{
-		BXStatus s = new BXStatus("a", 10);
+		BXStats s = new BXStats("a", 10);
 		assertEquals("10", s.description());
 	}
 	
 	public void testCount()
 	{
-		BXStatus s = new BXStatus("a", 10);
+		BXStats s = new BXStats("a", 10);
 		assertEquals("a", s.getTypeName());
 		assertEquals(10, s.getCount());
 		
@@ -34,7 +34,7 @@ public class BXStatusTest extends AndroidTestCase {
 	
 	public void testAdViewStat()
 	{
-		AdViewStatus s = new AdViewStatus("b", 10);
+		AdViewStats s = new AdViewStats("b", 10);
 		assertEquals("b", s.getTypeName());
 		assertEquals("", s.description());
 		
