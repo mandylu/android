@@ -50,7 +50,6 @@ public class QuanleimuApplication extends Application implements LocationService
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
 	public static String version="";
-	public static String ads_viewed="";
 	public static String channelId;
 	public static Context context;	
 	public static LazyImageLoader lazyImageLoader;
@@ -148,16 +147,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	}
 	
 	public static void addViewCounter(String adId){
-		if(!ads_viewed.equals("")){
-			ads_viewed += ",";
-		}
-		ads_viewed += adId;
-		
 		BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_AD_VIEW, adId);
-	}
-	
-	public static void resetViewCounter(){
-		QuanleimuApplication.ads_viewed = "";
 	}
 	
 	public static void setTextMode(boolean tMode){
