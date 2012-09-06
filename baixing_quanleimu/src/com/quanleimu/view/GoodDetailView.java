@@ -39,6 +39,9 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
@@ -82,7 +85,7 @@ import com.weibo.net.Weibo;
 import com.weibo.net.WeiboException;
 import com.weibo.net.WeiboParameters;
 
-public class GoodDetailView extends BaseView implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
+public class GoodDetailView extends BaseView implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 	
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -98,6 +101,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 	
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
+	private static final int MSG_HIDE_ARROW = 0x00010002;
 
 	public GoodsDetail detail = new GoodsDetail();
 	private View titleControlView = null;
@@ -209,6 +213,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		}
 //		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		super.onAttachedToWindow();
+		if(mListLoader != null && mListLoader.getSelection() == 0){
+			this.findViewById(R.id.btn_prev).setVisibility(View.GONE);
+		}else{
+			this.findViewById(R.id.btn_prev).setVisibility(View.VISIBLE);
+		}
+		this.findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
+		this.myHandler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 3000);
 	}
 	
 	private void saveToHistory(){
@@ -390,6 +401,14 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 					}
 					
 					updateButtonStatus();
+					
+					if(pos == 0){
+						GoodDetailView.this.findViewById(R.id.btn_prev).setVisibility(View.GONE);
+					}else{
+						GoodDetailView.this.findViewById(R.id.btn_prev).setVisibility(View.VISIBLE);
+					}
+					GoodDetailView.this.findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
+					GoodDetailView.this.myHandler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 1000);					
 				
 				}
 				else
@@ -1321,10 +1340,45 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		ll_meta.addView(time);
 	}
 	
+	@Override
+	public void onAnimationEnd(Animation animation) {
+		// TODO Auto-generated method stub
+		GoodDetailView.this.findViewById(R.id.btn_prev).setVisibility(View.GONE);
+		GoodDetailView.this.findViewById(R.id.btn_next).setVisibility(View.GONE);
+	}
+
+	@Override
+	public void onAnimationRepeat(Animation animation) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onAnimationStart(Animation animation) {
+		// TODO Auto-generated method stub
+		
+	}
+	
 	public Handler myHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case MSG_HIDE_ARROW:
+				final View prev = GoodDetailView.this.findViewById(R.id.btn_prev);
+				if(prev != null){
+					Animation animation = AnimationUtils.loadAnimation(GoodDetailView.this.getContext(), R.anim.alpha);
+					prev.startAnimation(animation);
+					animation.setAnimationListener(GoodDetailView.this);
+//					prev.setVisibility(View.GONE);
+				}
+				View next = GoodDetailView.this.findViewById(R.id.btn_next);
+				if(next != null){
+					Animation animation = AnimationUtils.loadAnimation(GoodDetailView.this.getContext(), R.anim.alpha);
+					next.startAnimation(animation);
+					animation.setAnimationListener(GoodDetailView.this);
+//					next.setVisibility(View.GONE);
+				}
+				break;
 			case msgRefresh:
 				if(json == null){
 					Toast.makeText(GoodDetailView.this.getContext(), "刷新失败，请稍后重试！", 0).show();

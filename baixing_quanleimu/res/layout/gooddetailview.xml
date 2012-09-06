@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@drawable/home_bg" >
-    
+
     <LinearLayout
         android:id="@+id/phonelayout"
         android:layout_width="fill_parent"
@@ -12,30 +12,29 @@
         android:layout_alignParentBottom="true"
         android:background="@drawable/viewad_bar"
         android:gravity="center_vertical" >
-        
+
         <RelativeLayout
             android:id="@+id/phone_parent"
             android:layout_width="fill_parent"
             android:layout_height="match_parent" >
 
-
             <com.quanleimu.widget.ContextMenuItem
                 android:id="@+id/contact"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
-                android:visibility="gone"
-                android:src="@android:color/transparent" />
+                android:layout_centerVertical="true"
+                android:src="@android:color/transparent"
+                android:visibility="gone" />
 
             <ImageView
                 android:id="@+id/call_img"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:paddingLeft="10dip"
                 android:layout_centerVertical="true"
+                android:paddingLeft="10dip"
                 android:src="@drawable/icon_call" />
-                       
+
             <TextView
                 android:id="@+id/number"
                 android:layout_width="wrap_content"
@@ -46,44 +45,51 @@
                 android:textColor="#FFFFFF"
                 android:textSize="25dip" >
             </TextView>
-            
-           
-          
-          
-         <TextView
-            android:id="@+id/buzz_txt"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-             android:layout_centerVertical="true"
-             android:layout_alignParentRight="true"
-            android:text="私信"
-            android:textSize="15sp"
-            android:paddingRight="10dp"
-            android:textColor="@color/white"
-            />
-                    
-          <ImageView
-            android:id="@+id/buzz"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-             android:layout_centerVertical="true"
-             android:layout_toLeftOf="@+id/buzz_txt"
-             android:paddingLeft="10dip"
-            android:src="@drawable/btn_viewad_buzz" />
-          
 
+            <TextView
+                android:id="@+id/buzz_txt"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:paddingRight="10dp"
+                android:text="私信"
+                android:textColor="@color/white"
+                android:textSize="15sp" />
 
-          
+            <ImageView
+                android:id="@+id/buzz"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/buzz_txt"
+                android:paddingLeft="10dip"
+                android:src="@drawable/btn_viewad_buzz" />
         </RelativeLayout>
-
-
-
     </LinearLayout>
-    
+
     <android.support.v4.view.ViewPager
-        android:layout_width="fill_parent" android:layout_height="fill_parent"
         android:id="@+id/svDetail"
-        android:layout_above="@+id/phonelayout"
-         />
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/phonelayout" />
+
+    <ImageView
+        android:id="@+id/btn_prev"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/btn_viewad_prev" >
+    </ImageView>
+
+    <ImageView
+        android:id="@+id/btn_next"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:src="@drawable/btn_viewad_next" >
+    </ImageView>
 
 </RelativeLayout>
