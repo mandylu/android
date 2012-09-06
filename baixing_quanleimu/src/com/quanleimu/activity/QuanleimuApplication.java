@@ -33,7 +33,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
-import com.quanleimu.util.BXStatusHelper;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
@@ -147,7 +147,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	}
 	
 	public static void addViewCounter(String adId){
-		BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_AD_VIEW, adId);
+		BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_AD_VIEW, adId);
 	}
 	
 	public static void setTextMode(boolean tMode){
@@ -600,12 +600,6 @@ public class QuanleimuApplication extends Application implements LocationService
 		}catch(Exception e){
 			e.printStackTrace();
 		}		
-//		
-//		Bundle bundle = this.getApplicationInfo().metaData;
-//		if (bundle != null)
-//		{
-//			channelId = bundle.getString("UMENG_CHANNEL");
-//		}
 		
 		super.onCreate();
 	}

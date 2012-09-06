@@ -64,7 +64,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXStatusHelper;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
@@ -710,7 +710,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 		switch (menuItem.getItemId())
 		{
 		case R.id.contact + 0: {
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_ADD_CONTACT, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_ADD_CONTACT, null);
 			TextView txt_phone = (TextView) findViewById(R.id.number);
 			Intent intent = new Intent(
 		            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
@@ -720,7 +720,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			return true;
 		}
 		case R.id.contact + 1: {
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_CALL, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_CALL, null);
 			TextView txt_phone = (TextView) findViewById(R.id.number);
 			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
@@ -728,7 +728,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			return true;
 		}
 		case R.id.contact + 2: {
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_SMS_SEND, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SMS_SEND, null);
 			TextView txt_phone = (TextView) findViewById(R.id.number);
 			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
@@ -912,7 +912,7 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;	
 		}
 		case R.id.buzz: {
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_AD_VIEW, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_AD_VIEW, null);
 			String userId = getMyId();
 			if (userId == null)
 			{
@@ -1043,13 +1043,13 @@ public class GoodDetailView extends BaseView implements View.OnTouchListener,Vie
 			break;
 			
 		case R.id.wxlayout:{
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_WEIXIN_SEND, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
 			doShare2WX();
 			break;
 		}
 		
 		case R.id.fenxianglayout:{
-			BXStatusHelper.getInstance().increase(BXStatusHelper.TYPE_WEIBO_SEND, null);
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIBO_SEND, null);
 			Weibo weibo = Weibo.getInstance();
 			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
 			weibo.setRedirectUrl("http://www.baixing.com");
