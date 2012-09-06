@@ -293,7 +293,8 @@ public class ChatMessageDatabase extends Database
 	public static void clearDatabase()
 	{
 		try{
-			database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
+//			database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
+			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, null);
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
