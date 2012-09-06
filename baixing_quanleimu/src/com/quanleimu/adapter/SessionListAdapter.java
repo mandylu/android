@@ -115,7 +115,7 @@ public class SessionListAdapter extends BaseAdapter {
 			}
 			try
 			{
-				holder.readStatus.setVisibility(lastMessage == null || ChatMessageDatabase.getUnreadCount(info.getSessionId()) > 0 ? View.VISIBLE : View.INVISIBLE);
+				holder.readStatus.setVisibility(/*lastMessage == null || */ChatMessageDatabase.getUnreadCount(info.getSessionId()) > 0 ? View.VISIBLE : View.INVISIBLE);
 			}
 			catch(Throwable t)
 			{
