@@ -20,13 +20,16 @@ import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.UserProfile;
 
 public class RegisterView extends BaseView{
 
+	private Bundle bundle = null;
 	private EditText accoutnEt, passwordEt,repasswordEt;
 	public String backPageName = "";
 	public String categoryEnglishName = "";
 	public String json = "";
+	private boolean registered = false;
 
 	protected void Init(){
         
@@ -46,7 +49,7 @@ public class RegisterView extends BaseView{
 	
 	public RegisterView(Context context, Bundle bundle){
 		super(context, bundle);
-		
+		this.bundle = bundle;
 		Init();
 	}
 	
@@ -146,9 +149,16 @@ public class RegisterView extends BaseView{
 			case 1:
 				try {
 					JSONObject jsonObject = new JSONObject(json);
+					String usrId = "";
+					String usrNick = "";
 					String id;
 					try {
 						id = jsonObject.getString("id");
+						JSONObject idObj = jsonObject.getJSONObject("id");
+						if(idObj != null){
+							usrId = idObj.getString("userId");
+							usrNick = idObj.getString("nickname");
+						}
 					} catch (Exception e) {
 						id = "";
 						e.printStackTrace();
@@ -166,9 +176,20 @@ public class RegisterView extends BaseView{
 						QuanleimuApplication.getApplication().setMobile(user.getPhone());
 						Util.saveDataToLocate(getContext(), "user", user);
 						
-						if(null != m_viewInfoListener){
-							m_viewInfoListener.onBack();
-							m_viewInfoListener.onSetResult(1212, 1212, null);
+						if(usrId != null && !usrId.equals("")){
+							UserProfile up = new UserProfile();
+							up.createTime = String.valueOf(System.currentTimeMillis() / 1000);
+							up.userId = usrId;
+							up.nickName = usrNick;
+							registered = true;
+							if(null != m_viewInfoListener){						
+								m_viewInfoListener.onNewView(new ProfileEditView(RegisterView.this.getContext(), bundle, up));
+							}
+						}else{
+							if(null != m_viewInfoListener){						
+								m_viewInfoListener.onBack();							
+								m_viewInfoListener.onSetResult(1212, 1212, null);
+							}							
 						}
 					}
 				} catch (JSONException e) {
@@ -182,6 +203,14 @@ public class RegisterView extends BaseView{
 			super.handleMessage(msg);
 		}
 	};
+	
+	@Override
+	public void onResume(){
+		if(registered){
+			m_viewInfoListener.onBack();							
+			m_viewInfoListener.onSetResult(1212, 1212, null);			
+		}
+	}
 
 //	@Override
 //	public void onFocusChange(View v, boolean hasFocus) {
