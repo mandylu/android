@@ -1,7 +1,6 @@
 package com.quanleimu.database;
 
 import java.util.ArrayList;
-import java.util.Collection;
 import java.util.Collections;
 import java.util.List;
 
@@ -96,6 +95,42 @@ public class ChatMessageDatabase extends Database
 		return msglist.get(msglist.size()-1);
 	}
 	
+	public static void updateReadStatus(String msgId, boolean readStatus)
+	{
+		if (hasMessage(msgId))
+		{
+			String sql = "update " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE + " set readstatus = " + Integer.valueOf(readStatus ? 1 : 0);
+			database.execSQL(sql);
+		}
+	}
+	
+	public static int getUnreadCount(String sid)
+	{
+		String where = "readstatus=0 OR readstatus is NULL";
+		if (sid != null)
+		{
+			where = "( " + where + " ) AND sessionId='" + sid + "'";
+		}
+		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, new String[] {"readstatus"}, where, null, null, null, null);
+		try
+		{
+			if (cur != null)
+			{
+				return cur.getCount();
+			}
+		}
+		finally
+		{
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
+		}
+		
+		return 0;
+	}
+	
 	public static String getSessionId(String from, String to, String adId)
 	{
 		String sid = null;
@@ -143,6 +178,31 @@ public class ChatMessageDatabase extends Database
 		return exists;
 	}
 	
+	public static ChatMessage queryMessageByMsgId(String msgId)
+	{
+		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
+				new String[] {"msgJson"}, "msgId='" + msgId + "'", null, null, null, null, null);
+		
+		try
+		{
+			if (cur != null && cur.moveToFirst())
+			{
+				return ChatMessage.fromJson(cur.getString(0));
+			}
+		}
+		finally
+		{
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
+		}
+		
+		
+		return null;
+	}
+	
 	public static void storeMessage(ChatMessage msg)
 	{
 		ContentValues values = new ContentValues();
@@ -156,11 +216,13 @@ public class ChatMessageDatabase extends Database
 		
 		if (hasMessage(msg.getId()))
 		{
+			values.put("readstatus", "1");
 			database.update(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, values, "msgId='" + msg.getId() + "'", null);
 		}
 		else
 		{
-			database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
+			values.put("readstatus", "0");
+			long result = database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
 		}
 	}
 	

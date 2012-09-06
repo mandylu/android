@@ -4,9 +4,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.os.Debug;
@@ -25,9 +27,11 @@ import android.widget.TextView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
+import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
@@ -35,6 +39,7 @@ import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
+import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
 import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
@@ -54,6 +59,7 @@ import android.widget.RelativeLayout;
 import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PostGoodsView;
+import com.readystatesoftware.viewbadger.BadgeView;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
@@ -63,6 +69,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	private boolean needClearViewStack = false;
 	
 	public static boolean isInActiveStack;
+	
+	private BroadcastReceiver msgListener;
 	
 	public QuanleimuMainActivity(){
 		super();
@@ -77,7 +85,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			
 			needClearViewStack = true;
 			onNewView(new HomePageView(this, bundle));
-			
 			break;
 		case ETAB_TYPE_CATEGORY:				
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY)break;
@@ -106,7 +113,6 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			needClearViewStack = true;
 //			onNewView(new PersonalCenterView(this, bundle));
 			onNewView(new PersonalCenterEntryView(this, bundle));
-
 			break;
 		case ETAB_TYPE_SETTING:
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
@@ -519,6 +525,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		if(tab.m_visible){
 			bottom.setVisibility(View.VISIBLE);
 			findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);
+			checkAndUpdateBadge(150);
 		}
 		else{
 			bottom.setVisibility(View.GONE);
@@ -545,6 +552,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	@Override
 	protected void onPause() {
 
+		unregisterMsgListener();
+		
 		super.onPause();
 		
 //		
@@ -558,6 +567,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		bundle.putString("backPageName", "");
 		super.onResume();
 		isInActiveStack = true;
+		
+		this.checkAndUpdateBadge(0);
+		registerMsgListener();
+		
 		startTalking(getIntent());
 //		MobclickAgent.onResume(this);
 //		
@@ -797,4 +810,64 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
         
         return true;
     }
+	
+	private void checkAndUpdateBadge(long uiDelay)
+	{
+		
+		final BadgeView v = (BadgeView) findViewById(R.id.badge);
+		uiDelay = uiDelay > 0 ? uiDelay : 0;
+			v.postDelayed(new Runnable() {
+
+			public void run() {
+				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
+				int count = ChatMessageDatabase.getUnreadCount(null);
+				Log.d("badge", "count" + count);
+				v.setText(count + "");
+
+				if (count == 0) {
+					v.setVisibility(View.GONE);
+				} else {
+					v.setVisibility(View.VISIBLE);
+				}
+			}
+
+		}, uiDelay);
+	}
+	
+	private void registerMsgListener()
+	{
+		if (msgListener == null)
+		{
+			msgListener = new BroadcastReceiver() {
+
+				public void onReceive(Context outerContext, Intent outerIntent) {
+					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
+					{
+						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+						if (msg.getTo().equals(getMyId()))
+						{
+							checkAndUpdateBadge(50);
+						}
+					}
+				}
+				
+			};
+		}
+		
+		registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+	}
+	
+	protected void unregisterMsgListener()
+	{
+		if (msgListener != null)
+		{
+			unregisterReceiver(msgListener);
+		}
+	}
+	
+	private String getMyId()
+	{
+		UserBean user = (UserBean) Util.loadDataFromLocate(this, "user");
+		return user != null ? user.getId() : "";
+	}
 }

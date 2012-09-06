@@ -49,7 +49,7 @@ public class ChatMessageHandler extends PushHandler {
 			{
 				//TODO: update badge count.
 			}
-			else
+			else if (!isUIActive(QuanleimuMainActivity.class.getName()))
 			{
 				final String titleText = jsonObj.has("text") ? jsonObj.getString("text") : "私信提醒";
 				Bundle bundle = new Bundle();

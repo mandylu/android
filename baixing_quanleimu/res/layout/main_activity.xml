@@ -126,6 +126,16 @@
 		        android:layout_alignParentBottom="true"
 		        android:layout_centerHorizontal="true"		        
 		        android:background="@drawable/iv_mycenter_xml" />
+		    
+		   <com.readystatesoftware.viewbadger.BadgeView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="8"
+				android:id="@+id/badge"
+				android:layout_marginTop="2dp"
+				android:layout_alignTop="@+id/ivMyCenter"
+				android:layout_toRightOf="@+id/ivMyCenter"/>
+		    			
         </RelativeLayout>
 		    
 	</LinearLayout>

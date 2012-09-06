@@ -319,6 +319,9 @@ public class TalkView extends BaseView
 		
 //		this.messageList.add(msg);
 		
+		ChatMessageDatabase.prepareDB(getContext());
+		ChatMessageDatabase.updateReadStatus(msg.getId(), true);
+		
 		this.postDelayed(new Runnable() {
 			public void run() {
 //				LayoutInflater inflator = LayoutInflater.from(getContext());
@@ -368,6 +371,7 @@ public class TalkView extends BaseView
 		for (ChatMessage tmp : list)
 		{
 			ChatMessageDatabase.storeMessage(tmp); //FIXME: we should do batch  update to save time.
+			ChatMessageDatabase.updateReadStatus(tmp.getId(), true);
 		}
 		
 	}
@@ -510,6 +514,7 @@ public class TalkView extends BaseView
 					
 					ChatMessageDatabase.prepareDB(getContext());
 					ChatMessageDatabase.storeMessage(chatMsgInst);
+					ChatMessageDatabase.updateReadStatus(chatMsgInst.getId(), true);
 //					messageList.add(chatMsgInst);
 				} catch (JSONException e) {
 					e.printStackTrace();

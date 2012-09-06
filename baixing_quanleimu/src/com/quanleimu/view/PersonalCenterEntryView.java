@@ -30,6 +30,7 @@ import android.widget.TextView;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.broadcast.CommonIntentAction;
+import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.GoodsDetail;
@@ -121,7 +122,8 @@ public class PersonalCenterEntryView extends BaseView implements
 					((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0");
 					new Thread(new GetPersonalSessionsThread()).start();
 				}else{
-					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+//					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+					updateMessageCountInfo();
 				}
 			}
 		}
@@ -145,6 +147,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			chatMessageReceiver = new BroadcastReceiver() {
 
 				public void onReceive(Context outerContext, Intent outerIntent) {
+					updateMessageCountInfo();
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
@@ -398,9 +401,10 @@ public class PersonalCenterEntryView extends BaseView implements
 			case MSG_GETPERSONALSESSIONS:
 				if(sessionsJson != null){
 					sessions = ChatSession.fromJson(sessionsJson);
-					if(sessions != null){
-						((TextView)PersonalCenterEntryView.this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
-					}
+//					if(sessions != null){
+//						((TextView)PersonalCenterEntryView.this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
+//					}
+					updateMessageCountInfo();
 				}
 				break;
 			}
@@ -537,4 +541,13 @@ public class PersonalCenterEntryView extends BaseView implements
 			}
 		}
 	}	
+	
+	private void updateMessageCountInfo()
+	{
+		if (this.sessions != null)
+		{
+			ChatMessageDatabase.prepareDB(getContext());
+			((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(ChatMessageDatabase.getUnreadCount(null)));
+		}
+	}
 }
