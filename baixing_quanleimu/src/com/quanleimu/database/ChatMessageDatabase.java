@@ -38,32 +38,35 @@ public class ChatMessageDatabase extends Database
 	public static List<ChatMessage> queryMessageBySession(String sid)
 	{
 		List<ChatMessage> list = new ArrayList<ChatMessage>();
-		
-		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
-				new String[] {"msgJson"}, "sessionId='" + sid + "'", null, null, null, null, null);
-		
-		if (cur != null && cur.moveToFirst())
-		{
+		try{
+			Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
+					new String[] {"msgJson"}, "sessionId='" + sid + "'", null, null, null, null, null);
 			
-			do
+			if (cur != null && cur.moveToFirst())
 			{
-				String msg = cur.getString(0);//cur.getString(cur.getColumnIndex("msgJson"));
-				try
+				
+				do
 				{
-					list.add(ChatMessage.fromJson(msg));
-				}
-				catch(Throwable t) //ignor message in bad format.
-				{
-					
-				}
+					String msg = cur.getString(0);//cur.getString(cur.getColumnIndex("msgJson"));
+					try
+					{
+						list.add(ChatMessage.fromJson(msg));
+					}
+					catch(Throwable t) //ignor message in bad format.
+					{
+						
+					}
+				
+				} while (cur.moveToNext());
+			}
 			
-			} while (cur.moveToNext());
-		}
-		
-		if (cur != null)
-		{
-			cur.deactivate();
-			cur.close();
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 		
 		return list;
@@ -97,10 +100,14 @@ public class ChatMessageDatabase extends Database
 	
 	public static void updateReadStatus(String msgId, boolean readStatus)
 	{
-		if (hasMessage(msgId))
-		{
-			String sql = "update " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE + " set readstatus = " + Integer.valueOf(readStatus ? 1 : 0);
-			database.execSQL(sql);
+		try{
+			if (hasMessage(msgId))
+			{
+				String sql = "update " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE + " set readstatus = " + Integer.valueOf(readStatus ? 1 : 0);
+				database.execSQL(sql);
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -111,9 +118,10 @@ public class ChatMessageDatabase extends Database
 		{
 			where = "( " + where + " ) AND sessionId='" + sid + "'";
 		}
-		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, new String[] {"readstatus"}, where, null, null, null, null);
+		Cursor cur = null;
 		try
 		{
+			cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, new String[] {"readstatus"}, where, null, null, null, null);
 			if (cur != null)
 			{
 				return cur.getCount();
@@ -140,18 +148,21 @@ public class ChatMessageDatabase extends Database
 		{
 			where += " AND adId='" + adId +"'";
 		}
-		
-		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, new String[] {"sessionId"}, where, 
-				null, null, null, null);
-		if (cur != null && cur.moveToFirst())
-		{
-			sid = cur.getString(0);
-		}
-		
-		if (cur != null)
-		{
-			cur.deactivate();
-			cur.close();
+		try{
+			Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, new String[] {"sessionId"}, where, 
+					null, null, null, null);
+			if (cur != null && cur.moveToFirst())
+			{
+				sid = cur.getString(0);
+			}
+			
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 		
 		
@@ -161,18 +172,22 @@ public class ChatMessageDatabase extends Database
 	public static boolean hasMessage(String msgId)
 	{
 		boolean exists = false;
-		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
-				new String[] {"msgId"}, "msgId='" + msgId + "'", null, null, null, null, null);
-		
-		if (cur != null && cur.moveToFirst())
-		{
-			exists = true;
-		}
-		
-		if (cur != null)
-		{
-			cur.deactivate();
-			cur.close();
+		try{
+			Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
+					new String[] {"msgId"}, "msgId='" + msgId + "'", null, null, null, null, null);
+			
+			if (cur != null && cur.moveToFirst())
+			{
+				exists = true;
+			}
+			
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 		
 		return exists;
@@ -180,11 +195,12 @@ public class ChatMessageDatabase extends Database
 	
 	public static ChatMessage queryMessageByMsgId(String msgId)
 	{
-		Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
-				new String[] {"msgJson"}, "msgId='" + msgId + "'", null, null, null, null, null);
+		Cursor cur = null;
 		
 		try
 		{
+			cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
+					new String[] {"msgJson"}, "msgId='" + msgId + "'", null, null, null, null, null);
 			if (cur != null && cur.moveToFirst())
 			{
 				return ChatMessage.fromJson(cur.getString(0));
@@ -214,15 +230,19 @@ public class ChatMessageDatabase extends Database
 		values.put("sessionId", msg.getSession());
 		values.put("timestamp", msg.getTimestamp());
 		
-		if (hasMessage(msg.getId()))
-		{
-			values.put("readstatus", "1");
-			database.update(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, values, "msgId='" + msg.getId() + "'", null);
-		}
-		else
-		{
-			values.put("readstatus", "0");
-			long result = database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
+		try{
+			if (hasMessage(msg.getId()))
+			{
+				values.put("readstatus", "1");
+				database.update(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, values, "msgId='" + msg.getId() + "'", null);
+			}
+			else
+			{
+				values.put("readstatus", "0");
+				long result = database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
+			}
+		}catch(Throwable e){
+			e.printStackTrace();
 		}
 	}
 	
@@ -232,12 +252,20 @@ public class ChatMessageDatabase extends Database
 	 */
 	public static void deleteMsgOlderthan(long olderThan)
 	{
-		database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, "timestamp < " + olderThan, null);
+		try{
+			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, "timestamp < " + olderThan, null);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 	}
 	
 	public static void clearDatabase()
 	{
-		database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
+		try{
+			database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
+		}catch(Throwable e){
+			e.printStackTrace();
+		}
 	}
 	
 	public static void storeMessage(String msg)
