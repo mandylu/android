@@ -270,7 +270,8 @@ public class GoodsListAdapter extends BaseAdapter {
 					}
 				}
 			}
-			String price = list.get(position).getMetaValueByKey("价格");
+//			String price = list.get(position).getMetaValueByKey("价格");
+			String price = list.get(position).getValueByKey("价格");
 			if (price == null || price.equals("")) {
 				holder.tvPrice.setVisibility(View.GONE);
 			} else {
