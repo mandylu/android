@@ -313,8 +313,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		                    editor.putString("hasShowShortcut", "yes");
 		                    // Commit the edits!
 		                    editor.commit();
-		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
-		            		QuanleimuMainActivity.this.startService(pushIntent);
+//		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
+//		            		QuanleimuMainActivity.this.startService(pushIntent);
 		            		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		            		QuanleimuMainActivity.this.startService(startPush);
 		            		
@@ -324,6 +324,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		            		isInActiveStack = false;
 		            		
 		            		BXStatsHelper.getInstance().store(QuanleimuMainActivity.this);
+		            		ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
+		            		ChatMessageDatabase.clearOldMessage(1000);
 		                    System.exit(0);
 		                }
 		            });
@@ -622,8 +624,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onCreate(Bundle savedInstanceState) {
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
-		this.stopService(pushIntent);
+//		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
+//		this.stopService(pushIntent);
 		
 		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		this.startService(startPush);
