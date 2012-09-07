@@ -57,8 +57,9 @@ public class SplashActivity extends BaseActivity{
 		//LocationService.getInstance().start(this, this);
 		super.onCreate(savedInstanceState);
 
-		QuanleimuApplication.udid = Secure.getString(this.getContentResolver(),
-				Secure.ANDROID_ID);
+		QuanleimuApplication.udid = QuanleimuApplication.getDeviceUdid(this);
+//				Secure.getString(this.getContentResolver(),
+//				Secure.ANDROID_ID);
 
 		PackageManager packageManager = getPackageManager();
 		// getPackageName()是你当前类的包名，0代表是获取版本信息

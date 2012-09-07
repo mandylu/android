@@ -261,7 +261,16 @@ public class DiskLruCache {
     }
 
 	public Bitmap decodeBitmapFromFile(String fileName){
-		return BitmapUtils.decodeSampledBitmapFromFile(fileName);
+		try
+		{
+			return BitmapUtils.decodeSampledBitmapFromFile(fileName);
+		}
+		catch(Throwable t)
+		{
+			System.gc();//Force gc.
+		}
+		
+		return null;
 	}
 	
 	public String getFilePath(String key){

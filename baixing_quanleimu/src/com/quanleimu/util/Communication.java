@@ -72,11 +72,11 @@ public class Communication implements Comparator<String> {
 		return (System.currentTimeMillis() / 1000) + "";
 	}
 
-	public static String getudid() {
-		return Secure.getString(
-				QuanleimuApplication.context.getContentResolver(),
-				Secure.ANDROID_ID);
-	}
+//	public static String getudid() {
+//		return Secure.getString(
+//				QuanleimuApplication.context.getContentResolver(),
+//				Secure.ANDROID_ID);
+//	}
 
 	public static String getversion() {
 		String version = "";

@@ -90,9 +90,9 @@ public class BXNotificationService extends Service {
 		return "";
 	}
 
-	private String getUdid(){
-		return Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
-	}
+//	private String getUdid(){
+//		return Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
+//	}
 
 	class GetNotificationThread implements Runnable {
 		@Override
