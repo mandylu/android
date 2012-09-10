@@ -22,22 +22,20 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.ScrollView;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.R;
+import com.quanleimu.adapter.ChatMessageAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.entity.compare.MsgTimeComparator;
-import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
@@ -53,18 +51,13 @@ public class TalkView extends BaseView
 	private static final int MSG_GETMYICON = 3;
 	
 	private String targetUserId;
-	private String targetIcon = null;
 	private String adId;
 	private String adTitle = "对话";
-//	private ChatMessageListener msgListener;
 	private BroadcastReceiver msgListener;
 	private String sessionId;
 	private String myUserId;
-	private String myIcon = null;
 	private long lastupdateTime = 0;
 	private boolean alwaysSync;
-	private boolean targetIsBoy = true;
-	private boolean iamBoy = true;
 	
 	public TalkView(Context context) {
 		super(context);
@@ -226,6 +219,8 @@ public class TalkView extends BaseView
 		sendBtn.setOnClickListener(ctrl);
 		findViewById(R.id.im_input_box).setOnClickListener(ctrl);
 		
+		((ListView) findViewById(R.id.char_history_p)).setAdapter(new ChatMessageAdapter(Util.getMyId(getContext())));
+		
 		initInputBox();
 		
 		//Show the message right now.
@@ -234,6 +229,11 @@ public class TalkView extends BaseView
 			receiveAndUpdateUI(msg);
 		}
 
+	}
+	
+	private ChatMessageAdapter getAdapter()
+	{
+		return (ChatMessageAdapter) ((ListView) findViewById(R.id.char_history_p)).getAdapter();
 	}
 	
 	private void initInputBox()
@@ -290,19 +290,28 @@ public class TalkView extends BaseView
 	private void sendAndUpdateUI(final String message)
 	{
 		//First step to update UI.
-//		LayoutInflater inflator = LayoutInflater.from(getContext());
-		View msgItem = loadMessageItem(true);//inflator.inflate(R.layout.im_message_item, null);
-		TextView textItem = (TextView) msgItem.findViewById(R.id.im_message_content);
-		textItem.setText(message);
-		
-		ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
-		vp.addView(msgItem);
+		ChatMessage msg = createMessage(message);
+		getAdapter().appendData(msg);
 		//TODO: post delay to scroll to bottom of scroll view.
 		postScrollDelay();
 		
 		//Send the text to server.
 		Thread t = new Thread(new SendMsgCmd(message));
 		t.start();
+	}
+	
+	private ChatMessage createMessage(final String message)
+	{
+		ChatMessage msg = new ChatMessage();
+		msg.setMessage(message);
+		msg.setSession(this.sessionId);
+		msg.setAdId(this.adId);
+		msg.setFrom(this.myUserId);
+		msg.setTo(this.targetUserId);
+		msg.setId(System.currentTimeMillis() + "");
+		msg.setTimestamp(System.currentTimeMillis()/1000);
+		
+		return msg;
 	}
 	
 	private void receiveAndUpdateUI(final ChatMessage msg)
@@ -324,13 +333,7 @@ public class TalkView extends BaseView
 		
 		this.postDelayed(new Runnable() {
 			public void run() {
-//				LayoutInflater inflator = LayoutInflater.from(getContext());
-				View msgItem = loadMessageItem(false);//inflator.inflate(R.layout.im_message_item_received, null);
-				TextView textView = (TextView) msgItem.findViewById(R.id.im_message_content);
-				textView.setText(msg.getMessage());
-				
-				ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
-				vp.addView(msgItem);
+				getAdapter().appendData(msg);
 				
 				postScrollDelay();
 			}
@@ -345,34 +348,23 @@ public class TalkView extends BaseView
 		
 		this.postDelayed(new Runnable() {
 			public void run() {
-				ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
-				if (isLocal)
-				{
-					vp.removeAllViews();
-				}
-				
-//				LayoutInflater inflator = LayoutInflater.from(getContext());
-				for (ChatMessage msg : list)
-				{
-					final boolean isMine = myUserId.equals(msg.getFrom());
-					View msgItem = loadMessageItem(isMine);//inflator.inflate(isMine ? R.layout.im_message_item : R.layout.im_message_item_received, null);
-					TextView textView = (TextView) msgItem.findViewById(R.id.im_message_content);
-					textView.setText(msg.getMessage());
-					
-					vp.addView(msgItem);
-				}
+//				long startTime = System.currentTimeMillis();
+				getAdapter().refreshData(list);
 				
 				postScrollDelay();
+//				Log.e("TalkView", "update ui cost : " + (System.currentTimeMillis()-startTime));
 			}
 			
-		}, 200);
+		}, 10);
 		
+//		long dbStart = System.currentTimeMillis();
 		ChatMessageDatabase.prepareDB(getContext());
 		for (ChatMessage tmp : list)
 		{
 			ChatMessageDatabase.storeMessage(tmp); //FIXME: we should do batch  update to save time.
 			ChatMessageDatabase.updateReadStatus(tmp.getId(), true);
 		}
+//		Log.e("TalkView", "insert db cost" + (System.currentTimeMillis() - dbStart));
 		
 	}
 	
@@ -382,8 +374,13 @@ public class TalkView extends BaseView
 			
 			@Override
 			public void run() {
-				ScrollView scroll = (ScrollView) findViewById(R.id.char_history_p);
-				scroll.fullScroll(ScrollView.FOCUS_DOWN);
+				if (getAdapter().getCount() > 0)
+				{
+					ListView scroll = (ListView) findViewById(R.id.char_history_p);
+//				scroll.fullScroll(ScrollView.FOCUS_DOWN);
+					scroll.setSelection(getAdapter().getCount()-1);
+				}
+				
 			}
 		}, 200);
 	}
@@ -534,34 +531,6 @@ public class TalkView extends BaseView
 		return user != null ? user.getId() : "";
 	}
 	
-	private View loadMessageItem(boolean isMine)
-	{
-		LayoutInflater inflator = LayoutInflater.from(getContext());
-		View msgItem = inflator.inflate(isMine ? R.layout.im_message_item : R.layout.im_message_item_received, null);
-		ImageView iv = isMine ? (ImageView)msgItem.findViewById(R.id.myIcon) : (ImageView)msgItem.findViewById(R.id.targetIcon);
-		if(iv != null){
-			if(isMine){
-				if(this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
-					iv.setTag(myIcon);
-					SimpleImageLoader.showImg(iv, myIcon, this.getContext());
-				}else if(!iamBoy){
-					iv.setImageResource(R.drawable.pic_my_avator_girl);
-				}
-			}else if(!isMine){
-				if(this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
-					iv.setTag(targetIcon);
-					SimpleImageLoader.showImg(iv, targetIcon, this.getContext());
-				}else if(!targetIsBoy){
-					iv.setImageResource(R.drawable.pic_my_avator_girl);
-				}
-			}
-		}
-		View msgParent = msgItem.findViewById(R.id.im_message_content_parent);
-		msgParent.setPadding(msgParent.getPaddingLeft(), msgParent.getPaddingTop()/10, msgParent.getPaddingRight(), msgParent.getPaddingBottom()/10);
-		
-		return msgItem;
-	}
-	
 	class UIControl implements View.OnClickListener, View.OnTouchListener
 	{
 
@@ -594,34 +563,6 @@ public class TalkView extends BaseView
 		}
 	}
 	
-	private void setPreviousIcon(boolean isMine){
-		if(isMine && (iamBoy && (myIcon == null || myIcon.equals("") || myIcon.equals("null"))))
-			return;
-			
-		if(!isMine && (targetIsBoy && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null"))))
-			return;
-		ViewGroup vp = (ViewGroup) findViewById(R.id.im_content_parent);
-		if(vp != null){
-			for(int i = 0; i < vp.getChildCount(); ++ i){
-				ImageView iv = 
-						(ImageView)(isMine ? vp.getChildAt(i).findViewById(R.id.myIcon) : vp.getChildAt(i).findViewById(R.id.targetIcon));
-				if(iv == null) continue;
-				if(isMine && (myIcon == null || myIcon.equals("") || myIcon.equals("null"))){
-					if(!iamBoy){
-						iv.setImageResource(R.drawable.pic_my_avator_girl);
-					}
-				}else if(!isMine && (targetIcon == null || targetIcon.equals("") || targetIcon.equals("null"))){
-					if(!targetIsBoy){
-						iv.setImageResource(R.drawable.pic_my_avator_girl);
-					}
-				}else{
-					iv.setTag(isMine ? myIcon : targetIcon);
-					SimpleImageLoader.showImg(iv, isMine ? myIcon : targetIcon, this.getContext());
-				}
-			}
-		}
-	}
-	
 	Handler myHandler = new Handler() {
 		@Override
 		public void handleMessage(Message msg) {
@@ -637,11 +578,17 @@ public class TalkView extends BaseView
 				}
 				break;
 			case MSG_GETTARGETICON:
-				setPreviousIcon(false);
+			{
+				SimpleProfile p = (SimpleProfile) msg.obj;
+				getAdapter().setTargetProfile(p.icon, p.isBoy);
 				break;
+			}
 			case MSG_GETMYICON:
-				setPreviousIcon(true);
+			{
+				SimpleProfile p = (SimpleProfile) msg.obj;
+				getAdapter().setMyProfile(p.icon, p.isBoy);
 				break;
+			}
 			}
 		}
 	};
@@ -662,25 +609,37 @@ public class TalkView extends BaseView
 				UserProfile up = UserProfile.from(upJson);
 				if(up != null){
 					if(usrId.equals(targetUserId)){
-						targetIcon = up.squareImage;
+						SimpleProfile profile = new SimpleProfile();
+						profile.icon = up.squareImage;
+						profile.isBoy = true;
 						if(up.gender != null && up.gender.equals("女")){
-							targetIsBoy = false;
+							profile.isBoy = false;
 						}
-						myHandler.sendEmptyMessage(MSG_GETTARGETICON);
-						Message msg = Message.obtain();
-						msg.what = MSG_GETPROFILE;
-						msg.obj = up.nickName;
-						myHandler.sendMessage(msg);
+						Message msg1 = myHandler.obtainMessage(MSG_GETTARGETICON, profile);
+						myHandler.sendMessage(msg1);
+						
+						Message msg2 = myHandler.obtainMessage();
+						msg2.what = MSG_GETPROFILE;
+						msg2.obj = up.nickName;
+						myHandler.sendMessage(msg2);
 					}else{
+						SimpleProfile profile = new SimpleProfile();
+						profile.icon = up.squareImage;
+						profile.isBoy = true;
 						if(up.gender != null && up.gender.equals("女")){
-							iamBoy = false;
-						}						
-						myIcon = up.squareImage;
-						myHandler.sendEmptyMessage(MSG_GETMYICON);
+							profile.isBoy = false;
+						}	
+						Message msg1 = myHandler.obtainMessage(MSG_GETMYICON, profile);
+						myHandler.sendMessage(msg1);
 					}
 				}
 			}
 		}
+	}
+	
+	class SimpleProfile {
+		public String icon;
+		public boolean isBoy;
 	}
 	
 }

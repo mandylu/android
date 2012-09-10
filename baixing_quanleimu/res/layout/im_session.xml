@@ -4,15 +4,17 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
-    <ScrollView
+    <ListView
         android:id="@+id/char_history_p"
         android:layout_width="match_parent"
         android:layout_height="match_parent"
         android:layout_gravity="bottom"
+        android:divider="@android:color/transparent"
+        android:dividerHeight="0px"
         android:layout_weight="1.0"
         android:background="#FFFFFF" >
 
-        <LinearLayout
+        <!--LinearLayout
             android:id="@+id/im_content_parent"
             android:layout_width="match_parent"
             android:layout_height="match_parent"
@@ -20,40 +22,39 @@
             android:orientation="vertical"
             android:paddingLeft="10dp"
             android:paddingRight="10dp" >
-        </LinearLayout>
-    </ScrollView>
+        </LinearLayout-->
+    </ListView>
 
     <RelativeLayout
         android:id="@+id/im_input_action_bar"
-        android:background="@drawable/bg_talk_send"
-        android:layout_marginBottom="2dp"
         android:layout_width="fill_parent"
-        android:layout_height="41dp" >
+        android:layout_height="41dp"
+        android:layout_marginBottom="2dp"
+        android:background="@drawable/bg_talk_send" >
 
         <EditText
             android:id="@+id/im_input_box"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
-            android:background="@drawable/bg_talk_input"
             android:layout_alignParentBottom="true"
             android:layout_centerHorizontal="true"
-            android:maxLength="140"
-            android:hint="最多可输入140个字"
             android:layout_marginLeft="4dp"
             android:layout_marginRight="4dp"
-            android:layout_toLeftOf="@+id/im_send_btn">
-
+            android:layout_toLeftOf="@+id/im_send_btn"
+            android:background="@drawable/bg_talk_input"
+            android:hint="最多可输入140个字"
+            android:maxLength="140" >
         </EditText>
 
         <ImageButton
             android:id="@+id/im_send_btn"
             android:layout_width="51dp"
             android:layout_height="36dp"
-            android:scaleType="fitCenter"
-            android:layout_marginRight="4dp"
             android:layout_alignParentBottom="true"
             android:layout_alignParentRight="true"
+            android:layout_marginRight="4dp"
             android:background="@android:color/transparent"
+            android:scaleType="fitCenter"
             android:src="@drawable/draw_send_btn" />
     </RelativeLayout>
 
