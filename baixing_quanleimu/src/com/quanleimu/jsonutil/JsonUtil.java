@@ -149,54 +149,144 @@ public class JsonUtil {
 	}
 
 	static AllCates allCates = null;
-	// 获取所有类目列表
-	public static AllCates getAllCatesFromJson(String jsonData) {
-//		static final AllCates allCates = null;
+	
+	private static AllCates getAllCatesFromJsonByJackson(String jsonData){
 		if(allCates != null) return allCates;
+		allCates = new AllCates();
 		try {
-			allCates = new AllCates();
-			JSONObject jsonObj = new JSONObject(jsonData);
-			allCates.setName(jsonObj.getString("name"));
-			allCates.setEnglishName(jsonObj.getString("englishName"));
-
-			JSONArray jsonA = new JSONArray(jsonObj.getString("children"));
-			List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
-			for (int i = 0; i < jsonA.length(); i++) {
-				FirstStepCate firstStepCate = new FirstStepCate();
-				JSONObject jsonFirstStepCate = jsonA.getJSONObject(i);
-				firstStepCate.setName(jsonFirstStepCate.getString("name"));
-				firstStepCate.setEnglishName(jsonFirstStepCate
-						.getString("englishName"));
-				firstStepCate.setParentEnglishName(jsonFirstStepCate
-						.getString("parentEnglishName"));
-
-				JSONArray jsonB = new JSONArray(
-						jsonFirstStepCate.getString("children"));
-				List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
-				for (int j = 0; j < jsonB.length(); j++) {
-					SecondStepCate secondStepCate = new SecondStepCate();
-					JSONObject jsonSecondStepCate = jsonB.getJSONObject(j);
-
-					secondStepCate
-							.setName(jsonSecondStepCate.getString("name"));
-					secondStepCate.setEnglishName(jsonSecondStepCate
-							.getString("englishName"));
-					secondStepCate.setParentEnglishName(jsonSecondStepCate
-							.getString("parentEnglishName"));
-
-					listSecond.add(secondStepCate);
+			JsonFactory factory = new JsonFactory();
+			JsonParser parser = factory.createJsonParser(jsonData);
+			while (parser.nextToken() != JsonToken.END_OBJECT){
+				String currentName = parser.getCurrentName();
+				if(currentName == null){
+					continue;
 				}
-				firstStepCate.setChildren(listSecond);
-
-				listFirst.add(firstStepCate);
+				if(currentName.equals("name")){
+					parser.nextToken();
+					allCates.setName(parser.getText());
+				}else if(currentName.equals("englishName")){
+					parser.nextToken();
+					allCates.setEnglishName(parser.getText());
+				}else if(currentName.equals("children")){
+					JsonToken jt = parser.nextToken();///start_array
+					List<FirstStepCate> firsts = new ArrayList<FirstStepCate>();
+					while(jt != JsonToken.END_ARRAY){
+						if(jt != JsonToken.START_OBJECT){
+							jt = parser.nextToken();
+							continue;
+						}
+						jt = parser.nextToken();///start_object
+						FirstStepCate firstStepCate = new FirstStepCate();
+						while(jt != JsonToken.END_OBJECT){
+							
+							String flName = parser.getCurrentName();
+							if(flName.equals("name")){
+								jt = parser.nextToken();
+								firstStepCate.setName(parser.getText());
+							}else if(flName.equals("englishName")){
+								jt = parser.nextToken();
+								firstStepCate.setEnglishName(parser.getText());
+							}else if(flName.equals("parentEnglishName")){
+								jt = parser.nextToken();
+								firstStepCate.setParentEnglishName(parser.getText());
+							}else if(flName.equals("children")){
+								jt = parser.nextToken();//start_array
+								List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
+									
+								while(jt != JsonToken.END_ARRAY){
+									if(jt != JsonToken.START_OBJECT){
+										jt = parser.nextToken();
+										continue;
+									}
+									SecondStepCate secStepCate = new SecondStepCate();
+									jt = parser.nextToken();//start_object
+									while(jt != JsonToken.END_OBJECT){
+										String secName = parser.getCurrentName();
+										jt = parser.nextToken();
+										String text = parser.getText();
+										if(secName.equals("name")){
+											secStepCate.setName(text);
+										}else if(secName.equals("englishName")){
+											secStepCate.setEnglishName(text);
+										}else if(secName.equals("parentEnglishName")){
+											secStepCate.setParentEnglishName(text);
+										}
+										jt = parser.nextToken();
+									}
+									jt = parser.nextToken();
+									listSecond.add(secStepCate);
+								}
+								firstStepCate.setChildren(listSecond);
+							}
+							jt = parser.nextToken();
+						}
+						firsts.add(firstStepCate);
+					}
+					allCates.setChildren(firsts);
+				}
 			}
-			allCates.setChildren(listFirst);
-		} catch (JSONException e1) {
+	
+		}catch(JsonParseException e){
+			allCates = null;
+			e.printStackTrace();
+		}catch(IOException e){
 			// TODO Auto-generated catch block
 			allCates = null;
-			e1.printStackTrace();
+			e.printStackTrace();
 		}
-		return allCates;
+		return allCates; 
+	}
+	
+	// 获取所有类目列表
+	public static AllCates getAllCatesFromJson(String jsonData) {
+//		long t1 = System.currentTimeMillis();
+		return getAllCatesFromJsonByJackson(jsonData);
+//		static final AllCates allCates = null;
+//		if(allCates != null) return allCates;
+//		try {
+//			allCates = new AllCates();
+//			JSONObject jsonObj = new JSONObject(jsonData);
+//			allCates.setName(jsonObj.getString("name"));
+//			allCates.setEnglishName(jsonObj.getString("englishName"));
+//
+//			JSONArray jsonA = new JSONArray(jsonObj.getString("children"));
+//			List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
+//			for (int i = 0; i < jsonA.length(); i++) {
+//				FirstStepCate firstStepCate = new FirstStepCate();
+//				JSONObject jsonFirstStepCate = jsonA.getJSONObject(i);
+//				firstStepCate.setName(jsonFirstStepCate.getString("name"));
+//				firstStepCate.setEnglishName(jsonFirstStepCate
+//						.getString("englishName"));
+//				firstStepCate.setParentEnglishName(jsonFirstStepCate
+//						.getString("parentEnglishName"));
+//
+//				JSONArray jsonB = new JSONArray(
+//						jsonFirstStepCate.getString("children"));
+//				List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
+//				for (int j = 0; j < jsonB.length(); j++) {
+//					SecondStepCate secondStepCate = new SecondStepCate();
+//					JSONObject jsonSecondStepCate = jsonB.getJSONObject(j);
+//
+//					secondStepCate
+//							.setName(jsonSecondStepCate.getString("name"));
+//					secondStepCate.setEnglishName(jsonSecondStepCate
+//							.getString("englishName"));
+//					secondStepCate.setParentEnglishName(jsonSecondStepCate
+//							.getString("parentEnglishName"));
+//
+//					listSecond.add(secondStepCate);
+//				}
+//				firstStepCate.setChildren(listSecond);
+//
+//				listFirst.add(firstStepCate);
+//			}
+//			allCates.setChildren(listFirst);
+//		} catch (JSONException e1) {
+//			// TODO Auto-generated catch block
+//			allCates = null;
+//			e1.printStackTrace();
+//		}
+//		return allCates;
 	}
 	
 	
