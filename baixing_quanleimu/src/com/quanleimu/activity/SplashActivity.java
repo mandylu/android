@@ -32,6 +32,12 @@ import com.quanleimu.util.NetworkProtocols;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
+
+/**
+ * 
+ * @deprecated replaced by <code>SplashJob</code>
+ * 
+ */
 public class SplashActivity extends BaseActivity{
 
 	// 定义经纬度

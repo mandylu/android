@@ -31,6 +31,11 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
+/**
+ * 
+ * @deprecated replaced by PushMessageService
+ * 
+ */
 public class BXNotificationService extends Service {
 	private static final String TAG = "BXService";
 	private static final int HELLO_ID = 0x11223344;

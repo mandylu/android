@@ -25,6 +25,8 @@ import android.widget.CheckBox;
 import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
+import com.quanleimu.activity.R.color;
+import com.quanleimu.activity.SplashJob.JobDoneListener;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
@@ -64,12 +66,13 @@ import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
-public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener, IWXAPIEventHandler{
+public class QuanleimuMainActivity extends BaseActivity implements BaseView.ViewInfoListener, IWXAPIEventHandler, JobDoneListener {
 	private BaseView currentView;
 	private boolean needClearViewStack = false;
 	
 	public static boolean isInActiveStack;
 	
+	private SplashJob splashJob;
 	private BroadcastReceiver msgListener;
 	
 	public QuanleimuMainActivity(){
@@ -573,7 +576,11 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		this.checkAndUpdateBadge(0);
 		registerMsgListener();
 		
-		startTalking(getIntent());
+		if (splashJob != null && !splashJob.isJobDone())
+		{
+			splashJob.doSplashWork();
+		}
+		
 //		MobclickAgent.onResume(this);
 //		
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
@@ -619,23 +626,13 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		return super.onContextItemSelected(item);
 	}
-
+	
 	@Override
-	protected void onCreate(Bundle savedInstanceState) {
-//		Debug.startMethodTracing();
-		super.onCreate(savedInstanceState);
-//		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
-//		this.stopService(pushIntent);
+	public void onJobDone() {
 		
-		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
-		this.startService(startPush);
-
-		setContentView(R.layout.main_activity);
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		
-		//ImageView vHomePage = (ImageView)findViewById(R.id.ivHomePage);
-		//vHomePage.setImageResource(R.drawable.iv_homepage_press);
-		
+		// TODO Auto-generated method stub
 		Button left = (Button)findViewById(R.id.btnLeft);
 		left.setOnClickListener(this);
 		Button right = (Button)findViewById(R.id.btnRight);
@@ -668,6 +665,28 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
 		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
 		showDetailViewFromWX();
+		
+		startTalking(getIntent()); //Launch after splash job.
+		
+		findViewById(R.id.splash_cover).setVisibility(View.GONE);
+		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
+		
+		this.splashJob = null; //Remove splash job reference.
+	}
+
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+//		Debug.startMethodTracing();
+		super.onCreate(savedInstanceState);
+//		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
+//		this.stopService(pushIntent);
+		
+		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		this.startService(startPush);
+
+		setContentView(R.layout.main_activity);
+		
+		splashJob = new SplashJob(this, this);
 	}
 	
 	private void showDataFromAlbamOrPhoto(){
@@ -697,7 +716,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	private void startTalking(Intent intent)
 	{
-		if (intent.getBooleanExtra("isTalking", false))
+		if (intent.getBooleanExtra("isTalking", false) && getMyId() != null)//
 		{
 			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
 			Bundle bundle = new Bundle();
@@ -706,8 +725,9 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			bundle.putString("sessionId", msg.getSession());
 			bundle.putSerializable("message", msg);
 			onNewView(new TalkView(this,bundle));
-			intent.removeExtra("isTalking"); //Only use this flag once.
 		}
+		
+		intent.removeExtra("isTalking"); //Only use this flag once.
 	}
 
 	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
@@ -872,4 +892,5 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		UserBean user = (UserBean) Util.loadDataFromLocate(this, "user");
 		return user != null ? user.getId() : "";
 	}
+
 }
