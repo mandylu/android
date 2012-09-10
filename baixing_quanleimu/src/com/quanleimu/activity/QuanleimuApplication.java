@@ -110,6 +110,8 @@ public class QuanleimuApplication extends Application implements LocationService
 				c.close();
 			}catch(SQLException e){
 				e.printStackTrace();
+			}catch(Throwable e){
+				e.printStackTrace();
 			}
 			if(db != null){
 				db.close();
