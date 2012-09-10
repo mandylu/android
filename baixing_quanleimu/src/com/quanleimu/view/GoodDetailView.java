@@ -1834,6 +1834,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		{
 			listUrl = new ArrayList<String>();
 			String b = (goodDetail.getImageList().getResize180());//.substring(1, (goodDetail.getImageList().getResize180()).length()-1);
+			if(b == null) return listUrl;
 			b = Communication.replace(b);
 			String[] c = b.split(",");
 			for(int i=0;i<c.length;i++) 

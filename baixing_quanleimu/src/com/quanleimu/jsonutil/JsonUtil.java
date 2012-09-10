@@ -1,5 +1,6 @@
 package com.quanleimu.jsonutil;
 
+import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
@@ -10,6 +11,10 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.core.JsonParser;
+import com.fasterxml.jackson.core.JsonToken;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.ChatMessage;
@@ -193,160 +198,291 @@ public class JsonUtil {
 		}
 		return allCates;
 	}
+	
+	
+	public static GoodsList getGoodsListFromJsonByJackson(String jsonData){
+		JsonFactory factory = new JsonFactory();
+		GoodsList goodsList = new GoodsList();
+		List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+		try{
+			JsonParser parser = factory.createJsonParser(jsonData);
+			while (parser.nextToken() != JsonToken.END_OBJECT) {
+				String fieldname = parser.getCurrentName();
+				if(fieldname == null) continue;
+				if(fieldname.equals("data")){
+					JsonToken jt = parser.nextToken();///start_array
+					jt = parser.nextToken();
+					while(jt != JsonToken.END_ARRAY){
+						jt = parser.nextToken();///start_object
+						
+						GoodsDetail detail = new GoodsDetail();
+						while(jt != JsonToken.END_OBJECT){
+							String fname = parser.getCurrentName();
+							if(fname == null){
+								parser.nextToken();
+								continue;
+							}
+							if(fname.equals("images")){
+								jt = parser.nextToken();//{
+								if(jt == JsonToken.START_OBJECT){
+									jt = parser.nextToken();	
+									ImageList il = new ImageList();
+									while(jt != JsonToken.END_OBJECT){
+										String imgType = parser.getCurrentName();
+										if(jt != JsonToken.START_ARRAY){
+											jt = parser.nextToken();
+											continue;
+										}
+										parser.nextToken();
+										
+										String imgStr = "";
+										while(jt != JsonToken.END_ARRAY){
+											String text = parser.getText();
+											imgStr += text + ",";
+											jt = parser.nextToken();
+										}
+										if(imgStr.length() > 0){
+											if(imgType.equals("big")){
+												il.setBig(imgStr.substring(0, imgStr.length() - 1));
+											}else if(imgType.equals("resize180")){
+												il.setResize180(imgStr.substring(0, imgStr.length() - 1));
+											}
+										}
+										jt = parser.nextToken();
+									}
+									detail.setImageList(il);
+									jt = parser.nextToken();////end of image object
+								}
+							}else if(fname.equals("metaData")){
+								jt = parser.nextToken();//START_OBJECT
+								jt = parser.nextToken();//START_ARRAY
+								ArrayList<String> metas = new ArrayList<String>();
+								while(jt != JsonToken.END_ARRAY){
+									String text = parser.getText();
+									metas.add(text);
+									jt = parser.nextToken();
+								}		
+								detail.setMetaData(metas);
+								jt = parser.nextToken();
+							}else if(fname.endsWith("_s")){
+								jt = parser.nextToken();//START_ARRAY
+
+								String value = "";
+								while(jt != JsonToken.END_ARRAY){
+									if(jt != JsonToken.START_OBJECT){
+										jt = parser.nextToken();
+										continue;
+									}
+									jt = parser.nextToken();///start_object							
+									while(jt != JsonToken.END_OBJECT){
+										String text = parser.getCurrentName();
+										jt = parser.nextToken();///value
+										String txtVal = parser.getText();
+										if(txtVal != null && txtVal.length() > 0){
+											value += txtVal + ",";
+										}
+										jt = parser.nextToken();
+									}
+									jt = parser.nextToken();
+								}
+								if(value.length() > 0){
+									value = value.substring(0, value.length() - 1);
+									detail.setValueByKey(fname, value);
+								}
+								jt = parser.nextToken();
+							}else{
+								jt = parser.nextToken();
+								if(jt == JsonToken.START_ARRAY){
+									while(jt != JsonToken.END_ARRAY){
+										jt = parser.nextToken();
+									}
+									jt = parser.nextToken();
+								}else if(jt == JsonToken.START_OBJECT){
+									while(jt != JsonToken.END_OBJECT){
+										jt = parser.nextToken();
+									}
+									jt = parser.nextToken();
+								}else{
+									String text = parser.getText();
+									detail.setValueByKey(fname, text);
+									jt = parser.nextToken();
+								}
+							}
+						}
+						jt = parser.nextToken();
+						list.add(detail);
+					}
+				}
+			}
+			parser.close();
+		}catch(JsonParseException e){
+			
+		}catch(IOException e){
+			
+		}
+		goodsList.setData(list);
+		return goodsList;
+	}
 
 	// 获取附近的Goods信息
 	public static GoodsList getGoodsListFromJson(String jsonData) {
-		GoodsList goodsList = new GoodsList();
-		if(jsonData == null) return goodsList;
-		JSONObject jsonObj;
-		try {
-			jsonObj = new JSONObject(jsonData);
-			goodsList.setCount(jsonObj.getInt("count"));
-			List<GoodsDetail> list = new ArrayList<GoodsDetail>();
-			JSONArray jsonArray = new JSONArray();
-			try {
-				jsonArray = jsonObj.getJSONArray("data");
-				for (int i = 0; i < jsonArray.length(); i++) {
-					
-					JSONObject jsonGoods = jsonArray.optJSONObject(i);
-					GoodsDetail goodsDetail = new GoodsDetail();
-
-					JSONArray names = jsonGoods.names();
-					for(int j = 0; j < names.length(); ++ j){
-						Object subObj = jsonGoods.get(names.getString(j));
-						if(subObj != null){
-							String value = null;
-							if(subObj.getClass().equals(String.class) && ((String)subObj).length() > 0){
-								value = (String)subObj;								
-							}
-							else if(subObj.getClass().equals(Integer.class)){
-								value = ((Integer)subObj).toString();
-							}else if(subObj.getClass().equals(Double.class)){
-								value = ((Double)subObj).toString();
-							}else if(subObj.getClass().equals(Float.class)){
-								value = ((Float)subObj).toString();
-							}else{
-								if(names.getString(j).endsWith("_s")){
-									if(subObj.getClass().equals(JSONArray.class)){
-										value = "";
-										JSONArray _sAry = (JSONArray)subObj;
-										if(_sAry != null){
-											for(int t = 0; t < _sAry.length(); ++ t){
-												String[] subStrings = _sAry.get(t).toString().split(":");
-												if(subStrings.length == 2){
-													int firstIndex = -1;
-													int lastIndex = subStrings[1].length() - 1;
-													for(int s = 0; s < subStrings[1].length(); ++ s){
-														if(firstIndex == -1){
-															if(subStrings[1].charAt(s) != '{'
-																	&& subStrings[1].charAt(s) != '}'
-																	&& subStrings[1].charAt(s) != '"'){
-																firstIndex = s;
-															}
-														}
-														else{
-															if(subStrings[1].charAt(s) == '{'
-																	|| subStrings[1].charAt(s) == '}'
-																	|| subStrings[1].charAt(s) == '"'){
-																lastIndex = s;
-																break;
-															}
-														}
-													}
-													if(t > 0){
-														value += ",";
-													}
-													value += subStrings[1].substring(firstIndex, lastIndex);
-												}
-											}
-										}
-									}
-								}
-								Log.println(0, "in JsonUtil ", "unknown jason value type!!!!!");
-							}
-								
-							goodsDetail.setValueByKey(names.getString(j), value);
-						}						
-					}
-
-					// 为ImageList赋值
-					JSONObject jsonImages = null;
-					ImageList imageList = new ImageList();
-					try {
-						jsonImages = jsonGoods.getJSONObject("images");
-					} catch (Exception e2) {
-						jsonImages = null;
-					}
-					if (jsonImages == null) {
-						imageList = null;
-					} else {
-						try {
-							JSONArray bigAry = jsonImages.getJSONArray("big");
-							if(bigAry != null){
-								String bigStr = "";
-								for(int s = 0; s < bigAry.length(); ++ s){
-									bigStr += "," + bigAry.getString(s);
-								}
-								if(!bigStr.equals("") && bigStr.charAt(0) == ','){
-									bigStr = bigStr.substring(1);
-								}
-								imageList.setBig(bigStr);
-							}
-//							imageList.setBig(jsonImages.getJSONArray("big").toString());
-//							imageList.setBig(jsonImages.get("big").toString());
-						} catch (Exception e1) {
-							imageList.setBig("");
-						}
-						try {
-							JSONArray resize180Ary = jsonImages.getJSONArray("resize180");
-							if(resize180Ary != null){
-								String r180Str = "";
-								for(int s = 0; s < resize180Ary.length(); ++ s){
-									r180Str += "," + resize180Ary.getString(s);
-								}
-								if(!r180Str.equals("") && r180Str.charAt(0) == ','){
-									r180Str = r180Str.substring(1);
-								}
-								imageList.setResize180(r180Str);
-							}
-							
-//							imageList.setResize180(jsonImages.getString("resize180"));
-						} catch (Exception e1) {
-							imageList.setResize180("");
-						}
-					}
-
-					goodsDetail.setImageList(imageList);
-
-					ArrayList<String> metas = new ArrayList<String>();
-					JSONArray jsonMeta;
-					try {
-						jsonMeta = jsonGoods.getJSONArray("metaData");
-					} catch (Exception e1) {
-						jsonMeta = null;
-					}
-					if (jsonMeta == null || jsonMeta.length() == 0) {
-						metas = null;
-					} else {
-						for (int j = 0; j < jsonMeta.length(); j++) {
-							String meta = jsonMeta.get(j).toString();
-							//String a[] = meta.split(" ");
-							metas.add(meta);
-							//map.put(a[0], a[1]);
-						}
-					}
-					goodsDetail.setMetaData(metas);
-					list.add(goodsDetail);
-
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-			goodsList.setData(list);
-		} catch (JSONException e) {
-			e.printStackTrace();
-		}
-		return goodsList;
+		long t1 = System.currentTimeMillis();
+		return getGoodsListFromJsonByJackson(jsonData);
+//		long t2 = System.currentTimeMillis();
+//		Log.d("times: ", "hahahaha:  " + (t2 - t1));
+//		GoodsList goodsList = new GoodsList();
+//		if(jsonData == null) return goodsList;
+//		JSONObject jsonObj;
+//		try {
+//			jsonObj = new JSONObject(jsonData);
+//			goodsList.setCount(jsonObj.getInt("count"));
+//			List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+//			JSONArray jsonArray = new JSONArray();
+//			try {
+//				jsonArray = jsonObj.getJSONArray("data");
+//				for (int i = 0; i < jsonArray.length(); i++) {
+//					
+//					JSONObject jsonGoods = jsonArray.optJSONObject(i);
+//					GoodsDetail goodsDetail = new GoodsDetail();
+//
+//					JSONArray names = jsonGoods.names();
+//					for(int j = 0; j < names.length(); ++ j){
+//						Object subObj = jsonGoods.get(names.getString(j));
+//						if(subObj != null){
+//							String value = null;
+//							if(subObj.getClass().equals(String.class) && ((String)subObj).length() > 0){
+//								value = (String)subObj;								
+//							}
+//							else if(subObj.getClass().equals(Integer.class)){
+//								value = ((Integer)subObj).toString();
+//							}else if(subObj.getClass().equals(Double.class)){
+//								value = ((Double)subObj).toString();
+//							}else if(subObj.getClass().equals(Float.class)){
+//								value = ((Float)subObj).toString();
+//							}else{
+//								if(names.getString(j).endsWith("_s")){
+//									if(subObj.getClass().equals(JSONArray.class)){
+//										value = "";
+//										JSONArray _sAry = (JSONArray)subObj;
+//										if(_sAry != null){
+//											for(int t = 0; t < _sAry.length(); ++ t){
+//												String[] subStrings = _sAry.get(t).toString().split(":");
+//												if(subStrings.length == 2){
+//													int firstIndex = -1;
+//													int lastIndex = subStrings[1].length() - 1;
+//													for(int s = 0; s < subStrings[1].length(); ++ s){
+//														if(firstIndex == -1){
+//															if(subStrings[1].charAt(s) != '{'
+//																	&& subStrings[1].charAt(s) != '}'
+//																	&& subStrings[1].charAt(s) != '"'){
+//																firstIndex = s;
+//															}
+//														}
+//														else{
+//															if(subStrings[1].charAt(s) == '{'
+//																	|| subStrings[1].charAt(s) == '}'
+//																	|| subStrings[1].charAt(s) == '"'){
+//																lastIndex = s;
+//																break;
+//															}
+//														}
+//													}
+//													if(t > 0){
+//														value += ",";
+//													}
+//													value += subStrings[1].substring(firstIndex, lastIndex);
+//												}
+//											}
+//										}
+//									}
+//								}
+//								Log.println(0, "in JsonUtil ", "unknown jason value type!!!!!");
+//							}
+//								
+//							goodsDetail.setValueByKey(names.getString(j), value);
+//						}						
+//					}
+//
+//					// 为ImageList赋值
+//					JSONObject jsonImages = null;
+//					ImageList imageList = new ImageList();
+//					try {
+//						jsonImages = jsonGoods.getJSONObject("images");
+//					} catch (Exception e2) {
+//						jsonImages = null;
+//					}
+//					if (jsonImages == null) {
+//						imageList = null;
+//					} else {
+//						try {
+//							JSONArray bigAry = jsonImages.getJSONArray("big");
+//							if(bigAry != null){
+//								String bigStr = "";
+//								for(int s = 0; s < bigAry.length(); ++ s){
+//									bigStr += "," + bigAry.getString(s);
+//								}
+//								if(!bigStr.equals("") && bigStr.charAt(0) == ','){
+//									bigStr = bigStr.substring(1);
+//								}
+//								imageList.setBig(bigStr);
+//							}
+////							imageList.setBig(jsonImages.getJSONArray("big").toString());
+////							imageList.setBig(jsonImages.get("big").toString());
+//						} catch (Exception e1) {
+//							imageList.setBig("");
+//						}
+//						try {
+//							JSONArray resize180Ary = jsonImages.getJSONArray("resize180");
+//							if(resize180Ary != null){
+//								String r180Str = "";
+//								for(int s = 0; s < resize180Ary.length(); ++ s){
+//									r180Str += "," + resize180Ary.getString(s);
+//								}
+//								if(!r180Str.equals("") && r180Str.charAt(0) == ','){
+//									r180Str = r180Str.substring(1);
+//								}
+//								imageList.setResize180(r180Str);
+//							}
+//							
+////							imageList.setResize180(jsonImages.getString("resize180"));
+//						} catch (Exception e1) {
+//							imageList.setResize180("");
+//						}
+//					}
+//
+//					goodsDetail.setImageList(imageList);
+//
+//					ArrayList<String> metas = new ArrayList<String>();
+//					JSONArray jsonMeta;
+//					try {
+//						jsonMeta = jsonGoods.getJSONArray("metaData");
+//					} catch (Exception e1) {
+//						jsonMeta = null;
+//					}
+//					if (jsonMeta == null || jsonMeta.length() == 0) {
+//						metas = null;
+//					} else {
+//						for (int j = 0; j < jsonMeta.length(); j++) {
+//							String meta = jsonMeta.get(j).toString();
+//							//String a[] = meta.split(" ");
+//							metas.add(meta);
+//							//map.put(a[0], a[1]);
+//						}
+//					}
+//					goodsDetail.setMetaData(metas);
+//					list.add(goodsDetail);
+//
+//				}
+//			} catch (Exception e) {
+//				e.printStackTrace();
+//			}
+//			goodsList.setData(list);
+//		} catch (JSONException e) {
+//			e.printStackTrace();
+//		}
+//		long t3 = System.currentTimeMillis();
+//		Log.d("previous time: ", "hahahaha prev:  " + (t3 - t2));
+//		return goodsList;
 	}
 
 	public static Filters getFilters(String jsonData) {
