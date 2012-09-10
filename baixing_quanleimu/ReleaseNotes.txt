@@ -1,0 +1,14 @@
+v2.6
+date:2012/9/7
+svn revision:5447
+main features:
+1.improve personl center. add image and private message entry.
+2.private message.
+3.fix bugs.
+
+v2.5.2
+date:2012/8/17
+svn revision:5304
+main features: 
+1.use gzip in network request
+2.fix bugs
