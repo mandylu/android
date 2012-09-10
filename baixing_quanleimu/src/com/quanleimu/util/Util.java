@@ -28,6 +28,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 
 import android.app.Activity;
@@ -1068,5 +1069,16 @@ public class Util {
 			}
 		}		
 		return url;
+	}
+	
+	public static String getMyId(Context context)
+	{
+		UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
+		if (user != null)
+		{
+			return user.getId();
+		}
+		
+		return null;
 	}
 }

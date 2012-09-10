@@ -519,7 +519,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				sessionsJson = Communication.getDataByUrl(url, true);
+				sessionsJson = Communication.getDataByUrl(url, false); //Only load cached data here.
 				myHandler.sendEmptyMessage(MSG_GETPERSONALSESSIONS);
 				return;
 			} catch (UnsupportedEncodingException e) {

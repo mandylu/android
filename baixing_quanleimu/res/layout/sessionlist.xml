@@ -4,8 +4,12 @@
     android:layout_height="fill_parent"
     android:background="@drawable/home_bg" >
 
+    <include layout="@layout/item_loading"
+        android:id="@+id/session_loading"/>
+    
     <ListView
         android:id="@+id/lv_sessionlist"
+        android:layout_below="@+id/session_loading"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:divider="@drawable/list_divider"

@@ -24,6 +24,7 @@ import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.PersonalCenterEntryView.GetPersonalSessionsThread;
 import com.quanleimu.widget.PullToRefreshListView;
@@ -56,6 +57,13 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
 		
+		if (sessions == null || sessions.size() == 0)
+		{
+			findViewById(R.id.session_loading).setVisibility(View.VISIBLE);
+		}
+		
+		syncSessions(Util.getMyId(getContext()));
+		
 		ViewUtil.removeNotification(getContext(), NotificationIds.NOTIFICATION_ID_CHAT_MESSAGE);
 	}
 	
@@ -77,6 +85,7 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		if(adapter != null){
 			adapter.notifyDataSetChanged();
 		}
+		
 	}
 	
 	protected void onDetachedFromWindow()
@@ -206,13 +215,19 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 			}
 		}
 		
+		syncSessions(msg.getTo());
+	}
+	
+	private void syncSessions(String userId)
+	{
 		ParameterHolder params = new ParameterHolder();
-		params.addParameter("u_id", msg.getTo());
+		params.addParameter("u_id", userId);
 		
 		Communication.executeAsyncGetTask("read_session", params, new Communication.CommandListener() {
 			
 			@Override
 			public void onServerResponse(String serverMessage) {
+				findViewById(R.id.session_loading).setVisibility(View.GONE);
 				List<ChatSession> newSessions = ChatSession.fromJson(serverMessage);
 				Message msg = handler.obtainMessage(MSG_NEW_SESSION, newSessions);
 				handler.sendMessage(msg);
@@ -221,8 +236,8 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 			@Override
 			public void onException(Exception ex) {
 				//Ignor this exception.
+				findViewById(R.id.session_loading).setVisibility(View.GONE);
 			}
 		});
-		
 	}
 }
