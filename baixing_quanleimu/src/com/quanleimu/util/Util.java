@@ -55,6 +55,8 @@ public class Util {
 	
 	public static String qq_access_key="";
 	public static String qq_access_secret="";
+	
+	private static String currentUserId;
 	/**
 	 * 
 	 * @author henry_young
@@ -1071,14 +1073,25 @@ public class Util {
 		return url;
 	}
 	
+	public static void logout()
+	{
+		currentUserId = null;
+	}
+	
+	
 	public static String getMyId(Context context)
 	{
+		if (currentUserId != null)
+		{
+			return currentUserId;
+		}
+		
 		UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
 		if (user != null)
 		{
-			return user.getId();
+			currentUserId = user.getId();
 		}
 		
-		return null;
+		return currentUserId;
 	}
 }

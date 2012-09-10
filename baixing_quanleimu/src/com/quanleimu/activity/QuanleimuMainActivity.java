@@ -716,7 +716,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	private void startTalking(Intent intent)
 	{
-		if (intent.getBooleanExtra("isTalking", false) && getMyId() != null)//
+		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
 		{
 			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
 			Bundle bundle = new Bundle();
@@ -842,11 +842,12 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 
 			public void run() {
 				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
-				int count = ChatMessageDatabase.getUnreadCount(null);
+				final String myId = Util.getMyId(QuanleimuMainActivity.this);
+				int count = ChatMessageDatabase.getUnreadCount(null, myId);
 				Log.d("badge", "count" + count);
 				v.setText(count + "");
 
-				if (count == 0) {
+				if (count == 0 ||  myId == null) {
 					v.setVisibility(View.GONE);
 				} else {
 					v.setVisibility(View.VISIBLE);
@@ -866,7 +867,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (msg.getTo().equals(getMyId()))
+						if (msg.getTo().equals(Util.getMyId(QuanleimuMainActivity.this)))
 						{
 							checkAndUpdateBadge(50);
 						}
@@ -887,10 +888,4 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		}
 	}
 	
-	private String getMyId()
-	{
-		UserBean user = (UserBean) Util.loadDataFromLocate(this, "user");
-		return user != null ? user.getId() : "";
-	}
-
 }

@@ -211,10 +211,6 @@ public class PushMessageService extends Service
         else if (action.equals(ACTION_XMPP_MESSAGE_RECEIVED)) {
         	String msg = intent.getStringExtra("message");
         	pushHandler.dispatch(msg);
-//        	if (msg != null && getMyId() != null) //User should in login status.
-//        	{
-//        		ServerMessageHandler.onNewMessage(this, msg, intent.getStringExtra("from"));
-//        	}
         }  else if (action.equals(ACTION_NETWORK_CHANGED)) {
             boolean available = intent.getBooleanExtra("available", true);
             boolean failover = intent.getBooleanExtra("failover", false);
@@ -248,7 +244,7 @@ public class PushMessageService extends Service
     {
 		RegisterCommandListener cmdListener = new RegisterCommandListener();
 		ParameterHolder parameters = new ParameterHolder();
-		String userId = getMyId();
+		String userId = Util.getMyId(this);
 		if (userId != null) {
 			parameters.addParameter("userId", userId);
 		}
@@ -281,16 +277,5 @@ public class PushMessageService extends Service
     	
     }
     
-	private String getMyId()
-	{
-		UserBean user = (UserBean) Util.loadDataFromLocate(this, "user");
-		if (user != null)
-		{
-			return user.getId();
-		}
-		
-		return null;
-	}
-
 }
 

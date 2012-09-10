@@ -22,6 +22,7 @@ import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.imageCache.SimpleImageLoader;
+import com.quanleimu.util.Util;
 
 public class SessionListAdapter extends BaseAdapter {
 	private List<ChatSession> list = null;
@@ -115,7 +116,7 @@ public class SessionListAdapter extends BaseAdapter {
 			}
 			try
 			{
-				holder.readStatus.setVisibility(/*lastMessage == null || */ChatMessageDatabase.getUnreadCount(info.getSessionId()) > 0 ? View.VISIBLE : View.INVISIBLE);
+				holder.readStatus.setVisibility(/*lastMessage == null || */ChatMessageDatabase.getUnreadCount(info.getSessionId(), Util.getMyId(context)) > 0 ? View.VISIBLE : View.INVISIBLE);
 			}
 			catch(Throwable t)
 			{

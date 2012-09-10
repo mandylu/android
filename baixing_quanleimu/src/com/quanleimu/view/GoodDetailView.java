@@ -294,17 +294,6 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		return this.keepSilent;
 	}
 	
-	private String getMyId()
-	{
-		UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
-		if (user == null)
-		{
-			return null;
-		}
-		return user.getId();
-	}
-
-	
 	protected void init(final int mCurIndex) {
 		
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
@@ -928,7 +917,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		}
 		case R.id.buzz: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
-			String userId = getMyId();
+			String userId = Util.getMyId(getContext());
 			if (userId == null)
 			{
 				requireAuth4Talk();

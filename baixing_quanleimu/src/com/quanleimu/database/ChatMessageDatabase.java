@@ -68,7 +68,6 @@ public class ChatMessageDatabase extends Database
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
-		
 		return list;
 	}
 	
@@ -111,13 +110,19 @@ public class ChatMessageDatabase extends Database
 		}
 	}
 	
-	public static int getUnreadCount(String sid)
+	public static int getUnreadCount(String sid, String uid)
 	{
-		String where = "readstatus=0 OR readstatus is NULL";
+		String where = "( " + "readstatus=0 OR readstatus is NULL"  + " )";
 		if (sid != null)
 		{
-			where = "( " + where + " ) AND sessionId='" + sid + "'";
+			where += " AND sessionId='" + sid + "'";
 		}
+		
+		if (uid != null)
+		{
+			where += " AND receiver='" + uid +"'";
+		}
+		
 		Cursor cur = null;
 		try
 		{
@@ -221,6 +226,11 @@ public class ChatMessageDatabase extends Database
 	
 	public static void storeMessage(ChatMessage msg)
 	{
+		storeMessage(msg, false);
+	}
+	
+	public static void storeMessage(ChatMessage msg, boolean markRead)
+	{
 		ContentValues values = new ContentValues();
 		values.put("msgId", msg.getId());
 		values.put("adId", msg.getAdId());
@@ -238,12 +248,30 @@ public class ChatMessageDatabase extends Database
 			}
 			else
 			{
-				values.put("readstatus", "0");
+				values.put("readstatus", markRead ? "1" : "0");
 				long result = database.insert(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, values);
 			}
 		}catch(Throwable e){
 			e.printStackTrace();
 		}
+	}
+	
+	public static void storeMessage(List<ChatMessage> messages, boolean markRead)
+	{
+		database.beginTransaction();
+		try
+		{
+			for (ChatMessage msg : messages)
+			{
+				storeMessage(msg, markRead);
+			}
+		}
+		finally
+		{
+			
+		}
+		database.setTransactionSuccessful();
+		database.endTransaction();
 	}
 	
 	/**
@@ -256,6 +284,18 @@ public class ChatMessageDatabase extends Database
 			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, "timestamp < " + olderThan, null);
 		}catch(Throwable e){
 			e.printStackTrace();
+		}
+	}
+	
+	public static void deleteMsgBySession(String sid)
+	{
+		try
+		{
+			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE,  "sessionId='" + sid + "'", null);
+		}
+		catch(Throwable t)
+		{
+			
 		}
 	}
 	

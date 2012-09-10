@@ -13,11 +13,14 @@ public abstract class Database {
      * Read only open.
      */
     protected static SQLiteDatabase databaseRO;
+    
+    protected Context context;
 
     
     Database(Context ctx) {
         if (database == null) {
         	DatabaseOpenHelper helper = new DatabaseOpenHelper(ctx);
+        	context = ctx;
             database = helper.getWritableDatabase();
             databaseRO = helper.getReadableDatabase();
         }

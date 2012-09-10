@@ -158,6 +158,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 
 						Util.clearData(getContext(), "user");
 						Util.clearData(getContext(), "userProfile");
+						Util.logout();
 						
 						QuanleimuApplication.getApplication().setListMyPost(null);
 						

@@ -33,7 +33,6 @@ import com.quanleimu.adapter.ChatMessageAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
-import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.jsonutil.JsonUtil;
@@ -71,7 +70,7 @@ public class TalkView extends BaseView
 		if (bundle != null)
 		{
 			targetUserId = bundle.getString("receiverId");
-			myUserId = getMyId(); //FIXME: this is load from file, may cost times to load it on main thread.
+			myUserId = Util.getMyId(getContext()); //FIXME: this is load from file, may cost times to load it on main thread.
 			adId = bundle.getString("adId");
 			if(bundle.containsKey("receiverNick")){
 				adTitle = bundle.getString("receiverNick");
@@ -357,15 +356,8 @@ public class TalkView extends BaseView
 			
 		}, 10);
 		
-//		long dbStart = System.currentTimeMillis();
 		ChatMessageDatabase.prepareDB(getContext());
-		for (ChatMessage tmp : list)
-		{
-			ChatMessageDatabase.storeMessage(tmp); //FIXME: we should do batch  update to save time.
-			ChatMessageDatabase.updateReadStatus(tmp.getId(), true);
-		}
-//		Log.e("TalkView", "insert db cost" + (System.currentTimeMillis() - dbStart));
-		
+		ChatMessageDatabase.storeMessage(list, true);
 	}
 	
 	private void postScrollDelay()
@@ -525,11 +517,6 @@ public class TalkView extends BaseView
 		}
 	}
 	
-	private String getMyId()
-	{
-		UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
-		return user != null ? user.getId() : "";
-	}
 	
 	class UIControl implements View.OnClickListener, View.OnTouchListener
 	{

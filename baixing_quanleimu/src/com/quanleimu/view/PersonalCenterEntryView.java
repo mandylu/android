@@ -547,7 +547,7 @@ public class PersonalCenterEntryView extends BaseView implements
 		if (this.sessions != null)
 		{
 			ChatMessageDatabase.prepareDB(getContext());
-			((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(ChatMessageDatabase.getUnreadCount(null)));
+			((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getContext()))));
 		}
 	}
 }
