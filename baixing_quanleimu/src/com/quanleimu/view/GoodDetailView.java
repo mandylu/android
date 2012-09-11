@@ -1251,7 +1251,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		appObj.fileData = detailJson.getBytes();
 		
 		List<String> listUrl = getImageUrls(this.detail);
-		String imgPath = (listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
+		String imgPath = (listUrl == null || listUrl.size()==0 ? null : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
 
 		WXMediaMessage obj = new WXMediaMessage();
 		

@@ -4,6 +4,9 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
 
+    <include layout="@layout/item_loading"
+        android:id="@+id/tip_loading_message"/>
+    
     <ListView
         android:id="@+id/char_history_p"
         android:layout_width="match_parent"

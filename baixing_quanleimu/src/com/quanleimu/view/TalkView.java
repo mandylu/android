@@ -48,6 +48,7 @@ public class TalkView extends BaseView
 	private static final int MSG_GETPROFILE = 1;
 	private static final int MSG_GETTARGETICON = 2;
 	private static final int MSG_GETMYICON = 3;
+	private static final int MSG_CLOSE_PROGRESS = 4;
 	
 	private String targetUserId;
 	private String adId;
@@ -227,6 +228,13 @@ public class TalkView extends BaseView
 		{
 			receiveAndUpdateUI(msg);
 		}
+		else if (alwaysSync) //No message to show and need to sync with server.
+		{
+			View loadingTip = findViewById(R.id.tip_loading_message);
+			loadingTip.setVisibility(View.VISIBLE);
+			TextView text = (TextView) loadingTip.findViewById(R.id.loading_more_tips);
+			text.setText(R.string.tip_loading_im_history);
+		}
 
 	}
 	
@@ -396,6 +404,7 @@ public class TalkView extends BaseView
 			
 			if (msgList != null && msgList.size() > 0)
 			{
+				myHandler.sendEmptyMessage(MSG_CLOSE_PROGRESS);
 				mergeAndUpdateUI(msgList, true);
 			}
 			
@@ -447,9 +456,12 @@ public class TalkView extends BaseView
 			{
 				//TODO: show error.
 			}
+			finally
+			{
+				myHandler.sendEmptyMessage(MSG_CLOSE_PROGRESS);
+			}
 		}
 	}
-	
 	
 	class SendMsgCmd implements Runnable 
 	{
@@ -574,6 +586,11 @@ public class TalkView extends BaseView
 			{
 				SimpleProfile p = (SimpleProfile) msg.obj;
 				getAdapter().setMyProfile(p.icon, p.isBoy);
+				break;
+			}
+			case MSG_CLOSE_PROGRESS:
+			{
+				findViewById(R.id.tip_loading_message).setVisibility(View.GONE);
 				break;
 			}
 			}

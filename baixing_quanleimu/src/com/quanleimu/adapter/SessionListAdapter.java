@@ -105,10 +105,11 @@ public class SessionListAdapter extends BaseAdapter {
 			
 			final long sessionTime = Long.parseLong(info.getTimeStamp());
 			ChatMessageDatabase.prepareDB(context);
-			ChatMessage lastMessage = ChatMessageDatabase.getLastMessage(info.getSessionId());
+//			ChatMessage lastMessage = ChatMessageDatabase.getLastMessage(info.getSessionId());
 			
 			holder.userAndAd.setText(info.getOppositeNick() + "-" + info.getAdTitle());
-			holder.lastChat.setText(lastMessage != null && lastMessage.getTimestamp() > sessionTime ? lastMessage.getMessage() : info.getLastMsg());
+//			holder.lastChat.setText(lastMessage != null && lastMessage.getTimestamp() > sessionTime ? lastMessage.getMessage() : info.getLastMsg());
+			holder.lastChat.setText(info.getLastMsg());
 			holder.image.setImageResource(R.drawable.moren);
 			if(info.getImageUrl() != null && !info.getImageUrl().equals("")){
 				holder.image.setTag(info.getImageUrl());
