@@ -103,9 +103,7 @@
         </replaceregexp>
         
         <delete dir="gen"/>
-         <delete>
-    		<fileset dir="bin" includes="**/*.*"/>
-  		</delete>
+        <delete dir="bin"/>
 
 <antcall target="release" inheritall="true" />
 <move file="./bin/${ant.project.name}-release.apk" tofile="./dist/android_baixing_${channel}_V${manifest.android:versionName}.apk"></move>
