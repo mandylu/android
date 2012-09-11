@@ -8,9 +8,11 @@ import java.util.LinkedHashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
@@ -18,6 +20,8 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.provider.MediaStore;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
@@ -218,7 +222,8 @@ public class ProfileEditView extends BaseView {
 			case MSG_NEW_IMAGE:
 				profileUri = (Uri) msg.obj;
 //				Bitmap bp = BitmapFactory.decodeFile(profileUri.toString());
-				((ImageView) findViewById(R.id.personalImage)).setImageURI(profileUri);
+//				((ImageView) findViewById(R.id.personalImage)).setImageBitmap(bp);
+				updateImageView(profileUri.toString());
 				break;
 			case MSG_UPLOAD_IMG_DONE:
 				newServerImage = (String) msg.obj;
@@ -295,6 +300,7 @@ public class ProfileEditView extends BaseView {
 			uri = data.getData();
 		}
 		
+		Log.e("IMG", "img url : " + uri);
 		if (uri != null)
 		{
 			Message msg = myHandler.obtainMessage(MSG_NEW_IMAGE, uri);
@@ -398,6 +404,74 @@ public class ProfileEditView extends BaseView {
 		if(imageUrl != null){
 			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), imageUrl, this.getContext());
 		}
+	}
+	
+	public void updateImageView(String imgPath)
+	{
+		Uri uri = Uri.parse(imgPath);
+		String path = getRealPathFromURI(uri); // from Gallery
+		if (path == null) {
+			path = uri.getPath(); // from File Manager
+		}
+		
+		if (path != null) {
+			try {
+			    
+			    BitmapFactory.Options bfo = new BitmapFactory.Options();
+		        bfo.inJustDecodeBounds = true;
+		        BitmapFactory.decodeFile(path, bfo);
+		        
+			    BitmapFactory.Options o =  new BitmapFactory.Options();
+                o.inPurgeable = true;
+                int maxDim = 600;
+                
+                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
+                
+                Bitmap bp = BitmapFactory.decodeFile(path, o);
+                ((ImageView) findViewById(R.id.personalImage)).setImageBitmap(bp);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+			
+	}
+	
+	private static int getClosestResampleSize(int cx, int cy, int maxDim)
+    {
+        int max = Math.max(cx, cy);
+        
+        int resample = 1;
+        for (resample = 1; resample < Integer.MAX_VALUE; resample++)
+        {
+            if (resample * maxDim > max)
+            {
+                resample--;
+                break;
+            }
+        }
+        
+        if (resample > 0)
+        {
+            return resample;
+        }
+        return 1;
+    }
+	
+	public String getRealPathFromURI(Uri contentUri) {
+		String[] proj = { MediaStore.Images.Media.DATA };
+		Cursor cursor = ((Activity)getContext()).managedQuery(contentUri, proj, null, null, null);
+
+		if (cursor == null)
+			return null;
+
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+		cursor.moveToFirst();
+
+		String ret = cursor.getString(column_index);
+//		cursor.close();
+		return ret;
 	}
 	
 }
