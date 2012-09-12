@@ -14,6 +14,7 @@ public class BXStartupIntentReceiver extends BroadcastReceiver {
 //			context.startService(serviceIntent);
 			
 	        Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+	        startPush.putExtra("updateToken", true);
 	        context.startService(startPush);
 		}
 	}

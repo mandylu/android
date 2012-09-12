@@ -112,6 +112,8 @@ public class PushMessageService extends Service
             } else {
 //                Log.w("onStartCommand() null intent with Gingerbread or higher");
             }
+            
+            registeDevice(null);
             return START_STICKY;
         }
 //        Log.i("onStartCommand(): Intent " + intent.getAction());
@@ -127,7 +129,10 @@ public class PushMessageService extends Service
             sendToServiceHandler(startId, intent);
         }
         
-        registeDevice(null); //
+        if (intent.getBooleanExtra("updateToken", false))
+        {
+        	registeDevice(null); //
+        }
         
         return START_STICKY;
     }
@@ -262,7 +267,7 @@ public class PushMessageService extends Service
     {
     	
 		public void onServerResponse(String serverMessage) {
-			Log.d("PushMesssageService", serverMessage);
+			Log.d(TAG, "updatetoken succed " + serverMessage);
 		}
 
 		@Override

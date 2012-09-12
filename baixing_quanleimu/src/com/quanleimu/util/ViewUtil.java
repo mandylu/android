@@ -166,8 +166,8 @@ public class ViewUtil {
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
 	{
-		Float width  = new Float(srcBmp.getWidth());
-		Float height = new Float(srcBmp.getHeight());
+		Float width  = Float.valueOf(srcBmp.getWidth());
+		Float height = Float.valueOf(srcBmp.getHeight());
 		Float ratio = width/height;
 		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
 

@@ -319,6 +319,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
 //		            		QuanleimuMainActivity.this.startService(pushIntent);
 		            		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		            		startPush.putExtra("updateToken", true);
 		            		QuanleimuMainActivity.this.startService(startPush);
 		            		
 		            		QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
@@ -682,6 +683,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 //		this.stopService(pushIntent);
 		
 		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		startPush.putExtra("updateToken", true);
 		this.startService(startPush);
 
 		setContentView(R.layout.main_activity);
