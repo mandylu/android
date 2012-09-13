@@ -588,17 +588,20 @@ public class QuanleimuApplication extends Application implements LocationService
 
 	@Override
 	public void onCreate() {
+//		Profiler.markStart("appcreate");
 		mDemoApp = this;
 		
 //		mBMapMan = new BMapManager(this);
 //		mBMapMan.init(this.mStrKey, new MyGeneralListener());
 
 		context = this.getApplicationContext();
-		lazyImageLoader = new LazyImageLoader();
+//		ProfileUtil.markStart("imgLoaderCreate");
+//		lazyImageLoader = new LazyImageLoader();
+//		ProfileUtil.markEnd("imgLoaderCreate");
 		
 		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
 		
-		LocationService.getInstance().start(context, this);
+//		LocationService.getInstance().start(context, this);
 
 		try{
 			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
@@ -609,6 +612,7 @@ public class QuanleimuApplication extends Application implements LocationService
 		}		
 		
 		super.onCreate();
+//		Profiler.markEnd("appcreate");
 	}
 	
 	static public void sendWXRequest(WXMediaMessage msg){

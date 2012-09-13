@@ -1,8 +1,5 @@
 package com.quanleimu.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -11,18 +8,21 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
-import android.os.Debug;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-
+import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.R.color;
@@ -31,15 +31,11 @@ import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
-import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
-import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
-import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.BaseView;
@@ -47,20 +43,14 @@ import com.quanleimu.view.BaseView.EBUTT_STYLE;
 import com.quanleimu.view.BaseView.ETAB_TYPE;
 import com.quanleimu.view.BaseView.TabDef;
 import com.quanleimu.view.BaseView.TitleDef;
-import com.quanleimu.view.GoodDetailView.IListHolder;
+import com.quanleimu.view.CateMainView;
 import com.quanleimu.view.GoodDetailView;
 import com.quanleimu.view.GridCategoryView;
+import com.quanleimu.view.HomePageView;
 import com.quanleimu.view.PersonalCenterEntryView;
+import com.quanleimu.view.PostGoodsView;
 import com.quanleimu.view.SetMainView;
 import com.quanleimu.view.TalkView;
-
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import com.quanleimu.view.CateMainView;
-import com.quanleimu.view.HomePageView;
-import com.quanleimu.view.PostGoodsView;
 import com.readystatesoftware.viewbadger.BadgeView;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
@@ -331,6 +321,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		            		ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
 		            		ChatMessageDatabase.clearOldMessage(1000);
 		                    System.exit(0);
+//		            		QuanleimuMainActivity.this.finish();
 		                }
 		            });
 		            builder.create().show();
@@ -570,22 +561,31 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	
 	@Override
 	protected void onResume() {
+//		Profiler.markStart("mainresume");
 		bundle.putString("backPageName", "");
 		super.onResume();
 		isInActiveStack = true;
-		
-		this.checkAndUpdateBadge(0);
-		registerMsgListener();
 		
 		if (splashJob != null && !splashJob.isJobDone())
 		{
 			splashJob.doSplashWork();
 		}
+		else
+		{
+			responseOnResume();
+		}
+//		Profiler.markEnd("mainresume");
 		
 //		MobclickAgent.onResume(this);
 //		
 //		Log.d("Umeng SDK API call", "onResume() called from QuanleimuMainActivity:onResume()!!");
 	} 
+	
+	private void responseOnResume()
+	{
+		this.checkAndUpdateBadge(0);
+		registerMsgListener();
+	}
 	
 	static public final String WX_APP_ID = "wx862b30c868401dbc";
 //	static public final String WX_APP_ID = "wx47a12013685c6d3b";//debug
@@ -631,6 +631,12 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	@Override
 	public void onJobDone() {
 		
+		//Start server when application is start.
+		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+		startPush.putExtra("updateToken", true);
+		this.startService(startPush);
+		
+		//Update UI after splash.
 		LinearLayout scroll = (LinearLayout)this.findViewById(R.id.contentLayout);
 		
 		// TODO Auto-generated method stub
@@ -669,26 +675,34 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		startTalking(getIntent()); //Launch after splash job.
 		
+		findViewById(R.id.badge).setVisibility(View.GONE); //hide the badge before we get the unread information.
+		responseOnResume();
+		
 		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
 		
 		this.splashJob = null; //Remove splash job reference.
+		
+//		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
+//		Profiler.clear();
 	}
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+//		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
 //		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
 //		this.stopService(pushIntent);
 		
-		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
-		startPush.putExtra("updateToken", true);
-		this.startService(startPush);
+//		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+//		startPush.putExtra("updateToken", true);
+//		this.startService(startPush);
 
 		setContentView(R.layout.main_activity);
 		
 		splashJob = new SplashJob(this, this);
+//		Profiler.markEnd("maincreate");
 	}
 	
 	private void showDataFromAlbamOrPhoto(){
@@ -708,12 +722,15 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		
-		setIntent(intent);
-        QuanleimuApplication.wxapi.handleIntent(intent, this);
-		showDetailViewFromWX();
-		showDataFromAlbamOrPhoto();
-		
-		startTalking(intent);
+		if (splashJob == null || splashJob.isJobDone()) //do not handle any intent before splash job done.
+		{
+			setIntent(intent);
+			QuanleimuApplication.wxapi.handleIntent(intent, this);
+			showDetailViewFromWX();
+			showDataFromAlbamOrPhoto();
+			
+			startTalking(intent);
+		}
 	}
 	
 	private void startTalking(Intent intent)

@@ -17,10 +17,12 @@ import com.quanleimu.entity.AllCates;
 import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
+import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 
 public class SplashJob {
@@ -34,6 +36,7 @@ public class SplashJob {
 	private BaseActivity parentActivity;
 	
 	private boolean isJobDone;
+	private boolean isJobStarted;
 	
 	SplashJob(BaseActivity activity, JobDoneListener listener)
 	{
@@ -43,6 +46,15 @@ public class SplashJob {
 	
 	public void doSplashWork()
 	{
+		if (isJobStarted || isJobDone)
+		{
+			return;  //Avoid deprecate start.
+		}
+		
+		isJobStarted = true;
+		
+		QuanleimuApplication.lazyImageLoader = new LazyImageLoader();
+		LocationService.getInstance().start(parentActivity, QuanleimuApplication.mDemoApp);
 		QuanleimuApplication.udid = QuanleimuApplication.getDeviceUdid(parentActivity);
 
 		PackageManager packageManager = parentActivity.getPackageManager();
