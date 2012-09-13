@@ -6,6 +6,9 @@ import java.util.List;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.os.Bundle;
 import android.os.Handler;
@@ -25,6 +28,7 @@ import android.widget.Toast;
 
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.entity.ImageList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
@@ -77,7 +81,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), null, getContext());
 			}
 		}
 		
@@ -94,18 +98,54 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	
 	@Override
 	public void onPause(){
+		Log.d("onpause of getgoods", "hahaha  ohnoooooooooooooooooooooooo!!!!!");
 		super.onPause();
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
 			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
 			
-			if(	null != imageView	
-					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
-					/*&& null != imageView.getDrawable()
-					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+			if(	null != imageView){	
+				if(null != imageView.getTag() && imageView.getTag().toString().length() > 0
+				/*&& null != imageView.getDrawable()
+				&& imageView.getDrawable() instanceof AnimationDrawable*/){
+					SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+				}
 			}
 		}
+	}
+	
+	@Override
+	public void onDestroy(){		
+		this.lvGoodsList = null;
+		this.adapter = null;
+		if(goodsListLoader != null && goodsListLoader.getGoodsList() != null){
+			 List<GoodsDetail> list = goodsListLoader.getGoodsList().getData();
+			 if(list != null){
+				 for(int i = 0; i < list.size(); ++ i){
+					 GoodsDetail gd = list.get(i);
+					 if(gd != null){
+						 ImageList il = gd.getImageList();
+						 if(il != null){
+							 if(il.getResize180() != null){
+								 String b = il.getResize180();
+								 if (b.contains(",")) {
+									String[] c = b.split(",");
+									if (c[0] != null && !c[0].equals("")) {
+//										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
+										QuanleimuApplication.lazyImageLoader.forceRecycle(c[0]);
+//										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
+									}
+								 }
+							 }
+						 }
+					 }
+				 }
+			 }
+		}
+		this.goodsListLoader.reset();
+		this.goodsListLoader = null;
+		System.gc();
+		super.onDestroy();
 	}
 	
 		
@@ -228,6 +268,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
 			case GoodsListLoader.MSG_FIRST_FAIL:
+				if(goodsListLoader == null) break;
 				if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
 					goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 				else{
@@ -238,7 +279,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 					}
 				}
 				break;
-			case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
+			case GoodsListLoader.MSG_FINISH_GET_FIRST:
+				if(goodsListLoader == null) break;
 				GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 				goodsListLoader.setGoodsList(goodsList);
 				if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
@@ -270,6 +312,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				break;
 			case GoodsListLoader.MSG_NO_MORE:
+				if(goodsListLoader == null) break;
 				progressBar.setVisibility(View.GONE);
 				
 //				Message msg1 = Message.obtain();
@@ -288,6 +331,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				break;
 			case GoodsListLoader.MSG_FINISH_GET_MORE:
+				if(goodsListLoader == null) break;
 				progressBar.setVisibility(View.GONE);
 				
 				GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
@@ -322,6 +366,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+				if(goodsListLoader == null) break;
 				progressBar.setVisibility(View.GONE);
 
 				Message msg2 = Message.obtain();

@@ -122,14 +122,14 @@ public class ChatMessageAdapter extends BaseAdapter {
 			if(isMine){
 				if(this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
 					iv.setTag(myIcon);
-					SimpleImageLoader.showImg(iv, myIcon, parent.getContext());
+					SimpleImageLoader.showImg(iv, myIcon, null, parent.getContext());
 				}else if(!iamBoy){
 					iv.setImageResource(R.drawable.pic_my_avator_girl);
 				}
 			}else {
 				if(this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
 					iv.setTag(targetIcon);
-					SimpleImageLoader.showImg(iv, targetIcon, parent.getContext());
+					SimpleImageLoader.showImg(iv, targetIcon, null, parent.getContext());
 				}else if(!targetIsBoy){
 					iv.setImageResource(R.drawable.pic_my_avator_girl);
 				}

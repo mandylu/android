@@ -155,7 +155,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		
 //		if(null != listUrl && listUrl.size() > 0)
 //			SimpleImageLoader.Cancel(listUrl);
-		
+		this.mListLoader = null;
 		super.onDestroy();
 	}
 	
@@ -170,6 +170,12 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 	public void onPause() {
 		this.keepSilent = true;
 		super.onPause();
+		
+		Gallery glDetail = (Gallery) findViewById(R.id.glDetail);
+		if(glDetail != null){
+//			glDetail.getc
+		}
+		glDetail = null;
 	}
 	
 	@Override
@@ -1666,8 +1672,9 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 			iv.setImageBitmap(mb_loading);
 			
 			if (listUrl.size() != 0 && listUrl.get(position) != null) {
+				String prevTag = (String)iv.getTag();
 				iv.setTag(listUrl.get(position));
-				SimpleImageLoader.showImg(iv, listUrl.get(position), GoodDetailView.this.getContext());
+				SimpleImageLoader.showImg(iv, listUrl.get(position), prevTag, GoodDetailView.this.getContext());
 			}
 			
 			//Log.d("GoodDetailView: ", "getView for position-" + position);

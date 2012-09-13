@@ -130,7 +130,9 @@ public class LazyImageLoader
 			urlDequeDiskIO.remove(url);
 			urlDequeDownload.remove(url);
 			callbackManager.remove(url);
-			imgManger.forceRecycle(url);
+//			Log.d("cancel", "hahaha, in cancel call1 forceRecycle: " + url);
+//			imgManger.forceRecycle(url);
+//			Log.d("cancel", "hahaha, end in cancel call1 forceRecycle: " + url);
 		}	
 	}
 	
@@ -138,7 +140,9 @@ public class LazyImageLoader
 		if(callbackManager.remove(url, object)){
 			urlDequeDiskIO.remove(url);
 			urlDequeDownload.remove(url);
-			imgManger.forceRecycle(url);
+//			Log.d("cancel", "hahaha, in cancel call2 forceRecycle: " + url);
+//			imgManger.forceRecycle(url);
+//			Log.d("cancel", "hahaha, end in cancel call2 forceRecycle: " + url);
 		}
 	}
 	
@@ -390,7 +394,10 @@ public class LazyImageLoader
 		
 	}
 
-
+	public Bitmap getBitmapInMemory(String url){
+		if(url == null || url.equals("")) return null;
+		return imgManger.getFromMemoryCache(url);
+	}
 
 
 

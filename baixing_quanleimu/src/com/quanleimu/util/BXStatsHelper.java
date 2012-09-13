@@ -184,7 +184,6 @@ public class BXStatsHelper {
 			@Override
 			public void onServerResponse(String serverMessage) {
 				//Do nothing.
-				System.out.println("do nothing.");
 			}
 			
 			@Override

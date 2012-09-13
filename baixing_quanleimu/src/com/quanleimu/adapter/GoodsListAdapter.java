@@ -30,6 +30,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.widget.AnimatingImageView;
+import com.tencent.mm.sdk.platformtools.Log;
 
 
 public class GoodsListAdapter extends BaseAdapter {
@@ -130,6 +131,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 	@Override
 	public View getView(final int position, View convertView, ViewGroup parent) {
+//		Log.d("goodslistadapter", "hahaha, position: " + position);
 		if(list == null || 0 == list.size()){
 			View v = null;
 			
@@ -230,7 +232,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(c[0]);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, c[0], this.context, R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 								}
 							}
@@ -253,7 +255,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(b);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, b, this.context, R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 								}
 							}

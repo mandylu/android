@@ -21,6 +21,7 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -136,7 +137,19 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
         //imageData = null;
         goodsDetail = null;
         QuanleimuApplication.lazyImageLoader.disableSampleSize();
-  		SimpleImageLoader.Cancel(listUrl);           
+  		SimpleImageLoader.Cancel(listUrl);
+  		if(listUrl != null){
+  			for(int i = 0; i < listUrl.size(); ++ i){
+  				String url = listUrl.get(i);
+  				if(url != null && !url.equals("")){
+  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
+  					QuanleimuApplication.lazyImageLoader.forceRecycle(url);
+  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
+  				}
+  			}
+  		}
+  		listUrl = null;
+  		System.gc();
         
         if(mb != null)
         {
@@ -379,7 +392,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 			{	
 				imageView.setImageBitmap(mb);
 				
-			    SimpleImageLoader.showImg(imageView, imageUrls.get(position), BigGalleryView.this.getContext());
+			    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), BigGalleryView.this.getContext());
 	            imageView.setTag(imageUrls.get(position));
 			}
 

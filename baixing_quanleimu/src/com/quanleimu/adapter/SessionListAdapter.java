@@ -113,7 +113,7 @@ public class SessionListAdapter extends BaseAdapter {
 			holder.image.setImageResource(R.drawable.moren);
 			if(info.getImageUrl() != null && !info.getImageUrl().equals("")){
 				holder.image.setTag(info.getImageUrl());
-				SimpleImageLoader.showImg(holder.image, info.getImageUrl(), this.context);
+				SimpleImageLoader.showImg(holder.image, info.getImageUrl(), null, this.context);
 			}
 			try
 			{

@@ -16,6 +16,8 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.location.Location;
 import android.net.Uri;
 import android.os.AsyncTask;
@@ -165,7 +167,7 @@ public class HomePageView
 					
 					@Override
 					public void onRgcUpdated(BXLocation locationBX) {
-						if(null == locationBX.cityName) return;
+						if(null == locationBX || null == locationBX.cityName) return;
 						
 						locationAddr = locationBX.cityName;
 						
@@ -568,6 +570,14 @@ public class HomePageView
 			(new AdapterNotifyChange(this)).execute(true);
 		}
 		
+		public void releaseBitmap(){
+			if(loadingList != null){
+				for(int i = 0; i < loadingList.size(); ++ i){
+					QuanleimuApplication.lazyImageLoader.forceRecycle(loadingList.get(i).getImgUrl());
+				}
+			}
+		}
+		
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
 			
@@ -648,7 +658,6 @@ public class HomePageView
 					//if this is the last seen item, try to load next
 					int position_cur = position + 1;
 					while(position_cur == curList.size() && position_cur < loadingList.size()){										
-						System.out.println("stuck in the loop for ever....................");
 						final int position_next = position_cur;
 						Bitmap bitmapNext = imgLoader.getWithImmediateIO(loadingList.get(position_next).getImgUrl(), new ImageLoaderCallback(){
 										
@@ -737,6 +746,13 @@ public class HomePageView
 	@Override
 	public void onPause(){
 		LocationService.getInstance().removeLocationListener(this);
+		if(this.adapter != null){
+			adapter.releaseBitmap();
+			adapter.notifyDataSetChanged();
+		}
+//		if(glDetail != null){
+//			glDetail.setAdapter(null);
+//		}
 	}
 	
 	protected void SwitchCateLevel(boolean toSubCate){

@@ -339,7 +339,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			}
 				
 			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), 
-					image, this.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+					image, null, this.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
 		}else{
 			((ImageView)this.findViewById(R.id.personalImage)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
 		}

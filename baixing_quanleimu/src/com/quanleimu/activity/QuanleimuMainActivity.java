@@ -239,6 +239,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			    		((LinearLayout)findViewById(R.id.linearTitleControls)).removeAllViews();
 			    		scroll.removeAllViews();
 			    		currentView.onDestroy();
+			    		currentView = null;
 		    		}
 		    		
 		    		//recover last view to screen

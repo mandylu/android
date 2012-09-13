@@ -131,7 +131,8 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 								py = new String[]{"chang"};
 							}
 							else{
-								py = PinyinHelper.toHanyuPinyinStringArray(list.get(i).toString().charAt(j), outFormat);
+//								py = PinyinHelper.toHanyuPinyinStringArray(list.get(i).toString().charAt(j), outFormat);
+								py = new String[]{BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)))};
 							}
 	//						Log.d("pinyin", list.get(i).toString() + ": " + py);
 	//						String py = BXHanzi2Pinyin.hanziToPinyin(String.valueOf(list.get(i).toString().charAt(j)));

@@ -402,7 +402,7 @@ public class ProfileEditView extends BaseView {
 	private void updateImage(String imageUrl)
 	{
 		if(imageUrl != null){
-			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), imageUrl, this.getContext());
+			SimpleImageLoader.showImg((ImageView)this.findViewById(R.id.personalImage), imageUrl, null, this.getContext());
 		}
 	}
 	

@@ -247,7 +247,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), getContext());
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), null, getContext());
 			}
 		}
 		

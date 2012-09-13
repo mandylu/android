@@ -53,6 +53,12 @@ public class GoodsListLoader {
 	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
 	private boolean mRt = true;
 	
+	public void reset(){
+		mGoodsList = null;
+		this.mLastJson = null;
+		this.mHandler = null;
+	}
+	
 	public GoodsListLoader(List<String> params, Handler handler, String fields, GoodsList goodsList){
 		this.params = params;
 		
@@ -248,10 +254,14 @@ public class GoodsListLoader {
 				
 				if (mLastJson != null) {
 					if (!mIsFirst) {
-						mHandler.sendEmptyMessage(msgMore);
+						if(mHandler != null){
+							mHandler.sendEmptyMessage(msgMore);
+						}
 					} else {
 						mIsFirst = false;
-						mHandler.sendEmptyMessage(msgFirst);
+						if(mHandler != null){
+							mHandler.sendEmptyMessage(msgFirst);
+						}
 					}
 					
 					//only when data is valid, do we need to updata listdata status
@@ -260,9 +270,13 @@ public class GoodsListLoader {
 															E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	GoodsListLoader.this.mStatusListdataExisting;
 				} else {
 					if(!mIsFirst){
-						mHandler.sendEmptyMessage(msgNoMore);
+						if(mHandler != null){
+							mHandler.sendEmptyMessage(msgNoMore);
+						}
 					}else{
-						mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
+						if(mHandler != null){
+							mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
+						}
 					}
 				}
 				
@@ -271,7 +285,9 @@ public class GoodsListLoader {
 			} catch (UnsupportedEncodingException e) {
 			} catch (IOException e) {
 				if(!mCancel){
-					mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+					if(mHandler != null){
+						mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+					}
 				}
 				exit();
 				return;
@@ -280,7 +296,9 @@ public class GoodsListLoader {
 			}
 			
 			if(!mCancel){
-				mHandler.sendEmptyMessage(MSG_EXCEPTION);
+				if(mHandler != null){
+					mHandler.sendEmptyMessage(MSG_EXCEPTION);
+				}
 			}
 			exit();
 		}
