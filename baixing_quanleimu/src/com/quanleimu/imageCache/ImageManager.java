@@ -201,7 +201,7 @@ public class ImageManager
 			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url);
 			bitmap.recycle();
 			bitmap = null;
-			System.gc();			
+//			System.gc();			
 		}
 		imageLruCache.remove(url);//anyway ,remove it from cache		
 	}
