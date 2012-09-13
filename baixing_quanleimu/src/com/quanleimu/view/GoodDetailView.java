@@ -156,6 +156,12 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 //		if(null != listUrl && listUrl.size() > 0)
 //			SimpleImageLoader.Cancel(listUrl);
 		this.mListLoader = null;
+		this.post(new Runnable(){
+			public void run(){
+				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
+			}
+		});
+		
 		super.onDestroy();
 	}
 	
@@ -245,7 +251,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		}
 		listLookHistory.add(0, detail);
 		QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
-		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
+//		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
 	}
 
 	private boolean isMyAd(){
@@ -333,6 +339,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 			
 			public Object instantiateItem(View arg0, int position) 
 			{
+				long t1 = System.currentTimeMillis();
 				Integer posObj = Integer.valueOf(position);
 				View detail = LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				detail.setTag(posObj);
@@ -347,6 +354,8 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 				{
 					initContent(detail, mListLoader.getGoodsList().getData().get(position), position);
 				}
+				long t2 = System.currentTimeMillis();
+				Log.d("instantiateItem", "hahaha instantiate: " + (t2 - t1));
 				return detail;
 			}
 			
@@ -379,15 +388,19 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 			
 			public void onPageSelected(int pos) {
 				keepSilent = false;//magic flag to refuse unexpected touch event
-				
+				long t1 = System.currentTimeMillis();
 				Log.d("PAGER", "current page is changed to " + pos);
 				if (pos != mListLoader.getGoodsList().getData().size())
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					mListLoader.setSelection(pos);
+					long t3 = System.currentTimeMillis();
 					updateContactBar(false);
+					long t4 = System.currentTimeMillis();
 					updateTitleInfo();
+					long t5 = System.currentTimeMillis();
 					saveToHistory();
+					long t6 = System.currentTimeMillis();
 					if(!initCalled){
 						//the ad is viewed once
 				        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
@@ -396,7 +409,8 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 					}
 					
 					updateButtonStatus();
-					
+					long t7 = System.currentTimeMillis();
+					Log.d("page selected", t3 + "    " + t4 + "   " + t5 + "    " + t6 + "   " + t7);
 					if(pos == 0){
 						GoodDetailView.this.findViewById(R.id.btn_prev).setVisibility(View.GONE);
 					}else{
@@ -410,7 +424,8 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 				{
 					updateContactBar(true);
 				}
-				
+				long t2 = System.currentTimeMillis();
+				Log.d("setOnPageChangeListener", "hahaha setOnPageChangeListener: " + (t2 - t1));
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
