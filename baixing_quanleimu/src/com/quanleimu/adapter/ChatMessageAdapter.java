@@ -53,9 +53,30 @@ public class ChatMessageAdapter extends BaseAdapter {
 	{
 		List<ChatMessage> newList = new ArrayList<ChatMessage>();
 		newList.addAll(msgList);
+		
+		if (msgList.size() > 0)
+		{
+			ChatMessage lastMsg = msgList.get(msgList.size()-1);
+			long lastTime = lastMsg.getTimestamp();
+			if (lastTime > msg.getTimestamp())
+			{
+				msg.setTimestamp(lastTime + 1); //
+			}
+		}
 		newList.add(msg);
 		
 		refreshData(newList);
+	}
+	
+	public void updateMessageTimestamp(long hashCode, long time)
+	{
+		for (ChatMessage msg : msgList)
+		{
+			if (msg.hashCode() == hashCode)
+			{
+				msg.setTimestamp(time);
+			}
+		}
 	}
 	
 	
