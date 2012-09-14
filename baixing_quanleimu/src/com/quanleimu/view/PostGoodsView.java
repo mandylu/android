@@ -298,6 +298,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			String b = (goodsDetail.getImageList().getResize180());
 //					.substring(1, (goodsDetail.getImageList()
 //							.getResize180()).length() - 1);
+			if(b == null || b.equals("")) return;
 			b = Communication.replace(b);
 			if (b.contains(",")) {
 				String[] c = b.split(",");
