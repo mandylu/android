@@ -1307,7 +1307,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 				accessToken.getSecret(), 
 				isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
 						"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
-				listUrl == null ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
+				(listUrl == null || listUrl.size() == 0) ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
 		}
 		catch(WeiboException e){
 			e.printStackTrace();
