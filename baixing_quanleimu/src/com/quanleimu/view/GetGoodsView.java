@@ -514,6 +514,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 				
 				goodsListLoader.cancelFetching();
+				goodsListLoader.setNearby(false);
 				goodsListLoader.setParams(basicParams);
 				goodsListLoader.setRuntime(true);
 				
@@ -543,7 +544,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				
 				List<String> params = new ArrayList<String>();
 				params.addAll(basicParams);
-				params.add("nearby=true");
+//				params.add("nearby=true");
+				goodsListLoader.setNearby(true);
 				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
 				//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
 				params.add("lat="+curLocation.fLat);

@@ -31,6 +31,7 @@ public class GoodsListLoader {
 	private Handler mHandler = new Handler();
 	
 	private static String mApiName = "ad_list";
+	private static String mNearbyApiName = "ad_nearby";
 	
 	private static String mLastJson = null;
 	
@@ -143,6 +144,11 @@ public class GoodsListLoader {
 		return mStatusListdataRequesting;
 	}
 	
+	private boolean isNearby = false;
+	public void setNearby(boolean isNearby){
+		this.isNearby = isNearby;
+	}
+	
 	public void startFetching(boolean isFirst, Communication.E_DATA_POLICY dataPolicy_){
 		cancelFetching();
 		
@@ -150,7 +156,7 @@ public class GoodsListLoader {
 		
 		mIsFirst = isFirst;
 
-		mCurThread = new GetGoodsListThread(dataPolicy_);		
+		mCurThread = new GetGoodsListThread(dataPolicy_, isNearby);		
 		new Thread(mCurThread).start();	
 	}	
 	
@@ -160,7 +166,7 @@ public class GoodsListLoader {
 		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
-		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_);		
+		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby);		
 		
 		new Thread(mCurThread).start();	
 	}
@@ -177,16 +183,19 @@ public class GoodsListLoader {
 		
 		private boolean mCancel = false;
 		private HttpClient mHttpClient = null;
+		private boolean isNearby = false;
 		
-		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_){
+		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby){
 			dataPolicy = dataPolicy_;
+			this.isNearby = isNearby;
 		}
 		
-		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_){
+		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
 			dataPolicy = dataPolicy_;
+			this.isNearby = isNearby;
 		}
 		
 		public void cancel(){
@@ -231,8 +240,8 @@ public class GoodsListLoader {
 				return;
 			}
 			
-			String url = Communication.getApiUrl(mApiName, list);
-			
+			String url = Communication.getApiUrl(this.isNearby ? mNearbyApiName : mApiName, list);
+//			Log.d("url", "urllll   " + url);
 //			if(Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL != dataPolicy){
 //				Log.d("ListViewUrl", url);
 //			}
