@@ -223,12 +223,13 @@ public class TalkView extends BaseView
 		
 		initInputBox();
 		
-		//Show the message right now.
-		if (msg != null)
-		{
-			receiveAndUpdateUI(msg);
-		}
-		else if (alwaysSync) //No message to show and need to sync with server.
+		//This message should be load from local cache.
+//		if (msg != null)
+//		{
+//			receiveAndUpdateUI(msg);
+//		}
+//		else 
+		if (alwaysSync) //No message to show and need to sync with server.
 		{
 			View loadingTip = findViewById(R.id.tip_loading_message);
 			loadingTip.setVisibility(View.VISIBLE);
@@ -356,7 +357,14 @@ public class TalkView extends BaseView
 		this.postDelayed(new Runnable() {
 			public void run() {
 //				long startTime = System.currentTimeMillis();
-				getAdapter().refreshData(list);
+				if (isLocal)
+				{
+					getAdapter().refreshData(list);
+				}
+				else
+				{
+					getAdapter().appendData(list, false);
+				}
 				
 				postScrollDelay();
 //				Log.e("TalkView", "update ui cost : " + (System.currentTimeMillis()-startTime));

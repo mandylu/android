@@ -31,10 +31,9 @@ public class ChatMessageAdapter extends BaseAdapter {
 	
 	public ChatMessageAdapter(String myId)
 	{
-//		this.msgList = itemList;
 		this.myId = myId;
 	}
-	
+
 	public void setMyProfile(String myProfileImg, boolean isBoy)
 	{
 		this.myIcon = myProfileImg;
@@ -68,14 +67,17 @@ public class ChatMessageAdapter extends BaseAdapter {
 		refreshData(newList);
 	}
 	
-	public void updateMessageTimestamp(long hashCode, long time)
+	public void appendData(List<ChatMessage> newData, boolean head)
 	{
-		for (ChatMessage msg : msgList)
+		Collections.sort(newData, new MsgTimeComparator());
+		
+		if (head)
 		{
-			if (msg.hashCode() == hashCode)
-			{
-				msg.setTimestamp(time);
-			}
+			msgList.addAll(0, newData);
+		}
+		else
+		{
+			msgList.addAll(newData);
 		}
 	}
 	
@@ -84,6 +86,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 	{
 		Collections.sort(newList, new MsgTimeComparator());
 		msgList = newList;
+		
 		this.notifyDataSetChanged();
 	}
 

@@ -57,12 +57,10 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
 		
-		if (sessions == null || sessions.size() == 0)
+		if (this.sessions == null || this.sessions.size() == 0)
 		{
 			findViewById(R.id.session_loading).setVisibility(View.VISIBLE);
 		}
-		
-		syncSessions(Util.getMyId(getContext()));
 		
 		ViewUtil.removeNotification(getContext(), NotificationIds.NOTIFICATION_ID_CHAT_MESSAGE);
 	}
@@ -79,6 +77,8 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		super.onAttachedToWindow();
 		ListView plv = (ListView)this.findViewById(R.id.lv_sessionlist);
 		plv.requestFocus();
+		
+		syncSessions(Util.getMyId(getContext()));
 		
 		registerReceiver();
 		BaseAdapter adapter = this.getAdapter();
