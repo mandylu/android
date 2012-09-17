@@ -410,6 +410,10 @@ public class JsonUtil {
 		}catch(IOException e){
 			
 		}
+		catch (Throwable t)
+		{
+			Log.d("JSON", "unexpected json parse issue " + t);
+		}
 		goodsList.setData(list);
 		return goodsList;
 	}

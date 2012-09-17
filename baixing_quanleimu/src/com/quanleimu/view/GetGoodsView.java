@@ -437,14 +437,25 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			String lat = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lon = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			
-			if(null == lat || 0 == lat.length() || null == lon || 0 == lon.length()){
+			double latD = 0;
+			double lonD = 0;
+			try
+			{
+				latD = Double.parseDouble(lat);
+				lonD = Double.parseDouble(lon);
+			}
+			catch(Throwable t)
+			{
 				Log.d("GetGoodView", "ad nearby lacks lat & lon");
+			}
+			
+			if(latD == 0  || lonD == 0){
 				unit = "米";
 				number = "0";
 			}else{
 
 				float results[] = {0.0f, 0.0f, 0.0f};
-				Location.distanceBetween(Double.valueOf(lat), Double.valueOf(lon), curLocation.fLat, curLocation.fLon, results);
+				Location.distanceBetween(latD, lonD, curLocation.fLat, curLocation.fLon, results);
 				
 				if(results[0] < 1000){
 					unit = "米";
