@@ -448,7 +448,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 	@Override
 	public void onRefresh() {
 		mListLoader.startFetching(true, mRefreshUsingLocal ? Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL : Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
-		mRefreshUsingLocal = true;
+		mRefreshUsingLocal = false;
 	}
 
 	@Override
