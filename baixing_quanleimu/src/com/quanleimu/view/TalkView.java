@@ -58,6 +58,7 @@ public class TalkView extends BaseView
 	private String myUserId;
 	private long lastupdateTime = 0;
 	private boolean alwaysSync;
+	private boolean isAttachedToWindow;
 	
 	public TalkView(Context context) {
 		super(context);
@@ -118,6 +119,7 @@ public class TalkView extends BaseView
 	@Override
 	protected void onAttachedToWindow() {
 		super.onAttachedToWindow();
+		isAttachedToWindow = true;
 		
 		//Load history or load msg from server.
 		if (sessionId == null)
@@ -140,6 +142,8 @@ public class TalkView extends BaseView
 	@Override
 	protected void onDetachedFromWindow() {
 		super.onDetachedFromWindow();
+		
+		this.isAttachedToWindow = false;
 		
 		unregisterReceiver();
 		
@@ -580,7 +584,10 @@ public class TalkView extends BaseView
 					title.m_visible = true;
 					title.m_title = msg.obj.toString();				
 					title.m_leftActionHint = "返回";
-					m_viewInfoListener.onTitleChanged(title);
+					if (isAttachedToWindow)
+					{
+						m_viewInfoListener.onTitleChanged(title);
+					}
 
 				}
 				break;
