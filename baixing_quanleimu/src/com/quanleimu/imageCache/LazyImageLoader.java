@@ -371,7 +371,7 @@ public class LazyImageLoader
 					}else{						
 						//Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
 						
-						urlDequeDownload.add(url);
+//						urlDequeDownload.add(url);
 						
 						notifyFail(url);
 //						Message msg = handler.obtainMessage(MESSAGE_FAIL);
