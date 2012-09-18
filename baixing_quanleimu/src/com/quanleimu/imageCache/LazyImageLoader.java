@@ -356,7 +356,7 @@ public class LazyImageLoader
 				{
 					String url= urlDequeDownload.remove(0);
 					
-					if(null == url){
+					if(null == url || !url.trim().startsWith("http")){
 						continue;
 					} 
 					
