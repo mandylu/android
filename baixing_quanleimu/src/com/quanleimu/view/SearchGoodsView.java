@@ -137,7 +137,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 					}
 				});
 		
-		((TextView)findViewById(R.id.tvSearchKeyword)).setText(searchContent);
+		((TextView)findViewById(R.id.tvSearchKeyword)).setText(title);
 
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
