@@ -280,8 +280,10 @@ public class BXHanzi2Pinyin {
         };  
   
     /*** First and last Chinese character with known Pinyin according to zh collation */  
-    private static final String FIRST_PINYIN_UNIHAN =  "\u5416";  
-    private static final String LAST_PINYIN_UNIHAN =  "\u5497";  
+//    private static final String FIRST_PINYIN_UNIHAN =  "\u5416";  
+//    private static final String LAST_PINYIN_UNIHAN =  "\u5497";  
+    private static final String FIRST_PINYIN_UNIHAN = "\u963F";
+    private static final String LAST_PINYIN_UNIHAN = "\u84D9";    
     /*** The first Chinese character in Unicode block */  
     private static final char FIRST_UNIHAN = '\u3400';  
     private static final Collator COLLATOR = Collator.getInstance(Locale.CHINA);  
