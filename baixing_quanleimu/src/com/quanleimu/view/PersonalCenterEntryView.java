@@ -214,7 +214,7 @@ public class PersonalCenterEntryView extends BaseView implements
 
 	@Override
 	public boolean onLeftActionPressed() {
-		m_viewInfoListener.onNewView(new SetMainView(getContext()));
+		m_viewInfoListener.onNewView(new SetMainView(getContext(), this.bundle));
 		return true;
 	}
 

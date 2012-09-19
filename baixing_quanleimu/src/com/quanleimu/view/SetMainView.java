@@ -86,15 +86,15 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		}
 	}
 	
-	public SetMainView(Context context){
-		super(context);		
-		
-		Init();
-	}
-	
+//	public SetMainView(Context context){
+//		super(context);		
+//		
+//		Init();
+//	}
+	private Bundle bundle = null;
 	public SetMainView(Context context, Bundle bundle){
 		super(context, bundle);
-		
+		this.bundle = bundle;
 		Init();
 	}
 	
@@ -159,7 +159,9 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 						Util.clearData(getContext(), "user");
 						Util.clearData(getContext(), "userProfile");
 						Util.logout();
-						
+						if(bundle != null){
+							bundle.remove("lastPost");
+						}
 						QuanleimuApplication.getApplication().setListMyPost(null);
 						
 						((TextView)SetMainView.this.findViewById(R.id.tvPhoneNum)).setText("");

@@ -111,7 +111,7 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
 			
 			needClearViewStack = true;
-			onNewView(new SetMainView(this));
+			onNewView(new SetMainView(this, bundle));
 			
 			break;			
 		}
