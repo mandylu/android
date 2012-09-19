@@ -5,6 +5,9 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
@@ -109,9 +112,18 @@ public class OpinionBackView extends BaseView {
 			}
 			switch (msg.what) {
 			case 0:
-				Toast.makeText(getContext(), "提交成功！", Toast.LENGTH_SHORT)
-						.show();
-				m_viewInfoListener.onBack();
+				try{
+					JSONObject jsonObject = new JSONObject(result);
+					JSONObject json = jsonObject.getJSONObject("error");
+					int code = json.getInt("code");
+					String message = json.getString("message");
+					Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+					if(code == 0){
+						m_viewInfoListener.onBack();
+					}
+				}catch(JSONException e){
+					e.printStackTrace();
+				}
 				break;
 			case 1:
 				Toast.makeText(getContext(), "提交失败！", Toast.LENGTH_SHORT)

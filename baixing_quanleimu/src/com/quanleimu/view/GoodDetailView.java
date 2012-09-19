@@ -1126,8 +1126,32 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 			break;
 		}
 		case R.id.jubaolayout:{
-			if(this.m_viewInfoListener != null){
-				this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 0, detail.getValueByKey("id")));
+			UserBean user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+			if(user == null){
+				new AlertDialog.Builder(GoodDetailView.this.getContext())
+				.setMessage("请登陆后举报")
+				.setPositiveButton("现在登陆", new DialogInterface.OnClickListener() {							
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.dismiss();
+						// TODO Auto-generated method stub
+						if(GoodDetailView.this.m_viewInfoListener != null){
+							GoodDetailView.this.m_viewInfoListener.onNewView(new LoginView(GoodDetailView.this.getContext(), mBundle));
+						}						
+					}
+				})
+				.setNegativeButton(
+			     "取消", new DialogInterface.OnClickListener() {
+					@Override
+					public void onClick(DialogInterface dialog, int which) {
+						dialog.cancel();							
+					}
+				})
+			     .show();				
+			}else{
+				if(this.m_viewInfoListener != null){
+					this.m_viewInfoListener.onNewView(new OpinionBackView(this.getContext(), mBundle, 0, detail.getValueByKey("id")));
+				}
 			}
 			break;
 		}
