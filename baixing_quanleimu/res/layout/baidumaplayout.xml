@@ -28,7 +28,7 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="5dip"
             android:background="@drawable/btn_jj"
-            android:text="详细信息"
+            android:text="返回"
             android:textColor="#ffffff" >
         </Button>
     </RelativeLayout>

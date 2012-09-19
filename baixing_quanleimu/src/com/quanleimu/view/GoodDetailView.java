@@ -999,7 +999,14 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 								
 								Bundle bundle = new Bundle();
 								bundle.putString("detailPosition", x +"," + y);
-								bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+								String areaname = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+								if(areaname != null){
+									String[] aryArea = areaname.split(",");
+									if(aryArea != null && aryArea.length > 0){
+										bundle.putString("title", aryArea[aryArea.length - 1]);
+									}
+								}
+								
 								//TODO:
 								BaseActivity baseActivity = (BaseActivity)getContext();
 								baseActivity.getIntent().putExtras(bundle);
