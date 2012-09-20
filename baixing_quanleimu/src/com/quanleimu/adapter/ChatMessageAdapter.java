@@ -1,7 +1,9 @@
 package com.quanleimu.adapter;
 
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
 import android.view.LayoutInflater;
@@ -120,8 +122,18 @@ public class ChatMessageAdapter extends BaseAdapter {
 		{
 			item = inflater.inflate(R.layout.item_im_message, null);
 		}
-		
+		item.findViewById(R.id.tvTime).setVisibility(View.GONE);
 		ChatMessage msg = msgList.get(position);
+		if(position > 0){
+			ChatMessage preMsg = msgList.get(position - 1);
+			if(Long.valueOf(msg.getTimestamp()) - Long.valueOf(preMsg.getTimestamp()) >= 5 * 60){
+				Date date = new Date(Long.valueOf(msg.getTimestamp()) * 1000);
+				SimpleDateFormat sDateFormat = new SimpleDateFormat("MM-dd HH:mm");
+				String dt = sDateFormat.format(date);
+				((TextView)item.findViewById(R.id.tvTime)).setText(dt);
+				item.findViewById(R.id.tvTime).setVisibility(View.VISIBLE);
+			}
+		}
 		final boolean isMine = myId.equalsIgnoreCase(msg.getFrom());
 		
 		loadMessageItem(isMine, item, msg);

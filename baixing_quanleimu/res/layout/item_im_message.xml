@@ -2,11 +2,31 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent" >
-    <include layout="@layout/im_message_item"
-        android:id="@+id/my_item">
-    </include>
-    
-    <include layout="@layout/im_message_item_received"
-        android:id="@+id/received_item"/>
+
+    <TextView
+        android:id="@+id/tvTime"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentTop="true"
+        android:paddingBottom="3dip"
+        android:paddingTop="15dip"
+        android:text="" >
+    </TextView>
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/tvTime" >
+
+        <include
+            android:id="@+id/my_item"
+            layout="@layout/im_message_item" >
+        </include>
+
+        <include
+            android:id="@+id/received_item"
+            layout="@layout/im_message_item_received" />
+    </RelativeLayout>
 
 </RelativeLayout>
