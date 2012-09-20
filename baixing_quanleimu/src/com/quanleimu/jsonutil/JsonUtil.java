@@ -61,6 +61,70 @@ public class JsonUtil {
 		return cityList;
 	}
 	
+	public static List<ChatMessage> parseChatMessagesByJackson(String msg){
+		JsonFactory factory = new JsonFactory();
+		List<ChatMessage> list = new ArrayList<ChatMessage>();
+		try{
+			JsonParser parser = factory.createJsonParser(msg);
+			while (parser.nextToken() != JsonToken.END_OBJECT) {
+				String fieldname = parser.getCurrentName();
+				if(fieldname == null) continue;
+				if(fieldname.equals("data")){
+					JsonToken jt = parser.nextToken();///start_array
+					jt = parser.nextToken();
+					while(jt != JsonToken.END_ARRAY){
+						jt = parser.nextToken();///start_object
+						
+						ChatMessage chat = new ChatMessage();
+						while(jt != JsonToken.END_OBJECT){
+							String fname = parser.getCurrentName();
+							if(fname == null){
+								parser.nextToken();
+								continue;
+							}
+							
+							jt = parser.nextToken();
+							String text = parser.getText();
+							if(fname.equals("u_id_from")){																
+								chat.setFrom(text);
+								jt = parser.nextToken();
+							}else if(fname.equals("u_id_to")){
+								chat.setTo(text);
+								jt = parser.nextToken();
+							}else if(fname.equals("message")){
+								chat.setMessage(text);
+								jt = parser.nextToken();
+							}else if(fname.equals("timestamp")){
+								chat.setTimestamp(Long.valueOf(text));
+								jt = parser.nextToken();
+							}else if(fname.equals("ad_id")){
+								chat.setAdId(text);
+								jt = parser.nextToken();
+							}else if(fname.equals("session_id")){
+								chat.setSession(text);
+								jt = parser.nextToken();
+							}else if(fname.equals("id")){
+								chat.setId(text);
+								jt = parser.nextToken();
+							}							
+						}
+						jt = parser.nextToken();
+						list.add(chat);
+					}
+				}
+			}
+		}catch(JsonParseException e){
+			
+		}catch(IOException e){
+			
+		}
+		catch (Throwable t)
+		{
+			Log.d("JSON", "unexpected json parse issue " + t);
+		}
+		return list;				
+	}
+	
 	public static List<ChatMessage> parseChatMessages(JSONArray msgs)
 	{
 		final List<ChatMessage> list = new ArrayList<ChatMessage>();

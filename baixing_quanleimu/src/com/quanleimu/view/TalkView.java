@@ -38,6 +38,7 @@ import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class TalkView extends BaseView 
 {
@@ -452,16 +453,21 @@ public class TalkView extends BaseView
 				cmdOpts.add("last_update_timestamp=" + URLEncoder.encode(lastupdateTime + ""));
 			}
 			cmdOpts.add("limit=" + MAX_REQ_COUNT);
-			
+
 			String url = Communication.getApiUrl(apiName, cmdOpts);
 			
 			try {
 				String result = Communication.getDataByUrlGet(url);
-				JSONObject obj = new JSONObject(result);
-				if (obj.getInt("count") > 0)
-				{
-					JSONArray tmp = obj.getJSONArray("data");
-					mergeAndUpdateUI(JsonUtil.parseChatMessages(tmp), false);
+				
+//				JSONObject obj = new JSONObject(result);
+//				if (obj.getInt("count") > 0)
+//				{
+//					JSONArray tmp = obj.getJSONArray("data");
+//					mergeAndUpdateUI(JsonUtil.parseChatMessages(tmp), false);
+//				}				
+				List<ChatMessage> list2 = JsonUtil.parseChatMessagesByJackson(result);
+				if(list2 != null && list2.size() > 0){
+					mergeAndUpdateUI(list2, false);
 				}
 			}
 			catch(Throwable t)
