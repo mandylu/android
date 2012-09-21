@@ -24,6 +24,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class SplashJob {
 
@@ -53,7 +54,7 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		QuanleimuApplication.lazyImageLoader = new LazyImageLoader();
+		
 		LocationService.getInstance().start(parentActivity, QuanleimuApplication.mDemoApp);
 		QuanleimuApplication.udid = QuanleimuApplication.getDeviceUdid(parentActivity);
 
@@ -76,7 +77,6 @@ public class SplashJob {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
 		}
-		
 		new Thread(new ReadCityListThread()).start();
 		new Thread(new ReadInfoThread()).start();
 		new Thread(new ReadCateListThread()).start();
@@ -105,6 +105,7 @@ public class SplashJob {
 			
 			if(1 == record1 && 1 == record2 && 1 == record3){
 				isJobDone = true;
+				QuanleimuApplication.lazyImageLoader = new LazyImageLoader();
 				jobListener.onJobDone();
 			}
 		}
@@ -119,7 +120,6 @@ public class SplashJob {
 
 		@Override
 		public void run() {
-		
 			// TODO Auto-generated method stub
 			PostMu postMu = (PostMu)Util.loadDataFromLocate(parentActivity, "saveFirstStepCate");
 			
@@ -242,7 +242,6 @@ public class SplashJob {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
 			}
-			
 			myHandler.sendEmptyMessage(1);
 		}
 	}
