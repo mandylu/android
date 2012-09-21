@@ -33,32 +33,74 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.entity.labels;
 import com.quanleimu.entity.values;
 public class JsonUtil {
+	
+	public static CityList parseCityListFromJackson(String jsonData){
+		CityList cityList = new CityList();
+		List<CityDetail> lists = new ArrayList<CityDetail>();
+		JsonFactory factory = new JsonFactory();
+		try{
+			JsonParser parser = factory.createJsonParser(jsonData);
+			while (parser.nextToken() != JsonToken.END_OBJECT) {
+				String fieldname = parser.getCurrentName();
+				if(fieldname == null) continue;
+				parser.nextToken();
+				CityDetail cityDetail = new CityDetail();
+				cityDetail.setId(fieldname);				
+				JsonToken jt = parser.nextToken();///start_object
+				while(jt != JsonToken.END_OBJECT){
+					String key = parser.getCurrentName();
+					jt = parser.nextToken();
+					String value = parser.getText();
+					if(key.equals("englishName")){
+						cityDetail.setEnglishName(value);
+					}else if(key.equals("name")){
+						cityDetail.setName(value);
+					}else if(key.equals("sheng")){
+						cityDetail.setSheng(value);
+					}
+					jt = parser.nextToken();					
+				}
+				lists.add(cityDetail);
+			}
+		}catch(JsonParseException e){
+			
+		}catch(IOException e){
+			
+		}
+		catch (Throwable t)
+		{
+			Log.d("JSON", "unexpected json parse issue " + t);
+		}
+		cityList.setListDetails(lists);
+		return cityList;
+	}
 
 	// 获取所有城市列表
 	public static CityList parseCityListFromJson(String jsonData) {
-		CityList cityList = new CityList();
-		try {
-			List<CityDetail> list = new ArrayList<CityDetail>();
-			// JSONArray jsonA = new JSONArray(jsonData);
-
-			JSONObject jsonObj = new JSONObject(jsonData);
-
-			JSONArray jsonArray = jsonObj.names();
-			for (int i = 0; i < jsonArray.length(); i++) {
-				CityDetail cityDetail = new CityDetail();
-				cityDetail.setId(jsonArray.getString(i));
-				JSONObject jsonCity = jsonObj.getJSONObject(jsonArray
-						.getString(i));
-				cityDetail.setEnglishName(jsonCity.getString("englishName"));
-				cityDetail.setName(jsonCity.getString("name"));
-				cityDetail.setSheng(jsonCity.getString("sheng"));
-				list.add(cityDetail);
-			}
-			cityList.setListDetails(list);
-		} catch (JSONException e1) {
-			e1.printStackTrace();
-		}
-		return cityList;
+		return parseCityListFromJackson(jsonData);
+//		CityList cityList = new CityList();
+//		try {
+//			List<CityDetail> list = new ArrayList<CityDetail>();
+//			// JSONArray jsonA = new JSONArray(jsonData);
+//
+//			JSONObject jsonObj = new JSONObject(jsonData);
+//
+//			JSONArray jsonArray = jsonObj.names();
+//			for (int i = 0; i < jsonArray.length(); i++) {
+//				CityDetail cityDetail = new CityDetail();
+//				cityDetail.setId(jsonArray.getString(i));
+//				JSONObject jsonCity = jsonObj.getJSONObject(jsonArray
+//						.getString(i));
+//				cityDetail.setEnglishName(jsonCity.getString("englishName"));
+//				cityDetail.setName(jsonCity.getString("name"));
+//				cityDetail.setSheng(jsonCity.getString("sheng"));
+//				list.add(cityDetail);
+//			}
+//			cityList.setListDetails(list);
+//		} catch (JSONException e1) {
+//			e1.printStackTrace();
+//		}
+//		return cityList;
 	}
 	
 	public static List<ChatMessage> parseChatMessagesByJackson(String msg){
