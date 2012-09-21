@@ -1,3 +1,13 @@
+v2.6.2
+date:2012/9/21
+svn revision:5521
+main features:
+1. fix image request url error, which may cause thread leak
+2. remove auto loop request for image when it failed, to avoid ui lag, especially in offline mode
+3. add time segment in talk view
+4. improve performance when launching app
+5. fix bug
+
 v2.6.1
 date:2012/9/17
 svn revision:5504
