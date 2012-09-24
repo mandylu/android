@@ -2,6 +2,7 @@ package com.quanleimu.database;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
+import android.database.sqlite.SQLiteException;
 
 public abstract class Database {
 	/**
@@ -19,10 +20,13 @@ public abstract class Database {
     
     Database(Context ctx) {
         if (database == null) {
-        	DatabaseOpenHelper helper = new DatabaseOpenHelper(ctx);
-        	context = ctx;
-            database = helper.getWritableDatabase();
-            databaseRO = helper.getReadableDatabase();
+        	try{
+	        	DatabaseOpenHelper helper = new DatabaseOpenHelper(ctx);
+	        	context = ctx;
+	            database = helper.getWritableDatabase();
+	            databaseRO = helper.getReadableDatabase();
+        	}catch(SQLiteException e){
+        	}
         }
     }
 }

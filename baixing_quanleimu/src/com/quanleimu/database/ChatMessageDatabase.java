@@ -36,8 +36,9 @@ public class ChatMessageDatabase extends Database
 	 * @return
 	 */
 	public static List<ChatMessage> queryMessageBySession(String sid)
-	{
+	{		
 		List<ChatMessage> list = new ArrayList<ChatMessage>();
+		if(databaseRO == null ) return list;
 		try{
 			Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
 					new String[] {"msgJson"}, "sessionId='" + sid + "'", null, null, null, null, null);
@@ -99,6 +100,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void updateReadStatus(String msgId, boolean readStatus)
 	{
+		if(database == null ) return;
 		try{
 			if (hasMessage(msgId))
 			{
@@ -112,6 +114,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static int getUnreadCount(String sid, String uid)
 	{
+		if(databaseRO == null ) return 0;
 		String where = "( " + "readstatus=0 OR readstatus is NULL"  + " )";
 		if (sid != null)
 		{
@@ -146,6 +149,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static String getSessionId(String from, String to, String adId)
 	{
+		if(databaseRO == null ) return null;
 		String sid = null;
 		
 		String where = "(" + "(sender='" + from + "' AND receiver='" + to +"')" + " OR " + "(receiver='" + from + "' AND sender='" + to +"')" + ")";
@@ -176,6 +180,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static boolean hasMessage(String msgId)
 	{
+		if(databaseRO == null ) return false;
 		boolean exists = false;
 		try{
 			Cursor cur = databaseRO.query(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, 
@@ -200,6 +205,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static ChatMessage queryMessageByMsgId(String msgId)
 	{
+		if(databaseRO == null ) return null;
 		Cursor cur = null;
 		
 		try
@@ -231,6 +237,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void storeMessage(ChatMessage msg, boolean markRead)
 	{
+		if(database == null ) return;
 		ContentValues values = new ContentValues();
 		values.put("msgId", msg.getId());
 		values.put("adId", msg.getAdId());
@@ -258,6 +265,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void storeMessage(List<ChatMessage> messages, boolean markRead)
 	{
+		if(database == null ) return;
 		database.beginTransaction();
 		try
 		{
@@ -280,6 +288,7 @@ public class ChatMessageDatabase extends Database
 	 */
 	public static void deleteMsgOlderthan(long olderThan)
 	{
+		if(database == null ) return;
 		try{
 			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, "timestamp < " + olderThan, null);
 		}catch(Throwable e){
@@ -289,6 +298,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void deleteMsgBySession(String sid)
 	{
+		if(database == null ) return;
 		try
 		{
 			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE,  "sessionId='" + sid + "'", null);
@@ -301,6 +311,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void clearOldMessage(long keepCount)
 	{
+		if(databaseRO == null ) return;
 		Cursor cur;
 		long time = 0;
 		
@@ -332,6 +343,7 @@ public class ChatMessageDatabase extends Database
 	
 	public static void clearDatabase()
 	{
+		if(database == null ) return;
 		try{
 //			database.execSQL("delete * from " + DatabaseOpenHelper.CHAT_MESSAGE_TABLE);
 			database.delete(DatabaseOpenHelper.CHAT_MESSAGE_TABLE, null, null);
