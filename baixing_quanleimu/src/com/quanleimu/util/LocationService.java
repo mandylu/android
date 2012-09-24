@@ -50,7 +50,7 @@ public class LocationService{
 	}
 	
 	public void reverseGeocode(final float lat, final float lon, BXRgcListener callback){
-		
+		if(bMapManager == null) return;
 		class BXSearchListener implements MKSearchListener {
 			BXRgcListener rgcCallback = null;
 			
