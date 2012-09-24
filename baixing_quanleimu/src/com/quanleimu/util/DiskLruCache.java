@@ -240,8 +240,9 @@ public class DiskLruCache {
         int count = 0;
 
         Set< Entry<String, String> > entrySet = mLinkedHashMap.entrySet();
+        int size = mLinkedHashMap.size();
         while (count < MAX_REMOVALS &&
-                (cacheSize > maxCacheItemSize || cacheByteSize > maxCacheByteSize)) {
+                (size > 100 || cacheSize > maxCacheItemSize || cacheByteSize > maxCacheByteSize)) {
         	if(!entrySet.iterator().hasNext())	break;
         	
             eldestEntry = entrySet.iterator().next();
@@ -252,7 +253,8 @@ public class DiskLruCache {
             cacheSize = mLinkedHashMap.size();
             cacheByteSize -= eldestFileSize;
             count++;
-            
+            size = mLinkedHashMap.size();
+             
 //            if (BuildConfig.DEBUG) {
 //                //Log.d(TAG, "flushCache - Removed cache file, " + eldestFile + ", "
 //                        + eldestFileSize);
@@ -498,7 +500,6 @@ public class DiskLruCache {
 		try {
 			ois = new ObjectInputStream( new FileInputStream(mapIndex));
 			mLinkedHashMap = (Map<String, String>)ois.readObject();//Collections.synchronizedMap(() );	  
-			
 			if(null != mLinkedHashMap){
 //				Iterator<Entry<String, String>> iter = mLinkedHashMap.entrySet().iterator();
 //				while (iter.hasNext()) {
@@ -514,6 +515,7 @@ public class DiskLruCache {
 //				}
 //				
 				Object[] keyArray= mLinkedHashMap.keySet().toArray();
+				
 				if(null != keyArray){
 					for(Object key : keyArray){
 						String fileName = mLinkedHashMap.get(key.toString());
@@ -531,7 +533,6 @@ public class DiskLruCache {
 				maxCacheByteSize += cacheByteSize;
 				mNeedDumpToFile = true;
 			}
-			
 		} catch (FileNotFoundException e) {
 			// TODO Auto-generated catch block
 			e.printStackTrace();
