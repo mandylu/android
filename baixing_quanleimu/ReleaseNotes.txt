@@ -1,6 +1,6 @@
 v2.6.2
 date:2012/9/21
-svn revision:5522
+svn revision:5523
 main features:
 1. fix image request url error, which may cause thread leak
 2. remove auto loop request for image when it failed, to avoid ui lag, especially in offline mode
