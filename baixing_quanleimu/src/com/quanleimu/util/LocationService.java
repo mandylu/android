@@ -199,8 +199,13 @@ public class LocationService{
 			
 		//};	
 		if(bMapManager == null){
-			bMapManager = new BMapManager(context);
-			bMapManager.init("736C4435847CB7D20DD1131064E35E8941C934F5", null);
+			try{
+				bMapManager = new BMapManager(context);
+				bMapManager.init("736C4435847CB7D20DD1131064E35E8941C934F5", null);
+			}catch(Throwable e){
+				bMapManager = null;
+				return;
+			}
 		}
 		else{
 			bMapManager.stop();
