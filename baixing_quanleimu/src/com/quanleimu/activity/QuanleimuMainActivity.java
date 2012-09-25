@@ -13,6 +13,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
@@ -681,6 +682,20 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		
 		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
+		
+		Object firsttime = Util.loadDataFromLocate(this, "firsttime");
+		if(firsttime != null){
+			findViewById(R.id.topguide).setVisibility(View.GONE);
+			findViewById(R.id.textguide).setVisibility(View.GONE);
+		}else{
+			Util.saveDataToLocate(this, "firsttime", "yes");
+			findViewById(R.id.rl_guide).setOnClickListener(new OnClickListener(){
+				@Override
+				public void onClick(View v) {
+					v.setVisibility(View.GONE);
+				}
+			});
+		}
 		
 		this.splashJob = null; //Remove splash job reference.
 		
