@@ -21,8 +21,10 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
+import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 public class OpinionBackView extends BaseView {
@@ -53,6 +55,9 @@ public class OpinionBackView extends BaseView {
 
 		etOpinion = (EditText) findViewById(R.id.etOpinion);
 		etOpinion.findFocus();
+		if(-1 != opinionType){
+			findViewById(R.id.et_contact).setVisibility(View.GONE);
+		}
 		if(0 == opinionType){
 			etOpinion.setHint("请留下举报原因");
 		}
@@ -77,6 +82,10 @@ public class OpinionBackView extends BaseView {
 	@Override
 	public boolean onRightActionPressed(){
 		content = etOpinion.getText().toString();
+		String contact = ((TextView)findViewById(R.id.et_contact)).getText().toString();
+		if(contact != null && !contact.equals("")){
+			content += "联系方式: " + contact;
+		}
 		if (content.equals("")) {
 			Toast.makeText(getContext(), "内容不能为空",
 					Toast.LENGTH_SHORT).show();

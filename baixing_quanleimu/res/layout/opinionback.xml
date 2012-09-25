@@ -19,7 +19,18 @@
 	    android:minLines="6"
 	    android:typeface="monospace" 
 	    android:layout_alignParentTop="true"
-	    android:hint="感谢使用百姓网 android客户端，欢迎您反馈任何意见和问题，同时留下您的联系方式，方便我们及时联系您解决问题。">
+	    android:hint="感谢使用百姓网 android客户端，欢迎您反馈任何意见和问题，帮助我们做得更好~">
 	</EditText>
+
+	<EditText
+	    android:id="@+id/et_contact"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignLeft="@+id/etOpinion"
+	    android:layout_alignRight="@+id/etOpinion"
+	    android:layout_below="@+id/etOpinion"
+	    android:singleLine="true"
+	    android:hint="请留下您的手机号码、qq或Email地址"
+	    android:ems="10" />
 
 </RelativeLayout>
