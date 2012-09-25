@@ -34,7 +34,6 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		View setmain = inflator.inflate(R.layout.setmain, null);
 		this.addView(setmain);
 		
-		((RelativeLayout) findViewById(R.id.rlTelNum)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlWeibo)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlClearCache)).setOnClickListener(this);
 		( (RelativeLayout) findViewById(R.id.rlAbout)).setOnClickListener(this);
@@ -81,9 +80,6 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		((TextView)setmain.findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
 		
 		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
-		if (user != null) {
-			((TextView)setmain.findViewById(R.id.tvPhoneNum)).setText(user.getPhone());
-		}
 	}
 	
 //	public SetMainView(Context context){
@@ -102,9 +98,6 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		((TextView)findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
 		
 		user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
-		if (user != null) {
-			((TextView)findViewById(R.id.tvPhoneNum)).setText(user.getPhone());
-		}		
 	}
 	
 	@Override
@@ -129,62 +122,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 	@Override
 	public void onClick(View v) {
 		// 手机号码
-		if (v.getId() == ((RelativeLayout) findViewById(R.id.rlTelNum)).getId()) {
-			if (((TextView)findViewById(R.id.tvPhoneNum)).getText().equals("")) {
-				// 跳转登录界面
-				if(null != m_viewInfoListener){
-					m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
-				}
-			} else {
-				// 修改对话框
-
-				LayoutInflater inflater = LayoutInflater.from(getContext());
-				View linearlayout = inflater.inflate(
-						R.layout.changephonedialog, null);
-				TextView tvTelNum = (TextView) linearlayout
-						.findViewById(R.id.tvTelNum);
-				tvTelNum.setText("您已经登录到" + ((TextView)findViewById(R.id.tvPhoneNum)).getText().toString());
-				Button btnChange = (Button) linearlayout
-						.findViewById(R.id.btnChange);
-				Button btnCancel = (Button) linearlayout
-						.findViewById(R.id.btnCancel);
-
-				btnChange.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// 点击换号码，重新跳转到登录
-						changePhoneDialog.dismiss();
-
-						Util.clearData(getContext(), "user");
-						Util.clearData(getContext(), "userProfile");
-						Util.logout();
-						if(bundle != null){
-							bundle.remove("lastPost");
-						}
-						QuanleimuApplication.getApplication().setListMyPost(null);
-						
-						((TextView)SetMainView.this.findViewById(R.id.tvPhoneNum)).setText("");
-//						if(null != m_viewInfoListener){
-//							m_viewInfoListener.onNewView(new LoginView(getContext(), "设置"));
-//						}
-					}
-				});
-
-				btnCancel.setOnClickListener(new View.OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						changePhoneDialog.dismiss();
-					}
-				});
-				
-				changePhoneDialog = new AlertDialog.Builder(getContext()).setView(linearlayout).create();
-				changePhoneDialog.show();
-			}
-		}
-		
-		else if(v.getId() == R.id.rlWeibo){
+		if(v.getId() == R.id.rlWeibo){
 			if(QuanleimuApplication.getWeiboAccessToken() != null){
 				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
 				builder.setTitle("提示:")
@@ -257,8 +195,6 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 									
 									QuanleimuApplication.getApplication().ClearCache();
 									
-									//清空手机号码
-									((TextView)findViewById(R.id.tvPhoneNum)).setText("");
 									//清空签名档
 									((TextView)findViewById(R.id.personMark)).setText("");
 								}

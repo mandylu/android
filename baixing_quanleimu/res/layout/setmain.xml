@@ -34,57 +34,10 @@
                 android:layout_marginLeft="10dip"
                 android:layout_marginRight="10dip" >
 
-                <RelativeLayout
-                    android:id="@+id/rlTelNum"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:background="@drawable/list_selector"
-                    android:paddingBottom="10dip"
-                    android:paddingTop="10dip" >
-
-                    <TextView
-                        android:id="@+id/tvPhoneNumContent"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:duplicateParentState="true"
-                        android:text="手机号码"
-                        android:textColor="@drawable/list_textselector"
-                        android:textSize="16dip" >
-                    </TextView>
-
-                    <ImageView
-                        android:id="@+id/imageView1"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentRight="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginRight="10dip"
-                        android:focusable="false"
-                        android:src="@drawable/btn_viewad_right" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/tvPhoneNum"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_alignParentTop="true"
-                        android:layout_centerVertical="true"
-                        android:layout_marginLeft="10dip"
-                        android:layout_marginRight="10dip"
-                        android:layout_toLeftOf="@+id/imageView1"
-                        android:layout_toRightOf="@+id/tvPhoneNumContent"
-                        android:gravity="right"
-                        android:text="" >
-                    </TextView>
-                </RelativeLayout>
-
                 <TextView
                     android:id="@+id/border1"
                     android:layout_width="fill_parent"
                     android:layout_height="1dip"
-                    android:layout_below="@id/rlTelNum"
                     android:background="@drawable/list_divider" >
                 </TextView>
 
