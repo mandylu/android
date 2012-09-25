@@ -34,6 +34,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.BXLocation;
@@ -259,6 +260,15 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		});
 		
 		((TextView)findViewById(R.id.tvSubCateName)).setText(bundle.getString("name"));
+
+		String categoryName = bundle.getString("categoryName");
+		if(categoryName == null || categoryName.equals("") || categoryEnglishName == null || categoryEnglishName.equals("")){
+			findViewById(R.id.publishBtn).setVisibility(View.GONE);
+		}else{
+			findViewById(R.id.publishBtn).setOnClickListener(this);
+			findViewById(R.id.publishBtn).setVisibility(View.VISIBLE);
+		}
+
 	}
 
 		// 管理线程的Handler
@@ -509,6 +519,11 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	@Override
 	public void onClick(View v) {
 		switch(v.getId()){
+		case R.id.publishBtn:
+			String categoryName = bundle.getString("categoryName");
+			categoryName = categoryEnglishName + "," + categoryName;
+			m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)this.getContext(), this.bundle, categoryName));
+			break;
 		case R.id.btnRecent:
 			if(titleControlStatus != 0){
 				View btnNearBy = titleControl.findViewById(R.id.btnNearby);

@@ -1,6 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout 
-    xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
@@ -10,94 +9,102 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@drawable/home_bg"
-        android:orientation="vertical">
+        android:orientation="vertical" >
 
         <com.quanleimu.widget.PullToRefreshListView
-            android:listSelector="#00000000"
-            android:scrollingCache="false"
             android:id="@+id/lvGoodsList"
             android:layout_width="fill_parent"
-            android:fastScrollEnabled="false"
-            android:scrollbars="vertical"
-            android:focusable="true" 
             android:layout_height="fill_parent"
             android:divider="@drawable/list_divider"
             android:dividerHeight="1dp"
-            
+            android:fastScrollEnabled="false"
+            android:focusable="true"
+            android:footerDividersEnabled="true"
             android:headerDividersEnabled="false"
-			android:footerDividersEnabled="true"
-            
-            app:need_gap_header="true"/>
-        
+            android:listSelector="#00000000"
+            android:scrollbars="vertical"
+            android:scrollingCache="false"
+            app:need_gap_header="true" />
     </LinearLayout>
-    
-        <RelativeLayout 
+
+    <RelativeLayout
         android:id="@+id/linearStatusbar"
-        android:layout_height="wrap_content"
         android:layout_width="fill_parent"
-        android:background="#dd222222"
+        android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:gravity="center_vertical">
-        
+        android:background="#dd222222"
+        android:gravity="center_vertical" >
+
         <TextView
             android:id="@+id/tvSpaceOrTimeNumber"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:text="1"
-            android:textSize="20dip"
-            android:textColor="#ffffff"
-            android:textStyle="bold"
-            android:singleLine="true"
             android:layout_marginLeft="20dip"
-            android:layout_marginRight="5dip"/>
-        
-        <TextView 
+            android:layout_marginRight="5dip"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="1"
+            android:textColor="#ffffff"
+            android:textSize="20dip"
+            android:textStyle="bold" />
+
+        <TextView
             android:id="@+id/tvSpaceOrTimeUnit"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:textSize="15dip"
-            android:textColor="#ffffff"
-            android:layout_toRightOf="@+id/tvSpaceOrTimeNumber"
             android:layout_alignBottom="@+id/tvSpaceOrTimeNumber"
             android:layout_alignTop="@+id/tvSpaceOrTimeNumber"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeNumber"
+            android:gravity="bottom"
             android:singleLine="true"
-            android:text="小时"/>
-        	
-       <TextView 
+            android:text="小时"
+            android:textColor="#ffffff"
+            android:textSize="15dip" />
+
+        <TextView
             android:id="@+id/tvSpaceOrTimeScope"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom"
-            android:textSize="15dip"
-            android:textColor="#ffffff"
-            android:layout_toRightOf="@+id/tvSpaceOrTimeUnit"
             android:layout_alignBottom="@+id/tvSpaceOrTimeUnit"
             android:layout_alignTop="@+id/tvSpaceOrTimeUnit"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeUnit"
+            android:gravity="bottom"
             android:singleLine="true"
-            android:text="以内的："/>
-       
-		<TextView 
+            android:text="以内的："
+            android:textColor="#ffffff"
+            android:textSize="15dip" />
+
+        <TextView
             android:id="@+id/tvSubCateName"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:gravity="bottom|left"
-            android:textSize="16dip"
-            android:textColor="#ffffff"
-            android:layout_toRightOf="@+id/tvSpaceOrTimeScope"
             android:layout_alignBottom="@+id/tvSpaceOrTimeScope"
             android:layout_alignTop="@+id/tvSpaceOrTimeScope"
             android:layout_toLeftOf="@+id/imageQuickIndicator"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeScope"
+            android:gravity="bottom|left"
             android:singleLine="true"
             android:text="xxxx"
-            android:textStyle="bold"/>
-		
-		<ImageView 
-		    android:id="@+id/imageQuickIndicator"
-		    android:layout_width="wrap_content"
-		    android:layout_height="wrap_content"
-		    android:layout_alignParentRight="true"/>		
+            android:textColor="#ffffff"
+            android:textSize="16dip"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imageQuickIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
     </RelativeLayout>
+
+    <ImageButton
+        android:id="@+id/publishBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:background="@drawable/btn_listing_publish" >
+    </ImageButton>
 
 </RelativeLayout>

@@ -73,6 +73,7 @@ public class SecondCategoryView extends BaseView implements OnItemClickListener 
 					String toRet = secCate.englishName + "," + secCate.name;
 					m_viewInfoListener.onBack(msgBack, toRet);
 				}else{
+					bundle.putString("categoryName", secCate.getName());
 					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, secCate.getEnglishName()));
 				}
 			}

@@ -98,6 +98,7 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 		bundle.putString("siftresult", "");
 		bundle.putString("backPageName", "返回");
 		if(null != m_viewInfoListener){
+			bundle.putString("categoryName", selectedSubCate.getName());
 			m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, selectedSubCate.getEnglishName()));			
 		}
 	}
