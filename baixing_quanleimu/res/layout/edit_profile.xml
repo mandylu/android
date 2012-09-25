@@ -1,121 +1,138 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="match_parent"
     android:layout_height="match_parent"
     android:background="@drawable/home_bg"
-    android:paddingTop="15dp" >
-          <ImageView
-            android:id="@+id/personalImage"
-            android:layout_width="90dp"
-            android:layout_height="90dp"
-            android:layout_marginLeft="15dip"
-            android:scaleType="fitXY"
-            android:src="@drawable/pic_my_avator_boy" >
-        </ImageView>
-        
-        
-        <TableLayout
+    android:orientation="vertical"
+    android:paddingLeft="20dip"
+    android:paddingRight="20dip"
+    android:paddingTop="20dip" >
+
+    <RelativeLayout
+        android:id="@+id/rl_image"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/white_bk"
+        android:padding="10dip" >
+
+        <RelativeLayout
+            android:id="@+id/rl_personalImage"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:background="@drawable/overlay" >
+
+            <ImageView
+                android:id="@+id/personalImage"
+                android:layout_width="90dip"
+                android:layout_height="90dip"
+                android:layout_centerInParent="true" >
+            </ImageView>
+        </RelativeLayout>
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dip"
+            android:layout_toRightOf="@id/rl_personalImage"
+            android:text="上传头像"
+            android:textSize="22dip"
+            android:textStyle="bold" >
+        </TextView>
+    </RelativeLayout>
+
+    <TableLayout
         android:id="@+id/table_parent"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:stretchColumns="1"
-        android:layout_marginLeft="15dp"
-        android:layout_marginRight="15dp"
-        android:layout_toRightOf="@+id/personalImage"
-        android:background="@drawable/s_bg2" >
-
+        android:layout_marginTop="10dip"
+        android:background="@drawable/white_bk"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:stretchColumns="1" >
+
         <TableRow
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/table_row_top_margin"
-            android:layout_marginBottom="@dimen/table_row_bottom_margin">
-
+            android:layout_marginBottom="@dimen/table_row_bottom_margin"
+            android:layout_marginTop="@dimen/table_row_top_margin" >
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
+                android:layout_marginLeft="40dip"
                 android:gravity="right"
-                android:padding="3dp"
                 android:text="用户名"
-                android:textSize="@dimen/text_size_normal" />
-
+                android:textSize="20dip" />
+
             <EditText
                 android:id="@+id/username"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@android:color/transparent"
-                android:paddingLeft="5dp"
+                android:paddingLeft="15dip"
                 android:text="LieToMe"
-                android:textSize="@dimen/text_size_normal" >
-
+                android:textSize="20dip" >
             </EditText>
-"
         </TableRow>
 
         <TableRow
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="@drawable/list_divider" >
+            android:background="#CFCFCA" >
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                 >
-            </View>
-            
+                android:layout_height="1dp" />
         </TableRow>
-
+
         <TableRow
             android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_marginTop="@dimen/table_row_top_margin"
-            android:layout_marginBottom="@dimen/table_row_bottom_margin">
-
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/table_row_bottom_margin"
+            android:layout_marginTop="@dimen/table_row_top_margin" >
+
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:gravity="right"
                 android:padding="3dp"
                 android:text="性别"
-                android:textSize="@dimen/text_size_normal" />
-            
+                android:textSize="20dip" />
+
             <TextView
                 android:id="@+id/gender"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:padding="3dp"
+                android:paddingLeft="15dip"
                 android:text="男"
-                android:textSize="@dimen/text_size_normal" />
-            
+                android:textSize="20dip" />
+
             <Spinner
                 android:id="@+id/gender_selector"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:visibility="invisible"
-                android:entries="@array/genders"
                 android:background="@android:color/transparent"
+                android:entries="@array/genders"
                 android:paddingLeft="5dp"
-                >
-            </Spinner>
+                android:visibility="invisible" />
         </TableRow>
 
- 		<TableRow
+        <TableRow
             android:layout_width="fill_parent"
             android:layout_height="1dp"
-            android:background="@drawable/list_divider" >
+            android:background="#CFCFCA" >
 
             <View
                 android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                 >
-            </View>
-            
+                android:layout_height="1dp" />
         </TableRow>
-
+
         <TableRow
-            android:layout_width="match_parent"
-            android:layout_height="wrap_content" 
-            android:layout_marginTop="@dimen/table_row_top_margin"
-            android:layout_marginBottom="@dimen/table_row_bottom_margin">
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="@dimen/table_row_bottom_margin"
+            android:layout_marginTop="@dimen/table_row_top_margin" >
 
             <TextView
                 android:layout_width="wrap_content"
@@ -123,70 +140,46 @@
                 android:gravity="right"
                 android:padding="3dp"
                 android:text="城市"
-                android:textSize="@dimen/text_size_normal" />
-
-            <RelativeLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:id="@+id/change_city"
-               >
-
-                <TextView
-                    android:id="@+id/city"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_centerVertical="true"
-                    android:background="@android:color/transparent"
-                    android:paddingLeft="5dp"
-                    android:text="上海" 
-                    android:textSize="@dimen/text_size_normal">
-                </TextView>
-
-                <ImageView
-                    android:id="@+id/imageView1"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignParentRight="true"
-                    android:layout_centerVertical="true"
-                    android:layout_marginRight="10dip"
-                    android:focusable="false"
-                    android:src="@drawable/btn_viewad_right" >
-                </ImageView>
-            </RelativeLayout>
-        </TableRow>
-
- 	<TableRow
-            android:layout_width="fill_parent"
-            android:layout_height="1dp"
-            android:background="@drawable/list_divider" >
-
-            <View
-                android:layout_width="fill_parent"
-                android:layout_height="1dp"
-                 >
-            </View>
-            
-        </TableRow>
-
-        <TableRow android:layout_width="match_parent"
-            android:layout_height="wrap_content"
-            android:layout_marginTop="@dimen/table_row_top_margin"
-            android:layout_marginBottom="@dimen/table_row_bottom_margin">
+                android:textSize="20dip" />
 
             <TextView
-                android:gravity="right"
-                android:padding="3dp"
-                android:text="注册时间" 
-                android:textSize="@dimen/text_size_normal"/>
-
-            <TextView
-                android:paddingLeft="5dp"
-                android:id="@+id/create_time"
+                android:id="@+id/city"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
                 android:background="@android:color/transparent"
-                android:text="2012年12月"
-                android:textSize="@dimen/text_size_normal" >
-            </TextView>
+                android:paddingLeft="15dip"
+                android:text="上海"
+                android:textSize="20dip" />
+
+            <ImageView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:focusable="false"
+                android:src="@drawable/btn_viewad_right" />
         </TableRow>
     </TableLayout>
-          
-</RelativeLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:layout_marginTop="10dip"
+        android:orientation="horizontal" >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="注册时间"
+            android:textSize="18dip" />
+
+        <TextView
+            android:id="@+id/create_time"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:text="2012年12月"
+            android:textSize="18dip" />
+    </LinearLayout>
+
+</LinearLayout>

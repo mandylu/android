@@ -102,7 +102,7 @@ public class ProfileEditView extends BaseView {
 		newCityId = up.location;
 		updateText(up.nickName, R.id.username);
 		updateText(up.gender, R.id.gender);
-		findViewById(R.id.change_city).setOnClickListener(
+		findViewById(R.id.city).setOnClickListener(
 				new OnClickListener() {
 
 					public void onClick(View v) {
@@ -151,7 +151,7 @@ public class ProfileEditView extends BaseView {
 			loadCityMapping(newCityId);
 		}
 		
-		findViewById(R.id.personalImage).setOnClickListener(new OnClickListener() {
+		findViewById(R.id.rl_image).setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
 				ViewUtil.pickupPhoto(getContext(), 0);
