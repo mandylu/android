@@ -46,10 +46,9 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.LoginView.LoginThread;
-
+import com.quanleimu.util.LoginUtil;
 public class PersonalCenterEntryView extends BaseView implements
-		View.OnClickListener {
+		View.OnClickListener, LoginUtil.LoginListener{
 	private Bundle bundle = null;
 	private UserBean user = null;
 	private String json = null;
@@ -63,9 +62,32 @@ public class PersonalCenterEntryView extends BaseView implements
 	
 	static final int MSG_LOGINSUCCESS = 5;
 	static final int MSG_LOGINFAIL = 6;
+	static final int MSG_NEWREGISTERVIEW = 7;
+	static final int MSG_FORGETPASSWORDVIEW = 8;
 	private List<ChatSession> sessions = null;
 	private UserProfile up = null;
 	private BroadcastReceiver chatMessageReceiver;
+	private LoginUtil loginHelper;
+	
+	@Override
+	public void onLoginFail(String message){
+		Message msg = Message.obtain();
+		msg.what = MSG_LOGINFAIL;
+		msg.obj = message;
+		myHandler.sendMessage(msg);
+	}
+	public void onLoginSucceed(String message){
+		Message msg = Message.obtain();
+		msg.what = MSG_LOGINSUCCESS;
+		msg.obj = message;
+		myHandler.sendMessage(msg);		
+	}
+	public void onRegisterClicked(){
+		myHandler.sendEmptyMessage(MSG_NEWREGISTERVIEW);
+	}
+	public void onForgetClicked(){
+		myHandler.sendEmptyMessage(MSG_FORGETPASSWORDVIEW);
+	}
 
 	public PersonalCenterEntryView(Context context, Bundle bundle) {
 		super(context);
@@ -83,61 +105,6 @@ public class PersonalCenterEntryView extends BaseView implements
 		this.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
 		this.findViewById(R.id.personalEdit).setOnClickListener(this);
 	}
-
-	private boolean check(String account, String password) {
-		account = ((TextView)findViewById(R.id.et_account)).getText().toString();
-		password = ((TextView)findViewById(R.id.et_password)).getText().toString();
-		if (account == null || account.trim().equals("")) {
-			Toast.makeText(getContext(), "账号不能为空！", 0).show();
-			return false;
-		} else if (password == null || password.trim().equals("")) {
-			Toast.makeText(getContext(), "密码不能为空！", 0).show();
-			return false;
-		}
-		return true;
-	}
-	
-	private void parseLoginResponse(String json_response){
-		try {
-			JSONObject jsonObject = new JSONObject(json_response);
-
-			String id;
-			try {
-				id = jsonObject.getString("id");
-			} catch (Exception e) {
-				id = "";
-				e.printStackTrace();
-			}
-			JSONObject json = jsonObject.getJSONObject("error");
-			String message = json.getString("message");
-			
-			Message msg = Message.obtain();
-			
-			if (!id.equals("")) {
-				// 登录成功
-				UserBean user = new UserBean();
-				JSONObject jb = jsonObject.getJSONObject("id");
-				user.setId(jb.getString("userId"));
-				user.setPhone(jb.getString("mobile"));
-				//user.setPhone(accoutnEt.getText().toString());
-				String password = ((TextView)findViewById(R.id.et_password)).getText().toString();
-				user.setPassword(password);
-				QuanleimuApplication.getApplication().setMobile(user.getPhone());
-				Util.saveDataToLocate(getContext(), "user", user);
-				
-				msg.what = MSG_LOGINSUCCESS;				
-			}else{
-				msg.what = MSG_LOGINFAIL;
-			}
-			
-			msg.obj = message;		
-
-			myHandler.sendMessage(msg);
-		} catch (JSONException e) {
-			e.printStackTrace();
-			myHandler.sendEmptyMessage(2);
-		}		
-	}
 	
 	private void switchLayoutOnLogin(boolean logined){
 		if(logined){
@@ -150,32 +117,10 @@ public class PersonalCenterEntryView extends BaseView implements
 			title.m_rightActionHint="设置";
 			m_viewInfoListener.onTitleChanged(title);
 		}else{
-			findViewById(R.id.iv_forget).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v){
-					m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
-				}
-			});
-			findViewById(R.id.btn_register).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v){
-					m_viewInfoListener.onNewView(new RegisterView(PersonalCenterEntryView.this.getContext()));
-				}
-			});
-			findViewById(R.id.btn_login).setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v){
-					final String account = ((TextView)findViewById(R.id.et_account)).getText().toString();
-					final String password = ((TextView)findViewById(R.id.et_password)).getText().toString();
-					if(check(account, password)){
-						pd = ProgressDialog.show(getContext(), "提示", "正在登录，请稍候...");
-						pd.setCancelable(true);
-						new Thread(new LoginThread(account, password)).start();
-					}
-				}
-			});			
+			if(loginHelper == null){
+				loginHelper = new LoginUtil(findViewById(R.id.rl_login), this);
+			}
 			findViewById(R.id.rl_login).setVisibility(View.VISIBLE);
-			((TextView)findViewById(R.id.et_password)).setText("");
 			findViewById(R.id.rl_profile).setVisibility(View.GONE);
 			TitleDef title = new TitleDef();
 			title.m_leftActionHint="";
@@ -187,46 +132,6 @@ public class PersonalCenterEntryView extends BaseView implements
 
 	}
 	
-	class LoginThread implements Runnable {
-		private String account = "";
-		private String password = "";
-		public LoginThread(String account, String password){
-			this.account = account;
-			this.password = password;
-		}
-		public void run() {
-			String apiName = "user_login";
-			ArrayList<String> list = new ArrayList<String>();
-			try{
-				account = URLEncoder.encode(account, "UTF-8");
-			}
-			catch(Exception e){
-				e.printStackTrace();
-			}
-			list.add("mobile=" + account);
-			list.add("nickname=" + account);
-			list.add("password=" + password.trim());
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				String json = Communication.getDataByUrl(url, true);
-				if (json != null) {
-					parseLoginResponse(json);
-				} else {
-					myHandler.sendEmptyMessage(MSG_LOGINFAIL);
-				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				myHandler.sendEmptyMessage(10);
-				e.printStackTrace();
-			}
-			if(pd != null){
-				pd.dismiss();
-			}
-		}
-	}
-
 	@Override
 	public void onAttachedToWindow() {
 		super.onAttachedToWindow();
@@ -268,7 +173,7 @@ public class PersonalCenterEntryView extends BaseView implements
 			}else{
 				switchLayoutOnLogin(true);
 				((TextView)findViewById(R.id.btn_editprofile)).setText("编辑");
-				if(up == null){
+				if(up == null || (up.createTime.equals(""))){
 					new Thread(new GetPersonalProfileThread()).start();
 				}
 				else{
@@ -344,14 +249,14 @@ public class PersonalCenterEntryView extends BaseView implements
 			break;
 		case R.id.rl_wosent:
 			if(user == null){
-				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
+//				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
 			}else{
 				m_viewInfoListener.onNewView(new PersonalPostView(this.getContext(), bundle));
 			}			
 			break;
 		case R.id.rl_woprivatemsg:
 			if(user == null){
-				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
+//				m_viewInfoListener.onNewView(new LoginView(this.getContext(), "用户中心"));
 			}else{
 				m_viewInfoListener.onNewView(new SessionListView(this.getContext(), this.sessions));
 			}						
@@ -531,6 +436,12 @@ public class PersonalCenterEntryView extends BaseView implements
 		@Override
 		public void handleMessage(Message msg) {
 			switch (msg.what) {
+			case MSG_FORGETPASSWORDVIEW:
+				m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
+				break;
+			case MSG_NEWREGISTERVIEW:
+				m_viewInfoListener.onNewView(new RegisterView(PersonalCenterEntryView.this.getContext()));
+				break;
 			case MSG_LOGINSUCCESS:
 				if(msg.obj != null && msg.obj instanceof String){
 					Toast.makeText(getContext(), (String)msg.obj, 0).show();
@@ -746,6 +657,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			ChatMessageDatabase.prepareDB(getContext());
 			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getContext())));
 			((TextView)this.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
+		}else{
+			((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0未读");
 		}
 	}
 }

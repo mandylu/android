@@ -37,8 +37,9 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 	private BroadcastReceiver chatMessageReceiver;
 	
 	
-	public static final int MSG_NEW_MESSAGE = 1;
-	public static final int MSG_NEW_SESSION = 2;
+	private static final int MSG_NEW_MESSAGE = 1;
+	private static final int MSG_NEW_SESSION = 2;
+	private static final int MSG_NEW_SESSION_FAIL = 3;
 	
 	public SessionListView(Context ctx, List<ChatSession> sessions){
 		super(ctx);
@@ -167,8 +168,12 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 		public void handleMessage(Message msg) {
 			switch(msg.what)
 			{
+			case MSG_NEW_SESSION_FAIL:
+				findViewById(R.id.session_loading).setVisibility(View.GONE);
+				break;
 			case MSG_NEW_SESSION:
 				getAdapter().updateSessions((List<ChatSession>) msg.obj);
+				findViewById(R.id.session_loading).setVisibility(View.GONE);
 			case MSG_NEW_MESSAGE:
 				getAdapter().notifyDataSetChanged();
 				break;
@@ -227,7 +232,7 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 			
 			@Override
 			public void onServerResponse(String serverMessage) {
-				findViewById(R.id.session_loading).setVisibility(View.GONE);
+//				findViewById(R.id.session_loading).setVisibility(View.GONE);
 				List<ChatSession> newSessions = ChatSession.fromJson(serverMessage);
 				Message msg = handler.obtainMessage(MSG_NEW_SESSION, newSessions);
 				handler.sendMessage(msg);
@@ -236,7 +241,8 @@ public class SessionListView extends BaseView implements View.OnClickListener, P
 			@Override
 			public void onException(Exception ex) {
 				//Ignor this exception.
-				findViewById(R.id.session_loading).setVisibility(View.GONE);
+				handler.sendEmptyMessage(MSG_NEW_SESSION_FAIL);
+//				findViewById(R.id.session_loading).setVisibility(View.GONE);
 			}
 		});
 	}

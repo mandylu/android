@@ -170,7 +170,7 @@ public class RegisterView extends BaseView{
 						// 注册成功
 						
 						UserBean user = new UserBean();
-						user.setId(accoutnEt.getText().toString());
+						user.setId(usrId);
 						user.setPhone(accoutnEt.getText().toString());
 						user.setPassword(passwordEt.getText().toString());
 						QuanleimuApplication.getApplication().setMobile(user.getPhone());
