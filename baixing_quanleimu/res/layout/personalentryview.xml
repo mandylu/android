@@ -47,7 +47,7 @@
                         android:layout_height="wrap_content"
                         android:gravity="center_vertical"
                         android:paddingLeft="15dip"
-                        android:text="手机号"
+                        android:text="用户名"
                         android:textColor="#82807C"
                         android:textSize="22dip">
                     </TextView>
@@ -60,7 +60,7 @@
                         android:layout_toRightOf="@id/tv_account"
                         android:background="@null"
                         android:gravity="center_vertical"
-                        android:hint="11位数字/昵称"
+                        android:hint="手机号/昵称"
                         android:paddingLeft="15dip"
                         android:paddingRight="15dip"
                         android:textSize="22dip" >

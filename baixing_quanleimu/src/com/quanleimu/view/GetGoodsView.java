@@ -4,8 +4,10 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
@@ -20,6 +22,7 @@ import android.view.View;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ProgressBar;
@@ -62,7 +65,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	
 	private List<String> basicParams = null;
 	
-	private int titleControlStatus = 0;//0:Left(Recent), 1: Right(Nearby)
+//	private int titleControlStatus = 0;//0:Left(Recent), 1: Right(Nearby)
+	private int titleControlStatus = 1;//0:Right(Recent), 1: Left(Nearby)
 	
 	private BXLocation curLocation = null;
 
@@ -188,12 +192,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		title.m_title = bundle.getString("name");
 		title.m_rightActionHint = "筛选";
 		
-		if(null == titleControl){
-			LayoutInflater inflater = LayoutInflater.from(this.getContext());
-			titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
-			titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
-			titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
-		}
+//		if(null == titleControl){
+//		}
 		title.m_titleControls = titleControl;
 		
 		return title;
@@ -207,6 +207,11 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
 		View v = inflater.inflate(R.layout.goodslist, null);
 		this.addView(v);
+		
+		titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
+		titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
+		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
+
 
 		lvGoodsList = (PullToRefreshListView) findViewById(R.id.lvGoodsList);
 		lvGoodsList.setOnRefreshListener(this);
@@ -238,8 +243,21 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " AND status:0");
 		}
+
 		
 		goodsListLoader = new GoodsListLoader(basicParams, myHandler, null, new GoodsList());
+		
+		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
+		if(curLocation == null){
+			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+			this.titleControlStatus = 0;
+		}else{
+			basicParams.add("lat="+curLocation.fLat);
+			basicParams.add("lng="+curLocation.fLon);
+			goodsListLoader.setNearby(true);
+		}
+		
 		goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -528,12 +546,12 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			if(titleControlStatus != 0){
 				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
 				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
-				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				View btnRecent = titleControl.findViewById(R.id.btnRecent);
 				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
-				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
@@ -553,14 +571,25 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			break;
 		case R.id.btnNearby:
 			if(titleControlStatus != 1){
+				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
+				if(curLocation == null){
+					new AlertDialog.Builder(this.getContext()).setTitle("提醒").setMessage("无法确定当前位置")
+					.setPositiveButton("确定", new DialogInterface.OnClickListener(){
+						@Override
+						public void onClick(DialogInterface dialog, int which){
+							dialog.dismiss();
+						}
+					}).show();
+					return;
+				}
 				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
 				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
-				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
 				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				View btnRecent = titleControl.findViewById(R.id.btnRecent);
 				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
-				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
@@ -572,7 +601,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				params.addAll(basicParams);
 //				params.add("nearby=true");
 				goodsListLoader.setNearby(true);
-				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
+
 				//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
 				params.add("lat="+curLocation.fLat);
 				params.add("lng="+curLocation.fLon);
