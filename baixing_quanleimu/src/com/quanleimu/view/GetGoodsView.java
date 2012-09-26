@@ -188,7 +188,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 	public TitleDef getTitleDef(){
 		TitleDef title = new TitleDef();
 		title.m_visible = true;
-		title.m_leftActionHint = bundle.getString("backPageName");
+		title.m_leftActionHint = "返回";//bundle.getString("backPageName");
 		title.m_title = bundle.getString("name");
 		title.m_rightActionHint = "筛选";
 		
