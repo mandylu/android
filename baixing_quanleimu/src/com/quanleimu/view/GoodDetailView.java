@@ -1739,7 +1739,9 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		TitleDef title = new TitleDef();
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
-		title.m_title = "详细信息";
+		title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
+					this.mListLoader.getGoodsList().getData().size();
+		
 		title.m_visible = true;
 		
 		if(isMyAd()){
