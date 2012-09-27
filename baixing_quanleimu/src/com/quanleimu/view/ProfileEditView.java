@@ -2,8 +2,10 @@ package com.quanleimu.view;
 
 import java.io.File;
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.LinkedHashMap;
+import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -11,6 +13,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -26,12 +29,14 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.ArrayAdapter;
 import android.widget.ImageView;
 import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
+import com.quanleimu.adapter.GenderSpinnerAdapter;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.imageCache.SimpleImageLoader;
@@ -42,6 +47,7 @@ import com.quanleimu.util.UploadImageCommand;
 import com.quanleimu.util.UploadImageCommand.ProgressListener;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.MultiLevelSelectionView.MultiLevelItem;
+import com.quanleimu.widget.GenderPopupDialog;
 
 public class ProfileEditView extends BaseView {
 
@@ -118,30 +124,51 @@ public class ProfileEditView extends BaseView {
 
 				});
 
+		
 		findViewById(R.id.gender).setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View v) {
-				findViewById(R.id.gender_selector).performClick();
+				GenderPopupDialog dlg = new GenderPopupDialog(ProfileEditView.this.getContext(), 
+						((TextView)findViewById(R.id.gender)).getText().equals("男"));
+				dlg.show();
+				dlg.setOnDismissListener(new DialogInterface.OnDismissListener(){
+
+					@Override
+					public void onDismiss(DialogInterface dialog) {
+						// TODO Auto-generated method stub
+						if(dialog != null){
+							((TextView)findViewById(R.id.gender)).setText(((GenderPopupDialog)dialog).isBoy() ? "男" : "女");
+						}
+					}
+					
+				});
+//				findViewById(R.id.gender_selector).setVisibility(View.VISIBLE);
 			}
 		});
 		
-		Spinner selector = (Spinner) findViewById(R.id.gender_selector);
-		if (up.gender!=null && up.gender.length()>0)
-		{
-			selector.setSelection("男".equals(up.gender)?0 : 1);
-		}
-		selector.setOnItemSelectedListener(new OnItemSelectedListener(){
-
-			@Override
-			public void onItemSelected(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
-				updateText(arg2 == 0? "男" : "女", R.id.gender);
-			}
-
-			@Override
-			public void onNothingSelected(AdapterView<?> arg0) {
-				
-			}});
+//		Spinner selector = (Spinner) findViewById(R.id.gender_selector);
+//		selector.setVisibility(View.GONE);
+//		selector.setBackgroundResource(R.drawable.bk_box);
+//		List<String> genders = new ArrayList<String>();
+//		genders.add("男");
+//		genders.add("女");
+//		selector.setAdapter(new GenderSpinnerAdapter(this.getContext(), genders));
+////		if (up.gender!=null && up.gender.length()>0)
+////		{
+////			selector.setSelection("男".equals(up.gender)?0 : 1);
+////		}
+//		selector.setOnItemSelectedListener(new OnItemSelectedListener(){
+//
+//			@Override
+//			public void onItemSelected(AdapterView<?> arg0, View arg1,
+//					int arg2, long arg3) {
+//				updateText(arg2 == 0? "男" : "女", R.id.gender);
+//			}
+//
+//			@Override
+//			public void onNothingSelected(AdapterView<?> arg0) {
+//				
+//			}});
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
 		updateText(format.format(new Date(Long.parseLong(up.createTime) * 1000)), R.id.create_time);

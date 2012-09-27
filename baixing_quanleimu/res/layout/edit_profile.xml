@@ -126,15 +126,6 @@
                             android:paddingLeft="15dip"
                             android:text="男"
                             android:textSize="20dip" />
-
-                        <Spinner
-                            android:id="@+id/gender_selector"
-                            android:layout_width="wrap_content"
-                            android:layout_height="wrap_content"
-                            android:background="@android:color/transparent"
-                            android:entries="@array/genders"
-                            android:paddingLeft="5dp"
-                            android:visibility="invisible" />
                     </TableRow>
 
                     <TextView
@@ -172,6 +163,7 @@
                             android:layout_width="wrap_content"
                             android:layout_height="wrap_content"
                             android:layout_gravity="center_vertical"
+                            android:layout_marginRight="10dip"
                             android:focusable="false"
                             android:src="@drawable/btn_viewad_right" />
                     </TableRow>
