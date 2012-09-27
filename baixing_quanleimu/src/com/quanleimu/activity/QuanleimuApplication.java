@@ -201,7 +201,11 @@ public class QuanleimuApplication extends Application implements LocationService
 	}
 
 	public void setListLookHistory(List<GoodsDetail> listLookHistory) {
-		this.listLookHistory = listLookHistory;
+		if(listLookHistory != null && listLookHistory.size() > 50){
+			this.listLookHistory = new ArrayList<GoodsDetail>(listLookHistory.subList(0, 50));
+		}else{
+			this.listLookHistory = listLookHistory;
+		}
 	}
 
 	public List<GoodsDetail> getListMyStore() {
