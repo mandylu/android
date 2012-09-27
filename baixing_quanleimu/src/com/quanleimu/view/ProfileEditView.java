@@ -36,7 +36,6 @@ import android.widget.TextView;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GenderSpinnerAdapter;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.imageCache.SimpleImageLoader;

@@ -35,13 +35,13 @@ public class SessionListAdapter extends BaseAdapter {
 	}
 
 	public void setList(List<ChatSession> list) {
-		this.list = list;
+		this.list = list == null ? this.list : list;
 	}
 
 	public SessionListAdapter(Context context, List<ChatSession> list) {
 		super();
 		this.context = context;
-		this.list = list;
+		this.list = list == null ? this.list : list;
 		mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 

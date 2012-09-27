@@ -32,6 +32,8 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:autoLink="map|phone|web"
+            android:paddingBottom="2dip"
+            android:paddingTop="2dip"
             android:text="my message"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:textColor="#000000" />
