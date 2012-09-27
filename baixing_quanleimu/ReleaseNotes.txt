@@ -1,3 +1,14 @@
+v2.7
+date:2012/9/29
+svn revision:5565
+main features:
+1. support post in listing view
+2. update profile view
+3. add guide in first use for changing city
+4. use nearby instead of recent in getgoodsview
+5. limit file cache up to 100 to improve performance
+6. fix bug
+
 v2.6.2
 date:2012/9/21
 svn revision:5523
