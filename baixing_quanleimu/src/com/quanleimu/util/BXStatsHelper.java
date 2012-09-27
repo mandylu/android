@@ -14,6 +14,9 @@ public class BXStatsHelper {
 	public static final String TYPE_SIXIN_SEND = "sixin";
 	public static final String TYPE_WEIBO_SEND = "weibo";
 	public static final String TYPE_WEIXIN_SEND = "weixin";
+	public static final String TYPE_HOTS_SEND = "hots";
+	public static final String TYPE_HOMESEARCH_SEND = "homesearch";
+	public static final String TYPE_LISTINGFILTER_SEND = "listingfilter";
 
 	private static final String TYPE_ADS_ID = "adIds";
 	
@@ -30,7 +33,9 @@ public class BXStatsHelper {
 			new BXStats(TYPE_CALL, 0), new BXStats(TYPE_AD_VIEW, 0),
 			new BXStats(TYPE_ADD_CONTACT, 0), new BXStats(TYPE_SMS_SEND, 0),
 			new BXStats(TYPE_SIXIN_SEND, 0), new BXStats(TYPE_WEIBO_SEND, 0),
-			new BXStats(TYPE_WEIXIN_SEND, 0), new AdViewStats(TYPE_ADS_ID, 0)
+			new BXStats(TYPE_WEIXIN_SEND, 0), new AdViewStats(TYPE_ADS_ID, 0),
+			new BXStats(TYPE_HOTS_SEND, 0), new AdViewStats(TYPE_HOMESEARCH_SEND, 0),
+			new BXStats(TYPE_LISTINGFILTER_SEND, 0)
 		};
 		
 		statusList = new ArrayList<BXStats>();

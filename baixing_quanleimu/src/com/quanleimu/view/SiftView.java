@@ -26,6 +26,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.entity.values;
@@ -203,6 +204,7 @@ public class SiftView extends BaseView {
 //					toast.show();
 //				}
 			}
+			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_LISTINGFILTER_SEND, null);
 		}		
 		
 		

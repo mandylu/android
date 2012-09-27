@@ -45,6 +45,7 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.ImageLoaderCallback;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
@@ -293,6 +294,7 @@ public class HomePageView
 					bundle.putString("backPageName", "首页");
 					m_viewInfoListener.onNewView(new GetGoodsView(getContext(), bundle, listHot.get(arg2).getHotData().getKeyword()));
 				}
+				BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_HOTS_SEND, null);
 			}
 		});
 

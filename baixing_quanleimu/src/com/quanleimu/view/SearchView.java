@@ -11,6 +11,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import android.app.ProgressDialog;
@@ -220,7 +221,8 @@ public class SearchView extends BaseView implements View.OnClickListener{
 				 bundle.putString("actType", "search");
 				 bundle.putString("name", "");
 				 
-				 m_viewInfoListener.onExit(SearchView.this);						 
+				 m_viewInfoListener.onExit(SearchView.this);	
+				 BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_HOMESEARCH_SEND, null);
 				 m_viewInfoListener.onNewView(new SearchGoodsView(getContext(), bundle));
 				 m_viewInfoListener.onPopView(SearchGoodsView.class.getName());
 			 }
