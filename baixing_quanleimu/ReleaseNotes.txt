@@ -1,6 +1,6 @@
 v2.7
 date:2012/9/29
-svn revision:5565
+svn revision:5568
 main features:
 1. support post in listing view
 2. update profile view
