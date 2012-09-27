@@ -1,6 +1,7 @@
 package com.quanleimu.view;
 
 import java.io.File;
+import java.net.URLEncoder;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -354,7 +355,7 @@ public class ProfileEditView extends BaseView {
 		ParameterHolder params = new ParameterHolder();
 		params.addParameter("nickname", getTextData(R.id.username));
 		params.addParameter("gender", getTextData(R.id.gender));
-		params.addParameter("所在地", newCityId);
+		params.addParameter(URLEncoder.encode("所在地"), newCityId);
 		params.addParameter("userId", up.userId);
 		if (profileUri != null)
 		{

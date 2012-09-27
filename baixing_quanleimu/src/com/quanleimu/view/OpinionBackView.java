@@ -84,7 +84,7 @@ public class OpinionBackView extends BaseView {
 		content = etOpinion.getText().toString();
 		String contact = ((TextView)findViewById(R.id.et_contact)).getText().toString();
 		if(contact != null && !contact.equals("")){
-			content += "联系方式: " + contact;
+			content += "    联系方式: " + contact;
 		}
 		if (content.equals("")) {
 			Toast.makeText(getContext(), "内容不能为空",
@@ -156,7 +156,7 @@ public class OpinionBackView extends BaseView {
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("mobile=" + mobile);
-			list.add((-1 != opinionType ? "description=" : "feedback=") + URLEncoder.encode(etOpinion.getText().toString()));
+			list.add((-1 != opinionType ? "description=" : "feedback=") + URLEncoder.encode(content));
 			if(-1 != opinionType){
 				list.add("adId=" + adId);
 			}
