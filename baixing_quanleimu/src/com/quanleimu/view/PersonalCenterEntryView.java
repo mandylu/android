@@ -115,6 +115,8 @@ public class PersonalCenterEntryView extends BaseView implements
 			title.m_title = "用户中心";
 			title.m_leftActionHint="注销";
 			title.m_rightActionHint="设置";
+			findViewById(R.id.profile_background).setVisibility(View.VISIBLE);
+			findViewById(R.id.seperator_login).setVisibility(View.GONE);
 			m_viewInfoListener.onTitleChanged(title);
 		}else{
 			if(loginHelper == null){
@@ -127,7 +129,9 @@ public class PersonalCenterEntryView extends BaseView implements
 			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 			title.m_title = "用户中心";
 			title.m_rightActionHint="设置";
-			m_viewInfoListener.onTitleChanged(title);			
+			m_viewInfoListener.onTitleChanged(title);
+			findViewById(R.id.profile_background).setVisibility(View.GONE);
+			findViewById(R.id.seperator_login).setVisibility(View.VISIBLE);
 		}
 
 	}
@@ -319,12 +323,12 @@ public class PersonalCenterEntryView extends BaseView implements
 	@Override
 	public TitleDef getTitleDef() {
 		TitleDef title = new TitleDef();
-		title.m_leftActionHint = "设置";
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
+//		title.m_leftActionHint = "设置";
+//		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "用户中心";
-		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_CUSTOM;
-		title.m_rightActionHint = "";
-		title.rightCustomResourceId = R.drawable.btn_refresh;
+//		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_CUSTOM;
+//		title.m_rightActionHint = "";
+//		title.rightCustomResourceId = R.drawable.btn_refresh;
 		title.m_visible = true;
 		return title;
 	}

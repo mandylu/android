@@ -1,6 +1,7 @@
 package com.quanleimu.adapter;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
@@ -25,7 +26,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Util;
 
 public class SessionListAdapter extends BaseAdapter {
-	private List<ChatSession> list = null;
+	private List<ChatSession> list = new ArrayList<ChatSession>();
 	private Context context;
 	private LayoutInflater mInflater;
 

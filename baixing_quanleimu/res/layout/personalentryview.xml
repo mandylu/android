@@ -14,106 +14,122 @@
             android:layout_height="wrap_content"
             android:orientation="vertical" >
 
-			<include layout="@layout/loginlayout">
-			    
-			</include>
+            <include layout="@layout/loginlayout" >
+            </include>
 
-            <RelativeLayout
-                android:id="@+id/rl_profile"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:paddingBottom="15dip"
-                android:paddingTop="5dip" >
-
-                <ImageView
-                    android:id="@+id/personalImage"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_marginLeft="15dip"
-                    android:src="@drawable/pic_my_avator_boy" >
-                </ImageView>
-
-                <TextView
-                    android:id="@+id/personalNick"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_alignTop="@id/personalImage"
-                    android:layout_toRightOf="@id/personalImage"
-                    android:paddingLeft="10dip"
-                    android:textColor="#82807C"
-                    android:textSize="22dip"
-                    android:textStyle="bold" >
-                </TextView>
-
-                <LinearLayout
-                    android:id="@+id/llprofile"
-                    android:layout_width="fill_parent"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/personalNick"
-                    android:layout_marginTop="3dip"
-                    android:layout_toRightOf="@id/personalImage"
-                    android:gravity="center_vertical"
-                    android:orientation="horizontal"
-                    android:paddingLeft="10dip" >
-
-                    <ImageView
-                        android:id="@+id/personalGenderImage"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:layout_gravity="center_vertical" >
-                    </ImageView>
-
-                    <TextView
-                        android:id="@+id/personalLocation"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="5dip"
-                        android:textColor="#82807C"
-                        android:textSize="16dip">
-                    </TextView>
-                </LinearLayout>
-
-                <TextView
-                    android:id="@+id/personalRegisterTime"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_below="@id/llprofile"
-                    android:layout_marginTop="2dip"
-                    android:layout_toRightOf="@id/personalImage"
-                    android:paddingLeft="10dip"
-                    android:textColor="#82807C"
-                    android:textSize="16dip">
-                </TextView>
-
-                <LinearLayout
-                    android:id="@+id/personalEdit"
-                    android:layout_width="wrap_content"
-                    android:layout_height="wrap_content"
-                    android:layout_alignBottom="@id/personalImage"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginRight="10dip"
-                    android:background="@drawable/edit_btn_bg"
-                    android:clickable="true"
-                    android:gravity="center_vertical" >
-
-                    <TextView
-                        android:id="@+id/btn_editprofile"
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:paddingLeft="5dip"
-                        android:paddingRight="5dip"
-                        android:text="编辑"
-                        android:textColor="#82807C"
-                        android:textSize="18dip" >
-                    </TextView>
-                </LinearLayout>
-            </RelativeLayout>
-
-            <TextView
+            <View
+                android:id="@+id/seperator_login"
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
                 android:background="@drawable/list_divider" >
-            </TextView>
+            </View>
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content" >
+
+                <ImageView
+                    android:id="@+id/profile_background"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_alignBottom="@+id/rl_profile"
+                    android:layout_alignLeft="@+id/rl_profile"
+                    android:layout_alignRight="@+id/rl_profile"
+                    android:layout_alignTop="@+id/rl_profile"
+                    android:background="@drawable/overlay_profile" >
+                </ImageView>
+
+                <RelativeLayout
+                    android:id="@+id/rl_profile"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:paddingBottom="20dip"
+                    android:paddingTop="5dip" >
+
+                    <ImageView
+                        android:id="@+id/personalImage"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_marginLeft="15dip"
+                        android:src="@drawable/pic_my_avator_boy" >
+                    </ImageView>
+
+                    <TextView
+                        android:id="@+id/personalNick"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_alignTop="@id/personalImage"
+                        android:layout_toRightOf="@id/personalImage"
+                        android:paddingLeft="10dip"
+                        android:textColor="#82807C"
+                        android:textSize="22dip"
+                        android:textStyle="bold" >
+                    </TextView>
+
+                    <LinearLayout
+                        android:id="@+id/llprofile"
+                        android:layout_width="fill_parent"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/personalNick"
+                        android:layout_marginTop="3dip"
+                        android:layout_toRightOf="@id/personalImage"
+                        android:gravity="center_vertical"
+                        android:orientation="horizontal"
+                        android:paddingLeft="10dip" >
+
+                        <ImageView
+                            android:id="@+id/personalGenderImage"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:layout_gravity="center_vertical" >
+                        </ImageView>
+
+                        <TextView
+                            android:id="@+id/personalLocation"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dip"
+                            android:textColor="#82807C"
+                            android:textSize="16dip" >
+                        </TextView>
+                    </LinearLayout>
+
+                    <TextView
+                        android:id="@+id/personalRegisterTime"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_below="@id/llprofile"
+                        android:layout_marginTop="2dip"
+                        android:layout_toRightOf="@id/personalImage"
+                        android:paddingLeft="10dip"
+                        android:textColor="#82807C"
+                        android:textSize="16dip" >
+                    </TextView>
+
+                    <LinearLayout
+                        android:id="@+id/personalEdit"
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignBottom="@id/personalImage"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="10dip"
+                        android:background="@drawable/edit_btn_bg"
+                        android:clickable="true"
+                        android:gravity="center_vertical" >
+
+                        <TextView
+                            android:id="@+id/btn_editprofile"
+                            android:layout_width="wrap_content"
+                            android:layout_height="wrap_content"
+                            android:paddingLeft="5dip"
+                            android:paddingRight="5dip"
+                            android:text="编辑"
+                            android:textColor="#82807C"
+                            android:textSize="18dip" >
+                        </TextView>
+                    </LinearLayout>
+                </RelativeLayout>
+            </RelativeLayout>
 
             <RelativeLayout
                 android:id="@+id/rl_wosent"
@@ -143,7 +159,7 @@
                     android:gravity="center_vertical"
                     android:text="已发布的信息"
                     android:textColor="@drawable/list_textselector"
-                    android:textSize="20dip">
+                    android:textSize="20dip" >
                 </TextView>
 
                 <ImageView
@@ -169,7 +185,7 @@
                     android:paddingRight="3dip"
                     android:text="0"
                     android:textColor="#FFFFFF"
-                    android:textSize="18dip">
+                    android:textSize="18dip" >
                 </TextView>
             </RelativeLayout>
 
@@ -208,7 +224,7 @@
                     android:gravity="center_vertical"
                     android:text="收藏的信息"
                     android:textColor="@drawable/list_textselector"
-                    android:textSize="20dip">
+                    android:textSize="20dip" >
                 </TextView>
 
                 <ImageView
@@ -233,7 +249,7 @@
                     android:paddingLeft="3dip"
                     android:paddingRight="3dip"
                     android:textColor="#FFFFFF"
-                    android:textSize="18dip">
+                    android:textSize="18dip" >
                 </TextView>
             </RelativeLayout>
 
@@ -272,7 +288,7 @@
                     android:gravity="center_vertical"
                     android:text="浏览历史"
                     android:textColor="@drawable/list_textselector"
-                    android:textSize="20dip">
+                    android:textSize="20dip" >
                 </TextView>
 
                 <ImageView
@@ -297,7 +313,7 @@
                     android:paddingLeft="3dip"
                     android:paddingRight="3dip"
                     android:textColor="#FFFFFF"
-                    android:textSize="18dip">
+                    android:textSize="18dip" >
                 </TextView>
             </RelativeLayout>
 
@@ -336,7 +352,7 @@
                     android:gravity="center_vertical"
                     android:text="私信"
                     android:textColor="@drawable/list_textselector"
-                    android:textSize="20dip">
+                    android:textSize="20dip" >
                 </TextView>
 
                 <ImageView
@@ -362,7 +378,7 @@
                     android:paddingRight="3dip"
                     android:text="0"
                     android:textColor="#FFFFFF"
-                    android:textSize="18dip">
+                    android:textSize="18dip" >
                 </TextView>
             </RelativeLayout>
         </LinearLayout>

@@ -7,6 +7,7 @@ import java.util.ArrayList;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.ProgressDialog;
 import android.os.Message;
 import android.view.View;
 import android.widget.TextView;
@@ -25,6 +26,7 @@ public class LoginUtil implements View.OnClickListener{
 	}
 	private View view;
 	private LoginListener listener;
+	private ProgressDialog pd;
 	public LoginUtil(View v, LoginListener listener){
 		view = v;
 		this.listener = listener;
@@ -55,6 +57,8 @@ public class LoginUtil implements View.OnClickListener{
 			String password = ((TextView)view.findViewById(R.id.et_password)).getText().toString();
 			
 			if(check(account, password)){
+				pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
+				pd.show();
 				(new Thread(new LoginThread(account, password))).start();
 			}
 		}else if(v.getId() == R.id.iv_forget){
@@ -147,6 +151,9 @@ public class LoginUtil implements View.OnClickListener{
 				String json = Communication.getDataByUrl(url, true);
 				if (json != null) {
 					parseLoginResponse(json);
+					if(pd != null){
+						pd.dismiss();
+					}
 					return;
 				}
 			} catch (UnsupportedEncodingException e) {
@@ -154,6 +161,10 @@ public class LoginUtil implements View.OnClickListener{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+			if(pd != null){
+				pd.dismiss();
+			}
+			
 			if(listener != null){
 				listener.onLoginFail("登录未成功，请稍后重试！");
 			}	
