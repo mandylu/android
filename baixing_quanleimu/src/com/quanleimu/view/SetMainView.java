@@ -34,7 +34,7 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 		View setmain = inflator.inflate(R.layout.setmain, null);
 		this.addView(setmain);
 		
-		((RelativeLayout) findViewById(R.id.rlWeibo)).setOnClickListener(this);
+//		((RelativeLayout) findViewById(R.id.rlWeibo)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlClearCache)).setOnClickListener(this);
 		( (RelativeLayout) findViewById(R.id.rlAbout)).setOnClickListener(this);
 		((RelativeLayout) findViewById(R.id.rlMark)).setOnClickListener(this);
@@ -47,13 +47,13 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 			token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
 			token.setExpiresIn(tokenWrapper.getExpires());
 		}
-		String nick = (String)Helper.loadDataFromLocate(this.getContext(), "weiboNickName");
-		if(token != null && nick != null){
-			((TextView)findViewById(R.id.tvWeiboNick)).setText(nick);
-			if(QuanleimuApplication.getWeiboAccessToken() == null){
-				QuanleimuApplication.setWeiboAccessToken(token);
-			}
-		}
+//		String nick = (String)Helper.loadDataFromLocate(this.getContext(), "weiboNickName");
+//		if(token != null && nick != null){
+//			((TextView)findViewById(R.id.tvWeiboNick)).setText(nick);
+//			if(QuanleimuApplication.getWeiboAccessToken() == null){
+//				QuanleimuApplication.setWeiboAccessToken(token);
+//			}
+//		}
 		
 		final TextView textImg = (TextView)findViewById(R.id.textView3);
 		if(QuanleimuApplication.isTextMode()){
@@ -121,54 +121,54 @@ public class SetMainView extends BaseView implements View.OnClickListener{
 
 	@Override
 	public void onClick(View v) {
-		// 手机号码
-		if(v.getId() == R.id.rlWeibo){
-			if(QuanleimuApplication.getWeiboAccessToken() != null){
-				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
-				builder.setTitle("提示:")
-						.setMessage("是否解除绑定？")
-						.setNegativeButton("否", null)
-						.setPositiveButton("是",
-								new DialogInterface.OnClickListener() {
-	
-									@Override
-									public void onClick(DialogInterface dialog,
-											int which) {
-										
-										Helper.saveDataToLocate(SetMainView.this.getContext(), "weiboToken", null);
-										Helper.saveDataToLocate(SetMainView.this.getContext(), "weiboNickName", null);
-										QuanleimuApplication.setWeiboAccessToken(null);
-										Weibo.getInstance().setAccessToken(null);
-										Weibo.getInstance().setRequestToken(null);
-										Weibo.getInstance().setupConsumerConfig("", "");
-										((TextView)findViewById(R.id.tvWeiboNick)).setText("");
-									}
-								});
-				builder.create().show();	
-			}
-			else{
-				Weibo weibo = Weibo.getInstance();
-				weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
-				weibo.setRedirectUrl("http://www.baixing.com");
-//				weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener());
-                WeiboParameters parameters=new WeiboParameters();
-                parameters.add("forcelogin", "true");
-                Utility.setAuthorization(new Oauth2AccessTokenHeader());
-                AuthDialogListener lsn = new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener(){
-                	@Override
-                	public void onComplete(){
-                		String nick = (String)Helper.loadDataFromLocate(SetMainView.this.getContext(), "weiboNickName");
-                		((TextView)findViewById(R.id.tvWeiboNick)).setText(nick);
-                	}
-                }); 
-                weibo.dialog(SetMainView.this.getContext(), 
-                		parameters, lsn);
-                lsn.setInAuthrize(true);
-			}
-		}
+//		// 手机号码
+//		if(v.getId() == R.id.rlWeibo){
+//			if(QuanleimuApplication.getWeiboAccessToken() != null){
+//				AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+//				builder.setTitle("提示:")
+//						.setMessage("是否解除绑定？")
+//						.setNegativeButton("否", null)
+//						.setPositiveButton("是",
+//								new DialogInterface.OnClickListener() {
+//	
+//									@Override
+//									public void onClick(DialogInterface dialog,
+//											int which) {
+//										
+//										Helper.saveDataToLocate(SetMainView.this.getContext(), "weiboToken", null);
+//										Helper.saveDataToLocate(SetMainView.this.getContext(), "weiboNickName", null);
+//										QuanleimuApplication.setWeiboAccessToken(null);
+//										Weibo.getInstance().setAccessToken(null);
+//										Weibo.getInstance().setRequestToken(null);
+//										Weibo.getInstance().setupConsumerConfig("", "");
+//										((TextView)findViewById(R.id.tvWeiboNick)).setText("");
+//									}
+//								});
+//				builder.create().show();	
+//			}
+//			else{
+//				Weibo weibo = Weibo.getInstance();
+//				weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
+//				weibo.setRedirectUrl("http://www.baixing.com");
+////				weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener());
+//                WeiboParameters parameters=new WeiboParameters();
+//                parameters.add("forcelogin", "true");
+//                Utility.setAuthorization(new Oauth2AccessTokenHeader());
+//                AuthDialogListener lsn = new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener(){
+//                	@Override
+//                	public void onComplete(){
+//                		String nick = (String)Helper.loadDataFromLocate(SetMainView.this.getContext(), "weiboNickName");
+//                		((TextView)findViewById(R.id.tvWeiboNick)).setText(nick);
+//                	}
+//                }); 
+//                weibo.dialog(SetMainView.this.getContext(), 
+//                		parameters, lsn);
+//                lsn.setInAuthrize(true);
+//			}
+//		}
 
 		// 签名档
-		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
+		if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
 			if(null != m_viewInfoListener){
 				m_viewInfoListener.onNewView(new MarkLableView(getContext()));
 			}

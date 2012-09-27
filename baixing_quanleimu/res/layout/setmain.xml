@@ -41,7 +41,8 @@
                     android:background="@drawable/list_divider" >
                 </TextView>
 
-                <RelativeLayout
+<!--                 <RelativeLayout
+                    android:visibility="invisible"
                     android:id="@+id/rlWeibo"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
@@ -86,21 +87,21 @@
                         android:gravity="right"
                         android:text="" >
                     </TextView>
-                </RelativeLayout>
+                </RelativeLayout> -->
 
-                <TextView
+<!--                 <TextView
                     android:id="@+id/border2"
                     android:layout_width="fill_parent"
                     android:layout_height="1dip"
                     android:layout_below="@id/rlWeibo"
                     android:background="@drawable/list_divider" >
-                </TextView>
+                </TextView> -->
 
                 <RelativeLayout
                     android:id="@+id/rlMark"
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
-                    android:layout_below="@id/border2"
+                    
                     android:background="@drawable/list_selector"
                     android:paddingBottom="10dip"
                     android:paddingTop="10dip" >
