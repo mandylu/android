@@ -57,6 +57,10 @@ public class OpinionBackView extends BaseView {
 		etOpinion.findFocus();
 		if(-1 != opinionType){
 			findViewById(R.id.et_contact).setVisibility(View.GONE);
+		}else{
+			if(mobile != null && !mobile.equals("")){
+				((TextView)findViewById(R.id.et_contact)).setText(mobile);
+			}
 		}
 		if(0 == opinionType){
 			etOpinion.setHint("请留下举报原因");
