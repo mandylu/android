@@ -100,8 +100,6 @@ public class LoginView extends BaseView implements LoginUtil.LoginListener {
 
 		title.m_visible = true;
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-		title.m_rightActionHint = "确定";
-		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登录";
 
 		return title;
