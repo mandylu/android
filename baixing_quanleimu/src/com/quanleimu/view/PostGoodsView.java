@@ -724,10 +724,17 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 				}
 			}
 			//发布图片
-			for (int i = 0; i < bitmap_url.size(); i++) {
+			String images = "";
+			for (int i = 0; i < bitmap_url.size(); i++) {				
 				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
-					list.add("image=" + bitmap_url.get(i));
+					images += "," + bitmap_url.get(i);
 				}
+			}
+			if(images != null && images.length() > 0 && images.charAt(0) == ','){
+				images = images.substring(1);
+			}
+			if(images != null && images.length() > 0){
+				list.add("images=" + images);
 			}
 			// list.add("title=" + "111");
 			// list.add("description=" +
