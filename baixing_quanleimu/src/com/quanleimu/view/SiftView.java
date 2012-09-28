@@ -456,7 +456,7 @@ public class SiftView extends BaseView {
 							if(null != preValues && preValues.containsKey(listFilterss.get(i).getName())){
 								String preValue = preValues.get(listFilterss.get(i).getName());
 								tvmeta.setText(preValue);
-								valuemap.put(listFilterss.get(i).getName(), preValue);
+//								valuemap.put(listFilterss.get(i).getName(), preValue);
 							}
 						}
 						TextView border = new TextView(SiftView.this.getContext());
