@@ -588,7 +588,7 @@ public class QuanleimuApplication extends Application implements LocationService
 		}
 
 	}
-	static public com.tencent.mm.sdk.openapi.IWXAPI wxapi;
+//	static public com.tencent.mm.sdk.openapi.IWXAPI wxapi;
 
 	@Override
 	public void onCreate() {
@@ -623,8 +623,8 @@ public class QuanleimuApplication extends Application implements LocationService
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;
-		boolean b = wxapi.sendReq(req);
-		b = false;
+//		boolean b = wxapi.sendReq(req);
+//		b = false;
 	}
 
 	@Override

@@ -589,34 +589,34 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		registerMsgListener();
 	}
 	
-	static public final String WX_APP_ID = "wx862b30c868401dbc";
+	static public final String WX_APP_ID = "wx862b30c868401dbc";///formal
 //	static public final String WX_APP_ID = "wx47a12013685c6d3b";//debug
 //	static public final String WX_APP_ID = "wxc54c9e29fcd6993d";////burizado, baixingwang2
 	
-	private void showDetailViewFromWX(){
-		Intent intent = this.getIntent();
-		if(intent != null){
-			Bundle bundle = intent.getExtras();
-			if(bundle != null){
-				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
-					
-					GoodsList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
-					if(gl != null){
-						GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
-						glLoader.setGoodsList(gl);
-						glLoader.setHasMore(false);		
-						BaseView pb = QuanleimuApplication.getApplication().getViewStack().peer();
-						if(pb != null && currentView != null){
-							if((currentView instanceof GoodDetailView) && (pb instanceof GoodDetailView)){
-								this.onBack();
-							}
-						}
-						onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
-					}
-				}
-			}
-		}		
-	}
+//	private void showDetailViewFromWX(){
+//		Intent intent = this.getIntent();
+//		if(intent != null){
+//			Bundle bundle = intent.getExtras();
+//			if(bundle != null){
+//				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
+//					
+//					GoodsList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
+//					if(gl != null){
+//						GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
+//						glLoader.setGoodsList(gl);
+//						glLoader.setHasMore(false);		
+//						BaseView pb = QuanleimuApplication.getApplication().getViewStack().peer();
+//						if(pb != null && currentView != null){
+//							if((currentView instanceof GoodDetailView) && (pb instanceof GoodDetailView)){
+//								this.onBack();
+//							}
+//						}
+//						onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
+//					}
+//				}
+//			}
+//		}		
+//	}
 	
 	
 	
@@ -670,10 +670,10 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		setBaseLayout(childView);
 		scroll.addView(childView);		
 		
-		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
-		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
-		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
-		showDetailViewFromWX();
+//		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
+//		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
+//		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
+//		showDetailViewFromWX();
 		
 		startTalking(getIntent()); //Launch after splash job.
 		
@@ -741,8 +741,8 @@ public class QuanleimuMainActivity extends BaseActivity implements BaseView.View
 		if (splashJob == null || splashJob.isJobDone()) //do not handle any intent before splash job done.
 		{
 			setIntent(intent);
-			QuanleimuApplication.wxapi.handleIntent(intent, this);
-			showDetailViewFromWX();
+//			QuanleimuApplication.wxapi.handleIntent(intent, this);
+//			showDetailViewFromWX();
 			showDataFromAlbamOrPhoto();
 			
 			startTalking(intent);

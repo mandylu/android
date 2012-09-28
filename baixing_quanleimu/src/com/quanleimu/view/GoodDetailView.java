@@ -649,12 +649,12 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 		fenxiang.setOnClickListener(this);
 
 		
-		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
-			contentView.findViewById(R.id.wxlayout).setOnClickListener(this);
-		}
-		else{
+//		if(QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
+//			contentView.findViewById(R.id.wxlayout).setOnClickListener(this);
+//		}
+//		else{
 			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
-		}
+//		}
 		
 		View jubao = contentView.findViewById(R.id.jubaolayout);
 		if(isMyAd()){
@@ -1292,7 +1292,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 	}
 	
 	private void doShare2WX(){
-		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
+//		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
 		String detailJson = convert2JSONString(this.detail);
 		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
 			"我在百姓网看到：" + detail.getValueByKey("title");
