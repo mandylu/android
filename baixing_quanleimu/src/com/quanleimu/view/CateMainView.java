@@ -26,7 +26,7 @@ public class CateMainView extends BaseView implements CategorySelectionView.ICat
 
 		((LinearLayout)findViewById(R.id.linearListView)).addView(selectionView);
 		
-		title_str = "选择浏览类目";
+		title_str = "返回";
 		back_str = "";
 	}
 	

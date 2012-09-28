@@ -380,7 +380,7 @@ public class HomePageView
 		catesView.setHeaderFooterView(hotlistView, footer);
 		catesView.setSelectionListener(this);
 		
-		title_str = "选择浏览类目";
+		title_str = "返回";
 		back_str = "";
 		
 		LinearLayout changeCity = (LinearLayout) findViewById(R.id.llChangeCity);
