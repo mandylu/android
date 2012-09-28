@@ -54,12 +54,12 @@ public class MarkLableView extends BaseView{
 	}
 	
 	public boolean onRightActionPressed(){
-		if(etMark.getText().toString() == null || etMark.getText().toString().trim().equals(""))
+		/*if(etMark.getText().toString() == null || etMark.getText().toString().trim().equals(""))
 		{
 			Toast.makeText(getContext(), "内容不能为空", Toast.LENGTH_SHORT).show();
 		}
 		else
-		{
+		{*/
 			personMark = etMark.getText().toString();
 			QuanleimuApplication.getApplication().setPersonMark(personMark);
 			(new AsyncTask<Boolean, Boolean, Boolean>() { 
@@ -74,7 +74,7 @@ public class MarkLableView extends BaseView{
 					}
 				}
 			}).execute(true);
-		}
+		//}
 		return true;
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
