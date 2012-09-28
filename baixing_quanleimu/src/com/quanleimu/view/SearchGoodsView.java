@@ -77,7 +77,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 	
 	private List<String> basicParams = null;
 	
-	private int titleControlStatus = 0;//0: Left(Recent), 1: Right(Nearby)
+	private int titleControlStatus = 1;//0: Left(Recent), 1: Right(Nearby)
 	
 	private BXLocation curLocation = null;
 	
@@ -141,6 +141,18 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 
 		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
 		pd.setCancelable(true);
+		
+		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
+		if(curLocation == null){
+			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+			this.titleControlStatus = 0;
+		}else{
+			basicParams.add("lat="+curLocation.fLat);
+			basicParams.add("lng="+curLocation.fLon);
+			mListLoader.setNearby(true);
+		}
+
 		
 		mListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 	}
@@ -389,6 +401,12 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 	    	}else{
 	    		unit = "分钟";
 	    		number += nMinutes;
+	    		if(number.contains("-")){
+	    			number = "1";
+	    		}
+	    		else if(number.equals("0")){
+	    			number = "1";
+	    		}	    		
 	    	}
 		}else{
 			GoodsDetail detail = mListLoader.getGoodsList().getData().get(firstVisibleItem);
@@ -458,16 +476,17 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 			if(titleControlStatus != 0){
 				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
 				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
-				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				View btnRecent = titleControl.findViewById(R.id.btnRecent);
 				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
-				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 				
+				mListLoader.setNearby(false);
 				mListLoader.cancelFetching();
 				mListLoader.setParams(basicParams);
 				
@@ -482,12 +501,12 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 			if(titleControlStatus != 1){
 				View btnNearBy = titleControl.findViewById(R.id.btnNearby);
 				int paddingLeft = btnNearBy.getPaddingLeft(), paddingRight = btnNearBy.getPaddingRight(), paddingTop=btnNearBy.getPaddingTop(), paddingBottom=btnNearBy.getPaddingBottom();
-				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+				btnNearBy.setBackgroundResource(R.drawable.bg_nav_seg_left_pressed);
 				btnNearBy.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				View btnRecent = titleControl.findViewById(R.id.btnRecent);
 				paddingLeft = btnRecent.getPaddingLeft(); paddingRight = btnRecent.getPaddingRight(); paddingTop=btnRecent.getPaddingTop();paddingBottom=btnRecent.getPaddingBottom();
-				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
+				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
 				((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
@@ -496,7 +515,7 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 				
 				List<String> params = new ArrayList<String>();
 				params.addAll(basicParams);
-				params.add("nearby=true");
+				mListLoader.setNearby(true);
 				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
 				//Log.d("kkkkkk", "search goods nearby: ("+location.fLat+", "+location.fLon+") !!");
 				params.add("lat="+curLocation.fLat);
