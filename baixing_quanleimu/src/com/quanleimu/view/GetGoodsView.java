@@ -242,20 +242,23 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			basicParams.add("query="
 					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
 					+ categoryEnglishName + " AND status:0");
-		}
-
-		
-		goodsListLoader = new GoodsListLoader(basicParams, myHandler, null, new GoodsList());
+		}		
 		
 		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
+		List<String> addParams = new ArrayList<String>(basicParams);
 		if(curLocation == null){
 			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 			this.titleControlStatus = 0;
 		}else{
-			basicParams.add("lat="+curLocation.fLat);
-			basicParams.add("lng="+curLocation.fLon);
+			addParams.add("lat="+curLocation.fLat);
+			addParams.add("lng="+curLocation.fLon);			
+		}
+		
+		goodsListLoader = new GoodsListLoader(addParams, myHandler, null, new GoodsList());
+		if(curLocation != null){
 			goodsListLoader.setNearby(true);
+			goodsListLoader.setRuntime(false);
 		}
 		
 		goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
