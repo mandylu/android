@@ -19,6 +19,7 @@ import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
@@ -249,8 +250,12 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		if(curLocation == null){
 			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
+			((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+			((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 			this.titleControlStatus = 0;
 		}else{
+			((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+			((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
 			addParams.add("lat="+curLocation.fLat);
 			addParams.add("lng="+curLocation.fLon);			
 		}
@@ -431,7 +436,8 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 			int visibleItemCount, int totalItemCount) {
 		if(		null == goodsListLoader || 
 				null == goodsListLoader.getGoodsList() || 
-				null == goodsListLoader.getGoodsList().getData() || 
+				null == goodsListLoader.getGoodsList().getData() ||
+				(adapter == null || adapter.getList() == null || adapter.getList().size() == 0) ||
 				goodsListLoader.getGoodsList().getData().size() <= firstVisibleItem){
 			return;
 		}
@@ -510,6 +516,11 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		
 		((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
 		((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
+		if(0 == firstVisibleItem){
+//			findViewById(R.id.tvSpaceOrTimeNumber).setVisibility(View.GONE);
+//			findViewById(R.id.tvSpaceOrTimeNumber).setVisibility(View.VISIBLE);
+		}
+
 		
 		//Log.d("kkkkkk", "first visible item: "+firstVisibleItem+", visibleItemCount: "+visibleItemCount+", totalItemCount: "+totalItemCount);
 	}
@@ -576,6 +587,12 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				mRefreshUsingLocal = true;
 				lvGoodsList.onFail();
 				lvGoodsList.fireRefresh();
+				if(adapter != null){
+					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.notifyDataSetChanged();
+					((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+					((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+				}
 				
 				titleControlStatus = 0;
 			}
@@ -622,7 +639,13 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 				mRefreshUsingLocal = true;
 				lvGoodsList.onFail();
 				lvGoodsList.fireRefresh();
-				
+				if(adapter != null){
+					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.notifyDataSetChanged();
+					((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+					((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
+				}
+
 				titleControlStatus = 1;
 			}
 			break;
