@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout
+<RelativeLayout
  	 xmlns:android="http://schemas.android.com/apk/res/android"
   	 android:layout_width="fill_parent"
   	 android:layout_height="fill_parent"
@@ -64,6 +64,7 @@
   	 </LinearLayout>	
   	 
   	 <ListView 
+  	     android:layout_below="@id/lvSearch"
   	 	android:layout_height="fill_parent" 
   	 	android:layout_width="fill_parent" 
   	 	android:id="@+id/lvSearchHistory"
@@ -73,4 +74,4 @@
   	 	android:focusableInTouchMode="true"
   	 	android:focusable="true"/>
 
-</LinearLayout>
+</RelativeLayout>
