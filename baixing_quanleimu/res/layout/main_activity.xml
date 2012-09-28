@@ -13,8 +13,7 @@
             android:id="@+id/linearTop"
             android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:background="@drawable/top_bg"
-            android:gravity="center_vertical|top" >
+            android:background="@drawable/top_bg" >
 
             <LinearLayout
                 android:id="@+id/linearTitleControls"
@@ -27,6 +26,7 @@
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_centerInParent="true"
+                android:gravity="center"
                 android:text="首页"
                 android:textColor="#ffffff"
                 android:textSize="22dip" >
@@ -40,8 +40,12 @@
                 android:layout_centerVertical="true"
                 android:layout_marginLeft="5dip"
                 android:background="@drawable/btn_jj"
+                android:gravity="center"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
                 android:text="@string/ChangeCity"
-                android:textColor="#ffffff" >
+                android:textColor="#ffffff"
+                android:textSize="16dip" >
             </Button>
 
             <Button
@@ -52,8 +56,12 @@
                 android:layout_centerVertical="true"
                 android:layout_marginRight="5dip"
                 android:background="@drawable/btn_editx"
+                android:gravity="center"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip"
                 android:text="@string/Search"
-                android:textColor="#ffffff" >
+                android:textColor="#ffffff"
+                android:textSize="16dip" >
             </Button>
         </RelativeLayout>
 
