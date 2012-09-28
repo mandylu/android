@@ -124,9 +124,9 @@ public class ChatMessageAdapter extends BaseAdapter {
 		}
 		item.findViewById(R.id.tvTime).setVisibility(View.GONE);
 		ChatMessage msg = msgList.get(position);
-		if(position > 0){
-			ChatMessage preMsg = msgList.get(position - 1);
-			if(Long.valueOf(msg.getTimestamp()) - Long.valueOf(preMsg.getTimestamp()) >= 5 * 60){
+		if(position >= 0){
+			ChatMessage preMsg = position == 0 ? null : msgList.get(position - 1);
+			if(position == 0 || (preMsg != null && (Long.valueOf(msg.getTimestamp()) - Long.valueOf(preMsg.getTimestamp()) >= 5 * 60))){
 				Date date = new Date(Long.valueOf(msg.getTimestamp()) * 1000);
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("MM-dd HH:mm");
 				String dt = sDateFormat.format(date);
