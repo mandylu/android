@@ -1563,7 +1563,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						imgs[currentIndex].setImageBitmap(thumbnailBmp);
 						imgs[currentIndex].setClickable(true);
 						imgs[currentIndex].invalidate();
-						Toast.makeText(PostGoodsView.this.getContext(), "上传图片成功", 5).show();
+						Toast.makeText(PostGoodsView.this.getContext(), "上传图片成功", 0).show();
 					}
 				});	                
 			} else {
@@ -1575,7 +1575,7 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 						bitmap_url.set(currentIndex, bmpPath);
 						//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_red, BXDecorateImageView.ImagePos.ImagePos_RightTop);
 						imgs[currentIndex].invalidate();
-						Toast.makeText(PostGoodsView.this.getContext(), "上传图片失败", 5).show();
+						Toast.makeText(PostGoodsView.this.getContext(), "上传图片失败", 0).show();
 					}
 				});						
 			}
