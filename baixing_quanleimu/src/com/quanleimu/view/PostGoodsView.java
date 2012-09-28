@@ -1173,11 +1173,13 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 			((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
-
-			String personalMark = QuanleimuApplication.getApplication().getPersonMark();
-			if(personalMark != null && personalMark.length() > 0){
-				personalMark = "\n\n" + personalMark;
-				descriptionEt.setText(personalMark);
+			if(postBean.getName().equals("description"))//description is builtin keyword
+			{
+				String personalMark = QuanleimuApplication.getApplication().getPersonMark();
+				if(personalMark != null && personalMark.length() > 0){
+					personalMark = "\n\n" + personalMark;
+					descriptionEt.setText(personalMark);
+				}
 			}
 			v.setTag(HASH_POST_BEAN, postBean);
 			v.setTag(HASH_CONTROL, descriptionEt);
