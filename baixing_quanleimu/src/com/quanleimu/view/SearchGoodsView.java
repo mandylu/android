@@ -103,6 +103,10 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 		lvSearchResult.setOnRefreshListener(this);
 		lvSearchResult.setOnGetMoreListener(this);
 		
+		titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
+		titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
+		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
+
 		//线性布局  
         LinearLayout layout = new LinearLayout(getContext());  
         //设置布局 水平方向  
@@ -240,12 +244,6 @@ public class SearchGoodsView extends BaseView implements OnScrollListener, View.
 		title.m_title = this.title;
 		title.m_rightActionHint = "重新搜索";
 		
-		if(null == titleControl){
-			LayoutInflater inflater = LayoutInflater.from(this.getContext());
-			titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
-			titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
-			titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
-		}
 		title.m_titleControls = titleControl;
 		return title;
 	}
