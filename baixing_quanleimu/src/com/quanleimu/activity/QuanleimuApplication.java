@@ -381,6 +381,25 @@ public class QuanleimuApplication extends Application implements LocationService
 	public List<FirstStepCate> getListFirst() {
 		return listFirst;
 	}
+	
+	public String queryCategoryDisplayName(String englishName){
+		//this.getListFirst()
+		
+		for(int i = 0;i<this.listFirst.size();i++){
+			FirstStepCate cate = this.listFirst.get(i);
+			if(cate.englishName.equals(englishName)){
+				return cate.name;
+			}
+			
+			for(int j = 0; j< cate.children.size(); j++){
+				SecondStepCate s = cate.children.get(j);
+				if(s.englishName.equals(englishName)){
+					return s.name;
+				}
+			}
+		}
+		return englishName;
+	}
 
 	public void setListFirst(List<FirstStepCate> listFirst) {
 		this.listFirst = listFirst;

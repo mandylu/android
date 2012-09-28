@@ -283,13 +283,21 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 		((TextView)findViewById(R.id.tvSubCateName)).setText(bundle.getString("name"));
 
 		String categoryName = bundle.getString("categoryName");
-		if(categoryName == null || categoryName.equals("") || categoryEnglishName == null || categoryEnglishName.equals("")){
+		if(categoryName == null || categoryName.equals("")){
+			if(categoryEnglishName != null){
+				categoryName = QuanleimuApplication.getApplication().queryCategoryDisplayName(categoryEnglishName);
+				if(categoryName != null) bundle.putString("categoryName", categoryName);
+			}
+		}
+		
+		if(categoryName == null || categoryName.equals("") 
+				|| categoryEnglishName == null || categoryEnglishName.equals("")){
 			findViewById(R.id.publishBtn).setVisibility(View.GONE);
 		}else{
 			findViewById(R.id.publishBtn).setOnClickListener(this);
 			findViewById(R.id.publishBtn).setVisibility(View.VISIBLE);
 		}
-
+		
 	}
 
 		// 管理线程的Handler
