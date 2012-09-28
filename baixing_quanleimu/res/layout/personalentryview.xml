@@ -44,13 +44,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:paddingBottom="20dip"
-                    android:paddingTop="5dip" >
+                    android:paddingTop="10dip" >
 
                     <ImageView
                         android:id="@+id/personalImage"
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
-                        android:layout_marginLeft="15dip"
+                        android:layout_marginLeft="10dip"
                         android:src="@drawable/pic_my_avator_boy" >
                     </ImageView>
 
@@ -111,9 +111,9 @@
                         android:layout_width="wrap_content"
                         android:layout_height="wrap_content"
                         android:layout_alignBottom="@id/personalImage"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginRight="10dip"
+                        android:layout_alignLeft="@id/personalNick"
                         android:background="@drawable/edit_btn_bg"
+                        android:layout_marginLeft="10dip"
                         android:clickable="true"
                         android:gravity="center_vertical" >
 

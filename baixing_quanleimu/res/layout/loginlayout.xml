@@ -49,6 +49,7 @@
             android:hint="手机号/昵称"
             android:paddingLeft="15dip"
             android:paddingRight="15dip"
+            android:singleLine="true"
             android:textSize="22dip" >
         </EditText>
 
@@ -93,6 +94,7 @@
                 android:hint="必填"
                 android:inputType="textPassword"
                 android:paddingLeft="15dip"
+                android:singleLine="true"
                 android:textSize="22dip" >
             </EditText>
 
