@@ -83,6 +83,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已发布的信息";
+				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			GoodsList gl = new GoodsList();
@@ -101,7 +102,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "审核中";
-				title.m_rightActionHint = "编辑";
+				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(listInVerify == null){
@@ -131,7 +132,7 @@ public class PersonalPostView extends BaseView implements View.OnClickListener, 
 			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已删除";
-				title.m_rightActionHint = "编辑";
+				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				m_viewInfoListener.onTitleChanged(title);
 			}
 			if(listDeleted == null){
