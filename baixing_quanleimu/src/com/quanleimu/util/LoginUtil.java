@@ -8,8 +8,10 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.os.Message;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -57,6 +59,9 @@ public class LoginUtil implements View.OnClickListener{
 			String password = ((TextView)view.findViewById(R.id.et_password)).getText().toString();
 			
 			if(check(account, password)){
+		        InputMethodManager imm = (InputMethodManager) view.getContext().getSystemService(Context.INPUT_METHOD_SERVICE); 
+		        imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
+
 				pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
 				pd.show();
 				(new Thread(new LoginThread(account, password))).start();
