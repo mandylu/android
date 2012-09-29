@@ -97,9 +97,15 @@
         <foreachTask list="${channel_list}" target="release_channel" param="channel" inheritall="true">
         </foreachTask>
 </target>
+ <tstamp>
+    <format property="TODAY_CN" pattern="yyyy-MM-dd hh:mm" locale="zh,CN"/>
+ </tstamp>
 
 <target name="release_channel">
         <replaceregexp flags="g" byline="true" file="./AndroidManifest.xml" match="android:name=&quot;UMENG_CHANNEL&quot; android:value=&quot;(.*)&quot;" replace="android:name=&quot;UMENG_CHANNEL&quot; android:value=&quot;${channel}&quot;">
+        </replaceregexp>
+		
+		<replaceregexp flags="g" byline="true" file="./AndroidManifest.xml" match="android:name=&quot;publishTime&quot; android:value=&quot;(.*)&quot;" replace="android:name=&quot;publishTime&quot; android:value=&quot;${TODAY_CN}&quot;">
         </replaceregexp>
         
         <delete dir="gen"/>
