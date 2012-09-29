@@ -182,6 +182,7 @@ public class GoodDetailView extends BaseView implements AnimationListener, View.
 //			glDetail.getc
 		}
 		glDetail = null;
+		BXStatsHelper.getInstance().send();
 	}
 	
 	@Override

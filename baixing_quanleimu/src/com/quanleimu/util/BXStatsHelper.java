@@ -172,7 +172,7 @@ public class BXStatsHelper {
 	
 	public void send()
 	{
-		if (totalCount() < 0) //do not send if no log.
+		if (totalCount() <= 0) //do not send if no log.
 		{
 			return;
 		}
