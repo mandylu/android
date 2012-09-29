@@ -200,8 +200,8 @@ public class PostGoodsView extends BaseView implements OnClickListener {
 
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
 		
-//		baseActivity.getWindow().setSoftInputMode(
-//				WindowManager.LayoutParams.SOFT_INPUT_ADJUST_PAN);
+		baseActivity.getWindow().setSoftInputMode(
+				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		initial();
 		pd = new ProgressDialog(this.getContext());

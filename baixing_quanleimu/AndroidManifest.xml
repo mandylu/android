@@ -45,7 +45,7 @@
         
         <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="BaiduMapActivity" android:screenOrientation="portrait">
         </activity>
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:windowSoftInputMode="adjustPan" android:screenOrientation="portrait" android:launchMode="singleInstance">
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:screenOrientation="portrait" android:launchMode="singleInstance">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
