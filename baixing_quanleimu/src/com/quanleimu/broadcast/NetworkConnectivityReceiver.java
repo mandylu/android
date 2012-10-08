@@ -39,13 +39,9 @@ public class NetworkConnectivityReceiver extends BroadcastReceiver {
             svcintent.putExtra("failover", network.isFailover());
             context.startService(svcintent);
         }
-
-        //TODO: maybe we will using following logic to get better user experience.
-//        network = (NetworkInfo) intent.getParcelableExtra(ConnectivityManager.EXTRA_NETWORK_INFO);
-//        if (network.getTypeName().equals("WIFI") && network.isConnected()) {
-//            context.startService(new Intent(PushMessageService.ACTION_CONNECT));
-//        } else if (network.getTypeName().equals("WIFI") && !network.isConnected()) {            
-//            context.startService(new Intent(PushMessageService.ACTION_DISCONNECT));
-//        }
+        else if (network != null && network.isConnected() && !PushMessageService.IsRunning)//If service is not run, start it.
+        {
+        	context.startService(new Intent(PushMessageService.ACTION_CONNECT));
+        }
     }
 }
