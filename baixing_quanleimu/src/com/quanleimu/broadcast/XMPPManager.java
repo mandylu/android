@@ -22,6 +22,7 @@ import android.os.Handler;
 import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.util.TraceUtil;
 import com.quanleimu.util.ViewUtil;
 
 public class XMPPManager {
@@ -63,6 +64,7 @@ public class XMPPManager {
     private Runnable mReconnectRunnable = new Runnable() {
         public void run() {
             final Intent i = new Intent(PushMessageService.ACTION_CONNECT);
+            TraceUtil.trace(TAG, "reconnect by call service connect action " + context);
             if (context != null)
             {
             	context.startService(i);
@@ -104,8 +106,13 @@ public class XMPPManager {
                 cleanupConnection();
                 start(XMPPManager.CONNECTED);
             }
+            else
+            {
+            	TraceUtil.trace(TAG, "xmppRequestStateChange, trying to connect but we already in connect state.");
+            }
             break;
         case XMPPManager.DISCONNECTED:
+        	TraceUtil.trace(TAG, "xmppRequestStateChange, handle disconnect action.");
             stop();
             break;
         case XMPPManager.WAITING_TO_CONNECT:
@@ -257,11 +264,13 @@ public class XMPPManager {
         mConnectionListener = new ConnectionListener() {
             @Override
             public void connectionClosed() {
+            	TraceUtil.trace(TAG, "------ connection closed by server.");
                 xmppRequestStateChange(getConnectionStatus());
             }
 
             @Override
             public void connectionClosedOnError(Exception e) {
+            	TraceUtil.trace(TAG, "------ connection closed on exception");
                 maybeStartReconnect();
             }
 
@@ -405,6 +414,8 @@ public class XMPPManager {
             {
             	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, null, "XMPPStatus", statusAsString(status) + ":" +  QuanleimuApplication.udid, null, true);
             }
+            
+            TraceUtil.trace(TAG, "XMPP change status to " + statusAsString(status));
         }
     }
     

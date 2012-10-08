@@ -17,6 +17,7 @@ import com.quanleimu.broadcast.push.PushDispatcher;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.TraceUtil;
 import com.quanleimu.util.Util;
 import com.tencent.mm.sdk.platformtools.Log;
 
@@ -69,6 +70,7 @@ public class PushMessageService extends Service
 	
 	public void onCreate() 
 	{
+		TraceUtil.trace(TAG, "service create start");
 		super.onCreate();
 		HandlerThread thread = new HandlerThread(SERVICE_THREAD_NAME);
 		thread.start();
@@ -79,9 +81,11 @@ public class PushMessageService extends Service
         pushHandler = new PushDispatcher(this);
         
         IsRunning = true;
+        TraceUtil.trace(TAG, "service create end");
 	}
 	
     public void onDestroy() {
+    	TraceUtil.trace(TAG, "destory the service--begin");
         IsRunning = false;
         
 //        // If the _xmppManager is non-null, then our service was "started" (as
@@ -90,7 +94,7 @@ public class PushMessageService extends Service
             // do some cleanup
             unregisterReceiver(sXmppConChangedReceiver);
             sXmppConChangedReceiver = null;
-
+            TraceUtil.trace(TAG, "disconnect onDestory()");
             sXmppMgr.xmppRequestStateChange(XMPPManager.DISCONNECTED);
             sXmppMgr = null;
         }
@@ -100,18 +104,23 @@ public class PushMessageService extends Service
         sServiceLooper.quit();
         
         super.onDestroy();
+        TraceUtil.trace(TAG, "destory the service--end");
     }
     
     public int onStartCommand(Intent intent, int flags, int startId) {
+    	TraceUtil.trace(TAG, "service on start command. intent is " + intent);
+        this.startForeground(0, null);
+    	
         if (intent == null) {
             // The application has been killed by Android and
             // we try to restart the connection
             // this null intent behavior is only for SDK < 9
-            if (Build.VERSION.SDK_INT < 9) {
-                startService(new Intent(PushMessageService.ACTION_CONNECT));
-            } else {
-//                Log.w("onStartCommand() null intent with Gingerbread or higher");
-            }
+        	TraceUtil.trace(TAG, "onStartCommand() call PushMessageService.ACTION_CONNECT ");
+        	startService(new Intent(PushMessageService.ACTION_CONNECT));
+//            if (Build.VERSION.SDK_INT < 9) {
+//            } else {
+////                Log.w("onStartCommand() null intent with Gingerbread or higher");
+//            }
             
             registeDevice(null);
             return START_STICKY;
@@ -133,7 +142,7 @@ public class PushMessageService extends Service
         {
         	registeDevice(null); //
         }
-        
+        TraceUtil.trace(TAG, "onStartCommand finish.");
         return START_STICKY;
     }
     
@@ -153,6 +162,7 @@ public class PushMessageService extends Service
             sServiceHandler.sendMessage(msg);
             return true;
         } else {
+        	TraceUtil.trace(TAG, "sendToServiceHandler() handler is not created yet.");
             return false;
         }
     }
@@ -187,10 +197,12 @@ public class PushMessageService extends Service
         // This is not actively used any more
         if (intent.getBooleanExtra("force", false) && intent.getBooleanExtra("disconnect", false)) {
             // request to disconnect.
+        	TraceUtil.trace(TAG, "onHandleIntent() force to disconnect");
             sXmppMgr.xmppRequestStateChange(XMPPManager.DISCONNECTED);
         }
 
         if (Thread.currentThread().getId() != mHandlerThreadId) {
+        	TraceUtil.trace(TAG, "onHandleIntent illegal state on handle server intent.");
             throw new IllegalThreadStateException();
         }
         // We need to handle XMPP state changes which happened "externally" -
@@ -205,12 +217,14 @@ public class PushMessageService extends Service
             if (intent.getBooleanExtra("disconnect", false)) {
                 // Request to disconnect. We will stop the service if
                 // we are in "DISCONNECTED" state at the end of the method
+            	TraceUtil.trace(TAG, "onHandleIntent disconnect when do connect action");
                 sXmppMgr.xmppRequestStateChange(XMPPManager.DISCONNECTED);
             } else {
                 // A simple 'connect' request.
                 sXmppMgr.xmppRequestStateChange(XMPPManager.CONNECTED);
             }
         } else if (action.equals(ACTION_DISCONNECT)) {
+        	TraceUtil.trace(TAG, "onHandleIntent disconnect when do disconnect action");
             sXmppMgr.xmppRequestStateChange(XMPPManager.DISCONNECTED);
         } 
         else if (action.equals(ACTION_XMPP_MESSAGE_RECEIVED)) {
@@ -234,6 +248,7 @@ public class PushMessageService extends Service
         // stop the service if we are disconnected (but stopping the service
         // doesn't mean the process is terminated - onStart can still happen.)
         if (getConnectionStatus() == XMPPManager.DISCONNECTED) {
+        	TraceUtil.trace(TAG, "onHandleIntent will stop sercice ??????");
             if (stopSelfResult(id)) {
             } else {
             }
