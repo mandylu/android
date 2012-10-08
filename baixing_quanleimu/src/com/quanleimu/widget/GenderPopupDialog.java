@@ -5,7 +5,6 @@ import java.util.ArrayList;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
-import com.quanleimu.view.HomePageView;
 
 import android.app.AlertDialog;
 import android.app.Dialog;

@@ -144,7 +144,7 @@
         </RelativeLayout>
     </LinearLayout>
 
-    <RelativeLayout
+    <!-- RelativeLayout
         android:id="@+id/rl_guide"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent" >
@@ -172,7 +172,7 @@
                 android:src="@drawable/guide_002" >
             </ImageView>
         </RelativeLayout>
-    </RelativeLayout>
+    </RelativeLayout> -->
 
     <include
         android:id="@+id/splash_cover"

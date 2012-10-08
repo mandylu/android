@@ -1,6 +1,7 @@
 package com.quanleimu.util;
 
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -9,14 +10,17 @@ import java.util.List;
 import org.apache.http.client.HttpClient;
 
 import android.os.Handler;
-import android.util.Log;
 
 import com.quanleimu.entity.GoodsList;
-import com.quanleimu.util.NetworkProtocols;
 
 
-public class GoodsListLoader {
+public class GoodsListLoader implements Serializable{
 	
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -4876054768912906374L;
+
 	public interface HasMoreListener{
 		public void onHasMoreStatusChanged();
 	};
@@ -28,16 +32,16 @@ public class GoodsListLoader {
 	private boolean mHasMore = true;
 	private int mCurIndex = 0;
 	private int mRows = 30;
-	private Handler mHandler = new Handler();
+	private transient Handler mHandler = new Handler();
 	
 	private static String mApiName = "ad_list";
 	private static String mNearbyApiName = "ad_nearby";
 	
 	private static String mLastJson = null;
 	
-	private GetGoodsListThread mCurThread = null;
+	private transient GetGoodsListThread mCurThread = null;
 	
-	private HasMoreListener hasMoreListener = null;
+	private transient HasMoreListener hasMoreListener = null;
 	
 	public enum E_LISTDATA_STATUS{
 		E_LISTDATA_STATUS_OFFLINE,

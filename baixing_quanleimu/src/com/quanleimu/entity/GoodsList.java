@@ -1,8 +1,13 @@
 package com.quanleimu.entity;
 
+import java.io.Serializable;
 import java.util.List;
 
-public class GoodsList {
+public class GoodsList implements Serializable {
+	/**
+	 * 
+	 */
+	private static final long serialVersionUID = -2158869923050057462L;
 	private int count = 0;
 	
 	public GoodsList(){}

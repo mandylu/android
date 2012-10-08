@@ -17,16 +17,23 @@
 package com.quanleimu.util;
 
 import android.annotation.SuppressLint;
+import android.app.Activity;
 import android.app.ActivityManager;
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Bitmap.CompressFormat;
+import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
+import android.provider.MediaStore;
 import android.view.WindowManager;
 
 import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.InputStream;
 
 import com.quanleimu.activity.QuanleimuApplication;
@@ -256,4 +263,110 @@ public class BitmapUtils {
 	    
 	    return inSampleSize;
 	}
+	
+
+	public static Bitmap getBitmap(String path)
+	{
+		Bitmap currentBmp = null;
+		if (path != null) {
+			try {
+			    
+			    BitmapFactory.Options bfo = new BitmapFactory.Options();
+		        bfo.inJustDecodeBounds = true;
+		        BitmapFactory.decodeFile(path, bfo);
+		        
+			    BitmapFactory.Options o =  new BitmapFactory.Options();
+                o.inPurgeable = true;
+                
+                int maxDim = 600;
+                
+                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
+                
+                
+                currentBmp = BitmapFactory.decodeFile(path, o);
+                
+                return currentBmp;
+				//photo = Util.newBitmap(tphoto, 480, 480);
+				//tphoto.recycle();
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}			
+		
+		return null;
+	}
+	
+	public static String saveBitmapToSdCard(String path,String name,Bitmap bitmap) {
+		String res = null;
+		FileOutputStream fos = null; 
+		if (Environment.getExternalStorageState() != null) {
+			try {
+				File p = new File("/sdcard/" + "deviceTool"); // ����Ŀ¼
+				File s = new File("/sdcard/" + "deviceTool" + "/" + path); // ����Ŀ¼
+				File f = new File("/sdcard/" + "deviceTool" + "/" + path + "/" + name + ".png"); // �����ļ�
+				if (!p.exists()) {
+					p.mkdir();
+				}
+				if (!s.exists()) {
+					s.mkdir();
+				}
+				if (!f.exists()) {
+					f.createNewFile();
+				}
+				fos = new FileOutputStream(f);
+				
+				bitmap.compress(CompressFormat.JPEG, 100, fos);
+				fos.close();
+				res = f.getAbsolutePath();
+			} catch (FileNotFoundException e) {
+				res = "û���ҵ��ļ�";
+				e.printStackTrace();
+			} catch (Exception e) {
+				res = "SD��δ��װ";
+				e.printStackTrace();
+			}
+		}else{
+			res = "��SD��";
+		}
+		return res;
+	}
+	
+	private static int getClosestResampleSize(int cx, int cy, int maxDim)
+    {
+        int max = Math.max(cx, cy);
+        
+        int resample = 1;
+        for (resample = 1; resample < Integer.MAX_VALUE; resample++)
+        {
+            if (resample * maxDim > max)
+            {
+                resample--;
+                break;
+            }
+        }
+        
+        if (resample > 0)
+        {
+            return resample;
+        }
+        return 1;
+    }
+	
+	public static String getRealPathFromURI(Activity context, Uri contentUri) {
+		String[] proj = { MediaStore.Images.Media.DATA };
+		Cursor cursor = context.managedQuery(contentUri, proj, null, null, null);
+
+		if (cursor == null)
+			return null;
+
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+		cursor.moveToFirst();
+
+		String ret = cursor.getString(column_index);
+//		cursor.close();
+		return ret;
+	}
+
 }

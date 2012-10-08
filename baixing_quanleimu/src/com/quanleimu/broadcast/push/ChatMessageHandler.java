@@ -9,7 +9,7 @@ import com.quanleimu.broadcast.NotificationIds;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.ViewUtil;
-import com.quanleimu.view.TalkView;
+import com.quanleimu.view.fragment.TalkFragment;
 
 import android.content.Context;
 import android.content.Intent;
@@ -44,8 +44,8 @@ public class ChatMessageHandler extends PushHandler {
 			cxt.sendBroadcast(intent);
 			
 			//Update UI or schedule status bar notification.
-			if (TalkView.CURRENT_RECEIVER_RRICKY != null && 
-					msg.getFrom().equals(TalkView.CURRENT_RECEIVER_RRICKY))
+			if (TalkFragment.CURRENT_RECEIVER_RRICKY != null && 
+					msg.getFrom().equals(TalkFragment.CURRENT_RECEIVER_RRICKY))
 			{
 				//TODO: update badge count.
 			}

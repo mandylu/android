@@ -37,7 +37,6 @@ import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-import com.quanleimu.util.ViewStack;
 import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
@@ -545,14 +544,14 @@ public class QuanleimuApplication extends Application implements LocationService
 	static QuanleimuApplication mDemoApp;
 
 	
-	protected ViewStack viewStack;
-	public ViewStack getViewStack(){
-		if(null == viewStack){
-			viewStack = new ViewStack(this.getApplicationContext());
-		}
-		
-		return viewStack;
-	}
+//	protected ViewStack viewStack;
+//	public ViewStack getViewStack(){
+//		if(null == viewStack){
+//			viewStack = new ViewStack(this.getApplicationContext());
+//		}
+//		
+//		return viewStack;
+//	}
 	
 	protected ErrorHandler handler;
 	public void setErrorHandler(Context context){

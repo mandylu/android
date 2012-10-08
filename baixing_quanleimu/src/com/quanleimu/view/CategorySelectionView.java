@@ -53,6 +53,8 @@ public class CategorySelectionView extends ListView {
 	//protected ListView lvSubCate = null;
 	protected CommonItemAdapter secondCateAdapter = null;
 	
+	private boolean canExpend = true;
+	
 	public enum ECATE_LEVEL{
 		ECATE_LEVEL_MAIN,
 		ECATE_LEVEL_SUB
@@ -60,6 +62,11 @@ public class CategorySelectionView extends ListView {
 	protected ECATE_LEVEL curLevel = ECATE_LEVEL.ECATE_LEVEL_MAIN;
 	public ECATE_LEVEL getLevel(){
 		return curLevel;
+	}
+	
+	public void setExpendable(boolean can)
+	{
+		this.canExpend = can;
 	}
 	
 	protected class MainCateItemClickListener implements AdapterView.OnItemClickListener {
@@ -73,12 +80,138 @@ public class CategorySelectionView extends ListView {
 			FirstStepCate selectedMainCate = (FirstStepCate)CategorySelectionView.this.allCateAdapter.getList().get(index);
 			String cateName = selectedMainCate.getName();
 			
-
-			
-			if(null == secondCateAdapter){
-				secondCateAdapter = 
-						new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren(), 0x1FFFFFFF, false);
+			if (canExpend)
+			{
+				if(null == secondCateAdapter){
+					secondCateAdapter = 
+							new CommonItemAdapter(CategorySelectionView.this.getContext(), selectedMainCate.getChildren(), 0x1FFFFFFF, false);
+				}
+				
+				CategorySelectionView.this.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,
+							int arg2, long arg3) {
+						
+						int index = arg2 - CategorySelectionView.this.getHeaderViewsCount();
+						if(index < 0 || index > CategorySelectionView.this.secondCateAdapter.getList().size() - 1)
+							return;
+						
+						SecondStepCate selectedSubCate =  (SecondStepCate)CategorySelectionView.this.secondCateAdapter.getList().get(index);							
+						
+						if(null != CategorySelectionView.this.selectionListener){
+							if(QuanleimuApplication.listUsualCates != null){
+								int size = QuanleimuApplication.listUsualCates.size();
+								for(int i = 0; i < size; ++ i){
+									if(QuanleimuApplication.listUsualCates.get(i).getName().equals(selectedSubCate.getName())){
+										QuanleimuApplication.listUsualCates.remove(i);
+										break;
+									}
+								}
+								QuanleimuApplication.listUsualCates.add(0, selectedSubCate);
+								size = QuanleimuApplication.listUsualCates.size();
+								while(size > 5){
+									QuanleimuApplication.listUsualCates.remove(5);
+									size = QuanleimuApplication.listUsualCates.size();
+								}
+								Util.saveDataToLocate(getContext(), "listUsualCates", QuanleimuApplication.listUsualCates);
+							}
+							CategorySelectionView.this.selectionListener.OnSubCategorySelected(selectedSubCate);
+						}
+					}
+				});
+				
+				if(null != secondCateAdapter && !cateName.equals((String)secondCateAdapter.getTag())){
+					secondCateAdapter.setTag(cateName);
+					secondCateAdapter.setList(selectedMainCate.getChildren());
+				}
+				
+				CategorySelectionView.this.setAdapter(secondCateAdapter);
+				CategorySelectionView.this.setDivider(null);
+				CategorySelectionView.this.curLevel = ECATE_LEVEL.ECATE_LEVEL_SUB;
 			}
+
+			if(null != CategorySelectionView.this.selectionListener){
+				CategorySelectionView.this.selectionListener.OnMainCategorySelected(selectedMainCate);
+				}
+			}
+		};
+	
+	public CategorySelectionView(Context context, View headerView, View footerView) {
+		super(context);
+		
+		init(context);
+		
+		setHeaderFooterView(headerView, footerView);
+	}
+	
+	public void init(Context context) {
+		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
+//		this.setSelector(R.drawable.list_selector);
+		this.setCacheColorHint(0);
+		this.setFocusable(true);
+		
+		try{
+			Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);
+			this.setDivider(divider);
+			this.setDividerHeight(1);
+		}
+		catch(Exception e){
+			e.printStackTrace();
+		}
+//		this.setBackgroundDrawable(null);
+			
+		this.setOnItemClickListener(new MainCateItemClickListener());
+	}
+	
+	public void setHeaderFooterView(View headerView, View footerView){
+		if(null != headerView)
+			this.addHeaderView(headerView);
+		if(null != footerView)
+		this.addFooterView(footerView);
+		
+		//main cate list
+		List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+		
+		if(null != allCates && allCates.size() > 0)
+		{	
+//			this.ApplyAllCates(allCates);
+			setRootCateList(allCates);
+		}
+	}
+	
+	public void setRootCateList(List cate)
+	{
+		if (cate != null && cate.size() > 0)
+		{
+			if (cate.get(0) instanceof FirstStepCate)
+			{
+				ApplyAllCates(cate);
+			}
+			else if (cate.get(0) instanceof SecondStepCate)
+			{
+				applySubCates(cate);
+			}
+		}
+	}
+	
+	public CategorySelectionView(Context context, AttributeSet attrs){
+		super(context, attrs);
+
+		init(context);	
+		
+		TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
+				R.styleable.CategorySelectionView);
+		firstItemOverlap = styledAttrs.getBoolean(R.styleable.CategorySelectionView_firstitemoverlap, false);
+	}
+	
+	protected void applySubCates(List<SecondStepCate> subCates)
+	{
+		if (subCates == null || subCates.size() == 0)
+		{
+			QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE);
+		} else {
+			secondCateAdapter = 
+					new CommonItemAdapter(CategorySelectionView.this.getContext(), subCates, 0x1FFFFFFF, false);
 			
 			CategorySelectionView.this.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 				@Override
@@ -113,72 +246,18 @@ public class CategorySelectionView extends ListView {
 				}
 			});
 			
-			if(null != secondCateAdapter && !cateName.equals((String)secondCateAdapter.getTag())){
-				secondCateAdapter.setTag(cateName);
-				secondCateAdapter.setList(selectedMainCate.getChildren());
-			}
+//			if(null != secondCateAdapter && !cateName.equals((String)secondCateAdapter.getTag())){
+//				secondCateAdapter.setTag(cateName);
+//				secondCateAdapter.setList(selectedMainCate.getChildren());
+//			}
 			
 			CategorySelectionView.this.setAdapter(secondCateAdapter);
 			CategorySelectionView.this.setDivider(null);
 			CategorySelectionView.this.curLevel = ECATE_LEVEL.ECATE_LEVEL_SUB;
 			
-			if(null != CategorySelectionView.this.selectionListener){
-				CategorySelectionView.this.selectionListener.OnMainCategorySelected(selectedMainCate);
-				}
-			}
-		};
-	
-	public CategorySelectionView(Context context, View headerView, View footerView) {
-		super(context);
-		
-		init(context);
-		
-		setHeaderFooterView(headerView, footerView);
+		}
 	}
 
-	public void init(Context context) {
-		this.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
-//		this.setSelector(R.drawable.list_selector);
-		this.setCacheColorHint(0);
-		this.setFocusable(true);
-		
-		try{
-			Drawable divider = this.getResources().getDrawable(R.drawable.list_divider);
-			this.setDivider(divider);
-			this.setDividerHeight(1);
-		}
-		catch(Exception e){
-			e.printStackTrace();
-		}
-//		this.setBackgroundDrawable(null);
-			
-		this.setOnItemClickListener(new MainCateItemClickListener());
-	}
-	
-	public void setHeaderFooterView(View headerView, View footerView){
-		if(null != headerView)
-			this.addHeaderView(headerView);
-		if(null != footerView)
-		this.addFooterView(footerView);
-		
-		//main cate list
-		List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
-		
-		if(null != allCates && allCates.size() > 0)
-		{	
-			this.ApplyAllCates(allCates);			
-		}
-	}
-	
-	public CategorySelectionView(Context context, AttributeSet attrs){
-		super(context, attrs);
-
-		init(context);	
-		
-		TypedArray styledAttrs = context.obtainStyledAttributes(attrs,
-				R.styleable.CategorySelectionView);
-		firstItemOverlap = styledAttrs.getBoolean(R.styleable.CategorySelectionView_firstitemoverlap, false);
-	}
 
 	protected void ApplyAllCates(List<FirstStepCate> allCateList) {
 		if (allCateList == null || allCateList.size() == 0) {

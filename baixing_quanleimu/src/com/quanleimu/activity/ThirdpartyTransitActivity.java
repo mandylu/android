@@ -2,15 +2,14 @@ package com.quanleimu.activity;
 
 import java.io.File;
 
-import com.quanleimu.broadcast.BXNotificationService;
-
 import android.app.Activity;
-import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
+
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class ThirdpartyTransitActivity extends Activity{
 	static public final String ThirdpartyKey = "thirdparty";
@@ -26,34 +25,60 @@ public class ThirdpartyTransitActivity extends Activity{
 	private static final int PHOTOHRAPH = 1;
 	private static final int NONE = 0;
 	private int photoNameNumber = -1; 
+	private boolean isCreate = false;
 	enum ETHIRDPARTYTYPE{
 		ETHIRDPARTYTYPE_ALBAM,
 		ETHIRDPARTYTYPE_PHOTO
 	}
 	private ETHIRDPARTYTYPE tptype = null;
 	@Override
-	public void onCreate(Bundle bundle){		
+	public void onCreate(Bundle bundle){
+		Log.e("QLM", "third party create");
 		this.getWindow().setBackgroundDrawable(null);
-		Intent intent = this.getIntent();
-		Bundle extBundle = intent.getExtras();
-		
-		if(extBundle.containsKey(ThirdpartyKey)){
-			String key = extBundle.getString(ThirdpartyKey);
-			if(key != null){
-				if(key.equals(ThirdpartyType_Albam)){
-					tptype = ETHIRDPARTYTYPE.ETHIRDPARTYTYPE_ALBAM;
-					startThirdparty(0);
-				}
-				else if(key.equals(ThirdpartyType_Photo)){
-					tptype = ETHIRDPARTYTYPE.ETHIRDPARTYTYPE_PHOTO;
-					photoNameNumber = extBundle.getInt(Name_PhotoNumber);
-					startThirdparty(photoNameNumber);
-				}
-			}
-		}
+		this.isCreate = bundle == null;
 		super.onCreate(bundle);
 	}
 	
+	
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		Log.e("QLM", "third party onNewIntent()");
+		super.onNewIntent(intent);
+	}
+
+
+
+	@Override
+	protected void onResume() {
+		Log.e("QLM", "third party onResume()");
+		super.onResume();
+		if (isCreate)
+		{
+			Intent intent = this.getIntent();
+			Bundle extBundle = intent.getExtras();
+			
+			if(extBundle.containsKey(ThirdpartyKey)){
+				String key = extBundle.getString(ThirdpartyKey);
+				if(key != null){
+					if(key.equals(ThirdpartyType_Albam)){
+						tptype = ETHIRDPARTYTYPE.ETHIRDPARTYTYPE_ALBAM;
+						startThirdparty(0);
+					}
+					else if(key.equals(ThirdpartyType_Photo)){
+						tptype = ETHIRDPARTYTYPE.ETHIRDPARTYTYPE_PHOTO;
+						photoNameNumber = extBundle.getInt(Name_PhotoNumber);
+						startThirdparty(photoNameNumber);
+					}
+				}
+			}
+			isCreate = false;
+		}
+
+	}
+
+
+
 	private void startThirdparty(int tmpName){
 		if (tptype == ETHIRDPARTYTYPE.ETHIRDPARTYTYPE_ALBAM) {
 			Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
@@ -71,6 +96,8 @@ public class ThirdpartyTransitActivity extends Activity{
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.d("QLM", "third party active result");
+		
 		Intent backIntent = new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
 		if(requestCode == PHOTOHRAPH || requestCode == PHOTOZOOM){
@@ -80,6 +107,7 @@ public class ThirdpartyTransitActivity extends Activity{
 		bundle.putInt(Key_RequestResult, resultCode);
 		bundle.putParcelable(Key_Data, data);
 		backIntent.putExtras(bundle);
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(backIntent);
 		this.finish();
 	}

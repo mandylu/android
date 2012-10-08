@@ -1,41 +1,49 @@
 package com.quanleimu.activity;
 
+import java.util.ArrayList;
+import java.util.List;
+import java.util.Stack;
+
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Bundle;
-import android.util.Log;
+import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
+import android.support.v4.app.FragmentTransaction;
+import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.mobclick.android.MobclickAgent;
-
-import java.io.File;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
-import java.io.ObjectOutputStream;
-import java.util.ArrayList;
+import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.CityDetail;
-import com.quanleimu.entity.GoodsDetail;
-
-import java.util.List;
-import android.app.Activity;
+import com.quanleimu.view.fragment.FirstRunFragment;
+import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 父类Activity
  * @author henry_yang
  *
  */
-public class BaseActivity extends Activity implements OnClickListener{
+public class BaseActivity extends FragmentActivity implements OnClickListener{
 
+	public static final String TAG = "QLM";// "BaseActivity";
+	
+	public static final String PREF_FIRSTRUN  = "firstRunFlag";
+	
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
@@ -44,6 +52,8 @@ public class BaseActivity extends Activity implements OnClickListener{
 	protected View v = null; 
 	protected ProgressDialog pd;
 	//public LoadImage LoadImage;
+	
+	private int stackSize;
 	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -68,7 +78,8 @@ public class BaseActivity extends Activity implements OnClickListener{
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-        super.onRestoreInstanceState(savedInstanceState);
+    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
+    	super.onRestoreInstanceState(savedInstanceState);
 		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
 		myApp.setCityName(savedInstanceState.getString("cityName"));
 		
@@ -135,14 +146,92 @@ public class BaseActivity extends Activity implements OnClickListener{
 		MobclickAgent.onResume(this);
 		
 		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
+		
+		
 	}
 
 
 
 	@Override
+	public void onAttachFragment(Fragment fragment) {
+		// TODO Auto-generated method stub
+		super.onAttachFragment(fragment);
+	}
+	
+	protected final void notifyStackTop()
+	{
+		BaseFragment f = getCurrentFragment();
+		if (f != null)
+		{
+			int newStackSize = getSupportFragmentManager().getBackStackEntryCount();
+			
+			Log.e(TAG, "notify stack top " + f.getClass().getName());
+			try
+			{
+				f.notifyOnStackTop(newStackSize < stackSize);
+			} catch( Throwable t) {
+				
+			}
+			finally
+			{
+				stackSize = newStackSize;
+			}
+			findViewById(R.id.splash_cover).setVisibility(View.GONE);
+			
+		}
+	
+	}
+	
+	public final void showFirstRun(BaseFragment f)
+	{
+		if (f.getFirstRunId() == -1)
+		{
+			return; //No need first run.
+		}
+		String key = f.getClass().getName() + QuanleimuApplication.version;
+		SharedPreferences share = this.getSharedPreferences(PREF_FIRSTRUN, MODE_PRIVATE);
+		boolean shown = share.getBoolean(key, false);
+		if (!shown)
+		{
+			Editor edit = share.edit();
+			edit.putBoolean(key, true);
+			edit.commit();
+			
+			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
+			Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
+	        if (prev != null) {
+	            ft.remove(prev);
+	        }
+	        ft.addToBackStack(null);
+
+	        // Create and show the dialog.
+	        DialogFragment newFragment = FirstRunFragment.create(key, f.getFirstRunId());
+	        newFragment.show(ft, "dialog");
+		}
+	}
+	
+	public final void onHideFirstRun(String key)
+	{
+		SharedPreferences share = this.getSharedPreferences(PREF_FIRSTRUN, MODE_PRIVATE);
+		Editor edit = share.edit();
+		edit.putBoolean(key, true);
+		edit.commit();
+	}
+
+	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		
 		super.onCreate(savedInstanceState);
+		getSupportFragmentManager().addOnBackStackChangedListener(new OnBackStackChangedListener() {
+			@Override
+			public void onBackStackChanged() {
+				notifyStackTop();
+			}});
+		
+		if (savedInstanceState  != null)
+		{
+			Log.w(TAG, "recreate activity from saved instance" + this.hashCode());
+		}
 //		v =findViewById(R.id.linearBottom);
 		MobclickAgent.onError(this);
 		myApp = (QuanleimuApplication) getApplication();
@@ -281,6 +370,54 @@ public class BaseActivity extends Activity implements OnClickListener{
 	{
 		pd.dismiss();
 	}
+	
+	public final void pushFragment(BaseFragment fragment, Bundle bundle, String popTo)
+	{
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		fm.popBackStack(popTo == null ? null : popTo , FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		
+		if (bundle != null)
+		{
+			fragment.setArguments(bundle);
+		}
+		
+		ft.replace(R.id.contentLayout, fragment);
+		ft.addToBackStack(fragment.getName());
+		ft.commit();
+	}
+	
+	public final void pushFragment(BaseFragment f, Bundle bundle, boolean clearStack)
+	{
+		pushFragment(f, bundle, clearStack ? null : "");
+		
+	}
+	
+	
+	public final void popFragment(BaseFragment f)
+	{
+			FragmentManager fm = getSupportFragmentManager();
+			FragmentTransaction ft = fm.beginTransaction();
+			//Pop current
+			fm.popBackStackImmediate();
+			
+			ft.commit();
+	}
+	
+	
+	@Override
+	public boolean onContextItemSelected(MenuItem item) {
+		// TODO Auto-generated method stub
+		return super.onContextItemSelected(item);
+	}
+
+	public BaseFragment getCurrentFragment()
+	{
+		
+		FragmentManager fm = this.getSupportFragmentManager();
+//		
+		return (BaseFragment) fm.findFragmentById(R.id.contentLayout);
+	}
 
 //	public static String cn2Spell(String chinese) {
 //		StringBuffer pybf = new StringBuffer();
@@ -303,4 +440,12 @@ public class BaseActivity extends Activity implements OnClickListener{
 //		return pybf.toString();
 //	}
 	
+	/**
+	 * This is used to append the Fragment which is recorved by auto save.
+	 * @param f
+	 */
+	void restoreFragment(BaseFragment f)
+	{
+		Log.d(TAG, "append fragment from restore : " + f.getClass().getName());
+	}
 }
