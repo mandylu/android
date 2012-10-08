@@ -22,7 +22,10 @@ import android.widget.TextView;
 
 import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
+import com.quanleimu.database.ChatMessageDatabase;
+import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.FirstRunFragment;
+import com.readystatesoftware.viewbadger.BadgeView;
 import com.tencent.mm.sdk.platformtools.Log;
 
 /**
@@ -358,6 +361,7 @@ public abstract class BaseFragment extends Fragment {
 		}
 		else
 		{
+			checkAndUpdateBadge(50);
 			LinearLayout bottom = (LinearLayout)activity.findViewById(R.id.linearBottom);
 			bottom.setVisibility(View.VISIBLE);
 			activity.findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);
@@ -370,6 +374,34 @@ public abstract class BaseFragment extends Fragment {
 		}
 	}
 	
+	private void checkAndUpdateBadge(long uiDelay)
+	{
+		final Activity activity = getActivity();
+		if (activity == null)
+		{
+			return;
+		}
+		
+		final BadgeView v = (BadgeView) activity.findViewById(R.id.badge);
+		uiDelay = uiDelay > 0 ? uiDelay : 0;
+			v.postDelayed(new Runnable() {
+
+			public void run() {
+				ChatMessageDatabase.prepareDB(activity);
+				final String myId = Util.getMyId(activity);
+				int count = ChatMessageDatabase.getUnreadCount(null, myId);
+				Log.d("badge", "count" + count);
+				v.setText(count + "");
+				
+				if (count == 0 ||  myId == null) {
+					v.setVisibility(View.GONE);
+				} else {
+					v.setVisibility(View.VISIBLE);
+				}
+			}
+
+		}, uiDelay);
+	}
 	
 	protected void refreshHeader()
 	{
