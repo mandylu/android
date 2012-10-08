@@ -293,7 +293,7 @@ public class XMPPManager {
 
         try {
 //            informListeners(mConnection);
-        	handleOfflineMessages(mConnection, context);
+//        	handleOfflineMessages(mConnection, context);
             mPacketListener = new PkgListener();
             mConnection.addPacketListener(mPacketListener, mPacketListener);
 
