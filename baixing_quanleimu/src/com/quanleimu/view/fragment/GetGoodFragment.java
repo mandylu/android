@@ -224,7 +224,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		
 		goodsListLoader.setParams(addParams); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
-		if(curLocation != null){
+		if(curLocation != null && titleControlStatus != 0){
 			goodsListLoader.setNearby(true);
 			goodsListLoader.setRuntime(false);
 		}
