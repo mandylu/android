@@ -16,6 +16,7 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
+import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -28,6 +29,7 @@ import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.broadcast.BXNotificationService;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 
@@ -1106,5 +1108,21 @@ public class Util {
 		}
 		
 		return currentUserId;
+	}
+	
+	public static boolean isPushAlreadyThere(Context ctx, String pushCode){
+		if(ctx == null) return true;
+		if(pushCode == null || pushCode.equals("")) return false;
+		Object objCode = Util.loadDataFromLocate(ctx, "pushCode");
+		if(objCode != null){
+			String code = (String)objCode;
+			try{
+				return Integer.valueOf(pushCode) <= Integer.valueOf(code);
+			}catch(Throwable e){
+				e.printStackTrace();
+				return false;
+			}
+		}
+		return false;
 	}
 }

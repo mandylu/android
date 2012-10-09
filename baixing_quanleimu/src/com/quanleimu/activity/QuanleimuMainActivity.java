@@ -215,8 +215,9 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 		                    editor.putString("hasShowShortcut", "yes");
 		                    // Commit the edits!
 		                    editor.commit();
-//		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
-//		            		QuanleimuMainActivity.this.startService(pushIntent);
+		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
+		            		QuanleimuMainActivity.this.startService(pushIntent);
+
 		            		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		            		startPush.putExtra("updateToken", true);
 		            		QuanleimuMainActivity.this.startService(startPush);
@@ -468,8 +469,8 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-//		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
-//		this.stopService(pushIntent);
+		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
+		this.stopService(pushIntent);
 		
 //		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 //		startPush.putExtra("updateToken", true);

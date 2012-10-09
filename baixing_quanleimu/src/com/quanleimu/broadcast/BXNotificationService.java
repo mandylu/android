@@ -31,11 +31,7 @@ import android.content.IntentFilter;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 
-/**
- * 
- * @deprecated replaced by PushMessageService
- * 
- */
+
 public class BXNotificationService extends Service {
 	private static final String TAG = "BXService";
 	private static final int HELLO_ID = 0x11223344;
@@ -62,7 +58,7 @@ public class BXNotificationService extends Service {
 
 		// Notification的Intent，即点击后转向的Activity
 		Intent notificationIntent = new Intent(this,
-				com.quanleimu.activity.SplashActivity.class);
+				com.quanleimu.activity.QuanleimuMainActivity.class);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
@@ -107,9 +103,9 @@ public class BXNotificationService extends Service {
 			UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user");
 			list.add("userid=" + (user == null ? "" : URLEncoder.encode(user.getId())));
 			
-			Object timeObj = Util.loadDataFromLocate(BXNotificationService.this, "pushNotification");
+			Object timeObj = Util.loadDataFromLocate(BXNotificationService.this, "pushCode");
 			if(timeObj != null){
-				list.add("time=" + URLEncoder.encode((String)timeObj));
+				list.add("pushCode=" + URLEncoder.encode((String)timeObj));
 			}
 
 			String url = Communication.getApiUrl(apiName, list);
@@ -169,7 +165,7 @@ public class BXNotificationService extends Service {
 			switch (msg.what) {
 			case MSG_CHECK_UPDATE:
 				doGetPushInfo();
-				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 3600000);
+				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 7200000);
 				break;
 			case MSG_PUSH_RETURN:
 				if (json != null && !json.toString().equals("null")) {
@@ -185,8 +181,8 @@ public class BXNotificationService extends Service {
 							}
 						}
 						
-						if (jsonObject.has("time")) {
-							time = jsonObject.getString("time");
+						if (jsonObject.has("pushCode")) {
+							time = jsonObject.getString("pushCode");
 						}
 						if (jsonObject.has("ticket")) {
 							ticket = jsonObject.getString("ticket");
@@ -197,9 +193,10 @@ public class BXNotificationService extends Service {
 						if (jsonObject.has("content")) {
 							content = jsonObject.getString("content");
 						}
-
-						BXNotificationService.this.showNotification(ticket, title, content);
-						Util.saveDataToLocate(BXNotificationService.this, "pushNotification", time);
+						if(!Util.isPushAlreadyThere(BXNotificationService.this, time)){
+							BXNotificationService.this.showNotification(ticket, title, content);
+							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
+						}
 						
 					} catch (Exception e) {
 						e.printStackTrace();
