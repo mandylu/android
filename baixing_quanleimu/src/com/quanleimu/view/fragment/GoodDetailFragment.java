@@ -337,7 +337,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 				else
 				{
-					initContent(detail, mListLoader.getGoodsList().getData().get(position), position);
+					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0));
 				}
 				long t2 = System.currentTimeMillis();
 				Log.d("instantiateItem", "hahaha instantiate: " + (t2 - t1));
@@ -515,7 +515,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
 								page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
 								final Integer tag = (Integer)page.getTag();
-								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue());
+								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null);
 							}
 							
 						}, 10);
@@ -535,7 +535,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         return v;
 	}
 	
-	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex)
+	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager)
 	{
 		contentView = contentView.getRootView();
 		Log.d("PAGER", "init content view with detail " + detail.getValueByKey("title"));
@@ -646,10 +646,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			rl_address.setOnClickListener(this);
 		} 
 		
-		final ViewPager vp = (ViewPager) contentView.findViewById(R.id.svDetail);
-		if (pageIndex == vp.getCurrentItem())
+		final ViewPager vp = pager != null ? pager : (ViewPager) getActivity().findViewById(R.id.svDetail);
+		if (vp != null && pageIndex == vp.getCurrentItem())
 		{
-			updateContactBar(contentView.getRootView(), false);
+			updateContactBar(vp.getRootView(), false);
 		}
 		
 	}
