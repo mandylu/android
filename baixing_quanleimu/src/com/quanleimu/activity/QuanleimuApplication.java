@@ -51,7 +51,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	public static String version="";
 	public static String channelId;
 	public static Context context;	
-	public static LazyImageLoader lazyImageLoader;
+	private static LazyImageLoader lazyImageLoader;
 	public static List<String> list;//list of temporarily cache files
 	public static List<HotList> listHot;
 	public static boolean update = false;
@@ -87,6 +87,16 @@ public class QuanleimuApplication extends Application implements LocationService
         
         return androidId;
 
+    }
+    
+    public static final LazyImageLoader getImageLoader()
+    {
+    	if (lazyImageLoader == null)
+    	{
+    		lazyImageLoader = new LazyImageLoader();
+    	}
+    	
+    	return lazyImageLoader;
     }
 
 	

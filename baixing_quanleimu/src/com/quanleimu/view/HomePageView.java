@@ -322,7 +322,7 @@ public class HomePageView
 				listHot = JsonUtil.parseCityHotFromJson(jsonDecoded);
 				
 				for(int i = 0; i < listHot.size(); ++i){
-					if(!QuanleimuApplication.lazyImageLoader.checkWithImmediateIO(listHot.get(i).imgUrl)){
+					if(!QuanleimuApplication.getImageLoader().checkWithImmediateIO(listHot.get(i).imgUrl)){
 						lastSavedValid = false;
 					}
 				}
@@ -361,7 +361,7 @@ public class HomePageView
 		adapter = new HotListAdapter(getContext(), 
 				listHot, 
 				tempListHot, 
-				QuanleimuApplication.lazyImageLoader);
+				QuanleimuApplication.getImageLoader());
 		glDetail.setAdapter(adapter);		
 		
 		
@@ -575,7 +575,7 @@ public class HomePageView
 		public void releaseBitmap(){
 			if(loadingList != null){
 				for(int i = 0; i < loadingList.size(); ++ i){
-					QuanleimuApplication.lazyImageLoader.forceRecycle(loadingList.get(i).getImgUrl());
+					QuanleimuApplication.getImageLoader().forceRecycle(loadingList.get(i).getImgUrl());
 				}
 			}
 		}

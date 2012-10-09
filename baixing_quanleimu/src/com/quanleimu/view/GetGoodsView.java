@@ -138,7 +138,7 @@ public class GetGoodsView extends BaseView implements View.OnClickListener, OnSc
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
 //										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										QuanleimuApplication.lazyImageLoader.forceRecycle(c[0]);
+										QuanleimuApplication.getImageLoader().forceRecycle(c[0]);
 //										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
 									}
 								 }

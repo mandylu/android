@@ -479,7 +479,6 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 		setContentView(R.layout.main_activity);
 		findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
 		
-		QuanleimuApplication.lazyImageLoader = new LazyImageLoader();
 		splashJob = new SplashJob(this, this);
 		
 //		isRestoring = savedInstanceState != null;

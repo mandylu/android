@@ -104,6 +104,7 @@ public class SplashJob {
 			
 			if(1 == record1 && 1 == record2 && 1 == record3){
 				isJobDone = true;
+				QuanleimuApplication.getImageLoader();// = new LazyImageLoader();
 				jobListener.onJobDone();
 			}
 		}

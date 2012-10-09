@@ -53,7 +53,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
 	private Vector<String> unScannedFiles = new Vector<String>();
 	
 	protected void Init(){
-		QuanleimuApplication.lazyImageLoader.enableSampleSize();
+		QuanleimuApplication.getImageLoader().enableSampleSize();
 		LayoutInflater inflater = LayoutInflater.from(getContext());
 		this.addView(inflater.inflate(R.layout.biggallery, null));
 		
@@ -136,14 +136,14 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
         
         //imageData = null;
         goodsDetail = null;
-        QuanleimuApplication.lazyImageLoader.disableSampleSize();
+        QuanleimuApplication.getImageLoader().disableSampleSize();
   		SimpleImageLoader.Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
   					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					QuanleimuApplication.lazyImageLoader.forceRecycle(url);
+  					QuanleimuApplication.getImageLoader().forceRecycle(url);
   					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
@@ -161,7 +161,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
     @Override
     public void onResume()
     {
-    		QuanleimuApplication.lazyImageLoader.enableSampleSize();
+    		QuanleimuApplication.getImageLoader().enableSampleSize();
 	    	if(null == mb){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 	            o.inPurgeable = true;
@@ -420,7 +420,7 @@ public class BigGalleryView extends BaseView implements ViewFlow.ViewSwitchListe
     		
     		if(view instanceof ImageView){
     			//recycle the bitmap referred by the view
-    			QuanleimuApplication.lazyImageLoader.forceRecycle((String)(((ImageView)view).getTag()));
+    			QuanleimuApplication.getImageLoader().forceRecycle((String)(((ImageView)view).getTag()));
     		}
     	}
     }

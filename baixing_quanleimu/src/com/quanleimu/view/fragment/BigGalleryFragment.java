@@ -73,7 +73,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		QuanleimuApplication.lazyImageLoader.enableSampleSize();
+		QuanleimuApplication.getImageLoader().enableSampleSize();
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
@@ -176,7 +176,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    public void onResume()
 	    {
 	    	super.onResume();
-	    		QuanleimuApplication.lazyImageLoader.enableSampleSize();
+	    		QuanleimuApplication.getImageLoader().enableSampleSize();
 		    	if(null == mb){
 					BitmapFactory.Options o =  new BitmapFactory.Options();
 		            o.inPurgeable = true;
@@ -338,7 +338,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    		
 	    		if(view instanceof ImageView){
 	    			//recycle the bitmap referred by the view
-	    			QuanleimuApplication.lazyImageLoader.forceRecycle((String)(((ImageView)view).getTag()));
+	    			QuanleimuApplication.getImageLoader().forceRecycle((String)(((ImageView)view).getTag()));
 	    		}
 	    	}
 	    }

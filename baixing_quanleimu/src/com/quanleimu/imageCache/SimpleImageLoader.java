@@ -30,26 +30,26 @@ import com.tencent.mm.sdk.platformtools.Log;
 public class SimpleImageLoader
 {
 	public static void AdjustPriority(ArrayList<String> urls){
-		QuanleimuApplication.lazyImageLoader.AdjustPriority(urls);
+		QuanleimuApplication.getImageLoader().AdjustPriority(urls);
 	}
 	
 	public static void Cancel(List<String> urls){
-		QuanleimuApplication.lazyImageLoader.Cancel(urls);
+		QuanleimuApplication.getImageLoader().Cancel(urls);
 	//	QuanleimuApplication.lazyImageLoader.forceRecycle();
 	}
 	
 	public static void Cancel(String url, Object object){
-		QuanleimuApplication.lazyImageLoader.Cancel(url, object);
+		QuanleimuApplication.getImageLoader().Cancel(url, object);
 	}
 	
 	public static String getFileInDiskCache(String url){
-		return QuanleimuApplication.lazyImageLoader.getFileInDiskCache(url);
+		return QuanleimuApplication.getImageLoader().getFileInDiskCache(url);
 	}
 
 	public static void showImg(final ImageView view,final String url, final String preUrl, Context con, final int defaultResImgId)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = QuanleimuApplication.lazyImageLoader.get(url, getCallback(url,preUrl, view,defaultResImgId));
+		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view,defaultResImgId));
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
@@ -72,12 +72,12 @@ public class SimpleImageLoader
 				
 				@Override
 				protected void onPostExecute(Bitmap bitmap_) {  
-					synchronized(QuanleimuApplication.lazyImageLoader){
+					synchronized(QuanleimuApplication.getImageLoader()){
 						if(((String)view.getTag()).equals(url)){
 //							Log.d("load image: ", "hahaha ln79  load url is: " + url + " and view:    " + view.hashCode() + "   "+ System.currentTimeMillis());
 							if(!bitmap_.isRecycled()){
 								if(!url.equals(preUrl)){
-									Bitmap bmp = QuanleimuApplication.lazyImageLoader.getBitmapInMemory(preUrl);
+									Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 									if(bmp != null){
 										Drawable curDrawable = view.getDrawable();
 										if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
@@ -86,7 +86,7 @@ public class SimpleImageLoader
 //												Log.d("remove", "hahaha, before recycle, line: 77    " + System.currentTimeMillis());
 												int count = decreaseBitmapReferenceCount(bmp.hashCode(), view.hashCode());
 												if(0 >= count){
-													QuanleimuApplication.lazyImageLoader.forceRecycle(preUrl);
+													QuanleimuApplication.getImageLoader().forceRecycle(preUrl);
 												}else{
 //													Log.d("not 0", "hahaha can't recycle ooooooooooooooooooo, ln 91");
 												}
@@ -154,13 +154,13 @@ public class SimpleImageLoader
 			private boolean inFailStatus = false;
 			public void refresh(String url, Bitmap bitmap)
 			{
-				synchronized(QuanleimuApplication.lazyImageLoader){
+				synchronized(QuanleimuApplication.getImageLoader()){
 					if(url.equals(view.getTag().toString()))
 					{
 //						Log.d("load image: ", "hahaha ln107  load url is: " + url + "  and view:  " + view.hashCode() + "   "+ System.currentTimeMillis());
 						if(!bitmap.isRecycled()){
 							if(!url.equals(preUrl)){
-								Bitmap bmp = QuanleimuApplication.lazyImageLoader.getBitmapInMemory(preUrl);
+								Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 								if(bmp != null){
 									Drawable curDrawable = view.getDrawable();
 									if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
@@ -169,7 +169,7 @@ public class SimpleImageLoader
 //											Log.d("remove", "hahaha, before recycle, line: 129    " + System.currentTimeMillis());
 											int count = decreaseBitmapReferenceCount(bmp.hashCode(), view.hashCode());
 											if(0 >= count){
-												QuanleimuApplication.lazyImageLoader.forceRecycle(preUrl);
+												QuanleimuApplication.getImageLoader().forceRecycle(preUrl);
 											}else{
 //												Log.d("not 0", "hahaha can't recycle ooooooooooooooooooo, ln 175");
 											}
