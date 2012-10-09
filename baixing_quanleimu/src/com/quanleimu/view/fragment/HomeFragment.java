@@ -545,7 +545,7 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 
 	@Override
 	public void OnMainCategorySelected(FirstStepCate selectedMainCate){
-		Bundle bundle = createArguments(selectedMainCate.name, "选择浏览类目");
+		Bundle bundle = createArguments(selectedMainCate.name, "返回");
 		ArrayList<SecondStepCate> cates = new ArrayList<SecondStepCate>();
 		cates.addAll(selectedMainCate.getChildren());
 		bundle.putSerializable("cates", cates);
