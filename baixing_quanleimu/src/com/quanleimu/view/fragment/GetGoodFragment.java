@@ -210,7 +210,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
 		List<String> addParams = new ArrayList<String>(basicParams);
-		if(curLocation == null){
+		if(curLocation == null || titleControlStatus == 0){
 			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
