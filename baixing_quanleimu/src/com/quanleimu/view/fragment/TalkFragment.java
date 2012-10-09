@@ -54,6 +54,11 @@ public class TalkFragment extends BaseFragment {
 		private static final int MSG_GETTARGETICON = 2;
 		private static final int MSG_GETMYICON = 3;
 		private static final int MSG_CLOSE_PROGRESS = 4;
+		private static final int MSG_RECEIVE_MESSAGE = 5;
+		private static final int MSG_MERGE_MESSAGE = 6;
+		private static final int MSG_SEND_MESSAGE = 7;
+		private static final int MSG_REPLACE_MESSAGES = 8;
+		private static final int MSG_SCROLL_BOTTOM = 9;
 		
 		private String targetUserId;
 		private String adId;
@@ -64,6 +69,7 @@ public class TalkFragment extends BaseFragment {
 		private long lastupdateTime = 0;
 		private boolean alwaysSync;
 		private boolean isAttachedToWindow;
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			// TODO Auto-generated method stub
@@ -126,7 +132,8 @@ public class TalkFragment extends BaseFragment {
 			sendBtn.setOnClickListener(ctrl);
 			root.findViewById(R.id.im_input_box).setOnClickListener(ctrl);
 			
-			((ListView) root.findViewById(R.id.char_history_p)).setAdapter(new ChatMessageAdapter(Util.getMyId(getContext())));
+			ChatMessageAdapter msgAdapter = new ChatMessageAdapter(Util.getMyId(getContext()));
+			((ListView) root.findViewById(R.id.char_history_p)).setAdapter(msgAdapter);
 			
 			initInputBox(root);
 			
@@ -225,9 +232,9 @@ public class TalkFragment extends BaseFragment {
 		}	
 		
 		
-		private ChatMessageAdapter getAdapter()
+		private ChatMessageAdapter getAdapter(View currentRoot)
 		{
-			return (ChatMessageAdapter) ((ListView) findViewById(R.id.char_history_p)).getAdapter();
+			return (ChatMessageAdapter) ((ListView) currentRoot.findViewById(R.id.char_history_p)).getAdapter();
 		}
 		
 		private void initInputBox(View parent)
@@ -285,9 +292,10 @@ public class TalkFragment extends BaseFragment {
 		{
 			//First step to update UI.
 			ChatMessage msg = createMessage(message);
-			getAdapter().appendData(msg);
-			//TODO: post delay to scroll to bottom of scroll view.
-			postScrollDelay();
+//			getAdapter().appendData(msg);
+//			//TODO: post delay to scroll to bottom of scroll view.
+//			postScrollDelay();
+			sendMessage(MSG_SEND_MESSAGE, msg);
 			
 			//Send the text to server.
 			Thread t = new Thread(new SendMsgCmd(message));
@@ -325,14 +333,15 @@ public class TalkFragment extends BaseFragment {
 			ChatMessageDatabase.prepareDB(getContext());
 			ChatMessageDatabase.updateReadStatus(msg.getId(), true);
 			
-			getView().postDelayed(new Runnable() {
-				public void run() {
-					getAdapter().appendData(msg);
-					
-					postScrollDelay();
-				}
-				
-			}, 10);
+//			getView().postDelayed(new Runnable() {
+//				public void run() {
+//					getAdapter().appendData(msg);
+//					
+//					postScrollDelay();
+//				}
+//				
+//			}, 10);
+			sendMessage(MSG_RECEIVE_MESSAGE, msg);
 		}
 		
 		private void mergeAndUpdateUI(final List<ChatMessage> list, final boolean isLocal)
@@ -340,44 +349,53 @@ public class TalkFragment extends BaseFragment {
 			Collections.sort(list, new MsgTimeComparator());
 			lastupdateTime = list.get(list.size()-1).getTimestamp();
 			
-			getView().postDelayed(new Runnable() {
-				public void run() {
-//					long startTime = System.currentTimeMillis();
-					if (isLocal)
-					{
-						getAdapter().refreshData(list);
-					}
-					else
-					{
-						getAdapter().appendData(list, false);
-					}
-					
-					postScrollDelay();
-//					Log.e("TalkView", "update ui cost : " + (System.currentTimeMillis()-startTime));
-				}
-				
-			}, 10);
+//			getView().postDelayed(new Runnable() {
+//				public void run() {
+////					long startTime = System.currentTimeMillis();
+//					if (isLocal)
+//					{
+//						getAdapter().refreshData(list);
+//					}
+//					else
+//					{
+//						getAdapter().appendData(list, false);
+//					}
+//					
+//					postScrollDelay();
+////					Log.e("TalkView", "update ui cost : " + (System.currentTimeMillis()-startTime));
+//				}
+//				
+//			}, 10);
+			
+			if (isLocal)
+			{
+				sendMessage(MSG_REPLACE_MESSAGES, list);
+			}
+			else
+			{
+				sendMessage(MSG_MERGE_MESSAGE, list);
+			}
 			
 			ChatMessageDatabase.prepareDB(getContext());
 			ChatMessageDatabase.storeMessage(list, true);
 		}
 		
-		private void postScrollDelay()
-		{
-			getView().postDelayed(new Runnable() {
-				
-				@Override
-				public void run() {
-					if (getAdapter().getCount() > 0)
-					{
-						ListView scroll = (ListView) findViewById(R.id.char_history_p);
-//					scroll.fullScroll(ScrollView.FOCUS_DOWN);
-						scroll.setSelection(getAdapter().getCount()-1);
-					}
-					
-				}
-			}, 200);
-		}
+//		private void postScrollDelay()
+//		{
+//			getView().postDelayed(new Runnable() {
+//				
+//				@Override
+//				public void run() {
+//					if (getAdapter().getCount() > 0 && getView() != null)
+//					{
+//						ListView scroll = (ListView) findViewById(R.id.char_history_p);
+////					scroll.fullScroll(ScrollView.FOCUS_DOWN);
+//						scroll.setSelection(getAdapter().getCount()-1);
+//					}
+//					
+//				}
+//			}, 200);
+//		}
 		
 		private void updateSendStatus(boolean succed)
 		{
@@ -537,10 +555,11 @@ public class TalkFragment extends BaseFragment {
 				switch (v.getId())
 				{
 				case R.id.im_input_box:
-					postScrollDelay();
+//					postScrollDelay();
+					sendMessage(MSG_SCROLL_BOTTOM, null);
 					break;
 				case R.id.im_send_btn:
-					EditText text = (EditText) findViewById(R.id.im_input_box);
+					EditText text = (EditText) getView().findViewById(R.id.im_input_box);
 					if (text.length() != 0)
 					{
 						sendAndUpdateUI(text.getText().toString());
@@ -562,17 +581,39 @@ public class TalkFragment extends BaseFragment {
 			}
 		}
 		
+		private void scrollToBottom(View rootView)
+		{
+			ListView scroll = (ListView) rootView.findViewById(R.id.char_history_p);
+			scroll.setSelection(getAdapter(rootView).getCount()-1);
+		}
+		
 		protected final void handleMessage(Message msg, Activity activity, View rootView)
 		{
 
 			switch (msg.what) {
+			case MSG_REPLACE_MESSAGES:
+				getAdapter(rootView).refreshData((List<ChatMessage>) msg.obj);
+				scrollToBottom(rootView);
+				break;
+			case MSG_MERGE_MESSAGE:
+				getAdapter(rootView).appendData((List<ChatMessage>) msg.obj, false);
+				scrollToBottom(rootView);
+				break;
+			case MSG_RECEIVE_MESSAGE:
+			case MSG_SEND_MESSAGE:
+				getAdapter(rootView).appendData((ChatMessage) msg.obj);
+				scrollToBottom(rootView);
+				break;
+			case MSG_SCROLL_BOTTOM:
+				scrollToBottom(rootView);
+				break;
 			case MSG_GETPROFILE:
 				if(msg.obj != null){
 					TitleDef title = this.getTitleDef();
 					title.m_visible = true;
 					title.m_title = msg.obj.toString();				
 					title.m_leftActionHint = "返回";
-					if (getActivity() != null)
+					if (rootView != null)
 					{
 						refreshHeader();
 					}
@@ -582,18 +623,21 @@ public class TalkFragment extends BaseFragment {
 			case MSG_GETTARGETICON:
 			{
 				SimpleProfile p = (SimpleProfile) msg.obj;
-				getAdapter().setTargetProfile(p.icon, p.isBoy);
+				getAdapter(rootView).setTargetProfile(p.icon, p.isBoy);
 				break;
 			}
 			case MSG_GETMYICON:
 			{
 				SimpleProfile p = (SimpleProfile) msg.obj;
-				getAdapter().setMyProfile(p.icon, p.isBoy);
+				getAdapter(rootView).setMyProfile(p.icon, p.isBoy);
 				break;
 			}
 			case MSG_CLOSE_PROGRESS:
 			{
-				findViewById(R.id.tip_loading_message).setVisibility(View.GONE);
+				if (rootView != null)
+				{
+					rootView.findViewById(R.id.tip_loading_message).setVisibility(View.GONE);
+				}
 				break;
 			}
 			}

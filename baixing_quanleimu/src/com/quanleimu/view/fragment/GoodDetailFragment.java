@@ -172,7 +172,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		super.onPause();
 		
 		BXStatsHelper.getInstance().send();
-		Gallery glDetail = (Gallery) findViewById(R.id.glDetail);
+		Gallery glDetail = (Gallery) getView().findViewById(R.id.glDetail);
 		if(glDetail != null){
 //			glDetail.getc
 		}
@@ -266,11 +266,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		}		
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_MOVE: 
-	    	((ViewPager)findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
+	    	((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
 	        break;
 	    case MotionEvent.ACTION_UP:
 	    case MotionEvent.ACTION_CANCEL:
-	    	((ViewPager)findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
+	    	((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
 	        break;		
 	    }
 		return this.keepSilent;
@@ -537,6 +537,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex)
 	{
+		contentView = contentView.getRootView();
 		Log.d("PAGER", "init content view with detail " + detail.getValueByKey("title"));
 		
 		WindowManager wm = 
@@ -645,7 +646,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			rl_address.setOnClickListener(this);
 		} 
 		
-		final ViewPager vp = (ViewPager) findViewById(R.id.svDetail);
+		final ViewPager vp = (ViewPager) contentView.findViewById(R.id.svDetail);
 		if (pageIndex == vp.getCurrentItem())
 		{
 			updateContactBar(contentView.getRootView(), false);
@@ -834,9 +835,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 	@Override
 	public void onClick(View v) {
+		View rootView = getView();
 		switch (v.getId()) {
 		case R.id.number:{
-			findViewById(R.id.contact).performLongClick();
+			rootView.findViewById(R.id.contact).performLongClick();
 			break;
 		}
 		case R.id.retry_load_more:
@@ -849,12 +851,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			pushFragment(new FeedbackFragment(), bundle);
 			break;
 		case R.id.call_img:{
-			findViewById(R.id.contact).performLongClick();
+			rootView.findViewById(R.id.contact).performLongClick();
 			break;	
 		}
 		case R.id.buzz_txt:
 		{
-			findViewById(R.id.buzz).performClick();
+			rootView.findViewById(R.id.buzz).performClick();
 			break;
 		}
 		case R.id.buzz: {
@@ -1307,8 +1309,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onAnimationEnd(Animation animation) {
 		// TODO Auto-generated method stub
-		GoodDetailFragment.this.findViewById(R.id.btn_prev).setVisibility(View.GONE);
-		GoodDetailFragment.this.findViewById(R.id.btn_next).setVisibility(View.GONE);
+		getView().findViewById(R.id.btn_prev).setVisibility(View.GONE);
+		getView().findViewById(R.id.btn_next).setVisibility(View.GONE);
 	}
 
 	@Override
@@ -1329,22 +1331,22 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 		switch (msg.what) {
 		case MSG_HIDE_ARROW:
-			final View prev = GoodDetailFragment.this.findViewById(R.id.btn_prev);
+			final View prev = rootView.findViewById(R.id.btn_prev);
 			if(prev != null){
-				Animation animation = AnimationUtils.loadAnimation(GoodDetailFragment.this.getActivity(), R.anim.alpha);
+				Animation animation = AnimationUtils.loadAnimation(activity, R.anim.alpha);
 				prev.startAnimation(animation);
 				animation.setAnimationListener(GoodDetailFragment.this);
 			}
-			View next = GoodDetailFragment.this.findViewById(R.id.btn_next);
+			View next = rootView.findViewById(R.id.btn_next);
 			if(next != null){
-				Animation animation = AnimationUtils.loadAnimation(GoodDetailFragment.this.getActivity(), R.anim.alpha);
+				Animation animation = AnimationUtils.loadAnimation(activity, R.anim.alpha);
 				next.startAnimation(animation);
 				animation.setAnimationListener(GoodDetailFragment.this);
 			}
 			break;
 		case msgRefresh:
 			if(json == null){
-				Toast.makeText(GoodDetailFragment.this.getActivity(), "刷新失败，请稍后重试！", 0).show();
+				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
 				break;
 			}
 			try {
@@ -1789,11 +1791,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
 		
+		View v = getView();
 		switch (menuItem.getItemId())
 		{
 		case R.id.contact + 0: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_ADD_CONTACT, null);
-			TextView txt_phone = (TextView) findViewById(R.id.number);
+			TextView txt_phone = (TextView) v.findViewById(R.id.number);
 			Intent intent = new Intent(
 		            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
 		            Uri.parse("tel:" + txt_phone.getText()));
@@ -1803,7 +1806,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		case R.id.contact + 1: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_CALL, null);
-			TextView txt_phone = (TextView) findViewById(R.id.number);
+			TextView txt_phone = (TextView) v.findViewById(R.id.number);
 			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
 			this.getContext().startActivity(intent);
@@ -1811,7 +1814,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		case R.id.contact + 2: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SMS_SEND, null);
-			TextView txt_phone = (TextView) findViewById(R.id.number);
+			TextView txt_phone = (TextView) v.findViewById(R.id.number);
 			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
 			this.getContext().startActivity(intent);			

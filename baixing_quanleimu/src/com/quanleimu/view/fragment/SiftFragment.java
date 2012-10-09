@@ -39,6 +39,9 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
 public class SiftFragment extends BaseFragment {
+	
+	private static final int MSG_UPDATE_KEYWORD = 3;
+	
 	public List<String> listsize = new ArrayList<String>();
 
 	// 定义变量
@@ -489,8 +492,9 @@ public class SiftFragment extends BaseFragment {
 			}
 
 			if (keyWords != null) {
-				((TextView) SiftFragment.this.findViewById(R.id.edsift))
-						.setText(keyWords);
+//				((TextView) SiftFragment.this.findViewById(R.id.edsift))
+//						.setText(keyWords);
+				sendMessage(MSG_UPDATE_KEYWORD, keyWords);
 			}
 
 		}
@@ -516,9 +520,12 @@ public class SiftFragment extends BaseFragment {
 			if (pd != null) {
 				pd.dismiss();
 			}
-			Toast.makeText(getContext(), "服务当前不可用，请稍后重试！", 3).show();
+			Toast.makeText(activity, "服务当前不可用，请稍后重试！", 3).show();
 			break;
-
+		case MSG_UPDATE_KEYWORD:
+			((TextView) rootView.findViewById(R.id.edsift))
+			.setText((String) msg.obj);
+			break;
 		}
 
 	}

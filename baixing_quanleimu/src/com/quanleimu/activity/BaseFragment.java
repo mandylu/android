@@ -494,23 +494,24 @@ public abstract class BaseFragment extends Fragment {
 		return bundle;
 	}
 	
-	protected final View findViewById(int id) {
-		View view = getView();
-		Activity activity = getActivity();
-		
-		View target = null;
-		if (view != null)
-		{
-			target = view.findViewById(id);
-		}
-		
-		if (activity != null && target == null)
-		{
-			target =  activity.findViewById(id);
-		}
-		
-		return  target;
-	}
+	//View root, 
+//	protected final View findViewById(int id) {
+//		View view = getView();
+//		Activity activity = getActivity();
+//		
+//		View target = null;
+//		if (view != null)
+//		{
+//			target = view.findViewById(id);
+//		}
+//		
+//		if (activity != null && target == null)
+//		{
+//			target =  activity.findViewById(id);
+//		}
+//		
+//		return  target;
+//	}
 	
 	protected final Context getContext()
 	{

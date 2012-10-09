@@ -157,13 +157,14 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 //			}
 //		}
 
+		final View root = getView();
 		// 签名档
-		if (v.getId() == ((RelativeLayout) findViewById(R.id.rlMark)).getId()) {
+		if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlMark)).getId()) {
 			pushFragment(new MarkLableFragment(), null );
 		}
 
 		// 清空缓存
-		else if (v.getId() == ((RelativeLayout) findViewById(R.id.rlClearCache)).getId()) {
+		else if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlClearCache)).getId()) {
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 			builder.setTitle("提示:")
@@ -184,19 +185,19 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 									QuanleimuApplication.getApplication().ClearCache();
 									
 									//清空签名档
-									((TextView)findViewById(R.id.personMark)).setText("");
+									((TextView)root.findViewById(R.id.personMark)).setText("");
 								}
 							});
 			builder.create().show();
 		}
 		
 		//aboutus
-		else if(v.getId() == ((RelativeLayout) findViewById(R.id.rlAbout)).getId()){
+		else if(v.getId() == ((RelativeLayout) root.findViewById(R.id.rlAbout)).getId()){
 			pushFragment(new AboutUsFragment(), null);
 		}
 		
 		// 反馈
-		else if (v.getId() ==((RelativeLayout) findViewById(R.id.rlBack)).getId()) {
+		else if (v.getId() ==((RelativeLayout) root.findViewById(R.id.rlBack)).getId()) {
 			pushFragment(new FeedbackFragment(), createArguments(null, null));
 		}
 	}

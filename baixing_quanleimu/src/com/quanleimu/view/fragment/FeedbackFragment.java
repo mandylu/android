@@ -208,7 +208,7 @@ public class FeedbackFragment extends BaseFragment {
 	@Override
 	public void handleRightAction() {
 		content = etOpinion.getText().toString();
-		String contact = ((TextView)findViewById(R.id.et_contact)).getText().toString();
+		String contact = ((TextView)getView().findViewById(R.id.et_contact)).getText().toString();
 		if(contact != null && !contact.equals("")){
 			content += "    联系方式: " + contact;
 		}

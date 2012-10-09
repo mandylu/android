@@ -151,7 +151,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.rebuildPage(false);
+		this.rebuildPage(getView(), false);
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
 			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
@@ -172,12 +172,12 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 
 
 
-	private void rebuildPage(boolean onResult){
+	private void rebuildPage(View rootView, boolean onResult){
 		
 		if(glLoader != null){
 			glLoader.setHandler(handler);
 		}
-		LinearLayout lView = (LinearLayout)this.findViewById(R.id.linearListView);
+		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
 		
 		if(-1 == currentPage){
 			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
@@ -394,7 +394,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			if(msg.what == MSG_MYPOST){
 				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
 			}
-			rebuildPage(true);
+			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			break;
 		case GoodsListLoader.MSG_EXCEPTION:{
@@ -653,21 +653,21 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			this.currentPage = -1;
 			buttonStatus = -1;
 			adapter.setHasDelBtn(false);
-			rebuildPage(false);
+			rebuildPage(getView(), false);
 			break;
 		case R.id.ivMyfav:
 			buttonStatus = -1;
 			adapter.setHasDelBtn(false);
 			
 			this.currentPage = 0;
-			rebuildPage(false);
+			rebuildPage(getView(), false);
 			break;
 		case R.id.ivMyhistory:
 			buttonStatus = -1;
 			adapter.setHasDelBtn(false);
 			
 			this.currentPage = 1;
-			rebuildPage(false);
+			rebuildPage(getView(), false);
 			break;
 		default:
 			break;

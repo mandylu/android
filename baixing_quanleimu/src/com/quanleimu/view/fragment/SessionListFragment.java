@@ -70,9 +70,9 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 		return v;
 	}
 	
-	private SessionListAdapter getAdapter()
+	private SessionListAdapter getAdapter(View rootView)
 	{
-		ListView plv = (ListView)this.findViewById(R.id.lv_sessionlist);
+		ListView plv = (ListView)rootView.findViewById(R.id.lv_sessionlist);
 		return (SessionListAdapter) plv.getAdapter();
 	}
 	@Override
@@ -85,13 +85,13 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	public void onResume() {
 		super.onResume();
 
-		ListView plv = (ListView)this.findViewById(R.id.lv_sessionlist);
+		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
 		plv.requestFocus();
 		
 		syncSessions(Util.getMyId(getContext()));
 		
 		registerReceiver();
-		BaseAdapter adapter = this.getAdapter();
+		BaseAdapter adapter = getAdapter(getView());
 		if(adapter != null){
 			adapter.notifyDataSetChanged();
 		}
@@ -170,19 +170,19 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 		case MSG_NEW_SESSION_FAIL:
 			if (rootView != null)
 			{
-				findViewById(R.id.session_loading).setVisibility(View.GONE);
+				rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);
 			}
 			break;
 		case MSG_NEW_SESSION:
 			if (rootView != null)
 			{
-				getAdapter().updateSessions((List<ChatSession>) msg.obj);
-				findViewById(R.id.session_loading).setVisibility(View.GONE);
+				getAdapter(rootView).updateSessions((List<ChatSession>) msg.obj);
+				rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);
 			}
 		case MSG_NEW_MESSAGE:
 			if (rootView != null)
 			{
-				getAdapter().notifyDataSetChanged();
+				getAdapter(rootView).notifyDataSetChanged();
 			}
 			break;
 		}

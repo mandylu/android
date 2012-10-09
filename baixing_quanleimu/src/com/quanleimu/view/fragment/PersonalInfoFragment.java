@@ -138,24 +138,25 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 	
 	private void switchLayoutOnLogin(boolean logined){
+		View root = getView();
 		if(logined){
-			findViewById(R.id.rl_login).setVisibility(View.GONE);
-			findViewById(R.id.rl_profile).setVisibility(View.VISIBLE);
+			root.findViewById(R.id.rl_login).setVisibility(View.GONE);
+			root.findViewById(R.id.rl_profile).setVisibility(View.VISIBLE);
 			TitleDef title = this.getTitleDef();//new TitleDef();
 			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 			title.m_title = "用户中心";
 			title.m_leftActionHint="注销";
 			title.m_rightActionHint="设置";
-			findViewById(R.id.profile_background).setVisibility(View.VISIBLE);
-			findViewById(R.id.seperator_login).setVisibility(View.GONE);
+			root.findViewById(R.id.profile_background).setVisibility(View.VISIBLE);
+			root.findViewById(R.id.seperator_login).setVisibility(View.GONE);
 //			m_viewInfoListener.onTitleChanged(title);
 			refreshHeader();
 		}else{
 			if(loginHelper == null){
-				loginHelper = new LoginUtil(findViewById(R.id.rl_login), this);
+				loginHelper = new LoginUtil(root.findViewById(R.id.rl_login), this);
 			}
-			findViewById(R.id.rl_login).setVisibility(View.VISIBLE);
-			findViewById(R.id.rl_profile).setVisibility(View.GONE);
+			root.findViewById(R.id.rl_login).setVisibility(View.VISIBLE);
+			root.findViewById(R.id.rl_profile).setVisibility(View.GONE);
 			TitleDef title = this.getTitleDef();
 			title.m_leftActionHint="";
 			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
@@ -163,8 +164,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			title.m_rightActionHint="设置";
 //			m_viewInfoListener.onTitleChanged(title);
 			refreshHeader();
-			findViewById(R.id.profile_background).setVisibility(View.GONE);
-			findViewById(R.id.seperator_login).setVisibility(View.VISIBLE);
+			root.findViewById(R.id.profile_background).setVisibility(View.GONE);
+			root.findViewById(R.id.seperator_login).setVisibility(View.VISIBLE);
 		}
 
 	}
@@ -182,7 +183,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void onResume() {
 		super.onResume();
 		
-		refreshUI();
+		refreshUI(getView());
 		
 		
 		registerReceiver();
@@ -195,7 +196,11 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			chatMessageReceiver = new BroadcastReceiver() {
 
 				public void onReceive(Context outerContext, Intent outerIntent) {
-					updateMessageCountInfo();
+					View v = getView();
+					if (v != null)
+					{
+						updateMessageCountInfo(v);
+					}
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
@@ -385,7 +390,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			if (rootView != null)
 			{
-				refreshUI();
+				refreshUI(rootView);
 			}
 			break;				
 		case MSG_LOGINFAIL:
@@ -456,7 +461,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 //				if(sessions != null){
 //					((TextView)PersonalCenterEntryView.this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
 //				}
-				updateMessageCountInfo();
+				updateMessageCountInfo(rootView);
 			}
 			break;
 		}
@@ -484,7 +489,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 							bundle.remove("lastPost");
 						}
 						QuanleimuApplication.getApplication().setListMyPost(null);
-						refreshUI();
+						refreshUI(getView());
 					}					
 				});
 		builder.show();
@@ -492,7 +497,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		return true;
 	}
 	
-	private void refreshUI ()
+	private void refreshUI (View rootView)
 	{
 		Activity activity = this.getActivity();
 		user = (UserBean) Util.loadDataFromLocate(activity, "user");
@@ -521,12 +526,12 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			if(user == null){
 			    ((TextView)activity.findViewById(R.id.btn_editprofile)).setText("登陆");
 				clearProfile();
-				((TextView)this.findViewById(R.id.tv_buzzcount)).setText("未登陆");
+				((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("未登陆");
 				tvPersonalAds.setText("未登陆");
 				switchLayoutOnLogin(false);
 			}else{
 				switchLayoutOnLogin(true);
-				((TextView)findViewById(R.id.btn_editprofile)).setText("编辑");
+				((TextView)rootView.findViewById(R.id.btn_editprofile)).setText("编辑");
 				if(up == null || (up.createTime.equals(""))){
 					new Thread(new GetPersonalProfileThread()).start();
 				}
@@ -538,7 +543,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 					new Thread(new GetPersonalSessionsThread()).start();
 				}else{
 //					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
-					updateMessageCountInfo();
+					updateMessageCountInfo(rootView);
 				}
 			}
 		}
@@ -551,15 +556,15 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void handleRightAction() {
 		pushFragment(new SetMainFragment(), null);
 	}
-	private void updateMessageCountInfo()
+	private void updateMessageCountInfo(View rootView)
 	{
 		if (this.sessions != null)
 		{
 			ChatMessageDatabase.prepareDB(getActivity());
 			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getContext())));
-			((TextView)this.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
+			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
 		}else{
-			((TextView)this.findViewById(R.id.tv_buzzcount)).setText("0未读");
+			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("0未读");
 		}
 	}
 	

@@ -63,10 +63,10 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.search, null);
 	
-		btnCancel = (Button)findViewById(R.id.btnCancel);
+		btnCancel = (Button)v.findViewById(R.id.btnCancel);
 		btnCancel.setText("取消");
 		
-		etSearch = (EditText)findViewById(R.id.etSearch);
+		etSearch = (EditText)v.findViewById(R.id.etSearch);
 		etSearch.setFocusableInTouchMode(true);
 		etSearch.addTextChangedListener(new TextWatcher(){
 			@Override
@@ -84,7 +84,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 		});
 
 		
-		lvSearchResult = (ListView) findViewById(R.id.lvSearchHistory);
+		lvSearchResult = (ListView) v.findViewById(R.id.lvSearchHistory);
 		lvSearchResult.setDivider(null);
 		lvSearchResult.setOnItemClickListener(new OnItemClickListener(){
 			

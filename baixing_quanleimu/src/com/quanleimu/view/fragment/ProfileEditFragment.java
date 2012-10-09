@@ -156,7 +156,7 @@ public class ProfileEditFragment extends BaseFragment {
 			
 			public void onClick(View cV) {
 				GenderPopupDialog dlg = new GenderPopupDialog(ProfileEditFragment.this.getContext(), 
-						((TextView)findViewById(R.id.gender)).getText().equals("男"));
+						((TextView)v.findViewById(R.id.gender)).getText().equals("男"));
 				dlg.show();
 				dlg.setOnDismissListener(new DialogInterface.OnDismissListener(){
 
@@ -164,7 +164,7 @@ public class ProfileEditFragment extends BaseFragment {
 					public void onDismiss(DialogInterface dialog) {
 						// TODO Auto-generated method stub
 						if(dialog != null){
-							((TextView)findViewById(R.id.gender)).setText(((GenderPopupDialog)dialog).isBoy() ? "男" : "女");
+							((TextView)v.findViewById(R.id.gender)).setText(((GenderPopupDialog)dialog).isBoy() ? "男" : "女");
 						}
 					}
 					

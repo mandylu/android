@@ -309,8 +309,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				if(adapter != null){
 					adapter.setList(new ArrayList<GoodsDetail>());
 					adapter.notifyDataSetChanged();
-					((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-					((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 				}
 				
 				titleControlStatus = 0;
@@ -363,8 +363,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				if(adapter != null){
 					adapter.setList(new ArrayList<GoodsDetail>());
 					adapter.notifyDataSetChanged();
-					((TextView)findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-					((TextView)findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
+					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
 				}
 				
 				titleControlStatus = 1;
