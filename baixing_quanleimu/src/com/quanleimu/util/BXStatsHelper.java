@@ -4,6 +4,7 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 public class BXStatsHelper {
 
@@ -17,6 +18,8 @@ public class BXStatsHelper {
 	public static final String TYPE_HOTS_SEND = "hots";
 	public static final String TYPE_HOMESEARCH_SEND = "homesearch";
 	public static final String TYPE_LISTINGFILTER_SEND = "listingfilter";
+	public static final String TYPE_GET_NOTIFICATION = "getNotification";
+	public static final String TYPE_CLICK_NOTIFICATION = "clickNotification";
 
 	private static final String TYPE_ADS_ID = "adIds";
 	
@@ -35,7 +38,8 @@ public class BXStatsHelper {
 			new BXStats(TYPE_SIXIN_SEND, 0), new BXStats(TYPE_WEIBO_SEND, 0),
 			new BXStats(TYPE_WEIXIN_SEND, 0), new AdViewStats(TYPE_ADS_ID, 0),
 			new BXStats(TYPE_HOTS_SEND, 0), new AdViewStats(TYPE_HOMESEARCH_SEND, 0),
-			new BXStats(TYPE_LISTINGFILTER_SEND, 0)
+			new BXStats(TYPE_LISTINGFILTER_SEND, 0), new BXStats(TYPE_GET_NOTIFICATION, 0),
+			new BXStats(TYPE_CLICK_NOTIFICATION, 0)
 		};
 		
 		statusList = new ArrayList<BXStats>();
@@ -144,10 +148,14 @@ public class BXStatsHelper {
 	private int totalCount()
 	{
 		int t = 0;
-		BXStats s = findStatus(TYPE_AD_VIEW);
-		if (s != null) {
+		for(int i = 0; i < statusList.size(); ++ i){
+			BXStats s = statusList.get(i);
 			t += s.getCount();
 		}
+//		BXStats s = findStatus(TYPE_AD_VIEW);
+//		if (s != null) {
+//			t += s.getCount();
+//		}
 		
 		return t;
 	}
@@ -172,6 +180,7 @@ public class BXStatsHelper {
 	
 	public void send()
 	{
+		Log.d("task", "task  stats send");
 		if (totalCount() <= 0) //do not send if no log.
 		{
 			return;
@@ -181,9 +190,11 @@ public class BXStatsHelper {
 		ParameterHolder params = new ParameterHolder();
 		for (BXStats d : data)
 		{
-			params.addParameter(d.getTypeName(), d.description());
+			if(d.getCount() > 0){
+				params.addParameter(d.getTypeName(), d.description());
+			}
 		}
-		
+		Log.d("task", "task  stats send191");
 		Communication.executeAsyncPostTask("stats", params, new Communication.CommandListener() {
 			
 			@Override

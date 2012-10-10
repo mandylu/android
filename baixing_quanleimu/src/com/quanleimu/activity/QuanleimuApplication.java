@@ -63,31 +63,6 @@ public class QuanleimuApplication extends Application implements LocationService
 	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
-
-
-    static public String getDeviceUdid(Context context) {
-        // Use the Android ID unless it's broken, in which case fallback on deviceId,
-        // unless it's not available, then fallback on a random number which we store
-        // to a prefs file
-    	final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
-    	
-        try {
-        	
-            if ("9774d56d682e549c".equals(androidId) || androidId == null) {
-                final String deviceId = ((TelephonyManager) context.getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
-                String uuid = deviceId!=null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")).toString() : UUID.randomUUID().toString();
-                return uuid;
-            }
-            
-            return androidId;
-        } catch (UnsupportedEncodingException e) {
-//            throw new RuntimeException(e);
-        	e.printStackTrace();
-        }
-        
-        return androidId;
-
-    }
     
     public static final LazyImageLoader getImageLoader()
     {

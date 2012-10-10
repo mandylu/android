@@ -21,6 +21,7 @@ import android.app.PendingIntent;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Util;
@@ -59,9 +60,12 @@ public class BXNotificationService extends Service {
 		// Notification的Intent，即点击后转向的Activity
 		Intent notificationIntent = new Intent(this,
 				com.quanleimu.activity.QuanleimuMainActivity.class);
+		notificationIntent.putExtra("fromNotification", true);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,
 				notificationIntent, 0);
+		
+		
 
 		// 创建Notifcation
 		Notification notification = new Notification(icon, tickerText,
@@ -128,13 +132,13 @@ public class BXNotificationService extends Service {
 				int index = url.indexOf("udid=");
 				index += 5;
 				if(index >= url.length()){
-					url += QuanleimuApplication.getDeviceUdid(BXNotificationService.this);
+					url += Util.getDeviceUdid(BXNotificationService.this);
 				}
 				else{
 					char version = url.charAt(index);
 					if(version == '&'){
 						StringBuffer sb = new StringBuffer(url);
-						sb = sb.insert(index, QuanleimuApplication.getDeviceUdid(BXNotificationService.this));
+						sb = sb.insert(index, Util.getDeviceUdid(BXNotificationService.this));
 						url = sb.toString();
 					}
 				}
@@ -165,7 +169,7 @@ public class BXNotificationService extends Service {
 			switch (msg.what) {
 			case MSG_CHECK_UPDATE:
 				doGetPushInfo();
-				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 7200000);
+				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 10000);
 				break;
 			case MSG_PUSH_RETURN:
 				if (json != null && !json.toString().equals("null")) {
@@ -194,6 +198,11 @@ public class BXNotificationService extends Service {
 							content = jsonObject.getString("content");
 						}
 						if(!Util.isPushAlreadyThere(BXNotificationService.this, time)){
+							Log.d("task", "task  increase get_notification");
+							QuanleimuApplication.version = Util.getVersion(BXNotificationService.this);
+							QuanleimuApplication.udid = Util.getDeviceUdid(BXNotificationService.this);
+							BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_GET_NOTIFICATION, null);
+							BXStatsHelper.getInstance().send();
 							BXNotificationService.this.showNotification(ticket, title, content);
 							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
 						}

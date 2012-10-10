@@ -2,9 +2,11 @@ package com.quanleimu.broadcast.push;
 
 import org.json.JSONObject;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.broadcast.BXNotificationService;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.NotificationIds;
+import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.tencent.mm.sdk.platformtools.Log;
@@ -45,6 +47,11 @@ public class BXInfoHandler extends PushHandler {
 				pushCode = data.getString("pushCode");
 			}
 			if(!Util.isPushAlreadyThere(cxt, pushCode)){
+				QuanleimuApplication.version = Util.getVersion(cxt);
+				QuanleimuApplication.udid = Util.getDeviceUdid(cxt);
+
+				BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_GET_NOTIFICATION, null);
+				BXStatsHelper.getInstance().send();
 				ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_BXINFO, 
 						CommonIntentAction.ACTION_NOTIFICATION_BXINFO, title, content, null, false);
 				Util.saveDataToLocate(cxt, "pushCode", pushCode);

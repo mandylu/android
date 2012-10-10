@@ -54,18 +54,9 @@ public class SplashJob {
 		isJobStarted = true;
 		
 		LocationService.getInstance().start(parentActivity, QuanleimuApplication.mDemoApp);
-		QuanleimuApplication.udid = QuanleimuApplication.getDeviceUdid(parentActivity);
+		QuanleimuApplication.udid = Util.getDeviceUdid(parentActivity);
 
-		PackageManager packageManager = parentActivity.getPackageManager();
-		
-		PackageInfo packInfo;
-		try {
-			packInfo = packageManager.getPackageInfo(parentActivity.getPackageName(), 0);
-			QuanleimuApplication.version = packInfo.versionName;
-		} catch (NameNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		QuanleimuApplication.version = Util.getVersion(parentActivity);
 
 		try {
 			if (parentActivity.JadgeConnection() == false) {

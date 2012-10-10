@@ -71,30 +71,6 @@ public class Communication implements Comparator<String> {
 		return (System.currentTimeMillis() / 1000) + "";
 	}
 
-//	public static String getudid() {
-//		return Secure.getString(
-//				QuanleimuApplication.context.getContentResolver(),
-//				Secure.ANDROID_ID);
-//	}
-
-	public static String getversion() {
-		String version = "";
-		PackageManager packageManager = QuanleimuApplication.context
-				.getPackageManager();
-		// getPackageName()是你当前类的包名，0代表是获取版本信息
-		PackageInfo packInfo;
-		try {
-			packInfo = packageManager.getPackageInfo(
-					QuanleimuApplication.context.getPackageName(), 0);
-			QuanleimuApplication.version = packInfo.versionName;
-			// System.out.println("version--->" + QuanleimuApplication.version);
-		} catch (NameNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
-		return version;
-	}
-
 	// 业务逻辑API URL
 	private static String getPostParameters(List<String> list) {
 		/*
@@ -614,9 +590,9 @@ public class Communication implements Comparator<String> {
 					public void run() {
 						
 						String url = Communication.getApiUrl(apiName, params.toParameterList());
-						
 						try {
 							String result = isGet ? Communication.getDataByUrlGet(url) : Communication.getDataByUrl(url, true);
+							System.out.println("executeAsynctask" + "   task     result    " + result);
 							if (listener != null)
 							{
 								listener.onServerResponse(result);

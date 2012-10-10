@@ -63,20 +63,11 @@ public class SplashActivity extends BaseActivity{
 		//LocationService.getInstance().start(this, this);
 		super.onCreate(savedInstanceState);
 
-		QuanleimuApplication.udid = QuanleimuApplication.getDeviceUdid(this);
+		QuanleimuApplication.udid = Util.getDeviceUdid(this);
 //				Secure.getString(this.getContentResolver(),
 //				Secure.ANDROID_ID);
 
-		PackageManager packageManager = getPackageManager();
-		// getPackageName()是你当前类的包名，0代表是获取版本信息
-		PackageInfo packInfo;
-		try {
-			packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-			QuanleimuApplication.version = packInfo.versionName;
-		} catch (NameNotFoundException e1) {
-			// TODO Auto-generated catch block
-			e1.printStackTrace();
-		}
+		QuanleimuApplication.version = Util.getVersion(this);
 
 		try {
 			if (JadgeConnection() == false) {

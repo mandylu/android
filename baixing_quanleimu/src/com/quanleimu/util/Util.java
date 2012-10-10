@@ -21,6 +21,7 @@ import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.UUID;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -36,6 +37,9 @@ import com.quanleimu.entity.UserProfile;
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
+import android.content.pm.PackageInfo;
+import android.content.pm.PackageManager;
+import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
@@ -46,6 +50,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Environment;
 import android.os.Message;
+import android.provider.Settings.Secure;
+import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
 import android.graphics.Canvas;
@@ -1125,4 +1131,42 @@ public class Util {
 		}
 		return false;
 	}
+	
+	public static String getVersion(Context ctx){
+		PackageManager packageManager = ctx.getPackageManager();
+		// getPackageName()是你当前类的包名，0代表是获取版本信息
+		PackageInfo packInfo;
+		try {
+			packInfo = packageManager.getPackageInfo(ctx.getPackageName(), 0);
+			return packInfo.versionName;
+		} catch (NameNotFoundException e1) {
+			// TODO Auto-generated catch block
+			e1.printStackTrace();
+		}
+		return "";
+	}
+	
+    static public String getDeviceUdid(Context context) {
+        // Use the Android ID unless it's broken, in which case fallback on deviceId,
+        // unless it's not available, then fallback on a random number which we store
+        // to a prefs file
+    	final String androidId = Secure.getString(context.getContentResolver(), Secure.ANDROID_ID);
+    	
+        try {
+        	
+            if ("9774d56d682e549c".equals(androidId) || androidId == null) {
+                final String deviceId = ((TelephonyManager) context.getSystemService( Context.TELEPHONY_SERVICE )).getDeviceId();
+                String uuid = deviceId!=null ? UUID.nameUUIDFromBytes(deviceId.getBytes("utf8")).toString() : UUID.randomUUID().toString();
+                return uuid;
+            }
+            
+            return androidId;
+        } catch (UnsupportedEncodingException e) {
+//            throw new RuntimeException(e);
+        	e.printStackTrace();
+        }
+        
+        return androidId;
+
+    }	
 }

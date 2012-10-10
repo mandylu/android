@@ -23,6 +23,7 @@ import android.widget.ImageView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
+import com.quanleimu.broadcast.BXNotificationService;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
@@ -466,6 +467,7 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		Log.d("push", "push, on create");
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
@@ -483,7 +485,15 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 		splashJob = new SplashJob(this, this);
 		
 //		isRestoring = savedInstanceState != null;
-		
+		Intent intent = this.getIntent();
+		if(intent != null){
+			if(intent.getBooleanExtra("fromNotification", false)){
+				QuanleimuApplication.version = Util.getVersion(this);
+				QuanleimuApplication.udid = Util.getDeviceUdid(this);
+				BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_CLICK_NOTIFICATION, null);
+				BXStatsHelper.getInstance().send();
+			}
+		}
 //		Profiler.markEnd("maincreate");
 	}
 	
@@ -507,8 +517,6 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		Log.w(TAG, "on new intent");
-		
 		setIntent(intent);
 		Runnable task = new Runnable() {
 			public void run()

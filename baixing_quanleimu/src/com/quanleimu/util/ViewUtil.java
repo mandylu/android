@@ -3,6 +3,7 @@ package com.quanleimu.util;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.broadcast.CommonIntentAction;
+import com.quanleimu.broadcast.NotificationIds;
 
 import android.app.AlertDialog;
 import android.app.Notification;
@@ -94,6 +95,9 @@ public class ViewUtil {
 		{
 			notificationIntent.putExtras(extras);
 		}
+		if(notificationId == NotificationIds.NOTIFICATION_ID_BXINFO){
+			notificationIntent.putExtra("fromNotification", true);
+		}
 		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
 
@@ -109,7 +113,7 @@ public class ViewUtil {
 		{
 			notification.flags |= Notification.FLAG_AUTO_CANCEL;
 		}
-		
+
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
 		

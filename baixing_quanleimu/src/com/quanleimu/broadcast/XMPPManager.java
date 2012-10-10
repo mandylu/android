@@ -23,6 +23,7 @@ import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.util.TraceUtil;
+import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 
 public class XMPPManager {
@@ -331,7 +332,7 @@ public class XMPPManager {
         }
         
         try {
-			final String userId = QuanleimuApplication.getDeviceUdid(context);
+			final String userId = Util.getDeviceUdid(context);
         	checkAndRegister(connection, userId);
         	
             Random generator = new Random();
