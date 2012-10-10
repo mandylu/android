@@ -117,10 +117,11 @@ public abstract class BaseFragment extends Fragment {
 		}
 
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -131,7 +132,7 @@ public abstract class BaseFragment extends Fragment {
 				}
 				else
 				{
-					Log.e(TAG, "cannot dispatch handle message because activity is null ? " + Boolean.valueOf(activity == null));
+					Log.e(TAG, getName() + " cannot dispatch handle message because activity is null ? " + Boolean.valueOf(activity == null));
 				}
 			}
 		};
@@ -149,7 +150,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	public String getName()
 	{
-		return this.getClass().getName() + this.hashCode();
+		return this.getClass().getName()  + this.hashCode();
 	}
 	
 	protected final TitleDef getTitleDef()
@@ -234,6 +235,10 @@ public abstract class BaseFragment extends Fragment {
 	 */
 	@Override
 	public void onDestroyView() {
+		if (pd != null && pd.isShowing())
+		{
+			pd.dismiss();
+		}
 		super.onDestroyView();
 	}
 

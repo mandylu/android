@@ -178,7 +178,7 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 
 			if(listHot == null)	listHot = new ArrayList<HotList>();
 			
-			new Thread(new HotListThread()).start(); 
+//			new Thread(new HotListThread()).start(); 
 		}
 		
 		adapter = new HotListAdapter(getActivity(), 
@@ -232,6 +232,15 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 		return v;
 	}
 	
+	
+	
+	@Override
+	public void onStackTop(boolean isBack) {
+		new Thread(new HotListThread()).start(); 
+	}
+
+
+
 	class HotListThread implements Runnable {
 
 		@Override
