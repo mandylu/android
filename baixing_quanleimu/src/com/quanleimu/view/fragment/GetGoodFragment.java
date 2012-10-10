@@ -1,5 +1,6 @@
 package com.quanleimu.view.fragment;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -56,6 +57,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	private int titleControlStatus = 1;
 	
 	private String categoryEnglishName = "";
+	private String searchContent = "";
 	private String siftResult = "";
 	
 	private List<String> basicParams = null;
@@ -74,7 +76,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("name");
-		title.m_rightActionHint = "筛选";
+		title.m_rightActionHint = (this.categoryEnglishName == null || this.categoryEnglishName.equals("")) ? "搜索" : "筛选";
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
 		View titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
@@ -103,20 +105,19 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	public void handleRightAction(){
-		
-		Bundle args = createArguments(null, getArguments().getString(ARG_COMMON_BACK_HINT));
-		args.putAll(getArguments());
-//		bundle.putString("backPageName", bundle.getString("backPageName"));
-		args.putInt(ARG_COMMON_REQ_CODE, REQ_SIFT);
-		args.putString("searchType", "goodslist");
-		args.putString("categoryEnglishName", categoryEnglishName);
-
-		pushFragment(new SiftFragment(), args);
-//		if(null != m_viewInfoListener){
-//			m_viewInfoListener.onNewView(new SiftView(getContext(), bundle));
-//		}
-		
-	}//called when right button on title bar pressed, return true if handled already, false otherwise
+		if(this.categoryEnglishName == null || this.categoryEnglishName.equals("")){
+			pushAndFinish(new SearchFragment(), createArguments(null, null));
+		}else{
+			Bundle args = createArguments(null, getArguments().getString(ARG_COMMON_BACK_HINT));
+			args.putAll(getArguments());
+	//		bundle.putString("backPageName", bundle.getString("backPageName"));
+			args.putInt(ARG_COMMON_REQ_CODE, REQ_SIFT);
+			args.putString("searchType", "goodslist");
+			args.putString("categoryEnglishName", categoryEnglishName);
+	
+			pushFragment(new SiftFragment(), args);
+		}
+	}
 	
 	
 	
@@ -133,6 +134,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		super.onCreate(savedInstanceState);
 		
 		this.categoryEnglishName = getArguments().getString("categoryEnglishName");
+		this.searchContent = getArguments().getString("searchContent");
 		if (getArguments().containsKey("siftresult"))
 		{
 			this.siftResult = getArguments().getString("siftresult");
@@ -140,15 +142,24 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		
 		basicParams = new ArrayList<String>();
-		if (siftResult != null && !siftResult.equals("")) {
+		if(this.categoryEnglishName != null && !this.categoryEnglishName.equals("")){
 			basicParams.add("query="
-					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-					+ categoryEnglishName + " " + siftResult);
-		} else {
-			basicParams.add("query="
-					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-					+ categoryEnglishName + " AND status:0");
+					+ "cityEnglishName:" + QuanleimuApplication.getApplication().getCityEnglishName()
+					+ " AND categoryEnglishName:" + categoryEnglishName 
+					+ ((siftResult != null && !siftResult.equals("")) ? (" " + siftResult) : " AND status:0"));
+			
+		}else if(this.searchContent != null && !this.searchContent.equals("")){
+			basicParams.add("query=" 
+					+ Communication.urlEncode(URLEncoder.encode("cityEnglishName:" 
+								+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
+								+ searchContent)));
 		}
+//		if (siftResult != null && !siftResult.equals("")) {
+//		} else {
+//			basicParams.add("query="
+//					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
+//					+ categoryEnglishName + " AND status:0");
+//		}
 		
 		goodsListLoader = new GoodsListLoader(basicParams, handler, null, new GoodsList());
 	}

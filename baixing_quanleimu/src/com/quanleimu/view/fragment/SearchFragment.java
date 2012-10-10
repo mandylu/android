@@ -147,7 +147,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 							bundle.putString("searchContent", searchContent);
 							bundle.putString("actType", "search");
 							bundle.putString("name", "");
-							pushAndFinish(new SearchGoodsFragment(), bundle);
+							pushAndFinish(new GetGoodFragment(), bundle);
 						}
 						else
 						{
@@ -202,7 +202,8 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_HOMESEARCH_SEND, null);
 			
-			pushAndFinish(new SearchGoodsFragment(), bundle);
+//			pushAndFinish(new SearchGoodsFragment(), bundle);
+			pushAndFinish(new GetGoodFragment(), bundle);
 		}
 	}
 }
