@@ -592,7 +592,6 @@ public class Communication implements Comparator<String> {
 						String url = Communication.getApiUrl(apiName, params.toParameterList());
 						try {
 							String result = isGet ? Communication.getDataByUrlGet(url) : Communication.getDataByUrl(url, true);
-							System.out.println("executeAsynctask" + "   task     result    " + result);
 							if (listener != null)
 							{
 								listener.onServerResponse(result);
