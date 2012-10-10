@@ -184,7 +184,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onResume(){
 		updateButtonStatus();
 		
-		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onResume();
 	}
@@ -287,7 +287,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			this.mListLoader.setHandler(handler);
 			this.mListLoader.setHasMoreListener(this);
 		}
-		
+        
+		//the ad is viewed once
+		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
+        initCalled = true;		
 	}
 
 	@Override
@@ -314,10 +317,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.moren1, o);
-        
-		//the ad is viewed once
-        QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
-        initCalled = true;
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
         vp.setAdapter(new PagerAdapter() {
@@ -367,35 +366,27 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
 			}
 		});
-        
+        vp.setCurrentItem(mCurIndex);
         vp.setOnPageChangeListener(new OnPageChangeListener() {
 			
 			public void onPageSelected(int pos) {
 				keepSilent = false;//magic flag to refuse unexpected touch event
-				long t1 = System.currentTimeMillis();
-				Log.d("PAGER", "current page is changed to " + pos);
 				if (pos != mListLoader.getGoodsList().getData().size())
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					mListLoader.setSelection(pos);
-					long t3 = System.currentTimeMillis();
 					updateContactBar(v.getRootView(), false);
-					long t4 = System.currentTimeMillis();
 					reCreateTitle();
 					refreshHeader();
-					long t5 = System.currentTimeMillis();
 					saveToHistory();
-					long t6 = System.currentTimeMillis();
-					if(!initCalled){
-						//the ad is viewed once
-				        QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-					}else{
-						initCalled = false;
-					}
+//					if(!initCalled){
+//						//the ad is viewed once
+						QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+//					}else{
+//						initCalled = false;
+//					}
 					
 					updateButtonStatus();
-					long t7 = System.currentTimeMillis();
-					Log.d("page selected", t3 + "    " + t4 + "   " + t5 + "    " + t6 + "   " + t7);
 					if(pos == 0){
 						v.findViewById(R.id.btn_prev).setVisibility(View.GONE);
 					}else{
@@ -410,9 +401,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				{
 					updateContactBar(v.getRootView(), true);
 				}
-				long t2 = System.currentTimeMillis();
-				Log.d("setOnPageChangeListener", "hahaha setOnPageChangeListener: " + (t2 - t1));
-				
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -424,7 +412,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 		});
         
-        vp.setCurrentItem(mCurIndex);
+        
         
         mListLoader.setSelection(mCurIndex);
         mListLoader.setHandler(new Handler(){
@@ -1102,6 +1090,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
 			args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+			this.initCalled = true;
 			pushFragment(new PostGoodsFragment(), args);
 			break;
 		}
