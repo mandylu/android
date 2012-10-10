@@ -60,6 +60,7 @@ import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.ThirdpartyTransitActivity;
+import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
@@ -69,9 +70,14 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.ViewUtil;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
+	public static final int MSG_START_UPLOAD = 5;
+	public static final int MSG_FAIL_UPLOAD = 6;
+	public static final int MSG_SUCCED_UPLOAD = 7;
+	
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
@@ -82,8 +88,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public LinearLayout layout_txt;
 	public LinkedHashMap<String, PostGoodsBean> postList;		//发布模板每一项的集合
 	public static final int NONE = 0;
-	public static final int PHOTOHRAPH = 1;
-	public static final int PHOTOZOOM = 2; 
+//	public static final int PHOTOHRAPH = 1;
+//	public static final int PHOTOZOOM = 2; 
 	public static final int PHOTORESOULT = 3;
 	public static final int POST_LIST = 4;
 	public static final int POST_OTHERPROPERTIES = 5;
@@ -94,8 +100,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 	private PostParamsHolder params;
 	
-	private AlertDialog ad; 
-	private Button photoalbum, photomake, photocancle;
+//	private AlertDialog ad; 
+//	private Button photoalbum, photomake, photocancle;
 	private ArrayList<String>bitmap_url;
 	private ImageView[] imgs;
 	private Bitmap[] cachedBps;
@@ -492,7 +498,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					currentImgView = i;
 					ImageStatus status = getCurrentImageStatus(i);
 					if(ImageStatus.ImageStatus_Unset == status){
-						showDialog();
+//						showDialog();
+						ViewUtil.pickupPhoto(getActivity(), this.currentImgView);
 					}
 					else if(ImageStatus.ImageStatus_Failed == status){
 						String[] items = {"重试", "换一张"};
@@ -513,7 +520,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 									}
 									bitmap_url.set(currentImgView, null);
 									imgs[currentImgView].setImageResource(R.drawable.d);
-									showDialog();
+//									showDialog();
+									ViewUtil.pickupPhoto(getActivity(), currentImgView);
 									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
 								}
 								
@@ -537,6 +545,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 							public void onClick(DialogInterface dialog, int which) {
 								bitmap_url.set(currentImgView, null);
 								imgs[currentImgView].setImageResource(R.drawable.d);
+								cachedBps[currentImgView] = null;
 //								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
 							}
 						})
@@ -550,33 +559,34 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					}
 				}
 			}
-		} else if (v == photoalbum) {
-			// 相册
-			if (ad.isShowing()) {
-				ad.dismiss();
-			}
-			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
-			Bundle ext = new Bundle();
-			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Albam);
-			thirdparty.putExtras(ext);
-			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			activity.startActivity(thirdparty);
-			
-		} else if (v == photomake) {
-			if (ad.isShowing()) {
-				ad.dismiss();
-			}
-			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
-			Bundle ext = new Bundle();
-			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Photo);
-			ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, this.currentImgView);
-			thirdparty.putExtras(ext);
-			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-			activity.startActivity(thirdparty);
-
-		} else if (v == photocancle) {
-			ad.dismiss();
-		}
+		} 
+//		else if (v == photoalbum) {
+//			// 相册
+//			if (ad.isShowing()) {
+//				ad.dismiss();
+//			}
+//			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
+//			Bundle ext = new Bundle();
+//			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Albam);
+//			thirdparty.putExtras(ext);
+//			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			activity.startActivity(thirdparty);
+//			
+//		} else if (v == photomake) {
+//			if (ad.isShowing()) {
+//				ad.dismiss();
+//			}
+//			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
+//			Bundle ext = new Bundle();
+//			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Photo);
+//			ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, this.currentImgView);
+//			thirdparty.putExtras(ext);
+//			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+//			activity.startActivity(thirdparty);
+//
+//		} else if (v == photocancle) {
+//			ad.dismiss();
+//		}
 	}
 	
 	@Override
@@ -661,22 +671,22 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	 * 显示拍照相册对话框
 	 */
 	private void showDialog() {
-		View view = LinearLayout.inflate(this.getActivity(), R.layout.upload_head, null);
-		Builder builder = new AlertDialog.Builder(this.getActivity());
-		builder.setView(view);
-		ad = builder.create();
-
-		WindowManager.LayoutParams lp = ad.getWindow().getAttributes();
-		lp.y = 300;
-		ad.onWindowAttributesChanged(lp);
-		ad.show();
-
-		photoalbum = (Button) view.findViewById(R.id.photo_album);
-		photoalbum.setOnClickListener(this);
-		photomake = (Button) view.findViewById(R.id.photo_make);
-		photomake.setOnClickListener(this);
-		photocancle = (Button) view.findViewById(R.id.photo_cancle);
-		photocancle.setOnClickListener(this);
+//		View view = LinearLayout.inflate(this.getActivity(), R.layout.upload_head, null);
+//		Builder builder = new AlertDialog.Builder(this.getActivity());
+//		builder.setView(view);
+//		ad = builder.create();
+//
+//		WindowManager.LayoutParams lp = ad.getWindow().getAttributes();
+//		lp.y = 300;
+//		ad.onWindowAttributesChanged(lp);
+//		ad.show();
+//
+//		photoalbum = (Button) view.findViewById(R.id.photo_album);
+//		photoalbum.setOnClickListener(this);
+//		photomake = (Button) view.findViewById(R.id.photo_make);
+//		photomake.setOnClickListener(this);
+//		photocancle = (Button) view.findViewById(R.id.photo_cancle);
+//		photocancle.setOnClickListener(this);
 	}
 
 	/**
@@ -899,11 +909,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			return;
 		}
 		// 拍照 
-		if (requestCode == PHOTOHRAPH) {
+		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
 			// 设置文件保存路径这里放在跟目录下
 			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg");
 			uri = Uri.fromFile(picture);
-			getBitmap(uri, PHOTOHRAPH); // 直接返回图片
+			getBitmap(uri, requestCode); // 直接返回图片
 			//startPhotoZoom(uri); //截取图片尺寸
 		}
 
@@ -912,17 +922,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 
 		// 读取相册缩放图片
-		if (requestCode == PHOTOZOOM) {
+		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM) {
 			uri = data.getData();
 			//startPhotoZoom(uri);
-			getBitmap(uri, PHOTOZOOM);
+			getBitmap(uri, requestCode);
 		}
 		// 处理结果
 		if (requestCode == PHOTORESOULT) {
 			File picture = new File("/sdcard/cropped.jpg");
 			
 			uri = Uri.fromFile(picture);
-			getBitmap(uri, PHOTOHRAPH);
+			getBitmap(uri, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 			File file = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + "jpg");
 			try {
 				if(file.isFile() && file.exists()){
@@ -963,6 +973,18 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void loadCachedData()
 	{
+		if (imgs != null)
+		{
+			for (int i=0; imgs.length>i; i++)
+			{
+				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
+				{
+					imgs[i].setImageBitmap(cachedBps[i]);
+					imgs[i].invalidate();
+				}
+			}
+		}
+		
 		LinkedHashMap<String, String> uiMap = params.getUiData();
 		if (uiMap == null)
 		{
@@ -992,17 +1014,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 		}
 		
-		if (imgs != null)
-		{
-			for (int i=0; imgs.length>i; i++)
-			{
-				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
-				{
-					imgs[i].setImageBitmap(cachedBps[i]);
-					imgs[i].invalidate();
-				}
-			}
-		}
 	}
 	
 	static public boolean fetchResultFromViewBack(int message, Object obj, ViewGroup vg, PostParamsHolder params){
@@ -1134,7 +1145,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		String path = uri == null ? "" : uri.toString();
 		Log.w("QLM", "upload image : " + path);
 		if (uri != null) {
-				imgs[this.currentImgView].setFocusable(true);
+				if (imgs != null)
+				{
+					imgs[this.currentImgView].setFocusable(true);
+				}
 
 				new Thread(new UpLoadThread(path, currentImgView)).start();
 		}
@@ -1360,6 +1374,39 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 		
 		switch (msg.what) {
+		case MSG_START_UPLOAD:
+		{
+			Integer index = (Integer) msg.obj;
+			if (imgs != null)
+			{
+				imgs[index.intValue()].setImageResource(R.drawable.u);
+				imgs[index].setClickable(false);
+				imgs[index.intValue()].invalidate();
+			}
+			break;
+		}
+		case MSG_FAIL_UPLOAD:
+		{
+			if (imgs != null)
+			{
+				Integer index = (Integer) msg.obj;
+				imgs[index.intValue()].setImageResource(R.drawable.f);
+				imgs[index].setClickable(true);
+				imgs[index.intValue()].invalidate();
+			}
+			break;
+		}
+		case MSG_SUCCED_UPLOAD:
+		{
+			Integer index = (Integer) msg.obj;
+			if (imgs != null)
+			{
+				imgs[index].setImageBitmap(cachedBps[index]);
+				imgs[index].setClickable(true);
+				imgs[index].invalidate();
+			}
+			break;
+		}
 		case -2:
 		{
 			loadCachedData();
@@ -1471,9 +1518,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			activity.runOnUiThread(new Runnable(){
 				public void run(){
 					//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_orange, BXDecorateImageView.ImagePos.ImagePos_Center);
-					imgs[currentIndex].setImageResource(R.drawable.u);
-					imgs[currentIndex].setClickable(false);
-					imgs[currentIndex].invalidate();
+					sendMessage(MSG_START_UPLOAD, currentIndex);
 				}
 			});	
 			synchronized(PostGoodsFragment.this){
@@ -1530,9 +1575,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 				activity.runOnUiThread(new Runnable(){
 					public void run(){
-						imgs[currentIndex].setImageBitmap(thumbnailBmp);
-						imgs[currentIndex].setClickable(true);
-						imgs[currentIndex].invalidate();
+						sendMessage(MSG_SUCCED_UPLOAD, currentIndex);
 						Toast.makeText(activity, "上传图片成功", 0).show();
 					}
 				});	                
@@ -1540,11 +1583,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //				PostGoods.BXImageAndUrl imgAn dUrl = new PostGoods.BXImageAndUrl();
 				activity.runOnUiThread(new Runnable(){
 					public void run(){
-						imgs[currentIndex].setImageResource(R.drawable.f);
-						imgs[currentIndex].setClickable(true);
 						bitmap_url.set(currentIndex, bmpPath);
 						//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_red, BXDecorateImageView.ImagePos.ImagePos_RightTop);
-						imgs[currentIndex].invalidate();
+						sendMessage(MSG_FAIL_UPLOAD, currentIndex);
 						Toast.makeText(activity, "上传图片失败", 0).show();
 					}
 				});						

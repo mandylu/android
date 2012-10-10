@@ -96,7 +96,7 @@ public class ThirdpartyTransitActivity extends Activity{
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("QLM", "third party active result");
+		Log.d("QLM", "third party active result " + data);
 		
 		Intent backIntent = new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();

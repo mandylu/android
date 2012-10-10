@@ -181,7 +181,7 @@ public class ProfileEditView extends BaseView {
 		findViewById(R.id.rl_image).setOnClickListener(new OnClickListener() {
 
 			public void onClick(View v) {
-				ViewUtil.pickupPhoto(getContext(), 0);
+				ViewUtil.pickupPhoto((Activity) getContext(), 0);
 			}
 			
 		});

@@ -1,10 +1,13 @@
 package com.quanleimu.util;
 
+import java.io.File;
+
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.NotificationIds;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
@@ -13,9 +16,12 @@ import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.net.Uri;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.provider.MediaStore;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.WindowManager;
@@ -120,7 +126,7 @@ public class ViewUtil {
 		mNotificationManager.notify(notificationId, notification);
 	}
 	
-	public static void pickupPhoto(final Context context, final int tmpFileIndex)
+	public static void pickupPhoto(final Activity context, final int tmpFileIndex)
 	{
 		View view = LinearLayout.inflate(context, R.layout.upload_head, null);
 		Builder builder = new AlertDialog.Builder(context);
@@ -139,23 +145,31 @@ public class ViewUtil {
 				switch(v.getId())
 				{
 					case R.id.photo_album:
-						Intent startAlbum = new Intent(context,
-								ThirdpartyTransitActivity.class);
-						Bundle ex = new Bundle();
-						ex.putString(ThirdpartyTransitActivity.ThirdpartyKey,
-								ThirdpartyTransitActivity.ThirdpartyType_Albam);
-						startAlbum.putExtras(ex);
-						context.startActivity(startAlbum);
+//						Intent startAlbum = new Intent(context,
+//								ThirdpartyTransitActivity.class);
+//						Bundle ex = new Bundle();
+//						ex.putString(ThirdpartyTransitActivity.ThirdpartyKey,
+//								ThirdpartyTransitActivity.ThirdpartyType_Albam);
+//						startAlbum.putExtras(ex);
+//						context.startActivity(startAlbum);
+						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+						intent3.addCategory(Intent.CATEGORY_OPENABLE);
+						intent3.setType("image/*");
+						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
 						break;
 					case R.id.photo_make:
-						Intent startCap = new Intent(context,
-								ThirdpartyTransitActivity.class);
-						Bundle ext = new Bundle();
-						ext.putString(ThirdpartyTransitActivity.ThirdpartyKey,
-								ThirdpartyTransitActivity.ThirdpartyType_Photo);
-						ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, tmpFileIndex);
-						startCap.putExtras(ext);
-						context.startActivity(startCap);
+//						Intent startCap = new Intent(context,
+//								ThirdpartyTransitActivity.class);
+//						Bundle ext = new Bundle();
+//						ext.putString(ThirdpartyTransitActivity.ThirdpartyKey,
+//								ThirdpartyTransitActivity.ThirdpartyType_Photo);
+//						ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, tmpFileIndex);
+//						startCap.putExtras(ext);
+//						context.startActivity(startCap);
+						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
+								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
+						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 						break;
 					case R.id.photo_cancle:
 						break;

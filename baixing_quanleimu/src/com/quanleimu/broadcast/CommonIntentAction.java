@@ -15,6 +15,12 @@ public class CommonIntentAction
 	public static final String ACTION_NOTIFICATION_HOT = "com.baixing.action.notify.hot";//Hot spot.
 	public static final String ACTION_NOTIFICATION_BXINFO = "com.baixing.action.notify.bxinfo";
 	
+
+	public static interface PhotoReqCode
+	{
+		public static final int PHOTOZOOM = 2;
+		public static final int PHOTOHRAPH = 1;
+	}
 	
 
 }

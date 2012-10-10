@@ -23,22 +23,16 @@ import android.widget.ImageView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
-import com.quanleimu.broadcast.BXNotificationService;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
-import com.quanleimu.entity.GoodsList;
-import com.quanleimu.imageCache.LazyImageLoader;
-import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
-import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CatMainFragment;
-import com.quanleimu.view.fragment.GoodDetailFragment;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
@@ -49,8 +43,8 @@ import com.readystatesoftware.viewbadger.BadgeView;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
 import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
 public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHandler, JobDoneListener {
+	
 //	private BaseView currentView;
 	private boolean needClearViewStack = false;
 	
@@ -523,7 +517,7 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 			{
 //				QuanleimuApplication.wxapi.handleIntent(getIntent(), QuanleimuMainActivity.this);
 //				showDetailViewFromWX();
-				showDataFromAlbamOrPhoto();
+//				showDataFromAlbamOrPhoto();
 				
 				startTalking(getIntent());
 			}
