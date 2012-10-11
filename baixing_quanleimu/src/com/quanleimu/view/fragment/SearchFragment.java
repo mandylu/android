@@ -4,12 +4,14 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
@@ -30,6 +32,7 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Helper;
+import com.quanleimu.view.SearchView;
 
 public class SearchFragment extends BaseFragment implements View.OnClickListener {
 
@@ -161,6 +164,32 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 		 }
 	
 		 return rootV;
+	}
+	
+	@Override
+	public void onPause(){
+		InputMethodManager inputMgr = 
+				(InputMethodManager) SearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+		
+		super.onPause();
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		etSearch.postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				etSearch.requestFocus();
+				InputMethodManager inputMgr = 
+						(InputMethodManager) SearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_FORCED);
+//				if(!inputMgr.isActive())
+//					inputMgr.toggleSoftInput(0, 0);
+			}			
+		}, 100);
+
 	}
 
 	@Override
