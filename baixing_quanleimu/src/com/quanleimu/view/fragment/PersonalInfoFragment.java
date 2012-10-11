@@ -463,11 +463,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			break;
 		case MSG_GETPERSONALSESSIONS:
-			if(sessionsJson != null){
-				sessions = ChatSession.fromJson(sessionsJson);
-//				if(sessions != null){
-//					((TextView)PersonalCenterEntryView.this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
-//				}
+			if(this.sessions != null){
 				updateMessageCountInfo(rootView);
 			}
 			break;
@@ -640,6 +636,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				sessionsJson = Communication.getDataByUrl(url, true); //Only load cached data here.
+				if(sessionsJson != null){
+					sessions = ChatSession.fromJson(sessionsJson);
+				}
 				sendMessage(MSG_GETPERSONALSESSIONS, null);
 				return;
 			} catch (UnsupportedEncodingException e) {
