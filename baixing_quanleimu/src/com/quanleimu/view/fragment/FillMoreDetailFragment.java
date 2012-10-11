@@ -61,8 +61,11 @@ public class FillMoreDetailFragment extends BaseFragment {
 		tab.m_visible = false;
 	}	
 	
-	
-	
+	@Override
+	public void onResume(){
+		super.onResume();
+		setEditTextValue();
+	}
 	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -82,6 +85,9 @@ public class FillMoreDetailFragment extends BaseFragment {
 				border.setLayoutParams(new LayoutParams(
 						LayoutParams.FILL_PARENT, 1, 1));
 				border.setBackgroundResource(R.drawable.list_divider);
+				if(bean.getControlType().equals("input")){
+					((TextView)layout.findViewById(R.id.postinput)).setText("");
+				}
 				llDetails.addView(border);
 			}
 			if(params.containsKey(bean.getDisplayName())){
@@ -124,8 +130,38 @@ public class FillMoreDetailFragment extends BaseFragment {
 	}
 	
 	@Override
+	public void onPause(){
+		PostGoodsFragment.extractInputData(llDetails, params);
+		super.onPause();
+	}
+	
+	@Override
 	public void onFragmentBackWithData(int message, Object obj){
 		PostGoodsFragment.fetchResultFromViewBack(message, obj, llDetails, params);
+		setEditTextValue();
+	}
+	
+	///////seems a bullshit bug of android, 
+	///////if the last item with inputbox is filled with some text, 
+	///////whenever the view is backtotop again, 
+	///////all the item with inputbox will be filled with the same content
+	///////so force setting the content here, if you find any clue about this, tell me plz. xumengyi@baixing.com
+	private void setEditTextValue(){
+		for(int i = 0; i < llDetails.getChildCount(); ++ i){
+			PostGoodsBean postGoodsBean = (PostGoodsBean)llDetails.getChildAt(i).getTag(PostGoodsFragment.HASH_POST_BEAN);
+			if(postGoodsBean == null) continue;
+			
+			if (postGoodsBean.getControlType().equals("input") 
+					|| postGoodsBean.getControlType().equals("textarea")) {
+				EditText et = (EditText)llDetails.getChildAt(i).getTag(PostGoodsFragment.HASH_CONTROL);
+				if(et != null){
+					if(params.containsKey(postGoodsBean.getDisplayName())) 
+						et.setText(params.getData(postGoodsBean.getDisplayName()));
+					
+				}
+			}
+		}
+		
 	}
 	
 	@Override
