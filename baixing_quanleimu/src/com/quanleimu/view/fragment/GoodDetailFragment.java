@@ -323,7 +323,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			
 			public Object instantiateItem(View arg0, int position) 
 			{
-				long t1 = System.currentTimeMillis();
 				Integer posObj = Integer.valueOf(position);
 				View detail = LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				detail.setTag(posObj);
@@ -338,8 +337,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				{
 					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0));
 				}
-				long t2 = System.currentTimeMillis();
-				Log.d("instantiateItem", "hahaha instantiate: " + (t2 - t1));
 				return detail;
 			}
 			
@@ -394,7 +391,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					}
 					v.findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
 //					GoodDetailFragment.this.myHandler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 1000);
-					sendMessage(MSG_HIDE_ARROW, 1000);
+					handler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 1000);
 				
 				}
 				else
@@ -518,8 +515,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
 					}
 				}
-			});
+			});        
         
+        handler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 3000);
         return v;
 	}
 	
