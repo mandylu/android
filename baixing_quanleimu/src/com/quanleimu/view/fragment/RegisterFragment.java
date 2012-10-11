@@ -26,6 +26,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class RegisterFragment extends BaseFragment {
 	private EditText accoutnEt, passwordEt,repasswordEt;
@@ -152,7 +153,7 @@ public class RegisterFragment extends BaseFragment {
 					
 					UserBean user = new UserBean();
 //					user.setId(accoutnEt.getText().toString());
-					user.setId(id);
+					user.setId(usrId);
 					user.setPhone(accoutnEt.getText().toString());
 					user.setPassword(passwordEt.getText().toString());
 					QuanleimuApplication.getApplication().setMobile(user.getPhone());
@@ -166,6 +167,7 @@ public class RegisterFragment extends BaseFragment {
 						registered = true;
 						Bundle bundle = createArguments(null, null);
 						bundle.putSerializable("profile", up);
+						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
 						pushFragment(new ProfileEditFragment(), bundle);
 					}else{
 						finishFragment(requestCode, null);
@@ -184,11 +186,19 @@ public class RegisterFragment extends BaseFragment {
 	@Override
 	public void onResume(){
 		super.onResume();
-		
-		if(registered){
-			finishFragment(requestCode, 1212);
-		}
 	}
 	
+	@Override
+	public void onStackTop(boolean isBack)
+	{
+//		this.finishFragment();
+	}
+	
+	protected void onFragmentBackWithData(int requestCode, Object result)
+	{
+		this.finishFragment(requestCode, result);
+		//TODO:
+	}
+
 	
 }

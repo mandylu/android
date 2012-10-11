@@ -100,7 +100,6 @@ public class ProfileEditFragment extends BaseFragment {
 	public void onCreate(Bundle savedData)
 	{
 		super.onCreate(savedData);
-		
 		this.up = (UserProfile) getArguments().getSerializable("profile");
 		newCityId = up.location;
 		
@@ -121,7 +120,7 @@ public class ProfileEditFragment extends BaseFragment {
 				newCityId = item.id;
 				updateText(item.txt, R.id.city, getView());//
 				
-				loadCityMapping(newCityId);
+//				loadCityMapping(newCityId);
 			}
 		}
 	}
@@ -139,6 +138,7 @@ public class ProfileEditFragment extends BaseFragment {
 
 		updateText(up.nickName, R.id.username, v);
 		updateText(up.gender, R.id.gender, v);
+//		PostGoodsBean bean = new
 		v.findViewById(R.id.city).setOnClickListener(
 				new OnClickListener() {
 
@@ -196,7 +196,19 @@ public class ProfileEditFragment extends BaseFragment {
 		
 		if (newCityId != null && newCityId.length() > 0)
 		{
-			loadCityMapping(newCityId);
+			if(beans != null){
+				String name = this.findCityName(newCityId);
+				if(name != null && !name.equals("")){
+					this.updateText(name, R.id.city, v);
+				}
+			}else if(getArguments().containsKey("cityName")){				
+				String name = (String)getArguments().getSerializable("cityName");
+				if(name != null && !name.equals("")){
+					this.updateText(name, R.id.city, v);
+				}				
+			}else{
+				loadCityMapping(newCityId);
+			}
 		}
 		
 		v.findViewById(R.id.personalImage).setOnClickListener(new OnClickListener() {
@@ -441,6 +453,12 @@ public class ProfileEditFragment extends BaseFragment {
 		PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 		return bean.getDisplayName();
 		
+	}
+	
+	public boolean handleBack()
+	{
+		finishFragment(requestCode, null);
+		return true;
 	}
 	
 	private void saveAndexit()

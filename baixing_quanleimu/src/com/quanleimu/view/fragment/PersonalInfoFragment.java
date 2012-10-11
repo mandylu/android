@@ -51,10 +51,12 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LoginUtil;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.PersonalCenterEntryView;
 
 public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener {
 
 	public static final int REQ_EDIT_PROFILE = 1;
+	public static final int REQ_REGISTER = 2;
 	
 	private Bundle bundle = null;
 	private UserBean user = null;
@@ -133,7 +135,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
 		v.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
 		v.findViewById(R.id.personalEdit).setOnClickListener(this);
-	
+		this.loginHelper = null;
 		return v;
 	}
 	
@@ -295,11 +297,16 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			if(user == null){
 				Bundle bundle = createArguments(null,  "用户中心");
 //				bundle.putString("backPageName", "用户中心");
+//				bundle.putInt(ARG_COMMON_REQ_CODE, REQ_REGISTER);
 				pushFragment(new LoginFragment(), bundle);
 			}else if (up != null){
 				Bundle bundle = createArguments(null, null);
 				bundle.putInt(ARG_COMMON_REQ_CODE, REQ_EDIT_PROFILE);
 				bundle.putSerializable("profile", up);
+				if(null != ((TextView)getView().findViewById(R.id.personalLocation)).getText()){
+					bundle.putSerializable("cityName", 
+							((TextView)getView().findViewById(R.id.personalLocation)).getText().toString());
+				}
 				pushFragment(new ProfileEditFragment(), bundle);
 			}	
 			break;
@@ -314,6 +321,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		if (requestCode == REQ_EDIT_PROFILE && result != null)
 		{
 			forceUpdate();
+		}else if(REQ_REGISTER == requestCode && result != null){
+//			forceUpdate();
 		}
 	}
 	
@@ -379,7 +388,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));
 			break;
 		case MSG_NEWREGISTERVIEW:
-			pushFragment(new RegisterFragment(), createArguments(null, null)); //FIXME:
+			Bundle bundle = createArguments(null, null);
+			bundle.putInt(ARG_COMMON_REQ_CODE, REQ_REGISTER);
+			pushFragment(new RegisterFragment(), bundle); //FIXME:
 //			m_viewInfoListener.onNewView(new RegisterView(PersonalCenterEntryView.this.getContext()));
 			break;
 		case MSG_LOGINSUCCESS:
@@ -636,7 +647,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				sessionsJson = Communication.getDataByUrl(url, false); //Only load cached data here.
+				sessionsJson = Communication.getDataByUrl(url, true); //Only load cached data here.
 				sendMessage(MSG_GETPERSONALSESSIONS, null);
 				return;
 			} catch (UnsupportedEncodingException e) {
