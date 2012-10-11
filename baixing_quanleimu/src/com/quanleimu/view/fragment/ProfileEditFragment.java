@@ -14,12 +14,9 @@ import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
-import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
@@ -27,29 +24,23 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
-import android.widget.Spinner;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.UserProfile;
-import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
-import com.quanleimu.util.UploadImageCommand;
 import com.quanleimu.util.ViewUtil;
-import com.quanleimu.util.UploadImageCommand.ProgressListener;
 import com.quanleimu.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.widget.GenderPopupDialog;
+import com.quanleimu.widget.StateImage;
+import com.quanleimu.widget.StateImage.UploadListener;
 
-public class ProfileEditFragment extends BaseFragment {
+public class ProfileEditFragment extends BaseFragment implements UploadListener {
 	final int BACK_EVENT_ID = 100;
 	
 	public static final int NONE = 0;
@@ -68,10 +59,10 @@ public class ProfileEditFragment extends BaseFragment {
 	private UserProfile up;
 	private LinkedHashMap<String, PostGoodsBean> beans;
 	private String newCityId;
-	private Uri profileUri;
-	private String newServerImage;
+	private String newGender;
 	private Bundle bundle = null;
-	private Bitmap thumb;
+	
+	private StateImage profileImg;
 	
 	
 	@Override
@@ -91,10 +82,11 @@ public class ProfileEditFragment extends BaseFragment {
 	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
-		super.onSaveInstanceState(outState);
 		
-//		Log.d(TAG, "save image" + thumb);
-		outState.putParcelable("image", thumb);
+		outState.putSerializable("image", profileImg);
+		outState.putString("gender", newGender);
+		outState.putString("newCity", newCityId);
+		super.onSaveInstanceState(outState);
 	}
 
 	public void onCreate(Bundle savedData)
@@ -102,12 +94,22 @@ public class ProfileEditFragment extends BaseFragment {
 		super.onCreate(savedData);
 		this.up = (UserProfile) getArguments().getSerializable("profile");
 		newCityId = up.location;
+		newGender = up.gender;
 		
 		if (savedData != null)
 		{
-			thumb = (Bitmap) savedData.getParcelable("image");
+			profileImg = (StateImage) savedData.getSerializable("image");
+			newGender = savedData.getString("gender");
+			newCityId = savedData.getString("newCity");
 //			Log.d(TAG, "restore image" + thumb);
 		}
+		
+		if (profileImg == null)
+		{
+			profileImg = new StateImage(R.drawable.pic_my_avator_girl);
+		}
+		
+		profileImg.setContext(getActivity());
 	}
 	
 	@Override
@@ -118,7 +120,9 @@ public class ProfileEditFragment extends BaseFragment {
 			{
 				MultiLevelItem item = (MultiLevelItem) obj;
 				newCityId = item.id;
-				updateText(item.txt, R.id.city, getView());//
+				String newCityName = item.txt;//findCityName(newCityId);
+				getArguments().putString("cityName", newCityName);
+				updateText(newCityName, R.id.city, getView());//
 				
 //				loadCityMapping(newCityId);
 			}
@@ -137,7 +141,7 @@ public class ProfileEditFragment extends BaseFragment {
 		final View v = inflater.inflate(R.layout.edit_profile, null);
 
 		updateText(up.nickName, R.id.username, v);
-		updateText(up.gender, R.id.gender, v);
+		updateText(newGender, R.id.gender, v);
 //		PostGoodsBean bean = new
 		v.findViewById(R.id.city).setOnClickListener(
 				new OnClickListener() {
@@ -162,34 +166,15 @@ public class ProfileEditFragment extends BaseFragment {
 
 					@Override
 					public void onDismiss(DialogInterface dialog) {
-						// TODO Auto-generated method stub
 						if(dialog != null){
-							((TextView)v.findViewById(R.id.gender)).setText(((GenderPopupDialog)dialog).isBoy() ? "男" : "女");
+							newGender = ((GenderPopupDialog)dialog).isBoy() ? "男" : "女";
+							((TextView)v.findViewById(R.id.gender)).setText(newGender);
 						}
 					}
 					
 				});
-//				findViewById(R.id.gender_selector).setVisibility(View.VISIBLE);
 			}
 		});
-		
-//		Spinner selector = (Spinner) v.findViewById(R.id.gender_selector);
-//		if (up.gender!=null && up.gender.length()>0)
-//		{
-//			selector.setSelection("男".equals(up.gender)?0 : 1);
-//		}
-//		selector.setOnItemSelectedListener(new OnItemSelectedListener(){
-//
-//			@Override
-//			public void onItemSelected(AdapterView<?> arg0, View arg1,
-//					int arg2, long arg3) {
-//				updateText(arg2 == 0? "男" : "女", R.id.gender, v);
-//			}
-//
-//			@Override
-//			public void onNothingSelected(AdapterView<?> arg0) {
-//				
-//			}});
 		
 		SimpleDateFormat format = new SimpleDateFormat("yyyy-MM");
 		updateText(format.format(new Date(Long.parseLong(up.createTime) * 1000)), R.id.create_time, v);
@@ -219,23 +204,45 @@ public class ProfileEditFragment extends BaseFragment {
 			
 		});
 		
-		if (thumb != null)
-		{
-			((ImageView)v.findViewById(R.id.personalImage)).setImageBitmap(thumb);
+		
+//		if (thumb != null)
+//		{
+//			((ImageView)v.findViewById(R.id.personalImage)).setImageBitmap(thumb);
+//		}
+//		else 
+		if(up.resize180Image != null && !up.resize180Image.equals("") && !up.resize180Image.equals("null")){
+//			updateImage(up.resize180Image, v);
+			profileImg.assignServerImage(up.resize180Image);
 		}
-		else if(up.resize180Image != null && !up.resize180Image.equals("") && !up.resize180Image.equals("null")){
-			updateImage(up.resize180Image, v);
+
+		if(up.gender != null && up.gender.equals("女")){
+//			((ImageView)v.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
+			profileImg.setDefault(R.drawable.pic_my_avator_girl);
 		}else{
-			if(up.gender != null && up.gender.equals("女")){
-				((ImageView)v.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
-			}else{
-				((ImageView)v.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
-			}
+//			((ImageView)v.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+			profileImg.setDefault(R.drawable.pic_my_avator_boy);
 		}
 		
+		profileImg.attachView((ImageView)v.findViewById(R.id.personalImage));
+		
 		return v;
+	}
 	
-	}	
+	public void onResume()
+	{
+		super.onResume();
+	}
+	
+	public void onPause()
+	{
+		super.onPause();
+	}
+	
+	public void onDestory()
+	{
+		super.onDestroy();
+		profileImg.cancelUpload();
+	}
 	
 	private void updateText(String text, int resId, View parent)
 	{
@@ -270,54 +277,14 @@ public class ProfileEditFragment extends BaseFragment {
 		Communication.executeAsyncGetTask("metaobject", params, new Communication.CommandListener() {
 			
 			public void onServerResponse(String serverMessage) {
-				sendMessage(MSG_GOT_CITY_LIST, JsonUtil.getPostGoodsBean(serverMessage));
+				beans = JsonUtil.getPostGoodsBean(serverMessage);
+				sendMessage(MSG_GOT_CITY_LIST, null);
 			}
 			
 			public void onException(Exception ex) {
 				//Ignor
 			}
 		});
-	}
-	
-	
-	private void updateImage(String imageUrl, View parentView)
-	{
-		if(imageUrl != null){
-			SimpleImageLoader.showImg((ImageView)parentView.findViewById(R.id.personalImage), imageUrl, null, parentView.getContext());
-		}
-	}
-	
-	public void updateImageView(String imgPath)
-	{
-		Uri uri = Uri.parse(imgPath);
-		String path = getRealPathFromURI(uri); // from Gallery
-		if (path == null) {
-			path = uri.getPath(); // from File Manager
-		}
-		
-		if (path != null) {
-			try {
-			    
-			    BitmapFactory.Options bfo = new BitmapFactory.Options();
-		        bfo.inJustDecodeBounds = true;
-		        BitmapFactory.decodeFile(path, bfo);
-		        
-			    BitmapFactory.Options o =  new BitmapFactory.Options();
-                o.inPurgeable = true;
-                int maxDim = 600;
-                
-                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
-                
-                Bitmap bp = BitmapFactory.decodeFile(path, o);
-                ((ImageView) getActivity().findViewById(R.id.personalImage)).setImageBitmap(bp);
-                thumb = bp;
-//                Log.d(TAG, "succed parse bitmap " + thumb);
-			} catch (Exception e) {
-				Log.d(TAG, "set profile image error " + e.getMessage());
-				e.printStackTrace();
-			}
-		}
-			
 	}
 	
 	
@@ -382,17 +349,20 @@ public class ProfileEditFragment extends BaseFragment {
 			ViewUtil.postShortToastMessage(ProfileEditFragment.this.getView(), (String)msg.obj, 10);
 			break;
 		case MSG_GOT_CITY_LIST:
-			beans = (LinkedHashMap) msg.obj;
 			updateText(findCityName(newCityId), R.id.city, null);
 			break;
-		case MSG_NEW_IMAGE:
-			profileUri = (Uri) msg.obj;
+		case MSG_NEW_IMAGE://FIXME:
+//			profileUri = (Uri) msg.obj;
 //			Bitmap bp = BitmapFactory.decodeFile(profileUri.toString());
 //			((ImageView) findViewById(R.id.personalImage)).setImageBitmap(bp);
-			updateImageView(profileUri.toString());
+//			updateImageView(profileUri.toString());
 			break;
 		case MSG_UPLOAD_IMG_DONE:
-			newServerImage = (String) msg.obj;
+//			newServerImage = (String) msg.obj;//FIXME:
+			if (pd != null)
+			{
+				pd.dismiss();
+			}
 			continueUpdateProfile();
 			break;
 		case MSG_UPLOAD_IMG_FAIL:
@@ -408,9 +378,9 @@ public class ProfileEditFragment extends BaseFragment {
 		params.addParameter("gender", getTextData(R.id.gender));
 		params.addParameter(URLEncoder.encode("所在地"), newCityId);
 		params.addParameter("userId", up.userId);
-		if (profileUri != null)
+		if (profileImg.getServerUri() != null && !profileImg.getServerUri().equals(up.resize180Image))
 		{
-			params.addParameter("image_i", newServerImage);
+			params.addParameter("image_i", profileImg.getServerUri());
 		}
 		
 		
@@ -493,7 +463,8 @@ public class ProfileEditFragment extends BaseFragment {
 		Log.e("IMG", "img url : " + uri);
 		if (uri != null)
 		{
-			sendMessage(MSG_NEW_IMAGE, uri);
+//			sendMessage(MSG_NEW_IMAGE, uri);
+			profileImg.assignLocalImage(uri.getPath());
 		}
 	
 	}
@@ -504,23 +475,10 @@ public class ProfileEditFragment extends BaseFragment {
 	{
 		if (validate())
 		{
-			if (profileUri != null)
+			if (profileImg != null && profileImg.getLocalUri() != null)
 			{
 				pd = ProgressDialog.show(getContext(), "提示", "图片上传中，请稍等。。。");
-				new UploadImageCommand(getContext(), profileUri.toString()).startUpload(new ProgressListener() {
-					public void onStart(String imagePath) {
-						//Do nothing.
-					}
-
-					public void onCancel(String imagePath) {
-						sendMessage(MSG_UPLOAD_IMG_FAIL, null);
-					}
-
-					public void onFinish(Bitmap bmp, String imagePath) {
-						sendMessage(MSG_UPLOAD_IMG_DONE, imagePath);
-					}
-					
-				});
+				profileImg.startUpload(this);
 			}
 			else
 			{
@@ -528,6 +486,16 @@ public class ProfileEditFragment extends BaseFragment {
 			}
 			
 		}
+	}
+	
+	@Override
+	public void onSucced(String newLoc) {
+		sendMessage(MSG_UPLOAD_IMG_DONE, newLoc);						
+	}
+	
+	@Override
+	public void onFailed() {
+		sendMessage(MSG_UPLOAD_IMG_FAIL, null);
 	}
 	
 	private boolean validate()

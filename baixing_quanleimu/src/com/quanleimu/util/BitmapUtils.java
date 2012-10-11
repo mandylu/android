@@ -264,6 +264,26 @@ public class BitmapUtils {
 	    return inSampleSize;
 	}
 	
+	static public Bitmap createThumbnail(String path, int thunbWidth, int thumbHeight)
+	{
+		Bitmap srcBmp = getBitmap(path);
+		if (srcBmp == null)
+		{
+			return null;
+		}
+		
+//		Float width  = Float.valueOf(srcBmp.getWidth());
+//		Float height = Float.valueOf(srcBmp.getHeight());
+//		Float ratio = thumbHeight/height;
+		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, thunbWidth, thumbHeight, true);
+
+		if (thumbnail != srcBmp)
+		{
+			srcBmp.recycle();
+		}
+		
+		return thumbnail;
+	}
 
 	public static Bitmap getBitmap(String path)
 	{
