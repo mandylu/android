@@ -385,6 +385,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	@Override
+	public void onPause(){
+		this.lvGoodsList.setOnScrollListener(null);
+		super.onPause();
+	}
+	
+	@Override
 	public void onScroll(AbsListView view, int firstVisibleItem,
 			int visibleItemCount, int totalItemCount) {
 		GoodsListAdapter adapter = this.findGoodListAdapter();
