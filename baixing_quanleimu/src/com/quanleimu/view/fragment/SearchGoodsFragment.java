@@ -178,8 +178,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 		
 		((TextView)v.findViewById(R.id.tvSearchKeyword)).setText(title);
 
-		pd = ProgressDialog.show(getContext(), "提示", "请稍后...");
-		pd.setCancelable(true);
+		showSimpleProgress();
 		
 		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
 		if(curLocation == null){
@@ -267,9 +266,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == mListLoader.getRequestDataStatus())
 				mListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 			else{
-				if (pd != null) {
-					pd.dismiss();
-				}
+				hideProgress();
 				Toast.makeText(activity, "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 			}
 			break;
@@ -277,9 +274,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 			GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 
 			if (goodsList == null || goodsList.getData().size() == 0) {
-				if (pd != null) {
-					pd.dismiss();
-				}
+				hideProgress();
 				Toast.makeText(activity, "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 			} else {
 				List<GoodsDetail> listSearchGoods = goodsList.getData();
@@ -291,9 +286,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 				adapter = new GoodsListAdapter(activity, listSearchGoods);
 				adapter.setHasDelBtn(false);
 				lvSearchResult.setAdapter(adapter);
-				if (pd != null) {
-					pd.dismiss();
-				}
+				hideProgress();
 				
 				mListLoader.setGoodsList(goodsList);
 				mListLoader.setHasMore(true);
@@ -308,20 +301,15 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 
 			break;
 		case GoodsListLoader.MSG_NO_MORE:
-			if (pd != null) {
-				pd.dismiss();
-			}
-//			progressBar.setVisibility(View.GONE);
-//			Toast.makeText(getContext(), "没有符合条件的结果，请重新输入！", 3).show();
+			hideProgress();
 			
 			mListLoader.setHasMore(false);
 			lvSearchResult.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 			break;
 			
 		case GoodsListLoader.MSG_FINISH_GET_MORE:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			progressBar.setVisibility(View.GONE);
 			
 			GoodsList goodsListMore = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
@@ -347,9 +335,8 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 			}
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			progressBar.setVisibility(View.GONE);
 
 			Toast.makeText(activity, "网络连接失败，请检查设置！", Toast.LENGTH_LONG).show();

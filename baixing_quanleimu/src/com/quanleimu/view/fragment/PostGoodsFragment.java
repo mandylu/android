@@ -304,10 +304,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
-		pd = new ProgressDialog(this.getActivity());
-		pd.setTitle("提示");
-		pd.setMessage("请稍候...");
-		pd.setCancelable(true);
+		showSimpleProgress();
 		return v;
 	}
 	
@@ -481,7 +478,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				buildPostLayout();
 			}
 		} else {
-			pd.show();
 			new Thread(new GetCategoryMetaThread(true,cityEnglishName)).start();
 		}
 
@@ -600,8 +596,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			if(!check2()){
 				return;
 			}
-			pd = ProgressDialog.show(this.getActivity(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			new Thread(new UpdateThread()).start();
 		}
 	}
@@ -822,9 +817,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			} catch(Exception e){
 				e.printStackTrace();
 			}
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 			final String fmsg = errorMsg;
 			((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
 				@Override
@@ -1369,9 +1362,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
-		if (pd.isShowing()) {
-			pd.dismiss();
-		}
+		hideProgress();
 		
 		switch (msg.what) {
 		case MSG_START_UPLOAD:
@@ -1418,9 +1409,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			break;
 
 		case 2:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			AlertDialog.Builder builder = new AlertDialog.Builder(activity);
 			builder.setTitle("提示:")
 					.setMessage(message)
@@ -1437,9 +1426,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			break;
 		case 3:
 			try {
-				if(pd != null){
-					pd.dismiss();
-				}
+				hideProgress();
 				JSONObject jsonObject = new JSONObject(json);
 				String id;
 				try {
@@ -1480,9 +1467,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 			break;
 		case 10:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			Toast.makeText(activity, "网络连接失败，请检查设置！", 3).show();
 			break;
 		}

@@ -205,9 +205,8 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
-		if (pd != null && pd.isShowing()) {
-			pd.dismiss();
-		}
+		hideProgress();
+		
 		switch (msg.what) {
 		case MSG_LOGINSUCCESS:
 			if(msg.obj != null && msg.obj instanceof String){
@@ -233,9 +232,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));
 			break;
 		case 10:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			Toast.makeText(getActivity(), "网络连接失败，请检查设置！", 3).show();
 			break;
 		}

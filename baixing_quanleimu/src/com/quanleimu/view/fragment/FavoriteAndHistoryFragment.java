@@ -197,9 +197,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 
 		switch (msg.what) {
 		case MSG_UPDATEFAV:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			
 			tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 			if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
@@ -241,9 +239,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 			
 			break;
 		case MSG_UPDATEHISTORY:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 
 			tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 			if(null == tempGoodsList || 0 == tempGoodsList.getData().size()){
@@ -341,9 +337,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		case MSG_NOMOREFAV:
 		case MSG_NOMOREHISTORY:
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:	
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			onResult(msg.what, glLoader);
 			break;
 		}

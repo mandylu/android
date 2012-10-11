@@ -332,9 +332,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
-		if (pd != null && pd.isShowing()) {
-			pd.dismiss();
-		}
+		hideProgress();
 		
 		switch(msg.what)
 		{
@@ -359,10 +357,8 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 			break;
 		case MSG_UPLOAD_IMG_DONE:
 //			newServerImage = (String) msg.obj;//FIXME:
-			if (pd != null)
-			{
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			continueUpdateProfile();
 			break;
 		case MSG_UPLOAD_IMG_FAIL:
@@ -413,7 +409,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	
 	private void continueUpdateProfile()
 	{
-		pd = ProgressDialog.show(getActivity(),"提示", "更新中，请稍等...");
+		showProgress("提示", "更新中，请稍等...", true);
 		
 		updateProfile();
 	}
@@ -477,7 +473,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		{
 			if (profileImg != null && profileImg.getLocalUri() != null)
 			{
-				pd = ProgressDialog.show(getContext(), "提示", "图片上传中，请稍等。。。");
+				showProgress("提示", "图片上传中，请稍等。。。", true);
 				profileImg.startUpload(this);
 			}
 			else

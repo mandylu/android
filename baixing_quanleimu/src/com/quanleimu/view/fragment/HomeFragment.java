@@ -304,14 +304,10 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 
 			break;
 		case 2:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			break;
 		case 4:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			 Toast.makeText(QuanleimuApplication.context, "网络连接失败，请检查设置！", 3).show();
 			//tvInfo.setVisibility(View.VISIBLE);
 			break;

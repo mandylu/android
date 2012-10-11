@@ -99,22 +99,16 @@ public class SiftFragment extends BaseFragment {
 								+ categoryEnglishName
 								+ QuanleimuApplication.getApplication().cityEnglishName);
 		if (postMu == null || postMu.getJson().equals("")) {
-			pd = new ProgressDialog(this.getContext());
-			pd.setTitle("提示");
-			pd.setMessage("请稍候...");
-			pd.setCancelable(true);
-			pd.show();
+			showSimpleProgress();
+			
 			new Thread(new GetGoodsListThread(true)).start();
 		} else {
 			json = postMu.getJson();
 			long time = postMu.getTime();
 			if (time + 24 * 3600 * 1000 < System.currentTimeMillis()) {
 				sendMessage(1, null);
-				pd = new ProgressDialog(this.getContext());
-				pd.setTitle("提示");
-				pd.setMessage("请稍候...");
-				pd.setCancelable(true);
-				pd.show();
+				showSimpleProgress();
+				
 				new Thread(new GetGoodsListThread(false)).start();
 			} else {
 				// sendMessage(1, null);
@@ -297,9 +291,8 @@ public class SiftFragment extends BaseFragment {
 			} catch (Communication.BXHttpException e){
 				
 			}
-			if(pd != null){
-				pd.dismiss();
-			}
+			
+			hideProgress();
 		}
 	}
 	
@@ -506,10 +499,8 @@ public class SiftFragment extends BaseFragment {
 
 		switch (msg.what) {
 		case 1:
-			if (pd != null) {
-				pd.dismiss();
-			}
-
+			hideProgress();
+			
 			if (rootView != null)
 			{
 				loadSiftFrame(rootView);
@@ -517,9 +508,8 @@ public class SiftFragment extends BaseFragment {
 
 			break;
 		case 2:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			Toast.makeText(activity, "服务当前不可用，请稍后重试！", 3).show();
 			break;
 		case MSG_UPDATE_KEYWORD:

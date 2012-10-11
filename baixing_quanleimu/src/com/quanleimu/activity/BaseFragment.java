@@ -47,7 +47,7 @@ public abstract class BaseFragment extends Fragment {
 	public static final String ARG_COMMON_BACK_HINT = "backPageName";
 	public static final String ARG_COMMON_REQ_CODE = "reqestCode";
 	
-	protected ProgressDialog pd;
+	private ProgressDialog pd;
 	
 	private TitleDef titleDef;
 	private TabDef tabDef;
@@ -499,24 +499,29 @@ public abstract class BaseFragment extends Fragment {
 		return bundle;
 	}
 	
-	//View root, 
-//	protected final View findViewById(int id) {
-//		View view = getView();
-//		Activity activity = getActivity();
-//		
-//		View target = null;
-//		if (view != null)
-//		{
-//			target = view.findViewById(id);
-//		}
-//		
-//		if (activity != null && target == null)
-//		{
-//			target =  activity.findViewById(id);
-//		}
-//		
-//		return  target;
-//	}
+	protected final void showSimpleProgress()
+	{
+		showProgress("提示", "请稍候...", true);
+	}
+	
+	protected final void showProgress(String title, String message, boolean cancelable)
+	{
+		hideProgress();
+		
+		if (getActivity() != null)
+		{
+			pd = ProgressDialog.show(getActivity(), title, message);
+			pd.setCancelable(cancelable);
+		}
+	}
+	
+	protected final void hideProgress()
+	{
+		if (pd != null && pd.isShowing())
+		{
+			pd.cancel();
+		}
+	}
 	
 	protected final Context getContext()
 	{

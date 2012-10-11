@@ -328,8 +328,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	private void forceUpdate()
 	{
-		pd = ProgressDialog.show(getActivity(), "提示", "正在下载数据，请稍候...");
-		pd.setCancelable(true);
+		showProgress("提示", "正在下载数据，请稍候...", true);
 		
 		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();
@@ -373,9 +372,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			}
 			
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 		}
 	}
 	
@@ -412,9 +409,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			break;
 		case MSG_GETPERSONALADS:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			if (json != null) {
 				GoodsList gl = JsonUtil.getGoodsListFromJson(json);
 				
@@ -609,10 +605,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			}
-			
-			if(pd != null){
-				pd.dismiss();
-			}
+
+			hideProgress();
 		}		
 	}
 	
@@ -625,10 +619,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			upJson = Util.requestUserProfile(user.getId());
 			sendMessage(MSG_GETPERSONALPROFILE, null);
-			
-			if(pd != null){
-				pd.dismiss();
-			}
+
+			hideProgress();
 		}
 	}	
 
@@ -663,10 +655,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 			}
-			
-			if(pd != null){
-				pd.dismiss();
-			}
+
+			hideProgress();
 		}
 	}	
 	

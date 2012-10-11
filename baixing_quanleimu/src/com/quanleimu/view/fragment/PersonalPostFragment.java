@@ -214,9 +214,8 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 				adapter.setList(new ArrayList<GoodsDetail>());
 				adapter.notifyDataSetChanged();
 				lvGoodsList.invalidateViews();
-				pd = ProgressDialog.show(PersonalPostFragment.this.getContext(), "提示", "请稍候...");
-				pd.setCancelable(true);
-				pd.show();
+
+				showSimpleProgress();
 				this.onRefresh();
 			}
 			else{
@@ -245,9 +244,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 				adapter.setList(new ArrayList<GoodsDetail>());
 				adapter.notifyDataSetChanged();
 				lvGoodsList.invalidateViews();
-				pd = ProgressDialog.show(PersonalPostFragment.this.getContext(), "提示", "请稍候...");
-				pd.setCancelable(true);
-				pd.show();
+				showSimpleProgress();
 				this.onRefresh();
 			}
 			else{
@@ -294,14 +291,12 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 							switch(which){
 								case 0:
 									String id = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-									pd = ProgressDialog.show(PersonalPostFragment.this.getContext(), "提示", "请稍候...");
-									pd.show();
+									showSimpleProgress();
 									(new Thread(new MyMessageDeleteThread(id))).start();
 									break;
 								case 1:
 									String id2 = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-									pd = ProgressDialog.show(PersonalPostFragment.this.getContext(), "提示", "请稍候...");
-									pd.show();
+									showSimpleProgress();
 									(new Thread(new MyMessageRestoreThread(id2))).start();
 									break;
 							}
@@ -326,9 +321,8 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		case MSG_MYPOST:
 		case MSG_INVERIFY:
 		case MSG_DELETED:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson()); 
 			if (gl == null || gl.getData().size() == 0) {
 				if(msg.what == MSG_MYPOST) {
@@ -398,9 +392,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			lvGoodsList.onRefreshComplete();
 			break;
 		case GoodsListLoader.MSG_EXCEPTION:{
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 			lvGoodsList.onRefreshComplete();
 			break;
 		}
@@ -409,19 +401,16 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			int pos = msg.arg2;
 //			pos = pos - lvGoodsList.getHeaderViewsCount();
 			String id = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
+			showSimpleProgress();
 			new Thread(new MyMessageDeleteThread(id)).start();
 			break;
 		case MSG_DELETE_POST_FAIL:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 			Toast.makeText(getContext(), "删除失败,请稍后重试！", 0).show();
 			break;
 		case MSG_DELETE_POST_SUCCESS:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			Object deletedId = msg.obj;
 			try {
 				JSONObject jb = new JSONObject(json);
@@ -463,15 +452,11 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			adapter.setUiHold(false);
 			break;	
 		case MSG_RESTORE_POST_FAIL:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 			Toast.makeText(getContext(), "恢复失败,请稍后重试！", 0).show();
 			break;
 		case MSG_RESTORE_POST_SUCCESS:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 			if(listDeleted == null) break;
 			try{
 				JSONObject jb = new JSONObject(json);
@@ -501,9 +486,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			}
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-			if (pd != null) {
-				pd.dismiss();
-			}
+			hideProgress();
 			
 			Message msg2 = Message.obtain();
 			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
@@ -555,9 +538,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			} catch (Communication.BXHttpException e){
 				
 			}
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 		}
 	}
 
@@ -605,9 +586,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			} catch (Communication.BXHttpException e){
 				
 			}
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
 		}
 	}
 

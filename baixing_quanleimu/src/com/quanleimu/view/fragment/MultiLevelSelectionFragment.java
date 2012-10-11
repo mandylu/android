@@ -91,9 +91,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(items == null || items.size() == 0){
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
-			pd.show();
+			showProgress("提示", "请稍候...", true);
 			(new Thread(new GetMetaDataThread(id))).start();
 		}
 		else{
@@ -140,9 +138,8 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 
 		switch (msg.what) {
 		case MESSAGE_GET_METAOBJ:
-			if(pd != null){
-				pd.dismiss();
-			}
+			hideProgress();
+			
 			if(json != null){
 				LinkedHashMap<String, PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
 				if(beans != null){

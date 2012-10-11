@@ -718,8 +718,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private boolean handleRightBtnIfInVerify(){
 		if(!detail.getValueByKey("status").equals("0")){
-			pd = ProgressDialog.show(GoodDetailFragment.this.getActivity(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
 
 			return true;	
@@ -782,14 +781,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 									
 									break;
 								case 1:
-									pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-									pd.setCancelable(true);
+									showSimpleProgress();
 									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
 									dialog.dismiss();
 									break;									
 								case 2:
-									pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-									pd.setCancelable(true);
+									showSimpleProgress();
 									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
 									dialog.dismiss();
 									break;
@@ -1075,8 +1072,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		case R.id.manager_refresh:{
 //		case R.id.iv_refresh:{
 			manageDlg.dismiss();
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
 			
 			break;
@@ -1100,9 +1096,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
-					// TODO Auto-generated method stub
-					pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-					pd.setCancelable(true);
+					showSimpleProgress();
 					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();			
 				}
 			})
@@ -1345,18 +1339,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_UPDATE)).start();
 					Toast.makeText(getContext(), message, 0).show();
 				}else if(2 == code){
-					if(pd != null){
-						pd.dismiss();
-					}
+					hideProgress();
 					new AlertDialog.Builder(getContext()).setTitle("提醒")
 					.setMessage(message)
 					.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							// TODO Auto-generated method stub
-							pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-							pd.setCancelable(true);
-
+							showSimpleProgress();
 							new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1)).start();
 							dialog.dismiss();
 						}
@@ -1371,9 +1360,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				     .show();
 
 				}else {
-					if(pd != null){
-						pd.dismiss();
-					}
+					hideProgress();
 					Toast.makeText(getContext(), message, 0).show();
 				}
 			} catch (JSONException e) {
@@ -1382,9 +1369,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			break;			
 		case msgUpdate:
-			if(pd!=null){
-				pd.dismiss();
-			}
+			hideProgress();
 			GoodsList goods = JsonUtil.getGoodsListFromJson(json);
 			List<GoodsDetail> goodsDetails = goods.getData();
 			if(goodsDetails != null && goodsDetails.size() > 0){
@@ -1411,9 +1396,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			setMetaObject(); FIXME: should update current UI.
 			break;
 		case msgDelete:
-			if(pd!=null){
-				pd.dismiss();
-			}
+			hideProgress();
 			try {
 				JSONObject jb = new JSONObject(json);
 				JSONObject js = jb.getJSONObject("error");
@@ -1490,14 +1473,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
 						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-						if(pd != null){
-							pd.dismiss();
-						}
+						hideProgress();
 					} catch (IOException e) {
 						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-						if(pd != null){
-							pd.dismiss();
-						}						
+						hideProgress();
 					} catch (Communication.BXHttpException e){
 						
 					}

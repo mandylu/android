@@ -59,8 +59,7 @@ public class RegisterFragment extends BaseFragment {
 //			return;
 //		}
 		if (check()) {
-			pd = ProgressDialog.show(getContext(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			new Thread(new RegisterThread()).start();
 		}
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
@@ -124,9 +123,8 @@ public class RegisterFragment extends BaseFragment {
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
-		if (pd.isShowing()) {
-			pd.dismiss();
-		}
+		hideProgress();
+		
 		switch (msg.what) {
 		case 1:
 			try {

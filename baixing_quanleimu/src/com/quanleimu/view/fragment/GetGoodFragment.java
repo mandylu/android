@@ -182,8 +182,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-			pd = ProgressDialog.show(this.getActivity(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 		}
 		
@@ -520,10 +519,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 			else{
 				Toast.makeText(getActivity(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
-				
-				if (pd != null) {
-					pd.dismiss();
-				}
+				hideProgress();
 			}
 			break;
 		case GoodsListLoader.MSG_FINISH_GET_FIRST:
@@ -551,10 +547,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				lvGoodsList.fireRefresh();
 				//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 			
-			if (pd != null) {
-				pd.dismiss();
-			}
-			
+			hideProgress();
 			break;
 		case GoodsListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
@@ -570,10 +563,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_NO_MORE);
 			goodsListLoader.setHasMore(false);
 			
-			if (pd != null) {
-				pd.dismiss();
-			}
-			
+			hideProgress();			
 			break;
 		case GoodsListLoader.MSG_FINISH_GET_MORE:
 			if(goodsListLoader == null) break;
@@ -606,10 +596,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				goodsListLoader.setHasMore(true);
 			}
 			
-			if (pd != null) {
-				pd.dismiss();
-			}
-			
+			hideProgress();			
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			if(goodsListLoader == null) break;
@@ -621,10 +608,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			
 			lvGoodsList.onFail();
 			
-			if (pd != null) {
-				pd.dismiss();
-			}
-			
+			hideProgress();			
 			break;
 		}
 		

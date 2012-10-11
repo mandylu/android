@@ -129,9 +129,7 @@ public class FeedbackFragment extends BaseFragment {
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		// TODO Auto-generated method stub
-		if(pd!=null){
-			pd.dismiss();
-		}
+		hideProgress();
 		
 		switch (msg.what) {
 		case 0:
@@ -187,14 +185,11 @@ public class FeedbackFragment extends BaseFragment {
 				}
 			} catch (UnsupportedEncodingException e) {
 				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-				if(pd != null){
-					pd.dismiss();
-				}
+				hideProgress();
+				
 			} catch (IOException e) {
 				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-				if(pd != null){
-					pd.dismiss();
-				}				
+				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -217,8 +212,7 @@ public class FeedbackFragment extends BaseFragment {
 					Toast.LENGTH_SHORT).show();
 		} else {
 			
-			pd = ProgressDialog.show(getActivity(), "提示", "请稍候...");
-			pd.setCancelable(true);
+			showSimpleProgress();
 			new Thread(new FeedbackThread()).start();
 		}
 	}
