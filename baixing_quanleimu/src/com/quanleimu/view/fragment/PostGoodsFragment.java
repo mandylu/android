@@ -304,7 +304,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
-		showSimpleProgress();
 		return v;
 	}
 	
@@ -478,6 +477,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				buildPostLayout();
 			}
 		} else {
+			showSimpleProgress();
 			new Thread(new GetCategoryMetaThread(true,cityEnglishName)).start();
 		}
 
