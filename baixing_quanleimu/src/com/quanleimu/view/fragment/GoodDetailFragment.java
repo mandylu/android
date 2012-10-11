@@ -326,6 +326,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				Integer posObj = Integer.valueOf(position);
 				View detail = LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				detail.setTag(posObj);
+				
+				detail.setTag(R.id.accountEt, detail);
 				((ViewPager) arg0).addView(detail, 0);
 				if (position == mListLoader.getGoodsList().getData().size())
 				{
@@ -335,7 +337,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 				else
 				{
-					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0));
+					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0), true);
 				}
 				return detail;
 			}
@@ -500,12 +502,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
 								page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
 								final Integer tag = (Integer)page.getTag();
-								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null);
+								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
 							}
 							
 						}, 10);
 					}
-					Log.d("PAGER", "more goods return.");
 				}
 
 				private void onNoMore() {
@@ -521,10 +522,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         return v;
 	}
 	
-	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager)
+	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
-		contentView = contentView.getRootView();
-		Log.d("PAGER", "init content view with detail " + detail.getValueByKey("title"));
+		if(useRoot)
+			contentView = contentView.getRootView();
 		
 		WindowManager wm = 
 				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
@@ -1697,7 +1698,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				
 			}, 10);
 		}
-		Log.d("PAGER", "fail to load more.");
 	}
 	
 	private void retryLoadMore()
