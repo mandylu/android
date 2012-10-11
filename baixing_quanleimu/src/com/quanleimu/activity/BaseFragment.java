@@ -519,7 +519,7 @@ public abstract class BaseFragment extends Fragment {
 	{
 		if (pd != null && pd.isShowing())
 		{
-			pd.cancel();
+			pd.dismiss();
 		}
 	}
 	
