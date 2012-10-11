@@ -208,6 +208,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
+				Object shit = adapter.getItem(position);
 				if(adapter.getItem(position) instanceof BXHeader) return;
 				if(position == 0 && (items.size() > 10 
 						&& !(adapter.getItem(0) instanceof BXHeader) && !(adapter.getItem(0) instanceof BXPinyinSortItem))){
@@ -215,6 +216,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 					bundle.putBoolean("hasNextLevel", hasNextLevel);
 					bundle.putSerializable("selections", hasNextLevel ? (ArrayList)items : checkList);
 					pushFragment(new SelectionSearchFragment(), bundle);
+					return;
 				}
 				if((position == 1 || position == 0 || position == 2) && adapter.getItem(position).toString().equals("全部")){
 					MultiLevelItem nItem = new MultiLevelItem();

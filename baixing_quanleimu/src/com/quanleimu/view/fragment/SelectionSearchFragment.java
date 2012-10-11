@@ -106,6 +106,14 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 		return v;
 	} 
 	
+	@Override
+	public void onPause(){
+		InputMethodManager inputMgr = 
+				(InputMethodManager) SelectionSearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);		
+		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+		super.onPause();
+	}
+	
 	public void onResume(){
 		super.onResume();
 		//QuanleimuApplication.getApplication().setActivity_type("search");
