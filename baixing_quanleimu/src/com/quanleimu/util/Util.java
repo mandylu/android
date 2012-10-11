@@ -182,6 +182,9 @@ public class Util {
 		} catch (IOException e) {
 			res = "没有数据";
 			e.printStackTrace();
+		} catch(NullPointerException e){
+			res = "null pointer";
+			e.printStackTrace();
 		} finally {
 			try {
 				if(null != oos){
