@@ -1,10 +1,4 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-    <color name="hui">#595959</color>
 	<color name="white">#FFFFFF</color>
-	<color name="background_color">#FFFFFFFF</color>
-	<color name="transparent">#00000000</color>
-	<color name="blue">#0000FF</color>
-    <color name="black">#000000</color>
-    <color name="yin">#E6E8FA</color>
 </resources>

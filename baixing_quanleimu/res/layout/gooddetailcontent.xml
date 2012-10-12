@@ -222,7 +222,7 @@
 		                                android:textSize="16dip" /> -->
 		                        </LinearLayout>
 		
-		                        <LinearLayout
+<!-- 		                        <LinearLayout
 		                            android:id="@+id/fenxianglayout"
 		                            android:layout_width="wrap_content"
 		                            android:layout_height="wrap_content"
@@ -238,14 +238,14 @@
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:background="@drawable/icon_share" />
-<!-- 		
+		
 		                            <TextView
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:layout_marginLeft="1dip"
 		                                android:text="分享"
 		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" /> -->
+		                                android:textSize="16dip" />
 		                        </LinearLayout>
 		                        
 		                        <LinearLayout
@@ -264,7 +264,7 @@
 		                                android:layout_width="wrap_content"
 		                                android:layout_height="wrap_content"
 		                                android:background="@drawable/micro_messenger" />
-		                        </LinearLayout>		                        
+		                        </LinearLayout>	 -->	                        
 		
 		                        <LinearLayout
 		                            android:id="@+id/jubaolayout"

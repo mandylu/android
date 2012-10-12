@@ -1,9 +1,5 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <dimen name="common_round_corner_radius">2dp</dimen>
-        <dimen name="common_transparent_stroke">1dp</dimen>
-        <dimen name="table_column_gap">10dp</dimen>
-        <dimen name="text_size_normal">16sp</dimen>
         <dimen name="table_row_top_margin">6dp</dimen>
          <dimen name="table_row_bottom_margin">6dp</dimen>
 </resources>

@@ -13,9 +13,5 @@
     <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
     <string name="nickname_empty">请输入昵称</string>
     <string name="tip_loading_im_history">正在加载会话历史，请耐心等待</string>
-     <string-array name="genders">
-        <item>男</item>
-        <item>女</item>
-    </string-array>
  
 </resources>
