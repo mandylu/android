@@ -37,8 +37,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	public String cityName = "";
 	public String cityName1 = "";
 	
-	public String backPageName = "";
-	public String title = "";
+	public String backPageName = "返回";
+	public String title = "选择城市";
 	public List<String> listCityName = new ArrayList<String>();
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
 	
@@ -52,12 +52,33 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_leftActionHint = backPageName;
-		title.m_title = this.title;
+		title.m_leftActionHint = "返回";//backPageName;
+		title.m_title = "选择城市";//this.title;
 	}
 	
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
+	}
+	
+	@Override
+	public boolean handleBack(){
+		if(stackStage.size() == 0){
+			return false;
+		}else{
+			parentView.removeView(activeView);
+			
+			chooseStage stage = stackStage.pop();
+			activeView = stage.effectiveView;
+			parentView.addView(activeView);
+			backPageName = stage.backString;
+			title = stage.titleString;
+			
+			TitleDef title = getTitleDef();
+			title.m_leftActionHint = "返回";
+			title.m_title = this.title;
+			this.refreshHeader();
+		}
+		return true;
 	}
 
 	@Override
@@ -153,9 +174,12 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 				stackStage.push(stage);
 				parentView.removeView(activeView);
 				
-				backPageName = "选择城市";
+//				backPageName = "选择城市";
 				title = "选择省份";
-				
+				TitleDef titleDef = getTitleDef();
+				titleDef.m_leftActionHint = backPageName;
+				titleDef.m_title = CityChangeFragment.this.title;
+				refreshHeader();				
 				
 				if(null == linearProvinces){
 					LayoutInflater inflater = LayoutInflater.from(getActivity());
@@ -224,7 +248,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 								stackStage.push(stage);
 								parentView.removeView(activeView);
 								
-								backPageName = "选择省份";
+//								backPageName = "选择省份";
 								title = "选择城市";
 								
 								TitleDef title = getTitleDef();
