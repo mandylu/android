@@ -29,7 +29,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.LoginUtil;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
 	

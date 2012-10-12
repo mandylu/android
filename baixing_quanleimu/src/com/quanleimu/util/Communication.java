@@ -31,7 +31,7 @@ import android.net.NetworkInfo;
 import android.provider.Settings.Secure;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 public class Communication implements Comparator<String> {
 

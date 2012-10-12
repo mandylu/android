@@ -30,7 +30,6 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.widget.AnimatingImageView;
-import com.tencent.mm.sdk.platformtools.Log;
 
 
 public class GoodsListAdapter extends BaseAdapter {

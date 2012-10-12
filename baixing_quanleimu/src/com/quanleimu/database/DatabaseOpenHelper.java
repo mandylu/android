@@ -1,6 +1,6 @@
 package com.quanleimu.database;
 
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;

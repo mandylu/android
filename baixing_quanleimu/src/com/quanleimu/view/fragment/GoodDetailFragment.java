@@ -61,13 +61,13 @@ import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
-import com.quanleimu.entity.AuthDialogListener;
+//import com.quanleimu.entity.AuthDialogListener;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.WeiboAccessTokenWrapper;
+//import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
@@ -79,15 +79,15 @@ import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.tencent.mm.sdk.platformtools.Log;
-import com.weibo.net.AccessToken;
-import com.weibo.net.Oauth2AccessTokenHeader;
-import com.weibo.net.Utility;
-import com.weibo.net.Weibo;
-import com.weibo.net.WeiboException;
-import com.weibo.net.WeiboParameters;
+//import com.tencent.mm.sdk.openapi.WXAppExtendObject;
+//import com.tencent.mm.sdk.openapi.WXMediaMessage;
+//import com.tencent.mm.sdk.platformtools.Log;
+//import com.weibo.net.AccessToken;
+//import com.weibo.net.Oauth2AccessTokenHeader;
+//import com.weibo.net.Utility;
+//import com.weibo.net.Weibo;
+//import com.weibo.net.WeiboException;
+//import com.weibo.net.WeiboParameters;
 
 public class GoodDetailFragment extends BaseFragment implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 
@@ -552,7 +552,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			else{
 				((TextView)contentView.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
 			}
-			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
+//			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
 			contentView.findViewById(R.id.showmap).setEnabled(false);
 			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
 //			findViewById(R.id.sms).setEnabled(false);
@@ -603,15 +603,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 		LinearLayout ll_meta = (LinearLayout) contentView.findViewById(R.id.meta);
 		
-		View fenxiang = contentView.findViewById(R.id.fenxianglayout);
-		fenxiang.setOnClickListener(this);
+//		View fenxiang = contentView.findViewById(R.id.fenxianglayout);
+//		fenxiang.setOnClickListener(this);
 
 		
 //		if(QuanleimuApplication.wxapi != null && QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
 //			contentView.findViewById(R.id.wxlayout).setOnClickListener(this);
 //		}
 //		else{
-			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
+//			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
 //		}
 		
 		View jubao = contentView.findViewById(R.id.jubaolayout);
@@ -981,57 +981,57 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			break;
 			
-		case R.id.wxlayout:{
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
-			doShare2WX();
-			break;
-		}
+//		case R.id.wxlayout:{
+//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
+//			doShare2WX();
+//			break;
+//		}
 		
-		case R.id.fenxianglayout:{
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIBO_SEND, null);
-			Weibo weibo = Weibo.getInstance();
-			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
-			weibo.setRedirectUrl("http://www.baixing.com");
+//		case R.id.fenxianglayout:{
+//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIBO_SEND, null);
+//			Weibo weibo = Weibo.getInstance();
+//			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
+//			weibo.setRedirectUrl("http://www.baixing.com");
+//
+//			if(QuanleimuApplication.getWeiboAccessToken() == null){
+//				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
+//				AccessToken token = null;
+//				if(tokenWrapper != null && tokenWrapper.getToken() != null){
+//					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
+////					token.setExpiresIn(tokenWrapper.getExpires());
+//					Utility.setAuthorization(new Oauth2AccessTokenHeader());
+//					QuanleimuApplication.setWeiboAccessToken(token);
+//				}
+//			}
+//			
+//			if(QuanleimuApplication.getWeiboAccessToken() != null){
+//				Weibo.getInstance().setAccessToken(QuanleimuApplication.getWeiboAccessToken());
+//				doShare2Weibo(QuanleimuApplication.getWeiboAccessToken());
+//			}else{
+//	            WeiboParameters parameters=new WeiboParameters();
+//	            parameters.add("forcelogin", "true");
+//	            Utility.setAuthorization(new Oauth2AccessTokenHeader());
+//                com.quanleimu.entity.AuthDialogListener lsn = 
+//                		new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener() {
+//	                	@Override
+//	                	public void onComplete(){
+//	        				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(GoodDetailFragment.this.getContext(), "weiboToken");
+//	        				AccessToken token = null;
+//	        				if(tokenWrapper != null && tokenWrapper.getToken() != null){
+//	        					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
+//	        					token.setExpiresIn(tokenWrapper.getExpires());
+//	        					QuanleimuApplication.setWeiboAccessToken(token);
+//	        					Weibo.getInstance().setAccessToken(token);
+//	        					doShare2Weibo(token);
+//	        				}
+//	                	}
+//                }); 
+//	            weibo.dialog(this.getContext(), parameters, lsn);	 
+//	            lsn.setInAuthrize(true);
+//			}
 
-			if(QuanleimuApplication.getWeiboAccessToken() == null){
-				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
-				AccessToken token = null;
-				if(tokenWrapper != null && tokenWrapper.getToken() != null){
-					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-//					token.setExpiresIn(tokenWrapper.getExpires());
-					Utility.setAuthorization(new Oauth2AccessTokenHeader());
-					QuanleimuApplication.setWeiboAccessToken(token);
-				}
-			}
-			
-			if(QuanleimuApplication.getWeiboAccessToken() != null){
-				Weibo.getInstance().setAccessToken(QuanleimuApplication.getWeiboAccessToken());
-				doShare2Weibo(QuanleimuApplication.getWeiboAccessToken());
-			}else{
-	            WeiboParameters parameters=new WeiboParameters();
-	            parameters.add("forcelogin", "true");
-	            Utility.setAuthorization(new Oauth2AccessTokenHeader());
-                com.quanleimu.entity.AuthDialogListener lsn = 
-                		new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener() {
-	                	@Override
-	                	public void onComplete(){
-	        				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(GoodDetailFragment.this.getContext(), "weiboToken");
-	        				AccessToken token = null;
-	        				if(tokenWrapper != null && tokenWrapper.getToken() != null){
-	        					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-	        					token.setExpiresIn(tokenWrapper.getExpires());
-	        					QuanleimuApplication.setWeiboAccessToken(token);
-	        					Weibo.getInstance().setAccessToken(token);
-	        					doShare2Weibo(token);
-	        				}
-	                	}
-                }); 
-	            weibo.dialog(this.getContext(), parameters, lsn);	 
-	            lsn.setInAuthrize(true);
-			}
-
-			break;
-		}
+//			break;
+//		}
 		case R.id.jubaolayout:{
 
 			UserBean user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
@@ -1198,59 +1198,59 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		return obj.toString();
 	}
 	
-	private void doShare2WX(){
-//		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
-		String detailJson = convert2JSONString(this.detail);
-		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
-			"我在百姓网看到：" + detail.getValueByKey("title");
-		
-//		WXWebpageObject webObj = new WXWebpageObject();
-//		webObj.webpageUrl = detail.getValueByKey("link");
-		WXAppExtendObject appObj = new WXAppExtendObject();
-		appObj.fileData = detailJson.getBytes();
-		
-		List<String> listUrl = getImageUrls(this.detail);
-		String imgPath = (listUrl == null || listUrl.size()==0 ? null : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
-
-		WXMediaMessage obj = new WXMediaMessage();
-		
-		String description = "";
-		if(detail.getMetaData() != null){
-			for(int i = 0; i < detail.getMetaData().size(); ++ i){
-				String meta = detail.getMetaData().get(i);
-				String [] ms = meta.split(" ");
-				if(ms != null && ms.length == 2){
-					description += "，" + ms[1];
-				}
-			}
-		}
-		if(description.charAt(0) == '，'){
-			description = description.substring(1);
-		}
-		obj.description = description;
-		obj.title = title;
-		obj.mediaObject = appObj;
-		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
-		if(thumbnail != null){
-			obj.setThumbImage(thumbnail);
-		}
-		QuanleimuApplication.sendWXRequest(obj);
-	}
+//	private void doShare2WX(){
+////		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
+//		String detailJson = convert2JSONString(this.detail);
+//		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
+//			"我在百姓网看到：" + detail.getValueByKey("title");
+//		
+////		WXWebpageObject webObj = new WXWebpageObject();
+////		webObj.webpageUrl = detail.getValueByKey("link");
+//		WXAppExtendObject appObj = new WXAppExtendObject();
+//		appObj.fileData = detailJson.getBytes();
+//		
+//		List<String> listUrl = getImageUrls(this.detail);
+//		String imgPath = (listUrl == null || listUrl.size()==0 ? null : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
+//
+//		WXMediaMessage obj = new WXMediaMessage();
+//		
+//		String description = "";
+//		if(detail.getMetaData() != null){
+//			for(int i = 0; i < detail.getMetaData().size(); ++ i){
+//				String meta = detail.getMetaData().get(i);
+//				String [] ms = meta.split(" ");
+//				if(ms != null && ms.length == 2){
+//					description += "，" + ms[1];
+//				}
+//			}
+//		}
+//		if(description.charAt(0) == '，'){
+//			description = description.substring(1);
+//		}
+//		obj.description = description;
+//		obj.title = title;
+//		obj.mediaObject = appObj;
+//		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
+//		if(thumbnail != null){
+//			obj.setThumbImage(thumbnail);
+//		}
+//		QuanleimuApplication.sendWXRequest(obj);
+//	}
 	
-	private void doShare2Weibo(AccessToken accessToken){
-		try{ 
-			List<String> listUrl = getImageUrls(this.detail);
-		Weibo.getInstance().share2weibo((BaseActivity)getActivity(),
-				accessToken.getToken(),
-				accessToken.getSecret(), 
-				isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
-						"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
-				(listUrl == null || listUrl.size() == 0) ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
-		}
-		catch(WeiboException e){
-			e.printStackTrace();
-		}
-	}
+//	private void doShare2Weibo(AccessToken accessToken){
+//		try{ 
+//			List<String> listUrl = getImageUrls(this.detail);
+//		Weibo.getInstance().share2weibo((BaseActivity)getActivity(),
+//				accessToken.getToken(),
+//				accessToken.getSecret(), 
+//				isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
+//						"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
+//				(listUrl == null || listUrl.size() == 0) ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
+//		}
+//		catch(WeiboException e){
+//			e.printStackTrace();
+//		}
+//	}
 	
 	private void setMetaObject(View currentPage, GoodsDetail detail){
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);

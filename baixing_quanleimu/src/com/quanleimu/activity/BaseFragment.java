@@ -26,7 +26,8 @@ import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.FirstRunFragment;
 import com.readystatesoftware.viewbadger.BadgeView;
-import com.tencent.mm.sdk.platformtools.Log;
+//import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 /**
  * 

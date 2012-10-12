@@ -19,7 +19,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.TraceUtil;
 import com.quanleimu.util.Util;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 /**
  * 

@@ -33,7 +33,8 @@ import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.view.fragment.FirstRunFragment;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
+//import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 父类Activity
  * @author henry_yang
@@ -79,7 +80,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
-    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
+//    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
     	super.onRestoreInstanceState(savedInstanceState);
 		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
 		myApp.setCityName(savedInstanceState.getString("cityName"));

@@ -40,10 +40,11 @@ import com.quanleimu.view.fragment.PostGoodsFragment;
 import com.quanleimu.view.fragment.SetMainFragment;
 import com.quanleimu.view.fragment.TalkFragment;
 import com.readystatesoftware.viewbadger.BadgeView;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHandler, JobDoneListener {
+//import com.tencent.mm.sdk.openapi.BaseReq;
+//import com.tencent.mm.sdk.openapi.BaseResp;
+//import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
+import android.util.Log;
+public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
 	
 //	private BaseView currentView;
 	private boolean needClearViewStack = false;
@@ -550,47 +551,47 @@ public class QuanleimuMainActivity extends BaseActivity implements IWXAPIEventHa
 		intent.removeExtra("isTalking"); //Only use this flag once.
 	}
 
-	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
-	@Override
-	public void onReq(BaseReq req) {
-		int i = 0;
-		if(i == 1)
-			return;
-//		switch (req.getType()) {
-//		case ConstantsAPI.COMMAND_GETMESSAGE_FROM_WX:
-//			goToGetMsg();		
-//			break;
-//		case ConstantsAPI.COMMAND_SHOWMESSAGE_FROM_WX:
-//			goToShowMsg((ShowMessageFromWX.Req) req);
-//			break;
-//		default:
-//			break;
-//		}
-	}
+//	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
+//	@Override
+//	public void onReq(BaseReq req) {
+//		int i = 0;
+//		if(i == 1)
+//			return;
+////		switch (req.getType()) {
+////		case ConstantsAPI.COMMAND_GETMESSAGE_FROM_WX:
+////			goToGetMsg();		
+////			break;
+////		case ConstantsAPI.COMMAND_SHOWMESSAGE_FROM_WX:
+////			goToShowMsg((ShowMessageFromWX.Req) req);
+////			break;
+////		default:
+////			break;
+////		}
+//	}
 
 	// ����Ӧ�÷��͵�΢�ŵ�����������Ӧ����ص����÷���
-	@Override
-	public void onResp(BaseResp resp) {
-		
-		int result = 0;
-		if(result == 1)
-			return;
-//		switch (resp.errCode) {
-//		case BaseResp.ErrCode.ERR_OK:
-//			result = R.string.errcode_success;
-//			break;
-//		case BaseResp.ErrCode.ERR_USER_CANCEL:
-//			result = R.string.errcode_cancel;
-//			break;
-//		case BaseResp.ErrCode.ERR_AUTH_DENIED:
-//			result = R.string.errcode_deny;
-//			break;
-//		default:
-//			result = R.string.errcode_unknown;
-//			break;
-//		}
+//	@Override
+//	public void onResp(BaseResp resp) {
 //		
-	}
+//		int result = 0;
+//		if(result == 1)
+//			return;
+////		switch (resp.errCode) {
+////		case BaseResp.ErrCode.ERR_OK:
+////			result = R.string.errcode_success;
+////			break;
+////		case BaseResp.ErrCode.ERR_USER_CANCEL:
+////			result = R.string.errcode_cancel;
+////			break;
+////		case BaseResp.ErrCode.ERR_AUTH_DENIED:
+////			result = R.string.errcode_deny;
+////			break;
+////		default:
+////			result = R.string.errcode_unknown;
+////			break;
+////		}
+////		
+//	}
 
 	@Override
 	public void onClick(View v) {

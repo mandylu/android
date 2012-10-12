@@ -16,16 +16,16 @@ import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.entity.AuthDialogListener;
+//import com.quanleimu.entity.AuthDialogListener;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.WeiboAccessTokenWrapper;
+//import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
-import com.weibo.net.AccessToken;
-import com.weibo.net.Oauth2AccessTokenHeader;
-import com.weibo.net.Utility;
-import com.weibo.net.Weibo;
-import com.weibo.net.WeiboParameters;
+//import com.weibo.net.AccessToken;
+//import com.weibo.net.Oauth2AccessTokenHeader;
+//import com.weibo.net.Utility;
+//import com.weibo.net.Weibo;
+//import com.weibo.net.WeiboParameters;
 
 public class SetMainFragment extends BaseFragment implements View.OnClickListener {
 
@@ -46,12 +46,12 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 		((RelativeLayout) setmain.findViewById(R.id.rlTextImage)).setOnClickListener(this);
 		((RelativeLayout) setmain.findViewById(R.id.rlBack)).setOnClickListener(this);
 		
-		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
-		AccessToken token = null;
-		if(tokenWrapper != null && tokenWrapper.getToken() != null){
-			token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-			token.setExpiresIn(tokenWrapper.getExpires());
-		}
+//		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
+//		AccessToken token = null;
+//		if(tokenWrapper != null && tokenWrapper.getToken() != null){
+//			token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
+//			token.setExpiresIn(tokenWrapper.getExpires());
+//		}
 //		String nick = (String)Helper.loadDataFromLocate(this.getActivity(), "weiboNickName");
 //		if(token != null && nick != null){
 //			((TextView)setmain.findViewById(R.id.tvWeiboNick)).setText(nick);

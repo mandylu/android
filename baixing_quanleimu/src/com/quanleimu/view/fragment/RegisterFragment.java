@@ -26,7 +26,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 public class RegisterFragment extends BaseFragment {
 	private EditText accoutnEt, passwordEt,repasswordEt;

@@ -9,7 +9,7 @@ import com.quanleimu.broadcast.NotificationIds;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 import android.content.Context;
 

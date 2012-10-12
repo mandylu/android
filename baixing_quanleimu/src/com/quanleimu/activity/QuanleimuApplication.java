@@ -37,11 +37,12 @@ import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-import com.tencent.mm.sdk.openapi.SendMessageToWX;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
-import com.weibo.net.AccessToken;
+//import com.tencent.mm.sdk.openapi.SendMessageToWX;
+//import com.tencent.mm.sdk.openapi.WXAPIFactory;
+//import com.tencent.mm.sdk.openapi.WXMediaMessage;
+//import com.weibo.net.AccessToken;
 import com.quanleimu.util.BXDatabaseHelper;
+import android.util.Log;
 import android.telephony.TelephonyManager;
 public class QuanleimuApplication extends Application implements LocationService.BXLocationServiceListener{
 
@@ -56,7 +57,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	public static List<HotList> listHot;
 	public static boolean update = false;
 	public static boolean textMode = false;
-	private static AccessToken accessToken = null;
+//	private static AccessToken accessToken = null;
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
@@ -168,13 +169,13 @@ public class QuanleimuApplication extends Application implements LocationService
 //		this.listBigBm = listBigBm;
 //	}
 	
-	static public void setWeiboAccessToken(AccessToken token){
-		accessToken = token;
-	}
-	
-	static public AccessToken getWeiboAccessToken(){
-		return accessToken;
-	}
+//	static public void setWeiboAccessToken(AccessToken token){
+//		accessToken = token;
+//	}
+//	
+//	static public AccessToken getWeiboAccessToken(){
+//		return accessToken;
+//	}
 
 
 
@@ -622,13 +623,13 @@ public class QuanleimuApplication extends Application implements LocationService
 //		Profiler.markEnd("appcreate");
 	}
 	
-	static public void sendWXRequest(WXMediaMessage msg){
-		SendMessageToWX.Req req = new SendMessageToWX.Req();
-		req.transaction = String.valueOf(System.currentTimeMillis());
-		req.message = msg;
-//		boolean b = wxapi.sendReq(req);
-//		b = false;
-	}
+//	static public void sendWXRequest(WXMediaMessage msg){
+//		SendMessageToWX.Req req = new SendMessageToWX.Req();
+//		req.transaction = String.valueOf(System.currentTimeMillis());
+//		req.message = msg;
+////		boolean b = wxapi.sendReq(req);
+////		b = false;
+//	}
 
 	@Override
 	// 建议在您app的退出之前调用mapadpi的destroy()函数，避免重复初始化带来的时间消耗

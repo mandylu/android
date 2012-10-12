@@ -16,12 +16,6 @@ import android.widget.TextView;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.BXHanzi2Pinyin;
 //import com.quanleimu.widget.BXAlphabetListView.PinnedListViewAdapter;
-import net.sourceforge.pinyin4j.PinyinHelper;
-import net.sourceforge.pinyin4j.format.HanyuPinyinCaseType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinOutputFormat;
-import net.sourceforge.pinyin4j.format.HanyuPinyinToneType;
-import net.sourceforge.pinyin4j.format.HanyuPinyinVCharType;
-import net.sourceforge.pinyin4j.format.exception.BadHanyuPinyinOutputFormatCombination;
 
 public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator<Object> {
 
@@ -120,9 +114,6 @@ public class BXAlphabetSortableAdapter extends BaseAdapter implements Comparator
 					item.firstChars = "cq";
 				}
 				else{
-					 HanyuPinyinOutputFormat outFormat = new HanyuPinyinOutputFormat();  
-				        outFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);  
-				        outFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);  
 					for(int j = 0; j < list.get(i).toString().length(); ++ j){
 //						String py = String.valueOf(list.get(i).toString().charAt(j));
 						try{

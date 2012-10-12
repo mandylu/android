@@ -20,7 +20,7 @@ import android.widget.ImageView;
 import android.widget.ProgressBar;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 
 /**

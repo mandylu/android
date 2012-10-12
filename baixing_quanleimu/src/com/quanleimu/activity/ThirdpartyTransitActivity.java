@@ -8,8 +8,8 @@ import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
-
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
+//import com.tencent.mm.sdk.platformtools.Log;
 
 public class ThirdpartyTransitActivity extends Activity{
 	static public final String ThirdpartyKey = "thirdparty";

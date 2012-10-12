@@ -4,7 +4,7 @@ import java.io.File;
 import java.io.FileOutputStream;
 import java.util.Date;
 
-import com.tencent.mm.sdk.platformtools.Log;
+import android.util.Log;
 
 import android.os.Environment;
 
