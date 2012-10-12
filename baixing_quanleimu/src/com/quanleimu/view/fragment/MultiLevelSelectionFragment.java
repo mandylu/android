@@ -221,7 +221,9 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 				if((position == 1 || position == 0 || position == 2) && adapter.getItem(position).toString().equals("全部")){
 					MultiLevelItem nItem = new MultiLevelItem();
 					nItem.id = MultiLevelSelectionFragment.this.id;
-					nItem.txt = "全部";//MultiLevelSelectionFragment.this.title.equals("请选择") ? "全部" : MultiLevelSelectionFragment.this.title;
+					nItem.txt = nItem.id == null || nItem.id.equals("") ? 
+							"全部" : MultiLevelSelectionFragment.this.title;
+					//MultiLevelSelectionFragment.this.title.equals("请选择") ? "全部" : MultiLevelSelectionFragment.this.title;
 //					m_viewInfoListener.onBack(message, nItem);
 					finishFragment(requestCode, nItem);
 					return;
