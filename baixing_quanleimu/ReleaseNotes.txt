@@ -1,3 +1,11 @@
+v2.7.1
+date:2012/10/12
+svn revision: 5655
+main features:
+1. use fragment framework instead of customized view stack previously used
+2. fix offline message missing problem
+3. fix bugs
+
 v2.7
 date:2012/9/29
 svn revision:5568
@@ -7,7 +15,8 @@ main features:
 3. add guide in first use for changing city
 4. use nearby instead of recent in getgoodsview
 5. limit file cache up to 100 to improve performance
-6. fix bug
+6. disable weibo and weixin. svn revision: 5575, to use it again, revert this change
+7. fix bug
 
 v2.6.2
 date:2012/9/21
