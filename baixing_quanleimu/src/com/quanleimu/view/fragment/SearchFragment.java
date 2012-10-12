@@ -32,7 +32,6 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Helper;
-import com.quanleimu.view.SearchView;
 
 public class SearchFragment extends BaseFragment implements View.OnClickListener {
 

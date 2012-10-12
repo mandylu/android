@@ -166,7 +166,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		{
 			int newStackSize = getSupportFragmentManager().getBackStackEntryCount();
 			
-			Log.e(TAG, "notify stack top " + f.getClass().getName());
+			Log.e(TAG, "notify stack top " + f.getClass().getName() + "#" + f.hashCode());
 			try
 			{
 				f.notifyOnStackTop(newStackSize < stackSize);
@@ -339,7 +339,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	}
 	
 	//判断网络是否连接成功
-	public boolean JadgeConnection ()throws Exception
+	public boolean checkConnection ()throws Exception
 	{
 		
 		boolean a = false;

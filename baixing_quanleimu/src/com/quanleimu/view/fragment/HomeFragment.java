@@ -236,6 +236,16 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 	
 	@Override
 	public void onStackTop(boolean isBack) {
+		View v = getView();
+		if (v != null)
+		{
+			CategorySelectionView catesView = (CategorySelectionView)v.findViewById(R.id.cateSelection);
+			if (catesView != null)
+			{
+				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
+			}
+			
+		}
 		new Thread(new HotListThread()).start(); 
 	}
 

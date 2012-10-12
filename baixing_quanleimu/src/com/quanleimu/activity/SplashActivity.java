@@ -70,7 +70,7 @@ public class SplashActivity extends BaseActivity{
 		QuanleimuApplication.version = Util.getVersion(this);
 
 		try {
-			if (JadgeConnection() == false) {
+			if (checkConnection() == false) {
 				Toast.makeText(SplashActivity.this, "网络连接异常", 3).show();
 			}
 		} catch (Exception e) {

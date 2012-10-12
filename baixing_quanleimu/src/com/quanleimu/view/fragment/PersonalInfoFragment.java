@@ -51,7 +51,6 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LoginUtil;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.PersonalCenterEntryView;
 
 public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener {
 

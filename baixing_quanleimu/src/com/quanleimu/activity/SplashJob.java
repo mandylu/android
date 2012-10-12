@@ -59,7 +59,7 @@ public class SplashJob {
 		QuanleimuApplication.version = Util.getVersion(parentActivity);
 
 		try {
-			if (parentActivity.JadgeConnection() == false) {
+			if (parentActivity.checkConnection() == false) {
 				Toast.makeText(parentActivity, "网络连接异常", 3).show();
 			}
 		} catch (Exception e) {
