@@ -611,7 +611,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					|| postGoodsBean.getControlType().equals("textarea")) {
 				EditText et = (EditText)vg.getChildAt(i).getTag(HASH_CONTROL);
 				if(et != null){
-					params.put(postGoodsBean.getDisplayName(), et.getText().toString(), et.getText().toString() + postGoodsBean.getUnit());
+					params.put(postGoodsBean.getDisplayName(), et.getText().toString() + postGoodsBean.getUnit(), et.getText().toString());
 				}
 			}
 			else if(postGoodsBean.getControlType().equals("checkbox")){
