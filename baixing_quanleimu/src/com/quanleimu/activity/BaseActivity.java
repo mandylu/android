@@ -11,6 +11,7 @@ import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.content.res.Configuration;
 import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.net.NetworkInfo.State;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
@@ -343,11 +344,17 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		
 		boolean a = false;
 		ConnectivityManager connManager = (ConnectivityManager)getSystemService(Context.CONNECTIVITY_SERVICE);
-		State mobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
+		if (connManager == null)
+		{
+			return false;
+		}
 		
-		State wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-		
-		if(mobile.toString().equals("CONNECTED") || wifi.toString().equals("CONNECTED"))
+		NetworkInfo mobileInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE);
+		NetworkInfo wifiInfo = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI);
+		State mobile = mobileInfo == null ? null : mobileInfo.getState();
+		State wifi = wifiInfo== null ? null : wifiInfo.getState();
+
+		if((mobile != null && mobile.toString().equals("CONNECTED")) || (wifi != null && wifi.toString().equals("CONNECTED")))
 		{
 			a = true;
 		}
