@@ -68,6 +68,19 @@ public class StateImage implements Serializable{
 		this.context  = context;
 	}
 	
+	public void reset()
+	{
+		if (status == ImageStatus.ImageStatus_UPLOADING)
+		{
+			uploadListener = null;
+		}
+		
+		this.localImage = null;
+		this.serverImage = null;
+		this.defaultImg = null;
+		changeStatus(ImageStatus.ImageStatus_DEFAULT);
+	}
+	
 	public void assignLocalImage(String localImgPath)
 	{
 		String newUri = localImgPath;
@@ -231,6 +244,10 @@ public class StateImage implements Serializable{
 		});
 	}
 	
+	public ImageStatus getStatus()
+	{
+		return status;
+	}
 	
 	public String getLocalUri()
 	{
