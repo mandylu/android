@@ -524,13 +524,13 @@ public abstract class BaseFragment extends Fragment {
 		}
 	}
 	
-	protected final Context getContext()
+	protected final Context getAppContext()
 	{
-		Activity activity = this.getActivity();
-		if (activity != null )
-		{
-			return activity;
-		}
+//		Activity activity = this.getActivity();
+//		if (activity != null )
+//		{
+//			return activity;
+//		}
 		return QuanleimuApplication.context;
 	}
 	

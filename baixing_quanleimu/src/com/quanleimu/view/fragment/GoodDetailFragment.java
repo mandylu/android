@@ -572,7 +572,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				glDetail.setFadingEdgeLength(10);
 				glDetail.setSpacing(40);
 				
-				MainAdapter adapter = new MainAdapter(this.getContext(), listUrl);
+				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl);
 				glDetail.setAdapter(adapter);
 				glDetail.setOnTouchListener(this);
 				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -762,15 +762,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 			}
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
-			Helper.saveDataToLocate(this.getContext(), "listMyStore", myStore);
+			Helper.saveDataToLocate(this.getAppContext(), "listMyStore", myStore);
 			TitleDef title = getTitleDef();
 			title.m_rightActionHint = strCollect;
 			refreshHeader();
-			Toast.makeText(this.getContext(), "取消收藏", 3).show();
+			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
 		}
 		else if(1 == btnStatus){
 			final String[] names = {"编辑","刷新","删除"};
-			new AlertDialog.Builder(this.getContext()).setTitle("选择操作")
+			new AlertDialog.Builder(this.getActivity()).setTitle("选择操作")
 					.setItems(names, new DialogInterface.OnClickListener(){
 						public void onClick(DialogInterface dialog, int which){
 							switch(which){
@@ -845,7 +845,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		case R.id.buzz: {
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
-			String userId = Util.getMyId(getContext());
+			String userId = Util.getMyId(getActivity());
 			if (userId == null)
 			{
 				requireAuth4Talk();
@@ -914,12 +914,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 									}
 								}
 								
-								//TODO:
-								BaseActivity baseActivity = (BaseActivity)getContext();
-								baseActivity.getIntent().putExtras(bundle);
-								
-								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-								baseActivity.startActivity(baseActivity.getIntent());
+								final BaseActivity baseActivity = (BaseActivity)getActivity();
+								if (baseActivity != null)
+								{
+									baseActivity.getIntent().putExtras(bundle);
+									
+									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+									baseActivity.startActivity(baseActivity.getIntent());
+								}
 								return;
 							}
 
@@ -932,13 +934,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						Bundle bundle = new Bundle();
 						bundle.putString("detailPosition", positions);
 						bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-						//TODO:
-						BaseActivity baseActivity = (BaseActivity)getContext();
-						baseActivity.getIntent().putExtras(bundle);
 						
-						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-						baseActivity.startActivity(baseActivity.getIntent());
-
+						final BaseActivity baseActivity = (BaseActivity)getActivity();
+						if (baseActivity != null)
+						{
+							baseActivity.getIntent().putExtras(bundle);
+							
+							baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+							baseActivity.startActivity(baseActivity.getIntent());
+						}
 					}
 				});
 				convertThread.start();
@@ -961,12 +965,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 									Bundle bundle = new Bundle();
 									bundle.putString("detailPosition", positions);
 									bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-									//TODO:
-									BaseActivity baseActivity = (BaseActivity)getContext();
-									baseActivity.getIntent().putExtras(bundle);
-									
-									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-									baseActivity.startActivity(baseActivity.getIntent());
+
+									final BaseActivity baseActivity = (BaseActivity)getActivity();
+									if (baseActivity != null)
+									{
+										baseActivity.getIntent().putExtras(bundle);
+										
+										baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+										baseActivity.startActivity(baseActivity.getIntent());
+									}
 								}
 							}catch(UnsupportedEncodingException e){
 								e.printStackTrace();
@@ -1034,9 +1041,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		}
 		case R.id.jubaolayout:{
 
-			UserBean user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+			UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 			if(user == null){
-				new AlertDialog.Builder(getContext())
+				new AlertDialog.Builder(getActivity())
 				.setMessage("请登陆后举报")
 				.setPositiveButton("现在登陆", new DialogInterface.OnClickListener() {							
 					@Override
@@ -1092,7 +1099,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		case R.id.manager_delete:{
 			manageDlg.dismiss();
 //		case R.id.iv_del:{
-			new AlertDialog.Builder(getContext()).setTitle("提醒")
+			new AlertDialog.Builder(getActivity()).setTitle("提醒")
 			.setMessage("是否确定删除")
 			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
 				@Override
@@ -1119,7 +1126,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			manageDlg.dismiss();
 			return;
 		}
-		manageDlg = new Dialog(this.getContext(), android.R.style.Theme_Translucent_NoTitleBar);
+		manageDlg = new Dialog(this.getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
 		manageDlg.setContentView(R.layout.managerpost);
 		manageDlg.findViewById(R.id.manager_refresh).setOnClickListener(this);
 		manageDlg.findViewById(R.id.manager_edit).setOnClickListener(this);
@@ -1256,7 +1263,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
 		if(ll_meta == null) return;
 		ll_meta.removeAllViews();
-		LayoutInflater inflater = LayoutInflater.from(this.getContext());
+		LayoutInflater inflater = LayoutInflater.from(currentPage.getContext());
 		for (int i = 0; i < detail.getMetaData().size(); i++) {
 			String[] s = detail.getMetaData().get(i).split(" ");
 			if(s.length < 2) continue;
@@ -1338,10 +1345,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				int code = js.getInt("code");
 				if (code == 0) {
 					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_UPDATE)).start();
-					Toast.makeText(getContext(), message, 0).show();
+					Toast.makeText(getActivity(), message, 0).show();
 				}else if(2 == code){
 					hideProgress();
-					new AlertDialog.Builder(getContext()).setTitle("提醒")
+					new AlertDialog.Builder(getActivity()).setTitle("提醒")
 					.setMessage(message)
 					.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
 						@Override
@@ -1362,7 +1369,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 				}else {
 					hideProgress();
-					Toast.makeText(getContext(), message, 0).show();
+					Toast.makeText(getActivity(), message, 0).show();
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -1421,10 +1428,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						finishFragment(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					}
 //					finish();
-					Toast.makeText(getContext(), message, 0).show();
+					Toast.makeText(activity, message, 0).show();
 				} else {
 					// 删除失败
-					Toast.makeText(getContext(), "删除失败,请稍后重试！", 0).show();
+					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -1530,7 +1537,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private ArrayList<String> doDelete(){
 		// TODO Auto-generated method stub
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user");
 		String mobile = user.getPhone();
 		String password = user.getPassword();
 
@@ -1767,7 +1774,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
 		            Uri.parse("tel:" + txt_phone.getText()));
 		        intent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true);
-		        this.getContext().startActivity(intent);
+		        this.getActivity().startActivity(intent);
 			return true;
 		}
 		case R.id.contact + 1: {
@@ -1775,7 +1782,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			TextView txt_phone = (TextView) v.findViewById(R.id.number);
 			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-			this.getContext().startActivity(intent);
+			this.getActivity().startActivity(intent);
 			return true;
 		}
 		case R.id.contact + 2: {
@@ -1783,7 +1790,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			TextView txt_phone = (TextView) v.findViewById(R.id.number);
 			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
 			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-			this.getContext().startActivity(intent);			
+			this.getActivity().startActivity(intent);			
 			return true;
 		}
 		case R.id.contact + 4:

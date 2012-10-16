@@ -62,7 +62,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 
 		ListView lv = (ListView) v.findViewById(R.id.post_other_list);
 		lv.setDivider(null);
-		final CheckableAdapter adapter = new CheckableAdapter(this.getContext(), others, 0x1FFFFFFF, false);
+		final CheckableAdapter adapter = new CheckableAdapter(this.getActivity(), others, 0x1FFFFFFF, false);
 		lv.setAdapter(adapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {

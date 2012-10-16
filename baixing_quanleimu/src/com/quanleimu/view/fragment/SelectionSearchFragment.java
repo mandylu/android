@@ -49,10 +49,10 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 		boolean hasNextLevel = getArguments().getBoolean("hasNextLevel", false);
 		
 		if(hasNextLevel){
-			adapter = new CommonItemAdapter(getContext(), selections, 10, false);
+			adapter = new CommonItemAdapter(getActivity(), selections, 10, false);
 		}
 		else{
-			adapter = new CheckableAdapter(getContext(), (List<CheckableItem>)selections, 10, false);
+			adapter = new CheckableAdapter(getActivity(), (List<CheckableItem>)selections, 10, false);
 		}
 	}
 
@@ -109,7 +109,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 	@Override
 	public void onPause(){
 		InputMethodManager inputMgr = 
-				(InputMethodManager) SelectionSearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);		
+				(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);		
 		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
 		super.onPause();
 	}
@@ -123,7 +123,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 			public void run(){
 				etSearch.requestFocus();
 				InputMethodManager inputMgr = 
-						(InputMethodManager) SelectionSearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+						(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_FORCED);
 //				if(!inputMgr.isActive())
 //					inputMgr.toggleSoftInput(0, 0);

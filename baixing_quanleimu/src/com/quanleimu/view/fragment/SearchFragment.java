@@ -168,7 +168,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 	@Override
 	public void onPause(){
 		InputMethodManager inputMgr = 
-				(InputMethodManager) SearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+				(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
 		
 		super.onPause();
@@ -182,7 +182,7 @@ public class SearchFragment extends BaseFragment implements View.OnClickListener
 			public void run(){
 				etSearch.requestFocus();
 				InputMethodManager inputMgr = 
-						(InputMethodManager) SearchFragment.this.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+						(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
 				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_FORCED);
 //				if(!inputMgr.isActive())
 //					inputMgr.toggleSoftInput(0, 0);

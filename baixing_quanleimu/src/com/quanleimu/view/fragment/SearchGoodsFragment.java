@@ -140,11 +140,11 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
 		
 		//线性布局  
-        LinearLayout layout = new LinearLayout(getContext());  
+        LinearLayout layout = new LinearLayout(getActivity());  
         //设置布局 水平方向  
         layout.setOrientation(LinearLayout.HORIZONTAL);  
          //进度条  
-        progressBar = new ProgressBar(getContext(), null, android.R.attr.progressBarStyleSmall);
+        progressBar = new ProgressBar(getActivity(), null, android.R.attr.progressBarStyleSmall);
          //进度条显示位置  
         progressBar.setVisibility(View.GONE);
         

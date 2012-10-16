@@ -45,7 +45,7 @@ public class SiftOptionListFragment extends BaseFragment {
 		lv = (ListView) v.findViewById(R.id.lv_test);
 		if(listFilterss != null && listFilterss.size() != 0)
 		{
-			CommonItemAdapter adapter = new CommonItemAdapter(this.getContext(), filterLabels, 10, true);
+			CommonItemAdapter adapter = new CommonItemAdapter(this.getActivity(), filterLabels, 10, true);
 			adapter.setHasArrow(false);
 			lv.setAdapter(adapter);
 		}

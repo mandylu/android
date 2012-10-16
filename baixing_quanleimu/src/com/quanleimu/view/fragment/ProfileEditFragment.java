@@ -159,7 +159,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		v.findViewById(R.id.gender).setOnClickListener(new View.OnClickListener() {
 			
 			public void onClick(View cV) {
-				GenderPopupDialog dlg = new GenderPopupDialog(ProfileEditFragment.this.getContext(), 
+				GenderPopupDialog dlg = new GenderPopupDialog(v.getContext(), 
 						((TextView)v.findViewById(R.id.gender)).getText().equals("男"));
 				dlg.show();
 				dlg.setOnDismissListener(new DialogInterface.OnDismissListener(){

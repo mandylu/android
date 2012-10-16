@@ -146,7 +146,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		}
 		else if (resultCode == REQ_CODE_REGISTER)
 		{
-			UserBean user = (UserBean) Util.loadDataFromLocate(getContext(), "user");
+			UserBean user = (UserBean) Util.loadDataFromLocate(getAppContext(), "user");
 			
 			handleRightAction();
 		}
@@ -210,17 +210,17 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		switch (msg.what) {
 		case MSG_LOGINSUCCESS:
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(getContext(), (String)msg.obj, 0).show();
+				Toast.makeText(activity, (String)msg.obj, 0).show();
 			}else{
-				Toast.makeText(getContext(), "登陆成功", 0).show();
+				Toast.makeText(activity, "登陆成功", 0).show();
 			}
 			finishFragment();
 			break;
 		case MSG_LOGINFAIL:
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(getContext(), (String)msg.obj, 0).show();
+				Toast.makeText(activity, (String)msg.obj, 0).show();
 			}else{
-				Toast.makeText(getContext(), "登录未成功，请稍后重试！", 0).show();
+				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
 			}
 			break;
 		case MSG_NEWREGISTERVIEW:

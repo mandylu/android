@@ -73,7 +73,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		user = (UserBean) Util.loadDataFromLocate(this.getContext(), "user");
+		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 	}
 
 
@@ -84,7 +84,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		View v = inflater.inflate(R.layout.personalcenterview, null);
 		
 		try {
-			if (Util.JadgeConnection(this.getContext()) == false) {
+			if (Util.JadgeConnection(this.getActivity()) == false) {
 				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			}
 		} catch (Exception e) {
@@ -103,7 +103,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		ivMyhistory.setOnClickListener(this);
 		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		
-		adapter = new GoodsListAdapter(this.getContext(), this.listMyPost);
+		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost);
 		adapter.setMessageOutOnDelete(handler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
 
@@ -160,7 +160,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), null, getContext());
+				SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), null, getActivity());
 			}
 		}
 		
@@ -278,7 +278,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 				}
 				else if(null != listDeleted && index < listDeleted.size() && 1 == currentPage){
 					final String[] names = {"彻底删除", "恢复"};
-					new AlertDialog.Builder(PersonalPostFragment.this.getContext()).setTitle("选择操作")
+					new AlertDialog.Builder(getActivity()).setTitle("选择操作")
 					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
 						
 						@Override
@@ -406,7 +406,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			break;
 		case MSG_DELETE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(getContext(), "删除失败,请稍后重试！", 0).show();
+			Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
 			break;
 		case MSG_DELETE_POST_SUCCESS:
 			hideProgress();
@@ -441,9 +441,9 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
-					Toast.makeText(getContext(), message, 0).show();
+					Toast.makeText(activity, message, 0).show();
 				} else {
-					Toast.makeText(getContext(), "删除失败,请稍后重试！", 0).show();
+					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -453,7 +453,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			break;	
 		case MSG_RESTORE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(getContext(), "恢复失败,请稍后重试！", 0).show();
+			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
 			break;
 		case MSG_RESTORE_POST_SUCCESS:
 			hideProgress();
@@ -475,10 +475,10 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 						adapter.notifyDataSetChanged();
 						lvGoodsList.invalidateViews();
 					}
-					Toast.makeText(getContext(), message, 0).show();
+					Toast.makeText(activity, message, 0).show();
 				}
 				else{
-					Toast.makeText(getContext(), "恢复失败,请稍后重试！", 0).show();
+					Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
 				}
 			}catch (JSONException e) {
 				// TODO Auto-generated catch block

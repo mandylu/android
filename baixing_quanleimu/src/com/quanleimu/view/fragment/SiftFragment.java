@@ -94,7 +94,7 @@ public class SiftFragment extends BaseFragment {
 		// AND 地区_s:m7259
 		PostMu postMu = (PostMu) Util
 				.loadDataFromLocate(
-						getContext(),
+						getActivity(),
 						"saveFilterss"
 								+ categoryEnglishName
 								+ QuanleimuApplication.getApplication().cityEnglishName);
@@ -277,7 +277,7 @@ public class SiftFragment extends BaseFragment {
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(SiftFragment.this.getContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					Util.saveDataToLocate(SiftFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
 					if(isUpdate){
 						sendMessage(1, null);
 					}
@@ -301,7 +301,7 @@ public class SiftFragment extends BaseFragment {
 		listFilterss = JsonUtil.getFilters(json).getFilterssList();
 		QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 		LinearLayout ll_meta = (LinearLayout) rootView.findViewById(R.id.meta);
-		LayoutInflater inflater = LayoutInflater.from(SiftFragment.this
+		LayoutInflater inflater = LayoutInflater.from(rootView
 				.getContext());
 		if (listFilterss == null) {
 			ll_meta.setVisibility(View.GONE);
@@ -475,7 +475,7 @@ public class SiftFragment extends BaseFragment {
 					}
 				}
 				TextView border = new TextView(
-						SiftFragment.this.getContext());
+						rootView.getContext());
 				border.setLayoutParams(new LayoutParams(
 						LayoutParams.FILL_PARENT, 1, 1));
 				border.setBackgroundResource(R.drawable.list_divider);

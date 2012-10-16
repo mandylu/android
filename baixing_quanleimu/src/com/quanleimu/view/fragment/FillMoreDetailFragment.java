@@ -81,7 +81,7 @@ public class FillMoreDetailFragment extends BaseFragment {
 			ViewGroup layout = PostGoodsFragment.createItemByPostBean(bean, this);
 			if(layout != null){
 				llDetails.addView(layout);
-				TextView border = new TextView(getContext());
+				TextView border = new TextView(getActivity());
 				border.setLayoutParams(new LayoutParams(
 						LayoutParams.FILL_PARENT, 1, 1));
 				border.setBackgroundResource(R.drawable.list_divider);

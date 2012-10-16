@@ -138,7 +138,7 @@ public class FeedbackFragment extends BaseFragment {
 				JSONObject json = jsonObject.getJSONObject("error");
 				int code = json.getInt("code");
 				String message = json.getString("message");
-				Toast.makeText(getContext(), message, Toast.LENGTH_SHORT).show();
+				Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
 				if (code == 0)
 				{
 					finishFragment();

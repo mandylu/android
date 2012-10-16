@@ -55,7 +55,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 
 //		PullToRefreshListView plv = (PullToRefreshListView)this.findViewById(R.id.lv_sessionlist);
 		ListView plv = (ListView)v.findViewById(R.id.lv_sessionlist);
-		SessionListAdapter adapter = new SessionListAdapter(this.getContext(), sessions);
+		SessionListAdapter adapter = new SessionListAdapter(this.getActivity(), sessions);
 		plv.setAdapter(adapter);
 		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
@@ -65,7 +65,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 			v.findViewById(R.id.session_loading).setVisibility(View.VISIBLE);
 		}
 		
-		ViewUtil.removeNotification(getContext(), NotificationIds.NOTIFICATION_ID_CHAT_MESSAGE);
+		ViewUtil.removeNotification(getActivity(), NotificationIds.NOTIFICATION_ID_CHAT_MESSAGE);
 		
 		return v;
 	}
@@ -88,7 +88,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
 		plv.requestFocus();
 		
-		syncSessions(Util.getMyId(getContext()));
+		syncSessions(Util.getMyId(getActivity()));
 		
 		registerReceiver();
 		BaseAdapter adapter = getAdapter(getView());
@@ -150,7 +150,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	
 	private void updateSessionInfo(ChatSession session, View item)
 	{
-		ChatMessageDatabase.prepareDB(getContext());
+		ChatMessageDatabase.prepareDB(getActivity());
 		ChatMessage lastMessage = ChatMessageDatabase.getLastMessage(session.getSessionId());
 		if (lastMessage != null )
 		{
@@ -204,14 +204,14 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 			};
 		}
 		
-		getContext().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+		getActivity().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
 	}
 	
 	private void unregisterReceiver()
 	{
 		if (chatMessageReceiver != null)
 		{
-			getContext().unregisterReceiver(chatMessageReceiver);
+			getActivity().unregisterReceiver(chatMessageReceiver);
 		}
 	}
 	

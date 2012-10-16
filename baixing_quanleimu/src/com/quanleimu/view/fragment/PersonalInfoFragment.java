@@ -285,11 +285,14 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 //				Bundle bundle = createArguments(null, "用户中心");
 //				pushFragment(new LoginFragment(), bundle);
 			}else{
-				Bundle bundle = createArguments(null, null);
-				ArrayList tmpList = new ArrayList();
-				tmpList.addAll(this.sessions);
-				bundle.putSerializable("sessions", tmpList);
-				pushFragment(new SessionListFragment(), bundle);
+				if ( this.sessions != null)
+				{
+					Bundle bundle = createArguments(null, null);
+					ArrayList tmpList = new ArrayList();
+					tmpList.addAll(this.sessions);
+					bundle.putSerializable("sessions", tmpList);
+					pushFragment(new SessionListFragment(), bundle);
+				}
 			}						
 			break;
 		case R.id.personalEdit:
@@ -402,9 +405,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			break;				
 		case MSG_LOGINFAIL:
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(getContext(), (String)msg.obj, 0).show();
+				Toast.makeText(activity, (String)msg.obj, 0).show();
 			}else{
-				Toast.makeText(getContext(), "登录未成功，请稍后重试！", 0).show();
+				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
 			}
 			break;
 		case MSG_GETPERSONALADS:
@@ -472,7 +475,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 
 	@Override
 	public boolean handleBack() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getContext());
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 		builder.setTitle("提示:")
 				.setMessage("确定注销？")
 				.setNegativeButton("取消", new DialogInterface.OnClickListener(){
@@ -484,8 +487,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				.setPositiveButton("确定", new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which){
-						Util.clearData(getContext(), "user");
-						Util.clearData(getContext(), "userProfile");
+						Util.clearData(getAppContext(), "user");
+						Util.clearData(getAppContext(), "userProfile");
 						Util.logout();
 						if(bundle != null){
 							bundle.remove("lastPost");
@@ -563,7 +566,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		if (this.sessions != null)
 		{
 			ChatMessageDatabase.prepareDB(getActivity());
-			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getContext())));
+			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getActivity())));
 			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
 		}else{
 			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("0未读");

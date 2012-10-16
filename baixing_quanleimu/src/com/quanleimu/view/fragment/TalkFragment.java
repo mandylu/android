@@ -81,7 +81,7 @@ public class TalkFragment extends BaseFragment {
 			if (bundle != null)
 			{
 				targetUserId = bundle.getString("receiverId");
-				myUserId = Util.getMyId(getContext()); //FIXME: this is load from file, may cost times to load it on main thread.
+				myUserId = Util.getMyId(getActivity()); //FIXME: this is load from file, may cost times to load it on main thread.
 				adId = bundle.getString("adId");
 				if(bundle.containsKey("receiverNick")){
 					adTitle = bundle.getString("receiverNick");
@@ -106,7 +106,7 @@ public class TalkFragment extends BaseFragment {
 				}
 				else
 				{
-					ChatMessageDatabase.prepareDB(getContext());
+					ChatMessageDatabase.prepareDB(getActivity());
 					String cachedSession = ChatMessageDatabase.getSessionId(myUserId, targetUserId, adId);
 					sessionId = cachedSession == null ? sessionId : cachedSession;
 				}
@@ -132,7 +132,7 @@ public class TalkFragment extends BaseFragment {
 			sendBtn.setOnClickListener(ctrl);
 			root.findViewById(R.id.im_input_box).setOnClickListener(ctrl);
 			
-			ChatMessageAdapter msgAdapter = new ChatMessageAdapter(Util.getMyId(getContext()));
+			ChatMessageAdapter msgAdapter = new ChatMessageAdapter(Util.getMyId(getActivity()));
 			((ListView) root.findViewById(R.id.char_history_p)).setAdapter(msgAdapter);
 			
 			initInputBox(root);
@@ -196,14 +196,14 @@ public class TalkFragment extends BaseFragment {
 				};
 			}
 			
-			getContext().registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+			getActivity().registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
 		}
 		
 		protected void unregisterReceiver()
 		{
 			if (msgListener != null)
 			{
-				getContext().unregisterReceiver(msgListener);
+				getActivity().unregisterReceiver(msgListener);
 			}
 		}
 		
@@ -330,7 +330,7 @@ public class TalkFragment extends BaseFragment {
 			
 //			this.messageList.add(msg);
 			
-			ChatMessageDatabase.prepareDB(getContext());
+			ChatMessageDatabase.prepareDB(getAppContext());
 			ChatMessageDatabase.updateReadStatus(msg.getId(), true);
 			
 //			getView().postDelayed(new Runnable() {
@@ -376,7 +376,7 @@ public class TalkFragment extends BaseFragment {
 				sendMessage(MSG_MERGE_MESSAGE, list);
 			}
 			
-			ChatMessageDatabase.prepareDB(getContext());
+			ChatMessageDatabase.prepareDB(getAppContext());
 			ChatMessageDatabase.storeMessage(list, true);
 		}
 		
@@ -407,7 +407,7 @@ public class TalkFragment extends BaseFragment {
 			@Override
 			public void run() {
 				List<ChatMessage> msgList = null;
-				ChatMessageDatabase.prepareDB(getContext());
+				ChatMessageDatabase.prepareDB(getAppContext());
 				
 				if (sessionId != null)
 				{
@@ -531,7 +531,7 @@ public class TalkFragment extends BaseFragment {
 						
 						ChatMessage chatMsgInst = ChatMessage.fromJson(json);
 						
-						ChatMessageDatabase.prepareDB(getContext());
+						ChatMessageDatabase.prepareDB(getAppContext());
 						ChatMessageDatabase.storeMessage(chatMsgInst);
 						ChatMessageDatabase.updateReadStatus(chatMsgInst.getId(), true);
 //						messageList.add(chatMsgInst);

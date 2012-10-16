@@ -85,7 +85,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 					refreshHeader();
 //					m_viewInfoListener.onTitleChanged(title);
 //				}
-				Toast.makeText(getContext(), "图片未加载成功，请稍后重试", 3).show();
+				Toast.makeText(getActivity(), "图片未加载成功，请稍后重试", 3).show();
 			}
 			else
 			{
@@ -117,7 +117,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				CircleFlowIndicator indic = (CircleFlowIndicator) v.findViewById(R.id.viewflowindic);
 				vfCoupon.setFlowIndicator(indic); 
 				
-				GalleryImageAdapter adapter = new GalleryImageAdapter(getContext(), listUrl);
+				GalleryImageAdapter adapter = new GalleryImageAdapter(getActivity(), listUrl);
 				vfCoupon.setOnViewLazyInitializeListener(adapter);
 				vfCoupon.setOnViewSwitchListener(this);
 				vfCoupon.setAdapter(adapter, postIndex);
@@ -214,9 +214,9 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	        // 先得到新的URI
 	        Uri uri = null;
 	        try{
-	        	uri = getContext().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
+	        	uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 	        }catch(Exception e){
-	        	Toast.makeText(getContext(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+	        	Toast.makeText(getActivity(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
 	        	return;
 	        }
 
@@ -224,7 +224,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	        InputStream inStream = null;
 	        
 	        try {
-	            outStream = getContext().getContentResolver().openOutputStream(uri);
+	            outStream = getActivity().getContentResolver().openOutputStream(uri);
 	            inStream = new FileInputStream(new File(filePath));
 	            
 	            //new BufferedInputStream(
@@ -237,7 +237,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	            //Log.d("BigGalleryView", "uri.path: "+uri.getPath()+", outStream.toString()"+outStream.toString());
 	            
 	            if(null == scannerConnection)
-	            	scannerConnection = new android.media.MediaScannerConnection(getContext(), this );
+	            	scannerConnection = new android.media.MediaScannerConnection(getActivity(), this );
 	            
 	            if(!scannerConnection.isConnected()){
 	            	unScannedFiles.add(mediaFileName);
@@ -246,10 +246,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	            	scannerConnection.scanFile(mediaFileName, "image/png");
 	            }
 	            
-	            Toast.makeText(getContext(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
+	            Toast.makeText(getActivity(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            Toast.makeText(getContext(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+	            Toast.makeText(getActivity(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
 	        }finally{
 	        	if(outStream != null){
 	        		try {
@@ -320,7 +320,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				{	
 					imageView.setImageBitmap(mb);
 					
-				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getContext());
+				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));
 				}
 

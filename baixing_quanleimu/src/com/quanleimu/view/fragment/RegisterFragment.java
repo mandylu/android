@@ -78,13 +78,13 @@ public class RegisterFragment extends BaseFragment {
 
 	private boolean check() {
 		if (accoutnEt.getText().toString().trim().equals("")) {
-			Toast.makeText(getContext(), "账号不能为空！", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "账号不能为空！", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (passwordEt.getText().toString().trim().equals("")) {
-			Toast.makeText(getContext(), "密码不能为空！", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "密码不能为空！", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
-			Toast.makeText(getContext(), "密码不一致！", Toast.LENGTH_SHORT).show();
+			Toast.makeText(getActivity(), "密码不一致！", Toast.LENGTH_SHORT).show();
 			return false;
 		}
 		return true;
@@ -145,7 +145,7 @@ public class RegisterFragment extends BaseFragment {
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
 				String message = json.getString("message");
-				Toast.makeText(getContext(), message, 0).show();
+				Toast.makeText(activity, message, 0).show();
 				if (!id.equals("")) {
 					// 注册成功
 					
@@ -155,7 +155,7 @@ public class RegisterFragment extends BaseFragment {
 					user.setPhone(accoutnEt.getText().toString());
 					user.setPassword(passwordEt.getText().toString());
 					QuanleimuApplication.getApplication().setMobile(user.getPhone());
-					Util.saveDataToLocate(getContext(), "user", user);
+					Util.saveDataToLocate(activity, "user", user);
 					
 					if(usrId != null && !usrId.equals("")){
 						UserProfile up = new UserProfile();
@@ -176,7 +176,7 @@ public class RegisterFragment extends BaseFragment {
 			}
 			break;
 		case 2:
-			Toast.makeText(getContext(), "注册未成功，请稍后重试！", 3).show();
+			Toast.makeText(activity, "注册未成功，请稍后重试！", 3).show();
 			break;
 		}
 	}

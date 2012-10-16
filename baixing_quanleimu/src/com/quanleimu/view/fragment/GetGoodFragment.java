@@ -330,7 +330,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(titleControlStatus != 1){
 				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
 				if(curLocation == null){
-					new AlertDialog.Builder(this.getContext()).setTitle("提醒").setMessage("无法确定当前位置")
+					new AlertDialog.Builder(this.getActivity()).setTitle("提醒").setMessage("无法确定当前位置")
 					.setPositiveButton("确定", new DialogInterface.OnClickListener(){
 						@Override
 						public void onClick(DialogInterface dialog, int which){
