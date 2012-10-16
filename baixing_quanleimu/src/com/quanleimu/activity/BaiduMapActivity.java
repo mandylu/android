@@ -77,7 +77,7 @@ public class BaiduMapActivity extends MapActivity{
 			mBMapMan = new BMapManager(QuanleimuApplication.getApplication());
 			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
 		}
-		this.findViewById(R.id.btnLeft).setOnClickListener(new View.OnClickListener() {
+		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {
 			
 			@Override
 			public void onClick(View v) {

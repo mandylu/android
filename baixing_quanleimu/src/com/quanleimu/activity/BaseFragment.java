@@ -16,6 +16,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -72,9 +73,13 @@ public abstract class BaseFragment extends Fragment {
 		public String m_title = null;
 		public View m_titleControls = null;
 		
-		public String m_rightActionHint = null;
+//		public String m_rightActionHint = null;
+		public int m_rightActionImg = -1;
+		public int m_rightActionBg = R.drawable.title_bg_selector;//Default right action bg
 		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		public int rightCustomResourceId = -1;
+		
+		public boolean hasGlobalSearch = false; //Disable search by default
 	};
 	
 	public enum ETAB_TYPE{
@@ -352,61 +357,12 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected void refreshFooter()
 	{
-		if (!this.isUiActive())
-		{
-			return;
-		}
-		
-		TabDef footer = this.getTabDef();
-		Activity activity = this.getActivity();
-		
-		if(null == footer || !footer.m_visible)
-		{
-			activity.findViewById(R.id.linearBottom).setVisibility(View.GONE);
-			activity.findViewById(R.id.ivBottomNull).setVisibility(View.GONE);
-		}
-		else
-		{
-			checkAndUpdateBadge(50);
-			LinearLayout bottom = (LinearLayout)activity.findViewById(R.id.linearBottom);
-			bottom.setVisibility(View.VISIBLE);
-			activity.findViewById(R.id.ivBottomNull).setVisibility(View.VISIBLE);
-		}
-		
-		if(footer != null && footer.m_tabSelected != ETAB_TYPE.ETAB_TYPE_PREV){
-			getActivity().findViewById(R.id.ivHomePage).setBackgroundResource((footer.m_tabSelected == ETAB_TYPE.ETAB_TYPE_MAINPAGE) ? R.drawable.tabbar_cate_selected : R.drawable.iv_homepage_xml);
-			getActivity().findViewById(R.id.ivPostGoods).setBackgroundResource(footer.m_tabSelected == ETAB_TYPE.ETAB_TYPE_PUBLISH ? R.drawable.tabbar_add_selected : R.drawable.iv_postgoods_xml);
-			getActivity().findViewById(R.id.ivMyCenter).setBackgroundResource(footer.m_tabSelected == ETAB_TYPE.ETAB_TYPE_MINE ? R.drawable.tabbar_my_selected : R.drawable.iv_mycenter_xml);
-		}
+
 	}
 	
-	private void checkAndUpdateBadge(long uiDelay)
+	public void handleSearch()
 	{
-		final Activity activity = getActivity();
-		if (activity == null)
-		{
-			return;
-		}
 		
-		final BadgeView v = (BadgeView) activity.findViewById(R.id.badge);
-		uiDelay = uiDelay > 0 ? uiDelay : 0;
-			v.postDelayed(new Runnable() {
-
-			public void run() {
-				ChatMessageDatabase.prepareDB(activity);
-				final String myId = Util.getMyId(activity);
-				int count = ChatMessageDatabase.getUnreadCount(null, myId);
-				Log.d("badge", "count" + count);
-				v.setText(count + "");
-				
-				if (count == 0 ||  myId == null) {
-					v.setVisibility(View.GONE);
-				} else {
-					v.setVisibility(View.VISIBLE);
-				}
-			}
-
-		}, uiDelay);
 	}
 	
 	protected void refreshHeader()
@@ -421,13 +377,15 @@ public abstract class BaseFragment extends Fragment {
 		Activity activity = getActivity();
 		
 		RelativeLayout top = (RelativeLayout)activity.findViewById(R.id.linearTop);
+		top.setPadding(0, 0, 0, 0);//For nine patch.
+		
 		if( title != null && title.m_visible){
 			top.setVisibility(View.VISIBLE);
 			
 			LinearLayout llTitleControls = (LinearLayout) top
 					.findViewById(R.id.linearTitleControls);
 			TextView tTitle = (TextView) activity.findViewById(R.id.tvTitle);
-
+			
 			if (null != title.m_titleControls) {
 				llTitleControls.setVisibility(View.VISIBLE);
 				tTitle.setVisibility(View.GONE);
@@ -440,51 +398,73 @@ public abstract class BaseFragment extends Fragment {
 			}
 			
 			//left action bar settings
+			View left = activity.findViewById(R.id.left_action);
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
-				Button left = (Button)activity.findViewById(R.id.btnLeft);
 
-				if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){					
-					left.setBackgroundResource(R.drawable.btn_jj);
-				}
-				else //if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
-				{
-					left.setBackgroundResource(R.drawable.btn_editx);
-				}
-				
-				left.setText(title.m_leftActionHint);				
-				left.setVisibility(View.VISIBLE);				
-			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
-				Button left = (Button)activity.findViewById(R.id.btnLeft);
-				left.setBackgroundResource(title.leftCustomResourceId);
-				left.setText("");
+//				if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){					
+//					left.setBackgroundResource(R.drawable.btn_jj);
+//				}
+//				else //if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
+//				{
+//					left.setBackgroundResource(R.drawable.btn_editx);
+//				}
+//				
+//				left.setText(title.m_leftActionHint);				
 				left.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.line_left).setVisibility(View.VISIBLE);
+			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
+//				Button left = (Button)activity.findViewById(R.id.btnLeft);
+//				left.setBackgroundResource(title.leftCustomResourceId);
+//				left.setText("");
+				left.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.line_left).setVisibility(View.VISIBLE);
 			}else{
-				Button left = (Button)activity.findViewById(R.id.btnLeft);
+//				Button left = (Button)activity.findViewById(R.id.btnLeft);
 				left.setVisibility(View.GONE);
+				activity.findViewById(R.id.line_left).setVisibility(View.GONE);//FIXME: 
+//				RelativeLayout.LayoutParams lay = (RelativeLayout.LayoutParams) left.getLayoutParams();
+				
+			}
+			
+			View search = activity.findViewById(R.id.search_action);
+			if (title.hasGlobalSearch)
+			{
+				search.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.line_search).setVisibility(View.VISIBLE);
+			}
+			else
+			{
+				search.setVisibility(View.GONE);
+				activity.findViewById(R.id.line_search).setVisibility(View.GONE);	
 			}
 			
 			
 			//right action bar settings
-			if(null != title.m_rightActionHint && !title.m_rightActionHint.equals("")){
-				Button right = (Button)activity.findViewById(R.id.btnRight);
-				right.setText(title.m_rightActionHint);
+			View right = activity.findViewById(R.id.right_action);
+			
+			if(right != null && -1 != title.m_rightActionImg){
+//				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
-				
-				if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){
-					right.setBackgroundResource( R.drawable.btn_jj);
-				}
-				else //if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
-				{
-					right.setBackgroundResource(R.drawable.btn_editx);
-				}
-			}else if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
-				Button right = (Button)activity.findViewById(R.id.btnRight);
-				right.setBackgroundResource(title.rightCustomResourceId);
-				right.setText("");
+				right.setBackgroundResource(title.m_rightActionBg);
+				activity.findViewById(R.id.line_right).setVisibility(View.VISIBLE);
+//				if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){
+//					right.setBackgroundResource( R.drawable.btn_jj);
+//				}
+//				else //if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
+//				{
+//					right.setBackgroundResource(R.drawable.btn_editx);
+//				}
+			}else if(right != null && title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
+//				Button right = (Button)activity.findViewById(R.id.btnRight);
+//				right.setBackgroundResource(title.rightCustomResourceId);
+//				right.setText("");
 				right.setVisibility(View.VISIBLE);
-			}else{
-				Button right = (Button)activity.findViewById(R.id.btnRight);
+				right.setBackgroundResource(title.m_rightActionBg);
+				activity.findViewById(R.id.line_right).setVisibility(View.VISIBLE);
+			}else if (right != null){
+//				Button right = (Button)activity.findViewById(R.id.btnRight);
 				right.setVisibility(View.GONE);
+				activity.findViewById(R.id.line_right).setVisibility(View.GONE);
 			}
 		}
 		else{

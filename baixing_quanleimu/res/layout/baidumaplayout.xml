@@ -6,31 +6,36 @@
 
     <RelativeLayout
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
+        android:layout_height="@dimen/title_height"
         android:background="@drawable/top_bg"
         android:gravity="center_vertical|top" >
 
-        <TextView
-            android:id="@+id/tvTitle"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:text="位置"
-            android:textColor="#ffffff"
-            android:textSize="22dip" >
-        </TextView>
+       <LinearLayout android:id="@+id/left_action"
+        android:layout_width="@dimen/title_action_width"
+        android:orientation="horizontal"
+        android:background="@drawable/title_bg_selector"
+        android:gravity="center"
+        android:layout_height="fill_parent">
 
-        <Button
-            android:id="@+id/btnLeft"
+        <ImageView
+            android:id="@+id/imageView1"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:layout_marginLeft="5dip"
-            android:background="@drawable/btn_jj"
-            android:text="返回"
-            android:textColor="#ffffff" >
-        </Button>
+            android:src="@drawable/icon_back" />
+        
+    </LinearLayout>
+    
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/left_action"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="位置"
+        android:textColor="#ffffff"
+        android:textSize="22dip" >
+    </TextView>
     </RelativeLayout>
 
     <com.baidu.mapapi.MapView

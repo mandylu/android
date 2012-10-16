@@ -53,7 +53,8 @@ public class FillMoreDetailFragment extends BaseFragment {
 		title.m_visible = true;
 		title.m_title = "填写更多细节";
 		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "完成";
+//		title.m_rightActionHint = "完成";
+		title.m_rightActionImg = -1;//FIXME:
 	}
 	
 	@Override

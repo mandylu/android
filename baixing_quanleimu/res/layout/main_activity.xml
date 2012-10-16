@@ -9,61 +9,7 @@
         android:layout_height="fill_parent"
         android:orientation="vertical" >
 
-        <RelativeLayout
-            android:id="@+id/linearTop"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/top_bg" >
-
-            <LinearLayout
-                android:id="@+id/linearTitleControls"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true" />
-
-            <TextView
-                android:id="@+id/tvTitle"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerInParent="true"
-                android:gravity="center"
-                android:text="首页"
-                android:textColor="#ffffff"
-                android:textSize="22dip" >
-            </TextView>
-
-            <Button
-                android:id="@+id/btnLeft"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentLeft="true"
-                android:layout_centerVertical="true"
-                android:layout_marginLeft="5dip"
-                android:background="@drawable/btn_jj"
-                android:gravity="center"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:text="@string/ChangeCity"
-                android:textColor="#ffffff"
-                android:textSize="16dip" >
-            </Button>
-
-            <Button
-                android:id="@+id/btnRight"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentRight="true"
-                android:layout_centerVertical="true"
-                android:layout_marginRight="5dip"
-                android:background="@drawable/btn_editx"
-                android:gravity="center"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip"
-                android:text="@string/Search"
-                android:textColor="#ffffff"
-                android:textSize="16dip" >
-            </Button>
-        </RelativeLayout>
+		<include layout="@layout/common_title"/>
 
         <LinearLayout
             android:id="@+id/contentLayout"
@@ -71,108 +17,9 @@
             android:layout_height="0dip"
             android:layout_weight="1" >
         </LinearLayout>
-
-        <ImageView
-            android:id="@+id/ivBottomNull"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:background="@drawable/tabbar_bg" />
     </LinearLayout>
 
-    <LinearLayout
-        android:id="@+id/linearBottom"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentBottom="true"
-        android:baselineAligned="true" >
 
-        <RelativeLayout
-            android:id="@+id/rlHomePage"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_gravity="bottom"
-            android:layout_weight="1" >
-
-            <ImageView
-                android:id="@+id/ivHomePage"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/iv_homepage_xml" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlPostGoods"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:baselineAligned="true" >
-
-            <ImageView
-                android:id="@+id/ivPostGoods"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/iv_postgoods_xml" />
-        </RelativeLayout>
-
-        <RelativeLayout
-            android:id="@+id/rlMy"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_weight="1"
-            android:baselineAligned="true" >
-
-            <ImageView
-                android:id="@+id/ivMyCenter"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignParentBottom="true"
-                android:layout_centerHorizontal="true"
-                android:background="@drawable/iv_mycenter_xml" />
-
-            <com.readystatesoftware.viewbadger.BadgeView
-                android:id="@+id/badge"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_alignTop="@+id/ivMyCenter"
-                android:layout_marginTop="2dp"
-                android:layout_toRightOf="@+id/ivMyCenter"
-                android:text="8" />
-        </RelativeLayout>
-    </LinearLayout>
-
-    <!-- RelativeLayout
-        android:id="@+id/rl_guide"
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent" >
-
-        <ImageView
-            android:id="@+id/topguide"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/guide_001" >
-        </ImageView>
-
-        <RelativeLayout
-            android:id="@+id/textguide"
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_alignParentBottom="true"
-            android:layout_below="@id/topguide"
-            android:background="#99000000" >
-
-            <ImageView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:layout_alignParentTop="true"
-                android:src="@drawable/guide_002" >
-            </ImageView>
-        </RelativeLayout>
-    </RelativeLayout> -->
 
     <include
         android:id="@+id/splash_cover"

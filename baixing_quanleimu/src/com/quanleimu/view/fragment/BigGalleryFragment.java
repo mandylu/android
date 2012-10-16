@@ -134,7 +134,8 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		title.m_title = (postIndex+1)+"/"+listUrl.size();
 		title.m_leftActionHint = "返回";
 		
-		title.m_rightActionHint = "保存";
+//		title.m_rightActionHint = "保存";
+		title.m_rightActionImg = -1;//FIXME:
 	}
 	public void initTab(TabDef tab){
 		tab.m_visible = false;

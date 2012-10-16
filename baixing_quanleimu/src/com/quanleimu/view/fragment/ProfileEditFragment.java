@@ -69,7 +69,8 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "编辑个人信息";
-		title.m_rightActionHint = "完成";
+//		title.m_rightActionHint = "完成";
+		title.m_rightActionImg = -1;//FIXME:
 		title.m_leftActionHint = "返回";
 	}
 	

@@ -392,22 +392,12 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		
 		//Update UI after splash.
 		
-		// TODO Auto-generated method stub
-		Button left = (Button)findViewById(R.id.btnLeft);
+		View left = findViewById(R.id.left_action);
 		left.setOnClickListener(this);
-		Button right = (Button)findViewById(R.id.btnRight);
+		View right = findViewById(R.id.right_action);
 		right.setOnClickListener(this);
-		
-		ivHomePage = (ImageView)findViewById(R.id.ivHomePage);
-		ivHomePage.setOnClickListener(this);
-//		ivCateMain = (ImageView)findViewById(R.id.ivCateMain);
-//		ivCateMain.setOnClickListener(this);
-		ivPostGoods = (ImageView)findViewById(R.id.ivPostGoods);
-		ivPostGoods.setOnClickListener(this);
-		ivMyCenter = (ImageView)findViewById(R.id.ivMyCenter);
-		ivMyCenter.setOnClickListener(this);
-//		ivSetMain = (ImageView)findViewById(R.id.ivSetMain);
-//		ivSetMain.setOnClickListener(this);
+		View search = findViewById(R.id.search_action);
+		search.setOnClickListener(this);
 		
 		if(!QuanleimuApplication.update){
 			QuanleimuApplication.update = true;
@@ -441,7 +431,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		
 		startTalking(getIntent()); //Launch after splash job.
 		
-		findViewById(R.id.badge).setVisibility(View.GONE); //hide the badge before we get the unread information.
 		responseOnResume();
 		
 //		findViewById(R.id.splash_cover).setVisibility(View.GONE);
@@ -596,7 +585,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
-		case R.id.btnRight:
+		case R.id.right_action:
 //			currentView.onRightActionPressed();
 //			intent.setClass(HomePage.this, Search.class);
 //			bundle.putString("searchType", "homePage");
@@ -605,25 +594,30 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			getCurrentFragment().handleRightAction();
 			
 			break;
-		case R.id.btnLeft:
+		case R.id.left_action:
 			if (!getCurrentFragment().handleBack())
 			{
 				this.handleBack();
 			}
 			break;
-		case R.id.ivHomePage:{
-			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_MAINPAGE);
+		case R.id.search_action:
+		{
+			getCurrentFragment().handleSearch();
 			break;
 		}
-//		case R.id.ivCateMain:				
-//			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY);
+//		case R.id.ivHomePage:{
+//			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_MAINPAGE);
 //			break;
-		case R.id.ivPostGoods:
-			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_PUBLISH);			
-			break;
-		case R.id.ivMyCenter:
-			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_MINE);			
-			break;
+//		}
+////		case R.id.ivCateMain:				
+////			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_CATEGORY);
+////			break;
+//		case R.id.ivPostGoods:
+//			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_PUBLISH);			
+//			break;
+//		case R.id.ivMyCenter:
+//			this.onSwitchToTab(BaseFragment.ETAB_TYPE.ETAB_TYPE_MINE);			
+//			break;
 //		case R.id.ivSetMain:
 //			this.onSwitchToTab(BaseView.ETAB_TYPE.ETAB_TYPE_SETTING);	
 //			break;
@@ -650,26 +644,25 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	
 	private void checkAndUpdateBadge(long uiDelay)
 	{
-		
-		final BadgeView v = (BadgeView) findViewById(R.id.badge);
-		uiDelay = uiDelay > 0 ? uiDelay : 0;
-			v.postDelayed(new Runnable() {
-
-			public void run() {
-				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
-				final String myId = Util.getMyId(QuanleimuMainActivity.this);
-				int count = ChatMessageDatabase.getUnreadCount(null, myId);
-				Log.d("badge", "count" + count);
-				v.setText(count + "");
-
-				if (count == 0 ||  myId == null) {
-					v.setVisibility(View.GONE);
-				} else {
-					v.setVisibility(View.VISIBLE);
-				}
-			}
-
-		}, uiDelay);
+//		final BadgeView v = (BadgeView) findViewById(R.id.badge);
+//		uiDelay = uiDelay > 0 ? uiDelay : 0;
+//			v.postDelayed(new Runnable() {
+//
+//			public void run() {
+//				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
+//				final String myId = Util.getMyId(QuanleimuMainActivity.this);
+//				int count = ChatMessageDatabase.getUnreadCount(null, myId);
+//				Log.d("badge", "count" + count);
+//				v.setText(count + "");
+//
+//				if (count == 0 ||  myId == null) {
+//					v.setVisibility(View.GONE);
+//				} else {
+//					v.setVisibility(View.VISIBLE);
+//				}
+//			}
+//
+//		}, uiDelay);
 	}
 	
 	private void registerMsgListener()

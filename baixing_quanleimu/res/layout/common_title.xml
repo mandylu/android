@@ -1,0 +1,108 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearTop"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/title_height"
+    android:background="@drawable/bg_title" >
+
+    <LinearLayout android:id="@+id/left_action"
+        android:layout_width="@dimen/title_action_width"
+        android:orientation="horizontal"
+        android:background="@drawable/title_bg_selector"
+        android:gravity="center"
+        android:layout_height="fill_parent">
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_gravity="center"
+            android:src="@drawable/icon_back" />
+    </LinearLayout>
+    
+   <LinearLayout
+            android:layout_width="2dp"
+            android:id="@+id/line_left"
+            android:layout_toRightOf="@+id/left_action"
+            android:layout_height="fill_parent"
+            android:background="@drawable/icon_title_line" />
+    
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/line_left"
+        android:layout_centerVertical="true"
+        android:gravity="center"
+        android:text="首页"
+        android:textColor="#ffffff"
+        android:textSize="22dip" >
+    </TextView>
+    
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:id="@+id/right_action_parent"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal" >
+
+        <LinearLayout
+            android:layout_width="2dp"
+            android:id="@+id/line_search"
+            android:layout_height="fill_parent"
+            android:layout_gravity="left"
+            android:background="@drawable/icon_title_line" />
+
+        <LinearLayout
+            android:id="@+id/search_action"
+            android:layout_width="@dimen/title_action_width"
+            android:layout_height="fill_parent"
+            android:background="@drawable/title_bg_selector"
+            android:gravity="center"
+            android:orientation="horizontal" >
+
+            <ImageView
+                android:id="@+id/globalSearch"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_search"
+                android:gravity="center" >
+            </ImageView>
+        </LinearLayout>
+
+        <LinearLayout
+            android:layout_width="2dp"
+            android:id="@+id/line_right"
+            android:layout_height="fill_parent"
+            android:layout_gravity="left"
+            android:background="@drawable/icon_title_line" />
+
+        <LinearLayout
+            android:id="@+id/right_action"
+            android:layout_width="@dimen/title_action_right_width"
+            android:layout_height="fill_parent"
+            android:background="@drawable/bg_post_selector"
+            android:gravity="center" >
+
+            <ImageView
+                android:id="@+id/btnRight_"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:background="@drawable/icon_post"
+                android:gravity="center"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip" >
+            </ImageView>
+        </LinearLayout>
+    </LinearLayout>
+    
+	<LinearLayout
+        android:id="@+id/linearTitleControls"
+        android:layout_toRightOf="@+id/tvTitle"
+        android:layout_toLeftOf="@+id/right_action_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true" />
+    
+
+
+</RelativeLayout>

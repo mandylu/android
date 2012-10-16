@@ -66,7 +66,18 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 	static private String locationAddr = "";
 	
 	protected void initTitle(TitleDef title) {
-		title.m_visible = false;
+		LayoutInflater inflator = LayoutInflater.from(getActivity());
+		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
+		
+		title.hasGlobalSearch = true;
+		title.m_rightActionImg = R.drawable.icon_post;
+		title.m_rightActionBg = R.drawable.bg_post_selector;
+		
+		title.m_titleControls.findViewById(R.id.logo_root).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+			}
+		});
 	}
 	
 	public void initTab(TabDef tab){
