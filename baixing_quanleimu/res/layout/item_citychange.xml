@@ -10,8 +10,8 @@
 	  <RelativeLayout 
 	       android:layout_width="fill_parent" 
 	       android:id="@+id/linearGpsCity" 	 	         
-	       android:paddingTop="5dip"
-	       android:paddingBottom="5dip"
+	       android:paddingTop="10dip"
+	       android:paddingBottom="10dip"
 	       android:layout_height="wrap_content">
 	       
 			<TextView 

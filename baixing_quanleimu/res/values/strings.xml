@@ -44,5 +44,6 @@
 
     <!-- colors -->
     <color name="dialogbackgournd">#00ffffff</color>
+    <string name="citychange_gpscity">GPS定位城市</string>
 
 </resources>

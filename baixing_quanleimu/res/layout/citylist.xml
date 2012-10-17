@@ -14,14 +14,5 @@
 	 	android:layout_marginBottom="10dip"
 	 	android:orientation="vertical">
 	</LinearLayout>
-	<ImageView
-	    android:layout_width="fill_parent"
-    	android:layout_height="fill_parent"
-	    
-		android:layout_alignTop="@id/llcitylist"
-		android:layout_alignLeft="@id/llcitylist"
-		android:layout_alignRight="@id/llcitylist"
-		android:background="@drawable/s_bg2"
-		android:layout_alignBottom="@id/llcitylist">
-	</ImageView>
+	
 </RelativeLayout>
