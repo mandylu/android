@@ -91,7 +91,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(items == null || items.size() == 0){
-			showProgress("提示", "请稍候...", true);
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
 			(new Thread(new GetMetaDataThread(id))).start();
 		}
 		else{

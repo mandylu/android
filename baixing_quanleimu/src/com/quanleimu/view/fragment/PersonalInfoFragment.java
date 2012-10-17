@@ -330,7 +330,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	private void forceUpdate()
 	{
-		showProgress("提示", "正在下载数据，请稍候...", true);
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_data_loading, true);
 		
 		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();

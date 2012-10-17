@@ -167,10 +167,10 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 		else if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlClearCache)).getId()) {
 
 			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle("提示:")
-					.setMessage("是否清空缓存？")
-					.setNegativeButton("否", null)
-					.setPositiveButton("是",
+			builder.setTitle(R.string.dialog_title_info)
+					.setMessage(R.string.dialog_message_confirm_clear_cache)
+					.setNegativeButton(R.string.no, null)
+					.setPositiveButton(R.string.yes,
 							new DialogInterface.OnClickListener() {
 
 								@Override

@@ -369,7 +369,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	//弹出等待框
 	public void pdShow(Context context)
 	{
-		pd = ProgressDialog.show(context, "提示", "请稍候...");
+		pd = ProgressDialog.show(context, getString(R.string.dialog_title_info),
+				getString(R.string.dialog_message_waiting));
 		pd.setCancelable(true);
 	}
 	

@@ -77,9 +77,11 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			if (null == cityName || "".equals(cityName))
 			{
 				Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle("提示:").setMessage("是否退出?").setNegativeButton("否", null)
-						.setPositiveButton("是", new DialogInterface.OnClickListener() {
-					
+				builder.setTitle(R.string.dialog_title_info)
+					.setMessage(R.string.dialog_message_confirm_exit)
+					.setNegativeButton(R.string.no, null)
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() 
+				{
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
 						System.exit(0);

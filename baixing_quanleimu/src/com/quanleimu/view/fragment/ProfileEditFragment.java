@@ -409,7 +409,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	
 	private void continueUpdateProfile()
 	{
-		showProgress("提示", "更新中，请稍等...", true);
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);
 		
 		updateProfile();
 	}
@@ -473,7 +473,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		{
 			if (profileImg != null && profileImg.getLocalUri() != null)
 			{
-				showProgress("提示", "图片上传中，请稍等。。。", true);
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_uploading, true);
 				profileImg.startUpload(this);
 			}
 			else

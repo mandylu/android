@@ -477,7 +477,13 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final void showSimpleProgress()
 	{
-		showProgress("提示", "请稍候...", true);
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+	}
+	
+	protected final void showProgress(int titleResid, int messageResid, boolean cancelable) {
+		String title = getString(titleResid);
+		String message = getString(messageResid);
+		showProgress(title, message, cancelable);
 	}
 	
 	protected final void showProgress(String title, String message, boolean cancelable)

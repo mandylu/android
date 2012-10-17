@@ -219,10 +219,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private void ConfirmAbortAlert(){
 		AlertDialog.Builder builder = new AlertDialog.Builder(this.getActivity());
 		
-		builder.setTitle("提示:")
-				.setMessage("您所填写的数据将会丢失,放弃发布？")
-				.setNegativeButton("否", null)
-				.setPositiveButton("是",
+		builder.setTitle(R.string.dialog_title_info)
+				.setMessage(R.string.dialog_message_discard_input)
+				.setNegativeButton(R.string.no, null)
+				.setPositiveButton(R.string.yes,
 						new DialogInterface.OnClickListener() {
 
 							@Override

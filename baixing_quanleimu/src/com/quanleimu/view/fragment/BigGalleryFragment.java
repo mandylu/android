@@ -85,7 +85,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 					refreshHeader();
 //					m_viewInfoListener.onTitleChanged(title);
 //				}
-				Toast.makeText(getActivity(), "图片未加载成功，请稍后重试", 3).show();
+				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
 			}
 			else
 			{

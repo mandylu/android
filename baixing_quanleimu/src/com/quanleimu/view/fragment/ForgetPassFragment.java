@@ -43,7 +43,7 @@ public class ForgetPassFragment extends BaseFragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		
-		showProgress("提示", "数据下载中，请稍后。。。", false);
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_data_loading, false);
 		
 		WebView web = (WebView) getView().findViewById(R.id.web);
 		web.loadUrl("http://www.baixing.com/auth/password/?redirect=http%3A%2F%2Fshanghai.baixing.com%2F");
