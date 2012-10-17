@@ -24,6 +24,7 @@ public class GridAdapter extends BaseAdapter {
     }  
   
     private Context context;  
+    private int colCount;
   
     private List<GridInfo> list;  
     private LayoutInflater mInflater;  
@@ -33,8 +34,9 @@ public class GridAdapter extends BaseAdapter {
         this.context = c;  
     }  
   
-    public void setList(List<GridInfo> list) {  
+    public void setList(List<GridInfo> list, int columnCount) {  
         this.list = list;  
+        this.colCount = columnCount;
         mInflater = (LayoutInflater) context  
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
   
@@ -77,6 +79,15 @@ public class GridAdapter extends BaseAdapter {
             holder.text.setText(info.text);  
             holder.imageBtn.setImageResource(info.imgResourceId);
         }  
+        
+        if (index != 0 && (index + 1)%colCount == 0)
+        {
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_2);
+        }
+        else
+        {
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector);
+        }
         return convertView;  
     }  
   

@@ -77,7 +77,7 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 		gitems.add(gi);
 
 		GridAdapter adapter = new GridAdapter(this.getActivity());
-		adapter.setList(gitems);
+		adapter.setList(gitems, 3);
 		((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
 		((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
 		
