@@ -1,0 +1,154 @@
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/common_tab_layout"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/tab_height"
+    android:background="@color/tab_bg"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:id="@+id/tab_button_1"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/tab_bg" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+            <TextView
+                android:id="@+id/tab_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="TAB1"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/tab_arrow_1"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/tab_indicator_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/tab_indicator_bg" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tab_button_2"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/tab_bg" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+            <TextView
+                android:id="@+id/tab_text_2"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="TAB2"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+
+        </LinearLayout>
+
+        <View
+            android:id="@+id/tab_arrow_2"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/tab_indicator_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/tab_indicator_bg" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tab_button_3"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/tab_bg" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+            <TextView
+                android:id="@+id/tab_text_3"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="TAB3"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/tab_arrow_3"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/tab_indicator_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/tab_indicator_bg" />
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/tab_button_4"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@color/tab_bg" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+            <TextView
+                android:id="@+id/tab_text_4"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="TAB4"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+        <View
+            android:id="@+id/tab_arrow_4"
+            android:layout_width="fill_parent"
+            android:layout_height="@dimen/tab_indicator_height"
+            android:layout_alignParentBottom="true"
+            android:background="@color/tab_indicator_bg" />
+
+    </RelativeLayout>
+
+</LinearLayout>

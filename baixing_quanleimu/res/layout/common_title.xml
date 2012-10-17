@@ -13,8 +13,8 @@
         android:layout_height="fill_parent">
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
             android:layout_gravity="center"
             android:src="@drawable/icon_back" />
     </LinearLayout>
@@ -62,6 +62,7 @@
 
             <ImageView
                 android:id="@+id/globalSearch"
+                android:scaleType="fitXY"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_search"
@@ -85,12 +86,11 @@
 
             <ImageView
                 android:id="@+id/btnRight_"
+                android:scaleType="fitCenter"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:background="@drawable/icon_post"
-                android:gravity="center"
-                android:paddingLeft="10dip"
-                android:paddingRight="10dip" >
+                >
             </ImageView>
         </LinearLayout>
     </LinearLayout>
