@@ -81,7 +81,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
-	public ImageView img1, img2, img3;
+//	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
 	public String categoryName = "";
 	public String json = "";
@@ -121,7 +121,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	static private String lastCategoryEnglishName = null;
 	static private String lastCategoryShowName = null;
 	
-	private ArrayList<String> otherProperties = new ArrayList<String>();
+//	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
 	
@@ -274,10 +274,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		if(!userValidated){
-			usercheck();
-		}
-		else
+//		if(!userValidated){
+//			usercheck();
+//		}
+//		else
 		{
 			this.showPost();
 		}
@@ -300,7 +300,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		View v = inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
-		
+		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
+		v.findViewById(R.id.iv_post_finish).setOnClickListener(this);
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
@@ -423,27 +424,55 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			new Thread(new Imagethread(smalls, bigs)).start();
 		}
 	}
+	
+	private void postNoRegister(){
+		showSimpleProgress();
+		new Thread(new UpdateThread(false)).start();
+	}
 
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		if (user == null) {
-			if(loginTried){
-				finishFragment();
-			}else{
-				Bundle bundle = createArguments(null, "取消");
-				pushFragment(new LoginFragment(), bundle);
-				loginTried = true;
-			}
-		} else {
-			showPost();
+		if(user != null){
+			mobile = user.getPhone();
+			password = user.getPassword();
+			showSimpleProgress();
+			new Thread(new UpdateThread(true)).start();
+		}
+		else {
+			final String[] names = {"免注册发布","已注册用户发布"};
+			new AlertDialog.Builder(this.getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
+			.setItems(names, new DialogInterface.OnClickListener(){
+				
+				@Override
+				public void onClick(DialogInterface dialog, int which){
+					switch(which){
+						case 0:
+							postNoRegister();
+							break;
+						case 1:
+							if(loginTried){
+								finishFragment();
+							}else{
+								Bundle bundle = createArguments(null, "取消");
+								pushFragment(new LoginFragment(), bundle);
+								loginTried = true;
+							}
+							break;
+					}				
+				}
+			})
+			.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+				@Override
+				public void onClick(DialogInterface dialog, int which){
+					dialog.dismiss();
+				}
+			}).show();
 		}
 	}
 	
 	private void showPost()
 	{
 		userValidated = true;
-		mobile = user.getPhone();
-		password = user.getPassword();
 		String last = (String)Helper.loadDataFromLocate(getActivity(), "lastcategorynames");
 		if(last != null && !last.equals(",")){
 			String[] lasts = last.split(",");
@@ -467,13 +496,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
 //				myHandler.sendEmptyMessage(1);
 //				sendMessage(1, null);
-				addCategoryItem();
+//				addCategoryItem();
 				buildPostLayout();
 				new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 			} else {
 //				myHandler.sendEmptyMessage(1);
 //				sendMessage(1, null);
-				addCategoryItem();
+//				addCategoryItem();
 				buildPostLayout();
 			}
 		} else {
@@ -488,7 +517,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void onClick(View v) {
 		final Activity activity = getActivity();
 		
-		if (v == img1 || v == img2 || v == img3) {
+		if (v.getId() == R.id.iv_1 || v.getId() == R.id.iv_2 || v.getId() == R.id.iv_3) {
 			for (int i = 0; i < imgs.length; i++) {
 				if (imgs[i].equals(v)) {
 					currentImgView = i;
@@ -515,7 +544,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 										cachedBps[currentImgView] = null;
 									}
 									bitmap_url.set(currentImgView, null);
-									imgs[currentImgView].setImageResource(R.drawable.d);
+									imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
 //									showDialog();
 									ViewUtil.pickupPhoto(getActivity(), currentImgView);
 									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
@@ -540,7 +569,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 							@Override
 							public void onClick(DialogInterface dialog, int which) {
 								bitmap_url.set(currentImgView, null);
-								imgs[currentImgView].setImageResource(R.drawable.d);
+								imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
 								cachedBps[currentImgView] = null;
 //								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
 							}
@@ -556,6 +585,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				}
 			}
 		} 
+		else if(v.getId() == R.id.iv_post_finish){
+			this.handleRightAction();
+		}
 //		else if (v == photoalbum) {
 //			// 相册
 //			if (ad.isShowing()) {
@@ -590,14 +622,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if(uploadCount > 0){
 			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
 		}
-		// 提交
 		else{
 			extractInputData(layout_txt, params);
 			if(!check2()){
 				return;
 			}
-			showSimpleProgress();
-			new Thread(new UpdateThread()).start();
+			usercheck();
 		}
 	}
 	
@@ -647,6 +677,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
 						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
 						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
+					if(postGoodsBean.getName().equals("images"))continue;
 					Toast.makeText(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
 					return false;
 				}
@@ -693,6 +724,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	 * 
 	 */
 	class UpdateThread implements Runnable {
+		private boolean registered = false;
+		public UpdateThread(boolean registered){
+			this.registered = registered;
+		}
 		public void run() {
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
@@ -748,11 +783,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}	
 
 
-			list.add("mobile=" + mobile);
-			String password1 = Communication.getMD5(password);
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
+			if(registered){
+				list.add("mobile=" + mobile);
+				String password1 = Communication.getMD5(password);
+				password1 += Communication.apiSecret;
+				String userToken = Communication.getMD5(password1);
+				list.add("userToken=" + userToken);	
+			}
+			
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
 			list.add("rt=1");
@@ -940,31 +978,31 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 	}
 	
-	private void appendSelectedProperties(String[] lists){
-		if(lists == null || lists.length == 0) return;
-		for(int i = 0; i < lists.length; ++ i){
-			PostGoodsBean bean = this.postList.get(otherProperties.get(Integer.parseInt(lists[i]) - i));
-			if(bean == null) continue;
-			this.appendBeanToLayout(bean);
-			otherProperties.remove(Integer.parseInt(lists[i]) - i);
-		}
-		if(otherProperties.size() == 0){
-			if(layout_txt.getChildCount() > 0){
-				layout_txt.removeViewAt(layout_txt.getChildCount() - 1);
-			}
-		}
-		else{
-			if(layout_txt.getChildCount() > 0){
-				View v = layout_txt.getChildAt(layout_txt.getChildCount() - 1);
-				if(v != null){
-					View v2 = v.findViewById(R.id.postshow);
-					if(v2 != null && v2 instanceof TextView){
-						((TextView)v2).setText(otherProperties.toString());
-					}
-				}
-			}
-		}
-	}
+//	private void appendSelectedProperties(String[] lists){
+//		if(lists == null || lists.length == 0) return;
+//		for(int i = 0; i < lists.length; ++ i){
+//			PostGoodsBean bean = this.postList.get(otherProperties.get(Integer.parseInt(lists[i]) - i));
+//			if(bean == null) continue;
+//			this.appendBeanToLayout(bean);
+//			otherProperties.remove(Integer.parseInt(lists[i]) - i);
+//		}
+//		if(otherProperties.size() == 0){
+//			if(layout_txt.getChildCount() > 0){
+//				layout_txt.removeViewAt(layout_txt.getChildCount() - 1);
+//			}
+//		}
+//		else{
+//			if(layout_txt.getChildCount() > 0){
+//				View v = layout_txt.getChildAt(layout_txt.getChildCount() - 1);
+//				if(v != null){
+//					View v2 = v.findViewById(R.id.postshow);
+//					if(v2 != null && v2 instanceof TextView){
+//						((TextView)v2).setText(otherProperties.toString());
+//					}
+//				}
+//			}
+//		}
+//	}
 	
 	private void loadCachedData()
 	{
@@ -1081,55 +1119,55 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case MSG_MORE_DETAIL_BACK:
 			params.merge((PostParamsHolder) obj);
 			break;
-		case POST_OTHERPROPERTIES:
-			String list = (String)obj;
-			if(!list.equals("")){
-				String[] lists = list.split(",");
-				appendSelectedProperties(lists);
-			}
-			break;
-	
-		case MSG_CATEGORY_SEL_BACK:{
-			layout_txt.removeAllViews();
-			otherProperties.clear();
-			postList.clear();
-			params.clear();
-			bitmap_url.clear();
-			bitmap_url.add(null);
-			bitmap_url.add(null);
-			bitmap_url.add(null);
-			
-			int i = 0;
-			for (Bitmap bp : cachedBps)
-			{
-				if (bp != null) bp.recycle();
-				cachedBps[i++] = null;
-			}
-
-			listUrl.clear();
-			imgs = null;
-			currentImgView = -1;
-			uploadCount = 0;
-						
-//			this.addCategoryItem();
-//			TextView tv = (TextView)layout_txt.findViewById(R.layout.item_post_select).getTag(HASH_CONTROL);
-			getArguments().putString("cateNames", (String) obj); //Update cate names.
-			String[] backMsg = ((String)obj).split(",");
-			if(backMsg == null || backMsg.length != 2) break;
-//			if(tv != null){
-//				tv.setText(backMsg[1]);
+//		case POST_OTHERPROPERTIES:
+//			String list = (String)obj;
+//			if(!list.equals("")){
+//				String[] lists = list.split(",");
+//				appendSelectedProperties(lists);
 //			}
-			this.categoryEnglishName = backMsg[0];
-			this.categoryName = backMsg[1];
-			lastCategoryEnglishName = backMsg[0];
-			lastCategoryShowName = backMsg[1];
-			Helper.saveDataToLocate(getActivity(), 
-					"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
-
-			this.usercheck();
-			
-			break;
-		}
+//			break;
+	
+//		case MSG_CATEGORY_SEL_BACK:{
+//			layout_txt.removeAllViews();
+//			otherProperties.clear();
+//			postList.clear();
+//			params.clear();
+//			bitmap_url.clear();
+//			bitmap_url.add(null);
+//			bitmap_url.add(null);
+//			bitmap_url.add(null);
+//			
+//			int i = 0;
+//			for (Bitmap bp : cachedBps)
+//			{
+//				if (bp != null) bp.recycle();
+//				cachedBps[i++] = null;
+//			}
+//
+//			listUrl.clear();
+//			imgs = null;
+//			currentImgView = -1;
+//			uploadCount = 0;
+//						
+////			this.addCategoryItem();
+////			TextView tv = (TextView)layout_txt.findViewById(R.layout.item_post_select).getTag(HASH_CONTROL);
+//			getArguments().putString("cateNames", (String) obj); //Update cate names.
+//			String[] backMsg = ((String)obj).split(",");
+//			if(backMsg == null || backMsg.length != 2) break;
+////			if(tv != null){
+////				tv.setText(backMsg[1]);
+////			}
+//			this.categoryEnglishName = backMsg[0];
+//			this.categoryName = backMsg[1];
+//			lastCategoryEnglishName = backMsg[0];
+//			lastCategoryShowName = backMsg[1];
+//			Helper.saveDataToLocate(getActivity(), 
+//					"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
+//
+////			this.usercheck();
+//			showPost();
+//			break;
+//		}
 		default:
 			break;
 		}
@@ -1204,117 +1242,99 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
 		}
 		if (postBean.getControlType().equals("image")) {
-			layout = new LinearLayout(this.getActivity());
-			((LinearLayout)layout).setOrientation(LinearLayout.HORIZONTAL);
-			layout.setPadding(10, 10, 10, 10);
-			layout.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT, 1));
-			
-			int height = getActivity().getWindowManager().getDefaultDisplay().getHeight();
-			int fixHotHeight = height * 15 / 100;
-			if(fixHotHeight < 50)
-			{
-			    fixHotHeight = 50;
-			}
-			img1 = new ImageView(activity);
-			img2 = new ImageView(activity);
-			img3 = new ImageView(activity);
-			imgs = new ImageView[] { img1, img2, img3 };
-			
-		//fixHotHeight = layout.getHeight() - 5 * 2;
-		    img1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		    img1.setAdjustViewBounds(true);                       
-		    img1.setMaxHeight(fixHotHeight);
-		    img1.setMaxWidth(fixHotHeight);
-		    LinearLayout l1 = new LinearLayout(activity);
-		    l1.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-		    l1.addView(img1);
-		    
-		    img2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		    img2.setAdjustViewBounds(true);
-		    img2.setMaxHeight(fixHotHeight);
-		    img2.setMaxWidth(fixHotHeight);
-		    LinearLayout l2 = new LinearLayout(activity);
-		    l2.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-		    l2.addView(img2);
-		    
-		    img3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT, 1));
-		    img3.setAdjustViewBounds(true);
-		    img3.setMaxHeight(fixHotHeight);
-		    img3.setMaxWidth(fixHotHeight);
-		    LinearLayout l3 = new LinearLayout(activity);
-		    l3.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.WRAP_CONTENT, LayoutParams.WRAP_CONTENT));
-		    l3.addView(img3);
-		    
-			img1.setImageResource(R.drawable.d);
-			img2.setImageResource(R.drawable.d);
-			img3.setImageResource(R.drawable.d);
-			img1.setOnClickListener(PostGoodsFragment.this);
-			img2.setOnClickListener(PostGoodsFragment.this);
-			img3.setOnClickListener(PostGoodsFragment.this);
-			layout.addView(l1);
-			layout.addView(l2);
-			layout.addView(l3);
+			this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
+			layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
+			layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
+			layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
+			imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
+					(ImageView)layout_txt.findViewById(R.id.iv_2),
+					(ImageView)layout_txt.findViewById(R.id.iv_3)
+			};
 		}
+		LayoutInflater flater = LayoutInflater.from(activity);
+		View border = flater.inflate(R.layout.seperator, null);
+		LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, 1, 1);
+		border.setLayoutParams(lp);
 		
-		TextView border = new TextView(activity);
-		border.setLayoutParams(new LayoutParams(
-				LayoutParams.FILL_PARENT, 1, 1));
-		border.setBackgroundResource(R.drawable.list_divider);
-
-		if(layout_txt.getChildCount() % 2 == 1){
-			int insertIndex = 
-					layout_txt.getChildCount() >= 3 ? layout_txt.getChildCount() - 3 : layout_txt.getChildCount() - 1;
-			insertIndex = insertIndex >= 0 ? insertIndex : 0;
-			layout_txt.addView(layout, insertIndex);
-			layout_txt.addView(border, insertIndex + 1);
-		}
-		else{
+		if(layout != null){
 			layout_txt.addView(layout);
-			layout_txt.addView(border);
+		}
+		layout_txt.addView(border);
+	
+	}
+	
+//	private void addCategoryItem(){
+//		Activity activity = getActivity();
+//		if(this.goodsDetail != null)return;
+//		LayoutInflater inflater = LayoutInflater.from(activity);
+//		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+//		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
+//		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
+//		categoryItem.setOnClickListener(new OnClickListener(){
+//			@Override
+//			public void onClick(View v) {
+//					Bundle bundle = createArguments(null, null);
+//					bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+//					pushFragment(new GridCateFragment(), bundle);
+//			}				
+//		});
+//		layout_txt.addView(categoryItem);
+//		
+//		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
+//			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
+//		}
+//		
+//		TextView border = new TextView(activity);
+//		border.setLayoutParams(new LayoutParams(
+//				LayoutParams.FILL_PARENT, 1, 1));
+//		border.setBackgroundResource(R.drawable.list_divider);
+//		layout_txt.addView(border);
+//	}
+	
+	private String[] fixedItemNames = {"images", "description", "价格", "contact", "具体地点"};
+	
+	private void buildFixedPostLayout(){
+		if(this.postList == null || this.postList.size() == 0) return;
+		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();
+		Object[] postListKeySetArray = postList.keySet().toArray();
+		for(int i = 0; i < postList.size(); ++ i){
+			for(int j = 0; j < fixedItemNames.length; ++ j){
+				PostGoodsBean bean = postList.get(postListKeySetArray[i]);
+				if(bean.getName().equals(fixedItemNames[j])){
+					pm.put(fixedItemNames[j], bean);
+					break;
+				}
+			}
+		}
+		for(int i = 0; i < fixedItemNames.length; ++ i){
+			if(pm.containsKey(fixedItemNames[i])){
+				this.appendBeanToLayout(pm.get(fixedItemNames[i]));
+			}
 		}
 	}
 	
-	private void addCategoryItem(){
-		Activity activity = getActivity();
-		if(this.goodsDetail != null)return;
-		LayoutInflater inflater = LayoutInflater.from(activity);
-		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
-		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
-		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
-		categoryItem.setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-					Bundle bundle = createArguments(null, null);
-					bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-					pushFragment(new GridCateFragment(), bundle);
-			}				
-		});
-		layout_txt.addView(categoryItem);
-		
-		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
-			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
+	private boolean isFixedItem(PostGoodsBean bean){
+		for(int i = 0; i < fixedItemNames.length; ++ i){
+			if(bean.getName().equals(fixedItemNames[i])) return true;
 		}
-		
-		TextView border = new TextView(activity);
-		border.setLayoutParams(new LayoutParams(
-				LayoutParams.FILL_PARENT, 1, 1));
-		border.setBackgroundResource(R.drawable.list_divider);
-		layout_txt.addView(border);
+		return false;
 	}
 	
 	private void buildPostLayout(){
 		Log.d(TAG, "start to build layout");
-		otherProperties.clear();
+//		otherProperties.clear();
 		
 		final Activity activity = getActivity();
 		
 		//根据模板显示
 		if(null == json || json.equals("")) return;
 		postList = JsonUtil.getPostGoodsBean(json); 
+		buildFixedPostLayout();
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
+			if(isFixedItem(postBean)) continue;
 			if(postBean.getName().equals("地区")){
 				this.appendBeanToLayout(postBean);
 				continue;
@@ -1327,35 +1347,35 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				continue;
 			}
 
-			if(!postBean.getRequired().endsWith("required") 
-					&& (goodsDetail == null 
-						|| goodsDetail.getValueByKey(postBean.getName()) == null 
-						|| goodsDetail.getValueByKey(postBean.getName()).equals(""))){
-				otherProperties.add(postBean.getDisplayName());
-				continue;
-			}
+//			if(!postBean.getRequired().endsWith("required") 
+//					&& (goodsDetail == null 
+//						|| goodsDetail.getValueByKey(postBean.getName()) == null 
+//						|| goodsDetail.getValueByKey(postBean.getName()).equals(""))){
+//				otherProperties.add(postBean.getDisplayName());
+//				continue;
+//			}
 			this.appendBeanToLayout(postBean);
 		}
-		if(otherProperties.size() > 0){
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = inflater.inflate(R.layout.item_post_select, null);
-			((TextView)v.findViewById(R.id.postshow)).setText(otherProperties.toString());
-//			((TextView)v.findViewById(R.id.postshow)).setWidth(layout_txt.getWidth() * 2 / 3);
-			((TextView)v.findViewById(R.id.posthint)).setText("非必选");
-			v.setOnClickListener(new OnClickListener(){
-				@Override
-				public void onClick(View v) {
-					Bundle bundle = createArguments(null, null);
-					bundle.putInt(ARG_COMMON_REQ_CODE, MSG_MORE_DETAIL_BACK);
-					bundle.putSerializable("beans", postList);
-					bundle.putSerializable("details", otherProperties);
-					bundle.putSerializable("existing", params);
-					
-					pushFragment(new FillMoreDetailFragment(), bundle);
-				}	
-			});
-			layout_txt.addView(v);
-		}
+//		if(otherProperties.size() > 0){
+//			LayoutInflater inflater = LayoutInflater.from(activity);
+//			View v = inflater.inflate(R.layout.item_post_select, null);
+//			((TextView)v.findViewById(R.id.postshow)).setText(otherProperties.toString());
+////			((TextView)v.findViewById(R.id.postshow)).setWidth(layout_txt.getWidth() * 2 / 3);
+//			((TextView)v.findViewById(R.id.posthint)).setText("非必选");
+//			v.setOnClickListener(new OnClickListener(){
+//				@Override
+//				public void onClick(View v) {
+//					Bundle bundle = createArguments(null, null);
+//					bundle.putInt(ARG_COMMON_REQ_CODE, MSG_MORE_DETAIL_BACK);
+//					bundle.putSerializable("beans", postList);
+//					bundle.putSerializable("details", otherProperties);
+//					bundle.putSerializable("existing", params);
+//					
+//					pushFragment(new FillMoreDetailFragment(), bundle);
+//				}	
+//			});
+//			layout_txt.addView(v);
+//		}
 		editpostUI();		
 	}
 	
@@ -1406,7 +1426,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			break;
 		}
 		case 1:
-			addCategoryItem();
+//			addCategoryItem();
 			buildPostLayout();
 			break;
 
@@ -1669,7 +1689,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		title.m_visible = true;
 		title.m_title = "发布";
 		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "立即发布";
+		title.m_rightActionHint = "完成";
 	}
 	
 	@Override

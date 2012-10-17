@@ -42,6 +42,7 @@ import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Helper;
 import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
@@ -83,7 +84,18 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	}
 	
-	
+	@Override
+	public void handleRightAction(){
+		String last = (String)Helper.loadDataFromLocate(this.getActivity(), "lastcategorynames");
+		if(last != null && last.contains(",")){
+			Bundle newBundle = new Bundle();
+			newBundle.putAll(this.getArguments());
+			newBundle.putString("cateNames", last);
+			pushFragment(new PostGoodsFragment(), newBundle);
+		}else{
+			this.pushFragment(new GridCateFragment(), this.getArguments());
+		}
+	}
 
 	@Override
 	protected int getFirstRunId() {
