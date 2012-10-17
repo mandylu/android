@@ -177,6 +177,8 @@ public final class CustomizeTabHost implements Serializable
     
     public void showTab(int index)
     {
+    	setCurrentFocusIndex(index);
+    	
         for (int i = 0; i < tabArrows.length; i++)
         {
             if (tabArrows[i] != null)
