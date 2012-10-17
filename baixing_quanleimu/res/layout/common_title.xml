@@ -63,8 +63,8 @@
             <ImageView
                 android:id="@+id/globalSearch"
                 android:scaleType="fitXY"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
                 android:background="@drawable/icon_search"
                 android:gravity="center" >
             </ImageView>
@@ -83,15 +83,17 @@
             android:layout_height="fill_parent"
             android:background="@drawable/bg_post_selector"
             android:gravity="center" >
-
-            <ImageView
-                android:id="@+id/btnRight_"
-                android:scaleType="fitCenter"
-                android:layout_width="wrap_content"
+
+            <TextView
+                android:id="@+id/right_btn_txt"
+                android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:background="@drawable/icon_post"
-                >
-            </ImageView>
+                android:gravity="center"
+                android:text="发布 "
+                android:textColor="#ffffff"
+                android:textSize="20dip" >
+            </TextView>
+
         </LinearLayout>
     </LinearLayout>
     

@@ -76,8 +76,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("name");
-//		title.m_rightActionHint = (this.categoryEnglishName == null || this.categoryEnglishName.equals("")) ? "搜索" : "筛选";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = (this.categoryEnglishName == null || this.categoryEnglishName.equals("")) ? "搜索" : "筛选";
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
 		View titleControl = inflater.inflate(R.layout.recent_or_nearby, null);

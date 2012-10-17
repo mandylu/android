@@ -73,8 +73,7 @@ public abstract class BaseFragment extends Fragment {
 		public String m_title = null;
 		public View m_titleControls = null;
 		
-//		public String m_rightActionHint = null;
-		public int m_rightActionImg = -1;
+		public String m_rightActionHint = null;
 		public int m_rightActionBg = R.drawable.title_bg_selector;//Default right action bg
 		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		public int rightCustomResourceId = -1;
@@ -442,18 +441,14 @@ public abstract class BaseFragment extends Fragment {
 			//right action bar settings
 			View right = activity.findViewById(R.id.right_action);
 			
-			if(right != null && -1 != title.m_rightActionImg){
+			if(right != null && title.m_rightActionHint != null && !"".equals(title.m_rightActionHint)){
 //				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
 				right.setBackgroundResource(title.m_rightActionBg);
 				activity.findViewById(R.id.line_right).setVisibility(View.VISIBLE);
-//				if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){
-//					right.setBackgroundResource( R.drawable.btn_jj);
-//				}
-//				else //if(title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
-//				{
-//					right.setBackgroundResource(R.drawable.btn_editx);
-//				}
+				
+				TextView text = (TextView) activity.findViewById(R.id.right_btn_txt);
+				text.setText(title.m_rightActionHint);
 			}else if(right != null && title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
 //				Button right = (Button)activity.findViewById(R.id.btnRight);
 //				right.setBackgroundResource(title.rightCustomResourceId);

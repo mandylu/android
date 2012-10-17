@@ -186,8 +186,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已发布的信息";
-//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -207,8 +206,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "审核中";
-//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -238,8 +236,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已删除";
-//				title.m_rightActionHint = "编辑";
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = "编辑";
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -599,8 +596,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 //		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
 //			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "完成";
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = "完成";
 				
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
@@ -614,8 +610,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 //			btnEdit.setBackgroundResource(R.drawable.btn_search);
 //			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "编辑";
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = "编辑";
 				refreshHeader();
 //				title.m_leftActionHint = "更新";
 //				m_viewInfoListener.onTitleChanged(title);
@@ -663,8 +658,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-//		title.m_rightActionHint = "编辑";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "编辑";
 		if(this.currentPage == -1){
 			title.m_title = "已发布的信息";
 		}else if(currentPage == 0){

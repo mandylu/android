@@ -104,8 +104,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 		title.m_title = this.title;
 		title.m_leftActionHint = "发布";
 		if(!singleSelection){
-//			title.m_rightActionHint = "完成";
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint = "完成";
 		}
 	}
 	

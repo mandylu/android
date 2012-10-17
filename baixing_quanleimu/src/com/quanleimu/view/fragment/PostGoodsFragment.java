@@ -1669,8 +1669,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		title.m_visible = true;
 		title.m_title = "发布";
 		title.m_leftActionHint = "返回";
-//		title.m_rightActionHint = "立即发布";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "立即发布";
 	}
 	
 	@Override

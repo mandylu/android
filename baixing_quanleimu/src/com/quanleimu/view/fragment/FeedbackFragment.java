@@ -48,8 +48,7 @@ public class FeedbackFragment extends BaseFragment {
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
-//		title.m_rightActionHint = "确定";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "确定";
 	}
 	public void initTab(TabDef tab){
 		tab.m_visible = false;

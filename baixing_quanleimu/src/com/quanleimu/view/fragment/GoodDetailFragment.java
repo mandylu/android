@@ -734,8 +734,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			
 			TitleDef title = getTitleDef();
-//			title.m_rightActionHint = strCancelCollect;
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint = strCancelCollect;
 //			m_viewInfoListener.onTitleChanged(title);
 			refreshHeader();
 			
@@ -765,8 +764,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getAppContext(), "listMyStore", myStore);
 			TitleDef title = getTitleDef();
-//			title.m_rightActionHint = strCollect;
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint = strCollect;
 			refreshHeader();
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
 		}
@@ -1628,8 +1626,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
-//		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
 				this.mListLoader.getGoodsList().getData().size();
 		title.m_visible = true;
@@ -1641,18 +1638,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				titleControlView.setOnClickListener(this);
 			}
 			
-//			title.m_rightActionHint = "";
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint = "";
 			title.m_titleControls = titleControlView;
 		}
 		else{
 			if(isInMyStore()){
-//				title.m_rightActionHint = strCancelCollect;
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = strCancelCollect;
 			}
 			else{
-//				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
 			}
 		}
 	}

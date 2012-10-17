@@ -140,8 +140,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		if(-1 == buttonStatus){
 //			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "完成"; //FIXME: 
-				title.m_rightActionImg = -1;
+				title.m_rightActionHint = "完成";
 				title.m_leftActionHint = "清空";
 				title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 //				m_viewInfoListener.onTitleChanged(title);
@@ -155,8 +154,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		else{
 //			if(this.m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "编辑";//FIXME:
-				title.m_rightActionImg = -1;
+				title.m_rightActionHint = "编辑";
 				title.m_leftActionHint = "返回";
 				this.refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
@@ -184,8 +182,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_title = isFav ? "收藏的信息" : "浏览历史";
-//		title.m_rightActionHint = "编辑";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "编辑";
 	}
 
 	@Override
@@ -326,8 +323,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 			
 			if(/*FavoriteAndHistoryView.this.m_viewInfoListener != null*/getActivity() != null){
 				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "编辑";
-				title.m_rightActionImg = -1;//FIXME:
+				title.m_rightActionHint = "编辑";
 				title.m_leftActionHint = "返回";
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);

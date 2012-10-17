@@ -147,8 +147,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 			title.m_title = "用户中心";
 			title.m_leftActionHint="注销";
-//			title.m_rightActionHint="设置";
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint="设置";
 			root.findViewById(R.id.profile_background).setVisibility(View.VISIBLE);
 			root.findViewById(R.id.seperator_login).setVisibility(View.GONE);
 //			m_viewInfoListener.onTitleChanged(title);
@@ -163,8 +162,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			title.m_leftActionHint="";
 			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 			title.m_title = "用户中心";
-//			title.m_rightActionHint="设置";
-			title.m_rightActionImg = -1;//FIXME:
+			title.m_rightActionHint="设置";
 //			m_viewInfoListener.onTitleChanged(title);
 			refreshHeader();
 			root.findViewById(R.id.profile_background).setVisibility(View.GONE);

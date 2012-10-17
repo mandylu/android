@@ -68,8 +68,7 @@ public class RegisterFragment extends BaseFragment {
 		title.m_title = "注册账号";
 		title.m_visible = true;
 		title.m_leftActionHint = "登录";
-//		title.m_rightActionHint = "提交";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "提交";
 	}
 	
 	public void initTab(TabDef tab){

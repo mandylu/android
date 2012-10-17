@@ -92,8 +92,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 		title.m_visible = true;
 		title.m_leftActionHint = backPageName;
 		title.m_title = this.title;
-//		title.m_rightActionHint = "重新搜索";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "重新搜索";
 		
 //		if(null == titleControl){
 //			LayoutInflater inflater = LayoutInflater.from(this.getActivity());

@@ -69,8 +69,7 @@ public class MarkLableFragment extends BaseFragment {
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-//		title.m_rightActionHint = "修改";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "修改";
 		title.m_title = "签名档";
 		title.m_leftActionHint = "返回";
 	}

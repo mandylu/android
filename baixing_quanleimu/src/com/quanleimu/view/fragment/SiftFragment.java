@@ -134,8 +134,7 @@ public class SiftFragment extends BaseFragment {
 		title.m_visible = true;
 		title.m_title = "筛选";
 		title.m_leftActionHint = "返回";
-//		title.m_rightActionHint = "确定";
-		title.m_rightActionImg = -1;//FIXME:
+		title.m_rightActionHint = "确定";
 	}
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
