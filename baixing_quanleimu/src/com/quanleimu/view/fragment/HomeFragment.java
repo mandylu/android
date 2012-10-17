@@ -32,8 +32,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
@@ -134,9 +132,9 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 		});
 
 		if (QuanleimuApplication.getApplication().getCityName() == null || QuanleimuApplication.getApplication().getCityName().equals("")) {
-			cityName = "上海";
-			QuanleimuApplication.getApplication().setCityName(cityName);
-			QuanleimuApplication.getApplication().setCityEnglishName("shanghai");
+//			cityName = "上海";
+//			QuanleimuApplication.getApplication().setCityName(cityName);
+//			QuanleimuApplication.getApplication().setCityEnglishName("shanghai");
 		} else {
 			cityName = QuanleimuApplication.getApplication().getCityName();
 		}
@@ -255,9 +253,13 @@ public class HomeFragment extends BaseFragment implements CategorySelectionView.
 			{
 				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
 			}
-			
 		}
 		new Thread(new HotListThread()).start(); 
+		
+		String cityName = QuanleimuApplication.getApplication().getCityName();
+		if (null == cityName || "".equals(cityName)) {
+			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+		}
 	}
 
 

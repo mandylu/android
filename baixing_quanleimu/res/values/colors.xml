@@ -1,8 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-	<color name="white">#FFFFFF</color>
+	<color name="white">#FFFFFF</color>    
+	<color name="citychange_titleline">#76C920</color>
 	<color name="tab_bg">#4B4B4B</color>
 	<color name="tab_indicator_bg">#FEE63E</color>
 	<color name="tab_font_foucs">#FFF153</color>
-	<color name="tab_font">#ECECE4</color>
+	<color name="tab_font">#ECECE4</color>	
 </resources>
