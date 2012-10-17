@@ -16,9 +16,7 @@ import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
 import android.widget.CheckBox;
-import android.widget.ImageView;
 
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
@@ -28,7 +26,6 @@ import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.BXStatsHelper;
-import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
@@ -36,14 +33,11 @@ import com.quanleimu.view.fragment.CatMainFragment;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
-import com.quanleimu.view.fragment.PostGoodsFragment;
 import com.quanleimu.view.fragment.SetMainFragment;
 import com.quanleimu.view.fragment.TalkFragment;
-import com.readystatesoftware.viewbadger.BadgeView;
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import android.util.Log;
 public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
 	
 //	private BaseView currentView;
@@ -97,24 +91,13 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //			needClearViewStack = false;
 ////			onNewView(new PostGoodsCateMainView(this, bundle));
 ////			onNewView(new PostGoodsView(this, bundle, ""));
-//			String last = (String)Helper.loadDataFromLocate(this, "lastcategorynames");
-//			if(last != null && last.contains(",")){
-//				onNewView(new PostGoodsView(this, bundle, last));
-//			}else{
-//				onNewView(new GridCategoryView(this, bundle));
-//			}
+//			onNewView(new GridCategoryView(this, bundle));
+//			
 			
 			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_PUBLISH) break;
 
-			String last = (String)Helper.loadDataFromLocate(this, "lastcategorynames");
-			if(last != null && last.contains(",")){
-				Bundle newBundle = new Bundle();
-				newBundle.putAll(bundle);
-				newBundle.putString("cateNames", last);
-				pushFragment(new PostGoodsFragment(), newBundle, false);
-			}else{
-				this.pushFragment(new GridCateFragment(), bundle, false);
-			}
+			this.pushFragment(new GridCateFragment(), bundle, false);
+			
 			
 			break;
 		case ETAB_TYPE_MINE:

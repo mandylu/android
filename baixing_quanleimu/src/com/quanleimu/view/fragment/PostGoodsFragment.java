@@ -17,8 +17,6 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.AlertDialog.Builder;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -28,23 +26,16 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.os.Message;
-import android.os.Parcel;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.view.WindowManager;
-import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -55,17 +46,13 @@ import android.widget.Toast;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
@@ -118,9 +105,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private boolean userValidated = false;
 	private boolean loginTried = false;
 	
-	static private String lastCategoryEnglishName = null;
-	static private String lastCategoryShowName = null;
-	
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -138,13 +122,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			this.categoryEnglishName = names[0];
 			this.categoryName = names[1];
 			
-			if (goodsDetail == null) //FIXME: just keep logic when do refactor.
-			{
-				lastCategoryEnglishName = names[0];
-				lastCategoryShowName = names[1];
-				Helper.saveDataToLocate(getActivity(), 
-						"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
-			}
 		}else if(names.length == 1){
 			this.categoryEnglishName = names[0];
 		}
@@ -473,21 +450,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private void showPost()
 	{
 		userValidated = true;
-		String last = (String)Helper.loadDataFromLocate(getActivity(), "lastcategorynames");
-		if(last != null && !last.equals(",")){
-			String[] lasts = last.split(",");
-			if(lasts != null && lasts.length == 2){
-				lastCategoryEnglishName = lasts[0];
-				lastCategoryShowName = lasts[1];
-			}
-		}
+		
 		//获取发布模板
 		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 			cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
-		}
-		if(categoryEnglishName == null || categoryEnglishName.equals("")){
-			categoryEnglishName = lastCategoryEnglishName;
 		}
 		PostMu postMu =  (PostMu) Util.loadDataFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		if (postMu != null && !postMu.getJson().equals("")) {
@@ -1159,10 +1126,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 ////			}
 //			this.categoryEnglishName = backMsg[0];
 //			this.categoryName = backMsg[1];
-//			lastCategoryEnglishName = backMsg[0];
-//			lastCategoryShowName = backMsg[1];
-//			Helper.saveDataToLocate(getActivity(), 
-//					"lastcategorynames", lastCategoryEnglishName + "," + lastCategoryShowName);
 //
 ////			this.usercheck();
 //			showPost();
