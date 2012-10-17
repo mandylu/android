@@ -28,6 +28,7 @@
     
     <TextView
         android:id="@+id/tvTitle"
+        android:paddingLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/line_left"
@@ -35,7 +36,8 @@
         android:gravity="center"
         android:text="首页"
         android:textColor="#ffffff"
-        android:textSize="22dip" >
+        android:shadowColor="#68a523"
+        android:textSize="18sp" >
     </TextView>
     
     <LinearLayout
@@ -91,7 +93,8 @@
                 android:gravity="center"
                 android:text="发布 "
                 android:textColor="#ffffff"
-                android:textSize="20dip" >
+                android:shadowColor="#68a523"
+                android:textSize="18sp" >
             </TextView>
 
         </LinearLayout>
