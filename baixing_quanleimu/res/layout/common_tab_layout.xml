@@ -11,7 +11,7 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:background="@color/tab_bg" >
-
+        
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -49,6 +49,12 @@
         android:layout_weight="1"
         android:background="@color/tab_bg" >
 
+     <ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_tab_middle_line" />
+            
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -85,7 +91,13 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:background="@color/tab_bg" >
-
+     	
+     	<ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_tab_middle_line" />
+     	
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
@@ -121,7 +133,12 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:background="@color/tab_bg" >
-
+     	<ImageView
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:src="@drawable/icon_tab_middle_line" />
+     
         <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
