@@ -50,7 +50,6 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	public String title = "选择城市";
 	public List<String> listCityName = new ArrayList<String>();
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
-	public List<CityDetail> listAllCity = null;
 	
 	protected class chooseStage extends Object {
 		public View effectiveView;
@@ -412,26 +411,9 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		}
 	}
 	
-	private List<CityDetail> getAllCityDetails ()
-	{
-		if (null == listAllCity || listAllCity.size() == 0)
-		{
-			initShengMap();
-			HashMap<String, List<CityDetail>> shengMaps = QuanleimuApplication.getApplication().getShengMap();
-			listAllCity = new ArrayList<CityDetail>();
-			listAllCity.addAll(listHotCity);
-			for (String sheng : shengMaps.keySet())
-			{
-				listAllCity.addAll(shengMaps.get(sheng));
-			}			
-		}
-		
-		return listAllCity;
-	}
-	
 	private List<CityDetail> getFilteredCityDetails (String filterKeyword)
 	{
-		List<CityDetail> allCities = getAllCityDetails();
+		List<CityDetail> allCities = QuanleimuApplication.getApplication().getListCityDetails();
 		List<CityDetail> filteredCities = new ArrayList<CityDetail>(16);
 		for (CityDetail city : allCities)
 		{

@@ -87,7 +87,7 @@
 			 		    android:layout_centerVertical="true"
 			 			android:text="上海" 
 			 			android:paddingLeft="10dip"
-			 			android:textSize="14dip"
+			 			android:textSize="18dip"
 			 			android:textColor="#000000"
 			 			android:id="@+id/tvGPSCityName" 
 			 			android:layout_width="wrap_content" 
@@ -103,15 +103,7 @@
 			 		    android:layout_centerVertical="true"
 			 		    android:src="@drawable/gou" />
 		 		</RelativeLayout>
-		 	<!-- 	<ImageView
-				    android:layout_width="fill_parent"
-			    	android:layout_height="fill_parent"
-					android:layout_alignTop="@id/linearGpsCityItem"
-					android:layout_alignLeft="@id/linearGpsCityItem"
-					android:layout_alignRight="@id/linearGpsCityItem"
-					android:background="@drawable/s_bg2"
-					android:layout_alignBottom="@id/linearGpsCityItem" >
-				</ImageView> -->
+		 		
 			</RelativeLayout>
 			
 			<LinearLayout 
@@ -151,16 +143,7 @@
 				 	android:layout_marginRight="10dip"
 				 	android:orientation="vertical">
 				</LinearLayout>
-<!-- 				<ImageView
-				    android:layout_width="fill_parent"
-			    	android:layout_height="fill_parent"
-				    
-					android:layout_alignTop="@id/linearHotCities"
-					android:layout_alignLeft="@id/linearHotCities"
-					android:layout_alignRight="@id/linearHotCities"
-					android:background="@drawable/s_bg2"
-					android:layout_alignBottom="@id/linearHotCities">
-				</ImageView> -->
+
 			</RelativeLayout>
 			
 			<LinearLayout 
@@ -219,17 +202,6 @@
 			 			android:paddingRight="5dip" 
 			 			android:layout_alignParentRight="true"/>
 				</RelativeLayout>
-<!-- 				<ImageView
-				    android:layout_width="fill_parent"
-			    	android:layout_height="fill_parent"
-				    
-					android:layout_alignTop="@id/linear2Other"
-					android:layout_alignLeft="@id/linear2Other"
-					android:layout_alignRight="@id/linear2Other"
-					android:background="@drawable/s_bg2"
-					android:layout_alignBottom="@id/linear2Other">
-				</ImageView> -->
-	
 				
 			</RelativeLayout>
 		</LinearLayout>		

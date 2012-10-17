@@ -3,22 +3,20 @@ package com.quanleimu.view.fragment;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GridAdapter;
-import com.quanleimu.adapter.GridAdapter.GridInfo;
-import com.quanleimu.entity.FirstStepCate;
-
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.GridView;
+
+import com.quanleimu.activity.BaseFragment;
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.adapter.GridAdapter;
+import com.quanleimu.adapter.GridAdapter.GridInfo;
+import com.quanleimu.entity.FirstStepCate;
 
 public class GridCateFragment extends BaseFragment implements OnItemClickListener {
 
@@ -33,48 +31,21 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.gridcategory, null);
-
+		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
+						   R.drawable.icon_category_jianzhi,     R.drawable.icon_category_vita, 	R.drawable.icon_category_friend, 	R.drawable.icon_category_pet,
+						   R.drawable.icon_category_service,     R.drawable.icon_category_education};
+		String []texts 	= {"物品交易", "车辆买卖", "房屋租售", "全职招聘", 
+						   "兼职招聘", "求职简历", "交友活动", "宠物", 
+						   "生活服务", "教育培训"};
+		
 		List<GridInfo> gitems = new ArrayList<GridInfo>();
-		GridInfo gi = new GridInfo();
-		gi.imgResourceId = R.drawable.ershou;
-		gi.text = "物品交易";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.cheliang;
-		gi.text = "车辆买卖";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.fang;
-		gi.text = "房屋租售";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.gongzuo;
-		gi.text = "全职招聘";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.jianzhi;
-		gi.text = "兼职招聘";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.qiuzhi;
-		gi.text = "求职简历";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.huodong;
-		gi.text = "交友活动";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.chongwuleimu;
-		gi.text = "宠物";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.fuwu;
-		gi.text = "生活服务";
-		gitems.add(gi);
-		gi = new GridInfo();
-		gi.imgResourceId = R.drawable.jiaoyupeixun;
-		gi.text = "教育培训";
-		gitems.add(gi);
+		for (int i = 0; i < icons.length; i++)
+		{
+			GridInfo gi = new GridInfo();
+			gi.imgResourceId = icons[i];
+			gi.text = texts[i];
+			gitems.add(gi);
+		}
 
 		GridAdapter adapter = new GridAdapter(this.getActivity());
 		adapter.setList(gitems, 3);

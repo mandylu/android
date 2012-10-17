@@ -1,18 +1,21 @@
 package com.quanleimu.view.fragment;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.List;
+import java.util.Map;
+
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ListView;
+import android.widget.GridView;
+import android.widget.SimpleAdapter;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.CommonItemAdapter;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.SecondStepCate;
 
@@ -34,21 +37,30 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.post_othersview, null);
-
-		CommonItemAdapter adapter = new CommonItemAdapter(this.getActivity(), cate.getChildren(), 0x1FFFFFFF, false);
-		ListView lvContent = (ListView)v.findViewById(R.id.post_other_list);
-		lvContent.setAdapter(adapter);
-		lvContent.setOnItemClickListener(this);
+		View v =  inflater.inflate(R.layout.secondcate, null);
 		
+		GridView gridView = (GridView) v.findViewById(R.id.gridSecCategory);
+		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+		List<SecondStepCate> children = cate.getChildren();
+		for (SecondStepCate cate : children)
+		{
+			Map<String, Object> map = new HashMap<String, Object>();
+			map.put("tvCategoryName", cate.getName());
+			list.add(map);
+		}
+		
+		SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, R.layout.item_seccategory, 
+				new String[]{"tvCategoryName"}, new int[]{R.id.tvCategoryName});
+		gridView.setAdapter(adapter);
+		gridView.setOnItemClickListener(this);
 		return v;
 	}
 
 	@Override
 	public void onResume(){
 		super.onResume();
-		ListView lvContent = (ListView)getView().findViewById(R.id.post_other_list);
-		lvContent.requestFocus();
+		
+		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	
 	@Override
