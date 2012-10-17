@@ -69,42 +69,36 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testPost() throws Exception {
-		openTabbar(TAB_ID_POST);
-		
-		logon();
-		
-		ScrollViewElement postView = findElementById(POST_SCROLLVIEW_ID, ScrollViewElement.class);
-		if (postView != null) {
-			assertNotNull(postView);
+		openPostCategory(0, 0);
+	}
+	
+	@Test 
+	public void testPostData() throws Exception {
+		openPostCategory(1, 6);
+		openPostItemByIndex(1);
+		selectMetaByName("出售");
+		openPostItemByIndex(2);
+		selectMetaByName("宝山");
+		selectMetaByName("全部");
+		setMetaByIndex(0, "test title");
 
-			TimeUnit.SECONDS.sleep(3);
-			ViewGroupElement postLayout = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
-			assertNotNull(postLayout);
-			ViewGroupElement listView = postLayout.getChildByIndex(0, ViewGroupElement.class);
-			assertNotNull(listView);
-			listView.doClick();
-			TimeUnit.SECONDS.sleep(2);
-		}
-		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
-				AbsListViewElement.class);
-		assertNotNull(gridView);
-		ViewGroupElement item = gridView.getChildByIndex(0, ViewGroupElement.class);
-		assertNotNull(item);
-		TextViewElement view = item.getChildByIndex(1, TextViewElement.class);
-		assertEquals("物品交易", view.getText());
-		item.doClick();
-		TimeUnit.SECONDS.sleep(3);
-		
-		AbsListViewElement subCatListView = findElementById(POST_SECOND_CATEGORY_LISTVIEW_ID,
-				AbsListViewElement.class);
-		assertNotNull(subCatListView);
-		ViewGroupElement subCatView = subCatListView.getChildByIndex(0,
-				ViewGroupElement.class);
-		assertNotNull(subCatView);
-		subCatView.doClick();
+		openPostItemByIndex(3);
+		selectMetaByName("个人");
 
-		TimeUnit.SECONDS.sleep(3);
+		setMetaByIndex(1, TEST_DATA_MOBILE);
 		
+		//更多
+		openPostItemByIndex(4);
+		setOtherMetaByIndex(0, "100");
+		ViewElement el = findElementByText(POST_DONE);
+		assertNotNull(el);
+		el.doClick();
+		TimeUnit.SECONDS.sleep(1);
+
+		ViewElement eld = findElementByText(POST_SEND);
+		assertNotNull(eld);
+		eld.doClick();
+		TimeUnit.SECONDS.sleep(3);
 	}
 	
 	@Test
@@ -190,7 +184,6 @@ public class MainActivityTest extends BaixingTestCase {
 		String title2 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		Log.i(LOG_TAG, "title2my:" + title2);
 		assertFalse(title1.equals(title2));
-		
 	}
 	
 }
