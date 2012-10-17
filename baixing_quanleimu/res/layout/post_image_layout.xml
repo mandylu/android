@@ -8,31 +8,31 @@
 
     <ImageView
         android:id="@+id/iv_1"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dip"
+        android:layout_height="90dip"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
-        android:scaleType="center" >
+        android:scaleType="centerCrop" >
     </ImageView>
 
     <ImageView
         android:id="@+id/iv_2"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dip"
+        android:layout_height="90dip"
         android:layout_marginLeft="8dip"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
-        android:scaleType="center" >
+        android:scaleType="centerCrop" >
     </ImageView>
 
     <ImageView
         android:id="@+id/iv_3"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_width="90dip"
+        android:layout_height="90dip"
         android:layout_marginLeft="8dip"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
-        android:scaleType="center" >
+        android:scaleType="centerCrop" >
     </ImageView>
 
 </LinearLayout>
