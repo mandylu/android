@@ -1,6 +1,5 @@
 package com.quanleimu.view.fragment;
 
-import java.util.List;
 
 import android.os.Bundle;
 import android.support.v4.view.PagerAdapter;
@@ -34,8 +33,7 @@ public class TabExampleFragment extends BaseFragment implements TabSelectListene
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		tabHost = CustomizeTabHost.createTabHost(TAB_LABELS.length, defaultSelect, TAB_LABELS); //Create tab host instance.
-		tabHost.setTabSelectListener(this);
+		tabHost = CustomizeTabHost.createTabHost(defaultSelect, TAB_LABELS); //Create tab host instance.
 	}
 
 	@Override
@@ -49,7 +47,7 @@ public class TabExampleFragment extends BaseFragment implements TabSelectListene
 			Bundle savedInstanceState) {
 		 View root = inflater.inflate(R.layout.tab_test, null);
 		 
-		 tabHost.attachView(root.findViewById(R.id.common_tab_layout)); //Start to manage the tab host.
+		 tabHost.attachView(root.findViewById(R.id.common_tab_layout), this); //Start to manage the tab host.
 		 
 		 ViewPager pager = (ViewPager) root.findViewById(R.id.tab_content);
 		 pager.setAdapter(new PagerAdapter() {

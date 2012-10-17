@@ -49,18 +49,20 @@ public final class CustomizeTabHost implements Serializable
         
     }
     
-    public static CustomizeTabHost createTabHost(int tabCount, int focusIndex, String[] tabString)
+    public static CustomizeTabHost createTabHost(int focusIndex, String[] tabString)
     {
         CustomizeTabHost tabHost = new CustomizeTabHost();
-        tabHost.tabCount = tabCount;
+        tabHost.tabCount = tabString.length;
         tabHost.currentFocusIndex = focusIndex;
         tabHost.tabLabels = tabString;
         
         return tabHost;
     }
     
-    public void attachView(View v)
+    public void attachView(View v, TabSelectListener listener)
     {
+    	this.setTabSelectListener(listener);
+    	
     	this.initTabButton(v, this.tabCount);
     	this.showTab(this.currentFocusIndex);
     	
@@ -174,6 +176,11 @@ public final class CustomizeTabHost implements Serializable
         currentFocusIndex = index;
     }
             
+    
+    public int getTabCount()
+    {
+    	return this.tabCount;
+    }
     
     public void showTab(int index)
     {
