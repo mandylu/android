@@ -1,0 +1,55 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@drawable/home_bg" >
+
+ 	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content" 
+	    android:visibility="gone">
+
+	    <ImageView
+	        android:id="@+id/imageView1"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:src="@drawable/pic_my_avator_boy" />
+
+	    <LinearLayout
+	        android:layout_width="wrap_content"
+	        android:layout_height="fill_parent"
+	        android:layout_weight="0.87"
+	        android:orientation="vertical" >
+
+	        <TextView
+	            android:id="@+id/textView1"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="TextView" />
+
+	        <TextView
+	            android:id="@+id/textView2"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="TextView" />
+
+	        <TextView
+	            android:id="@+id/textView3"
+	            android:layout_width="wrap_content"
+	            android:layout_height="wrap_content"
+	            android:text="TextView" />
+
+	    </LinearLayout>
+	</LinearLayout> 
+    
+    <GridView
+        android:id="@+id/gridcategory"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:listSelector="@android:color/transparent"
+        android:gravity="center"
+        android:numColumns="3"
+        android:stretchMode="columnWidth"/>
+
+</LinearLayout>

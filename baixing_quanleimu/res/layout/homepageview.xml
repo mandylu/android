@@ -1,104 +1,14 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout
 	    xmlns:android="http://schemas.android.com/apk/res/android"
-	    xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity" 
 	    android:id="@+id/linearLayout1"
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:focusable="false"
 	    android:background="@drawable/home_bg"
-    		android:focusableInTouchMode="false">
+    	android:focusableInTouchMode="false">
 	    	
-			<RelativeLayout
-				android:id="@+id/lvLogoAndChangeCity"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:background="@drawable/top_bg">
-				
-				<LinearLayout
-				    android:id="@+id/llChangeCity"
-					android:layout_width="wrap_content"
-					android:layout_height="wrap_content"
-					android:layout_centerInParent="true"
-					android:gravity="center"
-					>
-				
-			    	 <ImageView 
-				        android:layout_width="wrap_content"
-				        android:layout_height="wrap_content"
-				        android:src="@drawable/pic_logo"/>
-			    	 
-			    	 <TextView 
-			    	    android:id="@+id/tvCityName"
-			    	    android:layout_width="wrap_content"
-			    	    android:layout_height="fill_parent"
-			    	    android:gravity="bottom"
-			    	    android:text="上海"
-			    	    android:textStyle="bold"
-			    	    android:textColor="#ffffffff"
-			    	    android:textSize="20dip"
-			    	    android:paddingLeft="5dip"/>
-			    	 
-			    	 <ImageView 
-				        android:layout_width="wrap_content"
-				        android:layout_height="fill_parent"
-				        android:gravity="bottom"
-				        android:src="@drawable/home_pic_cityarrow"/>
-			    	 		    	 
-			    </LinearLayout>		 
-			</RelativeLayout>	
-			
-					
-			
-			<LinearLayout
-				android:id="@+id/lvSearch"
-				android:layout_width="fill_parent"
-				android:layout_height="wrap_content"
-				android:background="@drawable/home_bg_search">			
-			    
-			    <LinearLayout
-			        android:id="@+id/rlSearch"
-			        android:layout_width="fill_parent"
-			        android:layout_height="wrap_content"
-			        android:background="@drawable/bgsearch"
-			        android:layout_margin="10dip"
-			        android:gravity="center">
-	
-			        <ImageView
-			            android:layout_width="wrap_content"
-			            android:layout_height="wrap_content"
-			            android:paddingLeft="5dip"
-			            android:src="@drawable/iconsearch" />
-	
-			        <TextView
-			            android:id="@+id/etSearch"
-			            android:layout_width="fill_parent"
-			            android:layout_height="wrap_content"
-			            android:background="#00000000"
-			            android:gravity="center_vertical"
-			            android:text="点这里搜索"
-			            android:paddingLeft="10dip"
-			            android:singleLine="true"
-			            android:textColor="#ffaaaaaa"
-			            android:textSize="15dip"
-			            android:layout_margin="0dip"
-			            android:paddingTop="0dip"
-			            android:paddingBottom="0dip"
-			            android:layout_weight="1"/>		            
-
-			    </LinearLayout>
-			</LinearLayout>		
-			
-			
-			<com.quanleimu.view.CategorySelectionView
-				android:id="@+id/cateSelection"
-				android:layout_width="fill_parent"
-				android:layout_height="0dip"
-				android:headerDividersEnabled="false"
-				android:footerDividersEnabled="true"
-				android:layout_weight="1"
-				android:focusable="true"
-				app:firstitemoverlap="true"/>	
+    	<include layout="@layout/tab_with_pager"/>
 								    
 </LinearLayout>
