@@ -76,18 +76,18 @@ public class MainActivityTest extends BaixingTestCase {
 	public void testPostData() throws Exception {
 		openPostCategory(1, 6);
 		openPostItemByIndex(1);
-		selectMetaByName("³öÊÛ");
+		selectMetaByName("å‡ºå”®");
 		openPostItemByIndex(2);
-		selectMetaByName("±¦É½");
-		selectMetaByName("È«²¿");
+		selectMetaByName("å®å±±");
+		selectMetaByName("å…¨éƒ¨");
 		setMetaByIndex(0, "test title");
 
 		openPostItemByIndex(3);
-		selectMetaByName("¸öÈË");
+		selectMetaByName("ä¸ªäºº");
 
 		setMetaByIndex(1, TEST_DATA_MOBILE);
 		
-		//¸ü¶à
+		//æ›´å¤š
 		openPostItemByIndex(4);
 		setOtherMetaByIndex(0, "100");
 		ViewElement el = findElementByText(POST_DONE);
@@ -171,7 +171,7 @@ public class MainActivityTest extends BaixingTestCase {
 		getDevice().pressBack();
 		getDevice().pressBack();
 		
-		showCount--;//todo bug:showCount ÉÙÁËÒ»¸ö¼ÆÊı
+		showCount--;//todo bug:showCount å°‘äº†ä¸€ä¸ªè®¡æ•°
 		assertEquals(showCount, showMyAdList(MY_LISTING_HISTORY_ID, MY_LISTING_HISTORY_COUNTER_ID)); 
 		
 		assertNotNull(openAdByIndex(1, MY_AD_FxH_VIEWLIST_ID));

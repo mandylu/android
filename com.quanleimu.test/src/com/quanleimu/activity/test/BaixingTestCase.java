@@ -43,8 +43,8 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String POST_META_ITEM_DISPLAY_ID = "postshow";
 	public static final String POST_META_ITEM_ID = "post_select";
 	public static final String POST_META_EDITTEXT_ID = "postinput";
-	public static final String POST_DONE = "完成";
-	public static final String POST_SEND = "立即发布";
+	public static final String POST_DONE = "瀹屾垚";
+	public static final String POST_SEND = "绔嬪嵆鍙戝竷";
 	
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
 	public static final String MY_MYAD_APPROVE_BUTTON_ID = "ivMyfav";
@@ -53,18 +53,18 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String MY_LISTING_HISTORY_COUNTER_ID = "tv_historycount";
 	public static final String MY_AD_FxH_VIEWLIST_ID = "plvlist";
 	
-	public static final String MY_LOGOUT_BUTTON_ID = "注销";
+	public static final String MY_LOGOUT_BUTTON_ID = "娉ㄩ攢";
 	public static final String MY_LOGIN_BUTTON_ID = "btn_login";
 	public static final String MY_LOGIN_USER_TEXTVIEW_ID = "et_account";
 	public static final String MY_LOGIN_PASSWORD_TEXTVIEW_ID = "et_password";
-	public static final String MY_LOGON_SUCCESS_MESSAGE = "用户登录成功";
-	public static final String DIALOG_OK_BUTTON_ID = "确定";
-	public static final String MY_EDIT_BUTTON_ID = "编辑";
-	public static final String MY_DELETE_ALL_BUTTON_ID = "清空";
+	public static final String MY_LOGON_SUCCESS_MESSAGE = "鐢ㄦ埛鐧诲綍鎴愬姛";
+	public static final String DIALOG_OK_BUTTON_ID = "纭畾";
+	public static final String MY_EDIT_BUTTON_ID = "缂栬緫";
+	public static final String MY_DELETE_ALL_BUTTON_ID = "娓呯┖";
 	
 	public static final String TEST_DATA_MOBILE = "13917067724";
 	public static final String TEST_DATA_PASSWORD = "whonwyhw";
-	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
+	public static final String TEST_DATA_CAT_WUPINJIAOYI = "鐗╁搧浜ゆ槗";
 	
 	@SuppressWarnings("unchecked")
 	public BaixingTestCase() throws Exception {
