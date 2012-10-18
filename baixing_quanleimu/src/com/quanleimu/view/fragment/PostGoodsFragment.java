@@ -31,9 +31,11 @@ import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.CheckBox;
@@ -41,6 +43,7 @@ import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -48,7 +51,10 @@ import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.adapter.CheckableAdapter;
+import com.quanleimu.adapter.CheckableAdapter.CheckableItem;
 import com.quanleimu.broadcast.CommonIntentAction;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
@@ -59,11 +65,12 @@ import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 
-public class PostGoodsFragment extends BaseFragment implements OnClickListener{
+public class PostGoodsFragment extends BaseFragment implements OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener{
 
 	public static final int MSG_START_UPLOAD = 5;
 	public static final int MSG_FAIL_UPLOAD = 6;
 	public static final int MSG_SUCCED_UPLOAD = 7;
+	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
@@ -105,6 +112,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private boolean userValidated = false;
 	private boolean loginTried = false;
 	
+	private View locationView = null;
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -248,7 +256,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		super.onPause();
 	}
 	
-
+	private boolean inLocating = false;
 	@Override
 	public void onStackTop(boolean isBack) {
 //		if(!userValidated){
@@ -257,6 +265,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //		else
 		{
 			this.showPost();
+		}
+		if(!isBack){
+			inLocating = true;
+			QuanleimuApplication.getApplication().getCurrentLocation(this);
+			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 3000);
 		}
 		
 	}
@@ -1201,6 +1214,18 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private void appendBeanToLayout(PostGoodsBean postBean){
 		Activity activity = getActivity();
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
+		if(postBean.getName().equals("具体地点")){
+			if(inLocating){
+				((TextView)layout.findViewById(R.id.postinput)).setHint("定位中...");
+			}else{
+				((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
+			}
+			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
+			locationView = layout;
+			if(this.detailLocation != null && !inLocating){
+				setDetailLocationControl(detailLocation);
+			}
+		}
 		if(postBean.getName().equals("contact") && layout != null){
 			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
 		}
@@ -1350,21 +1375,27 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		hideProgress();
 		
 		switch (msg.what) {
-		case MSG_START_UPLOAD:
-		{
+		case MSG_GETLOCATION_TIMEOUT:{
+			if(inLocating){
+				setDetailLocationControl(null);
+				if(this.locationView != null){
+					((TextView)locationView.findViewById(R.id.postinput)).setHint("请输入");
+				}
+			}
+			inLocating = false;			
+			break;
+		}
+		case MSG_START_UPLOAD:{		
 			Integer index = (Integer) msg.obj;
-			if (imgs != null)
-			{
+			if (imgs != null){
 				imgs[index.intValue()].setImageResource(R.drawable.u);
 				imgs[index].setClickable(false);
 				imgs[index.intValue()].invalidate();
 			}
 			break;
 		}
-		case MSG_FAIL_UPLOAD:
-		{
-			if (imgs != null)
-			{
+		case MSG_FAIL_UPLOAD:{
+			if (imgs != null){			
 				Integer index = (Integer) msg.obj;
 				imgs[index.intValue()].setImageResource(R.drawable.f);
 				imgs[index].setClickable(true);
@@ -1372,19 +1403,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 			break;
 		}
-		case MSG_SUCCED_UPLOAD:
-		{
+		case MSG_SUCCED_UPLOAD:{
 			Integer index = (Integer) msg.obj;
-			if (imgs != null)
-			{
+			if (imgs != null){
 				imgs[index].setImageBitmap(cachedBps[index]);
 				imgs[index].setClickable(true);
 				imgs[index].invalidate();
 			}
 			break;
 		}
-		case -2:
-		{
+		case -2:{
 			loadCachedData();
 			break;
 		}
@@ -1672,6 +1700,25 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		return ImageStatus.ImageStatus_Failed;
 	}
 	
+	static public void popupSelection(BaseFragment fragment, View v, PostGoodsBean bean){
+		if(bean.getLabels() == null || bean.getLabels().size() <= 0) return;
+		AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());
+		LayoutInflater inflater = LayoutInflater.from(fragment.getActivity());
+		View popupView = inflater.inflate(R.layout.popup_container, null);
+		List<String> items = bean.getLabels();
+		List<CheckableItem> checkableItems = new ArrayList<CheckableItem>();
+		for(int i = 0; i < items.size(); ++ i){
+			CheckableItem item = new CheckableItem();
+			item.checked = false;
+			item.txt = items.get(i);
+			checkableItems.add(item);
+		}
+		CheckableAdapter adapter = new CheckableAdapter(fragment.getActivity(), checkableItems, 20, false);
+		((ListView)popupView.findViewById(R.id.popup_list)).setAdapter(adapter);
+		builder.setView(popupView);
+		builder.show();
+	}
+	
 	public static ViewGroup createItemByPostBean(PostGoodsBean postBean, final BaseFragment fragment){
 		ViewGroup layout = null;
 		
@@ -1745,19 +1792,23 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
 							if(postBean.getLevelCount() > 0){
-								ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = 
-										new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
-								for(int i = 0; i < postBean.getLabels().size(); ++ i){
-									MultiLevelSelectionFragment.MultiLevelItem t = new MultiLevelSelectionFragment.MultiLevelItem();
-									t.txt = postBean.getLabels().get(i);
-									t.id = postBean.getValues().get(i);
-									items.add(t);
-								}
-								Bundle bundle = createArguments(null, null);
-								bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
-								bundle.putSerializable("items", items);
-								bundle.putInt("maxLevel", postBean.getLevelCount() - 1);
-								((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
+//								if(postBean.getLevelCount() == 1){
+//									popupSelection(fragment, v, postBean);
+//								}else{
+									ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = 
+											new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
+									for(int i = 0; i < postBean.getLabels().size(); ++ i){
+										MultiLevelSelectionFragment.MultiLevelItem t = new MultiLevelSelectionFragment.MultiLevelItem();
+										t.txt = postBean.getLabels().get(i);
+										t.id = postBean.getValues().get(i);
+										items.add(t);
+									}
+									Bundle bundle = createArguments(null, null);
+									bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
+									bundle.putSerializable("items", items);
+									bundle.putInt("maxLevel", postBean.getLevelCount() - 1);
+									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
+//								}
 							}
 							else{
 								Bundle bundle = createArguments(postBean.getDisplayName(), null);
@@ -1796,6 +1847,41 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			});
 		}
 		return layout;
+	}
+	
+	private void setDetailLocationControl(BXLocation location){
+		((TextView)locationView.findViewById(R.id.postinput)).setText(location == null ? "" :
+				((location.detailAddress == null || location.detailAddress.equals("")) ? 
+						location.subCityName : location.detailAddress));
+	}
+
+	private BXLocation detailLocation = null;
+	@Override
+	public void onLocationFetched(BXLocation location) {
+		// TODO Auto-generated method stub
+		if(location == null) return;
+		handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
+		detailLocation = location;
+		if(this.inLocating){
+			if(locationView != null){
+				this.getActivity().runOnUiThread(new Runnable(){
+					@Override
+					public void run(){
+						setDetailLocationControl(detailLocation);
+					}
+				});
+			}
+		}
+		this.inLocating = false;
+	}
+
+
+
+	@Override
+	public boolean onKey(View v, int keyCode, KeyEvent event) {
+		// TODO Auto-generated method stub
+		this.inLocating = false;
+		return false;
 	}
 	
 }

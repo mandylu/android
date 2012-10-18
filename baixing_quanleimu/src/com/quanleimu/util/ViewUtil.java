@@ -6,6 +6,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.NotificationIds;
+import com.quanleimu.view.fragment.LoginFragment;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -14,6 +15,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
@@ -128,58 +130,35 @@ public class ViewUtil {
 	
 	public static void pickupPhoto(final Activity context, final int tmpFileIndex)
 	{
-		View view = LinearLayout.inflate(context, R.layout.upload_head, null);
-		Builder builder = new AlertDialog.Builder(context);
-		builder.setView(view);
-
-		final AlertDialog ad = builder.create();
-		WindowManager.LayoutParams lp = ad.getWindow().getAttributes();
-		lp.y = 300;
-		ad.onWindowAttributesChanged(lp);
-		ad.show();
-		
-		OnClickListener listener = new OnClickListener() {
-			public void onClick(View v) {
-				ad.dismiss();
-				
-				switch(v.getId())
-				{
-					case R.id.photo_album:
-//						Intent startAlbum = new Intent(context,
-//								ThirdpartyTransitActivity.class);
-//						Bundle ex = new Bundle();
-//						ex.putString(ThirdpartyTransitActivity.ThirdpartyKey,
-//								ThirdpartyTransitActivity.ThirdpartyType_Albam);
-//						startAlbum.putExtras(ex);
-//						context.startActivity(startAlbum);
+		final String[] names = {"相册","拍照"};
+		new AlertDialog.Builder(context).setTitle("请选择")//.setMessage("无法确定当前位置")
+		.setItems(names, new DialogInterface.OnClickListener(){
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which){
+				switch(which){
+					case 0:
 						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
 						intent3.addCategory(Intent.CATEGORY_OPENABLE);
 						intent3.setType("image/*");
 						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
 						break;
-					case R.id.photo_make:
-//						Intent startCap = new Intent(context,
-//								ThirdpartyTransitActivity.class);
-//						Bundle ext = new Bundle();
-//						ext.putString(ThirdpartyTransitActivity.ThirdpartyKey,
-//								ThirdpartyTransitActivity.ThirdpartyType_Photo);
-//						ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, tmpFileIndex);
-//						startCap.putExtras(ext);
-//						context.startActivity(startCap);
+					case 1:
 						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
 								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
 						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
-						break;
-					case R.id.photo_cancle:
-						break;
-				}
-			}
-		};
 
-		view.findViewById(R.id.photo_album).setOnClickListener(listener);
-		view.findViewById(R.id.photo_make).setOnClickListener(listener);
-		view.findViewById(R.id.photo_cancle).setOnClickListener(listener);
+						break;
+				}				
+			}
+		})
+		.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog, int which){
+				dialog.dismiss();
+			}
+		}).show();			
 	}
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
