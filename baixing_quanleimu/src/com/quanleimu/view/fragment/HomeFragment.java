@@ -29,6 +29,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GridAdapter;
 import com.quanleimu.adapter.GridAdapter.GridInfo;
+import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.imageCache.ImageLoaderCallback;
@@ -607,7 +608,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {		
+	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	
+		String selText = ((GridAdapter.GridHolder) arg1.getTag()).text.getText().toString();
 		if (selectedIndex == 0) // 浏览信息页面
 		{
 			List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
@@ -617,7 +619,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			if (arg1.getTag() == null)
 				return;
 			for (int i = 0; i < allCates.size(); ++i) {
-				String selText = ((GridAdapter.GridHolder) arg1.getTag()).text.getText().toString();
+				
 				if (allCates.get(i).name.equals(selText)){
 					Bundle bundle = new Bundle();
 					bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
@@ -629,9 +631,37 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		}
 		else // 我的百姓网页面
 		{
-			switch (arg2)
-			{
-	
+			//TODO 登录判断，talk session 获取
+			if (selText.endsWith("已发布")) {
+				if(/*user == null*/true){
+					Bundle bundle = createArguments(null, "用户中心");
+					pushFragment(new LoginFragment(), bundle);
+				}else{
+					pushFragment(new PersonalPostFragment(), null);
+				}
+			} else if (selText.endsWith("审核未通过")) {
+
+			} else if (selText.endsWith("已删除")) {
+
+			} else if (selText.endsWith("收藏")) {
+				Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", true);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);
+				
+			} else if (selText.endsWith("私信")) {
+				Bundle bundle = createArguments(null, null);
+				ArrayList<ChatSession> tmpList = new ArrayList<ChatSession>();
+//				tmpList.addAll(this.sessions); 需要获取 sessions 数据
+				bundle.putSerializable("sessions", tmpList);
+				pushFragment(new SessionListFragment(), bundle);
+				
+			} else if (selText.endsWith("最近浏览")) {
+				Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", false);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);
+				
+			} else if (selText.endsWith("设置")) {
+				pushFragment(new SetMainFragment(), null);
 			}
 		}
 	}
