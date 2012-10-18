@@ -90,6 +90,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		glLoader.setHasMore(false);
 		
 		adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData());
+		adapter.setHasDelBtn(true);
 		adapter.setMessageOutOnDelete(handler, MSG_DELETEAD);
 //		adapter.setList(tempGoodsList.getData());		
 		pullListView.setAdapter(adapter);

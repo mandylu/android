@@ -7,71 +7,69 @@
     android:background = "@drawable/list_selector"
     android:orientation="horizontal">
 
-    <Button
-        android:id="@+id/btnDelete"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:background="@drawable/iv_delete"
-        android:clickable="true"
-        android:focusable="false"
-        android:text="" />
-
     <RelativeLayout
         android:id="@+id/rlListInfo"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content" 
+        android:layout_height="wrap_content"
         android:paddingBottom="5dip"
         android:paddingLeft="5dip"
-        android:paddingTop="5dip"
-        android:paddingRight="5dip" >
+        android:paddingRight="5dip"
+        android:paddingTop="5dip" >
+
+        <com.quanleimu.widget.ContextMenuItem
+            android:id="@+id/deleteContextMenuItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
 
         <com.quanleimu.widget.AnimatingImageView
             android:id="@+id/ivInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerVertical="true"
-            android:layout_toRightOf="@+id/btnDelete"
-            android:background="@drawable/bg_picholder"/>
-        
-        
-        <RelativeLayout 		        
+            android:background="@drawable/bg_picholder" />
+
+        <RelativeLayout
+            android:id="@+id/pbLoadingProgress"
             android:layout_width="fill_parent"
-		    android:layout_height="fill_parent"
-		    android:layout_alignLeft="@+id/ivInfo"
-		    android:layout_alignRight="@+id/ivInfo"
-		    android:layout_alignTop="@+id/ivInfo"
-		    android:layout_alignBottom="@+id/ivInfo"
-		    android:id="@+id/pbLoadingProgress"
-		    android:background="@drawable/bg_picholder"
-		    android:visibility="gone">
-			<ProgressBar 
-		        android:indeterminate="true"
-		        android:layout_width="wrap_content"
-		        android:layout_height="wrap_content"
-		        style="?android:attr/progressBarStyleSmall"
-		        android:layout_centerInParent="true"/>
-		</RelativeLayout>
+            android:layout_height="fill_parent"
+            android:layout_alignBottom="@+id/ivInfo"
+            android:layout_alignLeft="@+id/ivInfo"
+            android:layout_alignRight="@+id/ivInfo"
+            android:layout_alignTop="@+id/ivInfo"
+            android:background="@drawable/bg_picholder"
+            android:visibility="gone" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true" />
+        </RelativeLayout>
 
         <TextView
             android:id="@+id/tvDes"
-            android:layout_toRightOf="@+id/ivInfo"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="10dip"
-            android:layout_marginRight="10dip"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@+id/ivInfo"
+            android:layout_toLeftOf="@+id/btnDelete"
             android:singleLine="true"
             android:textColor="@drawable/list_titleselector"
-            android:textStyle="bold"
-            android:textSize="16dip" >
+            android:textSize="16dip"
+            android:textStyle="bold" >
+
         </TextView>
 
         <TextView
             android:id="@+id/tvPrice"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDateAndAddress"
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
-            android:layout_below="@+id/tvDateAndAddress"
             android:singleLine="true"
             android:textColor="@drawable/list_pricetextselector"
             android:textSize="14dip" >
@@ -83,21 +81,34 @@
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDes"
             android:layout_marginLeft="10dip"
-            android:textColor="@drawable/list_textselector"
-            
+            android:layout_marginRight="8dp"
             android:layout_toRightOf="@+id/ivInfo"
+            android:layout_toLeftOf="@+id/btnDelete"
             android:singleLine="true"
+            android:textColor="@drawable/list_textselector"
             android:textSize="14dip" >
         </TextView>
 
-        <ImageView
-            android:id="@+id/ivTurn2Detail"
+        <Button
+            android:id="@+id/btnDelete"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true"
             android:layout_centerVertical="true"
-            android:src="@drawable/arrow" >
-        </ImageView>
+            android:layout_marginRight="8dp"
+            android:background="@drawable/btn_circle_arrow"
+            android:clickable="true"
+            android:focusable="false" />
+
+        <View
+            android:id="@+id/lineView"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:layout_marginRight="10dp"
+            android:layout_toLeftOf="@id/btnDelete"
+            android:background="@color/list_line" />
+
     </RelativeLayout>
 
 </LinearLayout>

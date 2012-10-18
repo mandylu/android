@@ -18,6 +18,7 @@
     <string name="close">关闭</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
+    <string name="delete">删除</string>
 
     <!-- dialog text -->
     <string name="dialog_title_info">提示</string>
@@ -45,5 +46,11 @@
     <!-- colors -->
     <color name="dialogbackgournd">#00ffffff</color>
     <string name="citychange_gpscity">GPS定位城市</string>
+    
+    <string-array name="array_menu_delete">
+        <item>删除</item>
+        <item>取消</item>
+    </string-array>
+    
 
 </resources>

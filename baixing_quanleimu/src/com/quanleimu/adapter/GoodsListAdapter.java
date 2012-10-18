@@ -6,7 +6,9 @@ import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
@@ -30,6 +32,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.widget.AnimatingImageView;
+import com.quanleimu.widget.ContextMenuItem;
 
 
 public class GoodsListAdapter extends BaseAdapter {
@@ -41,7 +44,8 @@ public class GoodsListAdapter extends BaseAdapter {
 //	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
-	private boolean uiHold = false;
+	private boolean uiHold = false; 
+	
 	private RelativeLayout.LayoutParams lp = null;
 	
 	@Override
@@ -161,11 +165,11 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder = (ViewHolder)v.getTag();
 			}
 	
-			if (!hasDelBtn) {
-				holder.btnDelete.setVisibility(View.GONE);
+			if (hasDelBtn) {
+				holder.btnDelete.setVisibility(View.VISIBLE);
 			} 
 			else{
-				holder.btnDelete.setVisibility(View.VISIBLE);
+				holder.btnDelete.setVisibility(View.GONE);
 			}
 	
 			if(null == defaultBk2){
@@ -325,14 +329,25 @@ public class GoodsListAdapter extends BaseAdapter {
 				@Override
 				public void onClick(View v) {
 					if(uiHold) return;
-					uiHold = true;
-					if(GoodsListAdapter.this.handler == null) return;
-					Message msg = GoodsListAdapter.this.handler.obtainMessage();
-					msg.arg2 = position;
-					msg.what = GoodsListAdapter.this.messageWhat;
-	//				list.remove(position);
-					GoodsListAdapter.this.notifyDataSetChanged();
-					GoodsListAdapter.this.handler.sendMessage(msg);
+					// 弹出 menu 确认删除
+					AlertDialog.Builder builder = new AlertDialog.Builder(context);
+				    builder.setTitle("操作")
+				    	.setItems(R.array.array_menu_delete, new DialogInterface.OnClickListener() {
+				    		public void onClick(DialogInterface dialog, int which) {
+				    			if (which == 0) {
+									uiHold = true;
+									if(GoodsListAdapter.this.handler == null) return;
+									Message msg = GoodsListAdapter.this.handler.obtainMessage();
+									msg.arg2 = position;
+									msg.what = GoodsListAdapter.this.messageWhat;
+					//				list.remove(position);
+									GoodsListAdapter.this.notifyDataSetChanged();
+									GoodsListAdapter.this.handler.sendMessage(msg);
+								}
+				    		}
+				    });
+				    AlertDialog alert = builder.create();
+				    alert.show();
 				}
 			});
 			return v;
