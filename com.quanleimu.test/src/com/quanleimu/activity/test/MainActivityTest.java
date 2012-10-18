@@ -29,19 +29,26 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testSearchClick() throws Exception {
-		
-		findElementById(SEARCH_TEXTVIEW_ID).doClick();
-		TimeUnit.SECONDS.sleep(1);
-		TextViewElement etSearchText = findElementById(SEARCH_TEXTVIEW_ID,
-				TextViewElement.class);
-		etSearchText.setText("iphone");
-
-		findElementById(SEARCH_BUTTON_ID).doClick();
-		
-		TimeUnit.SECONDS.sleep(10);
-		assertEquals("iphone", etSearchText.getText());
+		doSearch("iphone");
+		doSearch("ipad");
+		doSearch("mac book");
 		getDevice().pressMenu();
 		TimeUnit.SECONDS.sleep(2);
+		
+		selectSearch("ipad");
+		assertNull(findElementById(SEARCH_TEXTVIEW_ID));
+		doSearch("");
+		selectSearch(SEARCH_DELETE_TEXT);
+		assertNotNull(findElementById(SEARCH_TEXTVIEW_ID));
+		assertNotNull(findElementById(SEARCH_BUTTON_ID));
+		try {
+			findElementById("ipad");
+			assertTrue(false);
+		} catch (NoSuchFieldException ex) {
+			assertTrue(true);
+		}
+		
+		doSearch("android");
 	}
 	
 	@Test
@@ -51,20 +58,6 @@ public class MainActivityTest extends BaixingTestCase {
 		TimeUnit.SECONDS.sleep(1);
 		getDevice().pressBack();
 		TimeUnit.SECONDS.sleep(1);
-	}
-	
-	@Test
-	public void testScrollToNextScreen() throws Exception {
-		AbsListViewElement catListView = findElementById(CATEGORY_VIEWLIST_ID,
-				AbsListViewElement.class);
-		assertEquals(3, catListView.getLastVisiblePosition());
-		catListView.scrollToNextScreen();
-		TimeUnit.SECONDS.sleep(3);
-		assertEquals(4, catListView.getFirstVisiblePosition());
-		catListView.scrollToNextScreen();
-		assertEquals(11, catListView.getLastVisiblePosition());
-		TimeUnit.SECONDS.sleep(3);
-		assertEquals(7, catListView.getFirstVisiblePosition());
 	}
 	
 	@Test
@@ -90,72 +83,93 @@ public class MainActivityTest extends BaixingTestCase {
 		//更多
 		openPostItemByIndex(4);
 		setOtherMetaByIndex(0, "100");
-		ViewElement el = findElementByText(POST_DONE);
-		assertNotNull(el);
-		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
-
-		ViewElement eld = findElementByText(POST_SEND);
-		assertNotNull(eld);
-		eld.doClick();
-		TimeUnit.SECONDS.sleep(3);
+		postOtherDone();
+		
+		postSend();
 	}
 	
 	@Test
 	public void testMy() throws Exception {
 		logout();
-		ViewElement el = findElementById(MY_LISTITEM_MYAD_ID);
-		assertNotNull(el);
-		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		
+		myItemClick(MY_LISTITEM_MYAD_ID);
 		assertNotNull(findElementById(MY_LISTITEM_MYAD_ID));
 		
 		logon();
 		
-		ViewElement el2 = findElementById(MY_LISTITEM_MYAD_ID);
-		assertNotNull(el2);
-		el2.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		myItemClick(MY_LISTITEM_MYAD_ID);
 		assertNull(findElementById(MY_LISTITEM_MYAD_ID));
 		TimeUnit.SECONDS.sleep(2);
 		
-		findElementById(MY_MYAD_APPROVE_BUTTON_ID).doClick();
-		TimeUnit.SECONDS.sleep(2);
-		findElementById(MY_MYAD_DELETE_BUTTON_ID).doClick();
-		TimeUnit.SECONDS.sleep(2);
+		myItemClick(MY_MYAD_APPROVE_BUTTON_ID);
+		myItemClick(MY_MYAD_DELETE_BUTTON_ID);
 	}
 	
 	@Test
 	public void testAdViewTouch() throws Exception {
 		BXViewGroupElement detailView = showAd(0, 0, 0);
 		assertNotNull(detailView);
-		
+	
+		adViewPicTouch();
 		TextViewElement titleView = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class);
 		assertNotNull(titleView);
 		//Ad1
 		String title1 = titleView.getText();
-		Log.i(LOG_TAG, "title1:" + title1);
+		//Log.i(LOG_TAG, "title1:" + title1);
 		//ViewElement next = findElementById(AD_DETAILVIEW_NEXT_ID);
 		//assertNotNull(next);
 		//next.doClick();
-		showNextAd(detailView);
 		
+		showNextView(detailView);
+		adViewPicTouch();
 		//Ad2
 		String title2 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
-		Log.i(LOG_TAG, "title2:" + title2);
+		//Log.i(LOG_TAG, "title2:" + title2);
 		assertFalse(title1.equals(title2));
 
-		showNextAd(detailView);
+		showNextView(detailView);
+		adViewPicTouch();
 		//Ad3
 		String title3 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
-		Log.i(LOG_TAG, "title3:" + title3);
+		//Log.i(LOG_TAG, "title3:" + title3);
 		assertFalse(title2.equals(title3));
 
-		showPrevAd(detailView);
+		showPrevView(detailView);
 		//Ad2
-		Log.i(LOG_TAG, "titleX:" + findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText());
+		//Log.i(LOG_TAG, "titleX:" + findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText());
 		assertEquals(title2, findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText());
+		adViewPicTouch();
 		
+	}
+	
+	public void adViewPicTouch() throws Exception {
+		//查看第一个图片
+		if (showAdPic(0)) {
+			//Log.i(LOG_TAG, "pic:0");
+			goBack(false);
+			//滚动图片
+			BXViewGroupElement ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
+			ilv.doTouch(-200);
+			TimeUnit.SECONDS.sleep(1);
+			//查看第二个图片
+			if (showAdPic(1)) {
+				//Log.i(LOG_TAG, "pic:1");
+				goBack(false);
+				//滚回图片
+				ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
+				ilv.doTouch(200);
+				TimeUnit.SECONDS.sleep(1);
+				//Log.i(LOG_TAG, "pic:touch0");
+				
+				//滚动大图
+				showAdPic(0);
+				TimeUnit.SECONDS.sleep(1);
+				BXViewGroupElement bv = findElementById(AD_BIG_IMAGE_VIEW_ID, BXViewGroupElement.class);
+				showNextView(bv);
+				//Log.i(LOG_TAG, "pic:touch1");
+				goBack();
+			}
+		}
 	}
 	
 	public void testHistory() throws Exception {
@@ -163,9 +177,9 @@ public class MainActivityTest extends BaixingTestCase {
 		BXViewGroupElement detailView = showAd(1, 0, 2);
 		int showCount = 1;
 		for (;showCount < 5; showCount++) {
-			showNextAd(detailView);
+			showNextView(detailView);
 		}
-		showPrevAd(detailView);
+		showPrevView(detailView);
 		
 		getDevice().pressBack();
 		getDevice().pressBack();
@@ -179,11 +193,25 @@ public class MainActivityTest extends BaixingTestCase {
 				BXViewGroupElement.class);
 		String title1 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		Log.i(LOG_TAG, "title1my:" + title1);
-		showNextAd(detailMyView);
+		showNextView(detailMyView);
 		
 		String title2 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		Log.i(LOG_TAG, "title2my:" + title2);
 		assertFalse(title1.equals(title2));
+	}
+	
+	@Test
+	public void testScrollToNextScreen() throws Exception {
+		AbsListViewElement catListView = findElementById(CATEGORY_VIEWLIST_ID,
+				AbsListViewElement.class);
+		assertEquals(3, catListView.getLastVisiblePosition());
+		catListView.scrollToNextScreen();
+		TimeUnit.SECONDS.sleep(3);
+		assertEquals(4, catListView.getFirstVisiblePosition());
+		catListView.scrollToNextScreen();
+		assertEquals(11, catListView.getLastVisiblePosition());
+		TimeUnit.SECONDS.sleep(3);
+		assertEquals(7, catListView.getFirstVisiblePosition());
 	}
 	
 }

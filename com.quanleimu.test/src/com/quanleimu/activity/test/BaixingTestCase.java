@@ -14,6 +14,10 @@ import android.util.Log;
 
 public class BaixingTestCase extends AthrunTestCase {
 	private static final String LOG_TAG = "MainActivityTest";
+	
+	//Common ID
+	public static final String BACK_BUTTON_TEXT = "返回";
+	//Home ID
 	public static final String HOME_MARK_ID = "lvLogoAndChangeCity";
 	public static final String HOME_CATEGORY_VIEWLIST_ID = "cateSelection";
 	public static final String HOME_CATEGORY_VIEWLIST_ITEM_NAME_ID = "tvName";
@@ -22,20 +26,27 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String TAB_ID_POST = "ivPostGoods";
 	public static final String TAB_ID_MY = "ivMyCenter";
 	
-	public static final String AD_VIEWLIST_ID = "lvGoodsList";
+	public static final String SEARCH_TEXTVIEW_ID = "etSearch";
+	public static final String SEARCH_BUTTON_ID = "btnCancel";
+	public static final String SEARCH_BUTTON_TEXT = "搜索";
+	public static final String SEARCH_DELETE_TEXT = "清除历史记录";
+	
+	public static final String CATEGORY_VIEWLIST_ID = "cateSelection";
+	
+	//AdList && AdView ID
 	public static final String AD_VIEWLIST_MARK_ID = "rlListInfo";
+	public static final String AD_VIEWLIST_ID = "lvGoodsList";
 	public static final String AD_DETAILVIEW_ID = "svDetail";
 	public static final String AD_DETAILVIEW_PREV_ID = "btn_prev";
 	public static final String AD_DETAILVIEW_NEXT_ID = "btn_next";
 	public static final String AD_DETAILVIEW_TITLE_ID = "goods_tittle";
+	public static final String AD_IMAGES_VIEWLIST_ID = "glDetail";
 	
-	public static final String SEARCH_TEXTVIEW_ID = "etSearch";
-	public static final String SEARCH_BUTTON_ID = "btnCancel";
+	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	
-	public static final String CATEGORY_VIEWLIST_ID = "cateSelection";
-	
-	public static final String POST_SCROLLVIEW_ID = "scrollView1";
+	//POST ID
 	public static final String POST_FORM_MARK_ID = "layout_txt";
+	public static final String POST_SCROLLVIEW_ID = "scrollView1";
 	public static final String POST_CATEGORY_GRIDVIEW_ID = "gridcategory";
 	public static final String POST_SECOND_CATEGORY_LISTVIEW_ID = "post_other_list";
 	public static final int POST_CATEGORY_SELEC_INDEX = 0;
@@ -46,6 +57,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String POST_DONE = "完成";
 	public static final String POST_SEND = "立即发布";
 	
+	//My ID
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
 	public static final String MY_MYAD_APPROVE_BUTTON_ID = "ivMyfav";
 	public static final String MY_MYAD_DELETE_BUTTON_ID = "ivMyhistory";
@@ -62,6 +74,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String MY_EDIT_BUTTON_ID = "编辑";
 	public static final String MY_DELETE_ALL_BUTTON_ID = "清空";
 	
+	//Test DATA
 	public static final String TEST_DATA_MOBILE = "13917067724";
 	public static final String TEST_DATA_PASSWORD = "whonwyhw";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
@@ -184,6 +197,20 @@ public class BaixingTestCase extends AthrunTestCase {
 		TimeUnit.SECONDS.sleep(3);
 	}
 	
+	public void postOtherDone() throws Exception {
+		ViewElement el = findElementByText(POST_DONE);
+		assertNotNull(el);
+		el.doClick();
+		TimeUnit.SECONDS.sleep(1);
+	}
+	
+	public void postSend() throws Exception {
+		ViewElement eld = findElementByText(POST_SEND);
+		assertNotNull(eld);
+		eld.doClick();
+		TimeUnit.SECONDS.sleep(3);
+	}
+	
 	public void openCategoryByIndex(int firstCatIndex, int secondCatIndex) throws Exception {
 		openTabbar(TAB_ID_HOME);
 		ViewElement hv = findElementById(HOME_MARK_ID);
@@ -245,25 +272,32 @@ public class BaixingTestCase extends AthrunTestCase {
 		return detailView;
 	}
 	
-	public void showNextAd(BXViewGroupElement view) throws Exception {
+	public void showNextView(BXViewGroupElement view) throws Exception {
 		TimeUnit.SECONDS.sleep(1);
 		view.doTouch(-view.getWidth() + 20);
 		TimeUnit.SECONDS.sleep(3);
 	}
 	
-	public void showPrevAd(BXViewGroupElement view) throws Exception {
+	public void showPrevView(BXViewGroupElement view) throws Exception {
 		TimeUnit.SECONDS.sleep(1);
 		view.doTouch(view.getWidth() - 20);
 		TimeUnit.SECONDS.sleep(3);
 	}
 	
+	public boolean showAdPic(int index) throws Exception {
+		ViewGroupElement ilv = findElementById(AD_IMAGES_VIEWLIST_ID, ViewGroupElement.class);
+		if (ilv == null) return false;
+		ViewElement iv = ilv.getChildByIndex(index);
+		if (iv == null) return false;
+		iv.doClick();
+		TimeUnit.SECONDS.sleep(1);
+		return (findElementById(AD_BIG_IMAGE_VIEW_ID) != null);
+	}
+	
 	public int showMyAdList(String myListId, String myListCountId) throws Exception {
 		openTabbar(TAB_ID_MY);
-		ViewElement el = findElementById(myListId);
-		assertNotNull(el);
 		TextViewElement elc = findElementById(myListCountId, TextViewElement.class);
-		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		myItemClick(myListId);
 		if (elc != null && elc.getText().length() > 0) return Integer.parseInt(elc.getText().replaceAll("\\D+",  ""));
 		return 0;
 	}
@@ -279,6 +313,57 @@ public class BaixingTestCase extends AthrunTestCase {
 		if (eld == null) return;
 		eld.doClick();
 		getDevice().pressBack();
+		TimeUnit.SECONDS.sleep(1);
+	}
+	
+	public void doSearch(String keyword) throws Exception {
+		if (findElementById(HOME_MARK_ID) != null) {
+			findElementById(SEARCH_TEXTVIEW_ID).doClick();
+			TimeUnit.SECONDS.sleep(1);
+		} else if (findElementById(AD_VIEWLIST_MARK_ID) != null) {
+			ViewElement btnSearch = findElementByText(SEARCH_BUTTON_TEXT, 0, true);
+			if (btnSearch != null) {
+				btnSearch.doClick();
+			}
+		}
+		if (keyword.length() > 0) {
+			TextViewElement etSearchText = findElementById(SEARCH_TEXTVIEW_ID,
+					TextViewElement.class);
+			etSearchText.setText(keyword);
+			assertEquals(keyword, etSearchText.getText());
+
+			findElementById(SEARCH_BUTTON_ID).doClick();
+			TimeUnit.SECONDS.sleep(2);
+		}
+	}
+	
+	public void selectSearch(String keyword) throws Exception {
+		doSearch("");
+		ViewElement iv = findElementByText(keyword, 0, true);
+		if (iv != null) {
+			iv.doClick();
+			TimeUnit.SECONDS.sleep(2);
+		}
+	}
+	
+	public void myItemClick(String itemId) throws Exception {
+		ViewElement el = findElementById(itemId);
+		assertNotNull(el);
+		el.doClick();
+		TimeUnit.SECONDS.sleep(1);
+	}
+	public void goBack() throws Exception {
+		goBack(true);
+	}
+	public void goBack(boolean force) throws Exception {
+		ViewElement iv = findElementByText(BACK_BUTTON_TEXT, 0, true);
+		if (!force) assertNotNull(iv);
+		if (iv != null) {
+			iv.doClick();
+		} else {
+			getDevice().pressBack();
+		}
+
 		TimeUnit.SECONDS.sleep(1);
 	}
 }
