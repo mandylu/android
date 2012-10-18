@@ -91,7 +91,10 @@ public class BaixingTestCase extends AthrunTestCase {
 		// log("This is a test for log() method");
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
-		if (v != null) v.doClick();
+		if (v != null) {
+			v.doClick();
+			TimeUnit.SECONDS.sleep(1);
+		}
 	}
 	
 	public void logout() throws Exception {
