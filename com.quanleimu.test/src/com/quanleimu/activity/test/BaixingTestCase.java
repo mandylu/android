@@ -18,6 +18,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	//Common ID
 	public static final String BACK_BUTTON_TEXT = "返回";
 	//Home ID
+	public static final String HOME_FIRST_RUN_ID = "topguide";
 	public static final String HOME_MARK_ID = "lvLogoAndChangeCity";
 	public static final String HOME_CATEGORY_VIEWLIST_ID = "cateSelection";
 	public static final String HOME_CATEGORY_VIEWLIST_ITEM_NAME_ID = "tvName";
@@ -89,7 +90,8 @@ public class BaixingTestCase extends AthrunTestCase {
 		super.setUp();
 		// log("This is a test for log() method");
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
-		//findElementById(HOME_CATEGORY_VIEWLIST_ID).doClickByMonkey();
+		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
+		if (v != null) v.doClick();
 	}
 	
 	public void logout() throws Exception {
