@@ -89,6 +89,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		super.setUp();
 		// log("This is a test for log() method");
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
+		//findElementById(HOME_CATEGORY_VIEWLIST_ID).doClickByMonkey();
 	}
 	
 	public void logout() throws Exception {

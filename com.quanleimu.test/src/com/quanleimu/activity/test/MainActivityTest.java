@@ -42,10 +42,9 @@ public class MainActivityTest extends BaixingTestCase {
 		assertNotNull(findElementById(SEARCH_TEXTVIEW_ID));
 		assertNotNull(findElementById(SEARCH_BUTTON_ID));
 		try {
-			findElementById("ipad");
+			findElementById("ipad");//稍微复杂了点，因为上面那种会出错
 			assertTrue(false);
 		} catch (NoSuchFieldException ex) {
-			assertTrue(true);
 		}
 		
 		doSearch("android");
@@ -54,9 +53,9 @@ public class MainActivityTest extends BaixingTestCase {
 	@Test
 	public void testCategoryClick() throws Exception {
 		openCategoryByIndex(3, 1);
-		getDevice().pressBack();
+		goBack();
 		TimeUnit.SECONDS.sleep(1);
-		getDevice().pressBack();
+		goBack();
 		TimeUnit.SECONDS.sleep(1);
 	}
 	
@@ -67,25 +66,26 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test 
 	public void testPostData() throws Exception {
-		openPostCategory(1, 6);
+		openPostCategory(1, 6);//车辆买卖， 汽车用品
 		openPostItemByIndex(1);
 		selectMetaByName("出售");
+		setMetaByIndex(0, "test title");//标题
 		openPostItemByIndex(2);
-		selectMetaByName("宝山");
-		selectMetaByName("全部");
-		setMetaByIndex(0, "test title");
-
-		openPostItemByIndex(3);
+		//selectMetaByName("宝山");
+		//selectMetaByName("全部");
+		//openPostItemByIndex(3);
 		selectMetaByName("个人");
 
 		setMetaByIndex(1, TEST_DATA_MOBILE);
 		
 		//更多
-		openPostItemByIndex(4);
-		setOtherMetaByIndex(0, "100");
-		postOtherDone();
+		//openPostItemByIndex(4);
+		//setOtherMetaByIndex(0, "100");
+		//postOtherDone();
 		
 		postSend();
+		
+		//还没有验证的步骤
 	}
 	
 	@Test
@@ -171,7 +171,7 @@ public class MainActivityTest extends BaixingTestCase {
 			}
 		}
 	}
-	
+
 	public void testHistory() throws Exception {
 		deleteAllHistoryAds();
 		BXViewGroupElement detailView = showAd(1, 0, 2);
@@ -181,9 +181,9 @@ public class MainActivityTest extends BaixingTestCase {
 		}
 		showPrevView(detailView);
 		
-		getDevice().pressBack();
-		getDevice().pressBack();
-		getDevice().pressBack();
+		goBack();
+		goBack();
+		goBack();
 		
 		showCount--;//todo bug:showCount 少了一个计数
 		assertEquals(showCount, showMyAdList(MY_LISTING_HISTORY_ID, MY_LISTING_HISTORY_COUNTER_ID)); 
