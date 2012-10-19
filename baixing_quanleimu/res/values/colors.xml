@@ -8,5 +8,6 @@
 	<color name="tab_font">#ECECE4</color>
 	<color name="category_grid_font">#986D2F</color>
 	<color name="category_second_font">#BEBEBE</color>
-	<color name="list_line">#C1C1B9</color>	
+	<color name="list_line">#C1C1B9</color>
+    <color name="base_green">#76C920</color>
 </resources>

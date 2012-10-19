@@ -487,8 +487,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				.setPositiveButton("确定", new DialogInterface.OnClickListener(){
 					@Override
 					public void onClick(DialogInterface dialog, int which){
-						Util.clearData(getAppContext(), "user");
-						Util.clearData(getAppContext(), "userProfile");
+
 						Util.logout();
 						if(bundle != null){
 							bundle.remove("lastPost");

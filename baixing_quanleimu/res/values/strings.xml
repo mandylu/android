@@ -39,6 +39,8 @@
 
     <!-- label text -->
     <string name="label_test">测试</string>
+    <string name="label_login">绑定百姓网帐号</string>
+    <string name="label_logout">退出</string>
 
     <!-- input hint text -->
     <string name="hint_searchCity">请输入城市名称</string>

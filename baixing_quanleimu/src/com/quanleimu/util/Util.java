@@ -1096,13 +1096,26 @@ public class Util {
 		}		
 		return url;
 	}
-	
-	public static void logout()
+
+    /**
+     * logout 数据清理也放在这里，外部直接调用即可
+     */
+    public static void logout()
 	{
+        Util.clearData(QuanleimuApplication.getApplication(), "user");
+        Util.clearData(QuanleimuApplication.getApplication(), "userProfile");
 		currentUserId = null;
 	}
-	
-	
+
+    /**
+     *
+     * @return 返回当前 UserBean user，未登录情况下返回 null
+     */
+    public static UserBean getCurrentUser() {
+        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication(), "user");
+        return user;
+    }
+
 	public static String getMyId(Context context)
 	{
 		if (currentUserId != null)

@@ -11,6 +11,7 @@ import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import android.widget.Toast;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
@@ -21,6 +22,8 @@ import com.quanleimu.entity.UserBean;
 //import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Util;
+
+import java.util.concurrent.TimeUnit;
 //import com.weibo.net.AccessToken;
 //import com.weibo.net.Oauth2AccessTokenHeader;
 //import com.weibo.net.Utility;
@@ -37,14 +40,13 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+
 		View setmain = inflater.inflate(R.layout.setmain, null);
-		
-//		((RelativeLayout) setmain.findViewById(R.id.rlWeibo)).setOnClickListener(this);
-		((RelativeLayout) setmain.findViewById(R.id.rlClearCache)).setOnClickListener(this);
-		( (RelativeLayout) setmain.findViewById(R.id.rlAbout)).setOnClickListener(this);
-		((RelativeLayout) setmain.findViewById(R.id.rlMark)).setOnClickListener(this);
-		((RelativeLayout) setmain.findViewById(R.id.rlTextImage)).setOnClickListener(this);
-		((RelativeLayout) setmain.findViewById(R.id.rlBack)).setOnClickListener(this);
+		((RelativeLayout) setmain.findViewById(R.id.setFlowOptimize)).setOnClickListener(this);
+		((RelativeLayout) setmain.findViewById(R.id.setBindID)).setOnClickListener(this);
+		((RelativeLayout) setmain.findViewById(R.id.setCheckUpdate)).setOnClickListener(this);
+		((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
+		((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
 		
 //		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
 //		AccessToken token = null;
@@ -60,40 +62,55 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 //			}
 //		}
 		
-		final TextView textImg = (TextView)setmain.findViewById(R.id.textView3);
-		if(QuanleimuApplication.isTextMode()){
-			textImg.setText("文字");
-		}
-		else{
-			textImg.setText("图片");
-		}
-		((RelativeLayout)setmain.findViewById(R.id.rlTextImage)).setOnClickListener(new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				if(textImg.getText().equals("图片")){
-					textImg.setText("文字");
-					QuanleimuApplication.setTextMode(true);
-				}
-				else{
-					textImg.setText("图片");
-					QuanleimuApplication.setTextMode(false);
-				}				
-			}
-		});
+//		final TextView textImg = (TextView)setmain.findViewById(R.id.textView3);
+//		if(QuanleimuApplication.isTextMode()){
+//			textImg.setText("文字");
+//		}
+//		else{
+//			textImg.setText("图片");
+//		}
+//		((RelativeLayout)setmain.findViewById(R.id.rlTextImage)).setOnClickListener(new View.OnClickListener() {
+//
+//			@Override
+//			public void onClick(View v) {
+//				if(textImg.getText().equals("图片")){
+//					textImg.setText("文字");
+//					QuanleimuApplication.setTextMode(true);
+//				}
+//				else{
+//					textImg.setText("图片");
+//					QuanleimuApplication.setTextMode(false);
+//				}
+//			}
+//		});
 		
-		((TextView)setmain.findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
-		
-		user = (UserBean) Util.loadDataFromLocate(getActivity(), "user");
-		
+//		((TextView)setmain.findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
+
+        refreshUI(setmain);
+
 		return setmain;
 	}
+
+    private void refreshUI(View rootView) {
+
+        user = Util.getCurrentUser();
+
+        TextView bindIdTextView = (TextView)rootView.findViewById(R.id.setBindIdtextView);
+        if (user == null) {
+            bindIdTextView.setText(R.string.label_login);
+        } else {
+            bindIdTextView.setText(R.string.label_logout);
+        }
+
+
+    }
+
+
 	
 	public void onResume(){
 		super.onResume();
-		((TextView)getView().findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
-		
-		user = (UserBean) Util.loadDataFromLocate(getActivity(), "user");
+//		((TextView)getView().findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
+        this.refreshUI(getView());
 	}
 	
 	@Override
@@ -111,6 +128,35 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 	
 	@Override
 	public void onClick(View v) {
+        switch (v.getId()) {
+            case R.id.setFlowOptimize:
+                Toast.makeText(getAppContext(), "todo 省流量", 1).show();
+                break;
+            case R.id.setBindID:
+                if (user == null) {
+                    Bundle bundle = createArguments(null,  "用户中心");
+                    pushFragment(new LoginFragment(), bundle);
+                } else {
+                    //TODO jiawu 加入确认退出过程
+                    Util.logout();
+                    Toast.makeText(getAppContext(), "已退出", 1).show();
+                    refreshUI(getView());
+                }
+
+                break;
+            case R.id.setCheckUpdate:
+                Toast.makeText(getAppContext(), "todo 检查更新", 1).show();
+                break;
+            case R.id.setAbout:
+                pushFragment(new AboutUsFragment(), null);
+                break;
+            case R.id.setFeedback:
+                pushFragment(new FeedbackFragment(), createArguments(null, null));
+                break;
+            default:
+                Toast.makeText(getAppContext(), "no action", 1).show();
+                break;
+        }
 		// 手机号码
 //		if(v.getId() == R.id.rlWeibo){
 //			if(QuanleimuApplication.getWeiboAccessToken() != null){
@@ -156,7 +202,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 //                lsn.setInAuthrize(true);
 //			}
 //		}
-
+                                    /*
 		final View root = getView();
 		// 签名档
 		if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlMark)).getId()) {
@@ -185,21 +231,13 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 									QuanleimuApplication.getApplication().ClearCache();
 									
 									//清空签名档
-									((TextView)root.findViewById(R.id.personMark)).setText("");
+//									((TextView)root.findViewById(R.id.personMark)).setText("");
 								}
 							});
 			builder.create().show();
 		}
 		
-		//aboutus
-		else if(v.getId() == ((RelativeLayout) root.findViewById(R.id.rlAbout)).getId()){
-			pushFragment(new AboutUsFragment(), null);
-		}
-		
-		// 反馈
-		else if (v.getId() ==((RelativeLayout) root.findViewById(R.id.rlBack)).getId()) {
-			pushFragment(new FeedbackFragment(), createArguments(null, null));
-		}
+ */
 	}
 
 }

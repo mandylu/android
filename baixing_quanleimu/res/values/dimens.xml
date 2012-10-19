@@ -1,11 +1,13 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
-        <dimen name="table_row_top_margin">6dp</dimen>
-         <dimen name="table_row_bottom_margin">6dp</dimen>
-         <dimen name="title_height">48dp</dimen>
-         <dimen name="title_action_width">48dp</dimen>
-         <dimen name="title_action_right_width">62dp</dimen>
-         <dimen name="tab_height">48dp</dimen>
-         <dimen name="tab_indicator_height">4dp</dimen>
-         <dimen name="tab_font_size">18sp</dimen>
+    <dimen name="table_row_top_margin">6dp</dimen>
+    <dimen name="table_row_bottom_margin">6dp</dimen>
+    <dimen name="title_height">48dp</dimen>
+    <dimen name="title_action_width">48dp</dimen>
+    <dimen name="title_action_right_width">62dp</dimen>
+    <dimen name="tab_height">48dp</dimen>
+    <dimen name="tab_indicator_height">4dp</dimen>
+    <dimen name="tab_font_size">18sp</dimen>
+    <dimen name="set_table_height">48dp</dimen>
+    <dimen name="set_table_header_text_height">12dp</dimen><dimen name="set_table_item_text_height">16dp</dimen>
 </resources>
