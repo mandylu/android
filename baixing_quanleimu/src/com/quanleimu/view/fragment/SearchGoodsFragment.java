@@ -508,7 +508,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight,
 						paddingBottom);
 
-				((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+//				((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 
 				mListLoader.setNearby(false);
 				mListLoader.cancelFetching();

@@ -8,11 +8,17 @@ import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
+import android.location.Location;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.quanleimu.activity.R;
+import com.quanleimu.adapter.GoodsListAdapter;
+import com.quanleimu.adapter.GoodsListAdapter.GroupItem;
+import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.Filterss;
+import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.values;
 import com.quanleimu.view.fragment.MultiLevelSelectionFragment;
 import com.quanleimu.view.fragment.PostParamsHolder;
@@ -35,6 +41,136 @@ public class FilterUtil {
 	{
 		
 	}
+	
+	public static List<GoodsListAdapter.GroupItem> createFilterGroup(List<Filterss> fss, PostParamsHolder paramsHolder, List<GoodsDetail> list)
+	{
+		final int skipCount = 3;//FIXME: define a field..
+		if (list == null || list.size() == 0)
+		{
+			return null;
+		}
+		
+		StringBuffer buf = new StringBuffer();
+		if (paramsHolder.containsKey(""))
+		{
+			buf.append(paramsHolder.getData("")).append("+");
+		}
+
+		int skiped = 0;
+		for (int i=0; i<fss.size(); i++)
+		{
+			Filterss f = fss.get(i);
+			if (f.getControlType().equals("select"))
+			{
+				if (skiped < skipCount)
+				{
+					skiped++;
+				}
+				else if (paramsHolder.containsKey(f.getName()))
+				{
+					buf.append(paramsHolder.getUiData(f.getName())).append("+");
+				}
+			}
+		}
+		
+		List<GoodsListAdapter.GroupItem> groups = new ArrayList<GoodsListAdapter.GroupItem>();
+		if (buf.length() > 0)
+		{
+			buf.deleteCharAt(buf.length()-1);
+			GroupItem g = new GroupItem();
+			g.filterHint = "\"" + buf.toString() + "\"";
+			g.resultCount = list.size();
+			groups.add(g);
+		}
+		
+		return groups;
+	}
+	
+	public static List<GoodsListAdapter.GroupItem> createDistanceGroup(List<Filterss> fss, List<GoodsDetail> ls, BXLocation currentLocation, int[] conditions)
+	{
+		List<GoodsDetail> detailList = new ArrayList<GoodsDetail>();
+		detailList.addAll(ls);
+		List<GoodsListAdapter.GroupItem> groups = new ArrayList<GoodsListAdapter.GroupItem>();
+		
+		for (int i=0; i<conditions.length; i++)
+		{
+			int count = 0;
+			for (int j=0; j<detailList.size();)
+			{
+				float results[] = {0.0f, 0.0f, 0.0f};
+				String lat = detailList.get(j).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+				String lon = detailList.get(j).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+				
+				double latD = 0;
+				double lonD = 0;
+				try
+				{
+					latD = Double.parseDouble(lat);
+					lonD = Double.parseDouble(lon);
+				}
+				catch(Throwable t)
+				{
+					Log.d("GetGoodView", "ad nearby lacks lat & lon");
+				}
+
+				if (latD != 0 && lonD != 0 && currentLocation != null)
+				{
+					Location.distanceBetween(latD, lonD, currentLocation.fLat, currentLocation.fLon, results);
+				}
+				
+				if (results[i] != 0.0 && results[i] < conditions[i])
+				{
+					count++;
+					detailList.remove(j);
+				}
+				else
+				{
+					j++;
+				}
+			}
+			
+			
+			if (count > 0)
+			{
+				GroupItem item = new GroupItem();
+				item.resultCount = count;
+				item.filterHint = "附近" + getDisplayDistance(conditions[i])  + "的信息";
+				groups.add(item);
+				Log.d("LIST", "group:" +item.filterHint + "(" + item.resultCount + " of " + ls.size());
+			}
+		}
+		
+		if (detailList.size() > 0)
+		{
+			GroupItem item = new GroupItem();
+			item.resultCount = detailList.size();
+			item.filterHint =  getDisplayDistance(conditions[conditions.length-1]) + "以外的信息";
+			groups.add(item);
+			Log.d("LIST", "group:" +item.filterHint + "(" + item.resultCount + " of " + ls.size());
+		}
+		
+		return groups;
+	}
+	
+	private static String getDisplayDistance(int distance)
+	{
+		
+		String unit = "米";
+		String number = distance + "";
+
+		if (distance > 1000)
+		{
+			unit = "公里";
+			int kilo_number = (int)(distance/1000);
+			int fractor_kilo_number = (int)((distance-(kilo_number*1000))/100);
+			number = ""+kilo_number+"."+fractor_kilo_number;
+		}
+		
+		return number + unit;
+		
+	}
+	
+	
 
 	public static void startSelect(Context context, CustomizeItem[] customizeItems, Filterss fss, final FilterSelectListener listener)
 	{

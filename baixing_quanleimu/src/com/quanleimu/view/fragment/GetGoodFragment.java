@@ -63,7 +63,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private PullToRefreshListView lvGoodsList;
 	private ProgressBar progressBar;
-	private int titleControlStatus = 1;
+	private int titleControlStatus = 0;
 	
 	private String categoryEnglishName = "";
 	private String searchContent = "";
@@ -76,6 +76,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private boolean mRefreshUsingLocal = false;
 	private BXLocation curLocation = null;
+	
+	private List<Filterss> listFilterss;
 	
     private static final int HOUR_MS = 60*60*1000;
     private static final int MINUTE_MS = 60*1000;
@@ -213,6 +215,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
 			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
+			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setAdapter(adapter);
 			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
 		}
@@ -316,12 +319,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		if(curLocation == null || titleControlStatus == 0){
 //			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 //			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
-			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+//			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 			this.titleControlStatus = 0;
 		}else{
-			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
+//			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
 			addParams.add("lat="+curLocation.fLat);
 			addParams.add("lng="+curLocation.fLon);			
 		}
@@ -331,13 +334,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			goodsListLoader.setNearby(true);
 			goodsListLoader.setRuntime(false);
 		}
-
+		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
-					int arg2, long arg3) {
+					int pos, long arg3) {
 				
-				int index = arg2 - lvGoodsList.getHeaderViewsCount();
+				int index = (int) arg3;//(int) (arg3 - lvGoodsList.getHeaderViewsCount());
 				if(index < 0 || index > goodsListLoader.getGoodsList().getData().size() - 1)
 					return;
 
@@ -360,13 +363,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			}
 		}
 		
-		if(categoryName == null || categoryName.equals("") 
-				|| categoryEnglishName == null || categoryEnglishName.equals("")){
-			v.findViewById(R.id.publishBtn).setVisibility(View.GONE);
-		}else{
-			v.findViewById(R.id.publishBtn).setOnClickListener(this);
-			v.findViewById(R.id.publishBtn).setVisibility(View.VISIBLE);
-		}
+//		if(categoryName == null || categoryName.equals("") 
+//				|| categoryEnglishName == null || categoryEnglishName.equals("")){
+//			v.findViewById(R.id.publishBtn).setVisibility(View.GONE);
+//		}else{
+//			v.findViewById(R.id.publishBtn).setOnClickListener(this);
+//			v.findViewById(R.id.publishBtn).setVisibility(View.VISIBLE);
+//		}
 		
 		return v;
 	
@@ -378,14 +381,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	public void onClick(View v) {
 		GoodsListAdapter adapter = this.findGoodListAdapter();
 		switch(v.getId()){
-		case R.id.publishBtn:
-			String categoryName = getArguments().getString("categoryName");
-			categoryName = categoryEnglishName + "," + categoryName;
-			Bundle bundle = createArguments(null, null);
-			bundle.putSerializable("cateNames", categoryName);
-			pushFragment(new PostGoodsFragment(), bundle);
-//			m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)this.getContext(), this.bundle, categoryName));
-			break;
+//		case R.id.publishBtn:
+//			String categoryName = getArguments().getString("categoryName");
+//			categoryName = categoryEnglishName + "," + categoryName;
+//			Bundle bundle = createArguments(null, null);
+//			bundle.putSerializable("cateNames", categoryName);
+//			pushFragment(new PostGoodsFragment(), bundle);
+////			m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)this.getContext(), this.bundle, categoryName));
+//			break;
 		case R.id.btnRecent:
 			if(titleControlStatus != 0){
 				View btnNearBy = getActivity().findViewById(R.id.btnNearby);
@@ -398,8 +401,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
-				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+//				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 				
 //				goodsListLoader.cancelFetching();
 //				goodsListLoader.setNearby(false);
@@ -411,10 +414,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				lvGoodsList.onFail();
 				lvGoodsList.fireRefresh();
 				if(adapter != null){
-					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.setList(new ArrayList<GoodsDetail>(), null);
 					adapter.notifyDataSetChanged();
-					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
+//					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
 				}
 				
 				titleControlStatus = 0;
@@ -444,8 +447,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				btnRecent.setBackgroundResource(R.drawable.bg_nav_seg_right_normal);
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight, paddingBottom);
 				
-				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
+//				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//				((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
 				
 //				goodsListLoader.cancelFetching();
 //				
@@ -466,10 +469,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				lvGoodsList.fireRefresh();
 				
 				if(adapter != null){
-					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.setList(new ArrayList<GoodsDetail>(), null);
 					adapter.notifyDataSetChanged();
-					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
+//					((TextView)getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
+//					((TextView)getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
 				}
 				
 				titleControlStatus = 1;
@@ -568,8 +571,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			}
 		}
 		
-		((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
-		((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
+//		((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
+//		((TextView)getActivity().findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
 		
 		//Log.d("kkkkkk", "first visible item: "+firstVisibleItem+", visibleItemCount: "+visibleItemCount+", totalItemCount: "+totalItemCount);
 	}
@@ -604,6 +607,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		mRefreshUsingLocal = false;
 	}
 
+	private void updateData(GoodsListAdapter adapter, List<GoodsDetail> data)
+	{
+		adapter.setList(data, titleControlStatus == 1 ? FilterUtil.createDistanceGroup(listFilterss, data, this.curLocation, new int[] {500, 1500}) : 
+			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
+	}
+	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
@@ -631,6 +640,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
+				updateData(adapter, goodsListLoader.getGoodsList().getData());
 				lvGoodsList.setAdapter(adapter);
 				goodsListLoader.setHasMore(true);
 			}
@@ -684,7 +694,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
 				GoodsListAdapter adapter = findGoodListAdapter();
-				adapter.setList(goodsListLoader.getGoodsList().getData());
+				updateData(adapter, goodsListLoader.getGoodsList().getData());
 				adapter.notifyDataSetChanged();		
 				
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
@@ -721,7 +731,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			return;
 		}
 		
-		List<Filterss> listFilterss = JsonUtil.getFilters(json).getFilterssList();
+		listFilterss = JsonUtil.getFilters(json).getFilterssList();
 		
 		
 		View.OnClickListener listener = new View.OnClickListener() {

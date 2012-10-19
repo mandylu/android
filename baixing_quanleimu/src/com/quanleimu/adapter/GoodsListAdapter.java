@@ -12,6 +12,7 @@ import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -37,8 +38,15 @@ import com.quanleimu.widget.ContextMenuItem;
 
 public class GoodsListAdapter extends BaseAdapter {
 
+	public static final class GroupItem
+	{
+		public String filterHint;
+		public int resultCount;
+	}
+	
 	private Context context;
 	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+	private List<GroupItem> groups  = new ArrayList<GoodsListAdapter.GroupItem>();
 	private boolean hasDelBtn = false;
 	private Bitmap defaultBk2;
 //	private AnimationDrawable loadingBK;
@@ -76,6 +84,20 @@ public class GoodsListAdapter extends BaseAdapter {
 	public void setList(List<GoodsDetail> list) {
 		this.list = list;
 	}
+	
+	public void updateGroups(List<GroupItem> outerGroup)
+	{
+		this.groups.clear();
+		if (outerGroup != null)
+		{
+			this.groups.addAll(outerGroup);
+		}
+	}
+	
+	public void setList(List<GoodsDetail> list, List<GroupItem> outerGroup) {
+		this.list = list;
+		updateGroups(outerGroup);
+	}
 
 	public GoodsListAdapter(Context context, List<GoodsDetail> list) {
 		super();
@@ -107,20 +129,23 @@ public class GoodsListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		// TODO Auto-generated method stub
-		return (list == null || 0 == list.size()) ? 1 : list.size();
+		return this.getGroupCount()  + ((list == null || 0 == list.size()) ? 1 : list.size());
+	}
+	
+	private int getGroupCount()
+	{
+		return groups == null ? 0 : groups.size();
 	}
 
 	@Override
 	public Object getItem(int arg0) {
-		// TODO Auto-generated method stub
 		return arg0;
 	}
 
 	@Override
 	public long getItemId(int position) {
-		// TODO Auto-generated method stub
-		return position;
+		
+		return this.getRealIndex(position);
 	}
 	
 	static class ViewHolder{
@@ -132,13 +157,73 @@ public class GoodsListAdapter extends BaseAdapter {
 		View pbView;
 	}
 	
+	private boolean isGroupPosition(int pos)
+	{
+		if (groups == null  || groups.size() == 0)
+		{
+			return false;
+		}
+
+		int skip = 0;
+		for (int i=0; i<groups.size(); skip += groups.get(i).resultCount + 1, i++)
+		{
+			final int expIndex = i == 0 ? 0 : groups.get(i-1).resultCount + skip;
+			if (expIndex == pos)
+			{
+				return true;
+			}
+		}
+		
+		return false;
+	}
+	
+	private GroupItem findGroupByPos(int position)
+	{
+		int skip = 0;
+		for (int i=0; i<groups.size(); skip += groups.get(i).resultCount + 1, i++)
+		{
+			final int expIndex = i == 0 ? 0 : groups.get(i-1).resultCount + skip;
+			if (expIndex == position)
+			{
+				return groups.get(i);
+			}
+		}
+		
+		return null;
+	}
+	
+	private int getRealIndex(int position)
+	{
+		if (groups == null || groups.size() == 0)
+		{
+			return position;
+		}
+		
+		if (isGroupPosition(position))
+		{
+			return -1;
+		}
+		
+		int skip = 0;
+		for (int i=0; i<groups.size(); skip += (groups.get(i).resultCount + 1), i++)
+		{
+			if (position <= (skip + groups.get(i).resultCount))
+			{
+				return position - i - 1;
+			}
+		}
+		
+		return -1;
+	}
+	
+	
 	@Override
-	public View getView(final int position, View convertView, ViewGroup parent) {
+	public View getView(final int pos, View convertView, ViewGroup parent) {
 //		Log.d("goodslistadapter", "hahaha, position: " + position);
 		if(list == null || 0 == list.size()){
 			View v = null;
 			
-			if(0 == position){			
+			if(0 == pos){			
 				
 				LayoutInflater inflater = LayoutInflater.from(context);
 				v = inflater.inflate(R.layout.goodslist_empty_hint, null);
@@ -150,7 +235,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			View v = convertView;
 			if(v == null || v.getTag() == null || !(v.getTag() instanceof ViewHolder)){
 				LayoutInflater inflater = LayoutInflater.from(context);
-				v = inflater.inflate(R.layout.item_goodslist, null);
+				v = inflater.inflate(R.layout.item_goodlist_with_title, null);
 				holder = new ViewHolder();
 				holder.tvDes = (TextView) v.findViewById(R.id.tvDes);
 				holder.tvPrice = (TextView) v.findViewById(R.id.tvPrice);
@@ -164,6 +249,28 @@ public class GoodsListAdapter extends BaseAdapter {
 			else{
 				holder = (ViewHolder)v.getTag();
 			}
+			
+			if (isGroupPosition(pos))
+			{
+				v.findViewById(R.id.filter_view_root).setVisibility(View.VISIBLE);
+				v.findViewById(R.id.goods_item_view_root).setVisibility(View.GONE);
+				GroupItem g = findGroupByPos(pos);
+				TextView text = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_string);
+				text.setText(g.filterHint);
+				TextView countTxt = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_result_count);
+				countTxt.setText(g.resultCount + "");
+				v.setEnabled(false);
+				return v;
+			}
+			else
+			{
+				v.setEnabled(true);
+				v.findViewById(R.id.filter_view_root).setVisibility(View.GONE);
+				v.findViewById(R.id.goods_item_view_root).setVisibility(View.VISIBLE);
+			}
+			
+			final int position = getRealIndex(pos);
+//			Log.e("LIST", "position translate from " + pos + "-->" + position);
 	
 			if (hasDelBtn) {
 				holder.btnDelete.setVisibility(View.VISIBLE);

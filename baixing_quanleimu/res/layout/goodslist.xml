@@ -30,9 +30,9 @@
             android:listSelector="#00000000"
             android:scrollbars="vertical"
             android:scrollingCache="false"
-            app:need_gap_header="true" />
+            app:need_gap_header="false" />
     </LinearLayout>
-     
+<!--      
     <RelativeLayout
         android:id="@+id/linearStatusbar"
         android:layout_below="@+id/filter_bar_root"
@@ -100,7 +100,7 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_alignParentRight="true" />
-    </RelativeLayout>
+    </RelativeLayout> 
 
     <ImageButton
         android:id="@+id/publishBtn"
@@ -111,6 +111,6 @@
         android:layout_marginBottom="10dip"
         android:layout_marginLeft="10dip"
         android:background="@drawable/btn_listing_publish" >
-    </ImageButton>
+    </ImageButton>-->
 
 </RelativeLayout>
