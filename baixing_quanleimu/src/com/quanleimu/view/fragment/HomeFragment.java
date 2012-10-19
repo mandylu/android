@@ -22,6 +22,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.GridView;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
@@ -60,6 +61,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	protected void initTitle(TitleDef title) {
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
 		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
+		TextView titleLabel = (TextView) title.m_titleControls.findViewById(R.id.title_label_city);
+		titleLabel.setText(QuanleimuApplication.getApplication().getCityName());
 		
 		title.hasGlobalSearch = true;
 		title.m_rightActionHint = "发布";
@@ -70,6 +73,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 			}
 		});
+		
 	}
 	
 	public void initTab(TabDef tab){
@@ -81,6 +85,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
 	}
+	
+	@Override
+	public void handleSearch() {
+		this.pushFragment(new SearchFragment(), this.getArguments());
+	};
 
 	@Override
 	protected int getFirstRunId() {
@@ -102,6 +111,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		View v = inflater.inflate(R.layout.homepageview, null);
 		
 		pageMgr.attachView(v, this, this);
+		
+
+		TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
+		titleLabel.setText(QuanleimuApplication.getApplication().getCityName());		
 		
 		return v;
 		

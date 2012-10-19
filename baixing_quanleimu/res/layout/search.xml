@@ -1,77 +1,85 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout
- 	 xmlns:android="http://schemas.android.com/apk/res/android"
-  	 android:layout_width="fill_parent"
-  	 android:layout_height="fill_parent"
-  	 android:orientation="vertical"
-  	 android:focusableInTouchMode="true"
-  	 android:background="@drawable/home_bg"
-  	 android:focusable="true">
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    android:orientation="vertical" >
 
-  	 <LinearLayout
-  	 	android:id="@+id/lvSearch"
-  	 	android:layout_width="fill_parent"
-  	 	android:layout_height="wrap_content"  	
-  	 	android:gravity="center" 	
-  	 	android:background="@drawable/home_bg_search">  	 
-  	     
-  	     <LinearLayout
-  	         android:id="@+id/rlSearch"
-  	         android:layout_width="fill_parent"
-  	         android:layout_height="wrap_content"
-  	         android:background="@drawable/bgsearch"
-  	         android:layout_marginLeft="10dip"
-  	         android:layout_marginTop="5dip"
-  	         android:layout_marginBottom="5dip"
-  	         android:gravity="center"
-  	         android:layout_weight="1">
-	
-  	         <ImageView
-  	             android:layout_width="wrap_content"
-  	             android:layout_height="wrap_content"
-  	             android:paddingLeft="5dip"
-  	             android:src="@drawable/iconsearch" />
-	
-  	         <EditText
-  	             android:id="@+id/etSearch"
-  	             android:layout_width="fill_parent"
-  	             android:layout_height="wrap_content"
-  	             android:background="#00000000"
-  	             android:ems="10"
-  	             android:gravity="center_vertical"
-  	             android:hint="点这里输入搜索关键字"
-  	             android:singleLine="true"
-  	             android:textColor="#ffaaaaaa"
-  	             android:textSize="15dip"
-  	             android:focusable="true"
-  	             android:paddingLeft="10dip"
-  	             android:paddingTop="0dip"
-  	             android:paddingBottom="0dip"
-  	             android:focusableInTouchMode="true"
-				 android:imeOptions="actionGo"/>        		          	         
-  	     </LinearLayout>
-  	     
-  	     <Button
-  	         	android:id="@+id/btnCancel"
-  	             android:layout_width="wrap_content"
-  	             android:layout_height="wrap_content"
-  	             android:layout_margin="5dip"
-  	             android:singleLine="true"
-  	             android:text="搜索"
-  	             android:gravity="center"	
-  	             android:textColor="#ffffff"		        
-  	             android:background="@drawable/btn_search" />
-  	 </LinearLayout>	
-  	 
-  	 <ListView 
-  	     android:layout_below="@id/lvSearch"
-  	 	android:layout_height="fill_parent" 
-  	 	android:layout_width="fill_parent" 
-  	 	android:id="@+id/lvSearchHistory"
-  	 	android:layout_gravity="bottom"
-  	 	android:listSelector="#00000000"
-  	 	android:scrollingCache="false"
-  	 	android:focusableInTouchMode="true"
-  	 	android:focusable="true"/>
+    <ListView
+       android:id="@+id/lvSearchHistory"
+       android:layout_width="fill_parent"
+       android:layout_height="wrap_content"
+       android:layout_gravity="bottom"
+       android:focusable="false"
+       android:focusableInTouchMode="true"
+       android:listSelector="#00000000"
+       android:scrollingCache="false" 
+       android:visibility="gone"
+     />
+ 
+    <LinearLayout
+        android:id="@+id/searchResult"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:orientation="vertical"
+        android:visibility="gone" >
 
-</RelativeLayout>
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:orientation="vertical"
+            android:paddingBottom="5dip"
+            android:paddingLeft="10dip"
+            android:paddingRight="10dip"
+            android:paddingTop="10dip" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dip"
+                android:layout_marginLeft="15dip"
+                android:layout_marginTop="10dip"
+                android:text="请选择分类查看"
+                android:textColor="@color/citychange_titleline"
+                android:textSize="14dip" >
+            </TextView>
+
+            <View
+                android:layout_width="wrap_content"
+                android:layout_height="3dp"
+                android:background="@color/citychange_titleline" >
+            </View>
+        </LinearLayout>
+        
+        <ListView
+            android:id="@+id/lvSearchResultList"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:layout_gravity="center_vertical"
+	        android:focusable="false"
+	        android:focusableInTouchMode="true"
+	        android:listSelector="@null"
+	        android:scrollingCache="false" 
+	        android:divider="@null"
+	        />
+        
+    </LinearLayout>
+    
+    <LinearLayout
+        android:id="@+id/noResultView"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+		android:visibility="gone"
+        >
+
+        <TextView
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="20dp"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:textSize="18dp"
+            android:text="@string/search_no_result" />
+
+    </LinearLayout>    
+
+</LinearLayout>

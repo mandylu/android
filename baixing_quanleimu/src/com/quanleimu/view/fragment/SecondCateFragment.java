@@ -100,12 +100,28 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		title.m_visible = true;
 		title.m_title = cate.getName();
 		title.m_leftActionHint = "返回";
+		title.hasGlobalSearch = true;
+		title.m_rightActionHint = "发布";
+		title.m_rightActionBg = R.drawable.bg_post_selector;		
 	}
 	
 	@Override
 	public void initTab(TabDef tab){
 		tab.m_visible = true;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
+	}
+	
+	@Override
+	public void handleSearch() {
+		Bundle bundle = new Bundle();
+		bundle.putString("categoryEnglishName", this.cate.getEnglishName());
+		bundle.putString("categoryName", this.cate.getName());
+		this.pushFragment(new SearchFragment(), bundle);
+	}
+	
+	@Override
+	public void handleRightAction() {
+
 	}
 
 }

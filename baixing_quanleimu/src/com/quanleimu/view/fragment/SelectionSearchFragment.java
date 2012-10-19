@@ -61,7 +61,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.search, null);
+		View v = inflater.inflate(R.layout.selectionsearch, null);
 	
 		btnCancel = (Button)v.findViewById(R.id.btnCancel);
 		btnCancel.setText("取消");

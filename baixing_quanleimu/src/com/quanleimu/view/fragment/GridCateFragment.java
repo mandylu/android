@@ -63,16 +63,28 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 			return;
 		if (arg1.getTag() == null)
 			return;
+		FirstStepCate selectedCate = null;
 		for (int i = 0; i < allCates.size(); ++i) {
 			String selText = ((GridAdapter.GridHolder) arg1.getTag()).text.getText().toString();
 			if (allCates.get(i).name.equals(selText)){
-				Bundle bundle = new Bundle();
-				bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
-				bundle.putSerializable("cates", allCates.get(i));
-				bundle.putBoolean("isPost", true);
-				pushFragment(new SecondCateFragment(), bundle);
+				selectedCate = allCates.get(i);
+				break;
 			}
 		}
+		
+		if (this.requestCode != INVALID_REQUEST_CODE)
+		{
+			this.finishFragment(this.requestCode, selectedCate);
+		}
+		else
+		{
+			Bundle bundle = new Bundle();
+			bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
+			bundle.putSerializable("cates", selectedCate);
+			bundle.putBoolean("isPost", true);
+			pushFragment(new SecondCateFragment(), bundle);
+		}
+		
 	}
 	
 	@Override

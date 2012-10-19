@@ -4,12 +4,14 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.util.Log;
+import android.util.Pair;
 
 import com.fasterxml.jackson.core.JsonFactory;
 import com.fasterxml.jackson.core.JsonParseException;
@@ -899,5 +901,38 @@ public class JsonUtil {
 		}
 		return postList;
 
+	}
+	
+	/*
+	 * Sample Json:
+	 * <pre>
+	 * {count: 10, data: [	["chongwujiaoyi","狗狗",	180284]	] }
+	 * </pre>
+	 */
+	public static List<Pair<SecondStepCate, Integer>> parseAdSearchCategoryCountResult(String jsonData)
+	{
+		List<Pair<SecondStepCate, Integer>> categoryCountList = new ArrayList<Pair<SecondStepCate, Integer>>(8);
+		try {
+			JSONObject json = new JSONObject(jsonData);
+			JSONArray data = json.getJSONArray("data");
+			for (int i = 0; i < data.length(); i++)
+			{
+				JSONArray categoryResult = data.getJSONArray(i);
+				String englishName = categoryResult.getString(0);
+				String name = categoryResult.getString(1);
+				int count = categoryResult.getInt(2);
+				
+				SecondStepCate secondCate = new SecondStepCate();
+				secondCate.setEnglishName(englishName);
+				secondCate.setName(name);
+				categoryCountList.add(new Pair<SecondStepCate, Integer>(secondCate, count));
+			}
+			
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		
+		return categoryCountList;
+		
 	}
 }

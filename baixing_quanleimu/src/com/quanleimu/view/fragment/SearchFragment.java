@@ -1,20 +1,25 @@
 package com.quanleimu.view.fragment;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
 
-import android.app.ProgressDialog;
+import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Message;
+import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.Button;
+import android.widget.ArrayAdapter;
 import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -23,215 +28,370 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.CommonItemAdapter;
-import com.quanleimu.entity.GoodsDetail;
-import com.quanleimu.entity.GoodsList;
-import com.quanleimu.util.BXStatsHelper;
+import com.quanleimu.entity.FirstStepCate;
+import com.quanleimu.entity.SecondStepCate;
+import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 
-public class SearchFragment extends BaseFragment implements View.OnClickListener {
+public class SearchFragment extends BaseFragment {
 
-	//定义控件
-		public Button btnCancel;
-		public EditText etSearch;
-		private TextView tvClear;
-		public ListView lvSearchHistory;
-		private CommonItemAdapter adapter;
-		//参数
-		private String fields = "mobile,id,link,title,description,date,areaNames,categoryEnglishName,lat,lng,images_big,images_resize180,metaDat";
+	private static final int REQ_SELECT_SEARCH_CATEGORY = 147;
+	private static final int MSG_SEARCH_RESULT = 1;
+
+	private EditText etSearch;
+	private TextView tvClear;
+	private ListView lvSearchHistory;
+	private View searchResult;
+	private ListView lvSearchResultList;
+	private View noResultView;
+	
+	
+
+	/**
+	 * 设置布局显示为目标有多大就多大
+	 */
+	private LayoutParams WClayoutParams = new LinearLayout.LayoutParams(
+			LinearLayout.LayoutParams.WRAP_CONTENT,
+			LinearLayout.LayoutParams.WRAP_CONTENT);
+	/**
+	 * 设置布局显示目标最大化
+	 */
+	private LayoutParams FFlayoutParams = new LinearLayout.LayoutParams(
+			LinearLayout.LayoutParams.FILL_PARENT,
+			LinearLayout.LayoutParams.FILL_PARENT);
+
+	// 定义变量
+	private FirstStepCate firstStepCategory;
+	
+	public String searchContent = "";
+
+	List<Pair<SecondStepCate, Integer>> categoryResultCountList;
+
+	private List<String> listRemark = new ArrayList<String>();
+
+	protected void initTitle(TitleDef title) {
+		title.m_visible = true;
+		title.m_titleControls = LayoutInflater.from(getActivity()).inflate(
+				R.layout.title_search, null);
+		etSearch = (EditText) title.m_titleControls.findViewById(R.id.etSearch);
+		title.m_rightActionHint = "搜索";
+
+		etSearch.setOnKeyListener(new View.OnKeyListener() {
+
+			@Override
+			public boolean onKey(View v, int keyCode, KeyEvent event) {
+				if (keyCode == KeyEvent.KEYCODE_ENTER) {
+					SearchFragment.this.doSearch();
+					return true;
+				} else if (keyCode == KeyEvent.KEYCODE_BACK)
+				{
+					SearchFragment.this.showSearchResult(false);
+					return false;
+				}else
+				{
+					return false;
+				}
+			}
+		});
 		
-		/** 
-		  * 设置布局显示为目标有多大就多大 
-		  */  
-		 private LayoutParams WClayoutParams =new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT); 
-		 /** 
-		 * 设置布局显示目标最大化 
-		 */  
-		 private LayoutParams FFlayoutParams =new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.FILL_PARENT);  
+		etSearch.setOnClickListener(new OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				SearchFragment.this.showSearchHistory();
+			}
+		});;
 		
-		//定义变量
-		public String searchType = "";
-		public String json = "";
-		public int startRow = 0;
-		public List<Bitmap> listBm = new ArrayList<Bitmap>();
-		public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
-		public GoodsList goodsList = new GoodsList();
-		public String searchContent = "";
-		
-		private List<String> listRemark = new ArrayList<String>();
-		
-		protected void initTitle(TitleDef title) {
-			title.m_visible = false;
-		}
-		
-		public void initTab(TabDef tab){
-			tab.m_visible = false;
-		}
-		
-		
+	}
+
+	public void initTab(TabDef tab) {
+		tab.m_visible = false;
+	}
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootV = inflater.inflate(R.layout.search, null);
-		
-		//通过ID获取控件
-		//btnSearch = (Button)findViewById(R.id.btnSearch);
-		btnCancel = (Button)rootV.findViewById(R.id.btnCancel);
-		
-		etSearch = (EditText)rootV.findViewById(R.id.etSearch);
-		etSearch.setFocusableInTouchMode(true);
 
-		
+		// 通过ID获取控件
 		lvSearchHistory = (ListView) rootV.findViewById(R.id.lvSearchHistory);
+		lvSearchResultList = (ListView) rootV
+				.findViewById(R.id.lvSearchResultList);
+		searchResult = rootV.findViewById(R.id.searchResult);
+		noResultView = rootV.findViewById(R.id.noResultView);
+
+		// 添加自定义布局
+		LinearLayout layout = new LinearLayout(getActivity());
+		layout.setOrientation(LinearLayout.HORIZONTAL);
 		
-		btnCancel.setOnClickListener(this);
+		tvClear = new TextView(getActivity());
+		tvClear.setTextSize(22);
+		tvClear.setText("清除历史记录");
+		tvClear.setGravity(Gravity.CENTER_VERTICAL);
+		layout.addView(tvClear, FFlayoutParams);
+		layout.setGravity(Gravity.CENTER);
+
+		LinearLayout loadingLayout = new LinearLayout(getActivity());
+		loadingLayout.addView(layout, WClayoutParams);
+		loadingLayout.setGravity(Gravity.CENTER);
+		lvSearchHistory.addFooterView(loadingLayout);
 		
-		listRemark = QuanleimuApplication.getApplication().getListRemark();
+		lvSearchHistory.setVisibility(View.GONE);
+		lvSearchHistory.setOnItemClickListener(new OnItemClickListener() {
+
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int arg2, long arg3) {
+				if (arg2 <= (listRemark.size() - 1)) {
+					searchContent = listRemark.get(arg2);
+					showSearchResult(true);
+				} else {
+					listRemark.clear();
+					QuanleimuApplication.getApplication().setListRemark(
+							listRemark);
+					lvSearchHistory.setVisibility(View.GONE);
+					tvClear.setVisibility(View.GONE);
+				}
+			}
+		});		
 		
-		adapter = new CommonItemAdapter(getActivity(), listRemark, 0x1FFFFFFF, false);
-		adapter.setHasArrow(false);
-		
-		//添加自定义布局
-		 LinearLayout layout = new LinearLayout(getActivity());  
-		 layout.setOrientation(LinearLayout.HORIZONTAL);  
-		 tvClear = new TextView(getActivity());
-		 tvClear.setTextSize(22);
-		 tvClear.setText("清除历史记录");
-		 tvClear.setGravity(Gravity.CENTER_VERTICAL);  
-		 
-		 layout.addView(tvClear,FFlayoutParams);  
-		 layout.setGravity(Gravity.CENTER);  
-		 
-		 LinearLayout loadingLayout = new LinearLayout(getActivity());  
-		 loadingLayout.addView(layout,WClayoutParams);  
-		 loadingLayout.setGravity(Gravity.CENTER);  
-		 lvSearchHistory.addFooterView(loadingLayout);
-		 
-		 lvSearchHistory.setVisibility(View.GONE);
-		 
-		 tvClear.setOnClickListener(new View.OnClickListener() {
-			
+		tvClear.setOnClickListener(new View.OnClickListener() {
+
 			@Override
 			public void onClick(View v) {
 				listRemark.clear();
 				QuanleimuApplication.getApplication().setListRemark(listRemark);
 				lvSearchHistory.setVisibility(View.GONE);
 				v.setVisibility(View.GONE);
-				
-				//将搜索记录保存本地
+
+				// 将搜索记录保存本地
 				Helper.saveDataToLocate(getActivity(), "listRemark", listRemark);
 			}
-		 });
-		 
-		 if(listRemark != null && listRemark.size() != 0)
-		 {
-			 lvSearchHistory.setVisibility(View.VISIBLE);
-			 tvClear.setVisibility(View.VISIBLE);
-			 lvSearchHistory.setAdapter(adapter);
-				lvSearchHistory.setOnItemClickListener(new OnItemClickListener() {
+		});
 
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-							long arg3) {
-						// TODO Auto-generated method stub
-						if(arg2 <=  (listRemark.size()-1))
-						{
-							 searchContent = listRemark.get(arg2);
-							 // 调用搜索接口获取搜索结果，跳转搜索界面
-	
-							Bundle bundle = new Bundle();
-							bundle.putString("backPageName", "首页");
-							bundle.putString("searchContent", searchContent);
-							bundle.putString("actType", "search");
-							bundle.putString("name", "");
-							pushAndFinish(new GetGoodFragment(), bundle);
-						}
-						else
-						{
-							listRemark.clear();
-							QuanleimuApplication.getApplication().setListRemark(listRemark);
-							lvSearchHistory.setVisibility(View.GONE);
-							tvClear.setVisibility(View.GONE);
-						}
-					}
-				});
-		 }
-	
-		 return rootV;
-	}
-	
-	@Override
-	public void onPause(){
-		InputMethodManager inputMgr = 
-				(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
-		
-		super.onPause();
-	}
-	
-	@Override
-	public void onResume(){
-		super.onResume();
-		etSearch.postDelayed(new Runnable(){
+		listRemark = QuanleimuApplication.getApplication().getListRemark();
+
+		lvSearchResultList.setOnItemClickListener(new OnItemClickListener() {
 			@Override
-			public void run(){
-				etSearch.requestFocus();
-				InputMethodManager inputMgr = 
-						(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-				inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_FORCED);
-//				if(!inputMgr.isActive())
-//					inputMgr.toggleSoftInput(0, 0);
-			}			
-		}, 100);
+			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
+					long arg3) {
+				SecondStepCate cate = (SecondStepCate) arg1.getTag();
 
+				Bundle bundle = new Bundle();
+				bundle.putString("searchContent", searchContent);
+				bundle.putString("actType", "search");
+				bundle.putString("name", "");
+				bundle.putString("categoryEnglishName", cate.getEnglishName());
+				pushFragment(new GetGoodFragment(), bundle);
+			}
+		});
+		
+		
+		return rootV;
+	}
+	
+	@Override
+	public void onStackTop(boolean isBack) {
+
+		if (isBack)
+		{
+			etSearch.setText(searchContent);
+			this.showSearchResult(false);
+		}
+		else
+		{		
+			this.showSearchHistory();
+		}
+		
 	}
 
-	@Override
-	public void onClick(View v) {
-		switch(v.getId())
-		{
-			case R.id.btnCancel:
-				doSearch();
-				break;
+	/**
+	 * 
+	 */
+	private void showSearchHistory() {
+		if (listRemark != null && listRemark.size() != 0) {
+			searchResult.setVisibility(View.GONE);
+			noResultView.setVisibility(View.GONE);			
+			lvSearchHistory.setVisibility(View.VISIBLE);
+			tvClear.setVisibility(View.VISIBLE);
+			
+			CommonItemAdapter adapter = new CommonItemAdapter(getActivity(),
+					listRemark, 0x1FFFFFFF, false);
+			adapter.setHasArrow(false);
+			lvSearchHistory.setAdapter(adapter);
 		}
 	}
-	
-	private void doSearch(){
-		if(etSearch.getText().toString().equals(""))
+
+	@Override
+	public void onPause() {
+		InputMethodManager inputMgr = (InputMethodManager) getActivity()
+				.getSystemService(Context.INPUT_METHOD_SERVICE);
+		inputMgr.hideSoftInputFromWindow(etSearch.getWindowToken(), 0);
+
+		super.onPause();
+	}
+
+	@Override
+	public void onResume() {
+		super.onResume();
+		if (null == searchContent || searchContent.length() == 0) {
+			etSearch.postDelayed(new Runnable() {
+				@Override
+				public void run() {
+					etSearch.requestFocus();
+				}
+			}, 300);
+		}
+	}
+
+	@Override
+	protected void onFragmentBackWithData(int requestCode, Object result) {
+		if (requestCode == REQ_SELECT_SEARCH_CATEGORY) {
+			firstStepCategory = (FirstStepCate) result;
+			showSearchResult(true);
+		}
+	}
+
+	@Override
+	public void handleRightAction() {
+		this.doSearch();
+	}
+
+	private void doSearch() {
+		searchContent = etSearch.getText().toString().trim();
+		if (searchContent.equals("")) {
+			Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT)
+					.show();
+		} else {
+			addToListRemark(searchContent);
+			showSearchResult(true);
+		}
+	}
+
+	/**
+	 * 
+	 */
+	private void showSearchResult(boolean search) {
+		this.showProgress("消息", "搜索中...", false);
+		lvSearchHistory.setVisibility(View.GONE);
+		this.hideSoftKeyboard();
+		if (search)
 		{
-			Toast.makeText(getActivity(), "搜索内容不能为空", 3).show();
+			new Thread(new SearchCategoryListThread()).start();
 		}
 		else
 		{
-			searchContent = etSearch.getText().toString();
-			if(listRemark == null || listRemark.size() == 0)
-			{
-				listRemark = new ArrayList<String>();
-				listRemark.add(searchContent);
-			}
-			else if(!listRemark.contains(searchContent))
-			{
-				listRemark.add(searchContent);
-			}
-			QuanleimuApplication.getApplication().setListRemark(listRemark);
-			//将搜索记录保存本地
-			Helper.saveDataToLocate(getActivity(), "listRemark", listRemark);
-			
-			Bundle bundle = new Bundle();
-			bundle.putString("backPageName", "首页");
-			bundle.putString("searchContent", searchContent);
-			bundle.putString("actType", "search");
-			bundle.putString("name", "");
-
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_HOMESEARCH_SEND, null);
-			
-//			pushAndFinish(new SearchGoodsFragment(), bundle);
-			pushAndFinish(new GetGoodFragment(), bundle);
+			this.sendMessage(MSG_SEARCH_RESULT, categoryResultCountList);
 		}
 	}
+
+	/**
+	 * @param searchContent
+	 * 
+	 */
+	private void addToListRemark(String searchContent) {
+		if (listRemark == null || listRemark.size() == 0) {
+			listRemark = new ArrayList<String>();
+			listRemark.add(searchContent);
+		} else if (!listRemark.contains(searchContent)) {
+			listRemark.add(searchContent);
+		}
+		QuanleimuApplication.getApplication().setListRemark(listRemark);
+		// 将搜索记录保存本地
+		Helper.saveDataToLocate(getActivity(), "listRemark", listRemark);
+	}
+
+	@Override
+	protected void handleMessage(Message msg, Activity activity, View rootView) {
+		switch (msg.what) {
+		case MSG_SEARCH_RESULT:
+			if (categoryResultCountList == null || categoryResultCountList.isEmpty())
+			{
+				noResultView.setVisibility(View.VISIBLE);
+				searchResult.setVisibility(View.GONE);
+			}
+			else
+			{
+				searchResult.setVisibility(View.VISIBLE);
+				noResultView.setVisibility(View.GONE);
+
+				ResultListAdapter adapter = new ResultListAdapter(activity,
+						R.layout.item_categorysearch, categoryResultCountList);
+				lvSearchResultList.setAdapter(adapter);
+			}
+			this.hideProgress();
+			break;
+		}
+	}
+	
+	
+
+	class SearchCategoryListThread implements Runnable {
+		@Override
+		public void run() {
+			String apiName = "ad_search";
+			List<String> parameters = new ArrayList<String>();
+			if (SearchFragment.this.firstStepCategory != null) {
+				parameters.add("categoryEnglishName="
+						+ SearchFragment.this.firstStepCategory
+								.getEnglishName());
+			}
+			parameters.add("query="
+					+ URLEncoder.encode(SearchFragment.this.searchContent));
+			String apiUrl = Communication.getApiUrl(apiName, parameters);
+			try {
+				String json = Communication.getDataByUrl(apiUrl, false);
+				categoryResultCountList = JsonUtil
+						.parseAdSearchCategoryCountResult(json);
+			} catch (Exception e) {
+				categoryResultCountList = null;
+				Log.e(TAG, e.getMessage());
+				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
+						Toast.LENGTH_SHORT).show();
+			}
+			SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
+					categoryResultCountList);			
+		}
+	}
+
+	class ResultListAdapter extends ArrayAdapter<Pair<SecondStepCate, Integer>> {
+		List<Pair<SecondStepCate, Integer>> objects;
+
+		public ResultListAdapter(Context context, int textViewResourceId,
+				List<Pair<SecondStepCate, Integer>> objects) {
+			super(context, textViewResourceId, objects);
+			this.objects = objects;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			if (convertView == null) {
+				convertView = LayoutInflater.from(
+						SearchFragment.this.getActivity()).inflate(
+						R.layout.item_categorysearch, null);
+			}
+
+			TextView tvCategoryName = (TextView) convertView
+					.findViewById(R.id.tvCategoryName);
+			TextView tvCategoryCount = (TextView) convertView
+					.findViewById(R.id.tvCategoryCount);
+			Pair<SecondStepCate, Integer> pair = objects.get(position);
+			convertView.setTag(pair.first);
+			tvCategoryName.setText(pair.first.getName());
+			tvCategoryCount.setText(String.format("(%d)",
+					pair.second.intValue()));
+
+			return convertView;
+		}
+
+		@Override
+		public int getCount() {
+			return objects == null ? 0 : objects.size();
+		}
+	}
+
 }
