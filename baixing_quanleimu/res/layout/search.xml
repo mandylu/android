@@ -5,81 +5,74 @@
     android:orientation="vertical" >
 
     <ListView
-       android:id="@+id/lvSearchHistory"
-       android:layout_width="fill_parent"
-       android:layout_height="wrap_content"
-       android:layout_gravity="bottom"
-       android:focusable="false"
-       android:focusableInTouchMode="true"
-       android:listSelector="#00000000"
-       android:scrollingCache="false" 
-       android:visibility="gone"
-     />
- 
+        android:id="@+id/lvSearchHistory"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_gravity="bottom"
+        android:focusable="false"
+        android:focusableInTouchMode="true"
+        android:listSelector="#00000000"
+        android:scrollingCache="false"
+        android:visibility="gone" />
+
     <LinearLayout
         android:id="@+id/searchResult"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_marginLeft="16dp"
+        android:layout_marginRight="16dp"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <LinearLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:orientation="vertical"
-            android:paddingBottom="5dip"
-            android:paddingLeft="10dip"
-            android:paddingRight="10dip"
-            android:paddingTop="10dip" >
+            android:layout_height="48dp"
+            android:orientation="vertical" >
 
             <TextView
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dip"
-                android:layout_marginLeft="15dip"
-                android:layout_marginTop="10dip"
-                android:text="请选择分类查看"
-                android:textColor="@color/citychange_titleline"
-                android:textSize="14dip" >
+                android:layout_marginTop="20dp"
+                android:paddingBottom="4dp"
+                android:layout_marginLeft="10dip"
+                android:text="@string/search_result_title"
+                android:textColor="@color/base_green"
+                android:textSize="12sp" >
             </TextView>
 
             <View
                 android:layout_width="wrap_content"
-                android:layout_height="3dp"
-                android:background="@color/citychange_titleline" >
+                android:layout_height="4dp"
+                android:background="@color/base_green" >
             </View>
         </LinearLayout>
-        
+
         <ListView
             android:id="@+id/lvSearchResultList"
-	        android:layout_width="fill_parent"
-	        android:layout_height="wrap_content"
-	        android:layout_gravity="center_vertical"
-	        android:focusable="false"
-	        android:focusableInTouchMode="true"
-	        android:listSelector="@null"
-	        android:scrollingCache="false" 
-	        android:divider="@null"
-	        />
-        
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:divider="@null"
+            android:focusable="false"
+            android:focusableInTouchMode="true"
+            android:listSelector="@null"
+            android:scrollbars="none"
+            android:scrollingCache="false" />
     </LinearLayout>
-    
+
     <LinearLayout
         android:id="@+id/noResultView"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-		android:visibility="gone"
-        >
+        android:visibility="gone" >
 
         <TextView
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_marginTop="20dp"
             android:layout_marginLeft="20dp"
             android:layout_marginRight="20dp"
-            android:textSize="18dp"
-            android:text="@string/search_no_result" />
-
-    </LinearLayout>    
+            android:layout_marginTop="20dp"
+            android:text="@string/search_no_result"
+            android:textSize="18dp" />
+    </LinearLayout>
 
 </LinearLayout>

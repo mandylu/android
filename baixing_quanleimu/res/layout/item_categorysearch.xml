@@ -6,38 +6,32 @@
 
     <LinearLayout
             android:layout_width="wrap_content"
-            android:layout_height="30dp"
-            android:layout_marginBottom="2dp"
-            android:layout_marginLeft="10dp"
-            android:layout_marginRight="10dp"
-            android:layout_marginTop="5dp"
+            android:layout_height="48dp"
              >
 
         <TextView
             android:id="@+id/tvCategoryName"            
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-			android:gravity="bottom"
-            android:textSize="18dp"
-			android:text="二手手机" />
+			android:layout_gravity="center_vertical"
+			android:paddingLeft="10dp"
+			android:textColor="#333333"
+            android:textSize="16sp"/>
  		
  		<TextView
             android:id="@+id/tvCategoryCount"            
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginLeft="5dp"
-			android:gravity="bottom"
-            android:textSize="14dp"
-            android:textColor="@android:color/darker_gray"
-			android:text="(0)" />
+			android:layout_gravity="center_vertical"			
+            android:textSize="12sp"
+            android:textColor="#a5a5a5"/>
         
     </LinearLayout>
 
     <View
         android:layout_width="wrap_content"
         android:layout_height="1dp"
-        android:layout_marginLeft="10dp"
-        android:layout_marginRight="10dp"
-        android:background="@color/category_second_font" />
+        android:background="@color/list_seperator" />
 
 </LinearLayout>

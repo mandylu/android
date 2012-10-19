@@ -17,7 +17,7 @@
     <View 
        	android:layout_width="wrap_content"
        	android:layout_height="1dp"
-       	android:background="@color/category_second_font"
+       	android:background="@color/list_seperator"
        	android:layout_marginLeft="10dp"
        	android:layout_marginRight="10dp"
        	/>

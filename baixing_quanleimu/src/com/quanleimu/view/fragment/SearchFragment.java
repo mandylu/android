@@ -148,6 +148,7 @@ public class SearchFragment extends BaseFragment {
 					int arg2, long arg3) {
 				if (arg2 <= (listRemark.size() - 1)) {
 					searchContent = listRemark.get(arg2);
+					etSearch.setText(searchContent);
 					showSearchResult(true);
 				} else {
 					listRemark.clear();
