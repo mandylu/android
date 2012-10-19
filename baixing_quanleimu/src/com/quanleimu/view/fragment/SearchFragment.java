@@ -8,6 +8,8 @@ import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.Editable;
+import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
@@ -78,7 +80,7 @@ public class SearchFragment extends BaseFragment {
 		title.m_titleControls = LayoutInflater.from(getActivity()).inflate(
 				R.layout.title_search, null);
 		etSearch = (EditText) title.m_titleControls.findViewById(R.id.etSearch);
-		title.m_rightActionHint = "搜索";
+		title.m_rightActionHint = "取消";
 
 		etSearch.setOnKeyListener(new View.OnKeyListener() {
 
@@ -89,12 +91,40 @@ public class SearchFragment extends BaseFragment {
 					return true;
 				} else if (keyCode == KeyEvent.KEYCODE_BACK)
 				{
-					SearchFragment.this.showSearchResult(false);
+					if (categoryResultCountList != null && categoryResultCountList.size() > 0)
+						SearchFragment.this.showSearchResult(false);
+					else
+						SearchFragment.this.showSearchHistory();
 					return false;
 				}else
 				{
 					return false;
 				}
+			}
+		});
+		
+		etSearch.addTextChangedListener(new TextWatcher() {
+			
+			@Override
+			public void onTextChanged(CharSequence s, int start, int before, int count) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void beforeTextChanged(CharSequence s, int start, int count,
+					int after) {
+				// TODO Auto-generated method stub
+				
+			}
+			
+			@Override
+			public void afterTextChanged(Editable s) {
+				if (s.length() == 0)
+					SearchFragment.this.getTitleDef().m_rightActionHint = "取消";
+				else
+					SearchFragment.this.getTitleDef().m_rightActionHint = "搜索";
+				SearchFragment.this.refreshHeader();
 			}
 		});
 		
@@ -259,7 +289,10 @@ public class SearchFragment extends BaseFragment {
 
 	@Override
 	public void handleRightAction() {
-		this.doSearch();
+		if (etSearch.getText().length() > 0)
+			this.doSearch();
+		else
+			this.finishFragment();
 	}
 
 	private void doSearch() {
@@ -277,11 +310,11 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		this.showProgress("消息", "搜索中...", false);
 		lvSearchHistory.setVisibility(View.GONE);
 		this.hideSoftKeyboard();
 		if (search)
 		{
+			this.showProgress("消息", "搜索中...", false);			
 			new Thread(new SearchCategoryListThread()).start();
 		}
 		else
