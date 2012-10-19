@@ -816,6 +816,19 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		getView().findViewById(R.id.filter_item_more).setOnClickListener(listener);
 		
+		//Search nearby is special.
+		if (this.titleControlStatus == 1 && listFilterss != null) //If is searching nearby, set the filter label to "neayby."
+		{
+			for (Filterss fs : listFilterss)
+			{
+				if (fs.getName().equals("地区_s"))
+				{
+					FilterUtil.updateFilterLabel(actionViews, "附近500米", fs);
+					break;
+				}
+			}
+		}
+		
 	}
 	
 	private View[] findAllFilterView()

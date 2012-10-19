@@ -8,7 +8,7 @@
   
       <RelativeLayout
           android:id="@+id/filter_item_more"
-          android:layout_width="52dp"
+          android:layout_width="54dp"
           android:layout_height="wrap_content"
           android:layout_alignParentRight="true"
           android:layout_centerVertical="true"
@@ -48,12 +48,24 @@
             android:id="@+id/filter_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:paddingLeft="6dp"
+            android:layout_toLeftOf="@+id/arrow_down"
             android:singleLine="true"
-            android:text="TextView"
+            android:text="全部"
             android:textColor="#ffffff"
             android:textSize="@dimen/tab_font_size" />
+
+        <ImageView
+            android:id="@+id/arrow_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="6dp"
+			android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/icon_arrow_down" />
+
     </RelativeLayout>
     
     
@@ -74,12 +86,22 @@
             android:id="@+id/filter_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:paddingLeft="6dp"
+            android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/arrow_down"
             android:singleLine="true"
-            android:text="TextView"
+            android:text="全部"
             android:textColor="#ffffff"
             android:textSize="@dimen/tab_font_size" />
+		<ImageView
+            android:id="@+id/arrow_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="6dp"
+			android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/icon_arrow_down" />
     </RelativeLayout>
     
         <RelativeLayout
@@ -100,12 +122,26 @@
             android:id="@+id/filter_name"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
-            android:layout_centerHorizontal="true"
+            android:paddingLeft="6dp"
+            android:layout_alignParentLeft="true"
+            android:layout_toLeftOf="@+id/arrow_down"
             android:layout_centerVertical="true"
             android:singleLine="true"
-            android:text="TextView"
+            android:text="全部"
             android:textColor="#ffffff"
             android:textSize="@dimen/tab_font_size" />
+        
+                <ImageView
+            android:id="@+id/arrow_down"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingRight="6dp"
+			android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"
+            android:src="@drawable/icon_arrow_down" />
+        
+        
+        
     </RelativeLayout>
         
     </LinearLayout>
