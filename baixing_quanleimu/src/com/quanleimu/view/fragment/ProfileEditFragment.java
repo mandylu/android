@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
+import com.quanleimu.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -92,7 +93,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	public void onCreate(Bundle savedData)
 	{
 		super.onCreate(savedData);
-		this.up = (UserProfile) getArguments().getSerializable("profile");
+		this.up = (UserProfile) Util.loadDataFromLocate(getAppContext(), "userProfile");
 		newCityId = up.location;
 		newGender = up.gender;
 		

@@ -381,7 +381,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
-
 		switch (msg.what) {
 		case MSG_FORGETPASSWORDVIEW:
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));

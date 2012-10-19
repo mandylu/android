@@ -4,12 +4,16 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.text.SimpleDateFormat;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
+import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
@@ -17,104 +21,91 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
+import android.widget.*;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
-import android.widget.GridView;
-import android.widget.ImageView;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GridAdapter;
 import com.quanleimu.adapter.GridAdapter.GridInfo;
-import com.quanleimu.entity.ChatSession;
-import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.entity.HotList;
+import com.quanleimu.entity.*;
 import com.quanleimu.imageCache.ImageLoaderCallback;
 import com.quanleimu.imageCache.LazyImageLoader;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager;
 import com.quanleimu.view.CustomizePagerManager.PageProvider;
 import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
 
-public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, OnItemClickListener{
-	
+public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, OnItemClickListener, View.OnClickListener{
+
 	public static final String NAME = "HomeFragment";
-	
+
 	public static final String[] TAB_LABELS = new String[] {
 		"浏览信息", "我的百姓网"
 	};
-	
+
 	private CustomizePagerManager pageMgr;
 	private int selectedIndex = 0;
+
+    private UserBean user;
+    private String userProfileJson;
+    static final int MSG_GETPERSONALPROFILE = 99;
 
 	private String json;
 	private HotListAdapter adapter;
 	private List<HotList> tempListHot = new ArrayList<HotList>();
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
-	
+
 	protected void initTitle(TitleDef title) {
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
 		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
-		TextView titleLabel = (TextView) title.m_titleControls.findViewById(R.id.title_label_city);
-		titleLabel.setText(QuanleimuApplication.getApplication().getCityName());
-		
+
 		title.hasGlobalSearch = true;
 		title.m_rightActionHint = "发布";
 		title.m_rightActionBg = R.drawable.bg_post_selector;
-		
+
 		title.m_titleControls.findViewById(R.id.logo_root).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 			}
 		});
-		
 	}
-	
+
 	public void initTab(TabDef tab){
 		tab.m_visible = true;
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	}
-	
+
 	@Override
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
 	}
-	
-	@Override
-	public void handleSearch() {
-		this.pushFragment(new SearchFragment(), this.getArguments());
-	};
 
 	@Override
 	protected int getFirstRunId() {
 		return R.layout.first_run_main;
 	}
-	
+
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+
 		pageMgr = CustomizePagerManager.createManager(TAB_LABELS, selectedIndex);
 	}
-	
+
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		logCreateView(savedInstanceState);
-		
-		View v = inflater.inflate(R.layout.homepageview, null);
-		
-		pageMgr.attachView(v, this, this);
-		
 
-		TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
-		titleLabel.setText(QuanleimuApplication.getApplication().getCityName());		
+		View v = inflater.inflate(R.layout.homepageview, null);
+
+		pageMgr.attachView(v, this, this);
 		
 		return v;
 		
@@ -226,7 +217,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		
 		((TextView)v.findViewById(R.id.tvCityName)).setText(cityName);
 		
-		Log.w(TAG, "do we have view here homeFragmengCreatView ?? " + (this.getView() != null));
+		Log.w(TAG, "do we have view here homeFragmengCreatView ? " + (this.getView() != null));
 		return v;
 		*/
 	}
@@ -323,6 +314,17 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			hideProgress();
 			 Toast.makeText(QuanleimuApplication.context, "网络连接失败，请检查设置！", 3).show();
 			//tvInfo.setVisibility(View.VISIBLE);
+        case MSG_GETPERSONALPROFILE:
+            if(userProfileJson != null){
+                UserProfile up = UserProfile.from(userProfileJson);
+                if (getActivity() != null)
+                {
+                    Util.saveDataToLocate(getActivity(), "userProfile", up);
+                    if(up != null){
+                        fillProfile(up, getView());
+                    }
+                }
+            }
 			break;
 		}
 	}
@@ -616,7 +618,23 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			adapter.setList(gitems, 3);
 			((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
 			((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
+
+            //set user profile info view
+            user = Util.getCurrentUser();
+            if (user != null) {
+                UserProfile up = (UserProfile) Util.loadDataFromLocate(context, "userProfile");
+                if (up != null) {
+                    fillProfile(up, v);
+                    v.findViewById(R.id.userInfoLayout).setOnClickListener(this);
+                } else {
+                    new Thread(new GetPersonalProfileThread()).start();
+                }
+            }
+
 		}
+
+
+
 		return v;
 	}
 
@@ -646,7 +664,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		{
 			//TODO 登录判断，talk session 获取
 			if (selText.endsWith("已发布")) {
-				if(/*user == null*/true){
+				if(user == null){
 					Bundle bundle = createArguments(null, "用户中心");
 					pushFragment(new LoginFragment(), bundle);
 				}else{
@@ -676,8 +694,105 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			} else if (selText.endsWith("设置")) {
 				pushFragment(new SetMainFragment(), null);
 			}
+
 		}
 	}
+
+
+    private void fillProfile(UserProfile up, View userInfoView){
+        View activity = userInfoView;
+
+        if(up.nickName != null){
+            ((TextView)activity.findViewById(R.id.userInfoNickname)).setText(up.nickName);
+        }else{
+            ((TextView)activity.findViewById(R.id.userInfoNickname)).setText("");
+        }
+        boolean showBoy = true;
+//        if(up.gender != null && !up.equals("")){
+//            if(up.gender.equals("男")){
+//                ((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
+////				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+//            }else if(up.gender.equals("女")){
+//                ((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_female);
+//                showBoy = false;
+////				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
+//            }
+//        }else{
+//            ((ImageView)activity.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
+//        }
+
+        if(up.location != null && !up.location.equals("")){
+//            (new Thread(new GetLocationThread(up.location))).start();
+            //TODO ming 开新线程拿什么定位？
+        }else{
+            ((TextView)activity.findViewById(R.id.userInfoLocation)).setText("");
+        }
+
+        if(up.createTime != null && !up.equals("")){
+            try{
+                Date date = new Date(Long.parseLong(up.createTime) * 1000);
+                SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月", Locale.SIMPLIFIED_CHINESE);
+                ((TextView)activity.findViewById(R.id.userInfoJoinDays)).setText(df.format(date) + "");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }else{
+            ((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
+        }
+        String image = null;
+        if(up.resize180Image != null && !up.resize180Image.equals("")){
+            image = up.resize180Image;
+        }
+        if(image != null && !image.equals("") && !image.equals("null")){
+//            int height = activity.findViewById(R.id.userInfoAvatar).getMeasuredHeight();
+//            int width = activity.findViewById(R.id.userInfoAvatar).getMeasuredWidth();
+//            if(height <= 0 || width <= 0){
+//                Drawable img = ((ImageView)activity.findViewById(R.id.userInfoAvatar)).getDrawable();
+//                if(img != null){
+//                    height = img.getIntrinsicHeight();
+//                    width = img.getIntrinsicWidth();
+//                }
+//            }
+//            if(height > 0 && width > 0){
+//                ViewGroup.LayoutParams lp = activity.findViewById(R.id.userInfoAvatar).getLayoutParams();
+//                lp.height = height;
+//                lp.width = width;
+//                activity.findViewById(R.id.userInfoAvatar).setLayoutParams(lp);
+//            }
+
+            SimpleImageLoader.showImg((ImageView) activity.findViewById(R.id.userInfoAvatar),
+                    image, null, activity.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+        }else{
+            ((ImageView)activity.findViewById(R.id.userInfoAvatar)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+        }
+        activity.findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
+    }
+
+    class GetPersonalProfileThread implements Runnable {
+        @Override
+        public void run() {
+            if (user == null)
+            {
+                return;
+            }
+            userProfileJson = Util.requestUserProfile(user.getId());
+            sendMessage(MSG_GETPERSONALPROFILE, null);
+
+            hideProgress();
+        }
+    }
+
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.userInfoLayout:
+                Bundle bundle = createArguments(null, "编辑我的信息");
+                pushFragment(new ProfileEditFragment(), bundle);
+                break;
+            default:
+                break;
+        }
+    }
+
 
 }
 
