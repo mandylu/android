@@ -242,7 +242,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(secondCatIndex,
 				ViewGroupElement.class);
 		subCatView.doClick();
-		TimeUnit.SECONDS.sleep(5);
+		TimeUnit.SECONDS.sleep(8);
 	}
 	
 	public ViewGroupElement openAdByIndex(int index) throws Exception {
@@ -272,6 +272,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		openTabbar(TAB_ID_MY);
 		logon();
 		openCategoryByIndex(firstCatIndex + 1, secondCatIndex);
+		TimeUnit.SECONDS.sleep(1);
 		assertNotNull(openAdByIndex(index));
 		BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 				BXViewGroupElement.class);
@@ -326,10 +327,11 @@ public class BaixingTestCase extends AthrunTestCase {
 		if (findElementById(HOME_MARK_ID) != null) {
 			findElementById(SEARCH_TEXTVIEW_ID).doClick();
 			TimeUnit.SECONDS.sleep(1);
-		} else if (findElementById(AD_VIEWLIST_MARK_ID) != null) {
+		} else if (findElementById(AD_VIEWLIST_MARK_ID) != null && findElementById(SEARCH_BUTTON_ID) == null) {
 			ViewElement btnSearch = findElementByText(SEARCH_BUTTON_TEXT, 0, true);
 			if (btnSearch != null) {
 				btnSearch.doClick();
+				TimeUnit.SECONDS.sleep(1);
 			}
 		}
 		if (keyword.length() > 0) {
