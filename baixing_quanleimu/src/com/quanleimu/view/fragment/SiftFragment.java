@@ -20,6 +20,7 @@ import android.view.ViewGroup;
 import android.view.View.OnClickListener;
 import android.widget.EditText;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import android.widget.LinearLayout.LayoutParams;
@@ -36,6 +37,7 @@ import com.quanleimu.entity.values;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.Util;
 
 public class SiftFragment extends BaseFragment {
@@ -52,28 +54,37 @@ public class SiftFragment extends BaseFragment {
 	public String res = "";
 	public String value_resl = "";
 	public int idselected;
-	TextView tvmeta = null;
+//	TextView tvmeta = null;
 
 	private Map<Integer, TextView> selector = new HashMap<Integer, TextView>();
 	private Map<String, EditText> editors = new HashMap<String, EditText>();
 
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
-	private Map<String, String> labelmap = new HashMap<String, String>();
-
-	public Map<String, String> valuemap = new HashMap<String, String>();
+//	private Map<String, String> labelmap = new HashMap<String, String>();
+//
+//	public Map<String, String> valuemap = new HashMap<String, String>();
 
 	public String categoryEnglishName = "";
 	public String json = "";
 
 	private final int MSG_MULTISEL_BACK = 0;
+	
+	private PostParamsHolder parametersHolder;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		Bundle bundle = getArguments();
 		categoryEnglishName = bundle.getString("categoryEnglishName");
-		backPageName = bundle.getString(ARG_COMMON_BACK_HINT);	
+		backPageName = bundle.getString(ARG_COMMON_BACK_HINT);
+		
+		parametersHolder = (PostParamsHolder) getArguments().getSerializable("filterResult");
+		if (parametersHolder == null)
+		{
+			parametersHolder = new PostParamsHolder();
+		}
+		
 	}
 
 	@Override
@@ -119,13 +130,15 @@ public class SiftFragment extends BaseFragment {
 	
 	public void handleRightAction(){
 			
-			
-			Bundle bundle = createArguments(null, backPageName);
-			bundle.putString("categoryEnglishName", categoryEnglishName);
-			collectValue(bundle);
+		
+		
+//			Bundle bundle = createArguments(null, backPageName);
+//			bundle.putString("categoryEnglishName", categoryEnglishName);
+//			collectValue(bundle);
+		
 //			pushAndFinish(new GetGoodFragment(), bundle);
 			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_LISTINGFILTER_SEND, null);
-			finishFragment(requestCode, bundle);
+			finishFragment(requestCode, parametersHolder);
 		
 		
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
@@ -153,29 +166,29 @@ public class SiftFragment extends BaseFragment {
 		String resultLabel = "";
 
 		String str = ed_sift.getText().toString().trim();
-		if( valuemap != null && valuemap.size() != 0)
-		{
-			for (int i = 0; i < listFilterss.size(); i++) {
-
-				String key = listFilterss.get(i).getName();
-				if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
-					result += " AND "
-							+ URLEncoder.encode(key) + ":"
-							+ URLEncoder.encode(valuemap.get(key));
-				}
-			}
-		}
-
-		if( labelmap != null && labelmap.size() != 0)
-		{
-			for (int i = 0; i < listFilterss.size(); i++) {
-
-				String key = listFilterss.get(i).getName();
-				if(labelmap.get(key) != null && !labelmap.get(key).equals("")){
-					resultLabel += " AND " + URLEncoder.encode(key) + ":" + URLEncoder.encode(labelmap.get(key));
-				}
-			}
-		}	
+//		if( valuemap != null && valuemap.size() != 0)
+//		{
+//			for (int i = 0; i < listFilterss.size(); i++) {
+//
+//				String key = listFilterss.get(i).getName();
+//				if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
+//					result += " AND "
+//							+ URLEncoder.encode(key) + ":"
+//							+ URLEncoder.encode(valuemap.get(key));
+//				}
+//			}
+//		}
+//
+//		if( labelmap != null && labelmap.size() != 0)
+//		{
+//			for (int i = 0; i < listFilterss.size(); i++) {
+//
+//				String key = listFilterss.get(i).getName();
+//				if(labelmap.get(key) != null && !labelmap.get(key).equals("")){
+//					resultLabel += " AND " + URLEncoder.encode(key) + ":" + URLEncoder.encode(labelmap.get(key));
+//				}
+//			}
+//		}	
 		
 		for(int i = 0; i < editors.size(); ++i){
 			String key = editors.keySet().toArray()[i].toString();
@@ -183,18 +196,20 @@ public class SiftFragment extends BaseFragment {
 			EditText txtEditor = (EditText)editors.get(key);
 			String textInput = txtEditor.getText().toString();
 			if(textInput.length() > 0){
-				result += " AND "
-						+ URLEncoder.encode(key) + ":"
-						+ URLEncoder.encode(textInput);
+//				result += " AND "
+//						+ URLEncoder.encode(key) + ":"
+//						+ URLEncoder.encode(textInput);
+				parametersHolder.put(key, textInput, textInput);
 			}
 		}
 
 		
 		if (!str.equals("")) {
-			if(result.length() > 0){
-				result += " AND ";
-			}
-			result += URLEncoder.encode(str);
+//			if(result.length() > 0){
+//				result += " AND ";
+//			}
+//			result += URLEncoder.encode(str);
+			parametersHolder.put("", str, str);
 		}
 		
 //		if (!str.equals("")) {
@@ -202,54 +217,57 @@ public class SiftFragment extends BaseFragment {
 //		}
 		
 		
-		if(result.length() > 0)
-		{
-			bundle.putString("siftresult", result);
-			bundle.putString("siftlabels", resultLabel);
-		}else{
-				bundle.putString("siftresult", "");
-				bundle.putString("siftlabels", "");
-		}
+//		if(result.length() > 0)
+//		{
+//			bundle.putString("siftresult", result);
+//			bundle.putString("siftlabels", resultLabel);
+//		}else{
+//				bundle.putString("siftresult", "");
+//				bundle.putString("siftlabels", "");
+//		}
 		
 	}
 	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj) {
-		if (message == 1234) {
-			Bundle data = (Bundle)obj;
-			
-			String s = data.getString("all"); 
-			if(s==null || s.equals("")){
-				res = data.getString("label");
-				value_resl = data.getString("value");
-				
-				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-					valuemap.put(listFilterss.get(temp).getName(), value_resl);
-				}
-				selector.get(temp).setText(res);
-			}else{
-				//res = datas.getString("label");
-				//value_resl = datas.getString("value");
-				
-				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-					valuemap.remove(listFilterss.get(temp).getName());
-				}
-				selector.get(temp).setText(s);
-			}
-		}
-		else if(MSG_MULTISEL_BACK == message){
+//		if (message == 1234) {
+//			Bundle data = (Bundle)obj;
+//			
+//			String s = data.getString("all"); 
+//			if(s==null || s.equals("")){
+//				res = data.getString("label");
+//				value_resl = data.getString("value");
+//				
+//				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
+//					valuemap.put(listFilterss.get(temp).getName(), value_resl);
+//				}
+//				selector.get(temp).setText(res);
+//			}else{
+//				//res = datas.getString("label");
+//				//value_resl = datas.getString("value");
+//				
+//				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
+//					valuemap.remove(listFilterss.get(temp).getName());
+//				}
+//				selector.get(temp).setText(s);
+//			}
+//		}
+//		else 
+			if(MSG_MULTISEL_BACK == message){
 			if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
 				final String txt = ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt;
 				selector.get(temp).setText(txt);
 				if(((MultiLevelSelectionFragment.MultiLevelItem)obj).id != null 
 						&&!((MultiLevelSelectionFragment.MultiLevelItem)obj).id.equals("")){
-					labelmap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
-					valuemap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);					
+					parametersHolder.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
+//					labelmap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
+//					valuemap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);					
 				}
 				else{
 					if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-						valuemap.remove(listFilterss.get(temp).getName());
-						labelmap.remove(listFilterss.get(temp).getName());
+//						valuemap.remove(listFilterss.get(temp).getName());
+//						labelmap.remove(listFilterss.get(temp).getName());
+						parametersHolder.remove(listFilterss.get(temp).getName());
 					}					
 				}
 			}
@@ -299,7 +317,7 @@ public class SiftFragment extends BaseFragment {
 	private void loadSiftFrame(View rootView)
 	{
 		listFilterss = JsonUtil.getFilters(json).getFilterssList();
-		QuanleimuApplication.getApplication().setListFilterss(listFilterss);
+//		QuanleimuApplication.getApplication().setListFilterss(listFilterss);
 		LinearLayout ll_meta = (LinearLayout) rootView.findViewById(R.id.meta);
 		LayoutInflater inflater = LayoutInflater.from(rootView
 				.getContext());
@@ -308,81 +326,79 @@ public class SiftFragment extends BaseFragment {
 		} else {
 			ll_meta.removeAllViews();
 			
-			HashMap<String, String> preValues = null;
-			HashMap<String, String> preLabels = null;
+//			HashMap<String, String> preValues = null;
+//			HashMap<String, String> preLabels = null;
 			Bundle bundle = getArguments();
-			String keyWords = null;
-			if (bundle != null) {
-				String preEncResult = bundle.getString("siftresult");
-				if (null != preEncResult) {
-					String decResult = URLDecoder.decode(preEncResult);
-					String[] pairs = decResult.split("AND ");
-					if (pairs != null) {
-						preValues = new HashMap<String, String>();
-					}
-					for (int x = 0; x < pairs.length; ++x) {
-						String[] subPairs = pairs[x].split(":");
-						if (subPairs.length <= 0 || subPairs.length > 2)
-							continue;
-						if (subPairs.length == 1 && subPairs[0] != null
-								&& !subPairs[0].equals("")
-								&& !subPairs[0].equals(" ")) {
-							keyWords = subPairs[0];
-						} else if (subPairs.length == 2) {
-							subPairs[0] = subPairs[0].trim();
-							subPairs[1] = subPairs[1].trim();
-							preValues.put(subPairs[0], subPairs[1]);
-						}
-					}
-				}
-
-				String preEncLabels = bundle.getString("siftlabels");
-				if (null != preEncLabels) {
-					String decResult = URLDecoder.decode(preEncLabels);
-					String[] pairs = decResult.split("AND ");
-					if (pairs != null) {
-						preLabels = new HashMap<String, String>();
-					}
-					for (int x = 0; x < pairs.length; ++x) {
-						String[] subPairs = pairs[x].split(":");
-						if (subPairs.length != 2)
-							continue;
-						subPairs[0] = subPairs[0].trim();
-						subPairs[1] = subPairs[1].trim();
-						preLabels.put(subPairs[0], subPairs[1]);
-					}
-				}
-			}
+			String keyWords = parametersHolder.getData("");
+//			if (bundle != null) {
+//				String preEncResult = bundle.getString("siftresult");
+//				if (null != preEncResult) {
+//					String decResult = URLDecoder.decode(preEncResult);
+//					String[] pairs = decResult.split("AND ");
+//					if (pairs != null) {
+//						preValues = new HashMap<String, String>();
+//					}
+//					for (int x = 0; x < pairs.length; ++x) {
+//						String[] subPairs = pairs[x].split(":");
+//						if (subPairs.length <= 0 || subPairs.length > 2)
+//							continue;
+//						if (subPairs.length == 1 && subPairs[0] != null
+//								&& !subPairs[0].equals("")
+//								&& !subPairs[0].equals(" ")) {
+//							keyWords = subPairs[0];
+//						} else if (subPairs.length == 2) {
+//							subPairs[0] = subPairs[0].trim();
+//							subPairs[1] = subPairs[1].trim();
+//							preValues.put(subPairs[0], subPairs[1]);
+//						}
+//					}
+//				}
+//
+//				String preEncLabels = bundle.getString("siftlabels");
+//				if (null != preEncLabels) {
+//					String decResult = URLDecoder.decode(preEncLabels);
+//					String[] pairs = decResult.split("AND ");
+//					if (pairs != null) {
+//						preLabels = new HashMap<String, String>();
+//					}
+//					for (int x = 0; x < pairs.length; ++x) {
+//						String[] subPairs = pairs[x].split(":");
+//						if (subPairs.length != 2)
+//							continue;
+//						subPairs[0] = subPairs[0].trim();
+//						subPairs[1] = subPairs[1].trim();
+//						preLabels.put(subPairs[0], subPairs[1]);
+//					}
+//				}
+//			}
 
 			for (int i = 0; i < listFilterss.size(); ++i) {
 				View v = null;
 				TextView tvmetatxt = null;
 
+				final String paramsKey = listFilterss.get(i).getName();
 				if (listFilterss.get(i).getControlType().equals("select")) {
 					v = inflater.inflate(R.layout.item_post_select, null);
-					valuemap.put(listFilterss.get(i).getName(), "");
+//					valuemap.put(listFilterss.get(i).getName(), "");
 					tvmetatxt = (TextView) v.findViewById(R.id.postshow);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 
-					tvmeta = (TextView) v.findViewById(R.id.posthint);
-					if (preValues != null
-							&& preValues.containsKey(listFilterss.get(i)
-									.getName())) {
-						String preValue = preValues.get(listFilterss.get(i)
-								.getName());
+					TextView tvmeta = (TextView) v.findViewById(R.id.posthint);
+					if (parametersHolder.containsKey(paramsKey)) {
+						String preValue = parametersHolder.getData(paramsKey); 
+//								preValues.get(listFilterss.get(i)
+//								.getName());
+						String preLabel= parametersHolder.getUiData(paramsKey); 
 						boolean valid = false;
-						if (preLabels != null
-								&& preLabels.containsKey(listFilterss
-										.get(i).getName())) {
-							tvmeta.setText(preLabels.get(listFilterss
-									.get(i).getName()));
-							labelmap.put(listFilterss.get(i).getName(),
-									preLabels.get(listFilterss.get(i)
-											.getName()));
+						if (preLabel != null) {
+							tvmeta.setText(preLabel);
+//							labelmap.put(listFilterss.get(i).getName(),
+//									preLabels.get(listFilterss.get(i)
+//											.getName()));
 							valid = true;
 						}
-						valuemap.put(listFilterss.get(i).getName(),
-								preValue);
+//						valuemap.put(listFilterss.get(i).getName(),
+//								preValue);
 						if (!valid) {
 							List<values> values = listFilterss.get(i)
 									.getValuesList();
@@ -460,15 +476,12 @@ public class SiftFragment extends BaseFragment {
 					v = inflater.inflate(R.layout.item_post_edit, null);
 					tvmetatxt = (TextView) v.findViewById(R.id.postshow);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
-					tvmeta = (EditText) v.findViewById(R.id.postinput);
+					EditText tvmeta = (EditText) v.findViewById(R.id.postinput);
 					final String key = listFilterss.get(i).getName();
 					editors.put(key,
 							(EditText) tvmeta);
-					if (null != preValues
-							&& preValues.containsKey(listFilterss.get(i)
-									.getName())) {
-						String preValue = preValues.get(listFilterss.get(i)
-								.getName());
+					String preValue = parametersHolder.getData(paramsKey);
+					if (preValue != null) {
 						tvmeta.setText(preValue);
 //						valuemap.put(listFilterss.get(i).getName(),
 //								preValue);

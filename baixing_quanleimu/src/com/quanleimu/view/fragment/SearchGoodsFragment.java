@@ -176,7 +176,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 					}
 				});
 		
-		((TextView)v.findViewById(R.id.tvSearchKeyword)).setText(title);
+//		((TextView)v.findViewById(R.id.tvSearchKeyword)).setText(title);
 
 		showSimpleProgress();
 		
@@ -436,8 +436,8 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 			}
 		}
 
-		((TextView) getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
-		((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
+//		((TextView) getView().findViewById(R.id.tvSpaceOrTimeNumber)).setText(number);
+//		((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText(unit);
 	}
 
 	@Override
@@ -543,7 +543,7 @@ public class SearchGoodsFragment extends BaseFragment implements OnScrollListene
 				btnRecent.setPadding(paddingLeft, paddingTop, paddingRight,
 						paddingBottom);
 
-				((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
+//				((TextView) getView().findViewById(R.id.tvSpaceOrTimeUnit)).setText("米");
 
 				mListLoader.cancelFetching();
 

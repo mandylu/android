@@ -1,6 +1,7 @@
 package com.quanleimu.view.fragment;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -77,6 +78,29 @@ public final class PostParamsHolder implements Serializable {
 		
 		this.uiMap.putAll(params.uiMap);
 		this.postValuemap.putAll(params.postValuemap);
+		
+	}
+	
+	public String toUrlString()
+	{
+		StringBuffer result = new StringBuffer();
+		Iterator<String> keys = postValuemap.keySet().iterator();
+		while(keys.hasNext())
+		{
+			String key = keys.next();
+			if (!"".equals(key))
+			{
+				result.append(" AND ")
+				.append(URLEncoder.encode(key)).append(":")
+				.append(URLEncoder.encode(postValuemap.get(key)));
+			}
+			else
+			{
+				result.append(" AND ").append(URLEncoder.encode(postValuemap.get(key)));
+			}
+		}
+		
+		return result.toString();
 		
 	}
 	

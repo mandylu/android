@@ -33,7 +33,7 @@
             app:need_gap_header="true" />
         
     </LinearLayout>
-    
+<!--     
     <RelativeLayout 
         android:id="@+id/linearStatusbar"
         android:layout_height="wrap_content"
@@ -98,6 +98,6 @@
 		    android:layout_width="wrap_content"
 		    android:layout_height="wrap_content"
 		    android:layout_alignParentRight="true"/>		
-    </RelativeLayout>
+    </RelativeLayout> -->
 
 </RelativeLayout>

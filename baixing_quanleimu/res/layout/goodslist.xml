@@ -4,8 +4,14 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
+        <include layout="@layout/filter_bar"
+            android:id="@+id/filter_bar_root"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/tab_height"/>
+        
     <LinearLayout
         android:id="@+id/linearListView"
+        android:layout_below="@+id/filter_bar_root"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@drawable/home_bg"
@@ -26,12 +32,12 @@
             android:scrollingCache="false"
             app:need_gap_header="true" />
     </LinearLayout>
-
+     
     <RelativeLayout
         android:id="@+id/linearStatusbar"
+        android:layout_below="@+id/filter_bar_root"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
         android:background="#dd222222"
         android:gravity="center_vertical" >
 

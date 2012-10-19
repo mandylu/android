@@ -339,13 +339,13 @@ public class QuanleimuApplication extends Application implements LocationService
 //		this.savemap = savemap;
 //	}
 
-	public List<Filterss> getListFilterss() {
-		return listFilterss;
-	}
+//	public List<Filterss> getListFilterss() {
+//		return listFilterss;
+//	}
 
-	public void setListFilterss(List<Filterss> listFilterss) {
-		this.listFilterss = listFilterss;
-	}
+//	public void setListFilterss(List<Filterss> listFilterss) {
+//		this.listFilterss = listFilterss;
+//	}
 
 //	public List<GoodsDetail> getListGoods() {
 //		return listGoods;
