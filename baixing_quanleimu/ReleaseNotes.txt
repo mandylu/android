@@ -1,6 +1,12 @@
+v2.7.2
+date:2012/10/22
+svn revision:5747
+main features:
+fix defects from umeng, including bitmap OOM, saveInstance error, data type cast error, most of which are caused by new framework, in implementation/merge
+
 v2.7.1
 date:2012/10/12
-svn revision: 5655
+svn revision: 5660
 main features:
 1. use fragment framework instead of customized view stack previously used
 2. fix offline message missing problem
