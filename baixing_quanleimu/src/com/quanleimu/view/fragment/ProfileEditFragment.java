@@ -6,6 +6,7 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
+import android.widget.Toast;
 import com.quanleimu.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -225,6 +226,15 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		}
 		
 		profileImg.attachView((ImageView)v.findViewById(R.id.personalImage));
+
+        //注册登出事件
+        v.findViewById(R.id.editProfileLogoutBtn).setOnClickListener(new OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                Util.logout();
+                finishFragment();
+            }
+        });
 		
 		return v;
 	}
