@@ -324,7 +324,9 @@ public abstract class BaseFragment extends Fragment {
 	protected final void finishFragment()
 	{
 		BaseActivity activity = (BaseActivity) getActivity();
-		activity.popFragment(this);
+		if(activity != null){
+			activity.popFragment(this);
+		}
 	}
 	
 	protected final void finishFragment(int resultCode, Object result)

@@ -85,8 +85,8 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	public void onResume() {
 		super.onResume();
 
-		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
-		plv.requestFocus();
+//		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
+//		plv.requestFocus();
 		
 		syncSessions(Util.getMyId(getActivity()));
 		

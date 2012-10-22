@@ -461,7 +461,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		if (uri != null)
 		{
 //			sendMessage(MSG_NEW_IMAGE, uri);
-			profileImg.assignLocalImage(uri.getPath());
+			profileImg.assignLocalImage(uri.toString());
 		}
 	
 	}

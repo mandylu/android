@@ -367,6 +367,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		
 //		return super.onContextItemSelected(item);
 //	}
+	@Override
+	public void onSaveInstanceState(Bundle savedInstanceState) {
+		super.onSaveInstanceState(savedInstanceState);
+	}
 	
 	@Override
 	public void onJobDone() {

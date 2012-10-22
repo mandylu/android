@@ -32,6 +32,7 @@ import android.widget.TextView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.CityDetail;
+import com.quanleimu.util.LocationService;
 import com.quanleimu.view.fragment.FirstRunFragment;
 import android.util.Log;
 //import com.tencent.mm.sdk.platformtools.Log;
@@ -57,9 +58,17 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	private int stackSize;
 	
+	private boolean savedInstance = false;
+	
+	@Override
+	protected void onNewIntent(Intent intent) {
+		savedInstance = false;
+		super.onNewIntent(intent);
+	}
+	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
-		
+		LocationService.getInstance().stop();
 		savedInstanceState.putString("cityEnglishName", myApp.getCityEnglishName());
 		savedInstanceState.putString("cityName", myApp.getCityName());
 		
@@ -74,12 +83,13 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		}
 		
 		savedInstanceState.putStringArrayList("cityDetails", strDetails);
-		
+		savedInstance = true;
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
+    	savedInstance = false;
 //    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
     	super.onRestoreInstanceState(savedInstanceState);
 		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
@@ -146,7 +156,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		// TODO Auto-generated method stub
 		super.onResume();
 		MobclickAgent.onResume(this);
-		
+		this.savedInstance = false;
 		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
 		
 		
@@ -162,6 +172,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	protected final void notifyStackTop()
 	{
+		if(savedInstance) return;
 		BaseFragment f = getCurrentFragment();
 		if (f != null)
 		{
@@ -186,6 +197,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	public final void showFirstRun(BaseFragment f)
 	{
+		if(savedInstance) return;
 		if (f.getFirstRunId() == -1)
 		{
 			return; //No need first run.
@@ -382,6 +394,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	public final void pushFragment(BaseFragment fragment, Bundle bundle, String popTo)
 	{
+		if(savedInstance) return;
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		fm.popBackStack(popTo == null ? null : popTo , FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -405,12 +418,13 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	public final void popFragment(BaseFragment f)
 	{
-			FragmentManager fm = getSupportFragmentManager();
-			FragmentTransaction ft = fm.beginTransaction();
-			//Pop current
-			fm.popBackStackImmediate();
-			
-			ft.commit();
+		if(savedInstance) return;
+		FragmentManager fm = getSupportFragmentManager();
+		FragmentTransaction ft = fm.beginTransaction();
+		//Pop current
+		fm.popBackStackImmediate();
+		
+		ft.commit();
 	}
 	
 	

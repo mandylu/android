@@ -13,7 +13,6 @@
 	    android:gravity="left|center_vertical"
 	    android:textSize="18dip"
 	    android:textColor="@drawable/list_titleselector" />	
-	<requestFocus />
 
 	<EditText
 	    android:id="@+id/postdescriptioninput"

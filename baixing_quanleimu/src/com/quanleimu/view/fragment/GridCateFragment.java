@@ -95,7 +95,7 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	@Override
 	public void onResume(){
 		super.onResume();
-		getView().requestFocus();
+//		getView().requestFocus();
 	}
 
 	@Override

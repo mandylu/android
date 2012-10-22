@@ -5,9 +5,13 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
+import android.database.Cursor;
 import android.graphics.Bitmap;
+import android.net.Uri;
+import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.BitmapUtils;
@@ -68,6 +72,23 @@ public class StateImage implements Serializable{
 		this.context  = context;
 	}
 	
+	public String getRealPathFromURI(Uri contentUri) {
+		String[] proj = { MediaStore.Images.Media.DATA };
+		Cursor cursor = ((BaseActivity)this.context).managedQuery(contentUri, proj, null, null, null);
+
+		if (cursor == null)
+			return null;
+
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+		cursor.moveToFirst();
+
+		String ret = cursor.getString(column_index);
+//		cursor.close();
+		return ret;
+	}
+	
 	public void reset()
 	{
 		if (status == ImageStatus.ImageStatus_UPLOADING)
@@ -83,14 +104,18 @@ public class StateImage implements Serializable{
 	
 	public void assignLocalImage(String localImgPath)
 	{
-		String newUri = localImgPath;
-		if (newUri == null || !new File(newUri).exists())
-		{
-			return;
+		Uri uri = Uri.parse(localImgPath);
+		String path = getRealPathFromURI(uri); // from Gallery
+		if (path == null) {
+			path = uri.getPath(); // from File Manager
 		}
+//		if (path == null || !new File(path).exists())
+//		{
+//			return;
+//		}
 		
 //		final boolean changed = this.localImage != null && newUri.equals(this.localImage);
-		this.localImage = localImgPath;//Uri.parse(localImgPath);
+		this.localImage = path;//Uri.parse(localImgPath);
 //		if (changed)
 //		{
 			changeStatus(ImageStatus.ImageStatus_LOCAL);

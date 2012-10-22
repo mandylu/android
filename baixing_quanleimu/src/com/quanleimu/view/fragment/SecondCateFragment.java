@@ -60,7 +60,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	public void onResume(){
 		super.onResume();
 		
-		getView().findViewById(R.id.gridSecCategory).requestFocus();
+//		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	
 	@Override
