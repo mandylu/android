@@ -5,7 +5,7 @@
     android:orientation="vertical" >
  <LinearLayout
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
+    android:layout_height="wrap_content"
     android:orientation="vertical">
     
             <RelativeLayout
@@ -110,54 +110,18 @@
 			            android:src="#82C726" />
             
 
-					<RelativeLayout
-		                android:layout_width="fill_parent"
-		                android:layout_height="wrap_content" >
-		                
-			            <LinearLayout
-		                    android:id="@+id/llMainContent"
+					<LinearLayout
+		                android:id="@+id/llMainContent"
 		                    android:layout_width="fill_parent"
 		                    android:layout_height="fill_parent"
 		                    android:orientation="vertical" >
-		                
-		                    <RelativeLayout
-		                        android:id="@+id/llgl"
+		                	
+		                	<LinearLayout
 		                        android:layout_width="fill_parent"
-		                        android:layout_height="fill_parent"
-		                        android:background="@drawable/viewad_pic_bg" >
-		
-		                        <Gallery
-		                            android:id="@+id/glDetail"
-		                            android:layout_width="fill_parent"
-		                            android:layout_height="wrap_content"
-		                            android:layout_centerInParent="true" >
-		                        </Gallery>
-		                    </RelativeLayout>
-
-		                    <LinearLayout
-		                        android:id="@+id/meta"
-		                        android:layout_width="fill_parent"
-		                        android:layout_height="wrap_content"
-		                        android:layout_marginLeft="10dip"
-		                        android:layout_marginRight="10dip"
-		                        android:background="@drawable/viewad_bg_meta"
-		                        android:orientation="vertical"
-		                        android:paddingBottom="8dip"
-		                        android:paddingTop="13dip" >
-		                    </LinearLayout>
-
-		                    <TextView
-		                        android:layout_width="fill_parent"
-		                        android:layout_height="1dip"
+		                        android:layout_height="48dp"
+		                        android:id="@+id/vad_title_parent"
 		                        android:layout_marginTop="10dip"
-		                        android:background="@drawable/list_divider" >
-		                    </TextView>
-
-		                    <LinearLayout
-		                        android:layout_width="fill_parent"
-		                        android:layout_height="wrap_content"
-		                        android:layout_marginTop="10dip"
-		                        android:gravity="top"
+		                        android:gravity="center_vertical"
 		                        android:orientation="horizontal" >
 		
 		                        <ImageView
@@ -171,11 +135,37 @@
 		                            android:id="@+id/goods_tittle"
 		                            android:layout_width="fill_parent"
 		                            android:layout_height="wrap_content"
+		                            android:singleLine="true"
 		                            android:gravity="top"
 		                            android:paddingLeft="10dip"
 		                            android:textColor="#000000"
-		                            android:textSize="20dip"
+		                            android:textSize="20sp"
 		                            android:textStyle="bold" />
+		                    </LinearLayout>
+					    
+		                		                    
+		                    <RelativeLayout
+		                        android:id="@+id/llgl"
+		                        android:layout_width="fill_parent"
+		                        android:layout_height="fill_parent"
+		                        android:paddingLeft="@dimen/list_margin_LF"
+		                        android:background="#e7e5d9" >
+		
+		                        <Gallery
+		                            android:id="@+id/glDetail"
+		                            android:layout_width="fill_parent"
+		                            android:layout_height="wrap_content"
+		                            android:layout_centerInParent="true" >
+		                        </Gallery>
+		                    </RelativeLayout>
+
+		                    <LinearLayout
+		                        android:id="@+id/meta"
+								android:layout_marginLeft="@dimen/list_margin_LF"
+		                		android:layout_marginRight="@dimen/list_margin_LF"
+		                        android:layout_width="fill_parent"
+		                        android:layout_height="wrap_content"
+		                        android:orientation="vertical">
 		                    </LinearLayout>
 
 		                    <TextView
@@ -198,100 +188,7 @@
 		                        android:paddingBottom="10dip"
 		                        android:paddingTop="10dip" >
 		
-		                        <LinearLayout
-		                            android:id="@+id/showmap"
-		                            android:layout_width="wrap_content"
-		                            android:layout_height="wrap_content"
-		                            android:background="@drawable/btn_bg"
-		                            android:clickable="true"
-		                            android:gravity="center_vertical"
-		                            android:paddingLeft="5dip"
-		                            android:paddingRight="5dip" >
-		
-		                            <ImageView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:background="@drawable/icon_map" />
-<!-- 		
-		                            <TextView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:layout_marginLeft="1dip"
-		                                android:text="具体地点"
-		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" /> -->
-		                        </LinearLayout>
-		
-<!-- 		                        <LinearLayout
-		                            android:id="@+id/fenxianglayout"
-		                            android:layout_width="wrap_content"
-		                            android:layout_height="wrap_content"
-		                            android:layout_marginLeft="10dip"
-		                            android:background="@drawable/btn_bg"
-		                            android:clickable="true"
-		                            android:gravity="center_vertical"
-		                            android:paddingLeft="5dip"
-		                            android:visibility="invisible"
-		                            android:paddingRight="5dip" >
-		
-		                            <ImageView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:background="@drawable/icon_share" />
-		
-		                            <TextView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:layout_marginLeft="1dip"
-		                                android:text="分享"
-		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" />
-		                        </LinearLayout>
-		                        
-		                        <LinearLayout
-		                            android:visibility="invisible"
-		                            android:id="@+id/wxlayout"
-		                            android:layout_width="wrap_content"
-		                            android:layout_height="wrap_content"
-		                            android:layout_marginLeft="10dip"
-		                            android:background="@drawable/btn_bg"
-		                            android:clickable="true"
-		                            android:gravity="center_vertical"
-		                            android:paddingLeft="5dip"
-		                            android:paddingRight="5dip" >
-		
-		                            <ImageView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:background="@drawable/micro_messenger" />
-		                        </LinearLayout>	 -->	                        
-		
-		                        <LinearLayout
-		                            android:id="@+id/jubaolayout"
-		                            android:layout_width="wrap_content"
-		                            android:layout_height="wrap_content"
-		                            android:layout_marginLeft="20dip"
-		                            android:clickable="true"
-		                            android:gravity="center_vertical"
-		                            android:paddingLeft="5dip"
-		                            android:paddingRight="5dip" >
-		
-		                            <ImageView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:layout_gravity="center_vertical"
-		                                android:background="@drawable/icon_flag" />
-		
-		                            <TextView
-		                                android:layout_width="wrap_content"
-		                                android:layout_height="wrap_content"
-		                                android:layout_marginLeft="1dip"
-		                                android:text="举报"
-		                                android:textColor="@drawable/list_textselector"
-		                                android:textSize="16dip" />
-		                        </LinearLayout>
 		                    </LinearLayout>
-						</LinearLayout>
 				
 				        <ImageView
 		                    android:id="@+id/graymask"
@@ -301,8 +198,9 @@
 		                    android:layout_alignLeft="@+id/llMainContent"
 		                    android:layout_alignRight="@+id/llMainContent"
 		                    android:layout_alignTop="@+id/llMainContent"
+		                    android:visibility="gone"
 		                    android:src="#C87D7D7D" />
-            	</RelativeLayout>
+            	</LinearLayout>
 			</LinearLayout>
 </LinearLayout>
 </ScrollView>

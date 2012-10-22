@@ -10,6 +10,7 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
+import java.util.zip.Inflater;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -48,8 +49,10 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
+import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -76,6 +79,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.TextUtil;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
@@ -98,8 +102,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	};
 	
 	
-	final private String strCollect = "收藏";
-	final private String strCancelCollect = "取消收藏";
+//	final private String strCollect = "收藏";
+//	final private String strCancelCollect = "取消收藏";
 	final private int msgRefresh = 5;
 	final private int msgUpdate = 6;
 	final private int msgDelete = 7;
@@ -109,17 +113,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private static final int MSG_HIDE_ARROW = 0x00010002;
 
 	public GoodsDetail detail = new GoodsDetail();
-	private View titleControlView = null;
+//	private View titleControlView = null;
 	private AuthController authCtrl;
 	
 	private String json = "";
 	
-	private Bundle mBundle;
+//	private Bundle mBundle;
 	
 	private Bitmap mb_loading = null;
 	
 	private int type = 240;//width of screen
-	private int paddingLeftMetaPixel = 16;//meta, right part, value
+//	private int paddingLeftMetaPixel = 16;//meta, right part, value
 	
 	private boolean keepSilent = false;
 	
@@ -192,17 +196,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void updateButtonStatus()
 	{
-		if(isMyAd()){
-			btnStatus = 1;
-		}
-		else{
-			if(isInMyStore()){
-				btnStatus = 0;
-			}
-			else{
-				btnStatus = -1;
-			}
-		}
+//		if(isMyAd()){
+//			btnStatus = 1;
+//		}
+//		else{
+//			if(isInMyStore()){
+//				btnStatus = 0;
+//			}
+//			else{
+//				btnStatus = -1;
+//			}
+//		}
 	}
 	
 	private void saveToHistory(){
@@ -306,11 +310,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		type = wm.getDefaultDisplay().getWidth();
 		
 		//different padding for meta value to avoid overlapping display
-		if (type < 480) {
-			this.paddingLeftMetaPixel = 0;
-		}else{
-			this.paddingLeftMetaPixel = 16;
-		}
+//		if (type < 480) {
+//			this.paddingLeftMetaPixel = 0;
+//		}else{
+//			this.paddingLeftMetaPixel = 16;
+//		}
 		
 		
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
@@ -386,9 +390,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
 					mListLoader.setSelection(pos);
+					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), false);
-					reCreateTitle();
-					refreshHeader();
+//					reCreateTitle();
+//					refreshHeader();
 					saveToHistory();
 //					if(!initCalled){
 //						//the ad is viewed once
@@ -410,6 +415,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 				else
 				{
+					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), true);
 				}
 			}
@@ -545,11 +551,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		type = wm.getDefaultDisplay().getWidth();
 		
 		//different padding for meta value to avoid overlapping display
-		if (type < 480) {
-			this.paddingLeftMetaPixel = 0;
-		}else{
-			this.paddingLeftMetaPixel = 16;
-		}
+//		if (type < 480) {
+//			this.paddingLeftMetaPixel = 0;
+//		}else{
+//			this.paddingLeftMetaPixel = 16;
+//		}
 		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
 		
@@ -566,8 +572,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				((TextView)contentView.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
 			}
 //			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
-			contentView.findViewById(R.id.showmap).setEnabled(false);
-			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
+//			contentView.findViewById(R.id.showmap).setEnabled(false);
+//			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
 //			findViewById(R.id.sms).setEnabled(false);
 //			findViewById(R.id.call).setEnabled(false);
 			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
@@ -611,7 +617,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
 		TextView txt_message1 = (TextView) contentView.findViewById(R.id.sendmess1);
-		LinearLayout rl_address = (LinearLayout) contentView.findViewById(R.id.showmap);
 //		rl_address.setOnTouchListener(this);
 
 		LinearLayout ll_meta = (LinearLayout) contentView.findViewById(R.id.meta);
@@ -627,28 +632,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
 //		}
 		
-		View jubao = contentView.findViewById(R.id.jubaolayout);
-		if(isMyAd()){
-			jubao.setVisibility(View.GONE);
-		}
-		else{			
-			jubao.setOnClickListener(this);			
-		}
 
 		this.setMetaObject(contentView, detail);
 		
 		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
 		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
 
-		String areaNamesV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-		if (areaNamesV != null && !areaNamesV.equals("")) 
-		{		
-			rl_address.setOnClickListener(this);
-		} 
-		
 		final ViewPager vp = pager != null ? pager : (ViewPager) getActivity().findViewById(R.id.svDetail);
 		if (vp != null && pageIndex == vp.getCurrentItem())
 		{
+			updateTitleBar(getTitleDef());
 			updateContactBar(vp.getRootView(), false);
 		}
 		
@@ -657,38 +650,73 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void updateContactBar(View rootView, boolean forceHide)
 	{
 		LinearLayout rl_phone = (LinearLayout)rootView.findViewById(R.id.phonelayout);
-		if (forceHide || isMyAd())
+		if (forceHide)
 		{
 			rl_phone.setVisibility(View.GONE);
 			return;
 		}
+		else if (isMyAd())
+		{
+			rootView.findViewById(R.id.phone_parent).setVisibility(View.GONE);
+			rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.VISIBLE);
+			
+			rootView.findViewById(R.id.vad_btn_edit).setOnClickListener(this);
+			rootView.findViewById(R.id.vad_btn_refresh).setOnClickListener(this);
+			rootView.findViewById(R.id.vad_btn_delete).setOnClickListener(this);
+			return;
+		}
 		
-		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
-		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.contact);
-		rootView.findViewById(R.id.buzz_txt).setOnClickListener(this);
-		View iv_buzz = rootView.findViewById(R.id.buzz);
+		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
+		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
+	
+		
+		ImageButton btnBuzz = (ImageButton) rootView.findViewById(R.id.vad_buzz_btn);
+		btnBuzz.setImageResource(isCurrentAdFromMobile() ? R.drawable.icon_buzz : R.drawable.icon_sms);
+		
+//		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
+		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
+		iv_contact.updateOptionList("请选择", 
+		new String[] {"发送手机短信", "发送即时消息"}, 
+		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2, R.id.vad_send_message + 3});
+		//FIXME: prepare context menu for currnet vad.
+		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
+//		View iv_buzz = rootView.findViewById(R.id.buzz);
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
 		
 		rl_phone.setVisibility(View.VISIBLE);
 		
-		iv_buzz.setOnClickListener(this);
-		rootView.findViewById(R.id.call_img).setOnClickListener(this);
+//		iv_buzz.setOnClickListener(this);
 		
 		if (mobileV != null
 				&& !mobileV.equals("")
 				&& !mobileV.equals("无")) {
-			txt_phone.setVisibility(View.VISIBLE);
-			txt_phone.setText(mobileV);
-			iv_contact.updateOptionList(mobileV, 
-					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
-					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
-			txt_phone.setOnClickListener(this);
+//			txt_phone.setVisibility(View.VISIBLE);
+//			txt_phone.setText(mobileV);
+//			iv_contact.updateOptionList(mobileV, 
+//					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
+//					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
+//			txt_phone.setOnClickListener(this);
 //			iv_contact.assignContactFromPhone(mobileV, false);
+			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(this);
+	
 		} else {
-			txt_phone.setText("无手机号码");
-			txt_phone.setOnClickListener(null);
+//			txt_phone.setText("无手机号码");
+//			txt_phone.setOnClickListener(null);
 //			txt_phone.setVisibility(View.INVISIBLE);
+			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(null);
 		}
+	}
+	
+	private boolean isCurrentAdFromMobile()
+	{
+		if (detail == null)
+		{
+			return false;
+		}
+		
+		String postFrom = detail.getValueByKey("postMethod");
+		
+		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom);
 	}
 	
 	private void requireAuth4Talk()
@@ -728,7 +756,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	
-	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
+//	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
 	
 	private boolean handleRightBtnIfInVerify(){
 		if(!detail.getValueByKey("status").equals("0")){
@@ -742,14 +770,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void handleStoreBtnClicked(){
 		if(handleRightBtnIfInVerify()) return;
-		if(-1 == btnStatus){
-			btnStatus = 0;
+		if(/*-1 == btnStatus*/!isInMyStore()){
+//			btnStatus = 0;
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			
-			TitleDef title = getTitleDef();
-			title.m_rightActionHint = strCancelCollect;
+//			TitleDef title = getTitleDef();
+//			title.m_rightActionHint = strCancelCollect;
 //			m_viewInfoListener.onTitleChanged(title);
-			refreshHeader();
+//			refreshHeader();
 			
 			if (myStore == null){
 				myStore = new ArrayList<GoodsDetail>();
@@ -762,10 +790,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}		
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", myStore);
+			updateTitleBar(getTitleDef());
 			Toast.makeText(QuanleimuApplication.context, "收藏成功", 3).show();
 		}
-		else if (0 == btnStatus) {
-			btnStatus = -1;
+		else /*if (0 == btnStatus)*/ {
+//			btnStatus = -1;
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			for (int i = 0; i < myStore.size(); i++) {
 				if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -776,47 +805,48 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getAppContext(), "listMyStore", myStore);
-			TitleDef title = getTitleDef();
-			title.m_rightActionHint = strCollect;
-			refreshHeader();
+//			TitleDef title = getTitleDef();
+//			title.m_rightActionHint = strCollect;
+//			refreshHeader();
+			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
 		}
-		else if(1 == btnStatus){
-			final String[] names = {"编辑","刷新","删除"};
-			new AlertDialog.Builder(this.getActivity()).setTitle("选择操作")
-					.setItems(names, new DialogInterface.OnClickListener(){
-						public void onClick(DialogInterface dialog, int which){
-							switch(which){
-								case 0:
-									Bundle bundle = createArguments(null, null);
-									bundle.putSerializable("goodsDetail", detail);
-									bundle.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-									pushFragment(new PostGoodsFragment(), bundle);
-									
-									break;
-								case 1:
-									showSimpleProgress();
-									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
-									dialog.dismiss();
-									break;									
-								case 2:
-									showSimpleProgress();
-									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
-									dialog.dismiss();
-									break;
-								default:
-									break;
-							}
-						}
-					})
-					.setNegativeButton(
-				     "取消", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();							
-						}
-					}).show();
-		}
+//		else if(1 == btnStatus){
+//			final String[] names = {"编辑","刷新","删除"};
+//			new AlertDialog.Builder(this.getActivity()).setTitle("选择操作")
+//					.setItems(names, new DialogInterface.OnClickListener(){
+//						public void onClick(DialogInterface dialog, int which){
+//							switch(which){
+//								case 0:
+//									Bundle bundle = createArguments(null, null);
+//									bundle.putSerializable("goodsDetail", detail);
+//									bundle.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+//									pushFragment(new PostGoodsFragment(), bundle);
+//									
+//									break;
+//								case 1:
+//									showSimpleProgress();
+//									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
+//									dialog.dismiss();
+//									break;									
+//								case 2:
+//									showSimpleProgress();
+//									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+//									dialog.dismiss();
+//									break;
+//								default:
+//									break;
+//							}
+//						}
+//					})
+//					.setNegativeButton(
+//				     "取消", new DialogInterface.OnClickListener() {
+//						@Override
+//						public void onClick(DialogInterface dialog, int which) {
+//							dialog.cancel();							
+//						}
+//					}).show();
+//		}
 	}
 	
 	@Override
@@ -834,8 +864,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onClick(View v) {
 		View rootView = getView();
 		switch (v.getId()) {
-		case R.id.number:{
-			rootView.findViewById(R.id.contact).performLongClick();
+//		case R.id.number:{
+//			rootView.findViewById(R.id.contact).performLongClick();
+//			break;
+//		}
+		case R.id.btn_fav_unfav:
+			handleStoreBtnClicked();
+			break;
+		case R.id.vad_call_btn:
+		{
+			startContact(false);
 			break;
 		}
 		case R.id.retry_load_more:
@@ -847,28 +885,38 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 			pushFragment(new FeedbackFragment(), bundle);
 			break;
-		case R.id.call_img:{
-			rootView.findViewById(R.id.contact).performLongClick();
-			break;	
-		}
-		case R.id.buzz_txt:
-		{
-			rootView.findViewById(R.id.buzz).performClick();
-			break;
-		}
-		case R.id.buzz: {
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
-			String userId = Util.getMyId(getActivity());
-			if (userId == null)
+		case R.id.vad_buzz_btn:
+			if (isCurrentAdFromMobile())
 			{
-				requireAuth4Talk();
+				getView().findViewById(R.id.vad_send_message).performLongClick();
 			}
 			else
 			{
-				startChat();
+				startContact(true);
 			}
 			break;
-		}
+//		case R.id.call_img:{
+//			rootView.findViewById(R.id.contact).performLongClick();
+//			break;	
+//		}
+//		case R.id.buzz_txt:
+//		{
+//			rootView.findViewById(R.id.buzz).performClick();
+//			break;
+//		}
+//		case R.id.buzz: {
+//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
+//			String userId = Util.getMyId(getActivity());
+//			if (userId == null)
+//			{
+//				requireAuth4Talk();
+//			}
+//			else
+//			{
+//				startChat();
+//			}
+//			break;
+//		}
 //		case R.id.sms:{
 //			TextView txt_phone = (TextView) findViewById(R.id.number);
 //			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
@@ -876,7 +924,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			this.getContext().startActivity(intent);			
 //			break;
 //		}
-		case R.id.showmap:
+		/*case R.id.showmap:
 			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
 			BXLocation location = QuanleimuApplication.getApplication().getCurrentPosition(true);
@@ -1000,7 +1048,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 			}
 			break;
-			
+			*/
 //		case R.id.wxlayout:{
 //			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
 //			doShare2WX();
@@ -1052,7 +1100,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 //			break;
 //		}
-		case R.id.jubaolayout:{
+		/*case R.id.jubaolayout:{
 
 			UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 			if(user == null){
@@ -1086,21 +1134,21 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			
 			break;
-		}
+		}*/
 		case R.id.managebtn:
 			showManageDialog();
 			break;
-		case R.id.manager_refresh:{
+		case R.id.vad_btn_refresh:{
 //		case R.id.iv_refresh:{
-			manageDlg.dismiss();
+//			manageDlg.dismiss();
 			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
 			
 			break;
 		}
 //		case R.id.
-		case R.id.manager_edit:{
-			manageDlg.dismiss();
+		case R.id.vad_btn_edit:{
+//			manageDlg.dismiss();
 			
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
@@ -1109,8 +1157,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			pushFragment(new PostGoodsFragment(), args);
 			break;
 		}
-		case R.id.manager_delete:{
-			manageDlg.dismiss();
+		case R.id.vad_btn_delete:{
+//			manageDlg.dismiss();
 //		case R.id.iv_del:{
 			new AlertDialog.Builder(getActivity()).setTitle("提醒")
 			.setMessage("是否确定删除")
@@ -1276,37 +1324,101 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
 		if(ll_meta == null) return;
 		ll_meta.removeAllViews();
+		
 		LayoutInflater inflater = LayoutInflater.from(currentPage.getContext());
-		for (int i = 0; i < detail.getMetaData().size(); i++) {
-			String[] s = detail.getMetaData().get(i).split(" ");
-			if(s.length < 2) continue;
-
-			View v = null;
-			v = inflater.inflate(R.layout.item_meta, null);
-
-			TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
-			TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-			tvmeta.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
-
-			tvmetatxt.setText(detail.getMetaData().get(i).split(" ")[0].toString() + "：");
-			tvmeta.setText(detail.getMetaData().get(i).split(" ")[1].toString());
-
-			v.setTag(i);
-			ll_meta.addView(v);
+		
+		String price = detail.getValueByKey(EDATAKEYS.EDATAKEYS_PRICE);
+		if (price != null)
+		{
+			ll_meta.addView(createMetaView(inflater, "价格:", price, null));
 		}
-
-		Date date = new Date(Long.parseLong(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
-		SimpleDateFormat df = new SimpleDateFormat("MM月dd日 HH:mm:ss",
-				Locale.SIMPLIFIED_CHINESE);
-		String strTime = df.format(date);
-		View time = inflater.inflate(R.layout.item_meta, null);
-		TextView timetxt = (TextView) time.findViewById(R.id.tvmetatxt);
-		TextView timevalue = (TextView) time.findViewById(R.id.tvmeta);
-		timevalue.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
-		timetxt.setText("更新时间： ");
-		timevalue.setText(strTime);
-		ll_meta.addView(time);
+		
+		
+		
+		String area = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+		if (area != null)
+		{
+			View areaV = createMetaView(inflater, "地区:", area, new View.OnClickListener() {
+				public void onClick(View v) {
+					showMap();
+				}
+			});
+			ll_meta.addView(areaV);
+		}
+		
+		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
+		if (contact != null)
+		{
+			View contacV = createMetaView(inflater, "联系方式",  contact, new View.OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					startContact(false);
+				}
+			});
+			ll_meta.addView(contacV);
+		}
+		
+		
+//		for (int i = 0; i < detail.getMetaData().size(); i++) {
+//			String[] s = detail.getMetaData().get(i).split(" ");
+//			if(s.length < 2) continue;
+//
+//			View v = null;
+//			v = inflater.inflate(R.layout.item_meta, null);
+//
+//			TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
+//			TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
+//			tvmeta.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
+//
+//			tvmetatxt.setText(detail.getMetaData().get(i).split(" ")[0].toString() + "：");
+//			tvmeta.setText(detail.getMetaData().get(i).split(" ")[1].toString());
+//
+//			v.setTag(i);
+//			ll_meta.addView(v);
+//		}
+//
+//		Date date = new Date(Long.parseLong(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
+//		SimpleDateFormat df = new SimpleDateFormat("MM月dd日 HH:mm:ss",
+//				Locale.SIMPLIFIED_CHINESE);
+//		String strTime = df.format(date);
+//		View time = inflater.inflate(R.layout.item_meta, null);
+//		TextView timetxt = (TextView) time.findViewById(R.id.tvmetatxt);
+//		TextView timevalue = (TextView) time.findViewById(R.id.tvmeta);
+//		timevalue.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
+//		timetxt.setText("更新时间： ");
+//		timevalue.setText(strTime);
+//		ll_meta.addView(time);
 	}
+	
+	private View createMetaView(LayoutInflater inflater, String label, String value, View.OnClickListener clickListener)
+	{
+		View v = inflater.inflate(R.layout.item_meta, null);
+		
+		TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
+		TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
+		
+		tvmetatxt.setText(label);
+		tvmeta.setText(value);
+		
+		if (clickListener != null)
+		{
+			v.findViewById(R.id.action_indicator_img).setVisibility(View.VISIBLE);
+			v.setOnClickListener(clickListener);
+		}
+		else
+		{
+			v.findViewById(R.id.action_indicator_img).setVisibility(View.INVISIBLE);
+		}
+		
+		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) v.getLayoutParams();
+		if (layoutParams== null)  layoutParams =  new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+		layoutParams.height = (int) getResources().getDimension(R.dimen.vad_meta_item_height);
+		v.setLayoutParams(layoutParams);
+		
+		return v;
+	}
+	
 	
 	@Override
 	public void onAnimationEnd(Animation animation) {
@@ -1683,29 +1795,70 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? "收藏" : null;
+		title.m_rightActionHint = "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
 				this.mListLoader.getGoodsList().getData().size();
 		title.m_visible = true;
 		
+		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
+		title.m_titleControls = title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
+		
+		updateTitleBar(title);
+		
+//		if(isMyAd()){
+//			if(titleControlView == null){
+//				titleControlView = inflater.inflate(R.layout.managebtn, null);
+//				titleControlView.setOnClickListener(this);
+//			}
+//			
+//			title.m_rightActionHint = "";
+//			title.m_titleControls = titleControlView;
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
+//		}
+//		else{
+//			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
+//			if(/*isInMyStore()*/detail.getValueByKey("status").equals("0")){
+//				title.m_rightActionHint = strCancelCollect;
+//			}
+//			else{
+//				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
+//			}
+//		}
+	}
+	
+	private void updateTitleBar(TitleDef title)
+	{
+		
 		if(isMyAd()){
-			if(titleControlView == null){
-				LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-				titleControlView = inflater.inflate(R.layout.managebtn, null);
-				titleControlView.setOnClickListener(this);
-			}
-			
-			title.m_rightActionHint = "";
-			title.m_titleControls = titleControlView;
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
 		}
 		else{
-			if(isInMyStore()){
-				title.m_rightActionHint = strCancelCollect;
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
+		}
+		
+		ImageView favBtn = (ImageView) title.m_titleControls.findViewById(R.id.btn_fav_unfav);
+		if (favBtn != null)
+		{
+			favBtn.setOnClickListener(this);
+			favBtn.setImageResource(isInMyStore() ? R.drawable.icon_unfav : R.drawable.icon_fav);
+		}
+		
+		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);
+		String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
+		if (dateV != null)
+		{
+			try {
+				long timeL = Long.parseLong(dateV) * 1000;
+				createTimeView.setText(TextUtil.getTimeDesc(timeL));
 			}
-			else{
-				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
+			catch(Throwable t)
+			{
+				createTimeView.setText("");
 			}
 		}
+		
+		TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
+		viewTimes.setText(detail.getValueByKey("count") + "次查看");
 	}
 	
 	@Override
@@ -1824,37 +1977,157 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		View v = getView();
 		switch (menuItem.getItemId())
 		{
-		case R.id.contact + 0: {
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_ADD_CONTACT, null);
-			TextView txt_phone = (TextView) v.findViewById(R.id.number);
-			Intent intent = new Intent(
-		            ContactsContract.Intents.SHOW_OR_CREATE_CONTACT,
-		            Uri.parse("tel:" + txt_phone.getText()));
-		        intent.putExtra(ContactsContract.Intents.EXTRA_FORCE_CREATE, true);
-		        this.getActivity().startActivity(intent);
+		case R.id.vad_send_message + 0: {
+			startContact(true);
 			return true;
 		}
-		case R.id.contact + 1: {
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_CALL, null);
-			TextView txt_phone = (TextView) v.findViewById(R.id.number);
-			Uri uri = Uri.parse("tel:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_DIAL, uri);
-			this.getActivity().startActivity(intent);
+		case R.id.vad_send_message + 1: {
+			startChat();
 			return true;
 		}
-		case R.id.contact + 2: {
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SMS_SEND, null);
-			TextView txt_phone = (TextView) v.findViewById(R.id.number);
-			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-			this.getActivity().startActivity(intent);			
-			return true;
-		}
-		case R.id.contact + 4:
+		case R.id.vad_send_message + 3:
 			return true;
 		}
 		
 		return super.onContextItemSelected(menuItem);
+	}
+	
+	private void startContact(boolean sms)
+	{
+		BXStatsHelper.getInstance().increase(sms ? BXStatsHelper.TYPE_SMS_SEND : BXStatsHelper.TYPE_CALL, null);
+		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
+		if (contact != null)
+		{
+			Intent intent = new Intent(
+					sms ? Intent.ACTION_SENDTO : Intent.ACTION_DIAL,
+					Uri.parse((sms ? "smsto:" : "tel:") + contact));
+			startActivity(intent);
+		}
+	}
+	
+	private void showMap()
+	{
+		if (detail == null)
+		{
+			return;
+		}
+		final GoodsDetail requestDetail = this.detail;
+		
+		String latV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+		String lonV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+		if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
+		{
+			final double lat = Double.valueOf(latV);
+			final double lon = Double.valueOf(lonV);
+			Thread convertThread = new Thread(new Runnable(){
+				@Override
+				public void run(){
+					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+							String.valueOf(lat), String.valueOf(lon));
+					try{
+						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+						JSONObject js = new JSONObject(baiduJsn);
+						Object errorCode = js.get("error");
+						if(errorCode instanceof Integer && (Integer)errorCode == 0){
+							String x = (String)js.get("x");
+							String y = (String)js.get("y");
+							byte[] bytes = Base64.decode(x, Base64.DEFAULT);
+							x = new String(bytes, "UTF-8");
+							
+							bytes = Base64.decode(y, Base64.DEFAULT);
+							y = new String(bytes, "UTF-8");
+							
+							Double dx = Double.valueOf(x);
+							Double dy = Double.valueOf(y);
+							
+							int ix = (int)(dx * 1E6);
+							int iy = (int)(dy * 1E6);
+							
+							x = String.valueOf(ix);
+							y = String.valueOf(iy);
+							
+							Bundle bundle = new Bundle();
+							bundle.putString("detailPosition", x +"," + y);
+							String areaname = requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+							if(areaname != null){
+								String[] aryArea = areaname.split(",");
+								if(aryArea != null && aryArea.length > 0){
+									bundle.putString("title", aryArea[aryArea.length - 1]);
+								}
+							}
+							
+							final BaseActivity baseActivity = (BaseActivity)getActivity();
+							if (baseActivity != null && requestDetail == detail)
+							{
+								baseActivity.getIntent().putExtras(bundle);
+								
+								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+								baseActivity.startActivity(baseActivity.getIntent());
+							}
+							return;
+						}
+
+					}catch(UnsupportedEncodingException e){
+						e.printStackTrace();
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
+					Bundle bundle = new Bundle();
+					bundle.putString("detailPosition", positions);
+					bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+					
+					final BaseActivity baseActivity = (BaseActivity)getActivity();
+					if (baseActivity != null && requestDetail == detail)
+					{
+						baseActivity.getIntent().putExtras(bundle);
+						
+						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+						baseActivity.startActivity(baseActivity.getIntent());
+					}
+				}
+			});
+			convertThread.start();
+		}
+		else{
+			Thread getCoordinate = new Thread(new Runnable(){
+	            @Override
+	            public void run() {
+	            	if(getActivity() == null) return;
+					String city = QuanleimuApplication.getApplication().cityName;
+					if(!city.equals("")){
+						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+						try{
+							String googleJsn = Communication.getDataByUrlGet(googleUrl);
+							String[] info = googleJsn.split(",");
+							if(info != null && info.length == 4){
+								String positions = 
+										Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
+										+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+								Bundle bundle = new Bundle();
+								bundle.putString("detailPosition", positions);
+								bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+
+								final BaseActivity baseActivity = (BaseActivity)getActivity();
+								if (baseActivity != null && requestDetail == detail)
+								{
+									baseActivity.getIntent().putExtras(bundle);
+									
+									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+									baseActivity.startActivity(baseActivity.getIntent());
+								}
+							}
+						}catch(UnsupportedEncodingException e){
+							e.printStackTrace();
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}	
+	            }
+			});
+			getCoordinate.start();
+
+		}
 	}
 	
 	

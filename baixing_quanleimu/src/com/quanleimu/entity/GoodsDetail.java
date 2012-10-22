@@ -15,19 +15,26 @@ public class GoodsDetail implements Serializable{
 	public ArrayList<String> metaData = new ArrayList<String>();
 	public HashMap<String, String> data = new HashMap<String, String>();
 	public enum EDATAKEYS{
-		EDATAKEYS_TITLE,
-		EDATAKEYS_DESCRIPTION,
-		EDATAKEYS_LAT,
-		EDATAKEYS_LON,
-		EDATAKEYS_DATE,
-		EDATAKEYS_ID,
-		EDATAKEYS_CATEGORYENGLISHNAME,
-		EDATAKEYS_CITYENGLISHNAME,
-		EDATAKEYS_AREANAME,
-		EDATAKEYS_MOBILE,
-		EDATAKEYS_WANTED,
-		EDATAKEYS_CONTACT,
-		EDATAKEYS_LINK
+		EDATAKEYS_TITLE("title"),
+		EDATAKEYS_DESCRIPTION("description"),
+		EDATAKEYS_LAT("lat"),
+		EDATAKEYS_LON("lng"),
+		EDATAKEYS_DATE("createdTime"),
+		EDATAKEYS_ID("id"),
+		EDATAKEYS_CATEGORYENGLISHNAME("categoryEnglishName"),
+		EDATAKEYS_CITYENGLISHNAME("cityEnglishName"),
+		EDATAKEYS_AREANAME("areaNames"),
+		EDATAKEYS_MOBILE("mobile"),
+		EDATAKEYS_WANTED("wanted"),
+		EDATAKEYS_CONTACT("contact"),
+		EDATAKEYS_LINK("link"),
+		EDATAKEYS_PRICE("价格");
+		
+		public String metaKey;
+		private EDATAKEYS(String key)
+		{
+			this.metaKey = key;
+		}
 	}
 	public Set<String> getKeys(){
 		if(null == data) return null;
@@ -119,13 +126,16 @@ public class GoodsDetail implements Serializable{
 		case EDATAKEYS_LINK:
 			key = "link";
 			break;
+		case EDATAKEYS_PRICE:
+			key ="价格";
+			break;
 		default:
 			break;
 		}
 		return key;
 	}
 	public String getValueByKey(EDATAKEYS e){
-		String key = getStringByEnum(e);
+		String key = e.metaKey; //getStringByEnum(e);
 		if(data.containsKey(key)){
 			return data.get(key);
 		}

@@ -1,0 +1,126 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+      android:id="@+id/vad_tool_bar"
+    android:layout_width="fill_parent"
+    android:layout_height="50dp"
+    android:visibility="gone"
+    android:orientation="horizontal" >
+
+    <RelativeLayout
+        android:id="@+id/vad_btn_edit"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@drawable/bg_vad_toolbar_item_selector" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+		<ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:scaleType="centerInside"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/linearLayout1"
+            android:src="@drawable/icon_edit" />
+                    
+            <TextView
+                android:id="@+id/tab_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="修改"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vad_btn_refresh"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@drawable/bg_vad_toolbar_item_selector" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+		<ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:scaleType="centerInside"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/linearLayout1"
+            android:src="@drawable/icon_refresh" />
+                    
+            <TextView
+                android:id="@+id/tab_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="刷新"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/vad_btn_delete"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@drawable/bg_vad_toolbar_item_selector" >
+     	
+         <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingBottom="3dp" >
+
+		<ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:scaleType="centerInside"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/linearLayout1"
+            android:src="@drawable/icon_delete" />
+                    
+            <TextView
+                android:id="@+id/tab_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="删除"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+
+    </RelativeLayout>
+    
+
+</LinearLayout>

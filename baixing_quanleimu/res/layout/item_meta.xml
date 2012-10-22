@@ -1,28 +1,50 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
-    android:orientation="horizontal" >
+    android:layout_height="80dp"
+    android:orientation="horizontal" 
+    android:background="@drawable/list_selector">
 
     <TextView
         android:id="@+id/tvmetatxt"
+        android:layout_centerVertical="true"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="上海"
-        android:textColor="#595959"
+        android:textColor="#94938e"
         android:width="80dip"
-        android:textSize="14dip" 
+        android:textSize="14sp" 
         >
     </TextView>
 
     <TextView
         android:id="@+id/tvmeta"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/tvmetatxt"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="上海"
         android:paddingLeft="0dip"
-        android:textColor="#000000"
-        android:textSize="14dip" >
+        android:textColor="#323234"
+        android:textSize="14sp" >
     </TextView>
+    
+    <ImageView
+        android:id="@+id/action_indicator_img"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentRight="true"
+        android:visibility="invisible"
+        android:src="@drawable/icon_triangle" >
+    </ImageView>
+    
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dip"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/list_divider" >
+    </View>
 
-</LinearLayout>
+</RelativeLayout>

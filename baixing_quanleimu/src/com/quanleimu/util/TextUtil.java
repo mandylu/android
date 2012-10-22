@@ -26,7 +26,7 @@ public class TextUtil
 
     public static final long FULL_YEAR = 60L * 60L * 24L * 30L * 12L;
 
-    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy-MM-dd HH:mm");
+    private static SimpleDateFormat simpleDateFormat = new SimpleDateFormat("yyyy.MM.dd HH:mm");
 
     private static SimpleDateFormat shortDateFormat = new SimpleDateFormat("yyyy.MM.dd");
 

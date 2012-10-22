@@ -10,16 +10,22 @@
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:layout_alignParentBottom="true"
-        android:background="@drawable/viewad_bar"
+		android:orientation="vertical"
         android:gravity="center_vertical" >
 
+        <include layout="@layout/vad_tool_bar"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            />
+        
         <RelativeLayout
             android:id="@+id/phone_parent"
             android:layout_width="fill_parent"
-            android:layout_height="match_parent" >
+            android:layout_height="50dp"
+            android:background="@drawable/bg_contact_bar" >
 
             <com.quanleimu.widget.ContextMenuItem
-                android:id="@+id/contact"
+                android:id="@+id/vad_send_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
@@ -27,44 +33,29 @@
                 android:src="@android:color/transparent"
                 android:visibility="gone" />
 
-            <ImageView
-                android:id="@+id/call_img"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:paddingLeft="10dip"
-                android:src="@drawable/icon_call" />
-
-            <TextView
-                android:id="@+id/number"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:layout_centerVertical="true"
-                android:layout_toRightOf="@+id/call_img"
-                android:text="12345678909"
-                android:textColor="#FFFFFF"
-                android:textSize="25dip" >
-            </TextView>
-
-            <TextView
-                android:id="@+id/buzz_txt"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <ImageButton
+                android:id="@+id/vad_buzz_btn"
+                android:layout_width="72dp"
+                android:layout_height="42dp"
                 android:layout_alignParentRight="true"
                 android:layout_centerVertical="true"
-                android:paddingRight="10dp"
-                android:text="私信"
-                android:textColor="@color/white"
-                android:textSize="15sp" />
+                android:layout_marginLeft="6dp"
+                android:layout_marginRight="6dp"
+                android:background="@drawable/bg_message_btn_selector"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_buzz" />
 
-            <ImageView
-                android:id="@+id/buzz"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:id="@+id/vad_call_btn"
+                android:layout_height="42dp"
+                android:layout_marginLeft="6dp"
                 android:layout_centerVertical="true"
-                android:layout_toLeftOf="@+id/buzz_txt"
-                android:paddingLeft="10dip"
-                android:src="@drawable/btn_viewad_buzz" />
+                android:layout_alignParentLeft="true"
+                android:background="@drawable/bg_call_btn_selector"
+                android:layout_toLeftOf="@+id/vad_buzz_btn" >
+            </LinearLayout>
+
         </RelativeLayout>
     </LinearLayout>
 
