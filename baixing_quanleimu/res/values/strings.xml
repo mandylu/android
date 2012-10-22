@@ -60,7 +60,7 @@
     <color name="dialogbackgournd">#00ffffff</color>
     <string name="citychange_gpscity">GPS定位城市</string>
 
-    <string name="search_no_result">没有搜到相关信息，请换个关键词重新搜索</string>
+    <string name="search_no_result">没有找到相应信息...</string>
 
     
     <string-array name="array_menu_delete">

@@ -85,7 +85,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
 	}
-
+	
+	@Override
+	public void handleSearch() {
+		this.pushFragment(new SearchFragment(), this.getArguments());
+	};
+	
+	
 	@Override
 	protected int getFirstRunId() {
 		return R.layout.first_run_main;

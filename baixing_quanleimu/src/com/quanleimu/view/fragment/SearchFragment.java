@@ -221,7 +221,6 @@ public class SearchFragment extends BaseFragment {
 			}
 		});
 		
-		
 		return rootV;
 	}
 	
@@ -240,9 +239,6 @@ public class SearchFragment extends BaseFragment {
 		
 	}
 
-	/**
-	 * 
-	 */
 	private void showSearchHistory() {
 		if (listRemark != null && listRemark.size() != 0) {
 			searchResult.setVisibility(View.GONE);
