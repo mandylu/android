@@ -61,6 +61,16 @@ public class Communication implements Comparator<String> {
 		return false;
 	}
 
+	public static boolean isNetworkActive() {
+		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context
+				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+		if (activeNetInfo != null) {
+			return true;
+		}
+		return false;
+	}
+	
 	public static String getApiUrl(String apiName, List<String> parameters) {
 
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
@@ -607,6 +617,20 @@ public class Communication implements Comparator<String> {
 		
 		t.start();
 	
+	}
+	
+	public static void executeSyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
+		String url = Communication.getApiUrl(apiName, params.toParameterList());
+		try {
+			String result = Communication.getDataByUrl(url, true);
+			if (listener != null) {
+				listener.onServerResponse(result);
+			}
+		} catch (Exception e) {
+			if (listener != null) {
+				listener.onException(e);
+			}
+		}
 	}
 	
 	public static void executeAsyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
