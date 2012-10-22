@@ -664,16 +664,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		{
 			//TODO 登录判断，talk session 获取
 			if (selText.endsWith("已发布")) {
-				if(user == null){
-					Bundle bundle = createArguments(null, "用户中心");
-					pushFragment(new LoginFragment(), bundle);
-				}else{
-					pushFragment(new PersonalPostFragment(), null);
-				}
+                pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);
 			} else if (selText.endsWith("审核未通过")) {
-
+                pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
 			} else if (selText.endsWith("已删除")) {
-
+                pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
 			} else if (selText.endsWith("收藏")) {
 				Bundle bundle = createArguments(null, null);
 				bundle.putBoolean("isFav", true);
@@ -697,6 +692,17 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
 		}
 	}
+
+    private void pushPersonalPostFragment(int type) {
+        if(user == null){
+            Bundle bundle = createArguments(null, "用户中心");
+            pushFragment(new LoginFragment(), bundle);
+        }else{
+            Bundle bundle = createArguments(null, null);
+            bundle.putInt(PersonalPostFragment.TYPE_KEY, type);
+            pushFragment(new PersonalPostFragment(), bundle);
+        }
+    }
 
 
     private void fillProfile(UserProfile up, View userInfoView){
@@ -723,7 +729,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
         if(up.location != null && !up.location.equals("")){
 //            (new Thread(new GetLocationThread(up.location))).start();
-            //TODO ming 开新线程拿什么定位？
+            //TODO fixme 开新线程拿什么定位？
         }else{
             ((TextView)activity.findViewById(R.id.userInfoLocation)).setText("");
         }
@@ -793,6 +799,15 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
         }
     }
 
+    //todo ming favorite history 布局、功能      reviewer:zhongjiawu
+
+    //todo ming mylisting 展示、删除、恢复、申诉   reviewer:zhongjiawu
+
+    //todo ming profile 编辑                    reviewer:liuchong
+
+    //todo ming 设置流量优化、检查更新、解除绑定    reviewer:liuchong
+
+    //todo ming 注册、登录、忘记密码              reviewer:xumengyi
 
 }
 

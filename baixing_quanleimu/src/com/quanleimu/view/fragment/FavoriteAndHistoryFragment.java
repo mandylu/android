@@ -136,36 +136,36 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		}
 	}	
 	
-	@Override
-	public void handleRightAction(){
-		if(-1 == buttonStatus){
-//			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "完成";
-				title.m_leftActionHint = "清空";
-				title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-//				m_viewInfoListener.onTitleChanged(title);
-				this.refreshHeader();
+//	@Override
+//	public void handleRightAction(){
+//		if(-1 == buttonStatus){
+////			if(this.m_viewInfoListener != null){
+//				TitleDef title = getTitleDef();
+//				title.m_rightActionHint = "完成";
+//				title.m_leftActionHint = "清空";
+//				title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
+////				m_viewInfoListener.onTitleChanged(title);
+//				this.refreshHeader();
+////			}
+//			if(adapter != null){
+//				adapter.setHasDelBtn(true);
 //			}
-			if(adapter != null){
-				adapter.setHasDelBtn(true);
-			}
-			buttonStatus = 0;
-		}
-		else{
-//			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "编辑";
-				title.m_leftActionHint = "返回";
-				this.refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
-			adapter.setHasDelBtn(false);
-			buttonStatus = -1;
-		}
-		adapter.notifyDataSetChanged();
-		pullListView.invalidateViews();
-	}
+//			buttonStatus = 0;
+//		}
+//		else{
+////			if(this.m_viewInfoListener != null){
+//				TitleDef title = getTitleDef();
+//				title.m_rightActionHint = "编辑";
+//				title.m_leftActionHint = "返回";
+//				this.refreshHeader();
+////				m_viewInfoListener.onTitleChanged(title);
+////			}
+//			adapter.setHasDelBtn(false);
+//			buttonStatus = -1;
+//		}
+//		adapter.notifyDataSetChanged();
+//		pullListView.invalidateViews();
+//	}
 
 	@Override
 	public boolean handleBack() {
@@ -183,7 +183,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_title = isFav ? "收藏的信息" : "浏览历史";
-		title.m_rightActionHint = "编辑";
+//		title.m_rightActionHint = "编辑";
 	}
 
 	@Override

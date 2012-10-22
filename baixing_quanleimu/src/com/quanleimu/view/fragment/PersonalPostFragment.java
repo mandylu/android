@@ -41,7 +41,7 @@ import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Util;
 import com.quanleimu.widget.PullToRefreshListView;
 
-public class PersonalPostFragment extends BaseFragment  implements View.OnClickListener, PullToRefreshListView.OnRefreshListener{
+public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
 	private final int MSG_MYPOST = 1;
 	private final int MSG_INVERIFY = 2;
 	private final int MSG_DELETED = 3;
@@ -52,7 +52,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	private final int MSG_RESTORE_POST_FAIL = 9;
 
 	public PullToRefreshListView lvGoodsList;
-	public ImageView ivMyads, ivMyfav, ivMyhistory;
+//	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = null;
 	private List<GoodsDetail> listInVerify = null;
@@ -61,7 +61,14 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	public GoodsListAdapter adapter = null;
 //	private String json;
 	UserBean user;
-	private int currentPage = -1;//-1:mypost, 0:inverify, 1:deleted
+
+    public final static String TYPE_KEY = "PersonalPostFragment_type_key";
+    public final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
+    public final static int TYPE_INVERIFY = 1;
+    public final static int TYPE_DELETED = 2;
+
+    private int currentType = TYPE_MYPOST;
+
 	private Bundle bundle;
 	private int buttonStatus = -1;//-1:edit 0:finish
 	private GoodsListLoader glLoader = null;
@@ -73,6 +80,14 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+
+        final Bundle arguments = getArguments();
+        if (arguments != null && arguments.containsKey(PersonalPostFragment.TYPE_KEY)) {
+            this.currentType = arguments.getInt(PersonalPostFragment.TYPE_KEY,
+                    PersonalPostFragment.TYPE_MYPOST);
+        }
+
+
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 	}
 
@@ -81,7 +96,9 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		View v = inflater.inflate(R.layout.personalcenterview, null);
+
+        View v = inflater.inflate(R.layout.personalcenterview, null);
+        v.findViewById(R.id.linearType).setVisibility(View.GONE);  // 禁用掉 已发布、审核中、已删除 tabView，后续删除
 		
 		try {
 			if (Util.JadgeConnection(this.getActivity()) == false) {
@@ -94,16 +111,17 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
 
-		ivMyads = (ImageView) v.findViewById(R.id.ivMyads);
-		ivMyfav = (ImageView) v.findViewById(R.id.ivMyfav);
-		ivMyhistory = (ImageView) v.findViewById(R.id.ivMyhistory);
-
-		ivMyads.setOnClickListener(this);
-		ivMyfav.setOnClickListener(this);
-		ivMyhistory.setOnClickListener(this);
+//		ivMyads = (ImageView) v.findViewById(R.id.ivMyads);
+//		ivMyfav = (ImageView) v.findViewById(R.id.ivMyfav);
+//		ivMyhistory = (ImageView) v.findViewById(R.id.ivMyhistory);
+//
+//		ivMyads.setOnClickListener(this);
+//		ivMyfav.setOnClickListener(this);
+//		ivMyhistory.setOnClickListener(this);
 		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		
 		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost);
+        adapter.setHasDelBtn(true);
 		adapter.setMessageOutOnDelete(handler, MCMESSAGE_DELETE);
 		lvGoodsList.setAdapter(adapter);
 
@@ -127,7 +145,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		super.onPause();
 		
 		if(adapter != null){
-			adapter.setHasDelBtn(false);
+//			adapter.setHasDelBtn(false);
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
 		}
@@ -179,14 +197,14 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		}
 		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
 		
-		if(-1 == currentPage){
-			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
-			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
-			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
+		if(TYPE_MYPOST == currentType){
+//			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
+//			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
+//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已发布的信息";
-				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
+//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -197,16 +215,16 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
 		}
-		else if(0 == currentPage){
+		else if(TYPE_INVERIFY == currentType){
 			lvGoodsList.setVisibility(View.VISIBLE);
-			ivMyads.setImageResource(R.drawable.bg_segment_sent);
-			ivMyfav.setImageResource(R.drawable.bg_segment_approving_selected);
-			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
+//			ivMyads.setImageResource(R.drawable.bg_segment_sent);
+//			ivMyfav.setImageResource(R.drawable.bg_segment_approving_selected);
+//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
 			
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "审核中";
-				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
+//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -230,13 +248,13 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		}
 		else{
 			lvGoodsList.setVisibility(View.VISIBLE);
-			ivMyads.setImageResource(R.drawable.bg_segment_sent);
-			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
-			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted_selected);
+//			ivMyads.setImageResource(R.drawable.bg_segment_sent);
+//			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
+//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted_selected);
 //			if(m_viewInfoListener != null){
 				TitleDef title = getTitleDef();
 				title.m_title = "已删除";
-				title.m_rightActionHint = "编辑";
+//				title.m_rightActionHint = "编辑";
 				refreshHeader();
 //				m_viewInfoListener.onTitleChanged(title);
 //			}
@@ -262,7 +280,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 				if(index < 0)
 					return;
 				
-				if(currentPage == -1 && null != listMyPost && index < listMyPost.size() ){
+				if(TYPE_MYPOST == currentType && null != listMyPost && index < listMyPost.size() ){
 //					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index, null));
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
@@ -270,13 +288,13 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 					pushFragment(new GoodDetailFragment(), bundle);
 					
 				}
-				else if(null !=  listInVerify && index < listInVerify.size() && 0 == currentPage){
+				else if(null !=  listInVerify && index < listInVerify.size() && TYPE_INVERIFY == currentType){
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
 					pushFragment(new GoodDetailFragment(), bundle);
 				}
-				else if(null != listDeleted && index < listDeleted.size() && 1 == currentPage){
+				else if(null != listDeleted && index < listDeleted.size() && TYPE_DELETED == currentType){
 					final String[] names = {"彻底删除", "恢复"};
 					new AlertDialog.Builder(getActivity()).setTitle("选择操作")
 					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -470,7 +488,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 							break;
 						}
 					}
-					if(currentPage == 1){
+					if(TYPE_DELETED == currentType){
 						adapter.setList(listDeleted);
 						adapter.notifyDataSetChanged();
 						lvGoodsList.invalidateViews();
@@ -544,11 +562,11 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 
 	class MyMessageDeleteThread implements Runnable {
 		private String id;
-		private int currengPage = -1;
+		private int currentType = TYPE_MYPOST;
 
 		public MyMessageDeleteThread(String id){
 			this.id = id;
-			this.currengPage = PersonalPostFragment.this.currentPage;
+			this.currentType = PersonalPostFragment.this.currentType;
 		}
 
 		@Override
@@ -571,7 +589,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 				if (json != null) {
 					Message msg = handler.obtainMessage();
 					msg.obj = id;
-					msg.arg1 = currengPage;
+					msg.arg1 = currentType;
 					msg.what = MSG_DELETE_POST_SUCCESS;
 					handler.sendMessage(msg);
 				} else {
@@ -590,80 +608,53 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 		}
 	}
 
-	@Override
-	public void handleRightAction(){
-		if(-1 == buttonStatus){
-//		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
-//			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "完成";
-				
-				refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
+//	@Override
+//	public void handleRightAction(){
+//		if(-1 == buttonStatus){
+////		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
+////			if(this.m_viewInfoListener != null){
+//				TitleDef title = getTitleDef();
+//				title.m_rightActionHint = "完成";
+//
+//				refreshHeader();
+////				m_viewInfoListener.onTitleChanged(title);
+////			}
+//			if(adapter != null){
+//				adapter.setHasDelBtn(true);
 //			}
-			if(adapter != null){
-				adapter.setHasDelBtn(true);
-			}
-			buttonStatus = 0;
-		}
-		else{
-//			btnEdit.setBackgroundResource(R.drawable.btn_search);
-//			if(this.m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_rightActionHint = "编辑";
-				refreshHeader();
-//				title.m_leftActionHint = "更新";
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
-			adapter.setHasDelBtn(false);
-			buttonStatus = -1;
-		}
-		if(adapter != null)
-		{
-			adapter.notifyDataSetChanged();
-			lvGoodsList.invalidateViews();
-		}		
-	}
+//			buttonStatus = 0;
+//		}
+//		else{
+////			btnEdit.setBackgroundResource(R.drawable.btn_search);
+////			if(this.m_viewInfoListener != null){
+//				TitleDef title = getTitleDef();
+//				title.m_rightActionHint = "编辑";
+//				refreshHeader();
+////				title.m_leftActionHint = "更新";
+////				m_viewInfoListener.onTitleChanged(title);
+////			}
+//			adapter.setHasDelBtn(false);
+//			buttonStatus = -1;
+//		}
+//		if(adapter != null)
+//		{
+//			adapter.notifyDataSetChanged();
+//			lvGoodsList.invalidateViews();
+//		}
+//	}
 	
-	@Override
-	public void onClick(View v) {
-		switch (v.getId()) {
-		case R.id.ivMyads:
-			this.currentPage = -1;
-			buttonStatus = -1;
-			adapter.setHasDelBtn(false);
-			rebuildPage(getView(), false);
-			break;
-		case R.id.ivMyfav:
-			buttonStatus = -1;
-			adapter.setHasDelBtn(false);
-			
-			this.currentPage = 0;
-			rebuildPage(getView(), false);
-			break;
-		case R.id.ivMyhistory:
-			buttonStatus = -1;
-			adapter.setHasDelBtn(false);
-			
-			this.currentPage = 1;
-			rebuildPage(getView(), false);
-			break;
-		default:
-			break;
-		}
-//		super.onClick(v);
-	}
+
 
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-		title.m_rightActionHint = "编辑";
-		if(this.currentPage == -1){
+//		title.m_rightActionHint = "编辑";
+		if(currentType == TYPE_MYPOST){
 			title.m_title = "已发布的信息";
-		}else if(currentPage == 0){
+		}else if(currentType == TYPE_INVERIFY){
 			title.m_title = "审核中";
-		}else if(currentPage == 1){
+		}else if(currentType == TYPE_DELETED){
 			title.m_title = "已删除";
 		}		
 		title.m_visible = true;
@@ -678,24 +669,24 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 	@Override
 	public void onRefresh() {
 		List<String> params = new ArrayList<String>();
-		if(currentPage == -1){
+		if(currentType == TYPE_MYPOST){
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
 			params.add("query=userId:" + user.getId() + " AND status:0");
 			params.add("activeOnly=0");
 		}
-		else if(currentPage == 0){
+		else if(currentType == TYPE_INVERIFY){
 			params.add("query=userId:" + user.getId() + " AND (status:4 OR status:20)");
 			params.add("activeOnly=0");
 		}
-		else if(currentPage == 1){
+		else if(currentType == TYPE_DELETED){
 			params.add("query=userId:" + user.getId() + " AND status:3");
 			params.add("activeOnly=0");
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
-		int msg = (currentPage == -1) ? MSG_MYPOST : (this.currentPage == 0 ? MSG_INVERIFY : MSG_DELETED);
+		int msg = (currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
 	}
 	
@@ -710,7 +701,7 @@ public class PersonalPostFragment extends BaseFragment  implements View.OnClickL
 							break;
 						}
 					}
-					if(currentPage == 0){
+					if(currentType == TYPE_INVERIFY){
 						adapter.setList(listInVerify);
 						adapter.notifyDataSetChanged();
 						lvGoodsList.invalidateViews();
