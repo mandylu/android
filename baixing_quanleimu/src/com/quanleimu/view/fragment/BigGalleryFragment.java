@@ -161,9 +161,9 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	  			for(int i = 0; i < listUrl.size(); ++ i){
 	  				String url = listUrl.get(i);
 	  				if(url != null && !url.equals("")){
-	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
+//	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
 	  					QuanleimuApplication.getImageLoader().forceRecycle(url);
-	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
+//	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
 	  				}
 	  			}
 	  		}
