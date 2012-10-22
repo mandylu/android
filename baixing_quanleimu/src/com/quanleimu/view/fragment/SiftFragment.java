@@ -145,7 +145,7 @@ public class SiftFragment extends BaseFragment {
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "筛选";
+		title.m_title = "更多筛选";
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
 	}
@@ -210,6 +210,10 @@ public class SiftFragment extends BaseFragment {
 //			}
 //			result += URLEncoder.encode(str);
 			parametersHolder.put("", str, str);
+		}
+		else
+		{
+			parametersHolder.remove("");
 		}
 		
 //		if (!str.equals("")) {

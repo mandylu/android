@@ -10,5 +10,5 @@
     <dimen name="tab_font_size">14sp</dimen>
     <dimen name="set_table_height">48dp</dimen>
     <dimen name="set_table_header_text_height">12dp</dimen><dimen name="set_table_item_text_height">16dp</dimen>
-         <dimen name="list_margin_LF">18dp</dimen>
+         <dimen name="list_margin_LF">16dp</dimen>
 </resources>

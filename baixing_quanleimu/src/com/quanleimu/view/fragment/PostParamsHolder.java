@@ -100,6 +100,10 @@ public final class PostParamsHolder implements Serializable {
 			}
 		}
 		
+		if (result.length() > 4)
+		{
+			result.replace(0, 4, "");
+		}
 		return result.toString();
 		
 	}

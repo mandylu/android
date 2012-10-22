@@ -2,7 +2,9 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/goods_item_view_root"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="88dp"
+   	android:paddingLeft="@dimen/list_margin_LF"
+    android:paddingRight="@dimen/list_margin_LF"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:background = "@drawable/list_selector"
@@ -12,10 +14,7 @@
         android:id="@+id/rlListInfo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:paddingBottom="5dip"
-        android:paddingLeft="5dip"
-        android:paddingRight="5dip"
-        android:paddingTop="5dip" >
+        >
 
         <com.quanleimu.widget.ContextMenuItem
             android:id="@+id/deleteContextMenuItem"
@@ -25,8 +24,8 @@
 
         <com.quanleimu.widget.AnimatingImageView
             android:id="@+id/ivInfo"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
             android:layout_centerVertical="true"
             android:background="@drawable/bg_picholder" />
 
@@ -72,7 +71,7 @@
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:textColor="@drawable/list_pricetextselector"
+            android:textColor="@drawable/vad_price_selector"
             android:textSize="14dip" >
         </TextView>
 
@@ -84,6 +83,20 @@
             android:layout_marginLeft="10dip"
             android:layout_marginRight="8dp"
             android:layout_toRightOf="@+id/ivInfo"
+            android:layout_toLeftOf="@+id/btnDelete"
+            android:singleLine="true"
+            android:textColor="@drawable/list_textselector"
+            android:textSize="14dip" >
+        </TextView>
+        
+         <TextView
+            android:id="@+id/tvUpdateDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDateAndAddress"
+            android:layout_marginLeft="10dip"
+            android:layout_marginRight="8dp"
+            android:layout_toRightOf="@+id/tvPrice"
             android:layout_toLeftOf="@+id/btnDelete"
             android:singleLine="true"
             android:textColor="@drawable/list_textselector"

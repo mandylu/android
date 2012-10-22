@@ -11,7 +11,18 @@
     <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
     <string name="nickname_empty">请输入昵称</string>
     <string name="tip_loading_im_history">正在加载会话历史，请耐心等待</string>
-
+    
+    <!-- time related -->
+    <string name="common_time_ago">前</string>
+    <string name="common_time_justnow">刚刚</string>
+    <string name="common_time_second">秒</string>
+    <string name="common_time_minute">分钟</string>
+    <string name="common_time_hour">小时</string>
+    <string name="common_time_day">天</string>
+    <string name="common_time_month">月</string>
+    <string name="common_time_one_year_ago">年</string>
+    <string name="common_time_unknow"></string>
+	 
     <!-- text -->
     <string name="yes">是</string>
     <string name="no">否</string>

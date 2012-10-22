@@ -31,6 +31,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.TextUtil;
 import com.quanleimu.util.Util;
 import com.quanleimu.widget.AnimatingImageView;
 import com.quanleimu.widget.ContextMenuItem;
@@ -152,7 +153,9 @@ public class GoodsListAdapter extends BaseAdapter {
 		TextView tvDes;
 		TextView tvPrice;
 		TextView tvDateAndAddress;
+		TextView tvUpdateDate;
 		Button btnDelete;
+		View actionLine;
 		ImageView ivInfo;
 		View pbView;
 	}
@@ -241,8 +244,10 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.tvPrice = (TextView) v.findViewById(R.id.tvPrice);
 				holder.tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
 				holder.btnDelete = (Button) v.findViewById(R.id.btnDelete);
+				holder.actionLine = v.findViewById(R.id.lineView);
 				holder.ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
 				holder.pbView = v.findViewById(R.id.pbLoadingProgress);
+				holder.tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
 				((AnimatingImageView)holder.ivInfo).setForefrontView(holder.pbView);
 				v.setTag(holder);
 			}
@@ -274,9 +279,11 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 			if (hasDelBtn) {
 				holder.btnDelete.setVisibility(View.VISIBLE);
+				holder.actionLine.setVisibility(View.VISIBLE);
 			} 
 			else{
 				holder.btnDelete.setVisibility(View.GONE);
+				holder.actionLine.setVisibility(View.GONE);
 			}
 	
 			if(null == defaultBk2){
@@ -404,31 +411,24 @@ public class GoodsListAdapter extends BaseAdapter {
 			if(dateV != null && !dateV.equals(""))
 			{
 				Date date = new Date(Long.parseLong(dateV) * 1000);
-				SimpleDateFormat df = new SimpleDateFormat("MM月dd日",
-						Locale.SIMPLIFIED_CHINESE);
+				holder.tvUpdateDate.setText(TextUtil.timeTillNow(date.getTime(), v.getContext()));
 				
-				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-				if(areaV != null && !areaV.equals(""))
-				{
-					holder.tvDateAndAddress.setText(df.format(date) + " "
-							+ areaV);
-				}
-				else
-				{
-					holder.tvDateAndAddress.setText(df.format(date));
-				}
 			}
 			else
 			{
-				String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-				if(areaV != null && !areaV.equals(""))
-				{
-					holder.tvDateAndAddress.setText(areaV);
-				}
-				else
-				{
-					holder.tvDateAndAddress.setVisibility(View.GONE);
-				}
+				holder.tvUpdateDate.setText("");
+				holder.tvUpdateDate.setVisibility(View.INVISIBLE);
+			}
+			
+			
+			String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+			if(areaV != null && !areaV.equals(""))
+			{
+				holder.tvDateAndAddress.setText(areaV);
+			}
+			else
+			{
+				holder.tvDateAndAddress.setText("");
 			}
 	
 			holder.btnDelete.setOnClickListener(new View.OnClickListener() {
