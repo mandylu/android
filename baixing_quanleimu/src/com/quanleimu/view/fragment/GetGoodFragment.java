@@ -24,6 +24,7 @@ import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
 import android.widget.Button;
 import android.widget.HeaderViewListAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
@@ -39,6 +40,7 @@ import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
+import com.quanleimu.entity.ImageList;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
@@ -462,9 +464,56 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	@Override
+	public void onDestroy(){		
+		this.lvGoodsList = null;
+//		this.adapter = null;
+		if(goodsListLoader != null && goodsListLoader.getGoodsList() != null){
+			 List<GoodsDetail> list = goodsListLoader.getGoodsList().getData();
+			 if(list != null){
+				 for(int i = 0; i < list.size(); ++ i){
+					 GoodsDetail gd = list.get(i);
+					 if(gd != null){
+						 ImageList il = gd.getImageList();
+						 if(il != null){
+							 if(il.getResize180() != null){
+								 String b = il.getResize180();
+								 if (b.contains(",")) {
+									String[] c = b.split(",");
+									if (c[0] != null && !c[0].equals("")) {
+//										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
+										QuanleimuApplication.getImageLoader().forceRecycle(c[0]);
+//										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
+									}
+								 }
+							 }
+						 }
+					 }
+				 }
+			 }
+		}
+		this.goodsListLoader.reset();
+		this.goodsListLoader = null;
+		System.gc();
+		super.onDestroy();
+	}
+	
+	
+	@Override
 	public void onPause(){
 		this.lvGoodsList.setOnScrollListener(null);
 		super.onPause();
+
+		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
+			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
+			
+			if(	null != imageView){	
+				if(null != imageView.getTag() && imageView.getTag().toString().length() > 0
+				/*&& null != imageView.getDrawable()
+				&& imageView.getDrawable() instanceof AnimationDrawable*/){
+					SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+				}
+			}
+		}		
 	}
 	
 	@Override

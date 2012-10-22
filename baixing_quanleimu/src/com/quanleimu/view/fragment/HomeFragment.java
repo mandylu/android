@@ -2,6 +2,7 @@ package com.quanleimu.view.fragment;
 
 import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
@@ -35,6 +36,7 @@ import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager;
@@ -309,11 +311,15 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				//save to context data
 				QuanleimuApplication.context.deleteFile("hotlist.json");
 				try {
-					BufferedOutputStream outFileStream = new BufferedOutputStream(QuanleimuApplication.context.openFileOutput("hotlist.json", Context.MODE_PRIVATE));
-					outFileStream.write(json.getBytes(), 0, json.length());
-					outFileStream.flush();
-					outFileStream.close();
-				} catch (FileNotFoundException e) {
+					FileOutputStream fo = QuanleimuApplication.context.openFileOutput("hotlist.json", Context.MODE_PRIVATE);
+					if(fo != null){
+						BufferedOutputStream outFileStream = new BufferedOutputStream(fo);
+						if(outFileStream != null){
+							outFileStream.write(json.getBytes(), 0, json.length());
+							outFileStream.flush();
+							outFileStream.close();
+						}
+					}				} catch (FileNotFoundException e) {
 					e.printStackTrace();
 				}catch(IOException e){
 					e.printStackTrace();
@@ -342,6 +348,33 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
             }
 			break;
 		}
+	}
+	
+	@Override
+	public void onDestroy(){
+//		LocationService.getInstance().removeLocationListener(this);
+		super.onDestroy();
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+//		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
+//			LocationService.getInstance().addLocationListener(getContext(), this);
+//		}
+	}
+	
+	@Override
+	public void onPause(){
+//		LocationService.getInstance().removeLocationListener(this);
+		if(this.adapter != null){
+			adapter.releaseBitmap();
+			adapter.notifyDataSetChanged();
+		}
+		super.onPause();
+//		if(glDetail != null){
+//			glDetail.setAdapter(null);
+//		}
 	}
 
 	class HotListAdapter extends BaseAdapter {

@@ -140,29 +140,34 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		tab.m_visible = false;
 	}
 	
+	@Override
+	public void onDestroyView(){
+//		ViewFlow vf = ((ViewFlow)this.getView().findViewById(R.id.vfCoupon));
+        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();	
+        super.onDestroyView();
+	}
+	
 	
 	 @Override
 	    public void onDestroy()
 	    {      
-	    	super.onDestroy();
 	    	
-//	        ((ViewFlow)findViewById(R.id.vfCoupon)).finalize();
-//	        
-//	        //imageData = null;
-//	        goodsDetail = null;
-//	        QuanleimuApplication.lazyImageLoader.disableSampleSize();
-//	  		SimpleImageLoader.Cancel(listUrl);
-//	  		if(listUrl != null){
-//	  			for(int i = 0; i < listUrl.size(); ++ i){
-//	  				String url = listUrl.get(i);
-//	  				if(url != null && !url.equals("")){
-//	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-//	  					QuanleimuApplication.lazyImageLoader.forceRecycle(url);
-//	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
-//	  				}
-//	  			}
-//	  		}
-//	  		listUrl = null;
+//	    	 ((ViewFlow)findViewById(R.id.vfCoupon)).finalize();
+	        //imageData = null;
+	        goodsDetail = null;
+	        QuanleimuApplication.getImageLoader().disableSampleSize();
+	  		SimpleImageLoader.Cancel(listUrl);
+	  		if(listUrl != null){
+	  			for(int i = 0; i < listUrl.size(); ++ i){
+	  				String url = listUrl.get(i);
+	  				if(url != null && !url.equals("")){
+	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
+	  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
+	  				}
+	  			}
+	  		}
+	  		listUrl = null;
 //	  		System.gc();
 	        
 	        if(mb != null)
@@ -170,6 +175,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	            mb.recycle();
 	            mb = null;
 	        }
+	        super.onDestroy();
 	    }
 	    
 	    @Override

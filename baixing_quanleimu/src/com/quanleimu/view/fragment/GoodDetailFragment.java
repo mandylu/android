@@ -6,6 +6,7 @@ import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 import java.util.Set;
@@ -344,14 +345,25 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			
             public void destroyItem(View arg0, int index, Object arg2)
             {
+            	Gallery glDetail = (Gallery) ((View)arg2).findViewById(R.id.glDetail);
+            	if(glDetail != null){
+            		glDetail.setAdapter(null);
+            	}
                 ((ViewPager) arg0).removeView((View) arg2);
                 
                 final Integer pos = (Integer) ((View) arg2).getTag();
+                arg2 = null;
                 if (pos < mListLoader.getGoodsList().getData().size())
                 {
+//                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
                 	List<String> listUrl = getImageUrls(mListLoader.getGoodsList().getData().get(pos));
-                	if(null != listUrl && listUrl.size() > 0)
+                	if(null != listUrl && listUrl.size() > 0){
                 		SimpleImageLoader.Cancel(listUrl);
+	            		for(int i = 0; i < listUrl.size(); ++ i){
+	            			decreaseImageCount(listUrl.get(i), pos);
+	//            			QuanleimuApplication.getImageLoader().forceRecycle(listUrl.get(i));
+	            		}
+                	}
                 }
                 
                 
@@ -519,6 +531,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			});        
         
         handler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 3000);
+        this.saveToHistory();
         return v;
 	}
 	
@@ -572,7 +585,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				glDetail.setFadingEdgeLength(10);
 				glDetail.setSpacing(40);
 				
-				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl);
+				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl, pageIndex);
 				glDetail.setAdapter(adapter);
 				glDetail.setOnTouchListener(this);
 				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -1554,14 +1567,57 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		return list;		
 	}
+	
+	private HashMap<String, List<Integer> > imageMap = new HashMap<String, List<Integer> >();
+	private void increaseImageCount(String url, int pos){
+		if(url == null) return;
+//		Log.d("imagecount", "imagecount, increase:  " + url);
+		if(imageMap.containsKey(url)){
+			List<Integer> values = imageMap.get(url);
+			for(int i = 0; i < values.size(); ++ i){
+				if(values.get(i) ==  pos){
+					return;
+				}
+			}
+			values.add(pos);
+			imageMap.put(url, values);
+		}else{
+			List<Integer> value = new ArrayList<Integer>();
+			value.add(pos);
+			imageMap.put(url, value);
+		}
+	}
+	
+	private void decreaseImageCount(String url, int pos){
+		if(url == null) return;
+//		Log.d("imagecount", "imagecount, decrease:  " + url);
+		if(imageMap.containsKey(url)){
+			List<Integer> values = imageMap.get(url);
+			for(int i = 0; i < values.size(); ++ i){
+				if(values.get(i) == pos){
+					values.remove(i);
+					break;
+				}
+			}
+			if(values.size() == 0){
+				QuanleimuApplication.getImageLoader().forceRecycle(url);
+				imageMap.remove(url);
+//				Log.d("remove", "imagecount    do remove");
+			}else{
+				imageMap.put(url, values);
+//				Log.d("0, remove", "imagecount not 0, no remove~~~~:   " + values.size());
+			}
+		}
+	}	
 
 	class MainAdapter extends BaseAdapter {
 		Context context;
 		List<String> listUrl;
-
-		public MainAdapter(Context context, List<String> listUrl) {
+		private int position;
+		public MainAdapter(Context context, List<String> listUrl, int detailPostion) {
 			this.context = context;
 			this.listUrl = listUrl;
+			position = detailPostion;
 		}
 
 		@Override
@@ -1615,6 +1671,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				String prevTag = (String)iv.getTag();
 				iv.setTag(listUrl.get(position));
 				SimpleImageLoader.showImg(iv, listUrl.get(position), prevTag, getActivity());
+				increaseImageCount(listUrl.get(position), this.position);
 			}
 			
 			//Log.d("GoodDetailView: ", "getView for position-" + position);

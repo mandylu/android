@@ -355,27 +355,31 @@ public class Communication implements Comparator<String> {
 				inputStream, "utf-8"));// 设置编码,否则中文乱码
 		String lines = "";
 		String temp = "";
-		StringBuilder sb = new StringBuilder();
+//		StringBuilder sb = new StringBuilder();
 		
-		char[] buffer = new char[1024];
-		int numRead = 0;
-		while((numRead = reader.read(buffer)) > 0){			
-			sb.append(new String(buffer, 0, numRead));
-		}
-//		while ((lines = reader.readLine()) != null) {
-////			Log.d("oooooo", "hahahaha datais: " + lines);
-//			temp += lines;
-//			
+//		char[] buffer = new char[1024];
+//		int numRead = 0;
+//		while((numRead = reader.read(buffer)) > 0){			
+//			sb.append(new String(buffer, 0, numRead));
 //		}
+//		Log.d("get data", "get databy url length:    " + sb.length());
+
+		while ((lines = reader.readLine()) != null) {
+//			Log.d("oooooo", "hahahaha datais: " + lines);
+			temp += lines;
+			
+		}
+
 		reader.close();
 		// 断开连接
 
 		httpClient.getConnectionManager().shutdown();
 		// if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
-//		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
-		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), sb.toString());
+		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
+//		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), sb.toString());
 		// }
-		return sb.toString();
+//		return sb.toString();
+		return temp;
 	}
 
 	public static String getCacheRequestIfExist(String url) {
