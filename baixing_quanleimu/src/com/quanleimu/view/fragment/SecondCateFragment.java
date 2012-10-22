@@ -129,7 +129,10 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	
 	@Override
 	public void handleRightAction() {
-
+		Bundle bundle = new Bundle();
+		bundle.putSerializable("cates", cate);
+		bundle.putBoolean("isPost", true);
+		this.pushFragment(new SecondCateFragment(), bundle);
 	}
 
 }

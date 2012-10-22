@@ -2,6 +2,7 @@ package com.quanleimu.view.fragment;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
@@ -372,6 +373,7 @@ public class SearchFragment extends BaseFragment {
 			}
 			parameters.add("query="
 					+ URLEncoder.encode(SearchFragment.this.searchContent));
+			parameters.add("timestamp="+new Date().getTime());
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
 				String json = Communication.getDataByUrl(apiUrl, false);
