@@ -308,6 +308,7 @@ public class ChatMessageDatabase extends Database
 			
 		}
 	}
+
 	
 	public static void clearOldMessage(long keepCount)
 	{

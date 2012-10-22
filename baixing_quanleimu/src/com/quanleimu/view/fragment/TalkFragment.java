@@ -25,9 +25,13 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
 import android.widget.EditText;
+import android.widget.HeaderViewListAdapter;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ListView.FixedViewInfo;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
@@ -44,6 +48,7 @@ import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
+import com.quanleimu.widget.AnimatingImageView;
 
 public class TalkFragment extends BaseFragment {
 	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
@@ -125,6 +130,8 @@ public class TalkFragment extends BaseFragment {
 				Bundle savedInstanceState) {
 			
 			LinearLayout root = (LinearLayout) inflater.inflate(R.layout.im_session, null);
+			
+			
 			root.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 			
 			UIControl ctrl = new UIControl();
@@ -133,7 +140,21 @@ public class TalkFragment extends BaseFragment {
 			root.findViewById(R.id.im_input_box).setOnClickListener(ctrl);
 			
 			ChatMessageAdapter msgAdapter = new ChatMessageAdapter(Util.getMyId(getActivity()));
-			((ListView) root.findViewById(R.id.char_history_p)).setAdapter(msgAdapter);
+			ListView listView = (ListView) root.findViewById(R.id.char_history_p);			
+//			listView.setAdapter(msgAdapter);
+			
+			// bind viewad info area
+			View v = inflater.inflate(R.layout.item_goodslist, null);
+			((TextView) v.findViewById(R.id.tvDes)).setText("description");
+			((TextView) v.findViewById(R.id.tvPrice)).setText("price");
+			((TextView) v.findViewById(R.id.tvDateAndAddress)).setText("dateAndAddr");
+			((Button) v.findViewById(R.id.btnDelete)).setVisibility(View.GONE);
+			(v.findViewById(R.id.lineView)).setVisibility(View.GONE);
+			((ImageView) v.findViewById(R.id.ivInfo)).setVisibility(View.VISIBLE);
+			TextView tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
+			listView.addHeaderView(v);
+			
+			listView.setAdapter(msgAdapter);
 			
 			initInputBox(root);
 			
@@ -234,7 +255,7 @@ public class TalkFragment extends BaseFragment {
 		
 		private ChatMessageAdapter getAdapter(View currentRoot)
 		{
-			return (ChatMessageAdapter) ((ListView) currentRoot.findViewById(R.id.char_history_p)).getAdapter();
+			return (ChatMessageAdapter)((HeaderViewListAdapter) ((ListView) currentRoot.findViewById(R.id.char_history_p)).getAdapter()).getWrappedAdapter();
 		}
 		
 		private void initInputBox(View parent)

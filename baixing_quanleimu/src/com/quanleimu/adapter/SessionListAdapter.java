@@ -1,34 +1,42 @@
 package com.quanleimu.adapter;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Locale;
 
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
+import android.os.Handler;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.ImageButton;
-import android.widget.ImageView;
 import android.widget.TextView;
 
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GridAdapter.GridHolder;
-import com.quanleimu.adapter.GridAdapter.GridInfo;
 import com.quanleimu.database.ChatMessageDatabase;
-import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
-import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.imageCache.SimpleImageLoader;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
 public class SessionListAdapter extends BaseAdapter {
 	private List<ChatSession> list = new ArrayList<ChatSession>();
 	private Context context;
 	private LayoutInflater mInflater;
+	private Handler handler;
+	private int messageWhat;
 
 	public List<ChatSession> getList() {
 		return list;
@@ -45,6 +53,11 @@ public class SessionListAdapter extends BaseAdapter {
 		mInflater = (LayoutInflater) context
 				.getSystemService(Context.LAYOUT_INFLATER_SERVICE);
 
+	}
+	
+	public void setMessageOutOnDelete(Handler h, int messageWhat){
+		this.handler = h;
+		this.messageWhat = messageWhat;
 	}
 	
 	public void updateSessions(List<ChatSession> newList)
@@ -75,11 +88,10 @@ public class SessionListAdapter extends BaseAdapter {
 	}
 
 	class SessionHolder {
-		public ImageView readStatus;
 		public TextView userAndAd;
 		public TextView lastChat;
 		public TextView lastTime;
-		public ImageView image;
+		public ImageButton rightArrow;
 	}
 
 	@Override
@@ -91,15 +103,13 @@ public class SessionListAdapter extends BaseAdapter {
 			holder.userAndAd = (TextView) convertView.findViewById(R.id.tvUserAndAd);
 			holder.lastChat = (TextView) convertView.findViewById(R.id.tvLastMsg);
 			holder.lastTime = (TextView) convertView.findViewById(R.id.tvTimeAndDate);
-			holder.image = (ImageView) convertView.findViewById(R.id.userImage);
-			holder.readStatus = (ImageView) convertView.findViewById(R.id.unreadicon);
+			holder.rightArrow = (ImageButton) convertView.findViewById(R.id.sessionArrow);
 			convertView.setTag(holder);
 
 		} else {
 			holder = (SessionHolder) convertView.getTag();
 
 		}
-		
 		
 		ChatSession info = list.get(position);
 		if (info != null) {
@@ -108,17 +118,14 @@ public class SessionListAdapter extends BaseAdapter {
 			ChatMessageDatabase.prepareDB(context);
 //			ChatMessage lastMessage = ChatMessageDatabase.getLastMessage(info.getSessionId());
 			
-			holder.userAndAd.setText(info.getOppositeNick() + "-" + info.getAdTitle());
+			holder.userAndAd.setText(info.getOppositeNick());
 //			holder.lastChat.setText(lastMessage != null && lastMessage.getTimestamp() > sessionTime ? lastMessage.getMessage() : info.getLastMsg());
 			holder.lastChat.setText(info.getLastMsg());
-			holder.image.setImageResource(R.drawable.moren);
-			if(info.getImageUrl() != null && !info.getImageUrl().equals("")){
-				holder.image.setTag(info.getImageUrl());
-				SimpleImageLoader.showImg(holder.image, info.getImageUrl(), null, this.context);
-			}
+
 			try
 			{
-				holder.readStatus.setVisibility(/*lastMessage == null || */ChatMessageDatabase.getUnreadCount(info.getSessionId(), Util.getMyId(context)) > 0 ? View.VISIBLE : View.INVISIBLE);
+				int unreadCount = ChatMessageDatabase.getUnreadCount(info.getSessionId(), Util.getMyId(context));
+//				holder.readStatus.setVisibility(/*lastMessage == null || */unreadCount > 0 ? View.VISIBLE : View.INVISIBLE);
 			}
 			catch(Throwable t)
 			{
@@ -128,7 +135,59 @@ public class SessionListAdapter extends BaseAdapter {
 			Date date = new Date(Long.parseLong(info.getTimeStamp()) * 1000);
 			String time = sf.format(date);
 			holder.lastTime.setText(time);
+			
+			holder.rightArrow.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					AlertDialog.Builder builder = new AlertDialog.Builder(context);
+	                builder.setTitle("操作")
+	                        .setItems(R.array.item_operate_session,
+	                                new DialogInterface.OnClickListener() {
+	                                    public void onClick(DialogInterface dialog, int which) {
+	                                        if (which == 0) {
+	                                        	new Thread(new DeleteSessionThread(list.get(position))).start();
+	                                        }
+	                                    }
+	                                })
+	                        .setNegativeButton("取消", new DialogInterface.OnClickListener() {
+	                            @Override
+	                            public void onClick(DialogInterface dialog, int which) {
+	                                dialog.dismiss();
+	                            }
+	                        });
+	                AlertDialog alert = builder.create();
+	                alert.show();					
+				}
+			});
 		}
 		return convertView;
+	}
+	
+	class DeleteSessionThread implements Runnable
+	{
+		private ChatSession session;
+		public DeleteSessionThread(ChatSession session) {
+			this.session = session;
+		}
+		
+		@Override
+		public void run() {
+			String apiName = "del_session";
+			List<String> parameters = new ArrayList<String>();
+			parameters.add("session_id=" + session.getSessionId());
+			String apiUrl = Communication.getApiUrl(apiName, parameters);
+			try {
+				Communication.getDataByUrl(apiUrl, true);
+				SessionListAdapter.this.list.remove(this.session);
+				ChatMessageDatabase.deleteMsgBySession(this.session.getSessionId());
+				Message msg = SessionListAdapter.this.handler.obtainMessage();				
+				msg.what = SessionListAdapter.this.messageWhat;
+				SessionListAdapter.this.handler.sendMessage(msg);
+			} catch (Exception e){
+				e.printStackTrace();
+			}
+		}
+		
 	}
 }

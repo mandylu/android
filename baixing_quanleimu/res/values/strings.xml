@@ -88,6 +88,9 @@
         <item>彻底删除</item>
     </string-array>
 
+    <string-array name="item_operate_session">
+        <item>删除</item>
+    </string-array>    
 
     <string name="search_result_title">请选择分类查看</string>
 

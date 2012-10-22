@@ -55,6 +55,12 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public static final int INDEX_HISTORY = 5;
 	public static final int INDEX_SETTING = 6;	
 	
+	public int postNum = 0;
+	public int limitedNum = 0;
+	public int deletedNum = 0;
+	public int favoriteNum = 0;
+	public int unreadMessageNum = 0;
+	public int historyNum = 0;
 	
 	public static final String[] TAB_LABELS = new String[] {
 		"浏览信息", "我的百姓网"
@@ -654,11 +660,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			String []texts 	= {"已发布", "审核未通过", "已删除", "收藏", 
 							   "私信", "最近浏览", "设置"};
 			
-			int []numbers = {1, 2, 3, 4, 
-							 5, 6, 0};
+			int []numbers = {postNum, limitedNum, deletedNum, favoriteNum, 
+							unreadMessageNum, historyNum, 0};
 			
 			boolean []stars = {false, false, false, false,
-							true, false, false};
+								(unreadMessageNum > 0), false, false};
 			
 			List<GridInfo> gitems = new ArrayList<GridInfo>();
 			for (int i = 0; i < icons.length; i++)
@@ -666,7 +672,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				GridInfo gi = new GridInfo();
 				gi.imgResourceId = icons[i];
 				gi.text = texts[i];
-				gi.number = numbers[i];
+//				gi.number = numbers[i]; //数字不用加
 				gi.starred = stars[i];
 				gitems.add(gi);
 			}

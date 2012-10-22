@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
-    android:layout_height="fill_parent"
+    android:layout_height="80dp"
     android:background="@drawable/list_selector"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
@@ -9,79 +9,68 @@
     android:paddingLeft="5dip"
     android:paddingRight="10dip" >
 
-    <ImageView
-        android:id="@+id/unreadicon"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_gravity="center_vertical"
-        android:src="@drawable/pic_my_unread" >
-    </ImageView>
+	<View
+	    android:id="@+id/session_spliter"
+	    android:layout_width="1dp"
+	    android:layout_height="20dp"
+	    android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+	    android:layout_marginRight="54dp"
+	    android:background="#c1c1b9" />
+	
+	<ImageButton
+	    android:id="@+id/sessionArrow"
+	    android:layout_width="wrap_content"
+	    android:layout_height="wrap_content"
+	    android:layout_alignParentRight="true"
+	    android:layout_centerVertical="true"
+	    android:background="@null"
+	    android:layout_marginRight="5dp"
+	    android:src="@drawable/icon_arrow" />      
+        
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"
+	   	android:paddingTop="5dp"
+	    android:paddingBottom="5dp"	   	
+	    android:gravity="center_vertical"
+	    android:orientation="vertical" 
+	    android:layout_toLeftOf="@id/session_spliter"
+	    >
+	
+	    <TextView
+	        android:id="@+id/tvUserAndAd"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="@drawable/list_titleselector"
+	        android:textSize="20dip"
+	        android:textStyle="bold" 
+	        android:text="111111111111111111111111111111111111111"
+	        >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/tvLastMsg"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="@drawable/list_textselector"
+	        android:textSize="16dip" >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/tvTimeAndDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="@drawable/list_pricetextselector"
+	        android:textSize="16dip" >
+	    </TextView>
+	</LinearLayout>
+	
+      
 
-    <RelativeLayout
-        android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:gravity="center_vertical"
-        android:paddingBottom="5dip"
-        android:paddingLeft="5dip"
-        android:paddingRight="5dip"
-        android:paddingTop="5dip" >
-
-        <ImageView
-            android:id="@+id/sessionArrow"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:paddingLeft="5dip"
-            android:src="@drawable/arrow" >
-        </ImageView>
-
-        <ImageView
-            android:id="@+id/userImage"
-            android:layout_width="70dp"
-            android:layout_height="70dp"
-            android:layout_alignParentLeft="true"
-            android:layout_centerVertical="true"
-            android:src="@drawable/moren" >
-        </ImageView>
-
-        <LinearLayout
-            android:layout_width="wrap_content"
-            android:layout_height="fill_parent"
-            android:layout_toLeftOf="@id/sessionArrow"
-            android:layout_toRightOf="@id/userImage"
-            android:gravity="center_vertical"
-            android:orientation="vertical"
-            android:paddingLeft="10dip" >
-
-            <TextView
-                android:id="@+id/tvUserAndAd"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textColor="@drawable/list_titleselector"
-                android:textSize="20dip"
-                android:textStyle="bold" >
-            </TextView>
-
-            <TextView
-                android:id="@+id/tvLastMsg"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textColor="@drawable/list_textselector"
-                android:textSize="16dip" >
-            </TextView>
-
-            <TextView
-                android:id="@+id/tvTimeAndDate"
-                android:layout_width="wrap_content"
-                android:layout_height="wrap_content"
-                android:singleLine="true"
-                android:textColor="@drawable/list_pricetextselector"
-                android:textSize="16dip" >
-            </TextView>
-        </LinearLayout>
-    </RelativeLayout>
-
-</LinearLayout>
+</RelativeLayout>

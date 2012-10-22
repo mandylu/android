@@ -42,6 +42,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	private static final int MSG_NEW_MESSAGE = 1;
 	private static final int MSG_NEW_SESSION = 2;
 	private static final int MSG_NEW_SESSION_FAIL = 3;
+	private static final int MSG_DEL_SESSION = 4;	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -56,6 +57,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 //		PullToRefreshListView plv = (PullToRefreshListView)this.findViewById(R.id.lv_sessionlist);
 		ListView plv = (ListView)v.findViewById(R.id.lv_sessionlist);
 		SessionListAdapter adapter = new SessionListAdapter(this.getActivity(), sessions);
+		adapter.setMessageOutOnDelete(this.handler, MSG_DEL_SESSION);
 		plv.setAdapter(adapter);
 		plv.setOnItemClickListener(this);
 //		plv.setPullToRefreshEnabled(false);
@@ -116,7 +118,6 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-//		title.m_rightActionHint = "编辑";
 		title.m_title = "私信";
 		title.m_visible = true;
 	}
@@ -154,7 +155,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 		ChatMessage lastMessage = ChatMessageDatabase.getLastMessage(session.getSessionId());
 		if (lastMessage != null )
 		{
-			item.findViewById(R.id.unreadicon).setVisibility(View.INVISIBLE);
+//TODO:update unread status
 			session.setTimeStamp(lastMessage.getTimestamp() + "");
 			session.setLastMsg(lastMessage.getMessage());
 		}
@@ -164,26 +165,22 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
-
+		if (rootView == null)
+			return;
+		
 		switch(msg.what)
 		{
 		case MSG_NEW_SESSION_FAIL:
-			if (rootView != null)
-			{
-				rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);
-			}
+			rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);
 			break;
 		case MSG_NEW_SESSION:
-			if (rootView != null)
-			{
-				getAdapter(rootView).updateSessions((List<ChatSession>) msg.obj);
-				rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);
-			}
+			getAdapter(rootView).updateSessions((List<ChatSession>) msg.obj);
+			rootView.findViewById(R.id.session_loading).setVisibility(View.GONE);	
 		case MSG_NEW_MESSAGE:
-			if (rootView != null)
-			{
-				getAdapter(rootView).notifyDataSetChanged();
-			}
+			getAdapter(rootView).notifyDataSetChanged();
+			break;
+		case MSG_DEL_SESSION:
+			getAdapter(rootView).notifyDataSetChanged();
 			break;
 		}
 	
