@@ -895,160 +895,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				startContact(true);
 			}
 			break;
-//		case R.id.call_img:{
-//			rootView.findViewById(R.id.contact).performLongClick();
-//			break;	
-//		}
-//		case R.id.buzz_txt:
-//		{
-//			rootView.findViewById(R.id.buzz).performClick();
-//			break;
-//		}
-//		case R.id.buzz: {
-//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_SIXIN_SEND, null);
-//			String userId = Util.getMyId(getActivity());
-//			if (userId == null)
-//			{
-//				requireAuth4Talk();
-//			}
-//			else
-//			{
-//				startChat();
-//			}
-//			break;
-//		}
-//		case R.id.sms:{
-//			TextView txt_phone = (TextView) findViewById(R.id.number);
-//			Uri uri = Uri.parse("smsto:" + txt_phone.getText().toString());
-//			Intent intent = new Intent(Intent.ACTION_SENDTO, uri);
-//			this.getContext().startActivity(intent);			
-//			break;
-//		}
-		/*case R.id.showmap:
-			String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-			String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-			BXLocation location = QuanleimuApplication.getApplication().getCurrentPosition(true);
-//			if(null != location){
-//				latV = ""+location.fLat;
-//				lonV = ""+location.fLon;
-//				
-//				Toast.makeText(getContext(), "现在用的是百度api位置，不是帖子位置！！", Toast.LENGTH_LONG);
-//			}
-			if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
-			{
-				final double lat = Double.valueOf(latV);
-				final double lon = Double.valueOf(lonV);
-				Thread convertThread = new Thread(new Runnable(){
-					@Override
-					public void run(){
-						String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
-								String.valueOf(lat), String.valueOf(lon));
-						try{
-							String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
-							JSONObject js = new JSONObject(baiduJsn);
-							Object errorCode = js.get("error");
-							if(errorCode instanceof Integer && (Integer)errorCode == 0){
-								String x = (String)js.get("x");
-								String y = (String)js.get("y");
-								byte[] bytes = Base64.decode(x, Base64.DEFAULT);
-								x = new String(bytes, "UTF-8");
-								
-								bytes = Base64.decode(y, Base64.DEFAULT);
-								y = new String(bytes, "UTF-8");
-								
-								Double dx = Double.valueOf(x);
-								Double dy = Double.valueOf(y);
-								
-								int ix = (int)(dx * 1E6);
-								int iy = (int)(dy * 1E6);
-								
-								x = String.valueOf(ix);
-								y = String.valueOf(iy);
-								
-								Bundle bundle = new Bundle();
-								bundle.putString("detailPosition", x +"," + y);
-								String areaname = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-								if(areaname != null){
-									String[] aryArea = areaname.split(",");
-									if(aryArea != null && aryArea.length > 0){
-										bundle.putString("title", aryArea[aryArea.length - 1]);
-									}
-								}
-								
-								final BaseActivity baseActivity = (BaseActivity)getActivity();
-								if (baseActivity != null)
-								{
-									baseActivity.getIntent().putExtras(bundle);
-									
-									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-									baseActivity.startActivity(baseActivity.getIntent());
-								}
-								return;
-							}
-
-						}catch(UnsupportedEncodingException e){
-							e.printStackTrace();
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-						String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
-						Bundle bundle = new Bundle();
-						bundle.putString("detailPosition", positions);
-						bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-						
-						final BaseActivity baseActivity = (BaseActivity)getActivity();
-						if (baseActivity != null)
-						{
-							baseActivity.getIntent().putExtras(bundle);
-							
-							baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-							baseActivity.startActivity(baseActivity.getIntent());
-						}
-					}
-				});
-				convertThread.start();
-			}
-			else{
-				Thread getCoordinate = new Thread(new Runnable(){
-		            @Override
-		            public void run() {
-		            	if(getActivity() == null) return;
-						String city = QuanleimuApplication.getApplication().cityName;
-						if(!city.equals("")){
-							String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-							try{
-								String googleJsn = Communication.getDataByUrlGet(googleUrl);
-								String[] info = googleJsn.split(",");
-								if(info != null && info.length == 4){
-									String positions = 
-											Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
-											+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-									Bundle bundle = new Bundle();
-									bundle.putString("detailPosition", positions);
-									bundle.putString("title", detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-
-									final BaseActivity baseActivity = (BaseActivity)getActivity();
-									if (baseActivity != null)
-									{
-										baseActivity.getIntent().putExtras(bundle);
-										
-										baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-										baseActivity.startActivity(baseActivity.getIntent());
-									}
-								}
-							}catch(UnsupportedEncodingException e){
-								e.printStackTrace();
-							}catch(Exception e){
-								e.printStackTrace();
-							}
-						}	
-		            }
-				});
-				getCoordinate.start();
-
-			}
-			break;
-			*/
 //		case R.id.wxlayout:{
 //			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
 //			doShare2WX();
@@ -1358,37 +1204,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			});
 			ll_meta.addView(contacV);
 		}
-		
-		
-//		for (int i = 0; i < detail.getMetaData().size(); i++) {
-//			String[] s = detail.getMetaData().get(i).split(" ");
-//			if(s.length < 2) continue;
-//
-//			View v = null;
-//			v = inflater.inflate(R.layout.item_meta, null);
-//
-//			TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
-//			TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-//			tvmeta.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
-//
-//			tvmetatxt.setText(detail.getMetaData().get(i).split(" ")[0].toString() + "：");
-//			tvmeta.setText(detail.getMetaData().get(i).split(" ")[1].toString());
-//
-//			v.setTag(i);
-//			ll_meta.addView(v);
-//		}
-//
-//		Date date = new Date(Long.parseLong(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE)) * 1000);
-//		SimpleDateFormat df = new SimpleDateFormat("MM月dd日 HH:mm:ss",
-//				Locale.SIMPLIFIED_CHINESE);
-//		String strTime = df.format(date);
-//		View time = inflater.inflate(R.layout.item_meta, null);
-//		TextView timetxt = (TextView) time.findViewById(R.id.tvmetatxt);
-//		TextView timevalue = (TextView) time.findViewById(R.id.tvmeta);
-//		timevalue.setPadding(this.paddingLeftMetaPixel, 0, 0, 0);
-//		timetxt.setText("更新时间： ");
-//		timevalue.setText(strTime);
-//		ll_meta.addView(time);
 	}
 	
 	private View createMetaView(LayoutInflater inflater, String label, String value, View.OnClickListener clickListener)
@@ -1813,7 +1628,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			
 //			title.m_rightActionHint = "";
 //			title.m_titleControls = titleControlView;
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
+//			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
 //		}
 //		else{
 //			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
