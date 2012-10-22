@@ -16,11 +16,14 @@ public class GridAdapter extends BaseAdapter {
 	static public class GridInfo{
 		public int imgResourceId;
 		public String text;
+		public int number = 0;
+		public boolean starred = false;
 	}
   
     static public class GridHolder {  
         ImageButton imageBtn;  
         public TextView text;  
+        public View starIcon;
     }  
   
     private Context context;  
@@ -68,7 +71,8 @@ public class GridAdapter extends BaseAdapter {
             holder.imageBtn.setClickable(false);
             holder.imageBtn.setFocusable(false);
             holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-            convertView.setTag(holder);     
+            holder.starIcon = convertView.findViewById(R.id.star);
+            convertView.setTag(holder);
   
         }else{  
              holder = (GridHolder) convertView.getTag();     
@@ -76,8 +80,14 @@ public class GridAdapter extends BaseAdapter {
         }  
         GridInfo info = list.get(index);  
         if (info != null) {     
-            holder.text.setText(info.text);  
+        	String text = info.text;
+        	if (info.number > 0) 
+        	{
+        		text = String.format("%s(%d)", text, info.number);
+        	}
+            holder.text.setText(text);
             holder.imageBtn.setImageResource(info.imgResourceId);
+            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
         }  
         
         if (index != 0 && (index + 1)%colCount == 0)

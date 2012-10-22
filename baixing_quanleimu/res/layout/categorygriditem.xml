@@ -26,4 +26,12 @@
         android:textColor="@color/category_grid_font" >
     </TextView>
 
+    <ImageView
+        android:id="@+id/star"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentTop="true"
+        android:layout_toRightOf="@+id/itemicon"
+        android:src="@drawable/icon_my_new_point" />
+
 </RelativeLayout>

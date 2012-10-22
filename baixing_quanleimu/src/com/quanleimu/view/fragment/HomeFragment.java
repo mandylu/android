@@ -44,7 +44,16 @@ import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
 public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, OnItemClickListener, View.OnClickListener{
 
 	public static final String NAME = "HomeFragment";
-
+	
+	public static final int INDEX_POSTED = 0;
+	public static final int INDEX_LIMITED = 1;
+	public static final int INDEX_DELETED = 2;
+	public static final int INDEX_FAVORITE = 3;
+	public static final int INDEX_MESSAGE = 4;
+	public static final int INDEX_HISTORY = 5;
+	public static final int INDEX_SETTING = 6;	
+	
+	
 	public static final String[] TAB_LABELS = new String[] {
 		"浏览信息", "我的百姓网"
 	};
@@ -599,8 +608,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
 			GridAdapter adapter = new GridAdapter(this.getActivity());
 			adapter.setList(gitems, 3);
-			((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
-			((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
+			GridView gv = (GridView) v.findViewById(R.id.gridcategory);  
+			gv.setAdapter(adapter);
+			gv.setOnItemClickListener(this);
 		}
 		else
 		{
@@ -611,19 +621,28 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			String []texts 	= {"已发布", "审核未通过", "已删除", "收藏", 
 							   "私信", "最近浏览", "设置"};
 			
+			int []numbers = {1, 2, 3, 4, 
+							 5, 6, 0};
+			
+			boolean []stars = {false, false, false, false,
+							true, false, false};
+			
 			List<GridInfo> gitems = new ArrayList<GridInfo>();
 			for (int i = 0; i < icons.length; i++)
 			{
 				GridInfo gi = new GridInfo();
 				gi.imgResourceId = icons[i];
 				gi.text = texts[i];
+				gi.number = numbers[i];
+				gi.starred = stars[i];
 				gitems.add(gi);
 			}
 		
 			GridAdapter adapter = new GridAdapter(this.getActivity());
 			adapter.setList(gitems, 3);
-			((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
-			((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
+			GridView gv = (GridView) v.findViewById(R.id.gridcategory);  
+			gv.setAdapter(adapter);
+			gv.setOnItemClickListener(this);
 
             //set user profile info view
             user = Util.getCurrentUser();
@@ -639,14 +658,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
 		}
 
-
-
 		return v;
 	}
 
 	@Override
 	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	
-		String selText = ((GridAdapter.GridHolder) arg1.getTag()).text.getText().toString();
 		if (selectedIndex == 0) // 浏览信息页面
 		{
 			List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
@@ -655,45 +671,63 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				return;
 			if (arg1.getTag() == null)
 				return;
-			for (int i = 0; i < allCates.size(); ++i) {
-				
-				if (allCates.get(i).name.equals(selText)){
-					Bundle bundle = new Bundle();
-					bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
-					bundle.putSerializable("cates", allCates.get(i));
-					bundle.putBoolean("isPost", false);
-					pushFragment(new SecondCateFragment(), bundle);
-				}
-			}
+			
+			FirstStepCate cate = allCates.get(arg2);
+			Bundle bundle = new Bundle();
+			bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
+			bundle.putSerializable("cates", cate);
+			bundle.putBoolean("isPost", false);
+			pushFragment(new SecondCateFragment(), bundle);
+			
 		}
 		else // 我的百姓网页面
 		{
 			//TODO 登录判断，talk session 获取
-			if (selText.endsWith("已发布")) {
-                pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);
-			} else if (selText.endsWith("审核未通过")) {
-                pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
-			} else if (selText.endsWith("已删除")) {
-                pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
-			} else if (selText.endsWith("收藏")) {
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", true);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);
-				
-			} else if (selText.endsWith("私信")) {
-				Bundle bundle = createArguments(null, null);
-				ArrayList<ChatSession> tmpList = new ArrayList<ChatSession>();
-//				tmpList.addAll(this.sessions); 需要获取 sessions 数据
-				bundle.putSerializable("sessions", tmpList);
-				pushFragment(new SessionListFragment(), bundle);
-				
-			} else if (selText.endsWith("最近浏览")) {
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", false);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);
-				
-			} else if (selText.endsWith("设置")) {
-				pushFragment(new SetMainFragment(), null);
+			switch (arg2)
+			{
+			case INDEX_POSTED:
+                {
+                	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);				
+                }
+				break;
+			case INDEX_LIMITED:
+				{
+					pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
+				}
+				break;
+			case INDEX_DELETED:
+                {
+                	pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
+                }
+                break;
+			case INDEX_FAVORITE:
+				{
+					Bundle bundle = createArguments(null, null);
+					bundle.putBoolean("isFav", true);
+					pushFragment(new FavoriteAndHistoryFragment(), bundle);					
+				}
+				break;
+			case INDEX_MESSAGE:
+				{
+					Bundle bundle = createArguments(null, null);
+					ArrayList<ChatSession> tmpList = new ArrayList<ChatSession>();
+//					tmpList.addAll(this.sessions); 需要获取 sessions 数据
+					bundle.putSerializable("sessions", tmpList);
+					pushFragment(new SessionListFragment(), bundle);
+				}
+				break;
+			case INDEX_HISTORY:
+				{
+					Bundle bundle = createArguments(null, null);
+					bundle.putBoolean("isFav", false);
+					pushFragment(new FavoriteAndHistoryFragment(), bundle);
+				}
+				break;
+			case INDEX_SETTING:
+				{
+					pushFragment(new SetMainFragment(), null);
+				}
+				break;
 			}
 
 		}
