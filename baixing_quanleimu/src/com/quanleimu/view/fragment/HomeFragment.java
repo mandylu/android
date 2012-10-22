@@ -872,10 +872,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
         }
     }
 
-    //todo ming userProfile  线条颜色、字体大小 整理
-    //todo ming profile 编辑                    reviewer:liuchong
-
-    //todo ming 设置流量优化、检查更新、解除绑定    reviewer:liuchong
+    //todo ming listing btn 定位没对齐
+    //todo ming 收藏按钮 crash, category  没拿下来
+    //todo ming 检查更新、解除绑定    reviewer:liuchong
 
     //todo ming 注册、登录、忘记密码              reviewer:xumengyi
 

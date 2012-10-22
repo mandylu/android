@@ -51,7 +51,8 @@
     <!-- label text -->
     <string name="label_test">测试</string>
     <string name="label_login">绑定百姓网帐号</string>
-    <string name="label_logout">退出</string>
+    <string name="label_logout">解除绑定</string>
+    <string name="label_flow_optimize">流量优化设置</string>
 
     <!-- input hint text -->
     <string name="hint_searchCity">请输入城市名称</string>
@@ -62,29 +63,29 @@
 
     <string name="search_no_result">没有找到相应信息...</string>
 
+    <string-array name="item_flow_optimize">
+        <item>图片模式</item>
+        <item>省流量模式</item>
+    </string-array>
 
     <string-array name="item_operate_favorite_history">
         <item>删除</item>
-        <item>取消</item>
     </string-array>
 
     <string-array name="item_operate_mypost">
         <item>刷新</item>
         <item>修改</item>
         <item>删除</item>
-        <item>取消</item>
     </string-array>
 
     <string-array name="item_operate_inverify">
         <item>申诉</item>
         <item>删除</item>
-        <item>取消</item>
     </string-array>
 
     <string-array name="item_operate_deleted">
         <item>恢复</item>
         <item>彻底删除</item>
-        <item>取消</item>
     </string-array>
 
 
