@@ -67,12 +67,11 @@ public class GoodsListAdapter extends BaseAdapter {
 	public void setUiHold(boolean hold){
 		uiHold = hold;
 	}
-	
 
-	public void setMessageOutOnDelete(Handler h, int messageWhat){
-		this.handler = h;
-		this.messageWhat = messageWhat;
-	}
+    public void setOperateMessage(Handler h, int messageWhat){
+        this.handler = h;
+        this.messageWhat = messageWhat;
+    }
 	
 	public void setHasDelBtn(boolean has){
 		hasDelBtn = has;
@@ -432,29 +431,12 @@ public class GoodsListAdapter extends BaseAdapter {
 			}
 	
 			holder.btnDelete.setOnClickListener(new View.OnClickListener() {
-	
 				@Override
 				public void onClick(View v) {
-					if(uiHold) return;
-					// 弹出 menu 确认删除
-					AlertDialog.Builder builder = new AlertDialog.Builder(context);
-				    builder.setTitle("操作")
-				    	.setItems(R.array.array_menu_delete, new DialogInterface.OnClickListener() {
-				    		public void onClick(DialogInterface dialog, int which) {
-				    			if (which == 0) {
-									uiHold = true;
-									if(GoodsListAdapter.this.handler == null) return;
-									Message msg = GoodsListAdapter.this.handler.obtainMessage();
-									msg.arg2 = position;
-									msg.what = GoodsListAdapter.this.messageWhat;
-					//				list.remove(position);
-									GoodsListAdapter.this.notifyDataSetChanged();
-									GoodsListAdapter.this.handler.sendMessage(msg);
-								}
-				    		}
-				    });
-				    AlertDialog alert = builder.create();
-				    alert.show();
+                    Message msg = handler.obtainMessage();
+                    msg.arg2 = position;
+                    msg.what = messageWhat;
+                    handler.sendMessage(msg);
 				}
 			});
 			return v;

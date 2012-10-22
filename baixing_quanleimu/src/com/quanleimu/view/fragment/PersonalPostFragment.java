@@ -50,6 +50,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	private final int MSG_DELETE_POST_FAIL = 7;
 	private final int MSG_RESTORE_POST_SUCCESS = 8;
 	private final int MSG_RESTORE_POST_FAIL = 9;
+    private final int MSG_ITEM_OPERATE = 10;
 
 	public PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -62,6 +63,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //	private String json;
 	UserBean user;
 
+    /**
+     * 用这几个 static value 区分不同类别“我的信息”
+     */
     public final static String TYPE_KEY = "PersonalPostFragment_type_key";
     public final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     public final static int TYPE_INVERIFY = 1;
@@ -70,7 +74,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
     private int currentType = TYPE_MYPOST;
 
 	private Bundle bundle;
-	private int buttonStatus = -1;//-1:edit 0:finish
 	private GoodsListLoader glLoader = null;
 	
 	private String json = "";
@@ -122,7 +125,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost);
         adapter.setHasDelBtn(true);
-		adapter.setMessageOutOnDelete(handler, MCMESSAGE_DELETE);
+		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
 
 		GoodsList gl = new GoodsList();
@@ -149,8 +152,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
 		}
-		
-		buttonStatus = -1;
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
 			ImageView imageView = (ImageView)lvGoodsList.getChildAt(i).findViewById(R.id.ivInfo);
@@ -333,7 +334,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	
 	
 	@Override
-	protected void handleMessage(Message msg, Activity activity, View rootView) {
+	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
 		case MSG_MYPOST:
@@ -513,12 +514,79 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			lvGoodsList.onFail();
 			
 			break;
+        case MSG_ITEM_OPERATE:
+            showItemOperateMenu(msg);
+            break;
 		}
 	}
 
+    /**
+     *
+     * @param msg 根据 msg.arg2 定位 ad
+     */
+    private void showItemOperateMenu(final Message msg) {
+        int pos = msg.arg2;
+        final String adId = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
+        // 弹出 menu 确认操作
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle("操作");
 
+        int r_array_item_operate = R.array.item_operate_mypost;
+        if (currentType == TYPE_MYPOST) {
+            r_array_item_operate = R.array.item_operate_mypost;
+        } else if (currentType == TYPE_INVERIFY) {
+            r_array_item_operate = R.array.item_operate_inverify;
+        } else if (currentType == TYPE_DELETED) {
+            r_array_item_operate = R.array.item_operate_deleted;
+        }
 
+        builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
+            public void onClick(DialogInterface dialog, int clickedIndex) {
+                if (currentType == TYPE_MYPOST) {
+                    switch (clickedIndex) {
+                        case 0://刷新
+                            //todo ming 刷新、修改
+                            break;
+                        case 1://修改
+                            break;
+                        case 2://删除
+                            showSimpleProgress();
+                            new Thread(new MyMessageDeleteThread(adId)).start();
+                            break;
+                    }
+                } else if (currentType == TYPE_INVERIFY) {
+                    switch (clickedIndex) {
+                        case 0://申诉
+                            //todo ming 申诉
+                            break;
+                        case 1://删除
+                            showSimpleProgress();
+                            new Thread(new MyMessageDeleteThread(adId)).start();
+                            break;
+                    }
+                } else if (currentType == TYPE_DELETED) {
+                    switch (clickedIndex) {
+                        case 0://恢复
+                            showSimpleProgress();
+                            new Thread(new MyMessageRestoreThread(adId)).start();
+                            break;
+                        case 1://彻底删除
+                            showSimpleProgress();
+                            new Thread(new MyMessageDeleteThread(adId)).start();
+                            break;
+                    }
+                }
+
+            }
+        });
+        AlertDialog alert = builder.create();
+        alert.show();
+    }
+
+    /**
+     * 恢复 ad
+     */
 	class MyMessageRestoreThread implements Runnable{
 		private String id;
 		public MyMessageRestoreThread(String id){
@@ -560,6 +628,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 	}
 
+    /**
+     * 删除 ad
+     */
 	class MyMessageDeleteThread implements Runnable {
 		private String id;
 		private int currentType = TYPE_MYPOST;

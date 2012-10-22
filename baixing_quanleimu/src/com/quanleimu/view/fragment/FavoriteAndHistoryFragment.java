@@ -4,6 +4,8 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
@@ -41,6 +43,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 	static final int MSG_GOTMOREHISTORY = 6;
 	static final int MSG_NOMOREFAV = 7;
 	static final int MSG_NOMOREHISTORY = 8;
+    private final int MSG_ITEM_OPERATE = 9;
+
 	private GoodsListAdapter adapter = null;
 	private PullToRefreshListView pullListView = null;
 	private Bundle bundle = null;
@@ -91,7 +95,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 		
 		adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData());
 		adapter.setHasDelBtn(true);
-		adapter.setMessageOutOnDelete(handler, MSG_DELETEAD);
+		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 //		adapter.setList(tempGoodsList.getData());		
 		pullListView.setAdapter(adapter);
 
@@ -194,7 +198,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 	
 	
 	@Override
-	protected void handleMessage(Message msg, Activity activity, View rootView) {
+	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
 		case MSG_UPDATEFAV:
@@ -341,6 +345,23 @@ public class FavoriteAndHistoryFragment extends BaseFragment  implements PullToR
 			hideProgress();
 			onResult(msg.what, glLoader);
 			break;
+
+        case MSG_ITEM_OPERATE:
+            // 弹出 menu 确认删除
+            AlertDialog.Builder builder = new AlertDialog.Builder(getAppContext());
+            builder.setTitle("操作")
+                    .setItems(R.array.item_operate_favorite_history, new DialogInterface.OnClickListener() {
+                        public void onClick(DialogInterface dialog, int which) {
+                            if (which == 0) {
+                                msg.what = MSG_DELETEAD;
+                                handler.sendMessage(msg);
+                            }
+                        }
+                    });
+            AlertDialog alert = builder.create();
+            alert.show();
+
+            break;
 		}
 	
 	}
