@@ -160,7 +160,7 @@ public class GoodsListLoader implements Serializable{
 		
 		mIsFirst = isFirst;
 
-		mCurThread = new GetGoodsListThread(dataPolicy_, isNearby);		
+		mCurThread = new GetGoodsListThread(dataPolicy_, isNearby, isUserList);		
 		new Thread(mCurThread).start();	
 	}	
 	
@@ -170,13 +170,19 @@ public class GoodsListLoader implements Serializable{
 		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
-		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby);		
+		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby, isUserList);		
 		
 		new Thread(mCurThread).start();	
 	}
 	
 	public void setRuntime(boolean rt){
 		mRt = rt;
+	}
+	
+	private boolean isUserList = false;
+	
+	public void setSearchUserList(boolean isUserList){
+		this.isUserList = isUserList;
 	}
 	
 	class GetGoodsListThread implements Runnable {
@@ -188,18 +194,21 @@ public class GoodsListLoader implements Serializable{
 		private boolean mCancel = false;
 		private HttpClient mHttpClient = null;
 		private boolean isNearby = false;
+		private boolean isUserList = false;
 		
-		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby){
+		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
+			this.isUserList = isUserList;
 		}
 		
-		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby){
+		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
+			this.isUserList = isUserList;
 		}
 		
 		public void cancel(){
@@ -244,7 +253,7 @@ public class GoodsListLoader implements Serializable{
 				return;
 			}
 			
-			String url = Communication.getApiUrl(this.isNearby ? mNearbyApiName : mApiName, list);
+			String url = Communication.getApiUrl(this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName), list);
 //			Log.d("url", "urllll   " + url);
 //			if(Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL != dataPolicy){
 //				Log.d("ListViewUrl", url);

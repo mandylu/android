@@ -117,7 +117,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey("defaultPageIndex")){
+			selectedIndex = bundle.getInt("defaultPageIndex");
+		}
 		pageMgr = CustomizePagerManager.createManager(TAB_LABELS, selectedIndex);
 	}
 
@@ -772,14 +775,14 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	}
 
     private void pushPersonalPostFragment(int type) {
-        if(user == null){
-            Bundle bundle = createArguments(null, "用户中心");
-            pushFragment(new LoginFragment(), bundle);
-        }else{
+//        if(user == null){
+//            Bundle bundle = createArguments(null, "用户中心");
+//            pushFragment(new LoginFragment(), bundle);
+//        }else{
             Bundle bundle = createArguments(null, null);
             bundle.putInt(PersonalPostFragment.TYPE_KEY, type);
             pushFragment(new PersonalPostFragment(), bundle);
-        }
+//        }
     }
 
 

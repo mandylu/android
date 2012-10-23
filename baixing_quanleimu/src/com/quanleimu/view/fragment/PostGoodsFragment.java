@@ -29,6 +29,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.app.FragmentActivity;
 import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
@@ -75,6 +76,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
+	
+	static final public String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
+	
+	public static final int MSG_POST_SUCCEED = 0xF0000010; 
 //	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
 	public String categoryName = "";
@@ -1442,8 +1447,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				hideProgress();
 				JSONObject jsonObject = new JSONObject(json);
 				String id;
+				boolean isRegisteredUser = false;
 				try {
 					id = jsonObject.getString("id");
+					isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");
 				} catch (Exception e) {
 					id = "";
 					e.printStackTrace();
@@ -1452,7 +1459,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				String message = json.getString("message");
 				Toast.makeText(activity, message, 0).show();
 				if (!id.equals("")) {
-					Bundle args = createArguments(null, null);
+					final Bundle args = createArguments(null, null);
 					args.putInt("forceUpdate", 1);
 					// 发布成功
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
@@ -1464,11 +1471,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						}else{
 							lp = id;
 						}
-//						Log.d("lastpost", lp + "    ***********************************");
 						args.putString("lastPost", lp);
+						
+						args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
 					}
-					((BaseActivity) activity).pushFragment(new PersonalInfoFragment(), args, true);
-					
+
+					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+					if(activity != null){
+						args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+						((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+					}
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block

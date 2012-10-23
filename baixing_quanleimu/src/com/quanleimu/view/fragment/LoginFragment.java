@@ -20,6 +20,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
@@ -214,7 +215,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			}else{
 				Toast.makeText(activity, "登陆成功", 0).show();
 			}
-			finishFragment();
+			Bundle bundle = createArguments(null, null);
+			bundle.putInt("defaultPageIndex", 1);
+			((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
 			break;
 		case MSG_LOGINFAIL:
 			if(msg.obj != null && msg.obj instanceof String){

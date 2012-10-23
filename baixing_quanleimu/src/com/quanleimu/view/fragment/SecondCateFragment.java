@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -61,6 +62,12 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		super.onResume();
 		
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
+	}
+	
+	protected void onFragmentBackWithData(int requestCode, Object result){
+		if(PostGoodsFragment.MSG_POST_SUCCEED == requestCode){
+			this.finishFragment(requestCode, result);
+		}
 	}
 	
 	@Override
