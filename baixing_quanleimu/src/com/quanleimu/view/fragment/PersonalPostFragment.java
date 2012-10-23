@@ -45,6 +45,9 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
     private final int MSG_RESTORE_POST_SUCCESS = 8;
     private final int MSG_RESTORE_POST_FAIL = 9;
     private final int MSG_ITEM_OPERATE = 10;
+    final private int msgRefresh = 11;
+    final private int msgUpdate = 12;
+    final private int msgDelete = 13;
 
     public PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -66,6 +69,13 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
     public final static int TYPE_DELETED = 2;
 
     private int currentType = TYPE_MYPOST;
+
+    enum REQUEST_TYPE{
+        REQUEST_TYPE_REFRESH,
+        REQUEST_TYPE_UPDATE,
+        REQUEST_TYPE_DELETE
+    }
+
 
     private Bundle bundle;
     private GoodsListLoader glLoader = null;
@@ -496,7 +506,7 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
      * @param msg 根据 msg.arg2 定位 ad
      */
     private void showItemOperateMenu(final Message msg) {
-        int pos = msg.arg2;
+        final int pos = msg.arg2;
         final String adId = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
         // 弹出 menu 确认操作
@@ -522,9 +532,14 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
                 if (currentType == TYPE_MYPOST) {
                     switch (clickedIndex) {
                         case 0://刷新
-                            //todo ming 刷新、修改
+                            doRefresh(0, adId);
                             break;
                         case 1://修改
+                            GoodsDetail detail = listMyPost.get(pos);
+                            Bundle args = createArguments(null, null);
+                            args.putSerializable("goodsDetail", detail);
+                            args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+                            pushFragment(new PostGoodsFragment(), args);
                             break;
                         case 2://删除
                             showSimpleProgress();
@@ -534,7 +549,10 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
                 } else if (currentType == TYPE_INVERIFY) {
                     switch (clickedIndex) {
                         case 0://申诉
-                            //todo ming 申诉
+                            Bundle bundle = createArguments(null, null);
+                            bundle.putInt("type", 1);
+                            bundle.putString("adId", adId);
+                            pushFragment(new FeedbackFragment(), bundle);
                             break;
                         case 1://删除
                             showSimpleProgress();
@@ -559,6 +577,80 @@ public class PersonalPostFragment extends BaseFragment implements PullToRefreshL
         AlertDialog alert = builder.create();
         alert.show();
     }
+
+    private void doRefresh(int pay, final String adId){
+        String tmpjson = null;
+        ArrayList<String> requests = new ArrayList<String>();
+
+        UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+        String mobile = user.getPhone();
+        String password = user.getPassword();
+
+        requests.add("mobile=" + mobile);
+        String password1 = Communication.getMD5(password);
+        password1 += Communication.apiSecret;
+        String userToken = Communication.getMD5(password1);
+        requests.add("userToken=" + userToken);
+        requests.add("adId=" + adId);
+        requests.add("rt=1");
+        if(pay != 0){
+            requests.add("pay=1");
+        }
+        String url = Communication.getApiUrl("ad_refresh", requests);
+        try {
+            json = Communication.getDataByUrl(url, true);
+        } catch (UnsupportedEncodingException e) {
+            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            hideProgress();
+        } catch (IOException e) {
+            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            hideProgress();
+        } catch (Communication.BXHttpException e){
+
+        }
+
+        if(json == null){
+            Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 0).show();
+        }
+        try {
+            JSONObject jb = new JSONObject(json);
+            JSONObject js = jb.getJSONObject("error");
+            String message = js.getString("message");
+            int code = js.getInt("code");
+            if (code == 0) {
+                doRefresh(0, adId);
+                Toast.makeText(getActivity(), message, 0).show();
+            }else if(2 == code){
+                hideProgress();
+                new AlertDialog.Builder(getActivity()).setTitle("提醒")
+                        .setMessage(message)
+                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                showSimpleProgress();
+                                doRefresh(1, adId);
+                                dialog.dismiss();
+                            }
+                        })
+                        .setNegativeButton(
+                                "取消", new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int which) {
+                                dialog.cancel();
+                            }
+                        })
+                        .show();
+
+            }else {
+                hideProgress();
+                Toast.makeText(getActivity(), message, 0).show();
+            }
+        } catch (JSONException e) {
+            // TODO Auto-generated catch block
+            e.printStackTrace();
+        }
+    }
+
 
     /**
      * 恢复 ad

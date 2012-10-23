@@ -882,7 +882,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     //todo ming listing btn 定位没对齐
     //todo ming 收藏按钮 crash, category  没拿下来
     //todo ming 检查更新、解除绑定    reviewer:liuchong
-
+    //todo ming 发布成功跳转到新版 用户中心
     //todo ming 注册、登录、忘记密码              reviewer:xumengyi
 
 }
