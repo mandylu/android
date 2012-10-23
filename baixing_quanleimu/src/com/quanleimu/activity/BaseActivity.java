@@ -1,6 +1,7 @@
 package com.quanleimu.activity;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
@@ -32,7 +33,12 @@ import android.widget.TextView;
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.CityDetail;
+
 import com.quanleimu.util.LocationService;
+import com.quanleimu.util.BxSender;
+import com.quanleimu.util.BxTrackData;
+import com.quanleimu.util.BxTracker;
+
 import com.quanleimu.view.fragment.FirstRunFragment;
 import android.util.Log;
 //import com.tencent.mm.sdk.platformtools.Log;
@@ -158,8 +164,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		MobclickAgent.onResume(this);
 		this.savedInstance = false;
 		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
-		
-		
+
+
 	}
 
 
@@ -277,6 +283,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 //		ivPostGoods.setOnClickListener(this);
 //		ivMyCenter.setOnClickListener(this);
 //		ivSetMain.setOnClickListener(this);
+		
+		BxSender sender = new BxSender(this);
+		Thread senderThread = new Thread(sender);
+		senderThread.start();
+		BxTracker tracker = BxTracker.getInstance();
+		tracker.initialize(this, sender);
 	}
 
 	@Override

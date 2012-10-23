@@ -7,6 +7,9 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.quanleimu.util.BxSender;
+import com.quanleimu.util.BxTracker;
+
 public class NetworkConnectivityReceiver extends BroadcastReceiver {
 	public static final String TAG = "receiver.network";
 
@@ -32,6 +35,16 @@ public class NetworkConnectivityReceiver extends BroadcastReceiver {
         }
         
         NetworkInfo network = cm.getActiveNetworkInfo();
+        if (network != null) {
+        	System.out.println("Hello Network");
+        	BxSender sender = BxTracker.getInstance().getBxSender();
+        	if (sender != null) {
+        		synchronized (sender) {
+            		sender.notifyAll();
+    			}
+        	}
+        }
+        
         if (network != null && PushMessageService.IsRunning) {
             Log.d(TAG, "NetworkConnectivityReceiver: " + PushMessageService.ACTION_NETWORK_CHANGED + " " + network.getTypeName());
             Intent svcintent = new Intent(PushMessageService.ACTION_NETWORK_CHANGED);
