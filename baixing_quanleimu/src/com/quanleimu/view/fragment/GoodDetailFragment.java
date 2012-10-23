@@ -3,39 +3,29 @@ package com.quanleimu.view.fragment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
-import java.text.SimpleDateFormat;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
-import java.util.Locale;
-import java.util.Set;
-import java.util.zip.Inflater;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.drawable.ColorDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.ContactsContract;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Base64;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -60,18 +50,12 @@ import android.widget.Toast;
 import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
-//import com.quanleimu.entity.AuthDialogListener;
-import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
-//import com.quanleimu.entity.WeiboAccessTokenWrapper;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
@@ -84,6 +68,8 @@ import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
+//import com.quanleimu.entity.AuthDialogListener;
+//import com.quanleimu.entity.WeiboAccessTokenWrapper;
 //import com.tencent.mm.sdk.openapi.WXAppExtendObject;
 //import com.tencent.mm.sdk.openapi.WXMediaMessage;
 //import com.tencent.mm.sdk.platformtools.Log;
@@ -895,57 +881,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				startContact(true);
 			}
 			break;
-//		case R.id.wxlayout:{
-//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIXIN_SEND, null);
-//			doShare2WX();
-//			break;
-//		}
-		
-//		case R.id.fenxianglayout:{
-//			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_WEIBO_SEND, null);
-//			Weibo weibo = Weibo.getInstance();
-//			weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
-//			weibo.setRedirectUrl("http://www.baixing.com");
-//
-//			if(QuanleimuApplication.getWeiboAccessToken() == null){
-//				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getContext(), "weiboToken");
-//				AccessToken token = null;
-//				if(tokenWrapper != null && tokenWrapper.getToken() != null){
-//					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-////					token.setExpiresIn(tokenWrapper.getExpires());
-//					Utility.setAuthorization(new Oauth2AccessTokenHeader());
-//					QuanleimuApplication.setWeiboAccessToken(token);
-//				}
-//			}
-//			
-//			if(QuanleimuApplication.getWeiboAccessToken() != null){
-//				Weibo.getInstance().setAccessToken(QuanleimuApplication.getWeiboAccessToken());
-//				doShare2Weibo(QuanleimuApplication.getWeiboAccessToken());
-//			}else{
-//	            WeiboParameters parameters=new WeiboParameters();
-//	            parameters.add("forcelogin", "true");
-//	            Utility.setAuthorization(new Oauth2AccessTokenHeader());
-//                com.quanleimu.entity.AuthDialogListener lsn = 
-//                		new AuthDialogListener(this.getContext(), new AuthDialogListener.AuthListener() {
-//	                	@Override
-//	                	public void onComplete(){
-//	        				WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(GoodDetailFragment.this.getContext(), "weiboToken");
-//	        				AccessToken token = null;
-//	        				if(tokenWrapper != null && tokenWrapper.getToken() != null){
-//	        					token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-//	        					token.setExpiresIn(tokenWrapper.getExpires());
-//	        					QuanleimuApplication.setWeiboAccessToken(token);
-//	        					Weibo.getInstance().setAccessToken(token);
-//	        					doShare2Weibo(token);
-//	        				}
-//	                	}
-//                }); 
-//	            weibo.dialog(this.getContext(), parameters, lsn);	 
-//	            lsn.setInAuthrize(true);
-//			}
-
-//			break;
-//		}
 		/*case R.id.jubaolayout:{
 
 			UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
@@ -981,20 +916,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			
 			break;
 		}*/
-		case R.id.managebtn:
-			showManageDialog();
-			break;
 		case R.id.vad_btn_refresh:{
-//		case R.id.iv_refresh:{
-//			manageDlg.dismiss();
 			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
 			
 			break;
 		}
-//		case R.id.
 		case R.id.vad_btn_edit:{
-//			manageDlg.dismiss();
 			
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
@@ -1004,8 +932,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			break;
 		}
 		case R.id.vad_btn_delete:{
-//			manageDlg.dismiss();
-//		case R.id.iv_del:{
 			new AlertDialog.Builder(getActivity()).setTitle("提醒")
 			.setMessage("是否确定删除")
 			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
@@ -1028,143 +954,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
-	private void showManageDialog(){
-		if(manageDlg != null && manageDlg.isShowing()){
-			manageDlg.dismiss();
-			return;
-		}
-		manageDlg = new Dialog(this.getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
-		manageDlg.setContentView(R.layout.managerpost);
-		manageDlg.findViewById(R.id.manager_refresh).setOnClickListener(this);
-		manageDlg.findViewById(R.id.manager_edit).setOnClickListener(this);
-		manageDlg.findViewById(R.id.manager_delete).setOnClickListener(this);
-
-		manageDlg.getWindow().setLayout(ViewGroup.LayoutParams.WRAP_CONTENT, ViewGroup.LayoutParams.WRAP_CONTENT);
-	    
-	    int location[] = new int[]{0, 0};
-	    ((ViewGroup)getView()).getChildAt(0).getLocationOnScreen(location);
-	    WindowManager.LayoutParams lp = manageDlg.getWindow().getAttributes();
-	    lp.y = location[1];
-	    manageDlg.getWindow().setAttributes(lp);
-	    manageDlg.getWindow().setGravity(Gravity.TOP);
-	    manageDlg.getWindow().setBackgroundDrawable(new ColorDrawable(0));
-	    
-	    manageDlg.setCancelable(true);
-	    manageDlg.setCanceledOnTouchOutside(true);
-	    manageDlg.show();
-	}
 	
-	private String convert2JSONString(GoodsDetail detail){
-		JSONObject obj = new JSONObject();
-		Set<String> keys = detail.getKeys();
-		Object[] keyAry = keys.toArray();
-		JSONArray jsonAry = new JSONArray();
-		JSONObject subObj = new JSONObject();
-		try{
-			for(int i = 0; i < keyAry.length; ++ i){				
-				String key = (String)keyAry[i];
-				String value = detail.getValueByKey((String)keyAry[i]); 
-				if(value == null) value = "";
-				subObj.put(key, value);
-			}			
-			
-			if(detail.getImageList() != null){
-				JSONObject jsonImgs = new JSONObject();
-				if(detail.getImageList().getBig() != null && !detail.getImageList().getBig().equals("")){
-					JSONArray imgAry = new JSONArray();
-					String big = detail.getImageList().getBig();
-					String[] bigs = big.split(",");
-					for(int m = 0; m < bigs.length; ++ m){
-						imgAry.put(bigs[m]);//.substring(1, bigs[m].length() - 1));
-					}
-//					jsonImgs.put("big", detail.getImageList().getBig());
-					jsonImgs.put("big", imgAry);
-				}
-				if(detail.getImageList().getResize180() != null && !detail.getImageList().getResize180().equals("")){
-//					jsonImgs.put("resize180", detail.getImageList().getResize180());
-					JSONArray imgAry = new JSONArray();
-					String resize = detail.getImageList().getResize180();
-					String[] resizes = resize.split(",");
-					for(int m = 0; m < resizes.length; ++ m){
-						imgAry.put(resizes[m]);//.substring(1, resizes[m].length() - 1));
-					}
-					jsonImgs.put("resize180", imgAry);
-					
-				}
-				subObj.put("images", jsonImgs);
-			}
-			
-			if(detail.getMetaData() != null && detail.getMetaData().size() > 0){
-				JSONArray jsonMetaAry = new JSONArray();
-				for(int t = 0; t < detail.getMetaData().size(); ++ t){
-					jsonMetaAry.put(detail.getMetaData().get(t));
-				}
-				subObj.put("metaData", jsonMetaAry);
-			}
-			jsonAry.put(subObj);
-			obj.put("data", jsonAry);
-			obj.put("count", 1);
-		} catch(JSONException e){
-			e.printStackTrace();
-		}
-		
-//		GoodsList gl = JsonUtil.getGoodsListFromJson(obj.toString());
-		return obj.toString();
-	}
 	
-//	private void doShare2WX(){
-////		QuanleimuApplication.wxapi.registerApp(QuanleimuMainActivity.WX_APP_ID);
-//		String detailJson = convert2JSONString(this.detail);
-//		String title = isMyAd() ? "我在百姓网发布：" + detail.getValueByKey("title") :
-//			"我在百姓网看到：" + detail.getValueByKey("title");
-//		
-////		WXWebpageObject webObj = new WXWebpageObject();
-////		webObj.webpageUrl = detail.getValueByKey("link");
-//		WXAppExtendObject appObj = new WXAppExtendObject();
-//		appObj.fileData = detailJson.getBytes();
-//		
-//		List<String> listUrl = getImageUrls(this.detail);
-//		String imgPath = (listUrl == null || listUrl.size()==0 ? null : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
-//
-//		WXMediaMessage obj = new WXMediaMessage();
-//		
-//		String description = "";
-//		if(detail.getMetaData() != null){
-//			for(int i = 0; i < detail.getMetaData().size(); ++ i){
-//				String meta = detail.getMetaData().get(i);
-//				String [] ms = meta.split(" ");
-//				if(ms != null && ms.length == 2){
-//					description += "，" + ms[1];
-//				}
-//			}
-//		}
-//		if(description.charAt(0) == '，'){
-//			description = description.substring(1);
-//		}
-//		obj.description = description;
-//		obj.title = title;
-//		obj.mediaObject = appObj;
-//		Bitmap thumbnail = imgPath == null ? null : BitmapFactory.decodeFile(imgPath);
-//		if(thumbnail != null){
-//			obj.setThumbImage(thumbnail);
-//		}
-//		QuanleimuApplication.sendWXRequest(obj);
-//	}
-	
-//	private void doShare2Weibo(AccessToken accessToken){
-//		try{ 
-//			List<String> listUrl = getImageUrls(this.detail);
-//		Weibo.getInstance().share2weibo((BaseActivity)getActivity(),
-//				accessToken.getToken(),
-//				accessToken.getSecret(), 
-//				isMyAd() ? "我在#百姓网#发布" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link") :
-//						"我在#百姓网#看到" + detail.getValueByKey("title") + ",求扩散！" + detail.getValueByKey("link"), 
-//				(listUrl == null || listUrl.size() == 0) ? "" : SimpleImageLoader.getFileInDiskCache(listUrl.get(0)));
-//		}
-//		catch(WeiboException e){
-//			e.printStackTrace();
-//		}
-//	}
 	
 	private void setMetaObject(View currentPage, GoodsDetail detail){
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
@@ -1619,26 +1410,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		title.m_titleControls = title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
 		
 		updateTitleBar(title);
-		
-//		if(isMyAd()){
-//			if(titleControlView == null){
-//				titleControlView = inflater.inflate(R.layout.managebtn, null);
-//				titleControlView.setOnClickListener(this);
-//			}
-//			
-//			title.m_rightActionHint = "";
-//			title.m_titleControls = titleControlView;
-//			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
-//		}
-//		else{
-//			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
-//			if(/*isInMyStore()*/detail.getValueByKey("status").equals("0")){
-//				title.m_rightActionHint = strCancelCollect;
-//			}
-//			else{
-//				title.m_rightActionHint = detail.getValueByKey("status").equals("0") ? strCollect : "删除";
-//			}
-//		}
 	}
 	
 	private void updateTitleBar(TitleDef title)

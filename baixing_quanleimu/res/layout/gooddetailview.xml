@@ -50,10 +50,33 @@
                 android:id="@+id/vad_call_btn"
                 android:layout_height="42dp"
                 android:layout_marginLeft="6dp"
+                android:gravity="center"
                 android:layout_centerVertical="true"
                 android:layout_alignParentLeft="true"
                 android:background="@drawable/bg_call_btn_selector"
                 android:layout_toLeftOf="@+id/vad_buzz_btn" >
+
+                <View
+                    android:id="@+id/imageView1"
+                    android:layout_width="32dp"
+                    android:layout_height="32dp"
+                    android:background="@drawable/icon_call"
+                    />
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="打电话联系对方"
+                    android:textColor="#ffffff"
+                    android:textSize="16sp"
+                    android:textStyle="bold"
+                    android:shadowRadius="0.5"
+                    android:shadowColor="#d3d3d3"
+                    android:shadowDx="2.0"
+                    android:shadowDy="2.0"
+                    />
+                
             </LinearLayout>
 
         </RelativeLayout>
