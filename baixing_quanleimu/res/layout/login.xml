@@ -4,6 +4,8 @@
     android:layout_height="fill_parent"
     android:background="@drawable/home_bg">
 
-    <include layout="@layout/loginlayout" />
+    <include layout="@layout/loginlayout"
+             android:layout_width="fill_parent"
+             android:layout_height="fill_parent"/>
 
 </RelativeLayout>

@@ -4,6 +4,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
+import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -41,10 +42,12 @@ public class LoginUtil implements View.OnClickListener{
 			if(login != null){
 				login.setOnClickListener(this);
 			}
-//			View forget = view.findViewById(R.id.iv_forget);
-//			if(forget != null){
-//				forget.setOnClickListener(this);
-//			}
+
+
+			Button forgetBtn = (Button) view.findViewById(R.id.loginForgetPwdBtn);
+			if(forgetBtn != null){
+                forgetBtn.setOnClickListener(this);
+			}
 		}
 	}
 	
@@ -69,11 +72,11 @@ public class LoginUtil implements View.OnClickListener{
 				(new Thread(new LoginThread(account, password))).start();
 			}
 		}
-//        else if(v.getId() == R.id.iv_forget){
-//			if(listener != null){
-//				listener.onForgetClicked();
-//			}
-//		}
+        else if(v.getId() == R.id.loginForgetPwdBtn){
+			if(listener != null){
+                listener.onForgetClicked();
+			}
+		}
 	}
 
 	private boolean check(String account, String password) {

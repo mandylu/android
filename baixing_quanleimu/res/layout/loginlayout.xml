@@ -4,26 +4,23 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:layout_gravity="center_horizontal"
-    android:layout_marginBottom="10dip"
-    android:layout_marginLeft="15dip"
-    android:layout_marginRight="15dip"
-    android:layout_marginTop="15dip"
         >
 
     <ScrollView
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
             android:id="@+id/scrollView">
 
         <RelativeLayout
                 android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+                android:layout_height="fill_parent"
+                android:padding="18dp">
 
             <Button
                     android:layout_width="fill_parent"
-                    android:layout_height="30dp"
+                    android:layout_height="44dp"
                     android:text="忘记密码了？点此找回"
-                    android:id="@+id/button"
+                    android:id="@+id/loginForgetPwdBtn"
                     android:layout_below="@+id/btn_login"
                     android:layout_marginTop="24dp"
                     android:layout_centerHorizontal="true"
