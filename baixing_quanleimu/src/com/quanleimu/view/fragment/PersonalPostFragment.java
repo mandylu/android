@@ -96,6 +96,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 	}
 
+	@Override
+	public void onStackTop(boolean isBack) {
+		if(!isBack){
+			lvGoodsList.fireRefresh();
+		}
+	}
 
 
 	@Override
@@ -139,7 +145,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		glLoader.setSearchUserList(true);
 		
 		lvGoodsList.setOnRefreshListener(this);	
-		lvGoodsList.fireRefresh();
+		
 		Bundle bundle = this.getArguments();
 		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
 			if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
@@ -913,6 +919,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					lvGoodsList.invalidateViews();
 				}
 			}
+		}else if(PostGoodsFragment.MSG_POST_SUCCEED == message){
+				if(this.lvGoodsList != null){
+					lvGoodsList.fireRefresh();
+			}
 		}
+
 	}
 }

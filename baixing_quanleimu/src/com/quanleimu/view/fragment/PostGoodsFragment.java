@@ -1471,12 +1471,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						args.putString("lastPost", lp);
 						
 						args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
-					}
-
-					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-					if(activity != null){
-						args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
-						((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+						if(activity != null){
+							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+						}						
+					}else{
+						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 					}
 				}
 			} catch (JSONException e) {

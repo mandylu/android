@@ -954,8 +954,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
-	
-	
+	@Override
+	protected void onFragmentBackWithData(int requestCode, Object result){
+		if(PostGoodsFragment.MSG_POST_SUCCEED == requestCode){
+			this.finishFragment(requestCode, result);
+		}
+	}
+
 	
 	private void setMetaObject(View currentPage, GoodsDetail detail){
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
