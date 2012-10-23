@@ -52,7 +52,7 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testCategoryClick() throws Exception {
-		openCategoryByIndex(3, 1);
+		openCategoryByIndex(2, 1);
 		goBack();
 		TimeUnit.SECONDS.sleep(1);
 		goBack();
@@ -80,7 +80,7 @@ public class MainActivityTest extends BaixingTestCase {
 		
 		//更多
 		//openPostItemByIndex(4);
-		//setOtherMetaByIndex(0, "100");
+		//assertNotNull(setOtherMetaByIndex(0, "100"));
 		//postOtherDone();
 		
 		postSend();
@@ -120,56 +120,26 @@ public class MainActivityTest extends BaixingTestCase {
 		//assertNotNull(next);
 		//next.doClick();
 		
-		showNextView(detailView);
+		showNextView(AD_DETAILVIEW_ID);
 		adViewPicTouch();
 		//Ad2
 		String title2 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		//Log.i(LOG_TAG, "title2:" + title2);
 		assertFalse(title1.equals(title2));
 
-		showNextView(detailView);
+		showNextView(AD_DETAILVIEW_ID);
 		adViewPicTouch();
 		//Ad3
 		String title3 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		//Log.i(LOG_TAG, "title3:" + title3);
 		assertFalse(title2.equals(title3));
 
-		showPrevView(detailView);
+		showPrevView(AD_DETAILVIEW_ID);
 		//Ad2
 		//Log.i(LOG_TAG, "titleX:" + findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText());
 		assertEquals(title2, findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText());
 		adViewPicTouch();
 		
-	}
-	
-	public void adViewPicTouch() throws Exception {
-		//查看第一个图片
-		if (showAdPic(0)) {
-			//Log.i(LOG_TAG, "pic:0");
-			goBack(false);
-			//滚动图片
-			BXViewGroupElement ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
-			ilv.doTouch(-200);
-			TimeUnit.SECONDS.sleep(1);
-			//查看第二个图片
-			if (showAdPic(1)) {
-				//Log.i(LOG_TAG, "pic:1");
-				goBack(false);
-				//滚回图片
-				ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
-				ilv.doTouch(200);
-				TimeUnit.SECONDS.sleep(1);
-				//Log.i(LOG_TAG, "pic:touch0");
-				
-				//滚动大图
-				showAdPic(0);
-				TimeUnit.SECONDS.sleep(1);
-				BXViewGroupElement bv = findElementById(AD_BIG_IMAGE_VIEW_ID, BXViewGroupElement.class);
-				showNextView(bv);
-				//Log.i(LOG_TAG, "pic:touch1");
-				goBack();
-			}
-		}
 	}
 
 	public void testHistory() throws Exception {
@@ -177,9 +147,9 @@ public class MainActivityTest extends BaixingTestCase {
 		BXViewGroupElement detailView = showAd(1, 0, 2);
 		int showCount = 1;
 		for (;showCount < 5; showCount++) {
-			showNextView(detailView);
+			showNextView(AD_DETAILVIEW_ID);
 		}
-		showPrevView(detailView);
+		showPrevView(AD_DETAILVIEW_ID);
 		
 		goBack();
 		goBack();
@@ -189,11 +159,10 @@ public class MainActivityTest extends BaixingTestCase {
 		assertEquals(showCount, showMyAdList(MY_LISTING_HISTORY_ID, MY_LISTING_HISTORY_COUNTER_ID)); 
 		
 		assertNotNull(openAdByIndex(1, MY_AD_FxH_VIEWLIST_ID));
-		BXViewGroupElement detailMyView = findElementById(AD_DETAILVIEW_ID,
-				BXViewGroupElement.class);
+		
 		String title1 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		Log.i(LOG_TAG, "title1my:" + title1);
-		showNextView(detailMyView);
+		showNextView(AD_DETAILVIEW_ID);
 		
 		String title2 = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText();
 		Log.i(LOG_TAG, "title2my:" + title2);
@@ -202,7 +171,7 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testScrollToNextScreen() throws Exception {
-		AbsListViewElement catListView = findElementById(CATEGORY_VIEWLIST_ID,
+		AbsListViewElement catListView = findElementById(HOME_CATEGORY_VIEWLIST_ID,
 				AbsListViewElement.class);
 		assertEquals(3, catListView.getLastVisiblePosition());
 		catListView.scrollToNextScreen();
