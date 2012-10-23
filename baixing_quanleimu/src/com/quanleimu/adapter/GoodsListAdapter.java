@@ -153,7 +153,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		TextView tvPrice;
 		TextView tvDateAndAddress;
 		TextView tvUpdateDate;
-		Button btnDelete;
+        View operateView;
 		View actionLine;
 		ImageView ivInfo;
 		View pbView;
@@ -242,7 +242,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.tvDes = (TextView) v.findViewById(R.id.tvDes);
 				holder.tvPrice = (TextView) v.findViewById(R.id.tvPrice);
 				holder.tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
-				holder.btnDelete = (Button) v.findViewById(R.id.btnDelete);
+				holder.operateView =  v.findViewById(R.id.rlListOperate);
 				holder.actionLine = v.findViewById(R.id.lineView);
 				holder.ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
 				holder.pbView = v.findViewById(R.id.pbLoadingProgress);
@@ -277,11 +277,11 @@ public class GoodsListAdapter extends BaseAdapter {
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 	
 			if (hasDelBtn) {
-				holder.btnDelete.setVisibility(View.VISIBLE);
+				holder.operateView.setVisibility(View.VISIBLE);
 				holder.actionLine.setVisibility(View.VISIBLE);
 			} 
 			else{
-				holder.btnDelete.setVisibility(View.GONE);
+				holder.operateView.setVisibility(View.GONE);
 				holder.actionLine.setVisibility(View.GONE);
 			}
 	
@@ -430,7 +430,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.tvDateAndAddress.setText("");
 			}
 	
-			holder.btnDelete.setOnClickListener(new View.OnClickListener() {
+			holder.operateView.setOnClickListener(new View.OnClickListener() {
 				@Override
 				public void onClick(View v) {
                     Message msg = handler.obtainMessage();

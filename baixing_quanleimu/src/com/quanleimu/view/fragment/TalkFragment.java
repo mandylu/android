@@ -148,7 +148,7 @@ public class TalkFragment extends BaseFragment {
 			((TextView) v.findViewById(R.id.tvDes)).setText("description");
 			((TextView) v.findViewById(R.id.tvPrice)).setText("price");
 			((TextView) v.findViewById(R.id.tvDateAndAddress)).setText("dateAndAddr");
-			((Button) v.findViewById(R.id.btnDelete)).setVisibility(View.GONE);
+			v.findViewById(R.id.rlListOperate).setVisibility(View.GONE);
 			(v.findViewById(R.id.lineView)).setVisibility(View.GONE);
 			((ImageView) v.findViewById(R.id.ivInfo)).setVisibility(View.VISIBLE);
 			TextView tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);

@@ -1,20 +1,22 @@
 <?xml version="1.0" encoding="utf-8"?>
-<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/goods_item_view_root"
     android:layout_width="fill_parent"
     android:layout_height="88dp"
-   	android:paddingLeft="@dimen/list_margin_LF"
-    android:paddingRight="@dimen/list_margin_LF"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:background = "@drawable/list_selector"
-    android:orientation="horizontal">
+    android:orientation="horizontal"
+    android:paddingLeft="18dp">
 
     <RelativeLayout
         android:id="@+id/rlListInfo"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        >
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/rlListOperate">
 
         <com.quanleimu.widget.ContextMenuItem
             android:id="@+id/deleteContextMenuItem"
@@ -50,17 +52,30 @@
 
         <TextView
             android:id="@+id/tvDes"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="8dp"
+            android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/ivInfo"
-            android:layout_toLeftOf="@+id/btnDelete"
             android:singleLine="true"
             android:textColor="@drawable/list_titleselector"
             android:textSize="16dip"
-            android:textStyle="bold" >
+            android:textStyle="bold"
+            android:layout_marginRight="5dp">
 
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvDateAndAddress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDes"
+            android:layout_marginLeft="10dp"
+            android:layout_toRightOf="@+id/ivInfo"
+            android:singleLine="true"
+            android:textColor="@drawable/list_textselector"
+            android:textSize="14dip"
+            android:layout_toLeftOf="@+id/rlListOperate"
+            android:layout_marginRight="5dp">
         </TextView>
 
         <TextView
@@ -72,57 +87,52 @@
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
             android:textColor="@drawable/vad_price_selector"
-            android:textSize="14dip" >
+            android:textSize="14dip"
+                >
         </TextView>
 
         <TextView
-            android:id="@+id/tvDateAndAddress"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_below="@+id/tvDes"
-            android:layout_marginLeft="10dip"
-            android:layout_marginRight="8dp"
-            android:layout_toRightOf="@+id/ivInfo"
-            android:layout_toLeftOf="@+id/btnDelete"
-            android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
-            android:textSize="14dip" >
-        </TextView>
-        
-         <TextView
             android:id="@+id/tvUpdateDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDateAndAddress"
             android:layout_marginLeft="10dip"
-            android:layout_marginRight="8dp"
             android:layout_toRightOf="@+id/tvPrice"
-            android:layout_toLeftOf="@+id/btnDelete"
             android:singleLine="true"
             android:textColor="@drawable/list_textselector"
             android:textSize="14dip" >
         </TextView>
 
-        <Button
-            android:id="@+id/btnDelete"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="54dp"
+            android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:layout_marginRight="8dp"
-            android:background="@drawable/btn_circle_arrow"
+            android:id="@+id/rlListOperate"
             android:clickable="true"
-            android:focusable="false" />
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:background="@drawable/list_selector">
 
         <View
             android:id="@+id/lineView"
             android:layout_width="1dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
-            android:layout_marginRight="10dp"
-            android:layout_toLeftOf="@id/btnDelete"
-            android:background="@color/list_line" />
+            android:background="#c1c1b9" />
 
+        <Button
+            android:id="@+id/btnListOperate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="false"
+            android:background="@drawable/btn_circle_arrow"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentBottom="false"
+            android:layout_centerInParent="true"/>
     </RelativeLayout>
 
-</LinearLayout>
+</RelativeLayout>
