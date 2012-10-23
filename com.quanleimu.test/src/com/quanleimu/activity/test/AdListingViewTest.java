@@ -40,7 +40,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//模式信息＝图片
 		//检查每条信息带图片展示
 		//模式信息＝文字
-		//检查每条心西不带图片展示
+		//检查每条信息不带图片展示
 		
 	}
 }
