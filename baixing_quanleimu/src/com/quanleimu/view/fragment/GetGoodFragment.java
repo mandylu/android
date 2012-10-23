@@ -58,8 +58,8 @@ import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
-	public static final int SEARCH_NEARBY = 1;
-	public static final int SEARCH_RECENT = 0;
+//	public static final int SEARCH_NEARBY = 1;
+//	public static final int SEARCH_RECENT = 0;
 	
 	
 	public static final int MSG_UPDATE_FILTER = 1000;
@@ -69,7 +69,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private PullToRefreshListView lvGoodsList;
 	private ProgressBar progressBar;
-	private int searchType = 0;
+//	private int searchType = 0;
 	
 	private String categoryEnglishName = "";
 	private String searchContent = "";
@@ -93,15 +93,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
 		title.m_rightActionHint = "发布";
 		title.m_rightActionBg = R.drawable.bg_post_selector;
-		title.hasGlobalSearch = true;
-//		title.m_rightActionHint = (this.categoryEnglishName == null || this.categoryEnglishName.equals("")) ? "搜索" : "筛选";
-		
-//		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-//		View titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
-//		titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
-//		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
-		
-//		title.m_titleControls = titleControl;
 	}
 	
 	public void initTab(TabDef tab){
@@ -136,9 +127,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	protected void onFragmentBackWithData(int requestCode, Object result) {
 		if (requestCode == REQ_SIFT && result instanceof PostParamsHolder)
 		{
+			this.filterParamHolder.clear(); //Replace old params with new.
 			this.filterParamHolder.merge((PostParamsHolder) result);
 //			this.updateSearchParams();
-			this.resetSearch(this.searchType == SEARCH_NEARBY, this.curLocation);
+//			searchType = PostParamsHolder.INVALID_VALUE.equals(filterParamHolder.getData("地区_s")) ? SEARCH_NEARBY : SEARCH_RECENT;
+			this.showFilterBar(getView(), listFilterss);
+			this.resetSearch(this.curLocation);
 			
 			lvGoodsList.fireRefresh();
 		}
@@ -181,25 +175,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		goodsListLoader = new GoodsListLoader(getSearchParams(), handler, null, new GoodsList());
 	}
 	
-//	private  void updateSearchParams()
-//	{
-//		basicParams = new ArrayList<String>();
-//		if(this.categoryEnglishName != null && !this.categoryEnglishName.equals("")){
-//			String siftResult = filterParamHolder.toUrlString(); 
-//			basicParams.add("query="
-//					+ "cityEnglishName:" + QuanleimuApplication.getApplication().getCityEnglishName()
-//					+ " AND categoryEnglishName:" + categoryEnglishName
-//					+ ((siftResult != null && !siftResult.equals("")) ? (" " + siftResult) : " AND status:0"));
-//			
-//		}else if(this.searchContent != null && !this.searchContent.equals("")){
-//			basicParams.add("query=" 
-//					+ Communication.urlEncode(URLEncoder.encode("cityEnglishName:" 
-//								+ QuanleimuApplication.getApplication().getCityEnglishName() + " AND "
-//								+ searchContent)));
-//		}
-//	}
-	
-
 	@Override
 	public void onResume() {
 		super.onResume();
@@ -223,20 +198,28 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		
 		
+		if (listFilterss == null)
+		{
+			PostMu postMu = (PostMu) Util
+					.loadDataFromLocate(
+							getActivity(),
+							"saveFilterss"
+									+ categoryEnglishName
+									+ QuanleimuApplication.getApplication().cityEnglishName);
+			if (postMu != null && !"".equals(postMu.getJson()))
+			{
+				listFilterss = JsonUtil.getFilters(postMu.getJson()).getFilterssList();
+			}
+		}
 		//Update filter bar.
-		PostMu postMu = (PostMu) Util
-				.loadDataFromLocate(
-						getActivity(),
-						"saveFilterss"
-								+ categoryEnglishName
-								+ QuanleimuApplication.getApplication().cityEnglishName);
-		if (postMu == null || postMu.getJson().equals(""))
+		
+		if (listFilterss == null)
 		{
 			new Thread(new GetGoodsListThread(true)).start();
 		}
 		else
 		{
-			showFilterBar(getView().findViewById(R.id.filter_bar_root), postMu.getJson());
+			showFilterBar(getView().findViewById(R.id.filter_bar_root), listFilterss);
 		}
 		
 	}
@@ -262,6 +245,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
 					Util.saveDataToLocate(getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					
+					listFilterss = JsonUtil.getFilters(json).getFilterssList();
 					if(isUpdate){
 						sendMessage(MSG_UPDATE_FILTER, json);
 					}
@@ -285,13 +270,18 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	{
 		ArrayList basicParams = new ArrayList<String>();
 		basicParams.add("query=" + filterParamHolder.toUrlString());
-		if (searchType == SEARCH_NEARBY && this.curLocation != null)
+		if (isSerchNearBy() && this.curLocation != null)
 		{
 			basicParams.add("lat="+curLocation.fLat);
 			basicParams.add("lng="+curLocation.fLon);	
 		}
 		
 		return basicParams;
+	}
+	
+	private boolean isSerchNearBy()
+	{
+		return PostParamsHolder.INVALID_VALUE.equals(this.filterParamHolder.getData("地区_s"));
 	}
 
 	@Override
@@ -326,12 +316,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
 //		List<String> addParams = new ArrayList<String>(basicParams);
-		if(curLocation == null/* || searchType == 0*/){
+		if(curLocation == null && isSerchNearBy()/* || searchType == 0*/){
 //			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
 //			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
 //			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
 //			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
-			this.searchType = SEARCH_RECENT;
+//			this.searchType = SEARCH_RECENT;
+			filterParamHolder.remove("地区_s");
 		}
 //		else{
 ////			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
@@ -341,7 +332,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 //		}
 		
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
-		if(curLocation != null && searchType != SEARCH_RECENT){
+		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
 			goodsListLoader.setNearby(true);
 			goodsListLoader.setRuntime(false);
 		}
@@ -374,14 +365,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			}
 		}
 		
-//		if(categoryName == null || categoryName.equals("") 
-//				|| categoryEnglishName == null || categoryEnglishName.equals("")){
-//			v.findViewById(R.id.publishBtn).setVisibility(View.GONE);
-//		}else{
-//			v.findViewById(R.id.publishBtn).setOnClickListener(this);
-//			v.findViewById(R.id.publishBtn).setVisibility(View.VISIBLE);
-//		}
-		
 		return v;
 	
 	}
@@ -392,74 +375,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	public void onClick(View v) {
 		GoodsListAdapter adapter = this.findGoodListAdapter();
 		switch(v.getId()){
-//		case R.id.publishBtn:
-//			String categoryName = getArguments().getString("categoryName");
-//			categoryName = categoryEnglishName + "," + categoryName;
-//			Bundle bundle = createArguments(null, null);
-//			bundle.putSerializable("cateNames", categoryName);
-//			pushFragment(new PostGoodsFragment(), bundle);
-////			m_viewInfoListener.onNewView(new PostGoodsView((BaseActivity)this.getContext(), this.bundle, categoryName));
-//			break;
-		case R.id.btnRecent:
-			if(searchType != SEARCH_RECENT){
-				
-//				goodsListLoader.cancelFetching();
-//				goodsListLoader.setNearby(false);
-//				goodsListLoader.setParams(basicParams);
-//				goodsListLoader.setRuntime(true);
-				this.resetSearch(false, curLocation);
-				
-				mRefreshUsingLocal = true;
-				lvGoodsList.onFail();
-				lvGoodsList.fireRefresh();
-				if(adapter != null){
-					adapter.setList(new ArrayList<GoodsDetail>(), null);
-					adapter.notifyDataSetChanged();
-				}
-				
-				searchType = SEARCH_RECENT;
-			}
-			break;
-		case R.id.btnNearby:
-			if(searchType != SEARCH_NEARBY){
-				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
-				if(curLocation == null){
-					new AlertDialog.Builder(this.getActivity()).setTitle("提醒").setMessage("无法确定当前位置")
-					.setPositiveButton("确定", new DialogInterface.OnClickListener(){
-						@Override
-						public void onClick(DialogInterface dialog, int which){
-							dialog.dismiss();
-						}
-					}).show();
-					return;
-				}
-				
-//				goodsListLoader.cancelFetching();
-//				
-//				List<String> params = new ArrayList<String>();
-//				params.addAll(basicParams);
-////				params.add("nearby=true");
-//				goodsListLoader.setNearby(true);
-////				curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
-//				//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
-//				params.add("lat="+curLocation.fLat);
-//				params.add("lng="+curLocation.fLon);
-//				goodsListLoader.setParams(params);
-//				goodsListLoader.setRuntime(false);
-				this.resetSearch(true, curLocation);
-				
-				mRefreshUsingLocal = true;
-				lvGoodsList.onFail();
-				lvGoodsList.fireRefresh();
-				
-				if(adapter != null){
-					adapter.setList(new ArrayList<GoodsDetail>(), null);
-					adapter.notifyDataSetChanged();
-				}
-				
-				searchType = SEARCH_NEARBY;
-			}
-			break;
+
 		}
 	}
 	
@@ -553,7 +469,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	private void updateData(GoodsListAdapter adapter, List<GoodsDetail> data)
 	{
-		adapter.setList(data, searchType == SEARCH_NEARBY ? FilterUtil.createDistanceGroup(listFilterss, data, this.curLocation, new int[] {500, 1500}) : 
+		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(listFilterss, data, this.curLocation, new int[] {500, 1500}) : 
 			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
 	}
 	
@@ -660,13 +576,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			hideProgress();			
 			break;
 		case MSG_UPDATE_FILTER:
-			showFilterBar(rootView, (String) msg.obj);
+			showFilterBar(rootView, listFilterss);
 			break;
 		}
 		
 	}
 	
-	public void showFilterBar(View root, String json)
+	public void showFilterBar(View root, final List<Filterss> fss)
 	{
 		View[] actionViews = findAllFilterView();
 		
@@ -674,8 +590,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		{
 			return;
 		}
-		
-		listFilterss = JsonUtil.getFilters(json).getFilterssList();
 		
 		
 		View.OnClickListener listener = new View.OnClickListener() {
@@ -703,7 +617,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					final boolean isLocation = fss.getName().equals("地区_s");
 					
 					CustomizeItem cItem = new CustomizeItem();
-					cItem.id = "";
+					cItem.id = PostParamsHolder.INVALID_VALUE; //FIXME:  this is special for current location.
 					cItem.txt = "附近500米";
 					
 					CustomizeItem[] cs = isLocation && curLocation != null ? new CustomizeItem[] {cItem} : null; 
@@ -712,23 +626,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 						
 						@Override
 						public void onItemSelect(MultiLevelItem item) {
-							if (item instanceof CustomizeItem && isLocation)
-							{
-								searchType = 1; //Nearby
-							}
-							else
-							{
-								if (isLocation)
-								{
-									searchType = 0; //
-								}
-								FilterUtil.updateFilter(filterParamHolder, item, fss.getName());
-							}
+							FilterUtil.updateFilter(filterParamHolder, item, fss.getName());
 							
 							FilterUtil.updateFilterLabel(findAllFilterView(), item.txt, fss);
 //							updateSearchParams();
 							
-							resetSearch(searchType == 1, curLocation);
+							resetSearch(curLocation);
 							lvGoodsList.fireRefresh();
 						}
 						
@@ -746,9 +649,9 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			v.setOnClickListener(listener);
 		}
 		
-		if (listFilterss != null)
+		if (fss != null)
 		{
-			FilterUtil.loadFilterBar(listFilterss, filterParamHolder, actionViews);
+			FilterUtil.loadFilterBar(fss, filterParamHolder, actionViews);
 		}
 		else
 		{
@@ -759,19 +662,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		
 		getView().findViewById(R.id.filter_item_more).setOnClickListener(listener);
-		
-		//Search nearby is special.
-		if (this.searchType == SEARCH_NEARBY && listFilterss != null) //If is searching nearby, set the filter label to "neayby."
-		{
-			for (Filterss fs : listFilterss)
-			{
-				if (fs.getName().equals("地区_s"))
-				{
-					FilterUtil.updateFilterLabel(actionViews, "附近500米", fs);
-					break;
-				}
-			}
-		}
 		
 	}
 	
@@ -790,8 +680,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		return actionViews;
 	}
 	
-	private void resetSearch(boolean isNeryBy, BXLocation location)
+	private void resetSearch(BXLocation location)
 	{
+		boolean isNeryBy = this.isSerchNearBy();
+		
 		goodsListLoader.cancelFetching();
 		if (!isNeryBy)
 		{

@@ -8,6 +8,9 @@ import java.util.LinkedHashMap;
 import android.os.Bundle;
 
 public final class PostParamsHolder implements Serializable {
+	
+	public static final String INVALID_VALUE = "INVALID_VALUE_KEY";
+	
 	/**
 	 * 
 	 */
@@ -88,6 +91,11 @@ public final class PostParamsHolder implements Serializable {
 		while(keys.hasNext())
 		{
 			String key = keys.next();
+			if (INVALID_VALUE.equals(postValuemap.get(key)))
+			{
+				continue;
+			}
+			
 			if (!"".equals(key))
 			{
 				result.append(" AND ")

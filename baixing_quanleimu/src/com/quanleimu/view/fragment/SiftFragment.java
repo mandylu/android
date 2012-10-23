@@ -2,33 +2,26 @@ package com.quanleimu.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLDecoder;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.ViewGroup;
 import android.view.View.OnClickListener;
+import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
-import android.widget.LinearLayout.LayoutParams;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.Filterss;
@@ -37,7 +30,6 @@ import com.quanleimu.entity.values;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.Util;
 
 public class SiftFragment extends BaseFragment {
@@ -79,10 +71,18 @@ public class SiftFragment extends BaseFragment {
 		categoryEnglishName = bundle.getString("categoryEnglishName");
 		backPageName = bundle.getString(ARG_COMMON_BACK_HINT);
 		
-		parametersHolder = (PostParamsHolder) getArguments().getSerializable("filterResult");
+		PostParamsHolder params = (PostParamsHolder) getArguments().getSerializable("filterResult");
+		getArguments().remove("filterResult");
+		
+		parametersHolder = (PostParamsHolder) getArguments().getSerializable("savedFilter");
 		if (parametersHolder == null)
 		{
 			parametersHolder = new PostParamsHolder();
+		}
+		
+		if (params != null)
+		{
+			parametersHolder.merge(params);
 		}
 		
 	}
@@ -160,6 +160,14 @@ public class SiftFragment extends BaseFragment {
 		collectValue(getArguments());
 	}
 	
+	
+	
+	@Override
+	public void onSaveInstanceState(Bundle outState) {
+		// TODO Auto-generated method stub
+		super.onSaveInstanceState(outState);
+	}
+
 	private void collectValue(Bundle bundle)
 	{
 		String result = "";
@@ -330,51 +338,7 @@ public class SiftFragment extends BaseFragment {
 		} else {
 			ll_meta.removeAllViews();
 			
-//			HashMap<String, String> preValues = null;
-//			HashMap<String, String> preLabels = null;
-			Bundle bundle = getArguments();
 			String keyWords = parametersHolder.getData("");
-//			if (bundle != null) {
-//				String preEncResult = bundle.getString("siftresult");
-//				if (null != preEncResult) {
-//					String decResult = URLDecoder.decode(preEncResult);
-//					String[] pairs = decResult.split("AND ");
-//					if (pairs != null) {
-//						preValues = new HashMap<String, String>();
-//					}
-//					for (int x = 0; x < pairs.length; ++x) {
-//						String[] subPairs = pairs[x].split(":");
-//						if (subPairs.length <= 0 || subPairs.length > 2)
-//							continue;
-//						if (subPairs.length == 1 && subPairs[0] != null
-//								&& !subPairs[0].equals("")
-//								&& !subPairs[0].equals(" ")) {
-//							keyWords = subPairs[0];
-//						} else if (subPairs.length == 2) {
-//							subPairs[0] = subPairs[0].trim();
-//							subPairs[1] = subPairs[1].trim();
-//							preValues.put(subPairs[0], subPairs[1]);
-//						}
-//					}
-//				}
-//
-//				String preEncLabels = bundle.getString("siftlabels");
-//				if (null != preEncLabels) {
-//					String decResult = URLDecoder.decode(preEncLabels);
-//					String[] pairs = decResult.split("AND ");
-//					if (pairs != null) {
-//						preLabels = new HashMap<String, String>();
-//					}
-//					for (int x = 0; x < pairs.length; ++x) {
-//						String[] subPairs = pairs[x].split(":");
-//						if (subPairs.length != 2)
-//							continue;
-//						subPairs[0] = subPairs[0].trim();
-//						subPairs[1] = subPairs[1].trim();
-//						preLabels.put(subPairs[0], subPairs[1]);
-//					}
-//				}
-//			}
 
 			for (int i = 0; i < listFilterss.size(); ++i) {
 				View v = null;
@@ -382,27 +346,19 @@ public class SiftFragment extends BaseFragment {
 
 				final String paramsKey = listFilterss.get(i).getName();
 				if (listFilterss.get(i).getControlType().equals("select")) {
-					v = inflater.inflate(R.layout.item_post_select, null);
-//					valuemap.put(listFilterss.get(i).getName(), "");
-					tvmetatxt = (TextView) v.findViewById(R.id.postshow);
+					v = inflater.inflate(R.layout.item_filter_select, null);
+					tvmetatxt = (TextView) v.findViewById(R.id.filter_label);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 
-					TextView tvmeta = (TextView) v.findViewById(R.id.posthint);
+					TextView tvmeta = (TextView) v.findViewById(R.id.filter_value);
 					if (parametersHolder.containsKey(paramsKey)) {
 						String preValue = parametersHolder.getData(paramsKey); 
-//								preValues.get(listFilterss.get(i)
-//								.getName());
 						String preLabel= parametersHolder.getUiData(paramsKey); 
 						boolean valid = false;
 						if (preLabel != null) {
 							tvmeta.setText(preLabel);
-//							labelmap.put(listFilterss.get(i).getName(),
-//									preLabels.get(listFilterss.get(i)
-//											.getName()));
 							valid = true;
 						}
-//						valuemap.put(listFilterss.get(i).getName(),
-//								preValue);
 						if (!valid) {
 							List<values> values = listFilterss.get(i)
 									.getValuesList();
@@ -478,7 +434,7 @@ public class SiftFragment extends BaseFragment {
 				// if(listFilterss.get(i).getControlType().equals(""))
 				else {
 					v = inflater.inflate(R.layout.item_post_edit, null);
-					tvmetatxt = (TextView) v.findViewById(R.id.postshow);
+					tvmetatxt = (TextView) v.findViewById(R.id.filter_label);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 					EditText tvmeta = (EditText) v.findViewById(R.id.postinput);
 					final String key = listFilterss.get(i).getName();
