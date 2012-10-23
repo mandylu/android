@@ -106,7 +106,7 @@ public abstract class BaseFragment extends Fragment {
 		//Override me to process you message.
 	}
 	
-	protected void sendMessage(int what, Object data)
+	protected final void sendMessage(int what, Object data)
 	{
 		Message message = null;
 		if (handler != null)
@@ -121,6 +121,23 @@ public abstract class BaseFragment extends Fragment {
 			handler.sendMessage(message);
 		}
 
+	}
+	
+	protected final void sendMessageDelay(int what, Object data, long delayMillis)
+	{
+		Message message = null;
+		if (handler != null)
+		{
+			message = handler.obtainMessage();
+			message.what = what;
+			if (data != null)
+			{
+				message.obj = data;
+			}
+			
+			handler.sendMessageDelayed(message, delayMillis);
+		}
+		
 	}
 
 	@Override

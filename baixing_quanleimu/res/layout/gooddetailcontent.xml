@@ -148,6 +148,8 @@
 		                        android:id="@+id/llgl"
 		                        android:layout_width="fill_parent"
 		                        android:layout_height="fill_parent"
+		                        android:paddingTop="8dp"
+		                        android:paddingBottom="8dp"
 		                        android:paddingLeft="@dimen/list_margin_LF"
 		                        android:background="#e7e5d9" >
 		

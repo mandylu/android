@@ -986,7 +986,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
 		if (contact != null)
 		{
-			View contacV = createMetaView(inflater, "联系方式",  contact, new View.OnClickListener() {
+			View contacV = createMetaView(inflater, "联系方式:",  contact, new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
