@@ -667,8 +667,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		//FIXME: prepare context menu for currnet vad.
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
 //		View iv_buzz = rootView.findViewById(R.id.buzz);
-		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE);
-		
+		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
 		rl_phone.setVisibility(View.VISIBLE);
 		
 //		iv_buzz.setOnClickListener(this);
@@ -683,12 +682,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
 //			txt_phone.setOnClickListener(this);
 //			iv_contact.assignContactFromPhone(mobileV, false);
+			rootView.findViewById(R.id.vad_call_btn).setVisibility(View.VISIBLE);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(this);
 	
 		} else {
 //			txt_phone.setText("无手机号码");
 //			txt_phone.setOnClickListener(null);
 //			txt_phone.setVisibility(View.INVISIBLE);
+			rootView.findViewById(R.id.vad_call_btn).setVisibility(View.INVISIBLE);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(null);
 		}
 	}
