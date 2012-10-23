@@ -433,30 +433,31 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			new Thread(new UpdateThread(true)).start();
 		}
 		else {
-			final String[] names = {"免注册发布","已注册用户发布"};
-			new AlertDialog.Builder(this.getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
-			.setItems(names, new DialogInterface.OnClickListener(){
-				
-				@Override
-				public void onClick(DialogInterface dialog, int which){
-					switch(which){
-						case 0:
-							postNoRegister();
-							break;
-						case 1:
-							Bundle bundle = createArguments(null, "取消");
-							bundle.putInt(LoginFragment.KEY_RETURN_CODE, VALUE_LOGIN_SUCCEEDED);
-							pushFragment(new LoginFragment(), bundle);
-							break;
-					}				
-				}
-			})
-			.setNegativeButton("取消", new DialogInterface.OnClickListener(){
-				@Override
-				public void onClick(DialogInterface dialog, int which){
-					dialog.dismiss();
-				}
-			}).show();
+			postNoRegister();
+//			final String[] names = {"免注册发布","已注册用户发布"};
+//			new AlertDialog.Builder(this.getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
+//			.setItems(names, new DialogInterface.OnClickListener(){
+//				
+//				@Override
+//				public void onClick(DialogInterface dialog, int which){
+//					switch(which){
+//						case 0:
+//							postNoRegister();
+//							break;
+//						case 1:
+//							Bundle bundle = createArguments(null, "取消");
+//							bundle.putInt(LoginFragment.KEY_RETURN_CODE, VALUE_LOGIN_SUCCEEDED);
+//							pushFragment(new LoginFragment(), bundle);
+//							break;
+//					}				
+//				}
+//			})
+//			.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+//				@Override
+//				public void onClick(DialogInterface dialog, int which){
+//					dialog.dismiss();
+//				}
+//			}).show();
 		}
 	}
 	
