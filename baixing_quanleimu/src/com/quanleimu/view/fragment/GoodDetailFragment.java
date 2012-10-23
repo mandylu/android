@@ -995,6 +995,20 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			});
 			ll_meta.addView(contacV);
 		}
+		
+		ArrayList<String> allMeta = detail.getMetaData();
+		for (String meta : allMeta)
+		{
+			if (!meta.startsWith("价格") &&
+					!meta.startsWith("地区") && !meta.startsWith("查看"))
+			{
+				final int splitIndex = meta.indexOf(" ");
+				if (splitIndex != -1)
+				{
+					ll_meta.addView(createMetaView(inflater, meta.substring(0, splitIndex), meta.substring(splitIndex), null));
+				}
+			}
+		}
 	}
 	
 	private View createMetaView(LayoutInflater inflater, String label, String value, View.OnClickListener clickListener)
