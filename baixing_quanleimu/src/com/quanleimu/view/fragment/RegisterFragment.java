@@ -3,6 +3,7 @@ package com.quanleimu.view.fragment;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
+import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -30,6 +31,7 @@ import android.util.Log;
 
 public class RegisterFragment extends BaseFragment {
 	private EditText accoutnEt, passwordEt,repasswordEt;
+    private Button registerBtn;
 	public String backPageName = "";
 	public String json = "";
 	private boolean registered = false;
@@ -42,33 +44,25 @@ public class RegisterFragment extends BaseFragment {
 		accoutnEt = (EditText) v.findViewById(R.id.accountEt);
 		passwordEt = (EditText) v.findViewById(R.id.passwordEt);
 		repasswordEt = (EditText) v.findViewById(R.id.repasswordEt);
+        registerBtn = (Button) v.findViewById(R.id.registerBtn);
+
+        registerBtn.setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View view) {
+                if (check()) {
+                    showSimpleProgress();
+                    new Thread(new RegisterThread()).start();
+                }
+            }
+        });
 		
 		return v;
 	}
-	
-	public void handleRightAction(){
-//		if ("13512135857".equalsIgnoreCase(accoutnEt.getText().toString()))
-//		{
-//			UserBean user = new UserBean();
-//			user.setId("13512135857");
-//			user.setPhone("13512135857");
-//			user.setPassword("123456");
-//			QuanleimuApplication.getApplication().setMobile(user.getPhone());
-//			Util.saveDataToLocate(getContext(), "user", user);
-//			finishFragment(requestCode, null);
-//			return;
-//		}
-		if (check()) {
-			showSimpleProgress();
-			new Thread(new RegisterThread()).start();
-		}
-	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	public void initTitle(TitleDef title){
 		title.m_title = "注册账号";
 		title.m_visible = true;
 		title.m_leftActionHint = "登录";
-		title.m_rightActionHint = "提交";
 	}
 	
 	public void initTab(TabDef tab){
@@ -148,28 +142,30 @@ public class RegisterFragment extends BaseFragment {
 				Toast.makeText(activity, message, 0).show();
 				if (!id.equals("")) {
 					// 注册成功
+                    // TODO 注册成功先直接返回
+                    finishFragment(requestCode, null);
 					
-					UserBean user = new UserBean();
-//					user.setId(accoutnEt.getText().toString());
-					user.setId(usrId);
-					user.setPhone(accoutnEt.getText().toString());
-					user.setPassword(passwordEt.getText().toString());
-					QuanleimuApplication.getApplication().setMobile(user.getPhone());
-					Util.saveDataToLocate(activity, "user", user);
+//					UserBean user = new UserBean();
+////					user.setId(accoutnEt.getText().toString());
+//					user.setId(usrId);
+//					user.setPhone(accoutnEt.getText().toString());
+//					user.setPassword(passwordEt.getText().toString());
+//					QuanleimuApplication.getApplication().setMobile(user.getPhone());
+//					Util.saveDataToLocate(activity, "user", user);
 					
-					if(usrId != null && !usrId.equals("")){
-						UserProfile up = new UserProfile();
-						up.createTime = String.valueOf(System.currentTimeMillis() / 1000);
-						up.userId = usrId;
-						up.nickName = usrNick;
-						registered = true;
-						Bundle bundle = createArguments(null, null);
-						bundle.putSerializable("profile", up);
-						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
-						pushFragment(new ProfileEditFragment(), bundle);
-					}else{
-						finishFragment(requestCode, null);
-					}
+//					if(usrId != null && !usrId.equals("")){
+//						UserProfile up = new UserProfile();
+//						up.createTime = String.valueOf(System.currentTimeMillis() / 1000);
+//						up.userId = usrId;
+//						up.nickName = usrNick;
+//						registered = true;
+//						Bundle bundle = createArguments(null, null);
+//						bundle.putSerializable("profile", up);
+//						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+//						pushFragment(new ProfileEditFragment(), bundle);
+//					}else{
+//						finishFragment(requestCode, null);
+//					}
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();

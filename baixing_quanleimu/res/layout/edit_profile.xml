@@ -190,7 +190,8 @@
                         android:text="退出当前帐号"
                         android:background="@drawable/bg_message_btn_selector"
                         android:id="@+id/editProfileLogoutBtn"
-                        android:textColor="#838383"/>
+                        android:textColor="#838383"
+                        android:textSize="14dp"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

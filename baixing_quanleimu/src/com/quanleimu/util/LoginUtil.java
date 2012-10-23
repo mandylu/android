@@ -33,28 +33,30 @@ public class LoginUtil implements View.OnClickListener{
 		view = v;
 		this.listener = listener;
 		if(view != null){
-			View register = view.findViewById(R.id.btn_register);
-			if(register != null){
-				register.setOnClickListener(this);
-			}
+//			View register = view.findViewById(R.id.btn_register);
+//			if(register != null){
+//				register.setOnClickListener(this);
+//			}
 			View login = view.findViewById(R.id.btn_login);
 			if(login != null){
 				login.setOnClickListener(this);
 			}
-			View forget = view.findViewById(R.id.iv_forget);
-			if(forget != null){
-				forget.setOnClickListener(this);
-			}
+//			View forget = view.findViewById(R.id.iv_forget);
+//			if(forget != null){
+//				forget.setOnClickListener(this);
+//			}
 		}
 	}
 	
 	@Override
 	public void onClick(View v){
-		if(v.getId() == R.id.btn_register){
-			if(listener != null){
-				listener.onRegisterClicked();
-			}
-		}else if(v.getId() == R.id.btn_login){
+//		if(v.getId() == R.id.btn_register){
+//			if(listener != null){
+//				listener.onRegisterClicked();
+//			}
+//		}else
+
+        if(v.getId() == R.id.btn_login){
 			String account = ((TextView)view.findViewById(R.id.et_account)).getText().toString();
 			String password = ((TextView)view.findViewById(R.id.et_password)).getText().toString();
 			
@@ -66,11 +68,12 @@ public class LoginUtil implements View.OnClickListener{
 				pd.show();
 				(new Thread(new LoginThread(account, password))).start();
 			}
-		}else if(v.getId() == R.id.iv_forget){
-			if(listener != null){
-				listener.onForgetClicked();
-			}
 		}
+//        else if(v.getId() == R.id.iv_forget){
+//			if(listener != null){
+//				listener.onForgetClicked();
+//			}
+//		}
 	}
 
 	private boolean check(String account, String password) {

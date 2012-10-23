@@ -57,7 +57,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 	public void onRegisterClicked(){
 		sendMessage(MSG_NEWREGISTERVIEW, null);
-	
+
 	}
 	public void onForgetClicked(){
 		sendMessage(MSG_FORGETPASSWORDVIEW, null);
@@ -72,12 +72,18 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		
 		title.m_visible = true;
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-//		title.m_rightActionHint = "确定";
+		title.m_rightActionHint = "注册";
 //		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登录";
 	}
-	
-	@Override
+
+    @Override
+    public void handleRightAction() {
+        super.handleRightAction();
+        onRegisterClicked();
+    }
+
+    @Override
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
 	}

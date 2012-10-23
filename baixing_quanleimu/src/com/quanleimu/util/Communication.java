@@ -45,7 +45,7 @@ public class Communication implements Comparator<String> {
 	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";
 //	 public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
-	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
+	 public static String apiUrl = "http://www.xumengyi.baixing.com/api/mobile.";
 
 	private static boolean isWifi() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context
