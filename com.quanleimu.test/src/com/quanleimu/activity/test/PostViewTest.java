@@ -36,7 +36,7 @@ public class PostViewTest extends BaixingTestCase {
 		//检查弹出页，包含“相册”“拍照”“取消”
 		//选择拍照button
 		//检查拍照页面弹出
-		//点击返回
+		//点击手机自带的返回键
 		//检查页面title文字，应为“发布”
 		
 	}

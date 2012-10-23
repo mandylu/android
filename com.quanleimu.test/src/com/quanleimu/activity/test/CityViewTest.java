@@ -1,3 +1,5 @@
+package com.quanleimu.activity.test;
+
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
 
@@ -11,7 +13,6 @@ public class CityViewTest extends BaixingTestCase {
 	}
 	
 	@Test
-	
 	public void testCityView() throws Exception {
 		
 		//home页点击百姓网

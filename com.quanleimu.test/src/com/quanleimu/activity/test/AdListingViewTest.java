@@ -28,4 +28,19 @@ public class AdListingViewTest extends BaixingTestCase {
 		//同上手机号码listing页面操作方式
 		
 	}
+	
+	@Test
+	public void testViewPic() throws Exception {
+		
+		// 进入设置>列表模式
+		//记录模式信息（图片 or 文字）
+		//点击返回
+		//切换到home
+		//进入任意二级类目listing页面
+		//模式信息＝图片
+		//检查每条信息带图片展示
+		//模式信息＝文字
+		//检查每条心西不带图片展示
+		
+	}
 }
