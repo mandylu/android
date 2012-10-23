@@ -1688,7 +1688,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "发布";
+		title.m_title = (categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "完成";
 	}
