@@ -40,6 +40,8 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	public String backPageName = "back";
 	public String categoryEnglishName = "";
 	
+	static public final String KEY_RETURN_CODE ="login_return_code";////the value should be int
+	
 	private boolean bingo;
 	
 	private LoginUtil.LoginListener listener;
@@ -221,9 +223,13 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			}else{
 				Toast.makeText(activity, "登陆成功", 0).show();
 			}
-			Bundle bundle = createArguments(null, null);
-			bundle.putInt("defaultPageIndex", 1);
-			((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
+			if(this.getArguments() != null && getArguments().containsKey(KEY_RETURN_CODE)){
+				this.finishFragment(getArguments().getInt(KEY_RETURN_CODE), null);
+			}else{
+				Bundle bundle = createArguments(null, null);
+				bundle.putInt("defaultPageIndex", 1);
+				((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
+			}
 			break;
 		case MSG_LOGINFAIL:
 			if(msg.obj != null && msg.obj instanceof String){

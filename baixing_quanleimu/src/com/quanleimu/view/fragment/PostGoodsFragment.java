@@ -73,6 +73,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	public static final int MSG_SUCCED_UPLOAD = 7;
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	
+	private static final int VALUE_LOGIN_SUCCEEDED = 9;
+	
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
@@ -113,9 +115,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 //	private BaseActivity baseActivity;
 //	private Bundle bundle;
-	
-	private boolean userValidated = false;
-	private boolean loginTried = false;
 	
 	private View locationView = null;
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
@@ -445,13 +444,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 							postNoRegister();
 							break;
 						case 1:
-							if(loginTried){
-								finishFragment();
-							}else{
-								Bundle bundle = createArguments(null, "取消");
-								pushFragment(new LoginFragment(), bundle);
-								loginTried = true;
-							}
+							Bundle bundle = createArguments(null, "取消");
+							bundle.putInt(LoginFragment.KEY_RETURN_CODE, VALUE_LOGIN_SUCCEEDED);
+							pushFragment(new LoginFragment(), bundle);
 							break;
 					}				
 				}
@@ -467,8 +462,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private void showPost()
 	{
-		userValidated = true;
-		
 		//获取发布模板
 		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
@@ -648,7 +641,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 
 	private boolean filled() {
-		if(null == user || layout_txt == null || layout_txt.getChildCount() == 2 || layout_txt.getChildCount() == 0) return false;
+		if(layout_txt == null || layout_txt.getChildCount() == 2 || layout_txt.getChildCount() == 0) return false;
 		
 		return true;
 	}
@@ -1095,6 +1088,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj){	
+		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
+			this.handleRightAction();
+			return;
+		}
 		boolean match = fetchResultFromViewBack(message, obj, layout_txt, params);
 		if(match){
 //			postMap.put(result.first, result.second);

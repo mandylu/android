@@ -1245,14 +1245,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ArrayList<String> list = new ArrayList<String>();
 
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		String mobile = user.getPhone();
-		String password = user.getPassword();
-
-		list.add("mobile=" + mobile);
-		String password1 = Communication.getMD5(password);
-		password1 += Communication.apiSecret;
-		String userToken = Communication.getMD5(password1);
-		list.add("userToken=" + userToken);
+		if(user != null){
+			String mobile = user.getPhone();
+			String password = user.getPassword();
+	
+			list.add("mobile=" + mobile);
+			String password1 = Communication.getMD5(password);
+			password1 += Communication.apiSecret;
+			String userToken = Communication.getMD5(password1);
+			list.add("userToken=" + userToken);
+		}
 		list.add("adId=" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		if(pay != 0){
@@ -1267,14 +1269,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ArrayList<String> list = new ArrayList<String>();
 		
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		String mobile = user.getPhone();
-		String password = user.getPassword();
-
-		list.add("mobile=" + mobile);
-		String password1 = Communication.getMD5(password);
-		password1 += Communication.apiSecret;
-		String userToken = Communication.getMD5(password1);
-		list.add("userToken=" + userToken);
+		if(user != null){
+			String mobile = user.getPhone();
+			String password = user.getPassword();
+	
+			list.add("mobile=" + mobile);
+			String password1 = Communication.getMD5(password);
+			password1 += Communication.apiSecret;
+			String userToken = Communication.getMD5(password1);
+			list.add("userToken=" + userToken);
+		}
 		list.add("query=id:" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		return list;		
@@ -1282,18 +1286,19 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private ArrayList<String> doDelete(){
 		// TODO Auto-generated method stub
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user");
-		String mobile = user.getPhone();
-		String password = user.getPassword();
-
 		json = "";
-//		String apiName = "ad_delete";
 		ArrayList<String> list = new ArrayList<String>();
-		list.add("mobile=" + mobile);
-		String password1 = Communication.getMD5(password);
-		password1 += Communication.apiSecret;
-		String userToken = Communication.getMD5(password1);
-		list.add("userToken=" + userToken);
+
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user");
+		if(user != null){
+			String mobile = user.getPhone();
+			String password = user.getPassword();
+			list.add("mobile=" + mobile);
+			String password1 = Communication.getMD5(password);
+			password1 += Communication.apiSecret;
+			String userToken = Communication.getMD5(password1);
+			list.add("userToken=" + userToken);
+		}
 		list.add("adId=" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		

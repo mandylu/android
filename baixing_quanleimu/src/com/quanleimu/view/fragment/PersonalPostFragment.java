@@ -448,13 +448,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				String message = js.getString("message");
 				int code = js.getInt("code");
 				List<GoodsDetail> refList = null;
-				if(msg.arg1 == -1){
+				if(msg.arg1 == TYPE_MYPOST){
 					refList = listMyPost;
 				}
-				else if(msg.arg1 == 0){
+				else if(msg.arg1 == TYPE_INVERIFY){
 					refList = listInVerify;
 				}
-				else if(msg.arg1 == 1){
+				else if(msg.arg1 == TYPE_DELETED){
 					refList = listDeleted;
 				}
 				if(refList == null) break;
@@ -652,14 +652,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         ArrayList<String> requests = new ArrayList<String>();
 
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-        String mobile = user.getPhone();
-        String password = user.getPassword();
-
-        requests.add("mobile=" + mobile);
-        String password1 = Communication.getMD5(password);
-        password1 += Communication.apiSecret;
-        String userToken = Communication.getMD5(password1);
-        requests.add("userToken=" + userToken);
+        Util.makeupUserInfoParams(user, requests);
         requests.add("adId=" + adId);
         requests.add("rt=1");
         if(pay != 0){
@@ -732,15 +725,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		@Override
 		public void run(){
-			if(user == null)return;
 			json = "";
 			String apiName = "ad_undelete";
 			ArrayList<String> list = new ArrayList<String>();
-			list.add("mobile=" + user.getPhone());
-			String password1 = Communication.getMD5(user.getPassword());
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
+			Util.makeupUserInfoParams(user, list);
 			list.add("adId=" + id);
 			list.add("rt=1");
 
@@ -779,15 +767,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 		@Override
 		public void run() {
-			if(user == null)return;
 			json = "";
 			String apiName = "ad_delete";
 			ArrayList<String> list = new ArrayList<String>();
-			list.add("mobile=" + user.getPhone());
-			String password1 = Communication.getMD5(user.getPassword());
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
+			Util.makeupUserInfoParams(user, list);
 			list.add("adId=" + id);
 			list.add("rt=1");
 
