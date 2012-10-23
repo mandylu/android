@@ -75,11 +75,11 @@ public class BxSender implements Runnable{
 			@Override
 			public void onException(Exception ex) {
 				System.out.print("send wrong");
-				sendingTimes++;
-				if (sendingTimes<2)//再次发送
-					sendList(list);
-				else
-					sendingTimes = 0;
+//				sendingTimes++;
+//				if (sendingTimes<2)//再次发送
+//					sendList(list);
+//				else
+//					sendingTimes = 0;
 			}
 		});
 	}
@@ -105,7 +105,7 @@ public class BxSender implements Runnable{
 					list = (ArrayList<BxTrackData>) (loadFromLocal(context,
 							manifest.get(0)));
 					if (list != null) {
-						sendList(list);
+//						sendList(list);
 						clearFile(context, manifest.get(0));
 					}
 					manifest.remove(0);
