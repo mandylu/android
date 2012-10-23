@@ -1,6 +1,7 @@
 package com.quanleimu.util;
 
 import java.io.IOException;
+import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Map.Entry;
@@ -56,14 +57,15 @@ public class BxSender implements Runnable{
 	}
 	
 	private void sendList(final List<BxTrackData> list) {
-		ParameterHolder params = new ParameterHolder();
 		String jsonStr = convertListToJson(list);
+		String compressedJson = null;
 		try {
-			params.addParameter("compressedJson", GzipUtil.compress(jsonStr));//压缩
+//			System.out.println("compressedJson("+GzipUtil.compress(jsonStr).length()+"):"+ GzipUtil.compress(jsonStr));
+			compressedJson = GzipUtil.compress(jsonStr);
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Communication.executeSyncPostTask(apiName, params, new Communication.CommandListener() {
+		Communication.executeSyncPostTask(apiName, compressedJson, new Communication.CommandListener() {
 			
 			@Override
 			public void onServerResponse(String serverMessage) {

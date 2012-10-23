@@ -6,7 +6,9 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
+import java.util.ArrayList;
 import java.util.Collections;
 import java.util.Comparator;
 import java.util.List;
@@ -22,16 +24,11 @@ import org.apache.http.entity.StringEntity;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
-import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.provider.Settings.Secure;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import android.util.Log;
 
 public class Communication implements Comparator<String> {
 
@@ -87,21 +84,21 @@ public class Communication implements Comparator<String> {
 		 * if(MyApplication.udid.equals("") ||
 		 * MyApplication.version.equals("")){ getudid(); getversion(); }
 		 */
-
 		list.add("udid=" + QuanleimuApplication.udid);
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("uid=" + QuanleimuApplication.context);
+		list.add("uid=" + Util.getMyId(QuanleimuApplication.context) );
+
 		
 		Collections.sort(list, COMPARATOR);
 
 		String queryString = "";
 		for (Object s : list) {
 			queryString += "&" + urlEncode((String) s);
-
 		}
+		
 		String parameter = urlEncode(queryString.substring(1));
 		String md5String = getMD5(parameter + apiSecret);
 		String p = "access_token=" + md5String + "&"
@@ -325,6 +322,7 @@ public class Communication implements Comparator<String> {
 		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
 		httpPost.setEntity(se);
 		se.setContentType("application/x-www-form-urlencoded");
+		
 		httpPost.addHeader("Accept-Encoding", "gzip");
 
 		HttpResponse response = null;
@@ -357,11 +355,13 @@ public class Communication implements Comparator<String> {
 		String temp = "";
 //		StringBuilder sb = new StringBuilder();
 		
+
 //		char[] buffer = new char[1024];
 //		int numRead = 0;
 //		while((numRead = reader.read(buffer)) > 0){			
 //			sb.append(new String(buffer, 0, numRead));
 //		}
+
 //		Log.d("get data", "get databy url length:    " + sb.length());
 
 		while ((lines = reader.readLine()) != null) {
@@ -392,7 +392,7 @@ public class Communication implements Comparator<String> {
 		return null;
 	}
 
-	// get提交数据方法
+	// post提交数据方法
 	public static String getDataByUrl(String url, boolean forceUpdate)
 			throws UnsupportedEncodingException, IOException, BXHttpException {
 
@@ -406,7 +406,9 @@ public class Communication implements Comparator<String> {
 
 		HttpPost httpPost = new HttpPost(
 				url.substring(0, url.indexOf("/?") + 2));
+//		System.out.println(url.substring(url.indexOf("/?") + 2));
 		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+//		System.out.println("se"+se.toString());
 		httpPost.setEntity(se);
 		se.setContentType("application/x-www-form-urlencoded");
 		httpPost.addHeader("Accept-Encoding", "gzip");
@@ -624,8 +626,12 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
-	public static void executeSyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
-		String url = Communication.getApiUrl(apiName, params.toParameterList());
+	public static void executeSyncPostTask(final String apiName, final String compressedStr, final CommandListener listener) {
+		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+		System.out.println("executeSync:"+ url);
+		url += "&compressedJson=";
+		url += (compressedStr);
+		System.out.println("check"+url);
 		try {
 			String result = Communication.getDataByUrl(url, true);
 			if (listener != null) {
