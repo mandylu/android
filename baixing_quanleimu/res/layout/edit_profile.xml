@@ -13,15 +13,14 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:orientation="vertical"
-            android:paddingLeft="20dip"
-            android:paddingRight="20dip"
-            android:paddingTop="20dip" >
+            android:padding="18dp">
 
             <RelativeLayout
                 android:id="@+id/rl_image"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginBottom="10dp">
+                android:layout_marginBottom="10dp"
+                android:visibility="gone">
                 <RelativeLayout
                     android:id="@+id/rl_personalImage"
                     android:layout_width="wrap_content"
@@ -69,32 +68,35 @@
                         android:background="@color/list_line" android:layout_alignParentBottom="true"/>
                 <LinearLayout
                         android:layout_width="fill_parent"
-                        android:layout_height="@dimen/set_table_height"
+                        android:layout_height="48dp"
                         android:layout_gravity="center_horizontal"
                         android:orientation="horizontal"
                         android:background="@drawable/list_selector">
 
                     <TextView
-                            android:layout_width="120dp"
+                            android:layout_width="80dp"
                             android:layout_height="fill_parent"
-                            android:gravity="center_vertical|right"
+                            android:gravity="center_vertical"
                             android:text="用户名"
-                            android:textSize="20dip" android:paddingRight="30dp"/>
+                            android:textSize="14dp"
+                            android:textColor="#838383"/>
 
                     <EditText
                             android:id="@+id/username"
                             android:layout_width="fill_parent"
                             android:layout_height="fill_parent"
                             android:background="@android:color/transparent"
-                            android:textSize="20dip" android:paddingLeft="5dp" android:gravity="center_vertical"
-                            android:hint="请输入用户名">
+                            android:textSize="14dp" android:paddingLeft="5dp" android:gravity="center_vertical"
+                            android:hint="请输入用户名"
+                            android:textColor="#b0afab">
                     </EditText>
                 </LinearLayout>
             </RelativeLayout>
 
             <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent"
+                    android:visibility="gone">
                 <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -129,7 +131,8 @@
 
             <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent"
+                    android:visibility="gone">
                 <View
                         android:layout_width="match_parent"
                         android:layout_height="1dp"
@@ -161,7 +164,8 @@
                 android:layout_height="@dimen/set_table_height"
                 android:layout_gravity="center_horizontal"
                 android:layout_marginTop="10dip"
-                android:orientation="horizontal" >
+                android:orientation="horizontal"
+                android:visibility="gone">
 
                 <TextView
                     android:layout_width="wrap_content"
@@ -178,12 +182,15 @@
             </LinearLayout>
             <RelativeLayout
                     android:layout_width="fill_parent"
-                    android:layout_height="fill_parent">
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="18dp">
                 <Button
                         android:layout_width="fill_parent"
-                        android:layout_height="fill_parent"
+                        android:layout_height="40dp"
                         android:text="退出当前帐号"
-                        android:id="@+id/editProfileLogoutBtn"/>
+                        android:background="@drawable/bg_message_btn_selector"
+                        android:id="@+id/editProfileLogoutBtn"
+                        android:textColor="#838383"/>
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

@@ -70,8 +70,8 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "编辑个人信息";
-		title.m_rightActionHint = "完成";
+		title.m_title = "修改资料";
+		title.m_rightActionHint = "确定";
 		title.m_leftActionHint = "返回";
 	}
 	

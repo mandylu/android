@@ -689,7 +689,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
                 UserProfile up = (UserProfile) Util.loadDataFromLocate(context, "userProfile");
                 if (up != null) {
                     fillProfile(up, v);
-                    v.findViewById(R.id.userInfoLayout).setOnClickListener(this);
                 } else {
                     new Thread(new GetPersonalProfileThread()).start();
                 }
@@ -793,6 +792,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
             ((TextView)activity.findViewById(R.id.userInfoNickname)).setText("");
         }
         boolean showBoy = true;
+        // 新版本只保留 nickname
 //        if(up.gender != null && !up.equals("")){
 //            if(up.gender.equals("男")){
 //                ((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
@@ -806,13 +806,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 //            ((ImageView)activity.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
 //        }
 
-        if(up.location != null && !up.location.equals("")){
-//            (new Thread(new GetLocationThread(up.location))).start();
-            //TODO fixme 开新线程拿什么定位？
-        }else{
-            ((TextView)activity.findViewById(R.id.userInfoLocation)).setText("");
-        }
-
+//        if(up.location != null && !up.location.equals("")){
+////            (new Thread(new GetLocationThread(up.location))).start();
+//            //TODO fixme 开新线程拿什么定位？
+//        }else{
+////            ((TextView)activity.findViewById(R.id.userInfoLocation)).setText("");
+//        }
+//
         if(up.createTime != null && !up.equals("")){
             try{
                 Date date = new Date(Long.parseLong(up.createTime) * 1000);
@@ -824,33 +824,34 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
         }else{
             ((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
         }
-        String image = null;
-        if(up.resize180Image != null && !up.resize180Image.equals("")){
-            image = up.resize180Image;
-        }
-        if(image != null && !image.equals("") && !image.equals("null")){
-//            int height = activity.findViewById(R.id.userInfoAvatar).getMeasuredHeight();
-//            int width = activity.findViewById(R.id.userInfoAvatar).getMeasuredWidth();
-//            if(height <= 0 || width <= 0){
-//                Drawable img = ((ImageView)activity.findViewById(R.id.userInfoAvatar)).getDrawable();
-//                if(img != null){
-//                    height = img.getIntrinsicHeight();
-//                    width = img.getIntrinsicWidth();
-//                }
-//            }
-//            if(height > 0 && width > 0){
-//                ViewGroup.LayoutParams lp = activity.findViewById(R.id.userInfoAvatar).getLayoutParams();
-//                lp.height = height;
-//                lp.width = width;
-//                activity.findViewById(R.id.userInfoAvatar).setLayoutParams(lp);
-//            }
-
-            SimpleImageLoader.showImg((ImageView) activity.findViewById(R.id.userInfoAvatar),
-                    image, null, activity.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
-        }else{
-            ((ImageView)activity.findViewById(R.id.userInfoAvatar)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
-        }
+//        String image = null;
+//        if(up.resize180Image != null && !up.resize180Image.equals("")){
+//            image = up.resize180Image;
+//        }
+//        if(image != null && !image.equals("") && !image.equals("null")){
+////            int height = activity.findViewById(R.id.userInfoAvatar).getMeasuredHeight();
+////            int width = activity.findViewById(R.id.userInfoAvatar).getMeasuredWidth();
+////            if(height <= 0 || width <= 0){
+////                Drawable img = ((ImageView)activity.findViewById(R.id.userInfoAvatar)).getDrawable();
+////                if(img != null){
+////                    height = img.getIntrinsicHeight();
+////                    width = img.getIntrinsicWidth();
+////                }
+////            }
+////            if(height > 0 && width > 0){
+////                ViewGroup.LayoutParams lp = activity.findViewById(R.id.userInfoAvatar).getLayoutParams();
+////                lp.height = height;
+////                lp.width = width;
+////                activity.findViewById(R.id.userInfoAvatar).setLayoutParams(lp);
+////            }
+//
+//            SimpleImageLoader.showImg((ImageView) activity.findViewById(R.id.userInfoAvatar),
+//                    image, null, activity.getContext(), showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+//        }else{
+//            ((ImageView)activity.findViewById(R.id.userInfoAvatar)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+//        }
         activity.findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
+        activity.findViewById(R.id.userInfoLayout).setOnClickListener(this);
     }
 
     class GetPersonalProfileThread implements Runnable {
@@ -870,7 +871,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.userInfoLayout:
-                Bundle bundle = createArguments(null, "编辑我的信息");
+                Bundle bundle = createArguments(null, "修改资料");
                 pushFragment(new ProfileEditFragment(), bundle);
                 break;
             default:

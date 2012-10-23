@@ -242,6 +242,8 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                     public void onClick(DialogInterface dialog, int i) {
                         QuanleimuApplication.setTextMode(i == 1);
                         dialog.dismiss();
+                        String tip = (i==1) ? "省流量模式" : "图片模式";
+                        Toast.makeText(getActivity(), "已切换至" + tip, 1).show();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

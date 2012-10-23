@@ -7,65 +7,52 @@
 
  	<LinearLayout
 	    android:layout_width="fill_parent"
-	    android:layout_height="wrap_content" 
+	    android:layout_height="92dp"
 	    android:visibility="gone" android:orientation="horizontal" android:id="@+id/userInfoLayout"
-        android:background="@drawable/list_selector">
-
-	    <ImageView
-	        android:id="@+id/userInfoAvatar"
-	        android:layout_width="96dp"
-	        android:layout_height="96dp"
-	        android:src="@drawable/pic_my_avator_boy" android:layout_marginLeft="15dp" android:layout_marginTop="10dp"
-            android:layout_marginRight="10dp" android:layout_marginBottom="10dp"/>
+        android:background="@drawable/list_selector"
+        android:clickable="true">
 
          <RelativeLayout
                  android:layout_width="fill_parent"
-                 android:layout_height="fill_parent" android:layout_gravity="center_vertical"
-                 android:gravity="center_vertical">
+                 android:layout_height="56dp" android:layout_gravity="center_vertical"
+                 android:gravity="center_vertical"
+                 android:layout_marginLeft="36dp">
+
+             <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
+                           android:layout_height="wrap_content" android:id="@+id/linearLayout"
+                           android:layout_alignParentBottom="true">
+                 <TextView android:id="@+id/textView3" android:layout_width="wrap_content"
+                           android:layout_height="20dp" android:text="已加入百姓网：" android:gravity="center_vertical"
+                           android:textSize="12dp" android:textColor="#9a8e78"/>
+                 <TextView android:id="@+id/userInfoJoinDays" android:layout_width="wrap_content"
+                           android:layout_height="20dp" android:text="9999天" android:gravity="center_vertical"
+                           android:textSize="12dp" android:textColor="#9a8e78"
+                           android:lines="1"/>
+             </LinearLayout>
+
              <LinearLayout
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:layout_weight="0.87"
-                android:orientation="vertical" android:layout_marginTop="15dp" android:layout_marginBottom="15dp"
-                android:layout_marginRight="15dp">
+                     android:orientation="horizontal"
+                     android:layout_width="wrap_content"
+                     android:layout_height="wrap_content">
 
-                <TextView
-                    android:id="@+id/userInfoNickname"
-                    android:layout_width="fill_parent"
-                    android:layout_height="36dp"
-                    android:text="小老百姓卖二手物品" android:textStyle="bold" android:gravity="fill_vertical"
-                    android:textColor="@color/category_grid_font" android:textSize="16dp"/>
+                 <TextView
+                     android:id="@+id/userInfoNickname"
+                     android:layout_width="wrap_content"
+                     android:layout_height="36dp"
+                     android:text="小老百姓卖二手物品" android:textStyle="bold" android:gravity="fill_vertical"
+                     android:textColor="#524735" android:textSize="18dp"/>
 
-                 <LinearLayout android:orientation="horizontal" android:layout_width="fill_parent"
-                               android:layout_height="wrap_content" android:id="@+id/linearLayout">
-                     <TextView android:id="@+id/textView3" android:layout_width="wrap_content"
-                               android:layout_height="20dp" android:text="已加入百姓网：" android:gravity="center_vertical"
-                               android:textSize="12dp" android:textColor="@color/category_second_font"/>
-                     <TextView android:id="@+id/userInfoJoinDays" android:layout_width="wrap_content"
-                               android:layout_height="20dp" android:text="9999天" android:gravity="center_vertical"
-                               android:textSize="12dp" android:textColor="@color/category_second_font"
-                               android:lines="1"/>
-                 </LinearLayout>
-                 <LinearLayout
-                         android:orientation="horizontal"
-                         android:layout_width="fill_parent"
-                         android:layout_height="wrap_content">
-                     <TextView
-                        android:id="@+id/textView2"
-                        android:layout_width="wrap_content"
-                        android:layout_height="20dp"
-                        android:text="常居地：" android:gravity="center_vertical" android:textSize="12dp"
-                        android:textColor="@color/category_second_font"/>
-                     <TextView android:id="@+id/userInfoLocation" android:layout_width="wrap_content"
-                               android:layout_height="20dp" android:text="徐汇区，徐家汇" android:gravity="center_vertical"
-                               android:textSize="12dp" android:textColor="@color/category_second_font"
-                               android:lines="1"/>
-                 </LinearLayout>
-
+                 <!-- todo ming imageView 加高亮效果 -->
+                 <ImageView
+                         android:layout_width="wrap_content"
+                         android:layout_height="wrap_content"
+                         android:src="@drawable/btn_edit_name"
+                         android:visibility="visible"/>
              </LinearLayout>
          </RelativeLayout>
+
      </LinearLayout>
-    
+
     <GridView
         android:id="@+id/gridcategory"
         android:layout_width="fill_parent"
