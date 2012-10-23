@@ -27,14 +27,14 @@ public class KeepLiveTest extends BaixingTestCase {
                 timer.cancel();
             }
         };
-        timer.schedule(tt, 1 * 60 * 60 * 1000); // N秒 * 1000
+        timer.schedule(tt, 100 * 1000); // N秒 * 1000
 	}
 	
 	/*
 	 * Start run this Ad Listing Test
 	 */
 	@Test
-	public void RunAdListing() throws Exception {
+	public void runAdListing() throws Exception {
         while(!willFinished) {
         	int index = (int)(Math.random() * 9);
         	Log.i(LOG_TAG, "Start do Category.index." + index);
@@ -46,7 +46,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	 * Start run post Test
 	 */
 	@Test
-	public void RunPost() throws Exception {
+	public void runPost() throws Exception {
         while(!willFinished) {
         	int index = (int)(Math.random() * 9);
         	Log.i(LOG_TAG, "Start do Post.index." + index);
@@ -70,6 +70,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0));
+			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
 			assertNotNull(openAdByIndex(rndIndex));
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 					BXViewGroupElement.class);

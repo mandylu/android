@@ -472,7 +472,7 @@ public class BaixingTestCase extends AthrunTestCase {
 			openTabbar(TAB_ID_HOME);
 			hv = findElementById(HOME_MARK_ID);
 		}
-		if (hv == null) return;
+		assertNotNull(hv);
 		AbsListViewElement catListView = findElementById(HOME_CATEGORY_VIEWLIST_ID,
 				AbsListViewElement.class);
 		ViewGroupElement catView = catListView.getChildByIndex(index + 1,
@@ -530,16 +530,23 @@ public class BaixingTestCase extends AthrunTestCase {
 			avi = avl.getChildByIndex(++j, ViewGroupElement.class);
 		}
 		*/
-		int pageSize = (int) (index / 6); //每页6个
+		int indexSize = 6;
+		int pageSize = (int) (index / indexSize); //每页6个
 		int i = 1;
 		while (i++ < pageSize) {
 			avl.scrollToNextScreen();
 			TimeUnit.SECONDS.sleep(1);
 		}
-		ViewGroupElement avi = findElementById(AD_VIEWLIST_MARK_ID, index % 6, ViewGroupElement.class);
-		if (avi != null) {
-			avi.doClick();
-			TimeUnit.SECONDS.sleep(1);
+		ViewGroupElement avi = null;
+		while(indexSize > 0) {
+			try {
+				avi = findElementById(AD_VIEWLIST_MARK_ID, index % (indexSize--), ViewGroupElement.class);
+				if (avi != null) {
+					avi.doClick();
+					TimeUnit.SECONDS.sleep(1);
+					break;
+				}
+			} catch (IndexOutOfBoundsException ex) {}
 		}
 		return avi;
 	}
