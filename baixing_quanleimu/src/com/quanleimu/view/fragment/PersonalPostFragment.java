@@ -420,6 +420,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			break;
+		case GoodsListLoader.MSG_FIRST_FAIL:
 		case GoodsListLoader.MSG_EXCEPTION:{
 			hideProgress();
 			lvGoodsList.onRefreshComplete();
@@ -876,26 +877,20 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	@Override
 	public void onRefresh() {
 		List<String> params = new ArrayList<String>();
+		if(user != null){
+			params.add("userId=" + user.getId());
+		}		
 		if(currentType == TYPE_MYPOST){
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
-			if(user != null){
-				params.add("userId=" + user.getId());// + " AND status:0");
-			}
-			params.add("activeOnly=0");
+			params.add("status=0");
 		}
 		else if(currentType == TYPE_INVERIFY){
-			if(user != null){
-				params.add("userId=" + user.getId() + " AND (status:4 OR status:20)");
-			}
-			params.add("activeOnly=0");
+			params.add("status=1");
 		}
 		else if(currentType == TYPE_DELETED){
-			if(user != null){
-				params.add("userId=" + user.getId() + " AND status:3");
-			}
-			params.add("activeOnly=0");
+			params.add("status=2");
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);

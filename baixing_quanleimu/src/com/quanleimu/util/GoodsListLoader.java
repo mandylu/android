@@ -274,7 +274,7 @@ public class GoodsListLoader implements Serializable{
 					return;
 				}
 				
-				if (mLastJson != null) {
+				if (mLastJson != null && !mLastJson.equals("")) {
 					if (!mIsFirst) {
 						if(mHandler != null){
 							mHandler.sendEmptyMessage(msgMore);
