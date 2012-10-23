@@ -19,6 +19,7 @@ import com.quanleimu.adapter.GoodsListAdapter.GroupItem;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.values;
 import com.quanleimu.view.fragment.MultiLevelSelectionFragment;
 import com.quanleimu.view.fragment.PostParamsHolder;
@@ -118,15 +119,25 @@ public class FilterUtil {
 					Location.distanceBetween(latD, lonD, currentLocation.fLat, currentLocation.fLon, results);
 				}
 				
-				if (results[i] != 0.0 && results[i] < conditions[i])
+				if (results[0] > conditions[i])
 				{
-					count++;
-					detailList.remove(j);
+					Log.d("LIST", "find first item distance > " + conditions[i] + " " + detailList.get(j).getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+					break;
 				}
-				else
-				{
-					j++;
-				}
+
+				detailList.remove(j);
+				count ++;
+				
+				
+//				if (results[i] != 0.0 && results[i] < conditions[i])
+//				{
+//					count++;
+//					detailList.remove(j);
+//				}
+//				else
+//				{
+//					j++;
+//				}
 			}
 			
 			

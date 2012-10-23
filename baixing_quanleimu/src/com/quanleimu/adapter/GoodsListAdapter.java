@@ -169,9 +169,10 @@ public class GoodsListAdapter extends BaseAdapter {
 		int skip = 0;
 		for (int i=0; i<groups.size(); skip += groups.get(i).resultCount + 1, i++)
 		{
-			final int expIndex = i == 0 ? 0 : groups.get(i-1).resultCount + skip;
+			final int expIndex = skip;//i == 0 ? 0 : groups.get(i-1).resultCount + skip;
 			if (expIndex == pos)
 			{
+				Log.d("LIST", "position is group " + pos);
 				return true;
 			}
 		}
@@ -184,7 +185,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		int skip = 0;
 		for (int i=0; i<groups.size(); skip += groups.get(i).resultCount + 1, i++)
 		{
-			final int expIndex = i == 0 ? 0 : groups.get(i-1).resultCount + skip;
+			final int expIndex = skip;//i == 0 ? 0 : groups.get(i-1).resultCount + skip;
 			if (expIndex == position)
 			{
 				return groups.get(i);
