@@ -236,6 +236,18 @@ public class SearchFragment extends BaseFragment {
 		else
 		{		
 			this.showSearchHistory();
+			etSearch.postDelayed(new Runnable(){
+				@Override
+				public void run(){
+					if (etSearch != null)
+					{
+						etSearch.requestFocus();
+						InputMethodManager inputMgr = 
+								(InputMethodManager) etSearch.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+						inputMgr.showSoftInput(etSearch, InputMethodManager.SHOW_IMPLICIT);
+					}
+				}			
+			}, 100);
 		}
 		
 	}
