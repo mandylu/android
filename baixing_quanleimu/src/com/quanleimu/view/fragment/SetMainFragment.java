@@ -3,6 +3,7 @@ package com.quanleimu.view.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.content.Intent;
@@ -40,6 +41,8 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
     private final int MSG_DOWNLOAD_APP = 1;
     private final int MSG_INSTALL_APP = 3;
     private final int MSG_HAS_NEW_VERSION = 4;
+
+    private ProgressDialog pd;
 
     private String serverVersion = "";
 
@@ -303,6 +306,10 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 break;
         }
 
+        if (pd != null) {
+            pd.hide();
+        }
+
     }
 
     /**
@@ -336,7 +343,8 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         ParameterHolder params = new ParameterHolder();
         params.addParameter("clientVersion", QuanleimuApplication.version);
 
-        //todo ming 检查更新 加入 loading
+        pd = ProgressDialog.show(SetMainFragment.this.getActivity(), "提示", "请稍候...");
+        pd.show();
         Communication.executeAsyncGetTask("check_version", params, new Communication.CommandListener() {
 
             @Override

@@ -895,11 +895,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
         }
     }
 
-    //fixme ming 修改用户名失败
     //fixme ming 小手机下载更新失败
-    //todo ming 收藏按钮 crash, category  没拿下来
-    //todo ming 检查更新、解除绑定    reviewer:liuchong
-    //todo ming 发布成功跳转到新版 用户中心, 注册登录成功跳转
 
 }
 
