@@ -382,13 +382,13 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	private void updateProfile() {
 		ParameterHolder params = new ParameterHolder();
 		params.addParameter("nickname", getTextData(R.id.username));
-		params.addParameter("gender", getTextData(R.id.gender));
-		params.addParameter(URLEncoder.encode("所在地"), newCityId);
+//		params.addParameter("gender", getTextData(R.id.gender));
+//		params.addParameter(URLEncoder.encode("所在地"), newCityId);
 		params.addParameter("userId", up.userId);
-		if (profileImg.getServerUri() != null && !profileImg.getServerUri().equals(up.resize180Image))
-		{
-			params.addParameter("image_i", profileImg.getServerUri());
-		}
+//		if (profileImg.getServerUri() != null && !profileImg.getServerUri().equals(up.resize180Image))
+//		{
+//			params.addParameter("image_i", profileImg.getServerUri());
+//		}
 		
 		
 		Communication.executeAsyncGetTask("user_profile_update", params, new Communication.CommandListener() {
@@ -441,9 +441,9 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 	private void saveAndexit()
 	{
 		up.nickName = getTextData(R.id.username);
-		up.gender = getTextData(R.id.gender);
-		up.location = newCityId;
-		//TODO: how about the image url?
+//		up.gender = getTextData(R.id.gender);
+//		up.location = newCityId;
+        Util.saveDataToLocate(getActivity(), "userProfile", up);
 		
 		this.finishFragment(requestCode, up);
 	
