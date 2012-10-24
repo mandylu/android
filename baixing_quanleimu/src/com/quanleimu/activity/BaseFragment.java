@@ -382,7 +382,7 @@ public abstract class BaseFragment extends Fragment {
 	{
 		
 	}
-	
+		
 	protected void refreshHeader()
 	{
 		if (!this.isUiActive())
@@ -407,8 +407,12 @@ public abstract class BaseFragment extends Fragment {
 			if (null != title.m_titleControls) {
 				llTitleControls.setVisibility(View.VISIBLE);
 				tTitle.setVisibility(View.GONE);
-				llTitleControls.removeAllViews();
-				llTitleControls.addView(title.m_titleControls);
+				
+				View titleControl = llTitleControls.getChildCount() == 0 ? null : llTitleControls.getChildAt(0);
+				if (titleControl != title.m_titleControls) {
+					llTitleControls.removeAllViews();
+					llTitleControls.addView(title.m_titleControls);					
+				}
 			} else {
 				llTitleControls.setVisibility(View.GONE);
 				tTitle.setVisibility(View.VISIBLE);
