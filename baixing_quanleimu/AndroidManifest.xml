@@ -68,8 +68,11 @@
                 <action android:name="com.quanleimu.action.NETWORK_CHANGED" />
             </intent-filter>
         </service>
-        
-		<receiver android:name="com.quanleimu.broadcast.NetworkConnectivityReceiver" android:enabled="true">
+        <service
+                android:name="com.quanleimu.util.BXUpdateService"
+                android:label="自动更新服务"/>
+
+        <receiver android:name="com.quanleimu.broadcast.NetworkConnectivityReceiver" android:enabled="true">
              <intent-filter>
                  <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
              </intent-filter>

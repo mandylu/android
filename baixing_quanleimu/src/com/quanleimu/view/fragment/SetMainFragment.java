@@ -1,9 +1,13 @@
 package com.quanleimu.view.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,9 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.util.BXUpdateService;
+import com.quanleimu.util.Communication;
+import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.Util;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 //import com.quanleimu.entity.AuthDialogListener;
 //import com.quanleimu.entity.WeiboAccessTokenWrapper;
@@ -26,6 +36,12 @@ import com.quanleimu.util.Util;
 
 public class SetMainFragment extends BaseFragment implements View.OnClickListener {
 
+    private final int MSG_NETWORK_ERROR = 0;
+    private final int MSG_DOWNLOAD_APP = 1;
+    private final int MSG_INSTALL_APP = 3;
+    private final int MSG_HAS_NEW_VERSION = 4;
+
+    private String serverVersion = "";
 
     // 定义控件
     public Dialog changePhoneDialog;
@@ -138,7 +154,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 
                 break;
             case R.id.setCheckUpdate:
-                Toast.makeText(getAppContext(), "todo 检查更新", 1).show();
+                checkNewVersion();
                 break;
             case R.id.setAbout:
                 pushFragment(new AboutUsFragment(), null);
@@ -233,6 +249,48 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
  */
     }
 
+    @Override
+    protected void handleMessage(Message msg, Activity activity, View rootView) {
+        super.handleMessage(msg, activity, rootView);
+
+        switch (msg.what) {
+            case MSG_NETWORK_ERROR:
+                Toast.makeText(getActivity(), msg.obj.toString(), 1).show();
+                break;
+            case MSG_DOWNLOAD_APP:
+                updateAppDownload(msg.obj.toString());
+                break;
+            case MSG_INSTALL_APP:
+                updateAppInstall();
+                break;
+            case MSG_HAS_NEW_VERSION:
+                final String apkUrl = msg.obj.toString();
+
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle(R.string.label_flow_optimize)
+                        .setMessage("当前版本: " + QuanleimuApplication.version
+                                + "\n发现新版本: " + serverVersion
+                                + "\n是否更新？")
+                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialogInterface, int i) {
+                                sendMessage(MSG_DOWNLOAD_APP, apkUrl);
+                            }
+                        })
+                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                                dialog.dismiss();
+                            }
+                        }).create().show();
+                break;
+        }
+
+    }
+
+    /**
+     * 省流量设置
+     */
     private void showFlowOptimizeDialog() {
         int checkedIdx = QuanleimuApplication.isTextMode() ? 1 : 0;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -242,7 +300,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                     public void onClick(DialogInterface dialog, int i) {
                         QuanleimuApplication.setTextMode(i == 1);
                         dialog.dismiss();
-                        String tip = (i==1) ? "省流量模式" : "图片模式";
+                        String tip = (i == 1) ? "省流量模式" : "图片模式";
                         Toast.makeText(getActivity(), "已切换至" + tip, 1).show();
                     }
                 })
@@ -252,6 +310,60 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                         dialog.dismiss();
                     }
                 }).create().show();
+    }
+
+    /**
+     * 检查版本更新
+     */
+    private void checkNewVersion() {
+        ParameterHolder params = new ParameterHolder();
+        params.addParameter("clientVersion", QuanleimuApplication.version);
+
+        //todo ming 检查更新 加入 loading
+        Communication.executeAsyncGetTask("check_version", params, new Communication.CommandListener() {
+
+            @Override
+            public void onServerResponse(String serverMessage) {
+                try {
+                    JSONObject respond = new JSONObject(serverMessage);
+                    JSONObject error = respond.getJSONObject("error");
+                    final String apkUrl = respond.getString("apkUrl");
+                    serverVersion = respond.getString("serverVersion");
+
+                    if (!"0".equals(error.getString("code"))) {
+                        sendMessage(MSG_NETWORK_ERROR, error.getString("message"));
+                    } else {
+                        if (respond.getBoolean("hasNew")) {
+                            sendMessage(MSG_HAS_NEW_VERSION, apkUrl);
+                        } else {
+
+                        }
+                    }
+                } catch (JSONException e) {
+                    sendMessage(MSG_NETWORK_ERROR, "网络异常");
+                }
+
+            }
+
+            @Override
+            public void onException(Exception ex) {
+                sendMessage(MSG_NETWORK_ERROR, "网络异常");
+            }
+        });
+    }
+
+    private void updateAppDownload(String apkUrl) {
+        //开启更新服务UpdateService
+        //这里为了把update更好模块化，可以传一些updateService依赖的值
+        //如布局ID，资源ID，动态获取的标题,这里以app_name为例
+        Intent updateIntent =new Intent(getAppContext(), BXUpdateService.class);
+        updateIntent.putExtra("titleId",R.string.app_name);
+        updateIntent.putExtra("apkUrl", apkUrl);
+        getAppContext().startService(updateIntent);
+    }
+
+    private void updateAppInstall() {
+
     }
 
 }

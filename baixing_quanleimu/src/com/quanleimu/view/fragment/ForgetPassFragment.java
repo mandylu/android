@@ -213,7 +213,7 @@ public class ForgetPassFragment extends BaseFragment {
                 getCodeBtn.setEnabled(true);
                 break;
             case MSG_SENT_CODE_FINISH:
-                Toast.makeText(getActivity(), "验证码发送成功", 1).show();
+                Toast.makeText(getActivity(), "一分钟后可再次获取", 1).show();
                 disableGetCodeBtn();
                 break;
             case MSG_POST_FINISH:
@@ -239,7 +239,7 @@ public class ForgetPassFragment extends BaseFragment {
 
     private void disableGetCodeBtn() {
         getCodeBtn.setEnabled(false);
-        getCodeBtn.setText("一分钟后可再次获取");
+        getCodeBtn.setText("验证码发送成功");
         TimerTask timerTask = new CountTimeTask();
         countTimer = new Timer(true);
         countTimer.schedule(timerTask, 0, 1000);
