@@ -527,7 +527,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         return v;
 	}
 	
-	private boolean isInvalidMessage()
+	private boolean isValidMessage()
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}
@@ -550,7 +550,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
 		
-		if(isInvalidMessage()){
+		if(isValidMessage()){
 			contentView.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
 			contentView.findViewById(R.id.graymask).setVisibility(View.GONE);
 			contentView.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
@@ -654,21 +654,29 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void updateContactBar(View rootView, boolean forceHide)
 	{
 		LinearLayout rl_phone = (LinearLayout)rootView.findViewById(R.id.phonelayout);
-		if (forceHide || !isInvalidMessage())
+		if (forceHide)
 		{
 			rl_phone.setVisibility(View.GONE);
 			return;
 		}
-		else if (isMyAd())
+		else if (isMyAd() || !isValidMessage())
 		{
 			rootView.findViewById(R.id.phone_parent).setVisibility(View.GONE);
 			rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.VISIBLE);
 			
+			
 			rootView.findViewById(R.id.vad_btn_edit).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_refresh).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_delete).setOnClickListener(this);
+			
+			if (!isValidMessage())
+			{
+				rootView.findViewById(R.id.vad_btn_edit).setVisibility(View.GONE);
+				rootView.findViewById(R.id.vad_btn_refresh).setVisibility(View.GONE);
+			}
 			return;
 		}
+		
 		
 		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
@@ -1470,7 +1478,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void updateTitleBar(TitleDef title)
 	{
 		
-		if(isMyAd()){
+		if(isMyAd() || !isValidMessage()){
 			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
 		}
 		else{
