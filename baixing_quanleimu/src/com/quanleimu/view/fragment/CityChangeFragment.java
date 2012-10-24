@@ -413,17 +413,44 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		}
 	}
 	
+	private static boolean checkContainsShortPinyin(String englishName, String shortPinyin)
+	{
+		int shortPos = 0;
+		for (int i = 0; i < englishName.length(); i++)
+		{
+			if (englishName.charAt(i) == shortPinyin.charAt(shortPos))
+			{
+				if (++shortPos >= shortPinyin.length())
+					return true;
+			}
+		}
+		return false;
+	}
+	
 	private List<CityDetail> getFilteredCityDetails (String filterKeyword)
 	{
 		List<CityDetail> allCities = QuanleimuApplication.getApplication().getListCityDetails();
 		List<CityDetail> filteredCities = new ArrayList<CityDetail>(16);
+		List<CityDetail> shortFilteredCities = new ArrayList<CityDetail>(8);
 		for (CityDetail city : allCities)
 		{
 			if (city.name.startsWith(filterKeyword) || city.englishName.startsWith(filterKeyword))
 			{
 				filteredCities.add(city);
+				continue;
+			}
+			
+			if (filterKeyword.length() < 6)
+			{
+				if (checkContainsShortPinyin(city.englishName, filterKeyword))
+				{
+					shortFilteredCities.add(city);
+				}
 			}
 		}
+		
+		filteredCities.addAll(shortFilteredCities);
+		
 		return filteredCities;
 	}
 

@@ -5,7 +5,7 @@
 
     <LinearLayout
         android:id="@+id/logo_root"
-        android:layout_width="152dp"
+        android:layout_width="wrap_content"
         android:layout_height="match_parent"
         android:paddingLeft="14dp"
         android:layout_centerVertical="true"
