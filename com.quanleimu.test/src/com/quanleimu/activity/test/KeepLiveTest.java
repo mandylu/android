@@ -56,9 +56,10 @@ public class KeepLiveTest extends BaixingTestCase {
 	
 	private void doFirstCategory(int index) throws Exception {
 		openHomeCategoryByIndex(index);
-		int maxCategoryNum = doScrollView(CATEGORY_VIEWLIST_ID, 0);
+		int maxCategoryNum = doScrollView(CATEGORY_SECOND_GRIDVIEW_ID, 5);
+    	Log.i(LOG_TAG, "Start do Category.maxCategoryNum" + maxCategoryNum);
 		if (maxCategoryNum < 0) return;
-		scrollTop((int)(maxCategoryNum / 8), CATEGORY_VIEWLIST_ID);
+		scrollTop((int)(maxCategoryNum / 8), CATEGORY_SECOND_GRIDVIEW_ID);
 		doSecondCategory((int)(Math.random() * maxCategoryNum));
 		goBack(true);
 	}

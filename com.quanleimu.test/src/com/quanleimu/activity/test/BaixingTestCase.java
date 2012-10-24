@@ -26,6 +26,10 @@ public class BaixingTestCase extends AthrunTestCase {
 	
 	//Common ID
 	public static final String BACK_BUTTON_TEXT = "返回";
+	public static final String BACK_BUTTON_ID = "left_action";
+	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
+	public static final String CATEGROY_GRIDVIEW_NAME_ID = "itemtext";
+	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
 	//Home ID
 	public static final String HOME_FIRST_RUN_ID = "topguide";
 	public static final String HOME_FIRST_RUN_ID_V3 = "etSearchCity";
@@ -33,9 +37,15 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String HOME_CATEGORY_VIEWLIST_ID = "cateSelection";
 	public static final String HOME_CATEGORY_VIEWLIST_ITEM_NAME_ID = "tvName";
 
+	public static final String HOME_MARK_TEXTS = "浏览信息,物品交易,全职招聘,求职简历";
 	public static final String TAB_ID_HOME = "ivHomePage";
-	public static final String TAB_ID_POST = "ivPostGoods";
+	public static final String TAB_ID_HOME_V3 = "tab_text_1";
+	public static final String TAB_ID_HOME_TEXT = "浏览信息";
+	public static final String TAB_ID_POST = "right_btn_txt";
+	public static final String TAB_ID_POST_TEXT = "发布";
 	public static final String TAB_ID_MY = "ivMyCenter";
+	public static final String TAB_ID_MY_V3 = "tab_text_2";
+	public static final String TAB_ID_MY_TEXT = "我的百姓网";
 	
 	public static final String SEARCH_TEXTVIEW_ID = "etSearch";
 	public static final String SEARCH_BUTTON_ID = "btnCancel";
@@ -58,6 +68,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	//POST ID
 	public static final String POST_FORM_MARK_ID = "layout_txt";
 	public static final String POST_SCROLLVIEW_ID = "scrollView1";
+	public static final String POST_SCROLLVIEW_PARENT_ID = "postgoodslayout";
 	public static final String POST_CATEGORY_GRIDVIEW_ID = "gridcategory";
 	public static final String POST_SECOND_CATEGORY_LISTVIEW_ID = "post_other_list";
 	public static final int POST_CATEGORY_SELEC_INDEX = 0;
@@ -68,7 +79,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String POST_META_EDIT_DISPLAY_ID = "postshow";
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
-	public static final String POST_SEND = "立即发布";
+	public static final String POST_SEND = "完成";
 	
 	//My ID
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
@@ -87,9 +98,13 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String DIALOG_OK_BUTTON_ID = "确定";
 	public static final String MY_EDIT_BUTTON_ID = "编辑";
 	public static final String MY_DELETE_ALL_BUTTON_ID = "清空";
+	public static final String MY_BIND_DIALOG_OK_BUTTON_ID = "是";
+	public static final String MY_BIND_DIALOG_NO_BUTTON_ID = "否";
 	
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
-	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "manager_delete";
+	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "vad_btn_delete";
+	public static final String MY_VIEWLIST_DELXUPDATE_BUTTON_ID = "tvUpdateDate";
+	public static final String MY_VIEWLIST_DELETE_BUTTON_TEXT = "删除";
 	
 	public static final String MY_PROFILE_PHOTO_ID = "personalImage";
 	
@@ -145,6 +160,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	};
 	public static String postDataQitazhaopin[][] = {
 		{"CATEGORY", "3", "其它招聘"}, //全职招聘
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"SELECT", "供求", "招聘"},
 		{"TITLE", "招聘职位", "招聘职位测试标题"},
 		{"TEXT", "工资", "500"},
@@ -153,8 +169,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		{"MULTISELECT", "入职前交费项", "体检费,押金,伙食费"},
 		{"SELECT", "入职前需交费", "无需缴纳"},
 		{"SELECT", "是否退款", "不予退还所交费用"},
-		{"TEXT", "公司名称", "公司名测试"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"TEXT", "公司名称", "公司名测试"}
 	};
 	public static String postDataYanyuan[][] = {
 		{"CATEGORY", "4", "演员"}, //兼职招聘
@@ -166,10 +181,10 @@ public class BaixingTestCase extends AthrunTestCase {
 	};
 	public static String postDataJianzhiJianli[][] = {
 		{"CATEGORY", "5", "兼职求职简历"}, //求职简历
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"MULTISELECT", "求职意向", "模特,网站,摄影"},
 		{"TEXT", "姓名", "测试员R"},
 		{"SELECT", "发布人", "个人"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TITLE", "简历标题", "兼职求职测试"},
 	};
 	public static String postDataXunren[][] = {
@@ -231,6 +246,45 @@ public class BaixingTestCase extends AthrunTestCase {
 			TimeUnit.SECONDS.sleep(10);
 		}
 	}
+	private boolean findElementByTexts(String texts) throws Exception {
+		String[] lstText = texts.split(",");
+		for(int i = 0; i < lstText.length; i++) {
+			if (findElementByText(lstText[i], 0, true) == null) return false;
+		}
+		return true;
+	}
+	
+	public TextViewElement findElementByViewId(String listViewId) throws Exception {
+		return findElementByViewId(listViewId, null);
+	}
+	public TextViewElement findElementByViewId(String listViewId, String displayName) throws Exception {
+		if (displayName == null || displayName.length() == 0) return findElementById(listViewId, TextViewElement.class);
+		ScrollViewElement scrollView = null;
+		AbsListViewElement listView = null;
+		try {
+
+			if (listViewId.equals(POST_SCROLLVIEW_PARENT_ID)) {
+				scrollView = getPostScrollView();
+			} else {
+				scrollView = findElementById(listViewId, ScrollViewElement.class);
+				assertNotNull(scrollView);
+			}
+		} catch (IllegalArgumentException ex) {
+			listView = findElementById(listViewId,
+					AbsListViewElement.class);
+			assertNotNull(listView);
+		}
+		int loop = 0;
+		TextViewElement v3 = findElementByText(displayName, 0, true);
+		while(v3 == null) {
+			if (scrollView != null) scrollView.scrollToNextScreen();
+			else listView.scrollToNextScreen();
+			TimeUnit.SECONDS.sleep(1);
+			v3 = findElementByText(displayName, 0, true);
+			if (loop++ > 10) break;
+		}
+		return v3;
+	}
 	
 	public void logout() throws Exception {
 		openTabbar(TAB_ID_MY);
@@ -256,10 +310,15 @@ public class BaixingTestCase extends AthrunTestCase {
 	}
 	
 	public void openTabbar(String vId) throws Exception {
-		ViewElement v = findElementById(vId);
+		TextViewElement v = findElementById(vId, TextViewElement.class);
 		if (v != null) {
-			v.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			if ((vId == TAB_ID_HOME_V3 && v.getText() == TAB_ID_HOME_TEXT)
+				|| (vId == TAB_ID_MY_V3 && v.getText() == TAB_ID_MY_TEXT)
+				|| (vId == TAB_ID_POST && v.getText() == TAB_ID_POST_TEXT))
+			{
+				v.doClick();
+				TimeUnit.SECONDS.sleep(1);
+			}
 		}
 	}
 	
@@ -269,26 +328,20 @@ public class BaixingTestCase extends AthrunTestCase {
 	}
 	
 	public void openPostFirstCategory(int firstCatIndex) throws Exception {
+
+		logon();
 		
 		openTabbar(TAB_ID_POST);
 		
-		logon();
-		
-		ScrollViewElement postView = findElementById(POST_SCROLLVIEW_ID, ScrollViewElement.class);
-		if (postView != null) {
-			assertNotNull(postView);
-
-			TimeUnit.SECONDS.sleep(2);
-			openPostItemByIndex(POST_CATEGORY_SELEC_INDEX);
-		}
 		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
 				AbsListViewElement.class);
 		assertNotNull(gridView);
 		ViewGroupElement item = gridView.getChildByIndex(firstCatIndex, ViewGroupElement.class);
 		assertNotNull(item);
 		if (firstCatIndex == 0) {
-			TextViewElement view = item.getChildByIndex(1, TextViewElement.class);
-			assertEquals(TEST_DATA_CAT_WUPINJIAOYI, view.getText());
+			TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
+					TextViewElement.class);
+			assertEquals(TEST_DATA_CAT_WUPINJIAOYI, catTextView.getText());
 		}
 		item.doClick();
 		waitForHideMsgbox(5000);
@@ -308,27 +361,55 @@ public class BaixingTestCase extends AthrunTestCase {
 		assertNotNull(postLayout);
 		int index = 0;
 		ViewGroupElement dv = null;
-		TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_ID, displayName);
-		assertNotNull(dtv);
+		int scrolled = 0;
+		boolean scrolledNull = true;
 		while(index < 50) {
 			try {
 				dv = findElementById(POST_META_ITEM_ID, index++, ViewGroupElement.class);
 				Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index);
+				
 				if (dv != null) {
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_ID);
 					TextViewElement nv = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
 					if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_DISPLAY_ID + displayName + ":" + nv.getText());
 					if (nv != null && nv.getText().equals(displayName)) {
+						Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 						dv.doClick();
 						TimeUnit.SECONDS.sleep(2);
+						if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) != null) {
+							Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":ScrollNext");
+							ScrollViewElement scrollView = getPostScrollView();
+							scrollView.scrollToNextScreen();
+							if (scrolled == 0) scrolled = index - 1;
+							TimeUnit.SECONDS.sleep(2);
+							dv.doClick();
+							TimeUnit.SECONDS.sleep(2);
+						}
 						return;
 					}
 				}
 			} catch (IndexOutOfBoundsException ex) {
-				break;
+				if (scrolledNull == false) break;
+			}
+			if (scrolledNull == true) {
+				Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":WScrollNext");
+				ScrollViewElement scrollView = getPostScrollView();
+				scrollView.scrollToNextScreen();
+				TimeUnit.SECONDS.sleep(2);
+				scrolledNull = false;
+				index--;
 			}
 		}
 		assertNotNull(dv);
+	}
+	
+	private ScrollViewElement getPostScrollView() throws Exception {
+		ViewGroupElement gridView = findElementById(POST_SCROLLVIEW_PARENT_ID,
+				ViewGroupElement.class);
+		assertNotNull(gridView);
+		ScrollViewElement scrollView = gridView.getChildByIndex(0, ScrollViewElement.class);
+		assertNotNull(scrollView);
+		return scrollView;
 	}
 	
 	public void setMetaByIndex (int index, String value) throws Exception {
@@ -370,49 +451,33 @@ public class BaixingTestCase extends AthrunTestCase {
 	}
 	
 	public TextViewElement findMetaByName(String listViewId, String displayName) throws Exception {
-		ScrollViewElement scrollView = null;
-		AbsListViewElement listView = null;
-		try {
-			scrollView = findElementById(listViewId,
-				ScrollViewElement.class);
-			assertNotNull(scrollView);
-		} catch (IllegalArgumentException ex) {
-			listView = findElementById(listViewId,
-					AbsListViewElement.class);
-			assertNotNull(listView);
-		}
-		int loop = 0;
-		TextViewElement v3 = findElementByText(displayName, 0, true);
-		while(v3 == null) {
-			if (scrollView != null) scrollView.scrollToNextScreen();
-			else listView.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(1);
-			v3 = findElementByText(displayName, 0, true);
-			if (loop++ > 10) break;
-		}
-		return v3;
+		return findElementByViewId(listViewId, displayName);
 	}
 	
 	public void setMetaByName (String displayName, String value) throws Exception {
 		ViewGroupElement postLayout = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
 		assertNotNull(postLayout);
 		TimeUnit.SECONDS.sleep(1);
-		ScrollViewElement lv = findElementById(POST_SCROLLVIEW_ID, ScrollViewElement.class);
-		assertNotNull(lv);
+		ScrollViewElement lv = getPostScrollView();
 		int loop = 0;
 		ViewElement v = setMetaValueByName(displayName, value);
 		while(v == null) {
+			Log.i(LOG_TAG, "setOtherMetaByName:setval" + displayName);
 			lv.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(1);
-			v = setMetaValueByName(displayName, value);
-			if (loop++ > 10) break;
+			TimeUnit.SECONDS.sleep(2);
+			v = setMetaValueByName(displayName, value, loop);
+			if (loop++ > 50) break;
 		}
 		assertNotNull(v);
 	}
+	
 	public ViewElement setMetaValueByName(String displayName, String value) throws Exception {
-		TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_ID, displayName);
+		return setMetaValueByName(displayName, value, 0);
+	}
+	
+	public ViewElement setMetaValueByName(String displayName, String value, int index) throws Exception {
+		TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_PARENT_ID, displayName);
 		assertNotNull(dtv);
-		int index = 0;
 		while(index < 50) {
 			try {
 				ViewGroupElement dv = findElementById(POST_META_EDIT_ITEM_ID, index++, ViewGroupElement.class);
@@ -435,7 +500,6 @@ public class BaixingTestCase extends AthrunTestCase {
 					}
 				}
 			} catch (IndexOutOfBoundsException ex) {
-				break;
 			}
 		}
 		return null;
@@ -518,7 +582,7 @@ public class BaixingTestCase extends AthrunTestCase {
 			switch(type) {
 			case CATEGORY:
 				openPostFirstCategory(Integer.parseInt(postData[i][1]));
-				selectMetaByName(postData[i][2]);
+				openSecondCategoryByName(postData[i][2]);
 				break;
 			case MULTISELECT:
 			case SELECT:
@@ -551,30 +615,31 @@ public class BaixingTestCase extends AthrunTestCase {
 	}
 	
 	public void openHomeCategoryByIndex(int index) throws Exception {
-		openTabbar(TAB_ID_HOME);
-		ViewElement hv = findElementById(HOME_MARK_ID);
+		openTabbar(TAB_ID_HOME_V3);
+		boolean hv = findElementByTexts(HOME_MARK_TEXTS);
 		int i = 0;
-		while(hv == null && i++ < 5) {
+		while(!hv && i++ < 5) {
 			goBack();
-			openTabbar(TAB_ID_HOME);
-			hv = findElementById(HOME_MARK_ID);
+			openTabbar(TAB_ID_HOME_V3);
+			hv = findElementByTexts(HOME_MARK_TEXTS);
 		}
-		assertNotNull(hv);
-		AbsListViewElement catListView = findElementById(HOME_CATEGORY_VIEWLIST_ID,
+		assertTrue(hv);
+		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
 				AbsListViewElement.class);
-		ViewGroupElement catView = catListView.getChildByIndex(index + 1,
-				ViewGroupElement.class);
-		TextViewElement catTextView = catView.findElementById(HOME_CATEGORY_VIEWLIST_ITEM_NAME_ID,
+		assertNotNull(gridView);
+		ViewGroupElement item = gridView.getChildByIndex(index, ViewGroupElement.class);
+		assertNotNull(item);
+		TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
 				TextViewElement.class);
 		TimeUnit.MILLISECONDS.sleep(300);
-		catView.doClick();
-		TimeUnit.SECONDS.sleep(2);
 		assertNotNull(catTextView.getText());
 		assertTrue(catTextView.getText().length() > 0);
+		item.doClick();
+		TimeUnit.SECONDS.sleep(2);
 	}
 	
 	public void openSecondCategoryByIndex(int index) throws Exception {
-		AbsListViewElement subCatListView = findElementById(CATEGORY_VIEWLIST_ID,
+		AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(index,
 				ViewGroupElement.class);
@@ -585,6 +650,13 @@ public class BaixingTestCase extends AthrunTestCase {
 	public void openCategoryByIndex(int firstCatIndex, int secondCatIndex) throws Exception {
 		openHomeCategoryByIndex(firstCatIndex);
 		openSecondCategoryByIndex(secondCatIndex);
+	}
+	
+	public void openSecondCategoryByName(String name) throws Exception {
+		TextViewElement subCatView = findElementByViewId(CATEGORY_SECOND_GRIDVIEW_ID, name);
+		assertNotNull(subCatView);
+		subCatView.doClick();
+		waitForHideMsgbox(10000);
 	}
 	
 	public ViewGroupElement openAdByIndex(int index) throws Exception {
@@ -727,18 +799,23 @@ public class BaixingTestCase extends AthrunTestCase {
 	}
 	
 	public void deleteAdByText(String keyword) throws Exception {
-		if (showMyAdList(MY_LISTITEM_MYAD_ID, MY_LISTING_MYAD_COUNTER_ID) <= 0) return;
+		//if (showMyAdList(MY_LISTITEM_MYAD_ID, MY_LISTING_MYAD_COUNTER_ID) <= 0) return;
+		ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+		if (d != null) {
+			d.doClick();
+		}
 		TimeUnit.SECONDS.sleep(2);
 		ViewElement v = findElementByText(keyword, 0, true);
 		if (v == null) return;
-		v.doClick();
+		
+		//列表上的 DELETE UPDATE 小按钮
+		/*ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
+		delv.doClick();
 		TimeUnit.SECONDS.sleep(1);
-		ViewElement vm = findElementById(MY_DETAILVIEW_MANAGE_BUTTON_ID);
-		if (vm == null) {
-			goBack();
-			return;
-		}
-		vm.doClick();
+		goBack();*/
+		
+		v.doClick();
+		
 		TimeUnit.SECONDS.sleep(1);
 		ViewElement vd = findElementById(MY_DETAILVIEW_DELETE_BUTTON_ID);
 		if (vd == null) {
@@ -793,7 +870,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		goBack(true);
 	}
 	public void goBack(boolean force) throws Exception {
-		ViewElement iv = findElementByText(BACK_BUTTON_TEXT, 0, true);
+		ViewElement iv = findElementById(BACK_BUTTON_ID);
 		if (!force) assertNotNull(iv);
 		if (iv != null) {
 			iv.doClick();
