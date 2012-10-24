@@ -14,7 +14,7 @@ public class AdListingViewTest extends BaixingTestCase {
 	
 	@Test
 	public void testViewListing() throws Exception {
-		
+		// android3.0
 		//点击物品交易>手机号码
 		//检查listing信息不为空
 		//向下浏览30个信息
@@ -36,8 +36,9 @@ public class AdListingViewTest extends BaixingTestCase {
 	
 	@Test
 	public void testViewPic() throws Exception {
-		
-		// 进入设置>列表模式
+	
+		//android2.7.2
+		//进入设置>列表模式
 		//记录模式信息（图片 or 文字）
 		//点击返回
 		//切换到home
@@ -48,4 +49,25 @@ public class AdListingViewTest extends BaixingTestCase {
 		//检查每条信息不带图片展示
 		
 	}
+	
+	@Test
+	public void testNewViewPic() throws Exception {
+		
+		//android3.0
+		//点击我的百姓网>设置>流量优化设置
+		//点击图片模式
+		//点击返回
+		//点击浏览信息
+		//点击物品交易>台式电脑
+		//检查listing信息为带图片展示
+		//点击返回
+		//点击返回
+		//点击我的百姓网>设置>流量优化设置
+		//点击省流量模式
+		//点击返回
+		//点击浏览信息
+		//点击物品交易>台式电脑
+		//检查listing信息为不带图片展示
+		
+}
 }
