@@ -3,9 +3,9 @@ package com.quanleimu.view.fragment;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Collections;
+import java.util.Date;
 import java.util.List;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -15,40 +15,42 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
+import android.text.format.DateFormat;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
-import android.widget.ListView.FixedViewInfo;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.ChatMessageAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
+import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
+import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.entity.compare.MsgTimeComparator;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Util;
-import com.quanleimu.widget.AnimatingImageView;
 
 public class TalkFragment extends BaseFragment {
 	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
@@ -64,6 +66,7 @@ public class TalkFragment extends BaseFragment {
 		private static final int MSG_SEND_MESSAGE = 7;
 		private static final int MSG_REPLACE_MESSAGES = 8;
 		private static final int MSG_SCROLL_BOTTOM = 9;
+		private static final int MSG_GOODS_DETAIL_LOADED = 10;
 		
 		private String targetUserId;
 		private String adId;
@@ -74,6 +77,16 @@ public class TalkFragment extends BaseFragment {
 		private long lastupdateTime = 0;
 		private boolean alwaysSync;
 		private boolean isAttachedToWindow;
+		
+		private GoodsDetail goodsDetail;		
+
+		private TextView tvDesc;
+
+		private TextView tvPrice;
+
+		private TextView tvDateAndAddress;
+
+		private ImageView ivInfo;
 		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -98,7 +111,6 @@ public class TalkFragment extends BaseFragment {
 					msg = (ChatMessage) bundle.getSerializable("message");
 					lastupdateTime = msg.getTimestamp();
 				}
-				
 				
 				
 				if (bundle.containsKey("sessionId"))
@@ -137,24 +149,60 @@ public class TalkFragment extends BaseFragment {
 			UIControl ctrl = new UIControl();
 			final View sendBtn = (View) root.findViewById(R.id.im_send_btn);
 			sendBtn.setOnClickListener(ctrl);
+			sendBtn.setOnTouchListener(new OnTouchListener() {
+				
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN)
+						v.setBackgroundResource(R.drawable.btn_send_on);
+					else
+						v.setBackgroundResource(R.drawable.btn_send);
+					return false;
+				}
+			});
+			
 			root.findViewById(R.id.im_input_box).setOnClickListener(ctrl);
 			
 			ChatMessageAdapter msgAdapter = new ChatMessageAdapter(Util.getMyId(getActivity()));
 			ListView listView = (ListView) root.findViewById(R.id.char_history_p);			
-//			listView.setAdapter(msgAdapter);
 			
 			// bind viewad info area
-			View v = inflater.inflate(R.layout.item_goodslist, null);
-			((TextView) v.findViewById(R.id.tvDes)).setText("description");
-			((TextView) v.findViewById(R.id.tvPrice)).setText("price");
-			((TextView) v.findViewById(R.id.tvDateAndAddress)).setText("dateAndAddr");
-			v.findViewById(R.id.rlListOperate).setVisibility(View.GONE);
-			(v.findViewById(R.id.lineView)).setVisibility(View.GONE);
-			((ImageView) v.findViewById(R.id.ivInfo)).setVisibility(View.VISIBLE);
-			TextView tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
-			listView.addHeaderView(v);
+			ViewGroup headerView = (ViewGroup) inflater.inflate(R.layout.item_goodslist, null);
+			tvDesc = ((TextView) headerView.findViewById(R.id.tvDes));
+			tvPrice = ((TextView) headerView.findViewById(R.id.tvPrice));
+			tvDateAndAddress = ((TextView) headerView.findViewById(R.id.tvDateAndAddress));
+			ivInfo = ((ImageView) headerView.findViewById(R.id.ivInfo));
+			//TextView tvUpdateDate = (TextView) headerView.findViewById(R.id.tvUpdateDate);
+
+			headerView.findViewById(R.id.rlListOperate).setVisibility(View.GONE);
 			
-			listView.setAdapter(msgAdapter);
+			headerView.setPadding(16, 11, 11, 16);
+			
+			listView.addHeaderView(headerView);
+			View lineView = inflater.inflate(R.layout.list_line, null);
+			listView.addHeaderView(lineView, null, false);
+			lineView.setPadding(16, 0, 16, 11);
+			listView.setAdapter(msgAdapter);				
+			
+			headerView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+			      
+			        ArrayList<GoodsDetail> goodsArray = new ArrayList<GoodsDetail>();
+			        goodsArray.add(goodsDetail);
+			        GoodsList tempGoodsList = new GoodsList(goodsArray);
+			        
+					GoodsListLoader glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
+			        glLoader.setHasMore(false);
+			        
+					Bundle bundle = new Bundle();
+					bundle.putInt("index", 0);
+					bundle.putSerializable("loader", glLoader);
+					TalkFragment.this.pushFragment(new GoodDetailFragment(), bundle);				
+				}
+			});
+					
 			
 			initInputBox(root);
 			
@@ -193,6 +241,10 @@ public class TalkFragment extends BaseFragment {
 				t.start();
 			}
 			
+			if (adId != null)
+			{
+				new Thread(new LoadGoodsInfoCmd()).start();
+			}
 			
 			registerMsgListener();
 		}
@@ -265,6 +317,7 @@ public class TalkFragment extends BaseFragment {
 			
 			final View sendBtn = (View) parent.findViewById(R.id.im_send_btn);
 			sendBtn.setEnabled(false);//Disable send by default.
+			
 			inputBox.setOnEditorActionListener(new OnEditorActionListener() {
 
 				@Override
@@ -313,9 +366,6 @@ public class TalkFragment extends BaseFragment {
 		{
 			//First step to update UI.
 			ChatMessage msg = createMessage(message);
-//			getAdapter().appendData(msg);
-//			//TODO: post delay to scroll to bottom of scroll view.
-//			postScrollDelay();
 			sendMessage(MSG_SEND_MESSAGE, msg);
 			
 			//Send the text to server.
@@ -349,19 +399,9 @@ public class TalkFragment extends BaseFragment {
 				sessionId = msg.getSession();
 			}
 			
-//			this.messageList.add(msg);
-			
 			ChatMessageDatabase.prepareDB(getAppContext());
 			ChatMessageDatabase.updateReadStatus(msg.getId(), true);
 			
-//			getView().postDelayed(new Runnable() {
-//				public void run() {
-//					getAdapter().appendData(msg);
-//					
-//					postScrollDelay();
-//				}
-//				
-//			}, 10);
 			sendMessage(MSG_RECEIVE_MESSAGE, msg);
 		}
 		
@@ -369,24 +409,6 @@ public class TalkFragment extends BaseFragment {
 		{
 			Collections.sort(list, new MsgTimeComparator());
 			lastupdateTime = list.get(list.size()-1).getTimestamp();
-			
-//			getView().postDelayed(new Runnable() {
-//				public void run() {
-////					long startTime = System.currentTimeMillis();
-//					if (isLocal)
-//					{
-//						getAdapter().refreshData(list);
-//					}
-//					else
-//					{
-//						getAdapter().appendData(list, false);
-//					}
-//					
-//					postScrollDelay();
-////					Log.e("TalkView", "update ui cost : " + (System.currentTimeMillis()-startTime));
-//				}
-//				
-//			}, 10);
 			
 			if (isLocal)
 			{
@@ -422,6 +444,31 @@ public class TalkFragment extends BaseFragment {
 		{
 		}
 		
+		
+		class LoadGoodsInfoCmd implements Runnable {
+
+
+			@Override
+			public void run() {
+				String apiName = "ad_list";
+				List<String> parameters = new ArrayList<String>();
+				parameters.add("query=id:" + URLEncoder.encode(TalkFragment.this.adId));
+				parameters.add("activeOnly=0");
+				String apiUrl = Communication.getApiUrl(apiName, parameters);
+				try {
+					String jsonData = Communication.getDataByUrl(apiUrl, false);
+					GoodsList goodsList = JsonUtil.getGoodsListFromJson(jsonData);
+					if (!goodsList.getData().isEmpty()){
+						goodsDetail = goodsList.getData().get(0);
+						TalkFragment.this.sendMessage(MSG_GOODS_DETAIL_LOADED, null);
+					}
+				} catch (Exception e) {
+					e.printStackTrace();
+				}
+				
+				
+			}
+		}
 		
 		class LoadLocalMsgCmd implements Runnable {
 
@@ -641,24 +688,40 @@ public class TalkFragment extends BaseFragment {
 
 				}
 				break;
-			case MSG_GETTARGETICON:
-			{
-				SimpleProfile p = (SimpleProfile) msg.obj;
-				getAdapter(rootView).setTargetProfile(p.icon, p.isBoy);
-				break;
-			}
-			case MSG_GETMYICON:
-			{
-				SimpleProfile p = (SimpleProfile) msg.obj;
-				getAdapter(rootView).setMyProfile(p.icon, p.isBoy);
-				break;
-			}
 			case MSG_CLOSE_PROGRESS:
 			{
 				if (rootView != null)
 				{
 					rootView.findViewById(R.id.tip_loading_message).setVisibility(View.GONE);
 				}
+				break;
+			}
+			case MSG_GOODS_DETAIL_LOADED:
+			{
+				String title = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE);
+				if (title == null || title.length() == 0)
+					title = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION);
+				String price = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_PRICE);
+				Date date = new Date(Long.parseLong(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE))*1000);
+				CharSequence dateStr = DateFormat.format("MM-dd hh:mm", date);
+				String addr = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+				tvDesc.setText(title);
+				tvPrice.setText(price);
+				tvDateAndAddress.setText(String.format("%s %s", dateStr, addr));
+
+				String urls = goodsDetail.imageList.getSmall();
+				if (urls == null || urls.length() == 0)
+					urls = goodsDetail.imageList.getResize180();
+				if (urls == null || urls.length() == 0)
+					urls = goodsDetail.imageList.getSquare();
+				if (urls == null || urls.length() == 0)
+					urls = goodsDetail.imageList.getBig();
+				
+				String[] urlList = urls.split(",");
+				String url = urlList[0];
+				
+				if (url != null && url.length() > 0)
+					SimpleImageLoader.showImg(ivInfo, url, null, getActivity(), R.drawable.home_bg_thumb_2x);				
 				break;
 			}
 			}

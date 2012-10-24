@@ -81,7 +81,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	protected void initTitle(TitleDef title) {
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
 		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
-
+		
 		title.hasGlobalSearch = true;
 		title.m_rightActionHint = "发布";
 		title.m_rightActionBg = R.drawable.bg_post_selector;
@@ -266,6 +266,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		String cityName = QuanleimuApplication.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+		}else
+		{
+			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
+			titleLabel.setText(QuanleimuApplication.getApplication().getCityName());			
 		}
 	}
 

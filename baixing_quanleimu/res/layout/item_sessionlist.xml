@@ -46,9 +46,7 @@
 	        android:layout_height="wrap_content"
 	        android:singleLine="true"
 	        android:textColor="@drawable/list_titleselector"
-	        android:textSize="20dip"
-	        android:textStyle="bold" 
-	        android:text="111111111111111111111111111111111111111"
+	        android:textSize="16sp"
 	        >
 	    </TextView>
 	
@@ -58,7 +56,7 @@
 	        android:layout_height="wrap_content"
 	        android:singleLine="true"
 	        android:textColor="@drawable/list_textselector"
-	        android:textSize="16dip" >
+	        android:textSize="12sp" >
 	    </TextView>
 	
 	    <TextView
@@ -66,8 +64,8 @@
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
 	        android:singleLine="true"
-	        android:textColor="@drawable/list_pricetextselector"
-	        android:textSize="16dip" >
+	        android:textColor="#f57b0f"
+	        android:textSize="12sp" >
 	    </TextView>
 	</LinearLayout>
 	

@@ -24,30 +24,9 @@ public class ChatMessageAdapter extends BaseAdapter {
 	private String myId;
 	private LayoutInflater inflater;
 	
-	
-	private String myIcon;
-	private boolean iamBoy = true;
-	
-	private String targetIcon;
-	private boolean targetIsBoy = true;
-	
 	public ChatMessageAdapter(String myId)
 	{
 		this.myId = myId;
-	}
-
-	public void setMyProfile(String myProfileImg, boolean isBoy)
-	{
-		this.myIcon = myProfileImg;
-		this.iamBoy = isBoy;
-		this.notifyDataSetChanged();
-	}
-	
-	public void setTargetProfile(String targetUserImg, boolean isBoy)
-	{
-		this.targetIcon = targetUserImg;
-		this.targetIsBoy = isBoy;
-		this.notifyDataSetChanged();
 	}
 	
 	public void appendData(ChatMessage msg) //FIXME: shall we do merge???
@@ -139,8 +118,6 @@ public class ChatMessageAdapter extends BaseAdapter {
 		loadMessageItem(isMine, item, msg);
 		
 		
-		
-		
 		return item;
 	}
 	
@@ -153,31 +130,12 @@ public class ChatMessageAdapter extends BaseAdapter {
 		send.setVisibility(isMine ? View.VISIBLE : View.GONE);
 		receive.setVisibility(isMine ? View.GONE : View.VISIBLE);
 		
-		ImageView iv = isMine ? (ImageView)send.findViewById(R.id.myIcon) : (ImageView) receive.findViewById(R.id.targetIcon);
-		if(iv != null){
-			if(isMine){
-				if(this.myIcon != null && !this.myIcon.equals("") && !this.myIcon.equals("null")){
-					iv.setTag(myIcon);
-					SimpleImageLoader.showImg(iv, myIcon, null, parent.getContext());
-				}else if(!iamBoy){
-					iv.setImageResource(R.drawable.pic_my_avator_girl);
-				}
-			}else {
-				if(this.targetIcon != null && !targetIcon.equals("") && !targetIcon.equals("null")){
-					iv.setTag(targetIcon);
-					SimpleImageLoader.showImg(iv, targetIcon, null, parent.getContext());
-				}else if(!targetIsBoy){
-					iv.setImageResource(R.drawable.pic_my_avator_girl);
-				}
-			}
-		}
-		
 		View msgItem = isMine ? send : receive;
 		View msgParent = msgItem.findViewById(R.id.im_message_content_parent);
 		TextView textView = (TextView) msgItem.findViewById(R.id.im_message_content);
 		textView.setText(msg.getMessage());
 		
-		msgParent.setPadding(msgParent.getPaddingLeft(), msgParent.getPaddingTop()/10, msgParent.getPaddingRight(), msgParent.getPaddingBottom()/10);
+		msgParent.setPadding(msgParent.getPaddingLeft()/3, msgParent.getPaddingTop()/6, msgParent.getPaddingRight()/3, msgParent.getPaddingBottom()/6);		
 	}
 
 }

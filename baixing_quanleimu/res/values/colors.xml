@@ -11,4 +11,5 @@
 	<color name="list_seperator">#CECBC4</color>
 	<color name="list_line">#C1C1B9</color>
     <color name="base_green">#86CF2A</color>
+    <color name="talk_content_font">#707070</color>
 </resources>

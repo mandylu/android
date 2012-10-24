@@ -4,26 +4,20 @@
     android:layout_height="wrap_content"
     android:orientation="horizontal"
     android:paddingBottom="5dip"
-    android:paddingTop="5dip" >
-
-    <ImageView
-        android:id="@+id/myIcon"
-        android:layout_width="40dip"
-        android:layout_height="40dip"
-        android:layout_alignBottom="@+id/im_message_content_parent"
-        android:layout_alignParentRight="true"
-        android:src="@drawable/pic_my_avator_boy" >
-    </ImageView>
+    android:paddingTop="5dip" 
+    android:paddingLeft="60dip" 
+    android:paddingRight="10dip" >
 
     <LinearLayout
         android:id="@+id/im_message_content_parent"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
-        android:layout_toLeftOf="@id/myIcon"
-        android:background="@drawable/chat_bubble_green"
-        android:gravity="center_vertical"
+        android:layout_alignParentRight="true"
+        android:background="@drawable/bg_dialogue_yellow"
+        android:gravity="center"
         android:minWidth="100dip"
+        android:minHeight="50dip"
         android:orientation="horizontal" >
 
         <TextView
@@ -32,11 +26,13 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_vertical"
             android:autoLink="map|phone|web"
-            android:paddingBottom="2dip"
-            android:paddingTop="2dip"
+            android:paddingBottom="20dip"
+            android:paddingTop="8dip"
+            android:paddingLeft="16dip"
+            android:paddingRight="7dip"            
             android:text="my message"
-            android:textAppearance="?android:attr/textAppearanceMedium"
-            android:textColor="#000000" />
+ 			android:textSize="14sp"            
+            android:textColor="@color/talk_content_font" />
     </LinearLayout>
 
 </RelativeLayout>
