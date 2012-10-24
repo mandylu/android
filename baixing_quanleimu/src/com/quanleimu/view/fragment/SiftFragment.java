@@ -32,7 +32,7 @@ import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
-public class SiftFragment extends BaseFragment {
+public class SiftFragment extends BaseFragment implements View.OnClickListener{
 	
 	private static final int MSG_UPDATE_KEYWORD = 3;
 	
@@ -94,6 +94,9 @@ public class SiftFragment extends BaseFragment {
 		
 		ed_sift = (EditText) v.findViewById(R.id.edsift);
 		ed_sift.clearFocus();
+		
+		v.findViewById(R.id.filter_confirm).setOnClickListener(this);
+		v.findViewById(R.id.filter_clear).setOnClickListener(this);
 		
 		return v;
 	}
@@ -351,6 +354,8 @@ public class SiftFragment extends BaseFragment {
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
 
 					TextView tvmeta = (TextView) v.findViewById(R.id.filter_value);
+					tvmeta.setTag(paramsKey);
+					
 					if (parametersHolder.containsKey(paramsKey)) {
 						String preValue = parametersHolder.getData(paramsKey); 
 						String preLabel= parametersHolder.getUiData(paramsKey); 
@@ -483,7 +488,7 @@ public class SiftFragment extends BaseFragment {
 		case 2:
 			hideProgress();
 			
-			Toast.makeText(activity, "服务当前不可用，请稍后重试！", 3).show();
+			Toast.makeText(activity, "服务当前不可用，请稍后重试！", Toast.LENGTH_SHORT).show();
 			break;
 		case MSG_UPDATE_KEYWORD:
 			((TextView) rootView.findViewById(R.id.edsift))
@@ -491,6 +496,36 @@ public class SiftFragment extends BaseFragment {
 			break;
 		}
 
+	}
+
+	@Override
+	public void onClick(View v) {
+		if (v.getId() == R.id.filter_clear)
+		{
+			//Remove keywrod.
+			ed_sift.setText("");
+			parametersHolder.remove(""); //Remove keyword
+			
+			//Remove all select value.
+			for (TextView selectValue : selector.values())
+			{
+				selectValue.setText("请选择");
+				parametersHolder.remove((String) selectValue.getTag());
+			}
+			
+			//Remove edit values.
+			for (String key : editors.keySet())
+			{
+				EditText edit = editors.get(key);
+				edit.setText("");
+				parametersHolder.remove(key);
+			}
+			
+		}
+		else if (v.getId() == R.id.filter_confirm)
+		{
+			handleRightAction();
+		}
 	}
 
 }

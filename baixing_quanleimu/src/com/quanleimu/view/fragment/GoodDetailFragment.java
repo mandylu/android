@@ -527,6 +527,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         return v;
 	}
 	
+	private boolean isInvalidMessage()
+	{
+		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
+	
 	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
 		if(useRoot)
@@ -545,12 +550,18 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
 		
-		if(!detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20")){
+		if(isInvalidMessage()){
 			contentView.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
 			contentView.findViewById(R.id.graymask).setVisibility(View.GONE);
 			contentView.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
 		}
 		else{
+			
+			contentView.findViewById(R.id.llMainContent).setEnabled(false);
+			contentView.findViewById(R.id.ll_appeal).setVisibility(View.VISIBLE);
+			contentView.findViewById(R.id.graymask).setVisibility(View.VISIBLE);
+			contentView.findViewById(R.id.verifyseperator).setVisibility(View.VISIBLE);
+			
 			if(detail.getValueByKey("tips").equals("")){
 				((TextView)contentView.findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
 			}
@@ -636,7 +647,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void updateContactBar(View rootView, boolean forceHide)
 	{
 		LinearLayout rl_phone = (LinearLayout)rootView.findViewById(R.id.phonelayout);
-		if (forceHide)
+		if (forceHide || !isInvalidMessage())
 		{
 			rl_phone.setVisibility(View.GONE);
 			return;
@@ -663,7 +674,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
 		iv_contact.updateOptionList("请选择", 
 		new String[] {"发送手机短信", "发送即时消息"}, 
-		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2, R.id.vad_send_message + 3});
+		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
 		//FIXME: prepare context menu for currnet vad.
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
 //		View iv_buzz = rootView.findViewById(R.id.buzz);
@@ -1588,11 +1599,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		View v = getView();
 		switch (menuItem.getItemId())
 		{
-		case R.id.vad_send_message + 0: {
+		case R.id.vad_send_message + 1: {
 			startContact(true);
 			return true;
 		}
-		case R.id.vad_send_message + 1: {
+		case R.id.vad_send_message + 2: {
 			startChat();
 			return true;
 		}

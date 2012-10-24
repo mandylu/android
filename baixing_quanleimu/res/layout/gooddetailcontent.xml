@@ -66,7 +66,7 @@
 
             </RelativeLayout>
 
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/llDetail"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
@@ -103,6 +103,7 @@
 		            
 		            <ImageView
 			            android:id="@+id/verifyseperator"
+			            android:layout_below="@+id/ll_appeal"
 			            android:layout_marginTop="10dip"
 			            android:layout_marginBottom="20dip"
 			            android:layout_width="fill_parent"
@@ -112,6 +113,7 @@
 
 					<LinearLayout
 		                android:id="@+id/llMainContent"
+		                android:layout_below="@+id/verifyseperator"
 		                    android:layout_width="fill_parent"
 		                    android:layout_height="fill_parent"
 		                    android:orientation="vertical" >
@@ -191,18 +193,19 @@
 		                        android:paddingTop="10dip" >
 		
 		                    </LinearLayout>
-				
-				        <ImageView
-		                    android:id="@+id/graymask"
-		                    android:layout_width="wrap_content"
-		                    android:layout_height="wrap_content"
-		                    android:layout_alignBottom="@+id/llMainContent"
-		                    android:layout_alignLeft="@+id/llMainContent"
-		                    android:layout_alignRight="@+id/llMainContent"
-		                    android:layout_alignTop="@+id/llMainContent"
-		                    android:visibility="gone"
-		                    android:src="#C87D7D7D" />
             	</LinearLayout>
-			</LinearLayout>
+            	
+            	<ImageView
+                android:id="@+id/graymask"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignBottom="@+id/llMainContent"
+                android:layout_alignLeft="@+id/llMainContent"
+                android:layout_alignRight="@+id/llMainContent"
+                android:layout_alignTop="@+id/llMainContent"
+                android:src="#C87D7D7D"
+                android:visibility="visible" />
+
+			</RelativeLayout>
 </LinearLayout>
 </ScrollView>

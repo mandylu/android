@@ -76,6 +76,27 @@
                 android:orientation="vertical" >
             </LinearLayout>
             
+			<Button android:id="@+id/filter_confirm"
+                android:text="确定"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textSize="18sp"
+                android:textColor="#ffffff"
+                android:background="@drawable/bg_call_btn_selector"
+                android:layout_marginTop="40dp"
+				android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"/>
+            
+            
+            <Button android:id="@+id/filter_clear"
+                android:text="清空"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textSize="18sp"
+                android:background="@drawable/bg_message_btn_selector"
+                android:layout_marginTop="15dp"
+				android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"/>
 
         </LinearLayout>
     </ScrollView>
