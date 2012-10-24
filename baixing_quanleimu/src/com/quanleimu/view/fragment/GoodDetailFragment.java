@@ -632,8 +632,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 		this.setMetaObject(contentView, detail);
 		
-		txt_message1.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION));
-		txt_tittle.setText(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+		String title = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
+		String description = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION);
+		if ((title == null || title.length() == 0) && description != null)
+		{
+			title = description.length() > 40 ? description.substring(0, 40) : description;
+		}
+		
+		txt_message1.setText(description);
+		txt_tittle.setText(title);
 
 		final ViewPager vp = pager != null ? pager : (ViewPager) getActivity().findViewById(R.id.svDetail);
 		if (vp != null && pageIndex == vp.getCurrentItem())
