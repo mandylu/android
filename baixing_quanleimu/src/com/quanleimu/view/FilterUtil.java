@@ -58,6 +58,7 @@ public class FilterUtil {
 		}
 
 		int skiped = 0;
+		if(fss != null){
 		for (int i=0; i<fss.size(); i++)
 		{
 			Filterss f = fss.get(i);
@@ -72,6 +73,7 @@ public class FilterUtil {
 					buf.append(paramsHolder.getUiData(f.getName())).append("+");
 				}
 			}
+		}
 		}
 		
 		List<GoodsListAdapter.GroupItem> groups = new ArrayList<GoodsListAdapter.GroupItem>();

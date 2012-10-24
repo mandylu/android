@@ -6,6 +6,7 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -20,14 +21,19 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
+import android.os.Message;
+import android.widget.TextView;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.R;
+import com.quanleimu.entity.UserBean;
 
 public class Communication implements Comparator<String> {
 
@@ -303,19 +309,52 @@ public class Communication implements Comparator<String> {
 		// E_DATA_POLICY_PREFER_LOCAL,
 		E_DATA_POLICY_NETWORK_CACHEABLE, E_DATA_POLICY_NETWORK_UNCACHEABLE
 	};
+	
+	private static void registerDevice(HttpClient httpClient){
+		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.context, "user");
+		if(currentUser != null) return;
+		
+		String apiName = "user_autoregister";
+		ArrayList<String> list = new ArrayList<String>();
 
-	// get提交数据方法
-	public static String getDataByUrl(HttpClient httpClient, String url,
-			E_DATA_POLICY dataPolicy) throws UnsupportedEncodingException,
-			IOException, BXHttpException {
+		String url = Communication.getApiUrl(apiName, list);
+		try {
+			String json_response = doRequest(httpClient, url, false);
+			if (json_response != null) {
+				JSONObject jsonObject = new JSONObject(json_response);
 
-		if (/* E_DATA_POLICY.E_DATA_POLICY_PREFER_LOCAL == dataPolicy || */E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy) {
-			String cached = getCacheRequestIfExist(url);
-			if (E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy
-					|| cached != null)
-				return cached;
+				JSONObject userObj = null;
+				try {
+					userObj = jsonObject.getJSONObject("user");
+				} catch (Exception e) {
+//					userObj = ";
+					e.printStackTrace();
+				}
+				JSONObject json = jsonObject.getJSONObject("error");
+//				String message = json.getString("message");
+
+				if (userObj != null) {
+					
+					// 登录成功
+					UserBean user = new UserBean();
+//					JSONObject jb = jsonObject.getJSONObject("id");
+					user.setId(userObj.getString("id"));
+//					user.
+//					user.setPhone(userObj.getString("mobile"));
+					
+					Util.saveDataToLocate(QuanleimuApplication.context, "user", user);
+				} 
+				return;
+			}
+		} catch (UnsupportedEncodingException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
 		}
+	}
 
+	private static String doRequest(HttpClient httpClient, String url, boolean shutdown) throws UnsupportedEncodingException,
+	IOException, BXHttpException{
 		HttpPost httpPost = new HttpPost(
 				url.substring(0, url.indexOf("/?") + 2));
 		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
@@ -371,14 +410,30 @@ public class Communication implements Comparator<String> {
 
 		reader.close();
 		// 断开连接
-
-		httpClient.getConnectionManager().shutdown();
+		if(shutdown){
+			httpClient.getConnectionManager().shutdown();
 		// if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
-		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
+			QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
+		}
 //		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), sb.toString());
 		// }
 //		return sb.toString();
 		return temp;
+	}
+	
+	// get提交数据方法
+	public static String getDataByUrl(HttpClient httpClient, String url,
+			E_DATA_POLICY dataPolicy) throws UnsupportedEncodingException,
+			IOException, BXHttpException {
+
+		if (/* E_DATA_POLICY.E_DATA_POLICY_PREFER_LOCAL == dataPolicy || */E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy) {
+			String cached = getCacheRequestIfExist(url);
+			if (E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy
+					|| cached != null)
+				return cached;
+		}
+		registerDevice(httpClient);
+		return doRequest(httpClient, url, true);
 	}
 
 	public static String getCacheRequestIfExist(String url) {

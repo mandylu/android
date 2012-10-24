@@ -701,7 +701,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
             //set user profile info view
             user = Util.getCurrentUser();
-            if (user != null) {
+            if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
                 UserProfile up = (UserProfile) Util.loadDataFromLocate(context, "userProfile");
                 if (up != null) {
                     fillProfile(up, v);
