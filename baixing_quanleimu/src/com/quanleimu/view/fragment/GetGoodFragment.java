@@ -472,7 +472,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	private void updateData(GoodsListAdapter adapter, List<GoodsDetail> data)
 	{
-		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(listFilterss, data, this.curLocation, new int[] {500, 1500}) : 
+		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(data, this.curLocation, new int[] {500, 1500}) : 
 			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
 	}
 	

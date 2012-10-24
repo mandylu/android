@@ -46,7 +46,7 @@ public class FilterUtil {
 	public static List<GoodsListAdapter.GroupItem> createFilterGroup(List<Filterss> fss, PostParamsHolder paramsHolder, List<GoodsDetail> list)
 	{
 		final int skipCount = 3;//FIXME: define a field..
-		if (list == null || list.size() == 0)
+		if (list == null || list.size() == 0 || fss == null)
 		{
 			return null;
 		}
@@ -87,7 +87,7 @@ public class FilterUtil {
 		return groups;
 	}
 	
-	public static List<GoodsListAdapter.GroupItem> createDistanceGroup(List<Filterss> fss, List<GoodsDetail> ls, BXLocation currentLocation, int[] conditions)
+	public static List<GoodsListAdapter.GroupItem> createDistanceGroup(List<GoodsDetail> ls, BXLocation currentLocation, int[] conditions)
 	{
 		List<GoodsDetail> detailList = new ArrayList<GoodsDetail>();
 		detailList.addAll(ls);
