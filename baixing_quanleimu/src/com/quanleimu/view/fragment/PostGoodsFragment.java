@@ -430,7 +430,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 
 	private void usercheck() {
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		if(user != null){
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			mobile = user.getPhone();
 			password = user.getPassword();
 			showSimpleProgress();

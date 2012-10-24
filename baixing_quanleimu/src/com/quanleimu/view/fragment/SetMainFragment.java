@@ -109,7 +109,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         user = Util.getCurrentUser();
 
         TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
-        if (user == null) {
+        if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
             bindIdTextView.setText(R.string.label_login);
         } else {
             bindIdTextView.setText(R.string.label_logout);
