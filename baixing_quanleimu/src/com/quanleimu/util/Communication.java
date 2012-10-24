@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -47,7 +46,7 @@ public class Communication implements Comparator<String> {
 
 	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
 
-	private static boolean isWifi() {
+	 private static boolean isWifi() {
 		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
@@ -392,8 +391,18 @@ public class Communication implements Comparator<String> {
 		return null;
 	}
 
+	public static String getDataByGzipUrl(String url, boolean forceUpdate)
+			throws UnsupportedEncodingException, IOException, BXHttpException {
+		return getDataByUrlBasic(url, forceUpdate, true);
+	} 
+	
 	// post提交数据方法
 	public static String getDataByUrl(String url, boolean forceUpdate)
+			throws UnsupportedEncodingException, IOException, BXHttpException {
+		return getDataByUrlBasic(url, forceUpdate, false);
+	}
+
+	private static String getDataByUrlBasic(String url, boolean forceUpdate, boolean isGzipped)
 			throws UnsupportedEncodingException, IOException, BXHttpException {
 
 		// URL getUrl = new URL(url);
@@ -406,11 +415,16 @@ public class Communication implements Comparator<String> {
 
 		HttpPost httpPost = new HttpPost(
 				url.substring(0, url.indexOf("/?") + 2));
-//		System.out.println(url.substring(url.indexOf("/?") + 2));
-		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
-//		System.out.println("se"+se.toString());
-		httpPost.setEntity(se);
-		se.setContentType("application/x-www-form-urlencoded");
+		StringEntity se;
+		if (isGzipped) {
+			se = new StringEntity(GzipUtil.compress(url.substring(url.indexOf("/?") + 2)));
+			httpPost.setEntity(se);
+			se.setContentType("application/zip");//application/zip
+		} else {
+			se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+			httpPost.setEntity(se);
+			se.setContentType("application/x-www-form-urlencoded");
+		}
 		httpPost.addHeader("Accept-Encoding", "gzip");
 		HttpResponse response = httpClient.execute(httpPost);
 
@@ -448,7 +462,7 @@ public class Communication implements Comparator<String> {
 
 		return temp;
 	}
-
+	
 	// Post提交数据方法
 	/*
 	 * private static String PostDataByUrl(String Url, ArrayList<String> list) {
@@ -626,14 +640,13 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
-	public static void executeSyncPostTask(final String apiName, final String compressedStr, final CommandListener listener) {
+	public static void executeSyncPostTask(final String apiName, final String jsonStr, final CommandListener listener) {
 		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-		System.out.println("executeSync:"+ url);
-		url += "&compressedJson=";
-		url += (compressedStr);
-		System.out.println("check"+url);
+		url += "&json=";
+		url += jsonStr;
+		
 		try {
-			String result = Communication.getDataByUrl(url, true);
+			String result = Communication.getDataByGzipUrl(url, true);
 			if (listener != null) {
 				listener.onServerResponse(result);
 			}
