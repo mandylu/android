@@ -42,7 +42,6 @@
                      android:text="小老百姓卖二手物品" android:textStyle="bold" android:gravity="fill_vertical"
                      android:textColor="#524735" android:textSize="18dp"/>
 
-                 <!-- todo ming imageView 加高亮效果 -->
                  <ImageView
                          android:layout_width="wrap_content"
                          android:layout_height="wrap_content"

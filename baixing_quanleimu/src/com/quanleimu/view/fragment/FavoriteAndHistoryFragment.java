@@ -193,7 +193,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
 
     @Override
-    protected void handleMessage(final Message msg, Activity activity, View rootView) {
+    protected void handleMessage(Message msg, Activity activity, View rootView) {
 
         switch (msg.what) {
             case MSG_UPDATEFAV:
@@ -281,7 +281,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
                 break;
             case MSG_DELETEAD:
-                int pos = msg.arg2;
+                int pos = (Integer) msg.obj;
                 if (isFav) {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListMyStore();
                     goodsList.remove(pos);
@@ -341,14 +341,14 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
             case MSG_ITEM_OPERATE:
                 // 弹出 menu 确认删除
+                final Integer position = new Integer(msg.arg2);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("操作")
                         .setItems(R.array.item_operate_favorite_history,
                                 new DialogInterface.OnClickListener() {
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (which == 0) {
-                                            msg.what = MSG_DELETEAD;
-                                            handler.sendMessage(msg);
+                                            sendMessage(MSG_DELETEAD, position);
                                         }
                                     }
                                 })

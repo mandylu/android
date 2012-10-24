@@ -284,7 +284,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 final String apkUrl = msg.obj.toString();
 
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle(R.string.label_flow_optimize)
+                builder.setTitle("检查更新")
                         .setMessage("当前版本: " + QuanleimuApplication.version
                                 + "\n发现新版本: " + serverVersion
                                 + "\n是否更新？")
