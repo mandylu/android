@@ -32,6 +32,7 @@ import android.util.Log;
 public class RegisterFragment extends BaseFragment {
 	private EditText accoutnEt, passwordEt,repasswordEt;
     private Button registerBtn;
+    final public static int MSG_REGISTER_SUCCESS = 101;
 	public String backPageName = "";
 	public String json = "";
 	private boolean registered = false;
@@ -140,32 +141,15 @@ public class RegisterFragment extends BaseFragment {
 				JSONObject json = jsonObject.getJSONObject("error");
 				String message = json.getString("message");
 				Toast.makeText(activity, message, 0).show();
-				if (!id.equals("")) {
-					// 注册成功
-                    // TODO 注册成功先直接返回
-                    finishFragment(requestCode, null);
-					
-//					UserBean user = new UserBean();
-////					user.setId(accoutnEt.getText().toString());
-//					user.setId(usrId);
-//					user.setPhone(accoutnEt.getText().toString());
-//					user.setPassword(passwordEt.getText().toString());
-//					QuanleimuApplication.getApplication().setMobile(user.getPhone());
-//					Util.saveDataToLocate(activity, "user", user);
-					
-//					if(usrId != null && !usrId.equals("")){
-//						UserProfile up = new UserProfile();
-//						up.createTime = String.valueOf(System.currentTimeMillis() / 1000);
-//						up.userId = usrId;
-//						up.nickName = usrNick;
-//						registered = true;
-//						Bundle bundle = createArguments(null, null);
-//						bundle.putSerializable("profile", up);
-//						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
-//						pushFragment(new ProfileEditFragment(), bundle);
-//					}else{
-//						finishFragment(requestCode, null);
-//					}
+				if (!id.equals("")) { // 注册成功
+					UserBean user = new UserBean();
+					user.setId(usrId);
+					user.setPhone(accoutnEt.getText().toString());
+					user.setPassword(passwordEt.getText().toString());
+					QuanleimuApplication.getApplication().setMobile(user.getPhone());
+					Util.saveDataToLocate(activity, "user", user);
+
+                    finishFragment(MSG_REGISTER_SUCCESS, null);
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
