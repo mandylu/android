@@ -87,6 +87,10 @@ public class TalkFragment extends BaseFragment {
 		private TextView tvDateAndAddress;
 
 		private ImageView ivInfo;
+
+		private ViewGroup headerView;
+
+		private View lineView;
 		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
@@ -167,7 +171,7 @@ public class TalkFragment extends BaseFragment {
 			ListView listView = (ListView) root.findViewById(R.id.char_history_p);			
 			
 			// bind viewad info area
-			ViewGroup headerView = (ViewGroup) inflater.inflate(R.layout.item_goodslist, null);
+			headerView = (ViewGroup) inflater.inflate(R.layout.item_goodslist, null);
 			tvDesc = ((TextView) headerView.findViewById(R.id.tvDes));
 			tvPrice = ((TextView) headerView.findViewById(R.id.tvPrice));
 			tvDateAndAddress = ((TextView) headerView.findViewById(R.id.tvDateAndAddress));
@@ -179,10 +183,14 @@ public class TalkFragment extends BaseFragment {
 			headerView.setPadding(16, 11, 11, 16);
 			
 			listView.addHeaderView(headerView);
-			View lineView = inflater.inflate(R.layout.list_line, null);
+			
+			lineView = inflater.inflate(R.layout.list_line, null);
 			listView.addHeaderView(lineView, null, false);
 			lineView.setPadding(16, 0, 16, 11);
 			listView.setAdapter(msgAdapter);				
+			
+			lineView.setVisibility(View.GONE);
+			headerView.setVisibility(View.GONE);
 			
 			headerView.setOnClickListener(new OnClickListener() {
 				
@@ -698,6 +706,12 @@ public class TalkFragment extends BaseFragment {
 			}
 			case MSG_GOODS_DETAIL_LOADED:
 			{
+				if (goodsDetail == null)
+					break;
+				
+				headerView.setVisibility(View.VISIBLE);
+				lineView.setVisibility(View.VISIBLE);
+				
 				String title = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE);
 				if (title == null || title.length() == 0)
 					title = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION);
@@ -717,11 +731,14 @@ public class TalkFragment extends BaseFragment {
 				if (urls == null || urls.length() == 0)
 					urls = goodsDetail.imageList.getBig();
 				
-				String[] urlList = urls.split(",");
-				String url = urlList[0];
-				
-				if (url != null && url.length() > 0)
-					SimpleImageLoader.showImg(ivInfo, url, null, getActivity(), R.drawable.home_bg_thumb_2x);				
+				if (urls != null && urls.length() > 0)
+				{
+					String[] urlList = urls.split(",");
+					String url = urlList[0];
+					
+					if (url != null && url.length() > 0)
+						SimpleImageLoader.showImg(ivInfo, url, null, getActivity(), R.drawable.home_bg_thumb_2x);	
+				}
 				break;
 			}
 			}
