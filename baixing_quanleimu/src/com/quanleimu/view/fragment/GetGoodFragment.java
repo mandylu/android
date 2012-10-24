@@ -401,7 +401,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
 //										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										QuanleimuApplication.getImageLoader().forceRecycle(c[0]);
+										QuanleimuApplication.getImageLoader().prepareRecycle(c[0]);
 //										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
 									}
 								 }
@@ -412,6 +412,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			 }
 		}
 
+		QuanleimuApplication.getImageLoader().startRecycle();
 		System.gc();
 		super.onDestroy();
 	}

@@ -5,6 +5,8 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
+import java.util.List;
 
 import org.apache.http.HttpException;
 import org.apache.http.HttpResponse;
@@ -33,6 +35,7 @@ public class ImageManager
 
 	//private Map<String, SoftReference<Bitmap>> imgCache ;
 	
+	private List<Bitmap> trashList = new ArrayList<Bitmap>();
 	private LruCache<String, Bitmap> imageLruCache;
 	private DiskLruCache imageDiskLruCache = null;
 
@@ -186,7 +189,7 @@ public class ImageManager
 		return bitmap;
 	}
 	
-	public void forceRecycle(String url){
+	public void forceRecycle(String url, boolean rightNow){
 //		Bitmap bitmap = imageLruCache.get(url);
 //		if(bitmap!=null&& !bitmap.isRecycled()){
 //			bitmap.recycle();
@@ -197,12 +200,65 @@ public class ImageManager
 		if(url == null || url.equals(""))return;
 		Bitmap bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
 		if(bitmap != null){
-			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", bitmap is " + bitmap);
-			bitmap.recycle();
+			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", recycle right now ? " + rightNow);
+			if (rightNow)
+			{
+				bitmap.recycle();
+			}
+			else
+			{
+				synchronized (trashList) {
+					trashList.add(bitmap);
+				}
+			}
+						
+//			bitmap.recycle();
 			bitmap = null;
 //			System.gc();			
 		}
 				
+	}
+	
+	/**
+	 * FIXME: hard code for android fragment issue. fixme if you have any good idea.
+	 * When work with android support V4 fragment. system may force UI update even when fragment is destoried. So we must delay force recycle the bitmap.
+	 */
+	public void postRecycle()
+	{
+		Thread t = new Thread(
+				new Runnable() {
+					
+					@Override
+					public void run() {
+						
+						List<Bitmap> tmpList = null;
+						synchronized (trashList) {
+							tmpList = new ArrayList<Bitmap>();
+							tmpList.addAll(trashList);
+							trashList.clear();
+						}
+						
+						try {
+							if (tmpList.size() > 0) //Sleep only if we have something to recycle.
+							{
+								Thread.sleep(2000); 
+							}
+						} catch (InterruptedException e) {
+							e.printStackTrace();
+						}
+						
+						
+						for (Bitmap bp : tmpList)
+						{
+							Log.d("recycle", "exe delay recycle bitmap " + bp);
+							bp.recycle();
+						}
+						
+						System.gc(); //Force gc after bitmap recycle.
+					}
+				});
+		
+		t.start();
 	}
 	
 	public void forceRecycle(){//release all bitmap

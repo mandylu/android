@@ -268,7 +268,7 @@ public abstract class BaseFragment extends Fragment {
 	 */
 	@Override
 	public void onDestroyView() {
-		Log.w(TAG, "#" + this.getName() + " going to destory view.");
+//		Log.w(TAG, "#" + this.getName() + " going to destory view.");
 		if (pd != null && pd.isShowing())
 		{
 			pd.dismiss();
@@ -289,7 +289,7 @@ public abstract class BaseFragment extends Fragment {
 	 */
 	@Override
 	public void onDestroy() {
-		Log.w(TAG, "#" + this.getName() + " is going to be destory!");
+//		Log.w(TAG, "#" + this.getName() + " is going to be destory!");
 		this.handler = null;
 		super.onDestroy();
 	}

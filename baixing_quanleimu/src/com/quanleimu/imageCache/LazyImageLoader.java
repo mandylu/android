@@ -120,7 +120,17 @@ public class LazyImageLoader
 	}
 	
 	public void forceRecycle(String url){
-		this.imgManger.forceRecycle(url);
+		this.imgManger.forceRecycle(url, true);
+	}
+	
+	public void prepareRecycle(String url)
+	{
+		this.imgManger.forceRecycle(url, false);
+	}
+	
+	public void startRecycle()
+	{
+		this.imgManger.postRecycle();
 	}
 	
 	public void Cancel(List<String> urls){
