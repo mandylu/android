@@ -70,7 +70,7 @@
         </service>
         <service
                 android:name="com.quanleimu.util.BXUpdateService"
-                android:label="自动更新服务"/>
+                android:label="AutoUpdateService"/>
 
         <receiver android:name="com.quanleimu.broadcast.NetworkConnectivityReceiver" android:enabled="true">
              <intent-filter>
