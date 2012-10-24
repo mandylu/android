@@ -81,6 +81,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	static final public String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	
+	static final private String STRING_DETAIL_POSITION = "具体地点";
+	static final private String STRING_AREA = "地区";
+	
 	public static final int MSG_POST_SUCCEED = 0xF0000010; 
 //	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
@@ -117,6 +120,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //	private Bundle bundle;
 	
 	private View locationView = null;
+	private View districtView = null;
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -270,7 +274,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		{
 			this.showPost();
 		}
-		if(!isBack){
+		if(!isBack && this.goodsDetail == null){
 			inLocating = true;
 			QuanleimuApplication.getApplication().getCurrentLocation(this);
 			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 3000);
@@ -365,7 +369,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			this.params.put(bean.getDisplayName(), displayValue, detailValue);
 			
 		
-			if(bean.getDisplayName().equals("地区")){
+			if(bean.getDisplayName().equals(STRING_AREA)){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){
@@ -377,7 +381,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						for(int t = 0; t < areaLabels.size(); ++ t){
 							if(areaLabels.get(t).equals(areas[1])){
 //								postMap.put("地区", bean.getValues().get(t));
-								params.getData().put("地区", bean.getValues().get(t));
+								params.getData().put(STRING_AREA, bean.getValues().get(t));
 //								params.put("地区", areas[areas.length - 1], bean.getValues().get(t));
 								break;
 							}
@@ -472,11 +476,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (postMu != null && !postMu.getJson().equals("")) {
 			json = postMu.getJson();
 			Long time = postMu.getTime();
-			if (time + (24 * 3600 * 100) < System.currentTimeMillis()) {
+			if (time + (24 * 3600 * 1000) < System.currentTimeMillis()) {
 //				myHandler.sendEmptyMessage(1);
 //				sendMessage(1, null);
 //				addCategoryItem();
-				buildPostLayout();
+//				buildPostLayout();
 				new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 			} else {
 //				myHandler.sendEmptyMessage(1);
@@ -725,7 +729,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				View v = layout_txt.getChildAt(m);
 				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
 				if(bean == null) continue;
-				if(bean.getDisplayName().equals("地区")){
+				if(bean.getDisplayName().equals(STRING_AREA)){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
 					if(tv != null && !tv.getText().toString().equals("")){
 						city += "," + tv.getText();
@@ -736,7 +740,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				View v = layout_txt.getChildAt(m);
 				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
 				if(bean == null) continue;
-				if(bean.getDisplayName().equals("具体地点")){
+				if(bean.getDisplayName().equals(STRING_DETAIL_POSITION)){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
 					if(tv != null && !tv.getText().toString().equals("")){
 						city += "," + tv.getText();
@@ -1217,7 +1221,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private void appendBeanToLayout(PostGoodsBean postBean){
 		Activity activity = getActivity();
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
-		if(postBean.getName().equals("具体地点")){
+		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
 			if(inLocating){
 				((TextView)layout.findViewById(R.id.postinput)).setHint("定位中...");
 			}else{
@@ -1228,6 +1232,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(this.detailLocation != null && !inLocating){
 				setDetailLocationControl(detailLocation);
 			}
+		}else if(postBean.getName().equals(STRING_AREA)){
+			districtView = layout;
+			if(this.detailLocation != null && !inLocating){
+				setDetailLocationControl(detailLocation);
+			}			
 		}
 		if(postBean.getName().equals("contact") && layout != null){
 			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
@@ -1282,7 +1291,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		layout_txt.addView(border);
 //	}
 	
-	private String[] fixedItemNames = {"images", "description", "价格", "contact", "具体地点"};
+	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
 	
 	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
@@ -1326,7 +1335,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
 			if(isFixedItem(postBean)) continue;
-			if(postBean.getName().equals("地区")){
+			if(postBean.getName().equals(STRING_AREA)){
 				this.appendBeanToLayout(postBean);
 				continue;
 			}
@@ -1861,9 +1870,39 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void setDetailLocationControl(BXLocation location){
-		((TextView)locationView.findViewById(R.id.postinput)).setText(location == null ? "" :
-				((location.detailAddress == null || location.detailAddress.equals("")) ? 
-						location.subCityName : location.detailAddress));
+		String text = (location == null) ? "" :
+			((location.detailAddress == null || location.detailAddress.equals("")) ? 
+					((location.subCityName == null || location.subCityName.equals("")) ?
+							"" 
+							: location.subCityName)
+					: location.detailAddress);
+		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
+			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
+			if(chars == null || chars.toString().equals("")){
+				((TextView)locationView.findViewById(R.id.postinput)).setText(text);
+			}
+		}
+		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
+			CharSequence chars = ((TextView)districtView.findViewById(R.id.posthint)).getText();
+			if(chars != null && !chars.toString().equals("")) return;
+			if(this.postList != null && postList.size() > 0){
+				Object[] postListKeySetArray = postList.keySet().toArray();
+				for(int i = 0; i < postList.size(); ++ i){
+					PostGoodsBean bean = postList.get(postListKeySetArray[i]);
+					if(bean.getName().equals(STRING_AREA)){
+						if(bean.getLabels() != null){
+							for(int t = 0; t < bean.getLabels().size(); ++ t){
+								if(location.subCityName.contains(bean.getLabels().get(t))){
+									((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
+									params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+									return;
+								}
+							}
+						}						
+					}
+				}
+			}
+		}
 	}
 
 	private BXLocation detailLocation = null;

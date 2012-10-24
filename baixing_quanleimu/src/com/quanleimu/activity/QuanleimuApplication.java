@@ -438,6 +438,9 @@ public class QuanleimuApplication extends Application implements LocationService
 						curLocation.address = location.address;
 						curLocation.adminArea = location.adminArea;
 						curLocation.cityName = location.cityName;
+						curLocation.subCityName = location.subCityName;
+						curLocation.fGeoCodedLat = location.fGeoCodedLat;
+						curLocation.fGeoCodedLon = location.fGeoCodedLon;
 						curLocation.detailAddress = location.detailAddress;
 						curLocation.address = location.address;
 						curLocation.geocoded = location.geocoded;
