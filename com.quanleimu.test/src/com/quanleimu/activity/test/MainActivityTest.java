@@ -88,6 +88,13 @@ public class MainActivityTest extends BaixingTestCase {
 		//还没有验证的步骤
 	}
 	
+	public void testPostPhoto() throws Exception {
+		openTabbar(TAB_ID_POST);
+		TimeUnit.SECONDS.sleep(1);
+		doClickPostPhoto();
+		TimeUnit.SECONDS.sleep(10);
+	}
+	
 	@Test
 	public void testMy() throws Exception {
 		logout();

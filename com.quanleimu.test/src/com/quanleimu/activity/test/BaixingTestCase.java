@@ -1,16 +1,25 @@
 package com.quanleimu.activity.test;
 
+import java.util.ArrayList;
 import java.util.concurrent.TimeUnit;
+
+import android.app.Instrumentation;
 
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.utils.AthrunConnectorThread;
+import org.athrun.android.framework.utils.SleepUtils;
 import org.athrun.android.framework.viewelement.AbsListViewElement;
+import org.athrun.android.framework.viewelement.IViewElement;
 import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
+import org.athrun.android.framework.viewelement.ViewUtils;
 
 import android.util.Log;
+import android.view.KeyEvent;
+import android.view.View;
+import android.widget.TextView;
 
 public class BaixingTestCase extends AthrunTestCase {
 	private static final String LOG_TAG = "MainActivityTest";
@@ -80,6 +89,16 @@ public class BaixingTestCase extends AthrunTestCase {
 	
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
 	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "manager_delete";
+	
+	public static final String MY_PROFILE_PHOTO_ID = "personalImage";
+	
+	//Msgbox Texts
+	public static final String MSGBOX_TITLE_TEXT = "提示";
+	public static final String MSGBOX_WAITFOR_TEXT = "请稍候...";
+	public static final String MSGBOX_WAITFOR_PASSWORD_TEXT = "数据下载中，请稍后。。。";
+	public static final String MSGBOX_WAITFOR_PERSONAL_INFO_TEXT = "正在下载数据，请稍候...";
+	public static final String MSGBOX_WAITFOR_PROFILE_EDIT_TEXT = "更新中，请稍等...";
+	public static final String MSGBOX_WAITFOR_PROFILE_PHOTO_TEXT = "图片上传中，请稍等。。。";
 	
 	//POST META TYPE
 	public enum METATYPE {
@@ -212,7 +231,7 @@ public class BaixingTestCase extends AthrunTestCase {
 			etPwd.setText(TEST_DATA_PASSWORD);
 			
 			loginBtn.doClick();
-			assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 2000));
+			assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 5000));
 		}
 	}
 	
@@ -239,7 +258,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		if (postView != null) {
 			assertNotNull(postView);
 
-			TimeUnit.SECONDS.sleep(3);
+			TimeUnit.SECONDS.sleep(2);
 			openPostItemByIndex(POST_CATEGORY_SELEC_INDEX);
 		}
 		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
@@ -252,7 +271,7 @@ public class BaixingTestCase extends AthrunTestCase {
 			assertEquals(TEST_DATA_CAT_WUPINJIAOYI, view.getText());
 		}
 		item.doClick();
-		TimeUnit.SECONDS.sleep(3);
+		waitForHideMsgbox(5000);
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {
@@ -401,6 +420,54 @@ public class BaixingTestCase extends AthrunTestCase {
 		}
 		return null;
 	}
+	public void doClickPostPhoto() throws Exception {
+		ViewGroupElement df = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
+		assertNotNull(df);
+		BXImageViewElement iv = null;
+		for(int i = 0; i < df.getChildCount(); i++) {
+			int foundPhotoButton = 0;
+			//layout
+			ViewGroupElement ly = df.getChildByIndex(i, ViewGroupElement.class);
+			//if (ly != null) Log.i(LOG_TAG, "doClickPostPhoto:" + i + "c:" + ly.getChildCount());
+			if (ly != null && ly.getChildCount() == 6) {
+				//Log.i(LOG_TAG, "doClickPostPhoto:lx" + i);
+				//l1, l2, l3
+				for (int j = 0; j < 6; j++) {
+					ViewGroupElement lx = ly.getChildByIndex(j, ViewGroupElement.class);
+					//Log.i(LOG_TAG, "doClickPostPhoto:lx" + i + "|" + j);
+					if (lx != null && lx.getChildCount() == 1) {
+						//Log.i(LOG_TAG, "doClickPostPhoto:imageview" + i + "|" + j);
+						//ImageView
+						BXImageViewElement ivx = lx.getChildByIndex(0, BXImageViewElement.class);
+						if (ivx != null) {
+							//Log.i(LOG_TAG, "doClickPostPhoto:imageviex" + i + "|" + j);
+							if (j == 0) iv = ivx;
+							foundPhotoButton++;
+						}
+					}
+				}
+				if (foundPhotoButton == 3 && iv != null) {
+					iv.doClick();
+					SleepUtils.sleep(300);
+					ViewElement v = findElementByText("拍照", 0, true);
+					assertNotNull(v);
+					v.doClick();
+					SleepUtils.sleep(300);
+					//getActivity();
+					//Instrumentation inst = getInstrumentation();
+					//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+					//inst.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER);
+					//TimeUnit.SECONDS.sleep(10);
+					//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_LEFT);
+					//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_LEFT);
+					//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_CENTER);
+					//this.getDevice().pressBack();
+					TimeUnit.SECONDS.sleep(1);
+					break;
+				}
+			}
+		}
+	}
 	
 	public void selectMetaByIndex(int index) throws Exception {
 		selectMetaByIndex(index, POST_META_LISTVIEW_ID);
@@ -460,7 +527,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		ViewElement eld = findElementByText(POST_SEND);
 		assertNotNull(eld);
 		eld.doClick();
-		TimeUnit.SECONDS.sleep(3);
+		waitForHideMsgbox(10 * 1000);
 	}
 	
 	public void openHomeCategoryByIndex(int index) throws Exception {
@@ -492,7 +559,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(index,
 				ViewGroupElement.class);
 		subCatView.doClick();
-		TimeUnit.SECONDS.sleep(8);
+		waitForHideMsgbox(10000);
 	}
 	
 	public void openCategoryByIndex(int firstCatIndex, int secondCatIndex) throws Exception {
@@ -738,5 +805,23 @@ public class BaixingTestCase extends AthrunTestCase {
 			bv.scrollTop(height / 2 - height /3, height / 2 + height /3);
 			TimeUnit.SECONDS.sleep(2);
 		}
+	}
+	
+	public boolean waitForHideMsgbox(int timeout) throws Exception {
+		return waitForHideMsgbox("请稍候...", timeout);
+	}
+	
+	public boolean waitForHideMsgbox(String msg, int timeout) throws Exception {
+		SleepUtils.sleep(IViewElement.RETRY_TIME);
+		final long startTime = System.currentTimeMillis();
+		while (System.currentTimeMillis() < startTime + timeout) {
+			ViewElement v = findElementByText("提示", 0, true);
+			if (v == null) return true;
+			v = findElementByText(msg, 0, true);
+			if (v == null) return true;
+			SleepUtils.sleep(IViewElement.RETRY_TIME);
+		}
+
+		return false;
 	}
 }
