@@ -407,8 +407,13 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		if(savedInstance) return;
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
-		fm.popBackStack(popTo == null ? null : popTo , FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		ft.setCustomAnimations(fragment.getEnterAnimation(), /*R.anim.right_to_left_exit*/0, /*R.anim.left_to_right_enter*/0, fragment.getExitAnimation());
+		if (!"".equals(popTo))
+		{
+			fm.popBackStack(popTo == null ? null : popTo , FragmentManager.POP_BACK_STACK_INCLUSIVE);
+		}
 		
+		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		if (bundle != null)
 		{
 			fragment.setArguments(bundle);

@@ -12,14 +12,14 @@
      distributed under the License is distributed on an "AS IS" BASIS,
      WITHOUT WARRANTIES OR CONDITIONS OF ANY KIND, either express or implied.
      See the License for the specific language governing permissions and
-     limitations under the License.
+     limitations under the License.android:duration="@android:integer/config_longAnimTime"
 -->
 
 <set xmlns:android="http://schemas.android.com/apk/res/android"
     android:interpolator="@android:anim/accelerate_interpolator" >
 
     <translate
-        android:duration="@android:integer/config_shortAnimTime"
+        android:duration="@integer/animation_duration"
         android:fromYDelta="0.0"
         android:toYDelta="100.0%p" />
 

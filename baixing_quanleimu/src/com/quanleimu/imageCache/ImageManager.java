@@ -195,14 +195,14 @@ public class ImageManager
 //		}
 //		
 		if(url == null || url.equals(""))return;
-		Bitmap bitmap = imageLruCache.get(url);
+		Bitmap bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
 		if(bitmap != null){
-			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url);
+			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", bitmap is " + bitmap);
 			bitmap.recycle();
 			bitmap = null;
 //			System.gc();			
 		}
-		imageLruCache.remove(url);//anyway ,remove it from cache		
+				
 	}
 	
 	public void forceRecycle(){//release all bitmap

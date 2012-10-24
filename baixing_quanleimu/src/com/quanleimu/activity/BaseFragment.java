@@ -14,6 +14,7 @@ import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -139,6 +140,16 @@ public abstract class BaseFragment extends Fragment {
 		}
 		
 	}
+	
+	public int getEnterAnimation()
+	{
+		return R.anim.right_to_left_enter;
+	}
+	
+	public int getExitAnimation()
+	{
+		return R.anim.left_to_right_exit;
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -257,6 +268,7 @@ public abstract class BaseFragment extends Fragment {
 	 */
 	@Override
 	public void onDestroyView() {
+		Log.w(TAG, "#" + this.getName() + " going to destory view.");
 		if (pd != null && pd.isShowing())
 		{
 			pd.dismiss();
@@ -277,7 +289,8 @@ public abstract class BaseFragment extends Fragment {
 	 */
 	@Override
 	public void onDestroy() {
-		this.handler = null; 
+		Log.w(TAG, "#" + this.getName() + " is going to be destory!");
+		this.handler = null;
 		super.onDestroy();
 	}
 

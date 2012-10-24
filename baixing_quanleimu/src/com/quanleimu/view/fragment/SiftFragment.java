@@ -528,4 +528,15 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 		}
 	}
 
+	@Override
+	public int getEnterAnimation() {
+		return R.anim.down_to_up;
+	}
+
+	@Override
+	public int getExitAnimation() {
+		return R.anim.up_to_down;
+	}
+
+	
 }

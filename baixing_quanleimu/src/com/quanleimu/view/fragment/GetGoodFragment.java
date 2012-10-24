@@ -383,8 +383,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	public void onDestroy(){		
 		this.lvGoodsList = null;
 //		this.adapter = null;
-		if(goodsListLoader != null && goodsListLoader.getGoodsList() != null){
-			 List<GoodsDetail> list = goodsListLoader.getGoodsList().getData();
+		GoodsList goodData = this.goodsListLoader.getGoodsList();
+		this.goodsListLoader.reset();
+		this.goodsListLoader = null;
+		
+		if(goodData != null){
+			 List<GoodsDetail> list = goodData.getData();
 			 if(list != null){
 				 for(int i = 0; i < list.size(); ++ i){
 					 GoodsDetail gd = list.get(i);
@@ -407,8 +411,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				 }
 			 }
 		}
-		this.goodsListLoader.reset();
-		this.goodsListLoader = null;
+
 		System.gc();
 		super.onDestroy();
 	}

@@ -1933,5 +1933,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		this.inLocating = false;
 		return false;
 	}
+
+
+
+	@Override
+	public int getEnterAnimation() {
+		return R.anim.zoom_enter;
+	}
+
+
+
+	@Override
+	public int getExitAnimation() {
+		return R.anim.zoom_exit;
+	}
+	
+	
 	
 }

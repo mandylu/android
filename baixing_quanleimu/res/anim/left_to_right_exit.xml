@@ -19,13 +19,13 @@
     android:interpolator="@android:anim/decelerate_interpolator" >
 
     <translate
-        android:duration="@android:integer/config_mediumAnimTime"
-        android:fromXDelta="-100.0%p"
-        android:toXDelta="0.0" />
+        android:duration="@integer/animation_duration"
+        android:fromXDelta="0.0"
+        android:toXDelta="100.0%p" />
     
-    <alpha
+    <!-- alpha
 		android:fromAlpha="1.0"
 		android:toAlpha="0.0"
-		android:duration="@android:integer/config_mediumAnimTime" />
+		android:duration="@android:integer/config_mediumAnimTime" / -->
 
 </set>
