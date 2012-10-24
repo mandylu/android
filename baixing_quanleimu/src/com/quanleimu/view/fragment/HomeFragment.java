@@ -14,7 +14,6 @@ import java.util.Locale;
 import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
@@ -22,21 +21,29 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
+import android.widget.GridView;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GridAdapter;
 import com.quanleimu.adapter.GridAdapter.GridInfo;
-import com.quanleimu.entity.*;
+import com.quanleimu.entity.ChatSession;
+import com.quanleimu.entity.FirstStepCate;
+import com.quanleimu.entity.HotList;
+import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.UserProfile;
 import com.quanleimu.imageCache.ImageLoaderCallback;
 import com.quanleimu.imageCache.LazyImageLoader;
-import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
+import com.quanleimu.util.BxMobileConfig;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager;
@@ -262,6 +269,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			}
 		}
 		new Thread(new HotListThread()).start(); 
+		//Mobile Track Config入口
+		BxMobileConfig.getInstance();
 		
 		String cityName = QuanleimuApplication.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {

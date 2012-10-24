@@ -1,9 +1,7 @@
 package com.quanleimu.activity;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
-import java.util.Stack;
 
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -21,26 +19,19 @@ import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentManager.OnBackStackChangedListener;
 import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
-import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.CityDetail;
-
 import com.quanleimu.util.LocationService;
-import com.quanleimu.util.BxSender;
-import com.quanleimu.util.BxTrackData;
-import com.quanleimu.util.BxTracker;
-
 import com.quanleimu.view.fragment.FirstRunFragment;
-import android.util.Log;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 父类Activity
@@ -165,7 +156,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		this.savedInstance = false;
 		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
 
-
+//		HashMap<String,String> map = new HashMap<String,String>();
+//		map.put("tracktype", "pageview");
+//		map.put("city", "shanghai");
+//		map.put("timestamp", "1234567");
+//		BxTrackData data = new BxTrackData(map);
+//		BxTracker.getInstance().addTrackData(this, data);
 	}
 
 
@@ -283,12 +279,14 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 //		ivPostGoods.setOnClickListener(this);
 //		ivMyCenter.setOnClickListener(this);
 //		ivSetMain.setOnClickListener(this);
+		//生成BxTracker和BxSender
+//		BxSender sender = new BxSender(QuanleimuApplication.context);
+//		Thread senderThread = new Thread(sender);
+//		senderThread.start();
+//		BxTracker tracker = BxTracker.getInstance();
+//		tracker.initialize(QuanleimuApplication.context, sender);
+	
 		
-		BxSender sender = new BxSender(this);
-		Thread senderThread = new Thread(sender);
-		senderThread.start();
-		BxTracker tracker = BxTracker.getInstance();
-		tracker.initialize(this, sender);
 	}
 
 	@Override

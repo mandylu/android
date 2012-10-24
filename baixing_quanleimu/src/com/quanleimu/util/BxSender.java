@@ -1,13 +1,8 @@
 package com.quanleimu.util;
 
 import java.io.IOException;
-import java.net.URLDecoder;
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Map.Entry;
-
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.content.Context;
 
@@ -65,7 +60,7 @@ public class BxSender implements Runnable{
 		} catch (IOException e) {
 			e.printStackTrace();
 		}
-		Communication.executeSyncPostTask(apiName, compressedJson, new Communication.CommandListener() {
+		Communication.executeSyncPostTask(apiName, jsonStr, new Communication.CommandListener() {
 			
 			@Override
 			public void onServerResponse(String serverMessage) {
@@ -75,11 +70,11 @@ public class BxSender implements Runnable{
 			@Override
 			public void onException(Exception ex) {
 				System.out.print("send wrong");
-//				sendingTimes++;
-//				if (sendingTimes<2)//再次发送
-//					sendList(list);
-//				else
-//					sendingTimes = 0;
+				sendingTimes++;
+				if (sendingTimes<2)//再次发送
+					sendList(list);
+				else
+					sendingTimes = 0;
 			}
 		});
 	}
@@ -105,7 +100,7 @@ public class BxSender implements Runnable{
 					list = (ArrayList<BxTrackData>) (loadFromLocal(context,
 							manifest.get(0)));
 					if (list != null) {
-//						sendList(list);
+						sendList(list);
 						clearFile(context, manifest.get(0));
 					}
 					manifest.remove(0);
