@@ -26,6 +26,7 @@
     <!-- text -->
     <string name="yes">是</string>
     <string name="no">否</string>
+    <string name="ok">确认</string>
     <string name="close">关闭</string>
     <string name="cancel">取消</string>
     <string name="back">返回</string>
@@ -53,6 +54,8 @@
     <string name="label_login">绑定百姓网帐号</string>
     <string name="label_logout">解除绑定</string>
     <string name="label_flow_optimize">流量优化设置</string>
+
+    <string name="dialog_confirm_logout">确认解除绑定？</string>
 
     <!-- input hint text -->
     <string name="hint_searchCity">请输入城市名称</string>

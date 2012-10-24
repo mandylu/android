@@ -187,7 +187,7 @@
                 <Button
                         android:layout_width="fill_parent"
                         android:layout_height="40dp"
-                        android:text="退出当前帐号"
+                        android:text="解除绑定当前帐号"
                         android:background="@drawable/bg_message_btn_selector"
                         android:id="@+id/editProfileLogoutBtn"
                         android:textColor="#838383"

@@ -6,7 +6,9 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.LinkedHashMap;
 
+import android.app.AlertDialog;
 import android.widget.Toast;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.util.Util;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -231,13 +233,30 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
         v.findViewById(R.id.editProfileLogoutBtn).setOnClickListener(new OnClickListener() {
             @Override
             public void onClick(View view) {
-                Util.logout();
-                finishFragment();
+                logoutAction();
             }
         });
 		
 		return v;
 	}
+
+    private void logoutAction() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_confirm_logout)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Util.logout();
+                        finishFragment();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                }).create().show();
+    }
 	
 	public void onResume()
 	{
@@ -385,10 +404,7 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 //		params.addParameter("gender", getTextData(R.id.gender));
 //		params.addParameter(URLEncoder.encode("所在地"), newCityId);
 		params.addParameter("userId", up.userId);
-//		if (profileImg.getServerUri() != null && !profileImg.getServerUri().equals(up.resize180Image))
-//		{
-//			params.addParameter("image_i", profileImg.getServerUri());
-//		}
+//l
 		
 		
 		Communication.executeAsyncGetTask("user_profile_update", params, new Communication.CommandListener() {

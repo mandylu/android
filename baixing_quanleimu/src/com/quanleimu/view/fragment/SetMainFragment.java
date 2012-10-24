@@ -135,6 +135,24 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         tab.m_visible = false;
     }
 
+    private void logoutAction() {
+        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+        builder.setTitle(R.string.dialog_confirm_logout)
+                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                        Util.logout();
+                        Toast.makeText(getAppContext(), "已退出", 1).show();
+                    }
+                })
+                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                    }
+                }).create().show();
+    }
+
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
@@ -147,8 +165,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                     pushFragment(new LoginFragment(), bundle);
                 } else {
                     //TODO jiawu 加入确认退出过程
-                    Util.logout();
-                    Toast.makeText(getAppContext(), "已退出", 1).show();
+                    logoutAction();
                     refreshUI(getView());
                 }
 
