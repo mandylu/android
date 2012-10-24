@@ -19,8 +19,10 @@ import org.athrun.android.framework.viewelement.ViewGroupElement;
 import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.ViewUtils;
 
+
 public class MainActivityTest extends BaixingTestCase {
 	private static final String LOG_TAG = "MainActivityTest";
+	private static final String SCREEN_LOG_TAG = "TestKeyGuardTest";
 	
 	public MainActivityTest() throws Exception {
 		super();

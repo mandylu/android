@@ -28,6 +28,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String BACK_BUTTON_TEXT = "返回";
 	//Home ID
 	public static final String HOME_FIRST_RUN_ID = "topguide";
+	public static final String HOME_FIRST_RUN_ID_V3 = "etSearchCity";
 	public static final String HOME_MARK_ID = "lvLogoAndChangeCity";
 	public static final String HOME_CATEGORY_VIEWLIST_ID = "cateSelection";
 	public static final String HOME_CATEGORY_VIEWLIST_ITEM_NAME_ID = "tvName";
@@ -119,6 +120,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	//Test DATA
 	public static final String TEST_DATA_MOBILE = "13917067724";
 	public static final String TEST_DATA_PASSWORD = "whonwyhw";
+	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
 	public static String postDataJiaju[][] = {
 		{"CATEGORY", "0", "家具"}, //物品交易
@@ -204,11 +206,29 @@ public class BaixingTestCase extends AthrunTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		// log("This is a test for log() method");
+		startScreen_v3();
+	}
+	
+	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
 		if (v != null) {
 			v.doClick();
 			TimeUnit.SECONDS.sleep(1);
+		}
+	}
+	
+	private void startScreen_v3() throws Exception {
+		Log.i(LOG_TAG, "This is a test for startScreen_v3() method");
+		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
+		TextViewElement v = findElementById(HOME_FIRST_RUN_ID_V3, TextViewElement.class);
+		if (v != null) {
+			v.setText(TEST_DATA_DEFAULT_CITYNAME);
+			SleepUtils.sleep(300);
+			ViewElement c = findElementByText(TEST_DATA_DEFAULT_CITYNAME, 1, true);
+			assertNotNull(c);
+			c.doClick();
+			TimeUnit.SECONDS.sleep(10);
 		}
 	}
 	
@@ -451,7 +471,7 @@ public class BaixingTestCase extends AthrunTestCase {
 					SleepUtils.sleep(300);
 					ViewElement v = findElementByText("拍照", 0, true);
 					assertNotNull(v);
-					v.doClick();
+					//v.doClick();
 					SleepUtils.sleep(300);
 					//getActivity();
 					//Instrumentation inst = getInstrumentation();
