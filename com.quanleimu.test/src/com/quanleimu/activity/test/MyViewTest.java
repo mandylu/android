@@ -16,6 +16,7 @@ public class MyViewTest extends BaixingTestCase {
 	
 	public void testMyProfile() throws Exception {
 		
+		//android2.7.2
 		//进入“我的”
 		//检查是否包含登录按钮
 		//1.包含 2.不包含
@@ -38,6 +39,26 @@ public class MyViewTest extends BaixingTestCase {
 		//点击“西坝河”
 		//点击完成
 		//检查结果：用户名＝“tester”，性别＝“女”，城市＝“北京”
+		
+	}
+	
+	@Test
+	
+	public void testNewMyProfile() throws Exception {
+		
+		//android3.0
+		//进入“我的百姓网”页面
+		//检查是否包含登录按钮
+		//若包含登录按钮,则输入正确用户名，密码
+		//点击登录
+		//等待3s
+		//检查是否包含登录按钮，确保登录成功
+		//点击编辑按钮进入个人资料
+	    //点击用户名，清空
+		//检查，确保用户名＝Null
+		//点击用户名，输入“tester”
+		//点击完成
+		//检查结果：用户名＝“tester”
 		
 	}
 }
