@@ -989,7 +989,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		LayoutInflater inflater = LayoutInflater.from(currentPage.getContext());
 		
 		String price = detail.getValueByKey(EDATAKEYS.EDATAKEYS_PRICE);
-		if (price != null)
+		if (price != null && !"".equals(price))
 		{
 			ll_meta.addView(createMetaView(inflater, "价格:", price, null));
 		}
@@ -1067,8 +1067,20 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onAnimationEnd(Animation animation) {
 		// TODO Auto-generated method stub
-		getView().findViewById(R.id.btn_prev).setVisibility(View.GONE);
-		getView().findViewById(R.id.btn_next).setVisibility(View.GONE);
+		View root = getView();
+		if (root != null)
+		{
+			if (root.findViewById(R.id.btn_prev) != null)
+			{
+				root.findViewById(R.id.btn_prev).setVisibility(View.GONE);
+			}
+			
+			if (root.findViewById(R.id.btn_next) != null)
+			{
+				
+				root.findViewById(R.id.btn_next).setVisibility(View.GONE);
+			}
+		}
 	}
 
 	@Override
