@@ -163,7 +163,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 showFlowOptimizeDialog();
                 break;
             case R.id.setBindID:
-                if (user == null) {
+                if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
                     Bundle bundle = createArguments(null, "用户中心");
                     pushFragment(new LoginFragment(), bundle);
                 } else {
