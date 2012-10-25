@@ -274,6 +274,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		{
 			this.showPost();
 		}
+		if(isBack){
+			this.detailLocation = null;
+		}
 		if(!isBack && this.goodsDetail == null){
 			inLocating = true;
 			QuanleimuApplication.getApplication().getCurrentLocation(this);
