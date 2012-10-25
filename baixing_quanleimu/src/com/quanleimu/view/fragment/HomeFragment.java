@@ -8,6 +8,7 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
+import java.util.HashMap;
 import java.util.List;
 import java.util.Locale;
 
@@ -43,6 +44,8 @@ import com.quanleimu.imageCache.ImageLoaderCallback;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.BxMobileConfig;
+import com.quanleimu.util.BxTrackData;
+import com.quanleimu.util.BxTracker;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
@@ -269,8 +272,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			}
 		}
 		new Thread(new HotListThread()).start(); 
+		
 		//Mobile Track Config入口
-		BxMobileConfig.getInstance();
+//		BxMobileConfig.getInstance().getConfig();//获取config
 		
 		String cityName = QuanleimuApplication.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {
@@ -378,9 +382,27 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		super.onDestroy();
 	}
 	
+//	public void logPage(int selectedIndex) {
+//		if (selectedIndex == 0) {
+//			// /home
+//			HashMap<String,String> map = new HashMap<String,String>();
+//			map.put("tracktype", "pageview");
+////			map.put("city", "shanghai");
+////			map.put("timestamp", "1234567");
+//			map.put("category", "ershou");
+//			BxTrackData data = new BxTrackData(map);
+//			BxTracker.getInstance().addTrackData(this.getAppContext(), data);
+//		} else if (selectedIndex == 1) {
+//			// /my
+//			
+//		}
+//	}
+	
 	@Override
 	public void onResume(){
 		super.onResume();
+		Log.d("HomeFragment", ""+selectedIndex);
+//		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
 //		}

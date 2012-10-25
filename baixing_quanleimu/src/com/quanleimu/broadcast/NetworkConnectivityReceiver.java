@@ -7,6 +7,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.quanleimu.util.BxMobileConfig;
 import com.quanleimu.util.BxSender;
 import com.quanleimu.util.BxTracker;
 
@@ -36,11 +37,12 @@ public class NetworkConnectivityReceiver extends BroadcastReceiver {
         
         NetworkInfo network = cm.getActiveNetworkInfo();
         if (network != null) {
-        	System.out.println("Hello Network");
-        	BxSender sender = BxTracker.getInstance().getBxSender();
-        	if (sender != null) {
-        		synchronized (sender) {
-            		sender.notifyAll();
+        	Log.d("NetWorkConnectionReceiver", "hello network");
+        	
+        	if (BxMobileConfig.getInstance().getLoggingFlag()) {
+        		BxSender sender = BxSender.getInstance();
+    			synchronized (sender.getQueue()) {
+    				sender.notifyAll();
     			}
         	}
         }

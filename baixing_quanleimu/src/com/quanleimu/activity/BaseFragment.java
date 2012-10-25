@@ -25,6 +25,9 @@ import android.widget.TextView;
 import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.database.ChatMessageDatabase;
+import com.quanleimu.util.BxMobileConfig;
+import com.quanleimu.util.BxSender;
+import com.quanleimu.util.BxTracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.FirstRunFragment;
 import com.readystatesoftware.viewbadger.BadgeView;
@@ -252,7 +255,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	public void onStackTop(boolean isBack)
 	{
-		
+
 	}
 	
 	
@@ -307,6 +310,10 @@ public abstract class BaseFragment extends Fragment {
 		super.onPause();
 		
 		hideSoftKeyboard();
+		if (BxMobileConfig.getInstance().getLoggingFlag()) {
+			BxSender.getInstance().save();
+			BxTracker.getInstance().save();
+		}
 	}
 	
 	protected final void hideSoftKeyboard()
@@ -325,9 +332,14 @@ public abstract class BaseFragment extends Fragment {
 		getActivity().findViewById(R.id.contentLayout).setVisibility(View.VISIBLE);
 		
 		((BaseActivity) getActivity()).showFirstRun(this);
+		Log.d("BaseFragment", ""+this.getClass().getName());
 		
+		if (BxMobileConfig.getInstance().getLoggingFlag()) {
+			BxSender.getInstance().load();
+			BxTracker.getInstance().load();
+		}
 	}
-
+	
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);

@@ -17,7 +17,6 @@ import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
-import java.net.URLEncoder;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
@@ -30,11 +29,6 @@ import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
 
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.broadcast.BXNotificationService;
-import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.UserProfile;
-
 import android.app.Activity;
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -42,11 +36,14 @@ import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
+import android.graphics.Bitmap.CompressFormat;
 import android.graphics.Bitmap.Config;
 import android.graphics.BitmapFactory;
+import android.graphics.Canvas;
 import android.graphics.Matrix;
+import android.graphics.Paint;
 import android.graphics.Point;
-import android.graphics.Bitmap.CompressFormat;
+import android.graphics.Rect;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo.State;
 import android.os.Environment;
@@ -55,9 +52,9 @@ import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
 import android.view.Display;
-import android.graphics.Canvas;
-import android.graphics.Rect;
-import android.graphics.Paint;
+
+import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.entity.UserBean;
 public class Util {
 	private static String[] keys;
 	private static String[] values;
@@ -83,6 +80,10 @@ public class Util {
 	 * 
 	 *        Context.MODE_WORLD_WRITEABLE：允许其他应用程序写入，会覆盖原数据。
 	 */
+	//TODO
+	public static List<String> getFileList() {
+		return new ArrayList<String>();
+	}
 	
 	//数据保存SD卡
 	public static String saveDataToSdCard(String path, String file,

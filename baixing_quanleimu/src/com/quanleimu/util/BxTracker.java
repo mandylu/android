@@ -1,92 +1,76 @@
 package com.quanleimu.util;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
-import android.content.Context;
+import com.quanleimu.activity.QuanleimuApplication;
 
-//单例类
+//singleton
 public class BxTracker {
-	private static final String SERIALIZABLE_TRACKDATA_PREFIX = "bx_trackdata";//记录文件
-	private static final String SERIALIZABLE_TRACKDATA_SUFFIX = ".ser";
-	
-	private static final String SERIALIZABLE_TRACK_MANIFEST = "bx_track_manifest.ser";//花名册存放的文件
-	
-	private List<BxTrackData> dataList = new ArrayList<BxTrackData>();
-	private BxSender sender = null;
-	private List<String> manifest = new ArrayList<String>();//花名册
-	
-	private static BxTracker instance;
-	
-	//Constructor
-	private BxTracker()
-	{
-		
-	}
-	
-	public BxSender getBxSender() {
-		return sender;
-	}
-	
-	public void initialize(Context context, BxSender sender) {
-		this.sender = sender;
-		
-		Object obj = Util.loadDataFromLocate(context, SERIALIZABLE_TRACK_MANIFEST);
-		if (obj != null) {
-			manifest = (ArrayList<String>)obj;//获取花名册
-			if (manifest.size() > 0) {
-				synchronized (this.sender) {
-					this.sender.setFileFlag(true);
-					this.sender.notifyAll();
-				}
-			}
-		}
-	}
-	
-	public List<String> getManifest() {
-		return manifest;
-	}
-
+	private static final String SERIALIZABLE_TRACKER_FILE = "bx_tracker.ser";//记录文件
+	private String tracktype = null;
+	private List<BxTrackData> dataList = null;
+	private HashMap<String,String> map = null;
+	private static BxTracker instance = null;
 	public static BxTracker getInstance()
 	{
-		if (instance == null)
+		if (instance == null)// && BxMobileConfig.getInstance().getLoggingFlag() == true
 		{
 			instance = new BxTracker();
 		}
 		return instance;
 	}
+	private BxTracker()//构造器
+	{
+		dataList = new ArrayList<BxTrackData>();
+		map = new HashMap<String,String>();
+	}
 	
-	//需要记录时调用,参数为BxTrackData对象
-	public void addTrackData(Context context, BxTrackData trackobj)
+	public void endLog() {
+		map.put("tracktype", tracktype);
+		map.put("timestamp", Communication.getTimeStamp());
+
+		//addTrackData
+		addTrackData(new BxTrackData(map));
+		//clear map
+		map.clear();
+	}
+	
+	public BxTracker pageLog(String key, String value) {
+		map.put(key, value);
+		tracktype = "pageview";
+		return getInstance();
+	}
+	
+	public BxTracker eventLog(String key, String value) {
+		map.put(key, value);
+		tracktype = "event";
+		return getInstance();
+	}
+	//添加记录
+	private void addTrackData(BxTrackData trackobj)
 	{
 		dataList.add(trackobj);
-		if (dataList.size()>0) {//设置100次,写一组记录
-			saveToLocal(context, dataList);
-			clearDataList();
+		if (dataList.size()>100) {//设置100次,写一组记录
+			synchronized (BxSender.getInstance().getQueue()) {
+				BxSender.getInstance().addToQueue((ArrayList<BxTrackData>)dataList);
+				BxSender.getInstance().notifyAll();
+			}
+			clearDataList();//后台dataList存储
 		}
+	}
+	
+	public void save() {
+		Util.saveDataToLocate(QuanleimuApplication.context, SERIALIZABLE_TRACKER_FILE, dataList);
+	}
+	
+	public void load() {
+		dataList = (ArrayList<BxTrackData>)Util.loadDataFromLocate(QuanleimuApplication.context, SERIALIZABLE_TRACKER_FILE);
 	}
 	
 	public void clearDataList()
 	{
 		dataList.clear();
 	}
-	
-	public int size()
-	{
-		return dataList.size();
-	}
-	
-	public String saveToLocal(Context context, List<BxTrackData> dataList)
-	{
-		String filePath = SERIALIZABLE_TRACKDATA_PREFIX + System.currentTimeMillis()/1000 + SERIALIZABLE_TRACKDATA_SUFFIX;
-		String result = Util.saveDataToLocate(context,  filePath , dataList);
-		synchronized (sender) {
-			manifest.add(filePath);
-			result += "," +Util.saveDataToLocate(context, SERIALIZABLE_TRACK_MANIFEST, manifest);
-			sender.setFileFlag(true);
-			sender.notifyAll();//唤醒sender
-		}
-		return result;
-	}
-	
 }

@@ -95,7 +95,7 @@ public class Communication implements Comparator<String> {
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
 		list.add("uid=" + Util.getMyId(QuanleimuApplication.context) );
-
+//		list.add("city=" + QuanleimuApplication.cityEnglishName);
 		
 		Collections.sort(list, COMPARATOR);
 

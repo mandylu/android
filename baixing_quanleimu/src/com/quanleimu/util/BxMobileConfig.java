@@ -10,41 +10,49 @@ import android.util.Log;
 
 public class BxMobileConfig {
 	
-	private static BxMobileConfig instance;
+	
 	private  String response;
-	
+	private boolean isLogging = true;//默认开启mobile track为true
 	private final static int CONFIG_ON = 2;
+	private final static int CONFIG_OFF = 4;
 	private Handler handler;
+	private boolean hasResponseFromApi = false;
 	
-	//constructor
+	private static BxMobileConfig instance = null;
+	public static BxMobileConfig getInstance() {
+		if (instance==null) {
+			instance = new BxMobileConfig();
+		}
+		return instance;
+	}
+	//构造器
 	private BxMobileConfig() {
 		//handler
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
 				if (msg.what == CONFIG_ON) {
-					Log.d("BXM", "Come with Track & Sender");
-					//生成BxTracker和BxSender
-					BxSender sender = new BxSender(QuanleimuApplication.context);
-					Thread senderThread = new Thread(sender);
-					senderThread.start();
-					BxTracker tracker = BxTracker.getInstance();
-					tracker.initialize(QuanleimuApplication.context, sender);
+					Log.d("BXMobileConfig", "Turn ON Tracker & Sender");
+					isLogging = true;
+				} else if (msg.what == CONFIG_OFF) {
+					Log.d("BXMobileConfig", "Turn OFF Tracker & Sender");
+					isLogging = false;
 				}
 				super.handleMessage(msg);
 			}
 			
 		};
-		
-		//thread
-		new Thread(new configRunnable()).start();
+	}
+
+	public boolean getLoggingFlag() {
+		return isLogging;
 	}
 	
-	public static BxMobileConfig getInstance() {
-		if (instance==null) {
-			instance = new BxMobileConfig();
+	public void getConfig() {
+		if (hasResponseFromApi == false) {
+			hasResponseFromApi = true;
+			new Thread(new ConfigRunnable()).start();
 		}
-		return instance;
 	}
 	
 	private void sendMessage(int what) {
@@ -56,7 +64,7 @@ public class BxMobileConfig {
 		}
 	}
 	
-	class configRunnable implements Runnable {
+	class ConfigRunnable implements Runnable {
 
 		@Override
 		public void run() {
@@ -64,17 +72,17 @@ public class BxMobileConfig {
 			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
 				response = Communication.getDataByUrl(url, true);
-				System.out.println(response);
-				if (response != null && response.equals("\"true\"")) {
-//					System.out.println("response:true");
-					BxMobileConfig.getInstance().sendMessage(CONFIG_ON);
-				}else{
-//					System.out.println("response:none");
-				}
 			} catch (Exception e) {
-//				System.out.println("response:exception");
+				Log.d("BxMobileConfig", "response:exception");
+			} finally {
+				if (response != null && response.equals("\"false\"")) {
+					Log.d("BxMobileConfig", "response:");
+					BxMobileConfig.getInstance().sendMessage(CONFIG_OFF);
+				}else if (response != null && response.equals("\"true\"")){
+					Log.d("BxMobileConfig", "mobile_config:none");
+					BxMobileConfig.getInstance().sendMessage(CONFIG_ON);
+				}
 			}
 		}
-		
 	}
 }
