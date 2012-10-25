@@ -31,7 +31,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
-public class SiftFragment extends BaseFragment implements View.OnClickListener{
+public class FilterFragment extends BaseFragment implements View.OnClickListener{
 	
 	private static final int MSG_UPDATE_KEYWORD = 3;
 	
@@ -260,7 +260,7 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
 					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(SiftFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					Util.saveDataToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
 					if(isUpdate){
 						sendMessage(1, null);
 					}

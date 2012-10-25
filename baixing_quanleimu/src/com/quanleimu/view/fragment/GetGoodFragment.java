@@ -612,7 +612,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 						args.putString("searchType", "goodslist");
 						args.putString("categoryEnglishName", categoryEnglishName);
 				
-						pushFragment(new SiftFragment(), args);
+						pushFragment(new FilterFragment(), args);
 					}
 				}
 				else
