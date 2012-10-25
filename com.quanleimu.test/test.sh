@@ -2,11 +2,11 @@
 
 echo "START shell"
 
-(echo "")|android create avd -n testemulator1 -t 6 ;
+(echo "")|android create avd -n testemulator1 -t 2 ;
 
 sleep 2;
 
-(echo "")|android create avd -n testemulator2 -t 6 ;
+(echo "")|android create avd -n testemulator2 -t 2 ;
 
 if [ ! -f com.quanleimu.test/testcase1.img ];
 then
