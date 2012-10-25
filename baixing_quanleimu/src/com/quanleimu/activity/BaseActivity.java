@@ -213,7 +213,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			edit.putBoolean(key, true);
 			edit.commit();
 			
-			/*
+		
 			FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
 			Fragment prev = getSupportFragmentManager().findFragmentByTag("dialog");
 	        if (prev != null) {
@@ -224,7 +224,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	        // Create and show the dialog.
 	        DialogFragment newFragment = FirstRunFragment.create(key, f.getFirstRunId());
 	        newFragment.show(ft, "dialog");
-	        */
 		}
 	}
 	

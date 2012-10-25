@@ -116,10 +116,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	};
 	
 	
-	@Override
-	protected int getFirstRunId() {
-		return R.layout.first_run_main;
-	}
+//	@Override
+//	protected int getFirstRunId() {
+//		return R.layout.first_run_main;
+//	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
