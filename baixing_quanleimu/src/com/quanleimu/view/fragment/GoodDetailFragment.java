@@ -161,7 +161,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onPause() {
 		this.keepSilent = true;
 		super.onPause();
-		
 		BXStatsHelper.getInstance().send();
 		Gallery glDetail = (Gallery) getView().findViewById(R.id.glDetail);
 		if(glDetail != null){
@@ -534,6 +533,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
+		if(this.getView() == null) return;
 		if(useRoot)
 			contentView = contentView.getRootView();
 		
