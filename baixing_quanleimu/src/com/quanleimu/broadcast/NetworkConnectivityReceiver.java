@@ -40,10 +40,7 @@ public class NetworkConnectivityReceiver extends BroadcastReceiver {
         	Log.d("NetWorkConnectionReceiver", "hello network");
         	
         	if (BxMobileConfig.getInstance().getLoggingFlag()) {
-        		BxSender sender = BxSender.getInstance();
-    			synchronized (sender.getQueue()) {
-    				sender.notifyAll();
-    			}
+        		BxSender.getInstance().notifyNetworkReady();
         	}
         }
         

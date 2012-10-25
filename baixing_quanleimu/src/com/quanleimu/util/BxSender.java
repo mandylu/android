@@ -12,7 +12,6 @@ import com.quanleimu.activity.QuanleimuApplication;
 //singleton
 public class BxSender implements Runnable{
 //	private boolean isQueueReady;
-	private List<BxTrackData> list = null;
 	private Context context = null;
 	private static String apiName = "trackdata";
 	private int sendingTimes = 0;
@@ -20,6 +19,8 @@ public class BxSender implements Runnable{
 	private static final String SERIALIZABLE_SENDER_DIR = "BxLogDir";
 	private static final String SERIALIZABLE_SENDER_FILE_PREFIX = "bx_sender";//记录文件
 	private static final String SERIALIZABLE_SENDER_FILE_SUFFIX = ".ser";//记录文件
+	
+	private Object sendMutex = new Object();
 
 	
 	
@@ -41,20 +42,36 @@ public class BxSender implements Runnable{
 		new Thread(this).start();
 	}
 	
+	public void notifyNetworkReady()
+	{
+		synchronized (sendMutex) {
+			this.sendMutex.notifyAll();
+		}
+	}
+	
 	public void addToQueue(ArrayList<BxTrackData> dataList) {
-		queue.add((ArrayList<BxTrackData>) dataList);
+		List<BxTrackData> newList = new ArrayList<BxTrackData>();
+		newList.addAll(dataList);
+		synchronized (queue) {
+			queue.add((ArrayList<BxTrackData>)newList);
+		}
+		
+		//Notify send thread to send data.
+		synchronized (sendMutex) {
+			sendMutex.notifyAll();
+		}
 	}
 	
 	public List<ArrayList<BxTrackData>> getQueue() {
 		return queue;
 	}
 
-	private boolean getQueueFlag() {
+	private boolean hasDataToSend() {
 		int size = 0;
 		synchronized (this.queue) {
 			size = queue.size();
 		}
-		return (size > 0);
+		return (size > 0) || loadRecord() != null;
 	}
 	
 	private boolean isSendingReady() {
@@ -69,23 +86,43 @@ public class BxSender implements Runnable{
 	public void save() {
 		String fileName = "";
 		for (ArrayList<BxTrackData> data : queue) {
-			fileName = SERIALIZABLE_SENDER_FILE_PREFIX + System.currentTimeMillis()/1000 + SERIALIZABLE_SENDER_FILE_SUFFIX;
-			Util.saveSerializableToPath(context, SERIALIZABLE_SENDER_DIR, fileName, data);
+			saveListToFile(data);
 		} 
+		
+		queue.clear();
 	}
 	
+	private void saveListToFile(ArrayList<BxTrackData> data)
+	{
+		String fileName = SERIALIZABLE_SENDER_FILE_PREFIX + System.currentTimeMillis()/1000 + SERIALIZABLE_SENDER_FILE_SUFFIX;
+		Util.saveSerializableToPath(context, SERIALIZABLE_SENDER_DIR, fileName, data);
+	}
+	
+	
 	//load queue
-	public void load() {
+//	public void load() {
+//		List<String> list = Util.listFiles(context, SERIALIZABLE_SENDER_DIR);
+//		if (list.size() > 0) {
+//			for(String file : list) {
+//				synchronized (queue) {
+//					queue.add((ArrayList<BxTrackData>)Util.loadSerializable(file));
+//				}
+//				Util.clearData(context, file);
+//				new File(file).delete();
+//			}
+//		}
+//	}
+	
+	private String loadRecord()
+	{
 		List<String> list = Util.listFiles(context, SERIALIZABLE_SENDER_DIR);
-		if (list.size() > 0) {
-			for(String file : list) {
-				synchronized (queue) {
-					queue.add((ArrayList<BxTrackData>)Util.loadSerializable(file));
-				}
-				Util.clearData(context, file);
-				new File(file).delete();
-			}
+		if (list == null || list.size() == 0)
+		{
+			return null;
 		}
+		
+		return list.get(0);
+		
 	}
 	
 	private String convertListToJson(List<BxTrackData> list) {
@@ -98,65 +135,63 @@ public class BxSender implements Runnable{
 		return result;
 	}
 	
-	private void sendList(final List<BxTrackData> list) {
+	private boolean sendList(final List<BxTrackData> list) {
 		String jsonStr = convertListToJson(list);
 
-		Communication.executeSyncPostTask(apiName, jsonStr, new Communication.CommandListener() {
-			
-			@Override
-			public void onServerResponse(String serverMessage) {
-				Log.d("BxSender", "onServerResponse:" + serverMessage);
-			}
-			
-			@Override
-			public void onException(Exception ex) {
-				Log.d("BxSender", "onException");
-				sendingTimes++;
-				if (sendingTimes<2)//TODO:发送失败wait
-					sendList(list);
-				else
-					sendingTimes = 0;
-			}
-		});
+		boolean succed = Communication.executeSyncPostTask(apiName, jsonStr);
+		return succed;
 	}
 	
 	@Override
 	public void run() {
-		load();
-		if (Util.listFiles(context, "BxLogDir").size() > 0) {
-			for(String file : Util.getFileList()) {
-				//add file to queue
-				synchronized (this.queue) {
-					queue.add((ArrayList<BxTrackData>)Util.loadDataFromLocate(this.context, file));
-				}
-//				Util.clearData(this.context, file);
-			}
-		}
 		while(true) {
-				while (!getQueueFlag() || !isSendingReady()) {
+				//file ready & sending ready
+				Log.d("BxSender","ready to send~");
+
+				//First step : send memory data if there is any.
+				ArrayList<BxTrackData> list = null;
+				synchronized (queue) {
+					list = queue.remove(0);
+				}
+				
+				if (list != null) {
+					boolean succed = sendList(list);
+					
+					if (!succed) {
+						saveListToFile(list);
+					}
+				}
+				else	// Send persistence data if there is any.
+				{
+					String recordPath = loadRecord();
+					if (recordPath != null)
+					{
+						ArrayList<BxTrackData> singleRecordList = (ArrayList<BxTrackData>)Util.loadSerializable(recordPath);
+						if (singleRecordList != null && sendList(singleRecordList))
+						{
+							new File(recordPath).delete();
+						}
+					}
+				}
+				
+				//Check if we have more data to send.
+				boolean hasMoreData = this.hasDataToSend();
+				
+				while (!isSendingReady() || !hasMoreData) {
 					try {
 						Log.d("BxSender", "wait()");
-						synchronized (this.queue) {
+						synchronized (sendMutex) {
 							wait(300000);//wait time out 5 min
 						}
+						
+						hasMoreData = this.hasDataToSend();
 						Log.d("BxSender", "wake up~~");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}
 				}
-				//file ready & sending ready
-				Log.d("BxSender","ready to send~");
-				//TODO:gzip之后
-				int size = 0;
-				synchronized (queue) {
-					while ((size = queue.size()) > 0) {
-						list = queue.get(0);
-						if (list != null) {
-							sendList(queue.get(0));
-							queue.remove(0);
-						}
-					}
-				}
+				
+				
 		}//while true
 	}
 

@@ -9,9 +9,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 //singleton
 public class BxTracker {
 	private static final String SERIALIZABLE_TRACKER_FILE = "bx_tracker.ser";//记录文件
-	private String tracktype = null;
 	private List<BxTrackData> dataList = null;
-	private HashMap<String,String> map = null;
 	private static BxTracker instance = null;
 	public static BxTracker getInstance()
 	{
@@ -24,39 +22,30 @@ public class BxTracker {
 	private BxTracker()//构造器
 	{
 		dataList = new ArrayList<BxTrackData>();
-		map = new HashMap<String,String>();
 	}
 	
-	public void endLog() {
-		map.put("tracktype", tracktype);
-		map.put("timestamp", Communication.getTimeStamp());
-
-		//addTrackData
-		addTrackData(new BxTrackData(map));
-		//clear map
-		map.clear();
+	public void endLog(BxTrackData data) {
+		addTrackData(data);
 	}
 	
-	public BxTracker pageLog(String key, String value) {
-		map.put(key, value);
-		tracktype = "pageview";
-		return getInstance();
+	public BxTrackData createPageLogData(String key, String value) {
+		BxTrackData data = new BxTrackData(new HashMap<String, String>());
+		data.appendProperty("tracktype", "pageview");
+		return data.appendProperty(key, value);
 	}
 	
-	public BxTracker eventLog(String key, String value) {
-		map.put(key, value);
-		tracktype = "event";
-		return getInstance();
+	public BxTrackData createEventLogData(String key, String value) {
+		BxTrackData data = new BxTrackData(new HashMap<String, String>());
+		data.appendProperty("tracktype", "event");
+		return data.appendProperty(key, value);
 	}
+	
 	//添加记录
 	private void addTrackData(BxTrackData trackobj)
 	{
 		dataList.add(trackobj);
 		if (dataList.size()>100) {//设置100次,写一组记录
-			synchronized (BxSender.getInstance().getQueue()) {
-				BxSender.getInstance().addToQueue((ArrayList<BxTrackData>)dataList);
-				BxSender.getInstance().notifyAll();
-			}
+			BxSender.getInstance().addToQueue((ArrayList<BxTrackData>)dataList);
 			clearDataList();//后台dataList存储
 		}
 	}

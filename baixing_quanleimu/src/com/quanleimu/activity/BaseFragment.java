@@ -7,32 +7,17 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.support.v4.app.DialogFragment;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentTransaction;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.animation.Animation;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.Button;
-import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
-import com.quanleimu.database.ChatMessageDatabase;
-import com.quanleimu.util.BxMobileConfig;
-import com.quanleimu.util.BxSender;
-import com.quanleimu.util.BxTracker;
-import com.quanleimu.util.Util;
-import com.quanleimu.view.fragment.FirstRunFragment;
-import com.readystatesoftware.viewbadger.BadgeView;
 //import com.tencent.mm.sdk.platformtools.Log;
-import android.util.Log;
 
 /**
  * 
@@ -310,10 +295,10 @@ public abstract class BaseFragment extends Fragment {
 		super.onPause();
 		
 		hideSoftKeyboard();
-		if (BxMobileConfig.getInstance().getLoggingFlag()) {
-			BxSender.getInstance().save();
-			BxTracker.getInstance().save();
-		}
+//		if (BxMobileConfig.getInstance().getLoggingFlag()) {
+//			BxSender.getInstance().save();
+//			BxTracker.getInstance().save();
+//		}
 	}
 	
 	protected final void hideSoftKeyboard()
@@ -334,10 +319,10 @@ public abstract class BaseFragment extends Fragment {
 		((BaseActivity) getActivity()).showFirstRun(this);
 		Log.d("BaseFragment", ""+this.getClass().getName());
 		
-		if (BxMobileConfig.getInstance().getLoggingFlag()) {
-			BxSender.getInstance().load();
-			BxTracker.getInstance().load();
-		}
+//		if (BxMobileConfig.getInstance().getLoggingFlag()) {
+//			BxSender.getInstance().load();
+//			BxTracker.getInstance().load();
+//		}
 	}
 	
 	@Override

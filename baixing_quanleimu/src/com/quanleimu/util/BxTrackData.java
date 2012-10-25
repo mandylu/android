@@ -27,6 +27,13 @@ public class BxTrackData implements Serializable{
 		return map;
 	}
 	
+	
+	public BxTrackData appendProperty(String key, String value)
+	{
+		this.map.put(key, value);
+		return this;
+	}
+	
 	public JSONObject toJsonObj() {
 		JSONObject jobj = new JSONObject();
 		try {
