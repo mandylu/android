@@ -73,6 +73,10 @@ public class FilterUtil {
 					buf.append(paramsHolder.getUiData(f.getName())).append("+");
 				}
 			}
+			else if (paramsHolder.containsKey(f.getName()))
+			{
+				buf.append(paramsHolder.getUiData(f.getName())).append("+");
+			}
 		}
 		}
 		

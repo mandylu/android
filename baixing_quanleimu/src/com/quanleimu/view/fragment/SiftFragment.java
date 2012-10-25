@@ -173,73 +173,35 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 
 	private void collectValue(Bundle bundle)
 	{
-		String result = "";
-		String resultLabel = "";
+//		String result = "";
+//		String resultLabel = "";
 
 		String str = ed_sift.getText().toString().trim();
-//		if( valuemap != null && valuemap.size() != 0)
-//		{
-//			for (int i = 0; i < listFilterss.size(); i++) {
-//
-//				String key = listFilterss.get(i).getName();
-//				if (valuemap.get(key) != null && !valuemap.get(key).equals("")) {
-//					result += " AND "
-//							+ URLEncoder.encode(key) + ":"
-//							+ URLEncoder.encode(valuemap.get(key));
-//				}
-//			}
-//		}
-//
-//		if( labelmap != null && labelmap.size() != 0)
-//		{
-//			for (int i = 0; i < listFilterss.size(); i++) {
-//
-//				String key = listFilterss.get(i).getName();
-//				if(labelmap.get(key) != null && !labelmap.get(key).equals("")){
-//					resultLabel += " AND " + URLEncoder.encode(key) + ":" + URLEncoder.encode(labelmap.get(key));
-//				}
-//			}
-//		}	
+
 		
 		for(int i = 0; i < editors.size(); ++i){
 			String key = editors.keySet().toArray()[i].toString();
 			
 			EditText txtEditor = (EditText)editors.get(key);
 			String textInput = txtEditor.getText().toString();
+			String uiValue = editors.get(key).getTag() != null ? textInput + editors.get(key).getTag() : textInput;
 			if(textInput.length() > 0){
-//				result += " AND "
-//						+ URLEncoder.encode(key) + ":"
-//						+ URLEncoder.encode(textInput);
-				parametersHolder.put(key, textInput, textInput);
+				parametersHolder.put(key, uiValue, textInput);
+			}
+			else
+			{
+				parametersHolder.remove(key);
 			}
 		}
 
 		
 		if (!str.equals("")) {
-//			if(result.length() > 0){
-//				result += " AND ";
-//			}
-//			result += URLEncoder.encode(str);
 			parametersHolder.put("", str, str);
 		}
 		else
 		{
 			parametersHolder.remove("");
 		}
-		
-//		if (!str.equals("")) {
-//			result += URLEncoder.encode(str);
-//		}
-		
-		
-//		if(result.length() > 0)
-//		{
-//			bundle.putString("siftresult", result);
-//			bundle.putString("siftlabels", resultLabel);
-//		}else{
-//				bundle.putString("siftresult", "");
-//				bundle.putString("siftlabels", "");
-//		}
 		
 	}
 	
@@ -336,7 +298,7 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 		LinearLayout ll_meta = (LinearLayout) rootView.findViewById(R.id.meta);
 		LayoutInflater inflater = LayoutInflater.from(rootView
 				.getContext());
-		if (listFilterss == null) {
+		if (listFilterss == null || listFilterss.size() == 0) {
 			ll_meta.setVisibility(View.GONE);
 		} else {
 			ll_meta.removeAllViews();
@@ -344,6 +306,11 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 			String keyWords = parametersHolder.getData("");
 
 			for (int i = 0; i < listFilterss.size(); ++i) {
+				if (listFilterss.get(i) == null)
+				{
+					continue;
+				}
+				
 				View v = null;
 				TextView tvmetatxt = null;
 
@@ -438,10 +405,19 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 				// else
 				// if(listFilterss.get(i).getControlType().equals(""))
 				else {
-					v = inflater.inflate(R.layout.item_post_edit, null);
+					v = inflater.inflate(R.layout.item_filter_edit, null);
 					tvmetatxt = (TextView) v.findViewById(R.id.filter_label);
 					tvmetatxt.setText(listFilterss.get(i).getDisplayName());
-					EditText tvmeta = (EditText) v.findViewById(R.id.postinput);
+					EditText tvmeta = (EditText) v.findViewById(R.id.filter_input);
+					
+					TextView unitmeta = (TextView) v.findViewById(R.id.filter_unit);
+					String unitS = listFilterss.get(i).getUnit();
+					if (unitS != null)
+					{
+						unitmeta.setText(unitS);
+						tvmeta.setTag(unitS);
+					}
+					
 					final String key = listFilterss.get(i).getName();
 					editors.put(key,
 							(EditText) tvmeta);
