@@ -80,6 +80,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
 	public static final String POST_SEND = "完成";
+	public static final String POST_BACK_DIALOG_OK_BUTTON_ID = "是";
 	
 	//My ID
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
@@ -141,22 +142,25 @@ public class BaixingTestCase extends AthrunTestCase {
 		{"CATEGORY", "0", "家具"}, //物品交易
 		{"SELECT", "供求", "转让"},
 		{"TITLE", "标题", "物品交易标题家具"},
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "价格", "10020"}, //价格 （todo：价格不能超过N位）
 		{"SELECT", "发布人", "个人"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"SELECT", "地点", "宝山,全部"}
 	};
 	public static String postDataQiecheyongpin[][] = {
 		{"CATEGORY", "1", "汽车用品"}, //车辆买卖， 汽车用品
 		{"SELECT", "供求", "出售"},
 		{"TITLE", "标题", "测试汽车用品标题"},
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"SELECT", "发布人", "个人"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"SELECT", "地区", "宝山,全部"}
 	};
 	public static String postDataXiezilou[][] = {
 		{"CATEGORY", "2", "写字楼出租"}, //房屋租售
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"SELECT", "供求", "出租"},
-		{"TITLE", "标题", "测试写字楼出租"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"SELECT", "地区", "宝山,全部"},
+		{"TITLE", "标题", "测试写字楼出租"}
 	};
 	public static String postDataQitazhaopin[][] = {
 		{"CATEGORY", "3", "其它招聘"}, //全职招聘
@@ -186,11 +190,12 @@ public class BaixingTestCase extends AthrunTestCase {
 		{"MULTISELECT", "求职意向", "模特,网站,摄影"},
 		{"TEXT", "姓名", "测试员R"},
 		{"SELECT", "发布人", "个人"},
-		{"TITLE", "简历标题", "兼职求职测试"},
+		{"TITLE", "简历标题", "兼职求职测试"}
 	};
 	public static String postDataXunren[][] = {
 		{"CATEGORY", "6", "寻人/寻物"}, //交友活动
 		{"TITLE", "标题", "这时一个寻物的测试"},
+		{"SELECT", "地点", "宝山,全部"},
 		{"TEXT", "联系方式", TEST_DATA_MOBILE}
 	};
 	public static String postDataChongwuyongpin[][] = {
@@ -198,18 +203,21 @@ public class BaixingTestCase extends AthrunTestCase {
 		{"SELECT", "供求", "出售"},
 		{"TITLE", "标题", "食品用品测试标题宠物"},
 		{"SELECT", "发布人", "个人"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"SELECT", "地点", "宝山,全部"}
 	};
 	public static String postDataLipindingzhi[][] = {
 		{"CATEGORY", "8", "礼品定制"}, //生活服务
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TITLE", "标题", "礼品定制测试标题"},
-		{"TEXT", "公司名称", "测试公司"},
-		{"TEXT", "联系方式", TEST_DATA_MOBILE}
+		{"SELECT", "地区", "宝山,全部"},
+		{"TEXT", "公司名称", "测试公司"}
 	};
 	public static String postDataWaiyupeixun[][] = {
 		{"CATEGORY", "9", "外语培训"}, //教育培训
 		{"TITLE", "信息标题", "外语培训测试标题"},
 		{"TEXT", "学校名称", "测试学校"},
+		{"SELECT", "上课地点", "宝山,全部"},
 		{"TEXT", "联系方式", TEST_DATA_MOBILE}
 	};
 	
@@ -605,7 +613,18 @@ public class BaixingTestCase extends AthrunTestCase {
 		}
 		
 		postSend();
-		
+		ViewElement eld = findElementByText(POST_SEND);
+		if (eld != null) {
+			goBack();
+			ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
+			if (d != null) {
+				d.doClick();
+			}
+			goBack();
+			goBack();
+			return "";
+		}
+
 		return title;
 	}
 	
@@ -829,6 +848,7 @@ public class BaixingTestCase extends AthrunTestCase {
 		findElementByText(DIALOG_OK_BUTTON_ID, 0, true).doClick();
 		TimeUnit.SECONDS.sleep(1);
 		goBack();
+		//goBack();
 	}
 	
 	public void doSearch(String keyword) throws Exception {

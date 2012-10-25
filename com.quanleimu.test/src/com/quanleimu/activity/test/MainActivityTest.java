@@ -29,6 +29,14 @@ public class MainActivityTest extends BaixingTestCase {
 	}
 	
 	@Test
+	public void simpleTest() throws Exception {
+		System.out.println("test start");
+		assertTrue("test", false);
+
+		System.out.println("test end");
+	}
+	
+	@Test
 	public void testSearchClick() throws Exception {
 		doSearch("iphone");
 		doSearch("ipad");
