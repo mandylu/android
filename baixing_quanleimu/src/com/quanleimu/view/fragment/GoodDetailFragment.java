@@ -1289,7 +1289,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ArrayList<String> list = new ArrayList<String>();
 
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		if(user != null){
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();
 	
@@ -1313,7 +1313,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ArrayList<String> list = new ArrayList<String>();
 		
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-		if(user != null){
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();
 	
@@ -1334,7 +1334,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		ArrayList<String> list = new ArrayList<String>();
 
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user");
-		if(user != null){
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();
 			list.add("mobile=" + mobile);

@@ -658,7 +658,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         ArrayList<String> requests = new ArrayList<String>();
 
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-        Util.makeupUserInfoParams(user, requests);
+        if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+        	Util.makeupUserInfoParams(user, requests);
+        }
         requests.add("adId=" + adId);
         requests.add("rt=1");
         if(pay != 0){
@@ -734,7 +736,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			json = "";
 			String apiName = "ad_undelete";
 			ArrayList<String> list = new ArrayList<String>();
-			Util.makeupUserInfoParams(user, list);
+			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+				Util.makeupUserInfoParams(user, list);
+			}
 			list.add("adId=" + id);
 			list.add("rt=1");
 
@@ -776,7 +780,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			json = "";
 			String apiName = "ad_delete";
 			ArrayList<String> list = new ArrayList<String>();
-			Util.makeupUserInfoParams(user, list);
+			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+				Util.makeupUserInfoParams(user, list);
+			}
 			list.add("adId=" + id);
 			list.add("rt=1");
 
