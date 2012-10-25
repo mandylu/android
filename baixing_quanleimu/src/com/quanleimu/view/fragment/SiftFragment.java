@@ -298,13 +298,12 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 		LinearLayout ll_meta = (LinearLayout) rootView.findViewById(R.id.meta);
 		LayoutInflater inflater = LayoutInflater.from(rootView
 				.getContext());
+		ll_meta.removeAllViews();
 		if (listFilterss == null || listFilterss.size() == 0) {
-			ll_meta.setVisibility(View.GONE);
+			View v = new View(ll_meta.getContext());
+			v.setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, 0));
+			ll_meta.addView(v);
 		} else {
-			ll_meta.removeAllViews();
-			
-			String keyWords = parametersHolder.getData("");
-
 			for (int i = 0; i < listFilterss.size(); ++i) {
 				if (listFilterss.get(i) == null)
 				{
@@ -438,12 +437,14 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 				ll_meta.addView(border);
 			}
 
-			if (keyWords != null) {
+
+		}
+		
+		String keyWords = parametersHolder.getData("");
+		if (keyWords != null) {
 //				((TextView) SiftFragment.this.findViewById(R.id.edsift))
 //						.setText(keyWords);
-				sendMessage(MSG_UPDATE_KEYWORD, keyWords);
-			}
-
+			sendMessage(MSG_UPDATE_KEYWORD, keyWords);
 		}
 	}
 	
