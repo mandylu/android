@@ -174,6 +174,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				cachedBps[i++] = (Bitmap) p;
 			}
 		}
+		
+		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+			mobile = user.getPhone();
+			password = user.getPassword();
+		}
 	}
 	
 	
@@ -432,10 +438,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 
 	private void usercheck() {
-		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			mobile = user.getPhone();
-			password = user.getPassword();
 			showSimpleProgress();
 			new Thread(new UpdateThread(true)).start();
 		}
