@@ -180,6 +180,7 @@ public class SearchFragment extends BaseFragment {
 				if (arg2 <= (listRemark.size() - 1)) {
 					searchContent = listRemark.get(arg2);
 					etSearch.setText(searchContent);
+					etSearch.setSelection(searchContent.length(), searchContent.length());
 					showSearchResult(true);
 				} else {
 					listRemark.clear();
@@ -378,14 +379,15 @@ public class SearchFragment extends BaseFragment {
 		public void run() {
 			String apiName = "ad_search";
 			List<String> parameters = new ArrayList<String>();
-			if (SearchFragment.this.firstStepCategory != null) {
+			if (SearchFragment.this.firstStepCategory != null) 
+			{
 				parameters.add("categoryEnglishName="
 						+ SearchFragment.this.firstStepCategory
 								.getEnglishName());
 			}
 			parameters.add("query="
 					+ URLEncoder.encode(SearchFragment.this.searchContent));
-			parameters.add("timestamp="+new Date().getTime());
+//			parameters.add("timestamp="+new Date().getTime());
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
 				String json = Communication.getDataByUrl(apiUrl, false);
@@ -435,11 +437,6 @@ public class SearchFragment extends BaseFragment {
 					pair.second.intValue()));
 
 			return convertView;
-		}
-
-		@Override
-		public int getCount() {
-			return objects == null ? 0 : objects.size();
 		}
 	}
 
