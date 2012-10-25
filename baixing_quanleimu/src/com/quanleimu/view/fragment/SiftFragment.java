@@ -28,7 +28,6 @@ import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.values;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Util;
 
@@ -132,18 +131,7 @@ public class SiftFragment extends BaseFragment implements View.OnClickListener{
 	}
 	
 	public void handleRightAction(){
-			
-		
-		
-//			Bundle bundle = createArguments(null, backPageName);
-//			bundle.putString("categoryEnglishName", categoryEnglishName);
-//			collectValue(bundle);
-		
-//			pushAndFinish(new GetGoodFragment(), bundle);
-			BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_LISTINGFILTER_SEND, null);
-			finishFragment(requestCode, parametersHolder);
-		
-		
+		finishFragment(requestCode, parametersHolder);
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	public void initTitle(TitleDef title){

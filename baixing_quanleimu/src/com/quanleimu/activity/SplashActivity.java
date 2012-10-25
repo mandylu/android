@@ -24,7 +24,6 @@ import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
@@ -361,9 +360,6 @@ public class SplashActivity extends BaseActivity{
 				myApp.setPersonMark((String)personalMark);
 			}
 			myHandler.sendEmptyMessage(2);
-			
-			BXStatsHelper.getInstance().load(SplashActivity.this);
-			BXStatsHelper.getInstance().send();//Send log each startup.
 		}
 
 	}

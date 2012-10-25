@@ -33,14 +33,9 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-//import com.tencent.mm.sdk.openapi.SendMessageToWX;
-//import com.tencent.mm.sdk.openapi.WXAPIFactory;
-//import com.tencent.mm.sdk.openapi.WXMediaMessage;
-//import com.weibo.net.AccessToken;
 import com.quanleimu.util.BXDatabaseHelper;
 import android.util.Log;
 import android.telephony.TelephonyManager;
@@ -136,10 +131,6 @@ public class QuanleimuApplication extends Application implements LocationService
 				db.close();
 			}
 		}
-	}
-	
-	public static void addViewCounter(String adId){
-		BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_AD_VIEW, adId);
 	}
 	
 	public static void setTextMode(boolean tMode){

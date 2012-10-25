@@ -25,7 +25,6 @@ import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.Util;
@@ -209,7 +208,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		            		QuanleimuApplication.mDemoApp = null;
 		            		isInActiveStack = false;
 		            		
-		            		BXStatsHelper.getInstance().store(QuanleimuMainActivity.this);
 		            		ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
 		            		ChatMessageDatabase.clearOldMessage(1000);
 		                    System.exit(0);
@@ -464,8 +462,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			if(intent.getBooleanExtra("fromNotification", false)){
 				QuanleimuApplication.version = Util.getVersion(this);
 				QuanleimuApplication.udid = Util.getDeviceUdid(this);
-				BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_CLICK_NOTIFICATION, null);
-				BXStatsHelper.getInstance().send();
 			}
 		}
 //		Profiler.markEnd("maincreate");

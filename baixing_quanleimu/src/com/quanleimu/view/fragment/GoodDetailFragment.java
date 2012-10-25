@@ -58,7 +58,6 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
@@ -68,17 +67,6 @@ import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
-//import com.quanleimu.entity.AuthDialogListener;
-//import com.quanleimu.entity.WeiboAccessTokenWrapper;
-//import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-//import com.tencent.mm.sdk.openapi.WXMediaMessage;
-//import com.tencent.mm.sdk.platformtools.Log;
-//import com.weibo.net.AccessToken;
-//import com.weibo.net.Oauth2AccessTokenHeader;
-//import com.weibo.net.Utility;
-//import com.weibo.net.Weibo;
-//import com.weibo.net.WeiboException;
-//import com.weibo.net.WeiboParameters;
 
 public class GoodDetailFragment extends BaseFragment implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 
@@ -161,7 +149,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onPause() {
 		this.keepSilent = true;
 		super.onPause();
-		BXStatsHelper.getInstance().send();
 		Gallery glDetail = (Gallery) getView().findViewById(R.id.glDetail);
 		if(glDetail != null){
 //			glDetail.getc
@@ -277,10 +264,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			this.mListLoader.setHandler(handler);
 			this.mListLoader.setHasMoreListener(this);
 		}
-        
-		//the ad is viewed once
-		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));	
-        initCalled = true;		
 	}
 
 	@Override
@@ -380,14 +363,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //					reCreateTitle();
 //					refreshHeader();
 					saveToHistory();
-//					if(!initCalled){
-//						//the ad is viewed once
-						QuanleimuApplication.addViewCounter(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-//					}else{
-//						initCalled = false;
-//					}
-					
-					updateButtonStatus();
+//					updateButtonStatus();
 					if(pos == 0){
 						v.findViewById(R.id.btn_prev).setVisibility(View.GONE);
 					}else{
@@ -954,7 +930,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
 			args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-			this.initCalled = true;
 			pushFragment(new PostGoodsFragment(), args);
 			break;
 		}
@@ -1643,7 +1618,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void startContact(boolean sms)
 	{
-		BXStatsHelper.getInstance().increase(sms ? BXStatsHelper.TYPE_SMS_SEND : BXStatsHelper.TYPE_CALL, null);
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
 		if (contact != null)
 		{

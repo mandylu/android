@@ -21,7 +21,6 @@ import android.app.PendingIntent;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Util;
@@ -201,8 +200,6 @@ public class BXNotificationService extends Service {
 							Log.d("task", "task  increase get_notification");
 							QuanleimuApplication.version = Util.getVersion(BXNotificationService.this);
 							QuanleimuApplication.udid = Util.getDeviceUdid(BXNotificationService.this);
-							BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_GET_NOTIFICATION, null);
-							BXStatsHelper.getInstance().send();
 							BXNotificationService.this.showNotification(ticket, title, content);
 							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
 						}

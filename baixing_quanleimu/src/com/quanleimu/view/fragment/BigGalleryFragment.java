@@ -21,7 +21,6 @@ import android.os.Bundle;
 import android.os.Environment;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -32,8 +31,6 @@ import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
@@ -41,6 +38,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
+import android.util.Log;
 
 public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	//int index = 0;

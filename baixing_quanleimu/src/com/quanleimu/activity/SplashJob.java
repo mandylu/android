@@ -19,7 +19,6 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.BXStatsHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
@@ -287,9 +286,6 @@ public class SplashJob {
 				parentActivity.myApp.setPersonMark((String)personalMark);
 			}
 			myHandler.sendEmptyMessage(2);
-			
-			BXStatsHelper.getInstance().load(parentActivity);
-			BXStatsHelper.getInstance().send();//Send log each startup.
 		}
 
 	}
