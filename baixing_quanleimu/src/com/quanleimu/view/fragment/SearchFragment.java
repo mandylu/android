@@ -395,7 +395,7 @@ public class SearchFragment extends BaseFragment {
 						.parseAdSearchCategoryCountResult(json);
 			} catch (Exception e) {
 				categoryResultCountList = null;
-				Log.e(TAG, e.getMessage());
+				Log.e(TAG, e.getMessage()==null?"网络请求失败":e.getMessage());
 				getActivity().runOnUiThread(new Runnable(){
 					@Override
 					public void run(){
