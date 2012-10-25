@@ -221,6 +221,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	protected void setUp() throws Exception {
 		super.setUp();
 		// log("This is a test for log() method");
+		startScreen();
 		startScreen_v3();
 	}
 	

@@ -9,7 +9,6 @@ import java.util.ArrayList;
 import android.test.TouchUtils;
 import android.view.View;
 import android.util.Log;
-import android.support.v4.view.ViewPager;
 
 import org.athrun.android.framework.viewelement.AbsListViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
