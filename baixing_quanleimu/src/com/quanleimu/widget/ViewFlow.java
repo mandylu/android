@@ -755,8 +755,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 			// Recycle view outside buffer range
 			if(mCurrentBufferIndex >= 2*mSideBuffer) {
 				while(mCurrentBufferIndex > mSideBuffer && mCurrentAdapterIndex-mCurrentBufferIndex+2*mSideBuffer < mAdapter.getCount()){
-					recycleView(mLoadedViews.removeFirst());
-					mCurrentBufferIndex--;
+					if(mLoadedViews.size() > 0){
+						recycleView(mLoadedViews.removeFirst());
+						mCurrentBufferIndex--;
+					}else{
+						Log.d("haha", "hahaha,   no more elements   " + mCurrentBufferIndex);
+						break;
+					}
 				}
 			}
 			
@@ -774,7 +779,13 @@ public class ViewFlow extends AdapterView<Adapter> {
 			if(mCurrentBufferIndex <= 0){
 				// Recycle view outside buffer range
 				while (mLoadedViews.size() - 1 - mCurrentBufferIndex > mSideBuffer) {
-					recycleView(mLoadedViews.removeLast());
+					if(mLoadedViews.size() > 0){
+						recycleView(mLoadedViews.removeLast());
+					}else{
+						
+						Log.d("haha", "hahaha,   no more elements222   " + mCurrentBufferIndex);
+						break;
+					}
 				}
 			}
 			
