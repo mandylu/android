@@ -37,45 +37,45 @@ cd ../
 
 #start testemulator1
 
-adb -s emulator-5556 emu kill;
+#adb -s emulator-5556 emu kill;
 emulator -avd testemulator1 -port 5556 -sdcard com.quanleimu.test/testcase1.img &
 
 adb -s emulator-5556 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5556 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5556 uninstall com.quanleimu.activity;
-adb install -s emulator-5556 -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-adb install -s emulator-5556 -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+adb -s emulator-5556 install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
+adb -s emulator-5556 install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 
 adb -s emulator-5556 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5556 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 
 sleep 2;
-
-#test adListing loop case
-adb -s emulator-5556 shell am instrument -w -e class \
-	com.quanleimu.activity.test.KeepLiveTest#runAdListing com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> testcaserunadlisting.log &
-
 #end testemulator1 
 sleep 3;
 
 #start testemulator2
-adb -s emulator-5580 emu kill;
+#adb -s emulator-5580 emu kill;
 emulator -avd testemulator2 -port 5580 -sdcard com.quanleimu.test/testcase2.img &
 
 adb -s emulator-5580 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5580 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5580 uninstall com.quanleimu.activity;
-adb install -s emulator-5580 -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-adb install -s emulator-5580 -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+adb -s emulator-5580 install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
+adb -s emulator-5580 install  -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 
 adb -s emulator-5580 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-5580 emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
-
-#test post loop case
-adb -s emulator-5580 shell am instrument -w -e class \
-	com.quanleimu.activity.test.KeepLiveTest#runPost com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> testcaserunpost.log &
 
 #end testemulator2
+
+#test adListing loop case
+adb -s emulator-5556 shell am instrument -w -e class com.quanleimu.activity.test.KeepLiveTest#runAdListing com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> testcaserunadlisting.log &
+
+sleep 4;
+
+#test post loop case
+adb -s emulator-5580 shell am instrument -w -e class com.quanleimu.activity.test.KeepLiveTest#runPost com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> testcaserunpost.log &
+
 
 #test all case
 #adb shell am instrument -w -e class com.quanleimu.activity.test com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> testcaseall.log ;
