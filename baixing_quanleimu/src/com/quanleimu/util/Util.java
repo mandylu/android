@@ -11,6 +11,7 @@ import java.io.IOException;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
@@ -201,6 +202,142 @@ public class Util {
 		}
 		return res;
 	}
+	
+	/**
+	 * Return files under the specified dir.
+	 * 
+	 * @param context
+	 * @param dir
+	 * @return
+	 */
+	public static List<String> listFiles(Context context, String dir)
+	{
+		List<String> list = new ArrayList<String>();
+		String dirPath = context.getFilesDir().getAbsolutePath();
+		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
+		
+		File dirF = new File(dirPath);
+		if (dirF.exists() && dirF.isDirectory())
+		{
+			File[] fs = dirF.listFiles();
+			for (File f : fs)
+			{
+				list.add(f.getAbsolutePath());
+			}
+		}
+		
+		return list;
+	}
+	
+	/**
+	 * Load serializable file from specified path.
+	 * 
+	 * @param absolutePath
+	 * @return
+	 */
+	public static Object loadSerializable(String absolutePath)
+	{
+		if (absolutePath == null)
+		{
+			return null;
+		}
+		
+		File f = new File(absolutePath);
+		if (!f.exists() || f.isDirectory())
+		{
+			return null;
+		}
+		
+		ObjectInputStream ins = null;
+		try
+		{
+			ins = new ObjectInputStream(new FileInputStream(f));
+			return ins.readObject();
+		}
+		catch(Throwable t)
+		{
+			
+		}
+		finally
+		{
+			try
+			{
+				if (ins != null)
+				{
+					ins.close();
+				}
+			}
+			catch(Throwable t)
+			{
+				//Ignor.
+			}
+			
+		}
+		
+		return null;
+		
+	}
+	
+	/**
+	 * Save serializable file to speficied path.
+	 * 
+	 * @param context
+	 * @param dir
+	 * @param file
+	 * @param obj
+	 * @return
+	 */
+	public static String saveSerializableToPath(Context context, String dir, String file, Serializable obj)
+	{
+		if (file == null || obj == null || context == null)
+		{
+			return null;
+		}
+		
+		String dirPath = context.getFilesDir().getAbsolutePath();
+		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
+		
+		boolean succed = new File(dirPath).mkdirs();
+		if (!succed)
+		{
+			return null;
+		}
+		
+		
+		String filePath = dirPath.endsWith(File.separator) ? dirPath + file : dirPath + File.separator + file; 
+		ObjectOutputStream os =null;
+		try
+		{
+			os = new ObjectOutputStream(new FileOutputStream(new File(filePath)));
+			os.writeObject(obj);
+			os.flush();
+			os.close();
+			
+			return filePath;
+		}
+		catch(Throwable t)
+		{
+		}
+		finally
+		{
+			if (os != null)
+			{
+				try
+				{
+					os.flush();
+					os.close();
+				}
+				catch(Throwable t)
+				{
+					//Ignor.
+				}
+			}
+		}
+		
+		return null;
+		
+	}
+	
 	
 	public static void clearData(Context context, String file){
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){
