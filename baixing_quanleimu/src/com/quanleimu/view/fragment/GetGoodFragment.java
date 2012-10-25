@@ -262,7 +262,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				
 			}
 			
-			hideProgress();
+//			hideProgress();
 		}
 	}
 	
