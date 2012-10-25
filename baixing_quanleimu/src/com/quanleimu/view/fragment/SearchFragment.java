@@ -394,8 +394,13 @@ public class SearchFragment extends BaseFragment {
 			} catch (Exception e) {
 				categoryResultCountList = null;
 				Log.e(TAG, e.getMessage());
-				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
-						Toast.LENGTH_SHORT).show();
+				getActivity().runOnUiThread(new Runnable(){
+					@Override
+					public void run(){
+						Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
+								Toast.LENGTH_SHORT).show();
+					}
+				});
 			}
 			SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
 					categoryResultCountList);			
