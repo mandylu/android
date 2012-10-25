@@ -182,6 +182,7 @@ public class BaixingTestCase extends AthrunTestCase {
 	public static String postDataJianzhiJianli[][] = {
 		{"CATEGORY", "5", "兼职求职简历"}, //求职简历
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "现居住地", "测试居住地"},
 		{"MULTISELECT", "求职意向", "模特,网站,摄影"},
 		{"TEXT", "姓名", "测试员R"},
 		{"SELECT", "发布人", "个人"},

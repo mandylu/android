@@ -27,7 +27,7 @@ public class KeepLiveTest extends BaixingTestCase {
                 timer.cancel();
             }
         };
-        timer.schedule(tt, 100 * 1000); // N秒 * 1000
+        timer.schedule(tt, 1 * 60 * 60 * 1000); // N秒 * 1000
 	}
 	
 	/*
