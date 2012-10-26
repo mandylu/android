@@ -350,6 +350,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    
 		@Override
 		public void onSwitched(View view, int position) {
+			if(listUrl == null) return;
 			postIndex = position;
 			
 //			if(null != m_viewInfoListener){
