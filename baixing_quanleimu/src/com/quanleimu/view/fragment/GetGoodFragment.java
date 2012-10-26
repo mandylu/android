@@ -501,6 +501,11 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				bundle.putString("popup_message", "没有符合的结果，请更改条件并重试！");
 				msg1.setData(bundle);
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+
+				GoodsListAdapter adapter = findGoodListAdapter();
+				adapter.setList(new ArrayList<GoodsDetail>());
+				adapter.updateGroups(null);
+				adapter.notifyDataSetChanged();
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
@@ -515,7 +520,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus())
 				lvGoodsList.fireRefresh();
 				//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
-			
+
 			hideProgress();
 			break;
 		case GoodsListLoader.MSG_NO_MORE:
