@@ -23,7 +23,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 	private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
 	private String myId;
 	private LayoutInflater inflater;
-	private final long MSG_GROUP_TIME = 24* 60 * 60;
+	private final long MSG_GROUP_TIME = 12* 60 * 60;
 	
 	public ChatMessageAdapter(String myId)
 	{
