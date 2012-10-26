@@ -309,7 +309,7 @@ public class FilterUtil {
 			if (tag instanceof Filterss && f.getName().equals( ((Filterss) tag).getName()))
 			{
 				TextView text = (TextView) v.findViewById(R.id.filter_name);
-				text.setText(label);
+				text.setText(label.replaceFirst("所有", ""));
 				break;
 			}
 		}
@@ -343,11 +343,12 @@ public class FilterUtil {
 				}
 
 				if (!valid) {
-					text.setText("所有" + filter.getDisplayName());
+					text.setText(filter.getDisplayName());
 				}
 			}
 		} else {
-			text.setText("所有" + filter.getDisplayName());
+			//text.setText("所有" + filter.getDisplayName());
+			text.setText(filter.getDisplayName());
 		}
 	}
 	
