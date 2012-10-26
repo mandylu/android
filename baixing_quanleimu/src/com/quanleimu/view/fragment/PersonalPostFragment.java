@@ -540,6 +540,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 	}
 	
+	@Override
+	public boolean handleBack(){
+		Bundle bundle = createArguments(null, null);
+		bundle.putInt("defaultPageIndex", 1);
+		((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
+		return true;
+	}
+	
 	private void showBindDialog(){
 //		String[] items = {"绑定百姓网帐号，网站手机统一管理", "继续发布信息"};
 		new AlertDialog.Builder(this.getActivity())
