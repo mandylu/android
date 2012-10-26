@@ -5,6 +5,7 @@ import java.util.List;
 import com.quanleimu.activity.R;
   
 import android.content.Context;  
+import android.hardware.Camera.Size;
 import android.view.LayoutInflater;  
 import android.view.View;  
 import android.view.ViewGroup;  
@@ -42,12 +43,12 @@ public class GridAdapter extends BaseAdapter {
         this.colCount = columnCount;
         mInflater = (LayoutInflater) context  
                 .getSystemService(Context.LAYOUT_INFLATER_SERVICE);  
-  
     }  
   
     public int getCount() {  
-        // TODO Auto-generated method stub  
-        return list.size();  
+        final int size = list.size();
+        
+        return size % colCount == 0? size : size + colCount - (size % colCount);
     }  
   
     @Override  
@@ -60,25 +61,35 @@ public class GridAdapter extends BaseAdapter {
     public long getItemId(int index) {  
         return index;  
     }  
+    
   
-    @Override  
+    @Override
+	public boolean areAllItemsEnabled() {
+    	return list.size() % colCount == 0; //No hole to fill.
+	}
+
+	@Override
+	public boolean isEnabled(int position) {
+    	return position < list.size();
+	}
+
+	@Override  
     public View getView(int index, View convertView, ViewGroup parent) {  
         GridHolder holder;  
         if (convertView == null) {     
             convertView = mInflater.inflate(R.layout.categorygriditem, null);     
             holder = new GridHolder();  
-            holder.imageBtn = (ImageButton)convertView.findViewById(R.id.itemicon);  
-            holder.imageBtn.setClickable(false);
-            holder.imageBtn.setFocusable(false);
-            holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-            holder.starIcon = convertView.findViewById(R.id.star);
+        	holder.imageBtn = (ImageButton)convertView.findViewById(R.id.itemicon);  
+        	holder.imageBtn.setClickable(false);
+        	holder.imageBtn.setFocusable(false);
+        	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
+        	holder.starIcon = convertView.findViewById(R.id.star);
             convertView.setTag(holder);
   
         }else{  
              holder = (GridHolder) convertView.getTag();     
-  
         }  
-        GridInfo info = list.get(index);  
+        GridInfo info = index < list.size() ? list.get(index) : null;  
         if (info != null) {     
         	String text = info.text;
         	if (info.number > 0) 
@@ -88,7 +99,13 @@ public class GridAdapter extends BaseAdapter {
             holder.text.setText(text);
             holder.imageBtn.setImageResource(info.imgResourceId);
             holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
+            convertView.setEnabled(true);
         }  
+        else
+        {
+        	holder.starIcon.setVisibility(View.GONE);
+        	convertView.setEnabled(false);
+        }
         
         if (index != 0 && (index + 1)%colCount == 0)
         {
