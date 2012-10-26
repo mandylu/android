@@ -640,7 +640,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 						public void onItemSelect(MultiLevelItem item) {
 							FilterUtil.updateFilter(filterParamHolder, item, fss.getName());
 							
-							FilterUtil.updateFilterLabel(findAllFilterView(), item.txt, fss);
+							if (filterParamHolder.containsKey(fss.getName()))
+							{
+								FilterUtil.updateFilterLabel(findAllFilterView(), item.txt, fss);
+							}
+							else
+							{
+								FilterUtil.updateFilterLabel(findAllFilterView(), fss.getDisplayName(), fss);
+							}
 //							updateSearchParams();
 							
 							resetSearch(curLocation);
