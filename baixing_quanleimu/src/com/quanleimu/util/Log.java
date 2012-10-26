@@ -1,37 +1,35 @@
 package com.quanleimu.util;
 
-import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
-
-
-public class BxTrackData implements Serializable{
-	/**
-	 * 
-	 */
-	private static final long serialVersionUID = 1L;
-//	
+/**
+ * @author xuweiyan@baixing.com
+ */
+public class Log {
+	
 	private HashMap<String, String> map;
 	
 	//constructor
-	public BxTrackData(HashMap<String, String> map)
+	public Log(HashMap<String, String> map)
 	{
 		this.map = map;
 	}
-
 	
 	public HashMap<String, String> getMap() {
 		return map;
 	}
 	
-	
-	public BxTrackData appendProperty(String key, String value)
+	public Log append(String key, String value)
 	{
 		this.map.put(key, value);
 		return this;
+	}
+	
+	public void end() {
+		Tracker.getInstance().addLog(this);
 	}
 	
 	public JSONObject toJsonObj() {

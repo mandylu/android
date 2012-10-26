@@ -295,10 +295,7 @@ public abstract class BaseFragment extends Fragment {
 		super.onPause();
 		
 		hideSoftKeyboard();
-//		if (BxMobileConfig.getInstance().getLoggingFlag()) {
-//			BxSender.getInstance().save();
-//			BxTracker.getInstance().save();
-//		}
+
 	}
 	
 	protected final void hideSoftKeyboard()
@@ -318,11 +315,7 @@ public abstract class BaseFragment extends Fragment {
 		
 		((BaseActivity) getActivity()).showFirstRun(this);
 		Log.d("BaseFragment", ""+this.getClass().getName());
-		
-//		if (BxMobileConfig.getInstance().getLoggingFlag()) {
-//			BxSender.getInstance().load();
-//			BxTracker.getInstance().load();
-//		}
+
 	}
 	
 	@Override

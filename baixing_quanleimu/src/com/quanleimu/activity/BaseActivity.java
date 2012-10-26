@@ -30,6 +30,9 @@ import android.widget.TextView;
 
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.entity.CityDetail;
+import com.quanleimu.util.TrackConfig;
+import com.quanleimu.util.Sender;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.view.fragment.FirstRunFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
@@ -65,6 +68,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	@Override
     public void onSaveInstanceState(Bundle savedInstanceState) {
+		Log.d("baseactivity", "save");
 		LocationService.getInstance().stop();
 		savedInstanceState.putString("cityEnglishName", myApp.getCityEnglishName());
 		savedInstanceState.putString("cityName", myApp.getCityName());
@@ -81,12 +85,19 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		
 		savedInstanceState.putStringArrayList("cityDetails", strDetails);
 		savedInstance = true;
+		
+		// BxSender & BxTracker save data into file.
+		try {
+			Sender.getInstance().save();
+			Tracker.getInstance().save();
+		} catch (Exception e) {}
         super.onSaveInstanceState(savedInstanceState);
     }
 
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
     	savedInstance = false;
+    	Log.d("baseactivity", "restore");
 //    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
     	super.onRestoreInstanceState(savedInstanceState);
 		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
@@ -117,6 +128,11 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			cityDetails.add(detail);
 		}
 		myApp.setListCityDetails(cityDetails);
+		
+		// BxSender & BxTracker save data into file.
+		try {
+			Tracker.getInstance().load();
+		} catch (Exception e) {}
     }
 	
 	protected TextView tvAddMore ;

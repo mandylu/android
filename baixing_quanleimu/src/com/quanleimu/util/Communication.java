@@ -95,7 +95,7 @@ public class Communication implements Comparator<String> {
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
 		list.add("uid=" + Util.getMyId(QuanleimuApplication.context) );
-//		list.add("city=" + QuanleimuApplication.cityEnglishName);
+		list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
 		
 		Collections.sort(list, COMPARATOR);
 
@@ -695,14 +695,19 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
+	
 	public static boolean executeSyncPostTask(final String apiName, final String jsonStr) {
 		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 		url += "&json=";
 		url += jsonStr;
 		
 		try {
-			String result = Communication.getDataByGzipUrl(url, true);
-			return true;
+			JSONObject error = new JSONObject(Communication.getDataByGzipUrl(url, true));
+			String code = (String) error.getJSONObject("error").get("code");
+			if (code.equals("0"))
+				return true;
+			else
+				return false;
 		} catch (Exception e) {
 			return false;
 		}
