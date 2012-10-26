@@ -340,10 +340,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    	@Override
 	    	public void onViewRecycled(View view){
 	    		
-	    		if(view instanceof ImageView){
-	    			//recycle the bitmap referred by the view
-	    			QuanleimuApplication.getImageLoader().forceRecycle((String)(((ImageView)view).getTag()));
-	    		}
+//	    		if(view instanceof ImageView){
+//	    			//recycle the bitmap referred by the view
+//	    			QuanleimuApplication.getImageLoader().forceRecycle((String)(((ImageView)view).getTag()));
+//	    		}
 	    	}
 	    }
 	
