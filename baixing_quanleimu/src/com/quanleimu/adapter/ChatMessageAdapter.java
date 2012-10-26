@@ -23,6 +23,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 	private List<ChatMessage> msgList = new ArrayList<ChatMessage>();
 	private String myId;
 	private LayoutInflater inflater;
+	private final long MSG_GROUP_TIME = 24* 60 * 60;
 	
 	public ChatMessageAdapter(String myId)
 	{
@@ -105,7 +106,7 @@ public class ChatMessageAdapter extends BaseAdapter {
 		ChatMessage msg = msgList.get(position);
 		if(position >= 0){
 			ChatMessage preMsg = position == 0 ? null : msgList.get(position - 1);
-			if(position == 0 || (preMsg != null && (Long.valueOf(msg.getTimestamp()) - Long.valueOf(preMsg.getTimestamp()) >= 5 * 60))){
+			if(position == 0 || (preMsg != null && (Long.valueOf(msg.getTimestamp()) - Long.valueOf(preMsg.getTimestamp()) >= MSG_GROUP_TIME ))){
 				Date date = new Date(Long.valueOf(msg.getTimestamp()) * 1000);
 				SimpleDateFormat sDateFormat = new SimpleDateFormat("MM-dd HH:mm");
 				String dt = sDateFormat.format(date);

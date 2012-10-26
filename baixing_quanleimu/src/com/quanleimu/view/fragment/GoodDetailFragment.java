@@ -112,6 +112,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private boolean initCalled = false;
 	
+	private boolean fromChat = false;
+	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
 		REQUEST_TYPE_UPDATE,
@@ -264,6 +266,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			this.mListLoader.setHandler(handler);
 			this.mListLoader.setHasMoreListener(this);
 		}
+		
+		this.fromChat = this.getArguments().getBoolean("fromChat");
 	}
 
 	@Override
@@ -732,6 +736,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void startChat()
 	{
+		if (this.fromChat)
+		{
+			this.finishFragment();
+			return;
+		}
+		
 		if (/*m_viewInfoListener != null &&*/ this.detail != null)
 		{
 			Bundle bundle = new Bundle();
@@ -739,7 +749,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			bundle.putString("receiverId", detail.getValueByKey("userId"));
 			bundle.putString("adId", detail.getValueByKey("id"));
 			bundle.putString("adTitle", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-			
+			bundle.putBoolean("fromAd", true);
 			pushFragment(new TalkFragment(), bundle);
 		}
 	}

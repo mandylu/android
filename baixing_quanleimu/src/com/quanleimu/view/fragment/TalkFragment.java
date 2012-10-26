@@ -92,6 +92,8 @@ public class TalkFragment extends BaseFragment {
 
 		private View lineView;
 		
+		private boolean fromAd = false;
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			// TODO Auto-generated method stub
@@ -116,6 +118,7 @@ public class TalkFragment extends BaseFragment {
 					lastupdateTime = msg.getTimestamp();
 				}
 				
+				this.fromAd = bundle.getBoolean("fromAd");
 				
 				if (bundle.containsKey("sessionId"))
 				{
@@ -196,7 +199,12 @@ public class TalkFragment extends BaseFragment {
 				
 				@Override
 				public void onClick(View v) {
-			      
+					if (TalkFragment.this.fromAd)
+					{
+						TalkFragment.this.finishFragment();
+						return;
+					}
+					
 			        ArrayList<GoodsDetail> goodsArray = new ArrayList<GoodsDetail>();
 			        goodsArray.add(goodsDetail);
 			        GoodsList tempGoodsList = new GoodsList(goodsArray);
@@ -207,6 +215,7 @@ public class TalkFragment extends BaseFragment {
 					Bundle bundle = new Bundle();
 					bundle.putInt("index", 0);
 					bundle.putSerializable("loader", glLoader);
+					bundle.putBoolean("fromChat", true);
 					TalkFragment.this.pushFragment(new GoodDetailFragment(), bundle);				
 				}
 			});
