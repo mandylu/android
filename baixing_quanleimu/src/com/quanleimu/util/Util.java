@@ -230,6 +230,53 @@ public class Util {
 		return list;
 	}
 	
+	public static byte[] loadData(String absolutePath)
+	{
+
+		if (absolutePath == null)
+		{
+			return null;
+		}
+		
+		File f = new File(absolutePath);
+		if (!f.exists() || f.isDirectory())
+		{
+			return null;
+		}
+		
+		byte[] data = null;
+		FileInputStream ins = null;
+		try
+		{
+			ins = new FileInputStream(f);
+			data = new byte[ins.available()];
+			ins.read(data);
+			
+			return data;
+		}
+		catch(Throwable t)
+		{
+			
+		}
+		finally
+		{
+			try
+			{
+				if (ins != null)
+				{
+					ins.close();
+				}
+			}
+			catch(Throwable t)
+			{
+				//Ignor.
+			}
+			
+		}
+		
+		return null;
+	}
+	
 	/**
 	 * Load serializable file from specified path.
 	 * 
@@ -277,6 +324,56 @@ public class Util {
 		
 		return null;
 		
+	}
+	
+	public static String saveDataToFile(Context context, String dir, String file, byte[] data)
+	{
+		if (file == null || data == null || data.length == 0 || context == null)
+		{
+			return null;
+		}
+		
+		String dirPath = context.getFilesDir().getAbsolutePath();
+		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
+		
+		boolean succed = new File(dirPath).mkdirs();
+		if (!succed)
+		{
+			return null;
+		}
+		
+		
+		String filePath = dirPath.endsWith(File.separator) ? dirPath + file : dirPath + File.separator + file; 
+		FileOutputStream os =null;
+		try
+		{
+			os = new FileOutputStream(new File(filePath), true);
+			os.write(data);
+			os.flush();
+			os.close();
+			
+			return filePath;
+		}
+		catch(Throwable t)
+		{
+		}
+		finally
+		{
+			if (os != null)
+			{
+				try
+				{
+					os.flush();
+					os.close();
+				}
+				catch(Throwable t)
+				{
+					//Ignor.
+				}
+			}
+		}
+		
+		return null;
 	}
 	
 	/**
