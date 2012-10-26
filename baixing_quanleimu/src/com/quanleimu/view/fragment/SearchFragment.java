@@ -81,13 +81,14 @@ public class SearchFragment extends BaseFragment {
 		title.m_titleControls = LayoutInflater.from(getActivity()).inflate(
 				R.layout.title_search, null);
 		etSearch = (EditText) title.m_titleControls.findViewById(R.id.etSearch);
-		title.m_rightActionHint = "取消";
+		title.m_leftActionHint = "返回";
 
 		etSearch.setOnKeyListener(new View.OnKeyListener() {
 
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER) {
+				if (keyCode == KeyEvent.KEYCODE_ENTER) 
+				{
 					SearchFragment.this.doSearch();
 					return true;
 				} else if (keyCode == KeyEvent.KEYCODE_BACK)
@@ -101,31 +102,6 @@ public class SearchFragment extends BaseFragment {
 				{
 					return false;
 				}
-			}
-		});
-		
-		etSearch.addTextChangedListener(new TextWatcher() {
-			
-			@Override
-			public void onTextChanged(CharSequence s, int start, int before, int count) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void beforeTextChanged(CharSequence s, int start, int count,
-					int after) {
-				// TODO Auto-generated method stub
-				
-			}
-			
-			@Override
-			public void afterTextChanged(Editable s) {
-				if (s.length() == 0)
-					SearchFragment.this.getTitleDef().m_rightActionHint = "取消";
-				else
-					SearchFragment.this.getTitleDef().m_rightActionHint = "搜索";
-				SearchFragment.this.refreshHeader();
 			}
 		});
 		
@@ -295,14 +271,6 @@ public class SearchFragment extends BaseFragment {
 			firstStepCategory = (FirstStepCate) result;
 			showSearchResult(true);
 		}
-	}
-
-	@Override
-	public void handleRightAction() {
-		if (etSearch.getText().length() > 0)
-			this.doSearch();
-		else
-			this.finishFragment();
 	}
 
 	private void doSearch() {
