@@ -7,9 +7,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.quanleimu.util.BxMobileConfig;
-import com.quanleimu.util.BxSender;
-import com.quanleimu.util.BxTracker;
+import com.quanleimu.util.Sender;
+import com.quanleimu.util.TrackConfig;
 
 public class NetworkConnectivityReceiver extends BroadcastReceiver {
 	public static final String TAG = "receiver.network";
@@ -39,9 +38,9 @@ public class NetworkConnectivityReceiver extends BroadcastReceiver {
         if (network != null) {
         	Log.d("NetWorkConnectionReceiver", "hello network");
         	
-        	if (BxMobileConfig.getInstance().getLoggingFlag()) {
-        		BxSender.getInstance().notifyNetworkReady();
-        	}
+			try {
+				Sender.getInstance().notifyNetworkReady();
+			} catch (Exception e) {}
         }
         
         if (network != null && PushMessageService.IsRunning) {
