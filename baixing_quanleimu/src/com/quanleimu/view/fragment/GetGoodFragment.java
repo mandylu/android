@@ -503,9 +503,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
 
 				GoodsListAdapter adapter = findGoodListAdapter();
-				adapter.setList(new ArrayList<GoodsDetail>());
-				adapter.updateGroups(null);
-				adapter.notifyDataSetChanged();
+				if (adapter != null)
+				{
+					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.updateGroups(null);
+					adapter.notifyDataSetChanged();
+				}
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
