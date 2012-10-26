@@ -151,7 +151,10 @@ public class BxSender implements Runnable{
 				//First step : send memory data if there is any.
 				ArrayList<BxTrackData> list = null;
 				synchronized (queue) {
-					list = queue.remove(0);
+					if (queue.size() > 0)
+					{
+						list = queue.remove(0);
+					}
 				}
 				
 				if (list != null) {
