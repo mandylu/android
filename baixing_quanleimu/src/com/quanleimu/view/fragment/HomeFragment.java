@@ -271,7 +271,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
 			}
 		}
-		new Thread(new HotListThread()).start(); 
+//		new Thread(new HotListThread()).start(); 
 		
 		//Mobile Track Config入口
 //		BxMobileConfig.getInstance().getConfig();//获取config
@@ -288,35 +288,35 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
 
 
-	class HotListThread implements Runnable {
-
-		@Override
-		public void run() {
-			String apiName = "city_hotlist";
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("v=_v2");
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, true);
-				if (json != null) {
-//					myHandler.sendEmptyMessage(1);
-					sendMessage(1, null);
-				} else {
-//					myHandler.sendEmptyMessage(2);
-					sendMessage(2, null);
-				}
-			} catch (UnsupportedEncodingException e) {
-//				myHandler.sendEmptyMessage(4);
-				sendMessage(4, null);
-			} catch (IOException e) {
-//				myHandler.sendEmptyMessage(4);
-				sendMessage(4, null);
-			} catch (Communication.BXHttpException e){
-				
-			}
-
-		}
-	}
+//	class HotListThread implements Runnable {
+//
+//		@Override
+//		public void run() {
+//			String apiName = "city_hotlist";
+//			ArrayList<String> list = new ArrayList<String>();
+//			list.add("v=_v2");
+//			String url = Communication.getApiUrl(apiName, list);
+//			try {
+//				json = Communication.getDataByUrl(url, true);
+//				if (json != null) {
+////					myHandler.sendEmptyMessage(1);
+//					sendMessage(1, null);
+//				} else {
+////					myHandler.sendEmptyMessage(2);
+//					sendMessage(2, null);
+//				}
+//			} catch (UnsupportedEncodingException e) {
+////				myHandler.sendEmptyMessage(4);
+//				sendMessage(4, null);
+//			} catch (IOException e) {
+////				myHandler.sendEmptyMessage(4);
+//				sendMessage(4, null);
+//			} catch (Communication.BXHttpException e){
+//				
+//			}
+//
+//		}
+//	}
 	
 	
 	@Override
