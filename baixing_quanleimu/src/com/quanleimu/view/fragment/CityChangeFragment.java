@@ -63,8 +63,10 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_leftActionHint = "返回";//backPageName;
-		title.m_title = "选择城市";//this.title;		
+		String cityName = QuanleimuApplication.getApplication().cityName;
+		if (cityName != null && cityName.length() > 0)
+			title.m_leftActionHint = "返回";
+		title.m_title = "选择城市";		
 	}
 	
 	public void initTab(TabDef tab){
