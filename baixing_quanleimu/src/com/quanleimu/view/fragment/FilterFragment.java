@@ -495,12 +495,12 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 
 	@Override
 	public int getEnterAnimation() {
-		return R.anim.down_to_up;
+		return R.anim.zoom_enter;
 	}
 
 	@Override
 	public int getExitAnimation() {
-		return R.anim.up_to_down;
+		return R.anim.zoom_exit;
 	}
 
 	
