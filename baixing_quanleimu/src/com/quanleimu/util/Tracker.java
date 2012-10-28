@@ -11,16 +11,10 @@ import com.quanleimu.activity.QuanleimuApplication;
  * @author xuweiyan@baixing.com
  *Tracker的使用
  *统计pv:
- *try {
- *		Tracker.getInstance().pv().append("xx","xx").append("xx","xx").end();
- *	} catch (NullPointerException e) {
- *	}
+ *try {	Tracker.getInstance().pv().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
  *
  *统计event:
- *try {
- *		Tracker.getInstance().event().append("xx","xx").append("xx","xx").end();
- *	} catch (NullPointerException e) {
- *	}
+ *try {	Tracker.getInstance().event().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
  */
 //singleton
 public class Tracker {

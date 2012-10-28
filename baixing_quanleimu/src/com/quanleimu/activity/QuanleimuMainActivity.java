@@ -26,7 +26,9 @@ import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.LocationService;
+import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CatMainFragment;
 import com.quanleimu.view.fragment.GridCateFragment;
@@ -177,6 +179,11 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		                @Override
 		                public void onClick(DialogInterface dialog, int which)
 		                {
+		                	// BxSender & BxTracker save data into file.
+		                	try {
+		            			Sender.getInstance().save();
+		            			Tracker.getInstance().save();
+		            		} catch (Exception e) {}
 		
 		                    if (needShowShortcut && shortcutCheckBox.isChecked())
 		                    {
@@ -368,6 +375,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		super.onSaveInstanceState(savedInstanceState);
+		Log.d("quanleimu", "onsaveinstace");
 	}
 	
 	@Override
