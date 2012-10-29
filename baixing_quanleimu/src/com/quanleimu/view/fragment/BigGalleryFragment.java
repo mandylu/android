@@ -42,6 +42,7 @@ import android.util.Log;
 
 public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	//int index = 0;
+	public static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
@@ -65,7 +66,11 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	}
 
 
-
+	@Override
+	public boolean handleBack(){
+		this.finishFragment(MSG_GALLERY_BACK, null);
+		return true;
+	}
 
 
 	@Override

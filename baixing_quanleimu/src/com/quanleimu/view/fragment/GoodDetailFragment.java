@@ -26,6 +26,7 @@ import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.util.Base64;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -574,13 +575,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1,
-							int arg2, long arg3) {
-						Bundle bundle = createArguments(null, null);
-						bundle.putInt("postIndex", arg2);
-						bundle.putSerializable("goodsDetail", detail);
-						
-						pushFragment(new BigGalleryFragment(), bundle);
+					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+						if(galleryReturned){
+							Bundle bundle = createArguments(null, null);
+							bundle.putInt("postIndex", arg2);
+							bundle.putSerializable("goodsDetail", detail);
+							galleryReturned = false;
+							pushFragment(new BigGalleryFragment(), bundle);		
+						}else{
+//							Log.d("hhah", "hahaha, it workssssssssssss");
+						}
 					}
 				});
 				
@@ -966,10 +970,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
+	private boolean galleryReturned = true;
+	
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result){
 		if(PostGoodsFragment.MSG_POST_SUCCEED == requestCode){
 			this.finishFragment(requestCode, result);
+		}else if(BigGalleryFragment.MSG_GALLERY_BACK == requestCode){
+			galleryReturned = true;
 		}
 	}
 
