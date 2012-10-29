@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -1235,7 +1236,19 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 	
-	private void appendBeanToLayout(PostGoodsBean postBean){
+	private void appendBeanToLayout(PostGoodsBean postBean)
+	{
+		if (postBean.getName().equals("contact") &&
+			(postBean.getValues() == null || postBean.getValues().isEmpty()) &&
+			(user != null && user.getPhone() != null && user.getPhone().length() > 0))
+		{
+			List<String> valueList = new ArrayList<String>(1);
+			valueList.add(user.getPhone());
+			postBean.setValues(valueList);
+			postBean.setLabels(valueList);
+		}	
+		
+	
 		Activity activity = getActivity();
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
@@ -1309,20 +1322,23 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //	}
 	
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
+	private String[] hiddenItemNames = {"wanted", "faburen"};
 	
 	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
+		
 		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for(int i = 0; i < postList.size(); ++ i){
 			for(int j = 0; j < fixedItemNames.length; ++ j){
 				PostGoodsBean bean = postList.get(postListKeySetArray[i]);
-				if(bean.getName().equals(fixedItemNames[j])){
+				if(bean.getName().equals(fixedItemNames[j])){					
 					pm.put(fixedItemNames[j], bean);
 					break;
 				}
 			}
 		}
+		
 		for(int i = 0; i < fixedItemNames.length; ++ i){
 			if(pm.containsKey(fixedItemNames[i])){
 				this.appendBeanToLayout(pm.get(fixedItemNames[i]));
@@ -1333,6 +1349,37 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private boolean isFixedItem(PostGoodsBean bean){
 		for(int i = 0; i < fixedItemNames.length; ++ i){
 			if(bean.getName().equals(fixedItemNames[i])) return true;
+		}
+		return false;
+	}
+	
+	private void addHiddenItemsToParams()
+	{
+		if (postList == null || postList.isEmpty())
+			return ;
+		Set<String> keySet = postList.keySet();
+		for (String key : keySet)
+		{
+			PostGoodsBean bean = postList.get(key);
+			for (String name : hiddenItemNames)
+			{
+				if (bean.getName().equals(name))
+				{
+					this.params.put(bean.getDisplayName(), bean.getValues().get(0), bean.getValues().get(0));
+					break;
+				}
+			}
+		}
+	}
+	
+	private boolean isHiddenItem(PostGoodsBean bean)
+	{
+		for (int i = 0; i < hiddenItemNames.length; ++i)
+		{
+			if (bean.getName().equals(hiddenItemNames[i]))
+			{
+				return true;
+			}
 		}
 		return false;
 	}
@@ -1351,15 +1398,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			postList = JsonUtil.getPostGoodsBean(json);
 		}
 		buildFixedPostLayout();
+		addHiddenItemsToParams();
+		
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
-			if(isFixedItem(postBean)) continue;
+			
+			if(isFixedItem(postBean) || isHiddenItem(postBean))
+				continue;
+			
 			if(postBean.getName().equals(STRING_AREA)){
 				this.appendBeanToLayout(postBean);
 				continue;
 			}
+			
 //			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
 //					&& goodsDetail.getImageList().getResize180() != null 
 //					&& !goodsDetail.getImageList().getResize180().equals("")))){
@@ -1375,6 +1428,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //				otherProperties.add(postBean.getDisplayName());
 //				continue;
 //			}
+			
 			this.appendBeanToLayout(postBean);
 		}
 //		if(otherProperties.size() > 0){
