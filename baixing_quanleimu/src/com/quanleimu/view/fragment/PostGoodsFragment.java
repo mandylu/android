@@ -1406,7 +1406,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case MSG_START_UPLOAD:{		
 			Integer index = (Integer) msg.obj;
 			if (imgs != null){
-				imgs[index.intValue()].setImageResource(R.drawable.u);
+				imgs[index.intValue()].setImageResource(R.drawable.icon_post_loading);
 				imgs[index].setClickable(false);
 				imgs[index.intValue()].invalidate();
 			}
