@@ -652,8 +652,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 
 	private boolean filled() {
-		if(layout_txt == null || layout_txt.getChildCount() == 2 || layout_txt.getChildCount() == 0) return false;
-		
+		extractInputData(layout_txt, params);
+		if(!this.getView().findViewById(R.id.goodscontent).isShown() || this.params == null || this.params.getData() == null || this.params.getData().size() == 0){
+			return false;
+		}
 		return true;
 	}
 
@@ -1066,6 +1068,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					String txt = "";
 					for(int t = 0; t < checks.length; ++ t){
 						if(checks[t].equals(""))continue;
+//						if(bean.getLabels().size() <= Integer.parseInt(checks[t])){
+//							Log.d("outofbounds", "hahaha:   out of bound:   " + bean.getLabels().size() + "   " + checks[t]);
+//						}
 		 				txt += "," + bean.getLabels().get(Integer.parseInt(checks[t]));
 						value += "," + bean.getValues().get(Integer.parseInt(checks[t]));
 					}
@@ -1327,6 +1332,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void buildPostLayout(){
+		this.getView().findViewById(R.id.goodscontent).setVisibility(View.VISIBLE);
+		this.getView().findViewById(R.id.networkErrorView).setVisibility(View.GONE);
 		Log.d(TAG, "start to build layout");
 //		otherProperties.clear();
 		
@@ -1454,6 +1461,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 								}
 							});
 			builder.create().show();
+			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
+			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);
+			this.reCreateTitle();
+			this.refreshHeader();
+
 			break;
 		case 3:
 			try {
@@ -1508,6 +1520,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case 10:
 			hideProgress();
 			Toast.makeText(activity, "网络连接失败，请检查设置！", 3).show();
+			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
+			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
+			this.reCreateTitle();
+			this.refreshHeader();
 			break;
 		}
 	}
@@ -1706,7 +1722,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		title.m_visible = true;
 		title.m_title = (categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "完成";
+		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
+			title.m_rightActionHint = "完成";
+		}
 	}
 	
 	@Override
