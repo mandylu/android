@@ -218,7 +218,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		            			Sender.getInstance().save();
 		            			Tracker.getInstance().save();
 		            		} catch (Exception e) {}
-		                	
+		                	Log.d("quanleimu", "exit");
 		                    System.exit(0);
 //		            		QuanleimuMainActivity.this.finish();
 		                }
@@ -376,6 +376,8 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //	}
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+		Log.d("quanleimu", "onSaveInstanceState");
+
 		// BxSender & BxTracker save data into file.
 		try {
 			Sender.getInstance().save();
@@ -383,16 +385,16 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		} catch (Exception e) {
 		}
 		super.onSaveInstanceState(savedInstanceState);
-		Log.d("quanleimu", "onsaveinstace");
 	}
 	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
-		// BxSender & BxTracker save data into file.
-		try {
-			Tracker.getInstance().load();
-		} catch (Exception e) {
-		}
+		Log.d("quanleimu", "onRestoreInstanceState");
+//		// BxSender & BxTracker save data into file.
+//		try {
+//			Tracker.getInstance().load();
+//		} catch (Exception e) {
+//		}
 		super.onRestoreInstanceState(savedInstanceState);
 	}
 

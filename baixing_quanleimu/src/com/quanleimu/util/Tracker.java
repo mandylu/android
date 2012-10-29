@@ -35,6 +35,7 @@ public class Tracker {
 	{
 		context = QuanleimuApplication.context;
 		dataList = new ArrayList<String>();
+		load();
 	}
 	
 	public Log pv() {
@@ -62,7 +63,7 @@ public class Tracker {
 		}
 	}
 	
-	public void save() {//TODO:which callbacks to call?
+	public void save() {
 		if (context != null)
 			try {
 				Util.saveDataToLocate(context, TRACKER_FILE, dataList);
@@ -70,7 +71,7 @@ public class Tracker {
 	}
 	
 	@SuppressWarnings("unchecked")
-	public void load() {//TODO:which callbacks to call?
+	private void load() {
 		if (context != null)
 			try {
 				dataList = (ArrayList<String>)Util.loadDataFromLocate(context, TRACKER_FILE);
