@@ -115,6 +115,8 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
             bindIdTextView.setText(R.string.label_logout);
         }
 
+        TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
+        flowOptimizeTw.setText(QuanleimuApplication.isTextMode() ? "省流量模式" : "图片模式");
 
     }
 
@@ -145,6 +147,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Util.logout();
+                        refreshUI(getView());
                         Toast.makeText(getAppContext(), "已退出", 1).show();
                     }
                 })
@@ -169,7 +172,6 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 } else {
                     //TODO jiawu 加入确认退出过程
                     logoutAction();
-                    refreshUI(getView());
                 }
 
                 break;
@@ -323,6 +325,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
                         QuanleimuApplication.setTextMode(i == 1);
+                        refreshUI(getView());
                         dialog.dismiss();
                         String tip = (i == 1) ? "省流量模式" : "图片模式";
                         Toast.makeText(getActivity(), "已切换至" + tip, 1).show();
@@ -352,16 +355,16 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 try {
                     JSONObject respond = new JSONObject(serverMessage);
                     JSONObject error = respond.getJSONObject("error");
-                    final String apkUrl = respond.getString("apkUrl");
+
                     serverVersion = respond.getString("serverVersion");
 
                     if (!"0".equals(error.getString("code"))) {
                         sendMessage(MSG_NETWORK_ERROR, error.getString("message"));
                     } else {
                         if (respond.getBoolean("hasNew")) {
-                            sendMessage(MSG_HAS_NEW_VERSION, apkUrl);
+                            sendMessage(MSG_HAS_NEW_VERSION, respond.getString("apkUrl"));
                         } else {
-
+                            sendMessage(MSG_NETWORK_ERROR, "已经安装最新版本");
                         }
                     }
                 } catch (JSONException e) {

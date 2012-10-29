@@ -22,7 +22,7 @@
                 android:cursorVisible="true"
                 android:focusableInTouchMode="true"
                 android:gravity="top"
-                android:hint="感谢使用百姓网 android客户端，欢迎您反馈任何意见和问题，帮助我们做得更好~"
+                android:hint="您的反馈，将令我们做得更好"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:minLines="6"
                 android:typeface="monospace" >
@@ -36,7 +36,7 @@
                 android:layout_alignRight="@+id/etOpinion"
                 android:layout_below="@+id/etOpinion"
                 android:ems="10"
-                android:hint="请留下您的手机号码、qq或Email地址"
+                android:hint="请留下您的联系方式"
                 android:singleLine="true" />
         </RelativeLayout>
     </ScrollView>
