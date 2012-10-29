@@ -86,11 +86,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		savedInstanceState.putStringArrayList("cityDetails", strDetails);
 		savedInstance = true;
 		
-		// BxSender & BxTracker save data into file.
-		try {
-			Sender.getInstance().save();
-			Tracker.getInstance().save();
-		} catch (Exception e) {}
         super.onSaveInstanceState(savedInstanceState);
     }
 
@@ -129,10 +124,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		}
 		myApp.setListCityDetails(cityDetails);
 		
-		// BxSender & BxTracker save data into file.
-		try {
-			Tracker.getInstance().load();
-		} catch (Exception e) {}
     }
 	
 	protected TextView tvAddMore ;
@@ -501,6 +492,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	 */
 	void restoreFragment(BaseFragment f)
 	{
+		Log.d("baseactivity", "restoreFragment");
 		Log.d(TAG, "append fragment from restore : " + f.getClass().getName());
 	}
 }

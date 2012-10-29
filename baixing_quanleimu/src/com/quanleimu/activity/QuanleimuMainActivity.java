@@ -179,11 +179,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		                @Override
 		                public void onClick(DialogInterface dialog, int which)
 		                {
-		                	// BxSender & BxTracker save data into file.
-		                	try {
-		            			Sender.getInstance().save();
-		            			Tracker.getInstance().save();
-		            		} catch (Exception e) {}
 		
 		                    if (needShowShortcut && shortcutCheckBox.isChecked())
 		                    {
@@ -217,6 +212,13 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		            		
 		            		ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
 		            		ChatMessageDatabase.clearOldMessage(1000);
+		            		
+		            		// BxSender & BxTracker save data into file.
+		                	try {
+		            			Sender.getInstance().save();
+		            			Tracker.getInstance().save();
+		            		} catch (Exception e) {}
+		                	
 		                    System.exit(0);
 //		            		QuanleimuMainActivity.this.finish();
 		                }
@@ -374,10 +376,26 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //	}
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
+		// BxSender & BxTracker save data into file.
+		try {
+			Sender.getInstance().save();
+			Tracker.getInstance().save();
+		} catch (Exception e) {
+		}
 		super.onSaveInstanceState(savedInstanceState);
 		Log.d("quanleimu", "onsaveinstace");
 	}
 	
+	@Override
+	public void onRestoreInstanceState(Bundle savedInstanceState) {
+		// BxSender & BxTracker save data into file.
+		try {
+			Tracker.getInstance().load();
+		} catch (Exception e) {
+		}
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
 	@Override
 	public void onJobDone() {
 		
