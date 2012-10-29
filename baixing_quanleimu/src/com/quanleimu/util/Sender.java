@@ -180,7 +180,7 @@ public class Sender implements Runnable{
 					try {
 						Log.d("BxSender", "wait");
 						synchronized (sendMutex) {
-							wait(300000);//time out 5 min
+							sendMutex.wait(300000);//time out 5 min
 						}
 						hasMoreData = hasDataToSend();
 						Log.d("BxSender", "wake up");
