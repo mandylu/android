@@ -286,7 +286,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		bundle.putString("backPageName", "");
 		super.onResume();
 		isInActiveStack = true;
-		
+		BaseFragment bf = this.getCurrentFragment();
+		if(bf == null && splashJob == null){
+			splashJob = new SplashJob(this, this);
+		}
 		if (splashJob != null && !splashJob.isJobDone())
 		{
 			splashJob.doSplashWork();
