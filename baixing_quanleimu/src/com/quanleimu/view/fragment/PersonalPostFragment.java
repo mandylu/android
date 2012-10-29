@@ -656,6 +656,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                 }
 
             }
+        }).setNegativeButton(
+                "取消", new DialogInterface.OnClickListener() {
+            @Override
+            public void onClick(DialogInterface dialog, int which) {
+                dialog.dismiss();
+            }
         });
         AlertDialog alert = builder.create();
         alert.show();
