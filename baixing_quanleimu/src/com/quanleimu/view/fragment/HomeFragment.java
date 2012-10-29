@@ -4,7 +4,6 @@ import java.io.BufferedOutputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,8 +12,6 @@ import java.util.Locale;
 
 import android.app.Activity;
 import android.content.Context;
-import android.graphics.Bitmap;
-import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -22,10 +19,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.BaseAdapter;
 import android.widget.GridView;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -33,14 +27,11 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GridAdapter;
-import com.quanleimu.adapter.GridAdapter.GridInfo;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
-import com.quanleimu.imageCache.ImageLoaderCallback;
-import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.TrackConfig;
@@ -49,8 +40,11 @@ import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager;
 import com.quanleimu.view.CustomizePagerManager.PageProvider;
 import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
+import com.quanleimu.widget.CustomizeGridView;
+import com.quanleimu.widget.CustomizeGridView.GridInfo;
+import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 
-public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, OnItemClickListener, View.OnClickListener{
+public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, ItemClickListener , View.OnClickListener{
 
 	public static final String NAME = "HomeFragment";
 	
@@ -81,7 +75,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     static final int MSG_GETPERSONALPROFILE = 99;
 
 	private String json;
-	private HotListAdapter adapter;
 	private List<HotList> tempListHot = new ArrayList<HotList>();
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
 
@@ -108,6 +101,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
+//		BxTracker.getInstance().createPageLogData("", "").appendProperty("", "").appendProperty("", "");
 	}
 	
 	@Override
@@ -328,7 +322,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 					tempUpdated.add(false);
 				}
 
-				if(adapter != null)	adapter.SetLoadingHotList(tempListHot);
 				QuanleimuApplication.listHot = tempListHot;
 				
 				//save to context data
@@ -408,249 +401,12 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onPause(){
 //		LocationService.getInstance().removeLocationListener(this);
-		if(this.adapter != null){
-			adapter.releaseBitmap();
-			adapter.notifyDataSetChanged();
-		}
 		super.onPause();
 //		if(glDetail != null){
 //			glDetail.setAdapter(null);
 //		}
 	}
 
-	class HotListAdapter extends BaseAdapter {
-		Context context;
-		List<HotList> curList = new ArrayList<HotList>();
-		List<HotList> loadingList = new ArrayList<HotList>();
-		
-		private int nNotifyInstance = 0;
-		
-		final LazyImageLoader imgLoader;
-
-		private class AdapterNotifyChange extends AsyncTask<Boolean, Boolean, Boolean> { 
-			private HotListAdapter adapter = null;
-			
-			public AdapterNotifyChange(HotListAdapter adapter_){
-				this.adapter = adapter_;
-				nNotifyInstance++;
-				//Log.d("HomePage async task count:", " " + nNotifyInstance);
-			}
-			
-			protected Boolean doInBackground(Boolean... bs) {   
-				try {
-					Thread.sleep(50);
-				} catch (InterruptedException e) {
-					e.printStackTrace();
-				}
-				return true;
-			}
-			
-			protected void onProgressUpdate(Boolean... bs) {
-				}    
-			
-			protected void onPostExecute(Boolean bool) {  
-				this.adapter.notifyDataSetChanged();
-//				indicator.setPadding(0, glDetail.getHeight(), 0, 0);
-				nNotifyInstance--;
-				//Log.d("HomePage async task count:", " " + nNotifyInstance);
-			}
-		};
-		
-		public HotListAdapter(Context context, 
-				List<HotList> listHot,
-				List<HotList> loadingListHot,
-				LazyImageLoader imgLoader_) {
-			this.context = context;
-			this.curList = listHot;
-			this.loadingList = loadingListHot;
-			this.imgLoader = imgLoader_;
-			this.imgLoader.disableSampleSize();
-		}
-
-		@Override
-		public int getCount() {
-			return curList.size() > 0 ?	curList.size() : loadingList.size() > 0 ? 1 : 0;
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return null;
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return 0;
-		}
-		
-		public void SetLoadingHotList(List<HotList> loadingListHot_){
-			this.loadingList = loadingListHot_;
-			(new AdapterNotifyChange(this)).execute(true);
-		}
-		
-		public void releaseBitmap(){
-			if(loadingList != null){
-				for(int i = 0; i < loadingList.size(); ++ i){
-					QuanleimuApplication.getImageLoader().forceRecycle(loadingList.get(i).getImgUrl());
-				}
-			}
-		}
-		
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			
-			LayoutInflater inflater = LayoutInflater.from(context);
-			
-			View v = null;
-			if (convertView != null) {
-				v = convertView;
-			} else {
-				v = inflater.inflate(R.layout.hotdetail, null);
-			}
-			
-			ImageView iv = null;
-			
-			if(position < curList.size()){
-				iv = (ImageView) v.findViewById(R.id.ivHotDetail);
-				
-				// 设置图片填充布局				
-				iv.setTag(curList.get(position).getImgUrl());
-			}
-			
-			if(imgLoader != null){
-				//check whether real image has been valid
-
-				boolean needNotify = false;
-				Bitmap bitmapReal =  null;
-				final HotListAdapter thisAdapter = this;
-				
-				if(position < loadingList.size()){
-					final int position_f = position;					
-					final ImageView iv_f = iv;
-					
-					bitmapReal = imgLoader.getWithImmediateIO(loadingList.get(position).getImgUrl(), new ImageLoaderCallback(){					
-						@Override
-						public void refresh(final String url, final Bitmap bitmap){										
-							
-							if(position_f < curList.size()){
-								curList.set(position_f, loadingList.get(position_f));
-								tempUpdated.set(position_f, true);
-							}
-							else if(position_f == curList.size()){
-								curList.add(loadingList.get(position_f));
-								tempUpdated.set(position_f, true);
-							}
-							if(iv_f != null)	iv_f.setImageBitmap(bitmap);
-	
-							(new AdapterNotifyChange(thisAdapter)).execute(true);
-						}	
-						
-						@Override
-						public Object getObject(){
-							return iv_f;
-						}
-
-						@Override
-						public void fail(String url) {
-							
-						}
-					});
-					
-				}
-				
-				if(bitmapReal != null){
-					
-					if(position < curList.size() && !tempUpdated.get(position)){
-						curList.set(position, loadingList.get(position));
-						tempUpdated.set(position, true);
-						needNotify = true;		
-					}
-					else if(position == curList.size()){
-						curList.add(loadingList.get(position));
-						tempUpdated.set(position, true);
-						needNotify = true;
-						}
-					if(iv != null)	iv.setImageBitmap(bitmapReal);
-					
-					//if this is the last seen item, try to load next
-					int position_cur = position + 1;
-					while(position_cur == curList.size() && position_cur < loadingList.size()){										
-						final int position_next = position_cur;
-						Bitmap bitmapNext = imgLoader.getWithImmediateIO(loadingList.get(position_next).getImgUrl(), new ImageLoaderCallback(){
-										
-							public void refresh(final String url, final Bitmap bitmap){	
-															
-								if(position_next == curList.size()){
-									curList.add(loadingList.get(position_next));
-									tempUpdated.set(position_next, true);
-								}								
-								notifyChange();
-							}
-							
-							@Override
-							public Object getObject(){
-								return null;
-							}
-
-							@Override
-							public void fail(String url) {
-								
-							}
-						});
-						
-						if(bitmapNext != null){
-							curList.add(loadingList.get(position_next));
-							tempUpdated.set(position_next, true);
-							needNotify = true;
-							position_cur++;
-						}else{
-							position_cur++;
-						}
-						try{
-							Thread.sleep(1000);
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}
-				}else if(position < curList.size()){				
-					
-					final Bitmap bitmap =  imgLoader.getWithImmediateIO(curList.get(position).getImgUrl(), new ImageLoaderCallback(){
-					
-						public void refresh(final String url, final Bitmap bitmap){	
-								Log.d( "HotList original image loader 1", "original hotlist picture missing!!");
-					    }	
-						
-						@Override
-						public Object getObject(){
-							return null;
-						}
-
-						@Override
-						public void fail(String url) {
-							
-						}
-					});
-					
-					if(bitmap != null){
-						if(iv != null)	iv.setImageBitmap(bitmap);	
-					}else{
-						Log.d( "HotList original image loader 2", "original hotlist picture missing!!");
-					}
-					
-				}
-				
-				if(needNotify)	notifyChange();
-				
-			}
-			//this.imgLoader.enableSampleSize();
-			return v;
-		}
-		
-		private void notifyChange(){
-			if(HotListAdapter.this.nNotifyInstance < 1){
-				(new AdapterNotifyChange(this)).execute(true);
-			}
-		}
-	}
 
 	@Override
 	public void onPageSelect(int index) {
@@ -680,11 +436,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				gitems.add(gi);
 			}
 
-			GridAdapter adapter = new GridAdapter(this.getActivity());
-			adapter.setList(gitems, 3);
-			GridView gv = (GridView) v.findViewById(R.id.gridcategory);  
-			gv.setAdapter(adapter);
-			gv.setOnItemClickListener(this);
+//			GridAdapter adapter = new GridAdapter(this.getActivity());
+//			adapter.setList(gitems, 3);
+			CustomizeGridView gv = (CustomizeGridView) v.findViewById(R.id.gridcategory);
+			gv.setData(gitems, 3);
+			gv.setItemClickListener(this);
+//			gv.setAdapter(adapter);
+//			gv.setOnItemClickListener(this);
 		}
 		else
 		{
@@ -712,11 +470,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				gitems.add(gi);
 			}
 		
-			GridAdapter adapter = new GridAdapter(this.getActivity());
-			adapter.setList(gitems, 3);
-			GridView gv = (GridView) v.findViewById(R.id.gridcategory);  
-			gv.setAdapter(adapter);
-			gv.setOnItemClickListener(this);
+//			GridAdapter adapter = new GridAdapter(this.getActivity());
+//			adapter.setList(gitems, 3);
+			CustomizeGridView gv = (CustomizeGridView) v.findViewById(R.id.gridcategory);
+			gv.setData(gitems, 3);
+			gv.setItemClickListener(this);
+//			gv.setAdapter(adapter);
+//			gv.setOnItemClickListener(this);
 
             //set user profile info view
             user = Util.getCurrentUser();
@@ -735,17 +495,17 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {	
+	public void onItemClick(GridInfo info, int index) {	
 		if (selectedIndex == 0) // 浏览信息页面
 		{
 			List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 					.getListFirst();
 			if (allCates == null)
 				return;
-			if (arg1.getTag() == null)
+			if (info == null)
 				return;
 			
-			FirstStepCate cate = allCates.get(arg2);
+			FirstStepCate cate = allCates.get(index);
 			Bundle bundle = new Bundle();
 			bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
 			bundle.putSerializable("cates", cate);
@@ -756,7 +516,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		else // 我的百姓网页面
 		{
 			//TODO 登录判断，talk session 获取
-			switch (arg2)
+			switch (index)
 			{
 			case INDEX_POSTED:
                 {
@@ -903,6 +663,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
         }
     }
 
+    @Override
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.userInfoLayout:

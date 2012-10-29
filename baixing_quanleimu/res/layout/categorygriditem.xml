@@ -2,16 +2,19 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="106.5dp"
-    android:layout_height="120dp"
+    android:layout_height="106.5dp"
     android:background="@drawable/bg_grid_selector" >
 
+    <LinearLayout android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:gravity="center_vertical|center_horizontal"
+        android:orientation="vertical"
+        android:layout_centerInParent="true">
     <ImageButton
         android:id="@+id/itemicon"
         android:layout_width="40dp"
         android:layout_height="40dp"
         android:scaleType="centerInside"
-        android:layout_centerHorizontal="true"
-        android:layout_marginTop="15dp"
         android:background="@null"
         tools:ignore="ContentDescription" >
     </ImageButton>
@@ -21,10 +24,11 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_below="@+id/itemicon"
-        android:layout_centerHorizontal="true"
         android:singleLine="true"
         android:textColor="@color/category_grid_font" >
     </TextView>
+        
+    </LinearLayout>
 
     <ImageView
         android:id="@+id/star"

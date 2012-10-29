@@ -52,13 +52,11 @@
 
      </LinearLayout>
 
-    <GridView
+    <com.quanleimu.widget.CustomizeGridView
         android:id="@+id/gridcategory"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:listSelector="@android:color/transparent"
-        android:gravity="center"
-        android:numColumns="3"
-        android:stretchMode="columnWidth"/>
+        android:orientation="vertical"
+        />
 
 </LinearLayout>

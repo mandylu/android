@@ -20,12 +20,20 @@
         android:text="上海"
         android:textColor="@android:color/white"
        	android:textSize="22dp" />
+       
+      <TextView
+        android:id="@+id/title_label_app_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="百姓网"
+        android:textColor="@android:color/white"
+       	android:textSize="22dp" />
 
        <ImageView
            android:id="@+id/imageView1"
            android:layout_width="wrap_content"
            android:layout_height="wrap_content"
-           android:src="@drawable/icon_bx_home" />
+           android:src="@drawable/icon_arrow_down" />
 
     </LinearLayout>
     
