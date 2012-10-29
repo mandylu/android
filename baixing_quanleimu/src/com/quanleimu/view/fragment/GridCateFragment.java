@@ -7,18 +7,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
+//import android.widget.AdapterView;
+//import android.widget.AdapterView.OnItemClickListener;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GridAdapter;
-import com.quanleimu.adapter.GridAdapter.GridInfo;
+//import com.quanleimu.adapter.GridAdapter;
+//import com.quanleimu.adapter.GridAdapter.GridInfo;
 import com.quanleimu.entity.FirstStepCate;
+import com.quanleimu.widget.CustomizeGridView;
+import com.quanleimu.widget.CustomizeGridView.GridInfo;
+import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 
-public class GridCateFragment extends BaseFragment implements OnItemClickListener {
+public class GridCateFragment extends BaseFragment implements ItemClickListener {
 
 	
 	@Override
@@ -47,25 +49,27 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 			gitems.add(gi);
 		}
 
-		GridAdapter adapter = new GridAdapter(this.getActivity());
-		adapter.setList(gitems, 3);
-		((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
-		((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
-		
+//		GridAdapter adapter = new GridAdapter(this.getActivity());
+//		adapter.setList(gitems, 3);
+//		((GridView) v.findViewById(R.id.gridcategory)).setAdapter(adapter);
+//		((GridView) v.findViewById(R.id.gridcategory)).setOnItemClickListener(this);
+		CustomizeGridView grid = (CustomizeGridView) v.findViewById(R.id.gridcategory);
+		grid.setData(gitems, 3);
+		grid.setItemClickListener(this);
 		return v;
 	}
 
 	@Override
-	public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+	public void onItemClick(GridInfo info, int index) {
 		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 				.getListFirst();
 		if (allCates == null)
 			return;
-		if (arg1.getTag() == null)
+		if (info == null)
 			return;
 		FirstStepCate selectedCate = null;
 		for (int i = 0; i < allCates.size(); ++i) {
-			String selText = ((GridAdapter.GridHolder) arg1.getTag()).text.getText().toString();
+			String selText = info.text;
 			if (allCates.get(i).name.equals(selText)){
 				selectedCate = allCates.get(i);
 				break;
