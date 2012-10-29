@@ -348,23 +348,18 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onLocationFetched(BXLocation location) {
-		if(null == location || !location.geocoded)
-			return;
-		
-		if (!cityName.equals(location.cityName)) {
-			ivGPSChoose.setVisibility(View.INVISIBLE);
-		} else {
-			ivGPSChoose.setVisibility(View.VISIBLE);
-		}
-
 		final View rootView = getView();
 		if (rootView != null)
 		{
 			TextView tvGPSCityName = (TextView) rootView.findViewById(R.id.tvGPSCityName);
+		
+			if(null == location || !location.geocoded) {
+				tvGPSCityName.setText("定位失败");
+				return;
+			}
+
 			if(null == tvGPSCityName) return;
 			tvGPSCityName.setText(location.cityName);
-			
-			ivGPSChoose.setVisibility(View.VISIBLE);
 
 			RelativeLayout linearGpsCity = (RelativeLayout)rootView.findViewById(R.id.linearGpsCityItem);
 

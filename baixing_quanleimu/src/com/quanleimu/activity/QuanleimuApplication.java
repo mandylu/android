@@ -417,6 +417,7 @@ public class QuanleimuApplication extends Application implements LocationService
 		
 		final BXLocation curLocation = getCurrentPosition(true);
 		if(null == curLocation){
+			listener.onLocationFetched(null);
 			return false;
 		}		
 
