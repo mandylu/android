@@ -9,10 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -23,8 +21,6 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
@@ -54,6 +50,10 @@ public class FeedbackFragment extends BaseFragment {
 		tab.m_visible = false;
 	}
 	
+	@Override
+	public int[] excludedOptionMenus() {
+		return new int[]{OPTION_FEEDBACK};
+	}
 	
 	
 	@Override

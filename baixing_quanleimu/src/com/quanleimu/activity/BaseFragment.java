@@ -1,15 +1,22 @@
 package com.quanleimu.activity;
 
+import java.util.Set;
+import java.util.TreeSet;
+
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -17,6 +24,13 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
+import android.widget.Toast;
+
+import com.quanleimu.util.Util;
+import com.quanleimu.view.fragment.CityChangeFragment;
+import com.quanleimu.view.fragment.FeedbackFragment;
+import com.quanleimu.view.fragment.LoginFragment;
+import com.quanleimu.view.fragment.SetMainFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
 
 /**
@@ -30,6 +44,9 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;
 	protected int requestCode = INVALID_REQUEST_CODE;
+	
+	public final int MSG_USER_LOGIN 		= 10001;
+	public final int MSG_USER_LOGOUT 	 	= 10002;
 
 	/**
 	 * Argument keys.
@@ -142,7 +159,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+		this.setHasOptionsMenu(true);
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -218,6 +235,128 @@ public abstract class BaseFragment extends Fragment {
 		super.onViewCreated(view, savedInstanceState);
 	}
 
+	public static final String[] OPTION_TITLES = {"切换城市", "设置", "反馈",  "登录", "注销", "退出程序"};
+	public static final int OPTION_CHANGE_CITY = 0;
+	public static final int OPTION_SETTING     = 1;
+	public static final int OPTION_FEEDBACK    = 2;
+	public static final int OPTION_LOGIN       = 3;
+	public static final int OPTION_LOGOUT      = 4;
+	public static final int OPTION_EXIT        = 5;	
+	private static final int[] baseOptions     = {OPTION_SETTING, OPTION_FEEDBACK, OPTION_EXIT, OPTION_LOGIN};
+	private static Set<Integer>    	   options = new TreeSet<Integer>();
+	
+	public int[] includedOptionMenus ()
+	{
+		return new int[0];
+	}
+	
+	public int[] excludedOptionMenus ()
+	{
+		return new int[0];
+	}
+	
+	private void initOptionMenu()
+	{
+		options.clear();
+		for (int i = 0; i < baseOptions.length; i++)
+		{
+			options.add(baseOptions[i]);
+		}
+		int[] includeMenus = this.includedOptionMenus();
+		for (int i = 0; i < includeMenus.length; i++)
+		{
+			options.add(includeMenus[i]);
+		}
+		
+		int[] excludeMenus = this.excludedOptionMenus();		
+		for (int i = 0; i< excludeMenus.length; i++)
+		{
+			options.remove(excludeMenus[i]);
+		}
+				
+		if (Util.isUserLogin())
+		{
+			if (options.remove(OPTION_LOGIN))
+			{
+				options.add(OPTION_LOGOUT);
+			}
+		}
+		else
+		{
+			if (options.remove(OPTION_LOGOUT))
+			{
+				options.add(OPTION_LOGIN);
+			}			
+		}
+	}
+	
+//	@Override
+//	public void onCreateOptionsMenu(Menu menu, MenuInflater inflater) {
+//		this.initOptionMenu();
+//		for (int option : options)
+//		{
+//			menu.add(0, option, option, OPTION_TITLES[option]);
+//		}
+//		super.onCreateOptionsMenu(menu, inflater);
+//	}
+	
+	@Override
+	public void onPrepareOptionsMenu(Menu menu) {
+		this.initOptionMenu();
+		menu.clear();		
+		for (int option : options)
+		{
+			menu.add(0, option, option, OPTION_TITLES[option]);
+		}
+		super.onPrepareOptionsMenu(menu);
+	}
+	
+	@Override
+	public boolean onOptionsItemSelected(MenuItem item) {
+		Toast.makeText(getActivity(), item.getTitle(), Toast.LENGTH_SHORT).show();
+		switch (item.getItemId())
+		{
+		case OPTION_CHANGE_CITY:
+			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", ""));
+			break;
+		case OPTION_SETTING:
+			this.pushFragment(new SetMainFragment(), createArguments("设置", ""));
+			break;
+		case OPTION_FEEDBACK:
+			this.pushFragment(new FeedbackFragment(), createArguments("反馈", ""));
+			break;
+		case OPTION_EXIT:
+			QuanleimuMainActivity mainActivity = (QuanleimuMainActivity) this.getActivity();
+			mainActivity.exitMainActivity();
+			break;
+		case OPTION_LOGIN:
+			this.pushFragment(new LoginFragment(), createArguments("登录", ""));		
+			BaseFragment.this.sendMessage(MSG_USER_LOGIN, null);
+			break;
+		case OPTION_LOGOUT:
+	        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	        builder.setTitle(R.string.dialog_confirm_logout)
+	                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialogInterface, int i) {
+	                        Util.logout();
+	                        BaseFragment.this.sendMessage(MSG_USER_LOGOUT, null);
+	                        Toast.makeText(getAppContext(), "已退出", Toast.LENGTH_SHORT).show();
+	                    }
+	                })
+	                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialog, int id) {
+	                        dialog.dismiss();
+	                    }
+	                }).create().show();
+			break;
+		}
+		
+		return super.onOptionsItemSelected(item);
+	}
+	
+	
 	/**
 	 * this called before <code>onStart</code> and after <code>onCreateView</code>
 	 */

@@ -139,6 +139,11 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
     public void initTab(TabDef tab) {
         tab.m_visible = false;
     }
+    
+    @Override
+    public int[] excludedOptionMenus() {
+    	return new int[]{OPTION_SETTING};
+    }
 
     private void logoutAction() {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

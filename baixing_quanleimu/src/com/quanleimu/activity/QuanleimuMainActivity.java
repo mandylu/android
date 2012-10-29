@@ -154,81 +154,87 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		    		}
 		    		
 		    	}else{
-		
-		            SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-		            String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
-		
-		            AlertDialog.Builder builder = new AlertDialog.Builder(this);
-		
-		            LayoutInflater adbInflater = LayoutInflater.from(QuanleimuMainActivity.this);
-		            View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
-		
-		            final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
-		            final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
-		            if (needShowShortcut)
-		            {
-		                builder.setView(shortcutLayout);
-		            }
-		
-		            builder.setTitle(R.string.dialog_title_info)
-		            	.setMessage(R.string.dialog_message_confirm_exit)
-		            	.setNegativeButton(R.string.no, null)
-		            	.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-		            {
-		
-		                @Override
-		                public void onClick(DialogInterface dialog, int which)
-		                {
-		
-		                    if (needShowShortcut && shortcutCheckBox.isChecked())
-		                    {
-		                        ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
-		                    }
-		
-		                    if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
-		                    {
-		                        for (String s : QuanleimuApplication.list)
-		                        {
-		                            deleteFile(s);
-		                        }
-		                    }
-		
-		                    SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-		                    SharedPreferences.Editor editor = settings.edit();
-		                    editor.putString("hasShowShortcut", "yes");
-		                    // Commit the edits!
-		                    editor.commit();
-		            		Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
-		            		QuanleimuMainActivity.this.startService(pushIntent);
-
-		            		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
-		            		startPush.putExtra("updateToken", true);
-		            		QuanleimuMainActivity.this.startService(startPush);
-		            		
-		            		QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
-//		            		Debug.stopMethodTracing();
-		            		QuanleimuApplication.mDemoApp = null;
-		            		isInActiveStack = false;
-		            		
-		            		ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
-		            		ChatMessageDatabase.clearOldMessage(1000);
-		            		
-		            		// BxSender & BxTracker save data into file.
-		                	try {
-		            			Sender.getInstance().save();
-		            			Tracker.getInstance().save();
-		            		} catch (Exception e) {}
-		                	Log.d("quanleimu", "exit");
-		                    System.exit(0);
-//		            		QuanleimuMainActivity.this.finish();
-		                }
-		            });
-		            builder.create().show();
+		    		exitMainActivity();
 		    	}	
 			}
 		}catch(Exception e){
 			e.printStackTrace();
 		}
+	}
+
+	/**
+	 * 
+	 */
+	public void exitMainActivity() {
+		SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+		String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
+
+		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+
+		LayoutInflater adbInflater = LayoutInflater.from(QuanleimuMainActivity.this);
+		View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
+
+		final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
+		final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
+		if (needShowShortcut)
+		{
+		    builder.setView(shortcutLayout);
+		}
+
+		builder.setTitle(R.string.dialog_title_info)
+			.setMessage(R.string.dialog_message_confirm_exit)
+			.setNegativeButton(R.string.no, null)
+			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+		{
+
+		    @Override
+		    public void onClick(DialogInterface dialog, int which)
+		    {
+
+		        if (needShowShortcut && shortcutCheckBox.isChecked())
+		        {
+		            ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
+		        }
+
+		        if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
+		        {
+		            for (String s : QuanleimuApplication.list)
+		            {
+		                deleteFile(s);
+		            }
+		        }
+
+		        SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+		        SharedPreferences.Editor editor = settings.edit();
+		        editor.putString("hasShowShortcut", "yes");
+		        // Commit the edits!
+		        editor.commit();
+				Intent pushIntent = new Intent(QuanleimuMainActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
+				QuanleimuMainActivity.this.startService(pushIntent);
+
+				Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
+				startPush.putExtra("updateToken", true);
+				QuanleimuMainActivity.this.startService(startPush);
+				
+				QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
+//		            		Debug.stopMethodTracing();
+				QuanleimuApplication.mDemoApp = null;
+				isInActiveStack = false;
+				
+				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
+				ChatMessageDatabase.clearOldMessage(1000);
+				
+				// BxSender & BxTracker save data into file.
+		    	try {
+					Sender.getInstance().save();
+					Tracker.getInstance().save();
+				} catch (Exception e) {}
+		    	Log.d("quanleimu", "exit");
+		        System.exit(0);
+//		            		QuanleimuMainActivity.this.finish();
+		    }
+		});
+		builder.create().show();
 	}
 	
 	

@@ -79,6 +79,11 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		title.m_title = "登录";
 	}
 
+	@Override
+	public int[] excludedOptionMenus() {
+		return new int[]{OPTION_LOGIN};
+	}
+	
     @Override
     public void handleRightAction() {
         super.handleRightAction();

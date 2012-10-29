@@ -74,6 +74,11 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	}
 	
 	@Override
+	public int[] excludedOptionMenus() {
+		return new int[]{OPTION_CHANGE_CITY};
+	}
+	
+	@Override
 	public boolean handleBack(){
 		if(stackStage.size() == 0){
 			if (null == cityName || "".equals(cityName))
@@ -114,6 +119,12 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		return true;
 	}
 
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		this.setHasOptionsMenu(false);
+	}
+	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

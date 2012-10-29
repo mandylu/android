@@ -1350,6 +1350,12 @@ public class Util {
         UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication(), "user");
         return user;
     }
+    
+    public static boolean isUserLogin()
+    {
+    	UserBean user = getCurrentUser();
+    	return user != null && user.getPhone() != null && user.getPhone().length() > 0;
+    }
 
 	public static String getMyId(Context context)
 	{

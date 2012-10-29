@@ -16,6 +16,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
+import android.view.Menu;
+import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
@@ -110,6 +112,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
 	}
 
+	@Override
+	public int[] includedOptionMenus() {
+		return new int[]{OPTION_CHANGE_CITY};
+	}
+	
 	@Override
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
@@ -363,6 +370,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			hideProgress();
 			 Toast.makeText(QuanleimuApplication.context, "网络连接失败，请检查设置！", 3).show();
 			//tvInfo.setVisibility(View.VISIBLE);
+			 break;
         case MSG_GETPERSONALPROFILE:
             if(userProfileJson != null){
                 UserProfile up = UserProfile.from(userProfileJson);
@@ -374,6 +382,12 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
                     }
                 }
             }
+            break;
+        case MSG_USER_LOGOUT:
+        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
+			break;
+        case MSG_USER_LOGIN:
+        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
 			break;
 		}
 	}
@@ -588,8 +602,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
             pushFragment(new PersonalPostFragment(), bundle);
 //        }
     }
-
-
+    
     private void fillProfile(UserProfile up, View userInfoView){
         View activity = userInfoView;
 
@@ -657,8 +670,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 //        }else{
 //            ((ImageView)activity.findViewById(R.id.userInfoAvatar)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
 //        }
-        activity.findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
-        activity.findViewById(R.id.userInfoLayout).setOnClickListener(this);
+        View userInfoLayout = activity.findViewById(R.id.userInfoLayout);
+        userInfoLayout.setVisibility(View.VISIBLE);
+        userInfoLayout.setOnClickListener(this);
     }
 
     class GetPersonalProfileThread implements Runnable {
