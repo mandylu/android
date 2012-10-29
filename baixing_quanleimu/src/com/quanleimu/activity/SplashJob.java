@@ -9,6 +9,7 @@ import java.util.List;
 import android.content.pm.PackageInfo;
 import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
@@ -18,6 +19,7 @@ import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.LazyImageLoader;
+import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
@@ -128,10 +130,12 @@ public class SplashJob {
 //					String content = new String(b);	
 					
 					postMu = (PostMu)ois.readObject();
+					postMu.setTime(System.currentTimeMillis());
 					
 					//save to context
 					if(null != postMu)
 						Util.saveDataToLocate(parentActivity, "saveFirstStepCate", postMu);
+					
 	
 				}catch(ClassNotFoundException e){
 				}catch (IOException e) {
@@ -164,6 +168,10 @@ public class SplashJob {
 							postMu.setJson(json);
 							postMu.setTime(System.currentTimeMillis());
 							Util.saveDataToLocate(parentActivity, "saveFirstStepCate", postMu);
+							
+//							String tmpPath = "/quanleimu/favorites/百姓网收藏图片/";
+//							Util.saveDataToSdCard(tmpPath, "catetemp", postMu);
+							
 							valid = true;
 						}
 					} catch(Exception e){
