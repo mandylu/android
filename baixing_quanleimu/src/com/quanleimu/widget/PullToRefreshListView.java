@@ -221,9 +221,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
 		mAllowGetMore = mGetMoreAllowPolicy&judgeListFull();
 		if(!mAllowGetMore && mGetmoreView.getVisibility() != View.GONE){
 			mGetmoreView.setVisibility(View.GONE);
+			this.setFooterDividersEnabled(false);
 			((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setVisibility(View.GONE);
 		}else if(mAllowGetMore && mGetmoreView.getVisibility() != View.VISIBLE){
 			mGetmoreView.setVisibility(View.VISIBLE);
+			this.setFooterDividersEnabled(true);
 			((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setVisibility(View.VISIBLE);			
 		}
 		
