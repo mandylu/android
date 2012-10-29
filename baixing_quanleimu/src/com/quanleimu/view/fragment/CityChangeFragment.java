@@ -337,9 +337,13 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			}
 			
 		});
-		QuanleimuApplication.getApplication().getCurrentLocation(this);
 		
 		return rootView;
+	}
+	
+	@Override
+	public void onStackTop(boolean isBack) {
+		QuanleimuApplication.getApplication().getCurrentLocation(this);
 	}
 	
 	@Override
