@@ -208,6 +208,7 @@ public class SearchFragment extends BaseFragment {
 		if (isBack)
 		{
 			etSearch.setText(searchContent);
+			etSearch.setSelection(searchContent.length(), searchContent.length());
 			this.showSearchResult(false);
 		}
 		else
