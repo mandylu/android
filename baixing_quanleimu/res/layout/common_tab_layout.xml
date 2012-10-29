@@ -29,7 +29,7 @@
                 android:paddingRight="2dp"
                 android:text="TAB1"
                 android:textColor="@color/tab_font"
-                android:textSize="16sp" />
+                android:textSize="@dimen/tab_font_size" />
 
         </LinearLayout>
 
@@ -49,11 +49,11 @@
         android:layout_weight="1"
         android:background="@color/tab_bg" >
 
-     <ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+     <View
+        android:layout_width="@dimen/tab_gap_width"
+        android:layout_height="@dimen/tab_gap_height"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon_tab_middle_line" />
+        android:background="@color/tab_gap_color"/>
             
         <LinearLayout
             android:layout_width="wrap_content"
@@ -72,7 +72,7 @@
                 android:paddingRight="2dp"
                 android:text="TAB2"
                 android:textColor="@color/tab_font"
-                android:textSize="16sp" />
+                android:textSize="@dimen/tab_font_size" />
 
         </LinearLayout>
 
@@ -92,11 +92,11 @@
         android:layout_weight="1"
         android:background="@color/tab_bg" >
      	
-     	<ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+     	<View
+        android:layout_width="@dimen/tab_gap_width"
+        android:layout_height="@dimen/tab_gap_height"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon_tab_middle_line" />
+        android:background="@color/tab_gap_color"/>
      	
         <LinearLayout
             android:layout_width="wrap_content"
@@ -115,7 +115,7 @@
                 android:paddingRight="2dp"
                 android:text="TAB3"
                 android:textColor="@color/tab_font"
-                android:textSize="16sp" />
+                android:textSize="@dimen/tab_font_size" />
         </LinearLayout>
 
         <View
@@ -133,11 +133,12 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:background="@color/tab_bg" >
-     	<ImageView
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+     	
+     	<View
+        android:layout_width="@dimen/tab_gap_width"
+        android:layout_height="@dimen/tab_gap_height"
         android:layout_centerVertical="true"
-        android:src="@drawable/icon_tab_middle_line" />
+        android:background="@color/tab_gap_color"/>
      
         <LinearLayout
             android:layout_width="wrap_content"
@@ -156,7 +157,7 @@
                 android:paddingRight="2dp"
                 android:text="TAB4"
                 android:textColor="@color/tab_font"
-                android:textSize="16sp" />
+                android:textSize="@dimen/tab_font_size" />
         </LinearLayout>
 
         <View

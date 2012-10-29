@@ -8,6 +8,8 @@
     <dimen name="tab_height">48dp</dimen>
     <dimen name="tab_indicator_height">4dp</dimen>
     <dimen name="tab_font_size">14sp</dimen>
+    <dimen name="tab_gap_width">1dp</dimen>
+    <dimen name="tab_gap_height">22dp</dimen>
     <dimen name="set_table_height">48dp</dimen>
     <dimen name="set_table_header_text_height">12dp</dimen><dimen name="set_table_item_text_height">16dp</dimen>
     <dimen name="list_margin_LF">16dp</dimen>
