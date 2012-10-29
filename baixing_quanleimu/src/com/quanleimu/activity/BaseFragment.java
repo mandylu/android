@@ -385,6 +385,17 @@ public abstract class BaseFragment extends Fragment {
 	{
 		
 	}
+	
+	/**
+	 * Give subclass a chance to do something when we add customize title components to header.
+	 * Eg: maybe sub class is using an nine-patch background for title components, and want to set padding after the view is add to window.
+	 * 
+	 * @param titleControl
+	 */
+	protected void onAddTitleControl(View titleControl)
+	{
+		
+	}
 		
 	protected void refreshHeader()
 	{
@@ -414,7 +425,8 @@ public abstract class BaseFragment extends Fragment {
 				View titleControl = llTitleControls.getChildCount() == 0 ? null : llTitleControls.getChildAt(0);
 				if (titleControl != title.m_titleControls) {
 					llTitleControls.removeAllViews();
-					llTitleControls.addView(title.m_titleControls);					
+					llTitleControls.addView(title.m_titleControls);		
+					onAddTitleControl(title.m_titleControls);
 				}
 			} else {
 				llTitleControls.setVisibility(View.GONE);

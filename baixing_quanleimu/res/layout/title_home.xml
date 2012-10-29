@@ -17,6 +17,7 @@
         android:id="@+id/title_label_city"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="上海"
         android:textColor="@android:color/white"
        	android:textSize="22dp" />
@@ -25,15 +26,17 @@
         android:id="@+id/title_label_app_name"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:gravity="center"
         android:text="百姓网"
         android:textColor="@android:color/white"
        	android:textSize="22dp" />
 
        <ImageView
            android:id="@+id/imageView1"
-           android:layout_width="wrap_content"
-           android:layout_height="wrap_content"
-           android:src="@drawable/icon_arrow_down" />
+           android:layout_width="10dp"
+           android:layout_height="6dp"
+           android:layout_marginLeft="10dp"
+           android:src="@drawable/icon_header_city_arrow" />
 
     </LinearLayout>
     

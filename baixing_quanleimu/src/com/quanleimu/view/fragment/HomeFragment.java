@@ -85,12 +85,24 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		title.hasGlobalSearch = true;
 		title.m_rightActionHint = "发布";
 		title.m_rightActionBg = R.drawable.bg_post_selector;
-
-		title.m_titleControls.findViewById(R.id.logo_root).setOnClickListener(new View.OnClickListener() {
+		
+		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
+		
+		logoRoot.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 			}
 		});
+		logoRoot.setPadding(logoRoot.getPaddingLeft(), logoRoot.getPaddingBottom(), logoRoot.getPaddingRight(), logoRoot.getBottom()); //Fix padding issue for nine-patch.
+	}
+	
+	public void onAddTitleControl(View titleControl)
+	{
+		View logoRoot = titleControl.findViewById(R.id.logo_root);
+		if (logoRoot != null)
+		{
+			logoRoot.setPadding(logoRoot.getPaddingLeft(), logoRoot.getPaddingBottom(), logoRoot.getPaddingRight(), logoRoot.getBottom()); //Fix padding issue for nine-patch.
+		}
 	}
 
 	public void initTab(TabDef tab){
