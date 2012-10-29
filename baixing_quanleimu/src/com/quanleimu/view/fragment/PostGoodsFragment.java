@@ -893,6 +893,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			try {
 				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
+					postList = JsonUtil.getPostGoodsBean(json);
+					if(postList == null || postList.size() == 0){
+						sendMessage(10, null);
+						return;
+					}
 					// 获取数据成功
 					PostMu postMu = new PostMu();
 					postMu.setJson(json);
@@ -911,6 +916,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					// {"error":{"code":0,"message":"\u66f4\u65b0\u4fe1\u606f\u6210\u529f"},"id":"191285466"}
 					sendMessage(2, null);
 				}
+				return;
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (IOException e) {
@@ -919,7 +925,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			} catch (Communication.BXHttpException e){
 				
 			}
-
+			sendMessage(10, null);
 		}
 	}
 	
@@ -1341,7 +1347,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		//根据模板显示
 		if(null == json || json.equals("")) return;
-		postList = JsonUtil.getPostGoodsBean(json); 
+		if(postList == null || postList.size() == 0){
+			postList = JsonUtil.getPostGoodsBean(json);
+		}
 		buildFixedPostLayout();
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
