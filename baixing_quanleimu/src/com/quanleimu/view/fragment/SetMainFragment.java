@@ -105,7 +105,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
     }
 
     private void refreshUI(View rootView) {
-
+    	if(rootView == null) return;
         user = Util.getCurrentUser();
 
         TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
@@ -181,7 +181,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 
                 break;
             case R.id.setCheckUpdate:
-                checkNewVersion();
+//                checkNewVersion();
                 break;
             case R.id.setAbout:
                 pushFragment(new AboutUsFragment(), null);
