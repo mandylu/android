@@ -26,6 +26,7 @@ public class Sender implements Runnable{
 		if (instance == null &&  TrackConfig.getInstance().getLoggingFlag()) {
 			instance = new Sender();
 		}
+		if (TrackConfig.getInstance().getLoggingFlag() == false) return null;
 		return instance;
 	}
 	//constructor

@@ -10,11 +10,12 @@ import com.quanleimu.activity.QuanleimuApplication;
 /**
  * @author xuweiyan@baixing.com
  *Tracker的使用
+ *append中键/值在TrackConfig的enum中
  *统计pv:
- *try {	Tracker.getInstance().pv().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
+ *try {Tracker.getInstance().pv().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
  *
  *统计event:
- *try {	Tracker.getInstance().event().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
+ *try {Tracker.getInstance().event().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
  */
 //singleton
 public class Tracker {
@@ -28,6 +29,7 @@ public class Tracker {
 		{
 			instance = new Tracker();
 		}
+		if (TrackConfig.getInstance().getLoggingFlag() == false) return null;
 		return instance;
 	}
 	//constructor
