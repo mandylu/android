@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -53,6 +54,7 @@ import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
@@ -245,6 +247,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			}
 //		}		
 	    switch (event.getAction()) {
+	    case MotionEvent.ACTION_DOWN:
 	    case MotionEvent.ACTION_MOVE: 
 	    	((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
 	        break;
@@ -557,13 +560,19 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
-		if(detail.getImageList() != null){
+//		if(detail.getImageList() != null){
 			List<String>listUrl = getImageUrls(detail);
 			
-			if(listUrl.size() == 0){
-				llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-				llgl.setVisibility(View.GONE);
+			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+			if(listUrl == null || listUrl.size() == 0){
+//				llgl.setVisibility(View.GONE);
+				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.VISIBLE);
+				llgl.findViewById(R.id.glDetail).setVisibility(View.GONE);
+				
 			}else{
+				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
+				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
+				
 				Gallery glDetail = (Gallery) contentView.findViewById(R.id.glDetail);
 				glDetail.setOnItemSelectedListener(this);
 				glDetail.setFadingEdgeLength(10);
@@ -572,6 +581,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl, pageIndex);
 				glDetail.setAdapter(adapter);
 				glDetail.setOnTouchListener(this);
+				glDetail.setSpacing(0);
 				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 
 					@Override
@@ -587,12 +597,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						}
 					}
 				});
+				glDetail.setSelection(adapter.getCount() > 1 ? 1 : 0);
 				
 			}
-		}else{
-			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-			llgl.setVisibility(View.GONE);
-		}
+//		}
+//		else{
+//			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+//			llgl.setVisibility(View.GONE);
+//		}
 //		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
 		
 
@@ -1411,34 +1423,27 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 		@Override
 		public long getItemId(int position) {
-			return 0;
+			return position;
 		}
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			LayoutInflater inflater = LayoutInflater.from(context);
-			View v = null;
-//			if (convertView != null) {
-//				v = (ImageView) convertView;
-//			} else {
-				v = inflater.inflate(R.layout.item_detailview, null);
-//			}
-			ImageView iv = (ImageView) v.findViewById(R.id.ivGoods);
-			
-			if (type <= 240) {
-				iv.setLayoutParams(new Gallery.LayoutParams(86, 86));
-			} else if (type <= 320) {
-				iv.setLayoutParams(new Gallery.LayoutParams(145, 145));
-			} else if (type <= 480) {
-				iv.setLayoutParams(new Gallery.LayoutParams(210, 210));
-			} else if (type <= 540) {
-				iv.setLayoutParams(new Gallery.LayoutParams(235, 235));
-			} else if (type <= 640) {
-				iv.setLayoutParams(new Gallery.LayoutParams(240, 240));
-			}else{
-				iv.setLayoutParams(new Gallery.LayoutParams(245,245));
+			ImageView iv = null;
+			if (convertView == null)
+			{
+				convertView = new ImageView(context);
+				iv = (ImageView) convertView;
+				iv.setScaleType(ImageView.ScaleType.FIT_XY);
+				final int laySize = getResources().getDimensionPixelSize(R.dimen.vad_img_width_height);
+				final int paddingRight = getResources().getDimensionPixelSize(R.dimen.vad_img_right_space);
+				iv.setLayoutParams(new Gallery.LayoutParams(laySize + paddingRight, laySize));
+				iv.setPadding(0, 0, paddingRight, 0);
 			}
-
+			else
+			{
+				iv = (ImageView) convertView;
+			}
+			
 			iv.setImageBitmap(mb_loading);
 			
 			if (listUrl.size() != 0 && listUrl.get(position) != null) {

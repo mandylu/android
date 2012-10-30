@@ -15,4 +15,11 @@
     <dimen name="list_margin_LF">16dp</dimen>
     <dimen name="vad_meta_item_height">40dp</dimen>
     <dimen name="vad_img_width_height">106dp</dimen>
+    <dimen name="vad_img_right_space">8dp</dimen>
+    
+    <!--  -->
+    <dimen name="font_large">20sp</dimen>
+    <dimen name="font_medium">16sp</dimen>
+    <dimen name="font_small">14sp</dimen>
+    <dimen name="font_micro">12sp</dimen>
 </resources>
