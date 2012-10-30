@@ -71,10 +71,6 @@
                     android:textColor="#ffffff"
                     android:textSize="16sp"
                     android:textStyle="bold"
-                    android:shadowRadius="0.5"
-                    android:shadowColor="#d3d3d3"
-                    android:shadowDx="2.0"
-                    android:shadowDy="2.0"
                     />
                 
             </LinearLayout>
@@ -87,23 +83,5 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_above="@+id/phonelayout" />
-
-    <ImageView
-        android:id="@+id/btn_prev"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentLeft="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/btn_viewad_prev" >
-    </ImageView>
-
-    <ImageView
-        android:id="@+id/btn_next"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_alignParentRight="true"
-        android:layout_centerVertical="true"
-        android:src="@drawable/btn_viewad_next" >
-    </ImageView>
 
 </RelativeLayout>

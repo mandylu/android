@@ -87,7 +87,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
-	private static final int MSG_HIDE_ARROW = 0x00010002;
 
 	public GoodsDetail detail = new GoodsDetail();
 //	private View titleControlView = null;
@@ -368,18 +367,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					mListLoader.setSelection(pos);
 					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), false);
-//					reCreateTitle();
-//					refreshHeader();
 					saveToHistory();
-//					updateButtonStatus();
-					if(pos == 0){
-						v.findViewById(R.id.btn_prev).setVisibility(View.GONE);
-					}else{
-						v.findViewById(R.id.btn_prev).setVisibility(View.VISIBLE);
-					}
-					v.findViewById(R.id.btn_next).setVisibility(View.VISIBLE);
-//					GoodDetailFragment.this.myHandler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 1000);
-					handler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 1000);
 				
 				}
 				else
@@ -505,7 +493,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 			});        
         
-        handler.sendEmptyMessageDelayed(MSG_HIDE_ARROW, 3000);
         this.saveToHistory();
         return v;
 	}
@@ -524,13 +511,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		WindowManager wm = 
 				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 		type = wm.getDefaultDisplay().getWidth();
-		
-		//different padding for meta value to avoid overlapping display
-//		if (type < 480) {
-//			this.paddingLeftMetaPixel = 0;
-//		}else{
-//			this.paddingLeftMetaPixel = 16;
-//		}
 		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
 		
@@ -600,30 +580,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				glDetail.setSelection(adapter.getCount() > 1 ? 1 : 0);
 				
 			}
-//		}
-//		else{
-//			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-//			llgl.setVisibility(View.GONE);
-//		}
-//		rl_test = (RelativeLayout) findViewById(R.id.detailLayout);
-		
 
 		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
 		TextView txt_message1 = (TextView) contentView.findViewById(R.id.sendmess1);
 //		rl_address.setOnTouchListener(this);
 
 		LinearLayout ll_meta = (LinearLayout) contentView.findViewById(R.id.meta);
-		
-//		View fenxiang = contentView.findViewById(R.id.fenxianglayout);
-//		fenxiang.setOnClickListener(this);
-
-		
-//		if(QuanleimuApplication.wxapi != null && QuanleimuApplication.wxapi.isWXAppInstalled() && QuanleimuApplication.wxapi.isWXAppSupportAPI()){
-//			contentView.findViewById(R.id.wxlayout).setOnClickListener(this);
-//		}
-//		else{
-//			contentView.findViewById(R.id.wxlayout).setVisibility(View.GONE);
-//		}
 		
 
 		this.setMetaObject(contentView, detail);
@@ -688,30 +650,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
 		//FIXME: prepare context menu for currnet vad.
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
-//		View iv_buzz = rootView.findViewById(R.id.buzz);
 		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
 		rl_phone.setVisibility(View.VISIBLE);
 		
-//		iv_buzz.setOnClickListener(this);
-		
-		if (mobileV != null
-				&& !mobileV.equals("")
-				&& !mobileV.equals("无")) {
-//			txt_phone.setVisibility(View.VISIBLE);
-//			txt_phone.setText(mobileV);
-//			iv_contact.updateOptionList(mobileV, 
-//					new String[] {"拨打电话", "发送短信","保存到联系人", "取消"}, 
-//					new int[] {R.id.contact + 1, R.id.contact + 2, R.id.contact, R.id.contact + 4});
-//			txt_phone.setOnClickListener(this);
-//			iv_contact.assignContactFromPhone(mobileV, false);
-			rootView.findViewById(R.id.vad_call_btn).setVisibility(View.VISIBLE);
+		if (TextUtil.isNumberSequence(mobileV)) {
+			rootView.findViewById(R.id.vad_call_btn).setEnabled(true);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(this);
 	
 		} else {
-//			txt_phone.setText("无手机号码");
-//			txt_phone.setOnClickListener(null);
-//			txt_phone.setVisibility(View.INVISIBLE);
-			rootView.findViewById(R.id.vad_call_btn).setVisibility(View.INVISIBLE);
+			rootView.findViewById(R.id.vad_call_btn).setEnabled(false);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(null);
 		}
 	}
@@ -820,48 +767,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
 			Helper.saveDataToLocate(this.getAppContext(), "listMyStore", myStore);
-//			TitleDef title = getTitleDef();
-//			title.m_rightActionHint = strCollect;
-//			refreshHeader();
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
 		}
-//		else if(1 == btnStatus){
-//			final String[] names = {"编辑","刷新","删除"};
-//			new AlertDialog.Builder(this.getActivity()).setTitle("选择操作")
-//					.setItems(names, new DialogInterface.OnClickListener(){
-//						public void onClick(DialogInterface dialog, int which){
-//							switch(which){
-//								case 0:
-//									Bundle bundle = createArguments(null, null);
-//									bundle.putSerializable("goodsDetail", detail);
-//									bundle.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-//									pushFragment(new PostGoodsFragment(), bundle);
-//									
-//									break;
-//								case 1:
-//									showSimpleProgress();
-//									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
-//									dialog.dismiss();
-//									break;									
-//								case 2:
-//									showSimpleProgress();
-//									new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
-//									dialog.dismiss();
-//									break;
-//								default:
-//									break;
-//							}
-//						}
-//					})
-//					.setNegativeButton(
-//				     "取消", new DialogInterface.OnClickListener() {
-//						@Override
-//						public void onClick(DialogInterface dialog, int which) {
-//							dialog.cancel();							
-//						}
-//					}).show();
-//		}
 	}
 	
 	@Override
@@ -879,10 +787,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onClick(View v) {
 		View rootView = getView();
 		switch (v.getId()) {
-//		case R.id.number:{
-//			rootView.findViewById(R.id.contact).performLongClick();
-//			break;
-//		}
 		case R.id.btn_fav_unfav:
 			handleStoreBtnClicked();
 			break;
@@ -1023,13 +927,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
 		if (contact != null)
 		{
-			View contacV = createMetaView(inflater, "联系方式:",  contact, new View.OnClickListener() {
+			View contacV = createMetaView(inflater, "联系方式:",  contact, TextUtil.isNumberSequence(contact) ? new View.OnClickListener() {
 				
 				@Override
 				public void onClick(View v) {
 					startContact(false);
 				}
-			});
+			} : null);
 			ll_meta.addView(contacV);
 		}
 		
@@ -1080,20 +984,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onAnimationEnd(Animation animation) {
 		// TODO Auto-generated method stub
-		View root = getView();
-		if (root != null)
-		{
-			if (root.findViewById(R.id.btn_prev) != null)
-			{
-				root.findViewById(R.id.btn_prev).setVisibility(View.GONE);
-			}
-			
-			if (root.findViewById(R.id.btn_next) != null)
-			{
-				
-				root.findViewById(R.id.btn_next).setVisibility(View.GONE);
-			}
-		}
 	}
 
 	@Override
@@ -1113,20 +1003,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
-		case MSG_HIDE_ARROW:
-			final View prev = rootView.findViewById(R.id.btn_prev);
-			if(prev != null){
-				Animation animation = AnimationUtils.loadAnimation(activity, R.anim.alpha);
-				prev.startAnimation(animation);
-				animation.setAnimationListener(GoodDetailFragment.this);
-			}
-			View next = rootView.findViewById(R.id.btn_next);
-			if(next != null){
-				Animation animation = AnimationUtils.loadAnimation(activity, R.anim.alpha);
-				next.startAnimation(animation);
-				animation.setAnimationListener(GoodDetailFragment.this);
-			}
-			break;
 		case msgRefresh:
 			if(json == null){
 				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
