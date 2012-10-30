@@ -5,6 +5,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.content.Context;
+import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
 /**
@@ -40,28 +41,30 @@ public class Tracker {
 		load();
 	}
 	
-	public Log pv() {
-		Log data = new Log(new HashMap<String, String>());
+	public LogData pv() {
+		LogData data = new LogData(new HashMap<String, String>());
 		data.append("tracktype", "pageview");
 		data.append("timestamp", Communication.getTimeStamp());
 		return data;
 	}
 	
-	public Log event() {
-		Log data = new Log(new HashMap<String, String>());
+	public LogData event() {
+		LogData data = new LogData(new HashMap<String, String>());
 		data.append("tracktype", "event");
 		data.append("timestamp", Communication.getTimeStamp());
 		return data;
 	}
 	
-	public void addLog(Log log)
+	public void addLog(LogData log)
 	{
 		dataList.add(log.toJsonObj().toString());
-		if (dataList.size()>100) {//100 items
+		if (dataList.size()>0) {//100 items
+			Log.d("sender", "dataList.size>0");
 			try {
+				Log.d("sender", "try to addLog");
 				Sender.getInstance().addToQueue(dataList);//in case sender is null right now
 				clear();
-			} catch (Exception e) {}
+			} catch (Exception e) {Log.d("sender", "sender is null when track.addLog");}
 		}
 	}
 	
