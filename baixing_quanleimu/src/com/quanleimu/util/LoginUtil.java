@@ -68,6 +68,7 @@ public class LoginUtil implements View.OnClickListener{
 		        imm.hideSoftInputFromWindow(view.getWindowToken(), 0); 
 
 				pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
+				pd.setCancelable(true);
 				pd.show();
 				(new Thread(new LoginThread(account, password))).start();
 			}
