@@ -25,6 +25,7 @@ import android.widget.TextView;
 import android.widget.AbsListView.OnScrollListener;
 
 import com.quanleimu.activity.R;
+import com.quanleimu.util.Communication;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener {
 
@@ -612,8 +613,23 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             		&& mGetMoreState != GETTING_MORE 
             		&&  mGetmoreView.getBottom() <= this.getBottom()) {
                 // Initiate the refresh
-            	mGetMoreState = GETTING_MORE;                       
-                onGetMore();
+            	mGetMoreState = GETTING_MORE;
+            	if(Communication.isWifiConnection()) {
+            		updateFooterTip(R.string.scrolldown_to_getmore);
+            		mGetmoreView.setOnClickListener(null);
+            		onGetMore();
+            	}
+            	else
+            	{
+            		updateFooterTip(R.string.click_to_get_more);
+            		mGetmoreView.setOnClickListener(new View.OnClickListener() {
+						public void onClick(View v) {
+		            		updateFooterTip(R.string.scrolldown_to_getmore);
+		            		mGetmoreView.setOnClickListener(null);
+		            		onGetMore();
+						}
+					});
+            	}
             }            
             else if (mEnableHeader && firstVisibleItem == 0) {
             	mVelocityTracker.computeCurrentVelocity(1000, mMaximumVelocity);
@@ -847,5 +863,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     
     public interface OnListHeightMeasurer{
     	public int onMeasureListHeight();
+    }
+    
+    private void updateFooterTip(int resId)
+    {
+    	TextView text = (TextView) mGetmoreView.findViewById(R.id.pulldown_to_getmore);
+    	if (text != null)
+    	{
+    		text.setText(resId);
+    	}
     }
 }
