@@ -578,10 +578,13 @@ public abstract class BaseFragment extends Fragment {
 			left.setPadding(0, 0, 0, 0);//Fix 9-ppatch issue.
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				left.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
 			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
 				left.setVisibility(View.VISIBLE);
+				activity.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
 			}else{
 				left.setVisibility(View.GONE);
+				activity.findViewById(R.id.left_line).setVisibility(View.GONE);
 			}
 			
 			View search = activity.findViewById(R.id.search_action);
