@@ -1916,6 +1916,20 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 									bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 									bundle.putSerializable("items", items);
 									bundle.putInt("maxLevel", postBean.getLevelCount() - 1);
+									
+									String selectedValue = null;
+									if (fragment instanceof PostGoodsFragment)
+									{
+										PostGoodsFragment postGoodsFragment = (PostGoodsFragment) fragment;
+										selectedValue = postGoodsFragment.params.getData(postBean.getDisplayName());
+									}else if (fragment instanceof FillMoreDetailFragment)
+									{
+										FillMoreDetailFragment fillMoreDetailFragment = (FillMoreDetailFragment) fragment;
+										selectedValue = fillMoreDetailFragment.params.getData(postBean.getDisplayName());
+									}
+									
+									if (selectedValue != null)
+										bundle.putString("selectedValue", selectedValue);
 									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
 //								}
 							}

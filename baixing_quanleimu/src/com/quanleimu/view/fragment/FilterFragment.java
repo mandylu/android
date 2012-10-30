@@ -360,6 +360,9 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 							// }
 							Filterss fss = listFilterss.get(temp);
 							if (fss.getLevelCount() > 0) {
+								String selectedValue = parametersHolder.getData(fss.getName());
+								bundle.putString("selectedValue", selectedValue);
+								
 								ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
 								MultiLevelSelectionFragment.MultiLevelItem head = new MultiLevelSelectionFragment.MultiLevelItem();
 								head.txt = "全部";

@@ -52,6 +52,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 	ListAdapter adapter = null;
 	private int remainLevel = 0;
 	private ListView listView = null;
+	private String selectedValue = null;
 	
 	@Override
 	public void initTitle(TitleDef title){
@@ -107,6 +108,11 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		if (bundle.containsKey(ARG_COMMON_TITLE))
 		{
 			this.title = bundle.getString(ARG_COMMON_TITLE);
+		}
+		
+		if (bundle.containsKey("selectedValue"))
+		{
+			this.selectedValue = bundle.getString("selectedValue");
 		}
 		
 		if (bundle.containsKey("items"))
@@ -195,8 +201,9 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 			for(int i = 0; i < items.size(); ++ i){
 				CheckableItem t = new CheckableItem();
 				t.txt = items.get(i).txt;
-				t.checked = false;
 				t.id = items.get(i).id;
+				String itemId = t.id != null ? t.id : this.id;
+				t.checked = itemId != null ? itemId.equals(selectedValue) : false;
 				checkList.add(t);
 			}
 			adapter = new CheckableAdapter(this.getActivity(), checkList, 10, true);
@@ -237,6 +244,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
 						bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
 						bundle.putString("metaId", item.id);
+						bundle.putString("selectedValue", selectedValue);
 						pushFragment(new MultiLevelSelectionFragment(), bundle);
 //					}
 				}
