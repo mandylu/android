@@ -39,7 +39,7 @@ public class TextUtil
     {
         return shortDateFormat.format(new Date(time));
     }
-
+    
     public static final String timeTillNow(long time, Context context)
     {
         long now = System.currentTimeMillis();
@@ -78,6 +78,26 @@ public class TextUtil
         {
             return res.getString(R.string.common_time_unknow);
         }
+    }
+    
+    public static boolean isNumberSequence(String target)
+    {
+    	if (target == null || target.trim().length() == 0)
+    	{
+    		return false;
+    	}
+    	target = target.trim();
+    	
+    	try
+    	{
+    		Long.parseLong(target); 
+    		return true; //If nothing happen.
+    	}
+    	catch(Throwable t)
+    	{
+    		return false;
+    	}
+    	
     }
 
     public static String getMD5(String strMD5)
