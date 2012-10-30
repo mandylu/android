@@ -303,13 +303,18 @@ public class FilterUtil {
 	
 	public static void updateFilterLabel(View[] actionItems, String label, Filterss f)
 	{
+		if (actionItems == null)
+		{
+			return;
+		}
+		
 		for (View v : actionItems)
 		{
 			Object tag = v.getTag();
 			if (tag instanceof Filterss && f.getName().equals( ((Filterss) tag).getName()))
 			{
 				TextView text = (TextView) v.findViewById(R.id.filter_name);
-				text.setText(label.replaceFirst("所有", ""));
+				text.setText(label);
 				break;
 			}
 		}
