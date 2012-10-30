@@ -92,6 +92,7 @@ public class Communication implements Comparator<String> {
 		list.add("udid=" + QuanleimuApplication.udid);
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
+		list.add("api=mobile.trackdata");//api name
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
 		list.add("uid=" + Util.getMyId(QuanleimuApplication.context) );
