@@ -7,12 +7,11 @@ import java.util.Stack;
 
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.view.KeyEvent;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -24,14 +23,15 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
+import com.quanleimu.util.TrackConfig.TrackMobile.URL;
 
 public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {
 	// 定义控件名
@@ -343,6 +343,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onStackTop(boolean isBack) {
+		Log.d("citychange", "onstacktop");
+		try {Tracker.getInstance().pv().append(PVKey.URL.getName(),URL.SELECTCITY.getName()).end();} catch (NullPointerException e) {}
 		QuanleimuApplication.getApplication().getCurrentLocation(this);
 	}
 	

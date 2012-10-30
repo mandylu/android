@@ -26,6 +26,7 @@ public class Tracker {
 	private static Tracker instance = null;
 	public static Tracker getInstance()
 	{
+		Log.d("tracker", "flag"+TrackConfig.getInstance().getLoggingFlag());
 		if (instance == null && TrackConfig.getInstance().getLoggingFlag())
 		{
 			instance = new Tracker();
@@ -58,8 +59,8 @@ public class Tracker {
 	public void addLog(LogData log)
 	{
 		dataList.add(log.toJsonObj().toString());
+		Log.d("tracker", "addLog->dataList.size:"+dataList.size());
 		if (dataList.size()>0) {//100 items
-			Log.d("sender", "dataList.size>0");
 			try {
 				Log.d("sender", "try to addLog");
 				Sender.getInstance().addToQueue(dataList);//in case sender is null right now
@@ -79,7 +80,12 @@ public class Tracker {
 	private void load() {
 		if (context != null)
 			try {
-				dataList = (ArrayList<String>)Util.loadDataFromLocate(context, TRACKER_FILE);
+				List<String> oldList = (ArrayList<String>)Util.loadDataFromLocate(context, TRACKER_FILE);
+				if (oldList != null) {					
+					dataList.addAll(oldList);//添加记录到内存
+					Util.clearData(context, TRACKER_FILE);
+				}
+				Log.d("tracker","Load->dataList.size:"+dataList.size());
 			} catch (Exception e) {}
 	}
 	

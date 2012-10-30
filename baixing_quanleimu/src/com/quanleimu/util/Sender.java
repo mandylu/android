@@ -133,13 +133,22 @@ public class Sender implements Runnable{
 	
 	private boolean sendList(final List<String> list) {//TODO:流量统计:统计每次上传成功的字节数
 		String jsonStr = convertListToJson(list);
-
+		
 		boolean succed = Communication.executeSyncPostTask(apiName, jsonStr);
+		Log.d("sender", "after executeSyncPostTask");
 		return succed;
 	}
-	
+	private boolean isQueueTooFull() {//确保在断网的时候，queue里面的数据不会无限制堆积，多出的部分存成文件
+		int size = 0;
+		synchronized (queue) {
+			size = queue.size();
+		}
+		if (size > 10) return true;
+		return false;
+	}
 	@Override
 	public void run() {
+		Log.d("sender", "run");
 		while(TrackConfig.getInstance().getLoggingFlag()) {//config flag
 				//First step : send memory data if there is any.
 				ArrayList<String> list = null;
@@ -151,9 +160,11 @@ public class Sender implements Runnable{
 				}
 				
 				if (list != null) {//there's memory data, send
+					Log.d("sender", "has memory data");
 					boolean succed = sendList(list);
-					
+					Log.d("sender", "after sendList");
 					if (!succed) {
+						Log.d("sender", "saveListToFile");
 						saveListToFile(list);
 					}
 				}
@@ -172,18 +183,24 @@ public class Sender implements Runnable{
 						}
 					}
 				}
-				
+				try {
+					Thread.sleep(1000);
+				} catch (InterruptedException e1) {
+					e1.printStackTrace();
+				}
+				Log.d("sender", "check if there's more data to send");
 				//Check if we have more data to send.
 				boolean hasMoreData = hasDataToSend();
 				
-				while (!isSendingReady() || !hasMoreData) {
+				while ((!isSendingReady() && !isQueueTooFull()) || !hasMoreData) {//断网或者无数据
 					try {
-						Log.d("BxSender", "wait");
+						Log.d("sender", "wait");
 						synchronized (sendMutex) {
 							sendMutex.wait(300000);//time out 5 min
 						}
 						hasMoreData = hasDataToSend();
-						Log.d("BxSender", "wake up");
+						Log.d("sender", "hasMoredata:"+hasMoreData);
+						Log.d("sender", "wake up");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

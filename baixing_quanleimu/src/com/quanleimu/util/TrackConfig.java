@@ -54,7 +54,7 @@ public class TrackConfig {
 	
 	public interface TrackMobile {
 		enum PVKey implements TrackMobile {//每条记录可能的key
-			URL("pageURL","页面URL"),
+			URL("url","页面URL"),
 			FIRSTCATENAME("firstCateName","一级类目名"),
 			SECONDCATENAME("secondCateName","二级类目名"),
 			KEYWORD("keyword","关键字"),
@@ -73,10 +73,10 @@ public class TrackConfig {
 				this.name = keyName;
 				this.description = keyDescription;
 			}
-			public String getKeyName() {
+			public String getName() {
 				return name;
 			}
-			public String getKeyDescription() {
+			public String getDescription() {
 				return description;
 			}
 			
@@ -113,15 +113,15 @@ public class TrackConfig {
 			REGISTER("/register","注册"),
 			FORGETPASSWORD("/forgetPassword","忘记密码");			
 			
-			private String url;
+			private String name;
 			private String description;
 
 			private URL(String url, String description) {
-				this.url = url;
+				this.name = url;
 				this.description = description;
 			}
-			public String getUrl() {
-				return url;
+			public String getName() {
+				return name;
 			}
 			public String getDescription() {
 				return description;

@@ -6,7 +6,6 @@ import java.io.IOException;
 import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.Collections;
@@ -21,18 +20,15 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
-import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
-import android.os.Message;
-import android.widget.TextView;
+import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 
 public class Communication implements Comparator<String> {
@@ -703,9 +699,13 @@ public class Communication implements Comparator<String> {
 		url += jsonStr;
 		
 		try {
-			JSONObject error = new JSONObject(Communication.getDataByGzipUrl(url, true));
-			String code = (String) error.getJSONObject("error").get("code");
-			if (code.equals("0"))
+			System.out.println(Communication.getDataByGzipUrl(url, true));
+			Log.d("sender", "try sending");
+			String result = Communication.getDataByGzipUrl(url, true);
+			Log.d("sender", result);
+			JSONObject error = new JSONObject(result);
+			int code = (Integer) error.getJSONObject("error").get("code");
+			if (code == 0)
 				return true;
 			else
 				return false;
