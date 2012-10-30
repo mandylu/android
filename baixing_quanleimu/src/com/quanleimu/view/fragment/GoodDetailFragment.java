@@ -592,10 +592,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		String title = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
 		String description = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION);
+
 		if ((title == null || title.length() == 0) && description != null)
 		{
 			title = description.length() > 40 ? description.substring(0, 40) : description;
 		}
+		
+		description += "\n打电话给我时，请一定说明在百姓网看到的，谢谢！";
+		description = appendPostFromInfo(detail, description);
 		
 		txt_message1.setText(description);
 		txt_tittle.setText(title);
@@ -673,6 +677,26 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		String postFrom = detail.getValueByKey("postMethod");
 		
 		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom);
+	}
+	
+	private String appendPostFromInfo(GoodsDetail detail, String description)
+	{
+		if (detail == null)
+		{
+			return description;
+		}
+		
+		String postFrom = detail.getValueByKey("postMethod");
+		if ("api_mobile_android".equals(postFrom))
+		{
+			return description + "\n来自android客户端";
+		}
+		else if ("baixing_ios".equalsIgnoreCase(postFrom))
+		{
+			return description + "\n来自iPhone客户端";
+		}
+		
+		return description;
 	}
 	
 	private void requireAuth4Talk()

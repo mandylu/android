@@ -5,33 +5,32 @@
     android:layout_height="@dimen/title_height"
     android:background="@drawable/bg_title" >
 
-    <LinearLayout android:id="@+id/left_action"
+    <RelativeLayout android:id="@+id/left_action"
         android:layout_width="@dimen/title_action_width"
-        android:orientation="horizontal"
         android:background="@drawable/title_bg_selector"
-        android:gravity="center"
         android:layout_height="fill_parent">
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="24dp"
             android:layout_height="24dp"
-            android:layout_gravity="center"
+            android:layout_centerInParent="true"
             android:src="@drawable/icon_back" />
-    </LinearLayout>
-    
-   <LinearLayout
-            android:layout_width="2dp"
-            android:id="@+id/line_left"
-            android:layout_toRightOf="@+id/left_action"
+        
+        <LinearLayout
+            android:layout_width="1dp"
             android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
             android:background="@drawable/icon_title_line" />
+    </RelativeLayout>
+    
+   
     
     <TextView
         android:id="@+id/tvTitle"
         android:paddingLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/line_left"
+        android:layout_toRightOf="@+id/left_action"
         android:layout_centerVertical="true"
         android:gravity="center"
         android:text="首页"
@@ -47,57 +46,54 @@
         android:layout_alignParentRight="true"
         android:orientation="horizontal" >
 
-        <LinearLayout
-            android:layout_width="2dp"
-            android:id="@+id/line_search"
-            android:layout_height="fill_parent"
-            android:layout_gravity="left"
-            android:background="@drawable/icon_title_line" />
 
-        <LinearLayout
+
+        <RelativeLayout
             android:id="@+id/search_action"
             android:layout_width="@dimen/title_action_width"
-            android:layout_height="fill_parent"
+            android:layout_height="@dimen/title_height"
             android:background="@drawable/title_bg_selector"
-            android:gravity="center"
-            android:orientation="horizontal" >
-
+            >
+        <View
+            android:layout_width="1dp"
+            android:layout_height="@dimen/title_height"
+            android:background="@drawable/icon_title_line" />
+        
             <ImageView
                 android:id="@+id/globalSearch"
+                android:layout_centerInParent="true"
                 android:scaleType="fitXY"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
                 android:background="@drawable/icon_search"
                 android:gravity="center" >
             </ImageView>
-        </LinearLayout>
+        </RelativeLayout>
 
-        <LinearLayout
-            android:layout_width="2dp"
-            android:id="@+id/line_right"
-            android:layout_height="fill_parent"
-            android:layout_gravity="left"
-            android:background="@drawable/icon_title_line" />
 
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/right_action"
             android:layout_width="@dimen/title_action_right_width"
             android:layout_height="fill_parent"
             android:background="@drawable/bg_post_selector"
             android:gravity="center" >
-
+
+            <View
+            android:layout_width="1dp"
+            android:layout_height="@dimen/title_height"
+            android:background="@drawable/icon_title_line" />
             <TextView
                 android:id="@+id/right_btn_txt"
+                android:layout_centerInParent="true"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="发布 "
                 android:textColor="#ffffff"
-                android:shadowColor="#68a523"
                 android:textSize="18sp" >
             </TextView>
 
-        </LinearLayout>
+        </RelativeLayout>
     </LinearLayout>
     
 	<LinearLayout

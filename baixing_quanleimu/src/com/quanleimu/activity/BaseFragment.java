@@ -575,45 +575,24 @@ public abstract class BaseFragment extends Fragment {
 			
 			//left action bar settings
 			View left = activity.findViewById(R.id.left_action);
-			left.setPadding(left.getPaddingLeft(), 0, left.getPaddingRight(), 0);//Fix 9-ppatch issue.
+			left.setPadding(0, 0, 0, 0);//Fix 9-ppatch issue.
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
-
-//				if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){					
-//					left.setBackgroundResource(R.drawable.btn_jj);
-//				}
-//				else //if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_NORMAL )
-//				{
-//					left.setBackgroundResource(R.drawable.btn_editx);
-//				}
-//				
-//				left.setText(title.m_leftActionHint);				
 				left.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.line_left).setVisibility(View.VISIBLE);
 			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
-//				Button left = (Button)activity.findViewById(R.id.btnLeft);
-//				left.setBackgroundResource(title.leftCustomResourceId);
-//				left.setText("");
 				left.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.line_left).setVisibility(View.VISIBLE);
 			}else{
-//				Button left = (Button)activity.findViewById(R.id.btnLeft);
 				left.setVisibility(View.GONE);
-				activity.findViewById(R.id.line_left).setVisibility(View.GONE);//FIXME: 
-//				RelativeLayout.LayoutParams lay = (RelativeLayout.LayoutParams) left.getLayoutParams();
-				
 			}
 			
 			View search = activity.findViewById(R.id.search_action);
-			search.setPadding(search.getPaddingLeft(), 0, search.getPaddingRight(), 0);//Fix 9-patch issue.
+			search.setPadding(0, 0, 0, 0);//Fix 9-patch issue.
 			if (title.hasGlobalSearch)
 			{
 				search.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.line_search).setVisibility(View.VISIBLE);
 			}
 			else
 			{
 				search.setVisibility(View.GONE);
-				activity.findViewById(R.id.line_search).setVisibility(View.GONE);	
 			}
 			
 			
@@ -623,23 +602,16 @@ public abstract class BaseFragment extends Fragment {
 //				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
 				right.setBackgroundResource(title.m_rightActionBg);
-				activity.findViewById(R.id.line_right).setVisibility(View.VISIBLE);
 				
 				TextView text = (TextView) activity.findViewById(R.id.right_btn_txt);
 				text.setText(title.m_rightActionHint);
 			}else if(right != null && title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
-//				Button right = (Button)activity.findViewById(R.id.btnRight);
-//				right.setBackgroundResource(title.rightCustomResourceId);
-//				right.setText("");
 				right.setVisibility(View.VISIBLE);
 				right.setBackgroundResource(title.m_rightActionBg);
-				activity.findViewById(R.id.line_right).setVisibility(View.VISIBLE);
 			}else if (right != null){
-//				Button right = (Button)activity.findViewById(R.id.btnRight);
 				right.setVisibility(View.GONE);
-				activity.findViewById(R.id.line_right).setVisibility(View.GONE);
 			}
-			right.setPadding(right.getPaddingLeft(), 0, right.getPaddingRight(), 0); //fix 9-patch issue.
+			right.setPadding(0, 0, 0, 0); //fix 9-patch issue.
 		}
 		else{
 			top.setVisibility(View.GONE);

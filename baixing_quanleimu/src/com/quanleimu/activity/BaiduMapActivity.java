@@ -85,6 +85,7 @@ public class BaiduMapActivity extends MapActivity{
 				BaiduMapActivity.this.finish();
 			}
 		});
+		this.findViewById(R.id.left_action).setPadding(0, 0, 0, 0);
 		Bundle bundle = this.getIntent().getExtras();
 		if(bundle != null){
 			String title = bundle.getString("title");
