@@ -60,7 +60,7 @@ public class Tracker {
 	{
 		dataList.add(log.toJsonObj().toString());
 		Log.d("tracker", "addLog->dataList.size:"+dataList.size());
-		if (dataList.size()>0) {//100 items
+		if (dataList.size()>100) {//100 items
 			try {
 				Log.d("sender", "try to addLog");
 				Sender.getInstance().addToQueue(dataList);//in case sender is null right now
