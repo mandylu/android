@@ -1996,7 +1996,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	public void onLocationFetched(BXLocation location) {
 		// TODO Auto-generated method stub
 		if(location == null) return;
-		handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
+		if(handler != null){
+			handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
+		}
 		detailLocation = location;
 		if(this.inLocating){
 			if(locationView != null){
