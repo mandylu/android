@@ -11,6 +11,7 @@ import java.util.List;
 import java.util.Locale;
 import java.util.Vector;
 
+import android.app.Activity;
 import android.content.ContentValues;
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -19,10 +20,13 @@ import android.media.MediaScannerConnection.MediaScannerConnectionClient;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
@@ -36,11 +40,13 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
-import com.quanleimu.widget.CircleFlowIndicator;
 import com.quanleimu.widget.ViewFlow;
-import android.util.Log;
 
 public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
+	
+	public static final int MSG_HIDE_TITLE = 1;
+	public static final int MSG_SHOW_TITLE = 2;
+	
 	//int index = 0;
 	public static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
@@ -112,28 +118,33 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
                 mb = BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o);  
                 
 				ViewFlow vfCoupon = (ViewFlow)v.findViewById(R.id.vfCoupon);
-//				GalleryImageAdapter adapter = new GalleryImageAdapter(getContext(), listUrl);
-//				vfCoupon.setOnViewLazyInitializeListener(adapter);
-//				vfCoupon.setOnViewSwitchListener(this);
-//				vfCoupon.setAdapter(adapter, postIndex);
-
-				CircleFlowIndicator indic = (CircleFlowIndicator) v.findViewById(R.id.viewflowindic);
-				vfCoupon.setFlowIndicator(indic); 
 				
 				GalleryImageAdapter adapter = new GalleryImageAdapter(getActivity(), listUrl);
 				vfCoupon.setOnViewLazyInitializeListener(adapter);
 				vfCoupon.setOnViewSwitchListener(this);
 				vfCoupon.setAdapter(adapter, postIndex);
+				
+				vfCoupon.setOnTouchListener(new OnTouchListener() {
+					
+					public boolean onTouch(View v, MotionEvent event) {
+						if (!getTabDef().m_visible)
+						{
+							sendMessage(MSG_SHOW_TITLE, null);
+						}
+						return false;
+					}
+				});
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
 		}
 		
+		
 		return v;
 	}
 	
 	public void initTitle(TitleDef title){
-		title.m_visible = true;
+		title.m_visible = false;
 		title.m_title = (postIndex+1)+"/"+listUrl.size();
 		title.m_leftActionHint = "返回";
 		
@@ -151,7 +162,26 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	}
 	
 	
+	
 	 @Override
+	protected void handleMessage(Message msg, Activity activity, View rootView) {
+		 switch(msg.what)
+		 {
+		 case MSG_SHOW_TITLE:
+			 getTitleDef().m_visible = true;
+			 refreshHeader();
+			 sendMessageDelay(MSG_HIDE_TITLE, null, 5 * 1000);
+			 break;
+		 case MSG_HIDE_TITLE:
+			 getTitleDef().m_visible = false;
+			 refreshHeader();
+			 break;
+			 
+		 }
+	}
+
+
+	@Override
 	    public void onDestroy()
 	    {      
 	    	

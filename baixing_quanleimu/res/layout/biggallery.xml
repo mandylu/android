@@ -27,17 +27,6 @@
     		android:layout_width="fill_parent"
     		android:layout_height="fill_parent"
     		app:sidebuffer="1"/>	
-    		
-    	<com.quanleimu.widget.CircleFlowIndicator 
-    		android:padding="5dip"
-    		android:layout_height="wrap_content"
-    		android:layout_width="wrap_content"
-    		android:id="@+id/viewflowindic"
-    		android:layout_gravity="center_horizontal"
-    		app:radius="5dip"
-    		app:inactiveType="fill"
-    		app:activeColor="#dddddd"
-    		app:inactiveColor="#777777"/>    		    
 	</FrameLayout>
 	
 </RelativeLayout>
