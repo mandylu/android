@@ -1,9 +1,19 @@
 package com.quanleimu.activity.test;
 
+import java.io.File;
 import java.util.ArrayList;
+import java.util.Timer;
+import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 import android.app.Instrumentation;
+import android.content.ComponentName;
+import android.content.Context;
+import android.content.Intent;
+import android.content.ServiceConnection;
+
+import org.apache.log4j.Level;
+import org.apache.log4j.Logger;
 
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.utils.AthrunConnectorThread;
@@ -16,10 +26,14 @@ import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 import org.athrun.android.framework.viewelement.ViewUtils;
 
+import android.os.Environment;
+import android.os.IBinder;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
+
+import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 public class BaixingTestCase extends AthrunTestCase {
 	private static final String LOG_TAG = "MainActivityTest";
@@ -234,6 +248,51 @@ public class BaixingTestCase extends AthrunTestCase {
 		startScreen_v3();
 	}
 	
+	public static void waitScreenSave() {
+		LogConfigurator logConfigurator = new LogConfigurator();
+		String lockFilePath = "/mnt/sdcard/Athrun/bxtestcase_err.lock";
+		logConfigurator.setFileName(lockFilePath);
+		logConfigurator.setRootLevel(Level.INFO);
+		logConfigurator.configure();
+		Logger logger = Logger.getLogger(BaixingTestCase.class);
+		logger.info("lock");
+		final Timer timer = new Timer();
+		class BxTimerTask extends TimerTask {
+			public boolean willStopped = false;
+            @Override
+            public void run () {
+            	willStopped = true;
+                timer.cancel();
+            }
+        };
+        BxTimerTask tt = new BxTimerTask();
+        timer.schedule(tt, 10 * 1000); // N秒 * 1000
+        while(!tt.willStopped) {
+        	try {
+        		Thread.sleep(1 * 1000);
+        		File file = new File(lockFilePath);
+        		if (!file.exists()) {
+        			timer.cancel();
+        			break;
+        		}
+        	} catch (Exception ex) {}
+        }
+	}
+	
+	public static void assertNotNull(Object obj) {
+		if (obj == null) waitScreenSave();
+		AthrunTestCase.assertNotNull(obj);
+	}
+	
+	public static void assertTrue(boolean condition) {
+		if (condition == false) waitScreenSave();
+		AthrunTestCase.assertTrue(condition);
+	}
+	public static void assertEquals(String expected, String actual) {
+		if (!expected.equals(actual)) waitScreenSave();
+		AthrunTestCase.assertEquals(expected, actual);
+	}
+	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
@@ -342,19 +401,23 @@ public class BaixingTestCase extends AthrunTestCase {
 		logon();
 		
 		openTabbar(TAB_ID_POST);
-		
-		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
-				AbsListViewElement.class);
-		assertNotNull(gridView);
-		ViewGroupElement item = gridView.getChildByIndex(firstCatIndex, ViewGroupElement.class);
-		assertNotNull(item);
-		if (firstCatIndex == 0) {
-			TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
-					TextViewElement.class);
-			assertEquals(TEST_DATA_CAT_WUPINJIAOYI, catTextView.getText());
+		AbsListViewElement gridView = null;
+		try {
+			gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
+					AbsListViewElement.class);
+			assertNotNull(gridView);
+			ViewGroupElement item = gridView.getChildByIndex(firstCatIndex, ViewGroupElement.class);
+			assertNotNull(item);
+			if (firstCatIndex == 0) {
+				TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
+						TextViewElement.class);
+				assertEquals(TEST_DATA_CAT_WUPINJIAOYI, catTextView.getText());
+			}
+			item.doClick();
+			waitForHideMsgbox(5000);
+		} catch (Exception ex) {
+			assertNotNull(gridView);
 		}
-		item.doClick();
-		waitForHideMsgbox(5000);
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {
@@ -645,18 +708,24 @@ public class BaixingTestCase extends AthrunTestCase {
 			hv = findElementByTexts(HOME_MARK_TEXTS);
 		}
 		assertTrue(hv);
-		AbsListViewElement gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
-				AbsListViewElement.class);
-		assertNotNull(gridView);
-		ViewGroupElement item = gridView.getChildByIndex(index, ViewGroupElement.class);
-		assertNotNull(item);
-		TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
-				TextViewElement.class);
-		TimeUnit.MILLISECONDS.sleep(300);
-		assertNotNull(catTextView.getText());
-		assertTrue(catTextView.getText().length() > 0);
-		item.doClick();
-		TimeUnit.SECONDS.sleep(2);
+		AbsListViewElement gridView = null;
+		try {
+			gridView = findElementById(POST_CATEGORY_GRIDVIEW_ID,
+					AbsListViewElement.class);
+			assertNotNull(gridView);
+			ViewGroupElement item = gridView.getChildByIndex(index, ViewGroupElement.class);
+			assertNotNull(item);
+			TextViewElement catTextView = item.findElementById(CATEGROY_GRIDVIEW_NAME_ID,
+					TextViewElement.class);
+			TimeUnit.MILLISECONDS.sleep(300);
+			assertNotNull(catTextView.getText());
+			assertTrue(catTextView.getText().length() > 0);
+			item.doClick();
+			TimeUnit.SECONDS.sleep(2);
+		} catch (Exception ex) {
+			assertNotNull(gridView);
+		}
+		
 	}
 	
 	public void openSecondCategoryByIndex(int index) throws Exception {

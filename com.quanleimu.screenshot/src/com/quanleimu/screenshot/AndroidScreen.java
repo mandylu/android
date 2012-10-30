@@ -56,7 +56,7 @@ public class AndroidScreen {
                 		Date nowTime=new Date();
                 		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");
                     	BXOutputReceiver log = new BXOutputReceiver();
-                    	log.logFile = "logcat_test_" + d.toString() + "_" + time.format(nowTime) + ".log";
+                    	log.logFile = "logs/logcat/test_" + d.toString() + "_" + time.format(nowTime) + ".log";
                 		d.executeShellCommand("logcat -d", log);
                 		sleep(1 * 1000);
                 		d.executeShellCommand("logcat -c", rev);
@@ -147,7 +147,7 @@ public class AndroidScreen {
 	void saveImage(Image img) {
 		Date nowTime=new Date();
 		SimpleDateFormat time=new SimpleDateFormat("yyyyMMddHHmmss"); 
-		String filePath = "logs/" + time.format(nowTime) + "_" + device.toString() + String.valueOf((int)(Math.random() * 10000)) + ".png";
+		String filePath = "logs/screen/" + time.format(nowTime) + "_" + device.toString() + "_" + String.valueOf((int)(Math.random() * 10000)) + ".png";
         File target = new java.io.File(filePath);
         logger.debug("img path:" + target.getAbsolutePath());
         try {

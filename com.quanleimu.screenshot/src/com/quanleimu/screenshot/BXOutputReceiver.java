@@ -35,7 +35,7 @@ public class BXOutputReceiver extends MultiLineReceiver {
 	        if (isCancelled == false) {
 	                for(String line : lines) {
 	                	if (out != null) {
-	                		out.write(line);
+	                		out.write(line + "\n");
 	                	} else {
 	                		revString += line;
 	                	}
