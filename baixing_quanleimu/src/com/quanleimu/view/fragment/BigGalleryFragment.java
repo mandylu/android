@@ -123,17 +123,6 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				vfCoupon.setOnViewLazyInitializeListener(adapter);
 				vfCoupon.setOnViewSwitchListener(this);
 				vfCoupon.setAdapter(adapter, postIndex);
-				
-				vfCoupon.setOnTouchListener(new OnTouchListener() {
-					
-					public boolean onTouch(View v, MotionEvent event) {
-						if (!getTabDef().m_visible)
-						{
-							sendMessage(MSG_SHOW_TITLE, null);
-						}
-						return false;
-					}
-				});
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
@@ -144,7 +133,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	}
 	
 	public void initTitle(TitleDef title){
-		title.m_visible = false;
+		title.m_visible = true;
 		title.m_title = (postIndex+1)+"/"+listUrl.size();
 		title.m_leftActionHint = "返回";
 		
