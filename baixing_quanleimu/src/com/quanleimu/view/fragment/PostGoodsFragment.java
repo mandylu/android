@@ -85,6 +85,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
 	
+	
 	public static final int MSG_POST_SUCCEED = 0xF0000010; 
 //	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
@@ -660,12 +661,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		return true;
 	}
 
+	
 	private boolean check2() {
 		LinkedHashMap<String, String> postMap = params.getData();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
-			if (postGoodsBean.getRequired().endsWith("required")) {
+			if (postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean)) {
+				
 				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
 						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
 						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
@@ -795,12 +798,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			//发布发布集合
 			for (int i = 0; i < postMap.size(); i++) {
 				String key = (String) postMap.keySet().toArray()[i];
-
 				String values = postMap.get(key);
+				
 				if (values != null && values.length() > 0 && postList.get(key) != null) {
 					try{
 						list.add(URLEncoder.encode(postList.get(key).getName(), "UTF-8")
-								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));
+								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
+						if(postList.get(key).getName().equals("description")){//generate title from description
+							list.add("title"
+									+ "=" + URLEncoder.encode(values.substring(0, Math.min(25, values.length() - 1)), "UTF-8").replaceAll("%7E", "~"));
+						}
 					}catch(UnsupportedEncodingException e){
 						e.printStackTrace();
 					}
@@ -1322,7 +1329,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //	}
 	
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
-	private String[] hiddenItemNames = {"wanted", "faburen"};
+	private String[] hiddenItemNames = {"wanted", "faburen"};//must be selected type
 	private int [] hiddenItemValuesIndexes = {1, 0};
 	
 	private void buildFixedPostLayout(){
@@ -1381,6 +1388,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		{
 			if (bean.getName().equals(hiddenItemNames[i]))
 			{
+				return true;
+			}else if(bean.getName().equals("title")){//特殊处理
 				return true;
 			}
 		}
