@@ -1323,6 +1323,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
 	private String[] hiddenItemNames = {"wanted", "faburen"};
+	private int [] hiddenItemValuesIndexes = {1, 0};
 	
 	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
@@ -1361,11 +1362,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		for (String key : keySet)
 		{
 			PostGoodsBean bean = postList.get(key);
-			for (String name : hiddenItemNames)
+			for (int i = 0; i<  hiddenItemNames.length; i++)
 			{
-				if (bean.getName().equals(name))
+				if (bean.getName().equals(hiddenItemNames[i]))
 				{
-					this.params.put(bean.getDisplayName(), bean.getValues().get(0), bean.getValues().get(0));
+					this.params.put(bean.getDisplayName(), 
+							bean.getLabels().get(this.hiddenItemValuesIndexes[i]), 
+							bean.getValues().get(this.hiddenItemValuesIndexes[i]));
 					break;
 				}
 			}
