@@ -643,9 +643,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
 	
-		
+		final String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
+		final boolean isFromMobile = isCurrentAdFromMobile();
 		ImageButton btnBuzz = (ImageButton) rootView.findViewById(R.id.vad_buzz_btn);
-		btnBuzz.setImageResource(isCurrentAdFromMobile() ? R.drawable.icon_buzz : R.drawable.icon_sms);
+		btnBuzz.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
+		btnBuzz.setEnabled(isFromMobile ? true : (TextUtil.isNumberSequence(mobileV) ? true : false));
 		
 //		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
 		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
@@ -654,13 +656,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
 		//FIXME: prepare context menu for currnet vad.
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
-		String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
 		rl_phone.setVisibility(View.VISIBLE);
 		
 		if (TextUtil.isNumberSequence(mobileV)) {
 			rootView.findViewById(R.id.vad_call_btn).setEnabled(true);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(this);
 	
+			
 		} else {
 			rootView.findViewById(R.id.vad_call_btn).setEnabled(false);
 			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(null);
