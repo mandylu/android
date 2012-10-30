@@ -5,7 +5,7 @@ import android.content.Context;
 import android.content.Intent;
 
 import com.quanleimu.activity.QuanleimuMainActivity;
-import com.quanleimu.activity.SplashActivity;
+
 
 /**
  * 
