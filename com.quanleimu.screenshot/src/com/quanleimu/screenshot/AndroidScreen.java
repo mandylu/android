@@ -70,7 +70,7 @@ public class AndroidScreen {
     }
     
 	private void initBridge() {
-		sdkPath = "/Users/wyhw/android-sdk-macosx";
+		sdkPath = System.getProperty("user.home") + "/android-sdk-macosx";
 		
 		if (!AndroidSdkHelper.validatePath(sdkPath)) {
             logger.error("Android SDK is not properly configured.");
