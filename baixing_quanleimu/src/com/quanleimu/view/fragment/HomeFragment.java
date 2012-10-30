@@ -95,7 +95,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 			}
 		});
-		logoRoot.setPadding(logoRoot.getPaddingLeft(), logoRoot.getPaddingBottom(), logoRoot.getPaddingRight(), logoRoot.getBottom()); //Fix padding issue for nine-patch.
 	}
 	
 	public void onAddTitleControl(View titleControl)
@@ -103,7 +102,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		View logoRoot = titleControl.findViewById(R.id.logo_root);
 		if (logoRoot != null)
 		{
-			logoRoot.setPadding(logoRoot.getPaddingLeft(), logoRoot.getPaddingBottom(), logoRoot.getPaddingRight(), logoRoot.getBottom()); //Fix padding issue for nine-patch.
+			logoRoot.setPadding(logoRoot.getPaddingLeft(), 0, logoRoot.getPaddingRight(), 0); //Fix padding issue for nine-patch.
 		}
 	}
 

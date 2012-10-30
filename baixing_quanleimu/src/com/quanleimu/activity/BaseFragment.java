@@ -575,6 +575,7 @@ public abstract class BaseFragment extends Fragment {
 			
 			//left action bar settings
 			View left = activity.findViewById(R.id.left_action);
+			left.setPadding(left.getPaddingLeft(), 0, left.getPaddingRight(), 0);//Fix 9-ppatch issue.
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 
 //				if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_BACK ){					
@@ -603,6 +604,7 @@ public abstract class BaseFragment extends Fragment {
 			}
 			
 			View search = activity.findViewById(R.id.search_action);
+			search.setPadding(search.getPaddingLeft(), 0, search.getPaddingRight(), 0);//Fix 9-patch issue.
 			if (title.hasGlobalSearch)
 			{
 				search.setVisibility(View.VISIBLE);
@@ -617,7 +619,6 @@ public abstract class BaseFragment extends Fragment {
 			
 			//right action bar settings
 			View right = activity.findViewById(R.id.right_action);
-			
 			if(right != null && title.m_rightActionHint != null && !"".equals(title.m_rightActionHint)){
 //				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
@@ -638,6 +639,7 @@ public abstract class BaseFragment extends Fragment {
 				right.setVisibility(View.GONE);
 				activity.findViewById(R.id.line_right).setVisibility(View.GONE);
 			}
+			right.setPadding(right.getPaddingLeft(), 0, right.getPaddingRight(), 0); //fix 9-patch issue.
 		}
 		else{
 			top.setVisibility(View.GONE);
