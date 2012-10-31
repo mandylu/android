@@ -340,7 +340,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1,
 					int pos, long arg3) {
-				
 				int index = (int) arg3;//(int) (arg3 - lvGoodsList.getHeaderViewsCount());
 				if(index < 0 || index > goodsListLoader.getGoodsList().getData().size() - 1)
 					return;

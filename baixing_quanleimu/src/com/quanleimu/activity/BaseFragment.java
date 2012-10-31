@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CityChangeFragment;
 import com.quanleimu.view.fragment.FeedbackFragment;
@@ -643,11 +644,12 @@ public abstract class BaseFragment extends Fragment {
 	protected final void showProgress(String title, String message, boolean cancelable)
 	{
 		hideProgress();
-		
-		if (getActivity() != null)
+
+        if (getActivity() != null)
 		{
 			pd = ProgressDialog.show(getActivity(), title, message);
 			pd.setCancelable(cancelable);
+            pd.setCanceledOnTouchOutside(cancelable);
 		}
 	}
 	

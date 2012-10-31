@@ -89,6 +89,7 @@ public class SplashJob {
 				break;
 			case 3:
 				record3 = 1;
+                //todo load first category config 这块有问题
 				break;
 			default:
 				break;
@@ -185,10 +186,11 @@ public class SplashJob {
 				if (json != null && json.length() > 0) {
 					AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
 					
-					if (allCates == null) {
-					} else {
+//					if (allCates == null) {
+//					} else {
+                    //todo 不做保护，拿不到类目的情况时有发生，需要处理
 						parentActivity.myApp.setListFirst(allCates.getChildren());
-					}
+//					}
 				}
 			}
 			
