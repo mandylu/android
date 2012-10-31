@@ -11,7 +11,9 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -31,6 +33,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.TrackConfig;
 import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
 import com.quanleimu.util.TrackConfig.TrackMobile.Url;
@@ -43,6 +46,9 @@ import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
 import com.quanleimu.widget.CustomizeGridView;
 import com.quanleimu.widget.CustomizeGridView.GridInfo;
 import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
+import com.quanleimu.widget.EditUsernameDialogFragment;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, ItemClickListener , View.OnClickListener{
 
@@ -62,21 +68,22 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public int favoriteNum = 0;
 	public int unreadMessageNum = 0;
 	public int historyNum = 0;
-	
-	public static final String[] TAB_LABELS = new String[] {
-		"浏览信息", "我的百姓网"
-	};
 
 	private CustomizePagerManager pageMgr;
 	private int selectedIndex = 0;
 
     private UserBean user;
+    private UserProfile userProfile;
     private String userProfileJson;
-    static final int MSG_GETPERSONALPROFILE = 99;
+    public static final int MSG_GETPERSONALPROFILE = 99;
+    public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
+    public static final int MSG_SHOW_TOAST = 101;
+    public static final int MSG_SHOW_PROGRESS = 102;
 
 	private String json;
 	private List<HotList> tempListHot = new ArrayList<HotList>();
 	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
+    private EditUsernameDialogFragment editUserDlg;
 
 	protected void initTitle(TitleDef title) {
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
@@ -138,7 +145,12 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		if(bundle != null && bundle.containsKey("defaultPageIndex")){
 			selectedIndex = bundle.getInt("defaultPageIndex");
 		}
-		pageMgr = CustomizePagerManager.createManager(TAB_LABELS, selectedIndex);
+        String tabBrowse = getString(R.string.tab_browse);
+        String tabUserCenter = getString(R.string.tab_user_center);
+
+		pageMgr = CustomizePagerManager.createManager(
+                new String[] {tabBrowse, tabUserCenter},
+                selectedIndex);
 	}
 
 	@Override
@@ -374,12 +386,12 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			 break;
         case MSG_GETPERSONALPROFILE:
             if(userProfileJson != null){
-                UserProfile up = UserProfile.from(userProfileJson);
+                userProfile = UserProfile.from(userProfileJson);
                 if (getActivity() != null)
                 {
-                    Util.saveDataToLocate(getActivity(), "userProfile", up);
-                    if(up != null){
-                        fillProfile(up, getView());
+                    Util.saveDataToLocate(getActivity(), "userProfile", userProfile);
+                    if(userProfile != null){
+                        fillProfile(userProfile, getView());
                     }
                 }
             }
@@ -389,7 +401,19 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			break;
         case MSG_USER_LOGIN:
         	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
+            break;
+        case MSG_EDIT_USERNAME_SUCCESS:
+            hideProgress();
+            editUserDlg.dismiss();
+            reloadUser(getView());
 			break;
+        case MSG_SHOW_TOAST:
+            hideProgress();
+            Toast.makeText(QuanleimuApplication.context, msg.obj.toString(), 1).show();
+            break;
+        case MSG_SHOW_PROGRESS:
+            showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);
+            break;
 		}
 	}
 	
@@ -508,21 +532,25 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 //			gv.setAdapter(adapter);
 //			gv.setOnItemClickListener(this);
 
-            //set user profile info view
-            user = Util.getCurrentUser();
-            if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
-                UserProfile up = (UserProfile) Util.loadDataFromLocate(context, "userProfile");
-                if (up != null) {
-                    fillProfile(up, v);
-                } else {
-                    new Thread(new GetPersonalProfileThread()).start();
-                }
-            }
+            reloadUser(v);
 
 		}
 
 		return v;
 	}
+
+    private void reloadUser(View v) {
+        //set user profile info view
+        user = Util.getCurrentUser();
+        if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
+            userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile");
+            if (userProfile != null) {
+                fillProfile(userProfile, v);
+            } else {
+                new Thread(new GetPersonalProfileThread()).start();
+            }
+        }
+    }
 
 	@Override
 	public void onItemClick(GridInfo info, int index) {	
@@ -697,9 +725,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     public void onClick(View v) {
         switch(v.getId()){
             case R.id.userInfoLayout:
-                Bundle bundle = createArguments(null, "修改资料");
-                pushFragment(new ProfileEditFragment(), bundle);
+                editUserDlg = new EditUsernameDialogFragment();
+                editUserDlg.handler = this.handler;
+                editUserDlg.show(getFragmentManager(), null);
                 break;
+
             default:
                 break;
         }

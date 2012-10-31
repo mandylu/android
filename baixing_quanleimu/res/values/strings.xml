@@ -33,6 +33,9 @@
     <string name="back">返回</string>
     <string name="delete">删除</string>
 
+    <string name="tab_browse">浏览信息</string>
+    <string name="tab_user_center">用户中心</string>
+
     <!-- dialog text -->
     <string name="dialog_title_info">提示</string>
     <string name="dialog_title_warning">警告</string>
@@ -52,11 +55,13 @@
 
     <!-- label text -->
     <string name="label_test">测试</string>
-    <string name="label_login">绑定百姓网帐号</string>
-    <string name="label_logout">解除绑定</string>
+    <string name="label_login">登录百姓网</string>
+    <string name="label_logout">退出登录</string>
+    <string name="dialog_confirm_logout">确认退出登录？</string>
+
     <string name="label_flow_optimize">流量优化设置</string>
 
-    <string name="dialog_confirm_logout">确认解除绑定？</string>
+
 
     <!-- input hint text -->
     <string name="hint_searchCity">请输入城市名称</string>

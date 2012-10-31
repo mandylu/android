@@ -397,55 +397,19 @@ public class ProfileEditFragment extends BaseFragment implements UploadListener 
 		}
 	
 	}
-
-	private void updateProfile() {
-		ParameterHolder params = new ParameterHolder();
-		params.addParameter("nickname", getTextData(R.id.username));
-//		params.addParameter("gender", getTextData(R.id.gender));
-//		params.addParameter(URLEncoder.encode("所在地"), newCityId);
-		params.addParameter("userId", up.userId);
-//l
-		
-		
-		Communication.executeAsyncGetTask("user_profile_update", params, new Communication.CommandListener() {
-			
-			@Override
-			public void onServerResponse(String serverMessage) {
-				try {
-					JSONObject obj = new JSONObject(serverMessage).getJSONObject("error");
-					if (!"0".equals(obj.getString("code")))
-					{
-						sendMessage(MSG_UPDATE_FAIL, obj.get("message"));
-					}
-					else
-					{
-						sendMessage(MSG_UPDATE_SUCCED, null);
-					}
-				} catch (JSONException e) {
-					sendMessage(MSG_UPDATE_ERROR, null);
-				}
-				
-			}
-			
-			@Override
-			public void onException(Exception ex) {
-				sendMessage(MSG_UPDATE_ERROR, null);
-			}
-		});
-	}
 	
 	private void continueUpdateProfile()
 	{
 		showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);
 		
-		updateProfile();
+//		updateProfile();
 	}
 	
 	private String findCityName(String metaId)
 	{
 		PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
 		return bean.getDisplayName();
-		
+		//todo ming 无网络情况下，登录提示令人困惑
 	}
 	
 	public boolean handleBack()
