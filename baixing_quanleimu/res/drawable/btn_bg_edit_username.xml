@@ -1,0 +1,12 @@
+<?xml version="1.0" encoding="utf-8" ?>  
+<selector xmlns:android="http://schemas.android.com/apk/res/android">
+    <item android:state_pressed="false" android:drawable="@drawable/btn_edit_name"/>
+	<!--触摸模式下单击时的背景颜色  -->
+	<item android:state_pressed="true" android:drawable="@drawable/btn_edit_name_on">
+			<shape  android:shape="rectangle">  
+      		<gradient android:startColor="#52adcd" android:endColor="#1c87b1"  android:angle="270" />    
+			</shape>
+	</item>
+
+</selector>  
+

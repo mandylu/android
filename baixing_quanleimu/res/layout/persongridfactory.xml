@@ -5,28 +5,34 @@
     android:orientation="vertical"
     android:background="@drawable/home_bg" >
 
- 	<LinearLayout
+ 	<RelativeLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="90dp"
 	    android:visibility="gone" android:orientation="horizontal" android:id="@+id/userInfoLayout"
-        android:background="@drawable/list_selector"
-        android:clickable="true">
+        android:clickable="true"
+        android:background="#e4e1d3"
+        android:baselineAligned="true"
+             >
 
          <RelativeLayout
                  android:layout_width="fill_parent"
+
                  android:layout_height="56dp" android:layout_gravity="center_vertical"
                  android:gravity="center_vertical"
-                 android:layout_marginLeft="36dp">
+                 android:layout_alignParentLeft="false"
+                 android:layout_alignParentTop="false"
+                 android:layout_centerVertical="true"
+                 android:layout_marginLeft="20dp">
 
              <LinearLayout android:orientation="horizontal" android:layout_width="wrap_content"
                            android:layout_height="wrap_content" android:id="@+id/linearLayout"
                            android:layout_alignParentBottom="true">
                  <TextView android:id="@+id/textView3" android:layout_width="wrap_content"
                            android:layout_height="20dp" android:text="注册时间: " android:gravity="center_vertical"
-                           android:textSize="12dp" android:textColor="#9a8e78"/>
+                           android:textSize="@dimen/font_micro" android:textColor="#9a8e78"/>
                  <TextView android:id="@+id/userInfoJoinDays" android:layout_width="wrap_content"
                            android:layout_height="20dp" android:text="9999天" android:gravity="center_vertical"
-                           android:textSize="12dp" android:textColor="#9a8e78"
+                           android:textSize="@dimen/font_micro" android:textColor="#9a8e78"
                            android:lines="1"/>
              </LinearLayout>
 
@@ -40,17 +46,27 @@
                      android:layout_width="wrap_content"
                      android:layout_height="36dp"
                      android:text="小老百姓卖二手物品" android:textStyle="bold" android:gravity="fill_vertical"
-                     android:textColor="#524735" android:textSize="18dp"/>
+                     android:textColor="#524735" android:textSize="@dimen/font_medium"/>
 
                  <ImageView
-                         android:layout_width="wrap_content"
-                         android:layout_height="wrap_content"
-                         android:src="@drawable/btn_edit_name"
-                         android:visibility="visible"/>
+                         android:layout_width="36dp"
+                         android:layout_height="36dp"
+                         android:src="@drawable/btn_bg_edit_username"
+                         android:visibility="visible"
+                         android:layout_gravity="center_vertical"
+                         android:padding="8dp"
+                         android:id="@+id/userInfo_editUsername_btn"
+                         android:clickable="true"/>
              </LinearLayout>
          </RelativeLayout>
 
-     </LinearLayout>
+         <View
+                 android:layout_width="fill_parent"
+                 android:layout_height="1dp"
+                 android:background="#cecbbd"
+                 android:layout_alignParentBottom="true"/>
+
+     </RelativeLayout>
 
     <com.quanleimu.widget.CustomizeGridView
         android:id="@+id/gridcategory"

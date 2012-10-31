@@ -704,7 +704,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 //        }
         View userInfoLayout = activity.findViewById(R.id.userInfoLayout);
         userInfoLayout.setVisibility(View.VISIBLE);
-        userInfoLayout.setOnClickListener(this);
+        View editBtn = activity.findViewById(R.id.userInfo_editUsername_btn);
+        editBtn.setOnClickListener(this);
     }
 
     class GetPersonalProfileThread implements Runnable {
@@ -724,7 +725,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.userInfoLayout:
+            case R.id.userInfo_editUsername_btn:
                 editUserDlg = new EditUsernameDialogFragment();
                 editUserDlg.handler = this.handler;
                 editUserDlg.show(getFragmentManager(), null);
