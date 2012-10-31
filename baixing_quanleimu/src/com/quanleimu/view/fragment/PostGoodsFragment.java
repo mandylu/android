@@ -302,7 +302,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(!isBack && this.goodsDetail == null){
 			inLocating = true;
 			QuanleimuApplication.getApplication().getCurrentLocation(this);
-			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 3000);
+			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
 		}
 		
 	}
@@ -1559,7 +1559,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
-		hideProgress();
+		if(msg.what != MSG_GETLOCATION_TIMEOUT){
+			hideProgress();
+		}
 		
 		switch (msg.what) {
 		case MSG_GETLOCATION_TIMEOUT:{
