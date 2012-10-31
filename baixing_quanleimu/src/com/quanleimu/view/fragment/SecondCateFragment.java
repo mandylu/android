@@ -6,6 +6,7 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -62,13 +63,12 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	@Override
 	public void onResume(){
 		super.onResume();
-		
+		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.CATEGORIES.getName()).append(PVKey.FIRSTCATENAME.getName(), cate.getEnglishName()).end();} catch (NullPointerException e) {}
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.CATEGORIES.getName()).append(PVKey.FIRSTCATENAME.getName(), cate.getEnglishName()).end();} catch (NullPointerException e) {}
 		super.onStackTop(isBack);
 	}
 
