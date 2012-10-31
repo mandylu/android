@@ -281,10 +281,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		if (selectedIndex == 0)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
-		else if (selectedIndex == 1)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
 		View v = getView();
 		if (v != null)
 		{
@@ -442,6 +438,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onResume(){
 		super.onResume();
+		Log.d("homefragment", "onresume");
+		if (selectedIndex == 0)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
+		else if (selectedIndex == 1)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
