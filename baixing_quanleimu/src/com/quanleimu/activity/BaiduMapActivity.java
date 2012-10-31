@@ -5,7 +5,9 @@ import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
 import android.graphics.Paint;
 import android.graphics.Point;
+import android.location.Location;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
@@ -13,18 +15,23 @@ import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
+import com.baidu.mapapi.LocationListener;
+import com.baidu.mapapi.MKLocationManager;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
+import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
 import java.util.List;
 
-public class BaiduMapActivity extends MapActivity{
+public class BaiduMapActivity extends MapActivity implements LocationListener{
 	
 	BMapManager mBMapMan = null;
+	private GeoPoint endGeoPoint;
 	@Override
 	protected void onDestroy() {
 	    if (mBMapMan != null) {
+	    	mBMapMan.getLocationManager().removeUpdates(this);
 	        mBMapMan.destroy();
 	        mBMapMan = null;
 	    }
@@ -33,6 +40,7 @@ public class BaiduMapActivity extends MapActivity{
 	@Override
 	protected void onPause() {
 	    if (mBMapMan != null) {
+			mBMapMan.getLocationManager().removeUpdates(this);	    	
 	        mBMapMan.stop();
 	    }
 	    super.onPause();
@@ -43,7 +51,7 @@ public class BaiduMapActivity extends MapActivity{
 	        mBMapMan.start();
 	    }
 	    
-        MapView mapView = (MapView) findViewById(R.id.bmapsView);
+        final MapView mapView = (MapView) findViewById(R.id.bmapsView);
          
         MapController mapController = mapView.getController();
         mapView.setBuiltInZoomControls(true);
@@ -53,13 +61,25 @@ public class BaiduMapActivity extends MapActivity{
 	        String position = bundle.getString("detailPosition");
 	        String[] positions = position.split(",");
 	        if(positions.length == 2){
-	        	GeoPoint endGeoPoint = new GeoPoint(Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
+	        	endGeoPoint = new GeoPoint(Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
 				mapController.animateTo(endGeoPoint);
 				mapController.setZoom(15);
 				
 		        List<Overlay> overlays = mapView.getOverlays();
 		        overlays.add(new MyLocationOverlays(endGeoPoint));
+		        
+		        MKLocationManager locationManager = mBMapMan.getLocationManager();	        
+		        Location location = locationManager.getLocationInfo();
+		        if (location != null)
+		        {
+		        	this.updateMyLocationOverlay(location);
+		        }else
+		        {
+			        locationManager.requestLocationUpdates(this);
+		        }
 	        }
+	        
+
         }	    
 	    super.onResume();
 	} 
@@ -67,7 +87,7 @@ public class BaiduMapActivity extends MapActivity{
 	protected boolean isRouteDisplayed() {
 		return false;
 	}
-
+	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -98,6 +118,25 @@ public class BaiduMapActivity extends MapActivity{
         
 	}
 	
+	private void updateMyLocationOverlay(Location location)
+	{
+		if (location == null || this.endGeoPoint == null)
+			return;
+		
+		GeoPoint geoPoint = new GeoPoint((int)(location.getLatitude()*1E6), (int)(location.getLongitude()*1E6));
+		GeoPoint midPoint = new GeoPoint((endGeoPoint.getLatitudeE6()+geoPoint.getLatitudeE6())/2, (endGeoPoint.getLongitudeE6()+geoPoint.getLongitudeE6())/2);
+		int latSpan = Math.abs(endGeoPoint.getLatitudeE6()-geoPoint.getLatitudeE6());
+		int longSpan = Math.abs(endGeoPoint.getLongitudeE6()-geoPoint.getLongitudeE6());
+		
+		MapView mapView = (MapView) findViewById(R.id.bmapsView);
+		
+        MyLocationOverlay mylocationOverlay = new MyLocationOverlay(this, mapView);
+        mylocationOverlay.enableMyLocation();
+        mapView.getOverlays().add(mylocationOverlay);	
+		mapView.getController().animateTo(midPoint);
+		mapView.getController().zoomToSpan(latSpan*2, longSpan*2);
+	}
+	
 	class MyLocationOverlays extends Overlay {
 		GeoPoint geoPoint;
 
@@ -120,5 +159,11 @@ public class BaiduMapActivity extends MapActivity{
 			canvas.drawBitmap(bmp, point.x, point.y, paint);
 			bmp.recycle();
 		}
+	}
+
+	@Override
+	public void onLocationChanged(Location location) {
+		this.updateMyLocationOverlay(location);
+		mBMapMan.getLocationManager().removeUpdates(this);
 	}
 }
