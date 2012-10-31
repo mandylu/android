@@ -2110,8 +2110,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
 			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
 			if(chars == null || chars.toString().equals("")){
-				((TextView)locationView.findViewById(R.id.postinput)).setText(text);
-				originParams.put(STRING_DETAIL_POSITION, text, text);
+				if(text != null && !text.equals("")){
+					((TextView)locationView.findViewById(R.id.postinput)).setText(text);
+					originParams.put(STRING_DETAIL_POSITION, text, text);
+				}
 			}
 		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
