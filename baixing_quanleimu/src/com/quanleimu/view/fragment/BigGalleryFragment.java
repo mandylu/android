@@ -23,6 +23,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -61,7 +62,11 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	
 	
 	
-	
+	@Override
+	public void onPause(){
+//		Log.d("hahaha", "hahaha,  biggalleryFragment onpause");
+		super.onPause();
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -82,6 +87,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
+//		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
 		QuanleimuApplication.getImageLoader().enableSampleSize();
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
@@ -146,7 +152,31 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	@Override
 	public void onDestroyView(){
 //		ViewFlow vf = ((ViewFlow)this.getView().findViewById(R.id.vfCoupon));
-        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();	
+        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();
+//        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
+        
+//        goodsDetail = null;
+        QuanleimuApplication.getImageLoader().disableSampleSize();
+  		SimpleImageLoader.Cancel(listUrl);
+  		if(listUrl != null){
+  			for(int i = 0; i < listUrl.size(); ++ i){
+  				String url = listUrl.get(i);
+  				if(url != null && !url.equals("")){
+//  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
+  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+//  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
+  				}
+  			}
+  		}
+//  		listUrl = null;
+//  		System.gc();
+        
+        if(mb != null)
+        {
+            mb.recycle();
+            mb = null;
+        }
+        
         super.onDestroyView();
 	}
 	
@@ -173,36 +203,37 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	@Override
 	    public void onDestroy()
 	    {      
-	    	
+//	    	Log.d("hahah", "hahaha,   big gallery ondestroy");
 //	    	 ((ViewFlow)findViewById(R.id.vfCoupon)).finalize();
 	        //imageData = null;
 	        goodsDetail = null;
-	        QuanleimuApplication.getImageLoader().disableSampleSize();
-	  		SimpleImageLoader.Cancel(listUrl);
-	  		if(listUrl != null){
-	  			for(int i = 0; i < listUrl.size(); ++ i){
-	  				String url = listUrl.get(i);
-	  				if(url != null && !url.equals("")){
-//	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-	  					QuanleimuApplication.getImageLoader().forceRecycle(url);
-//	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
-	  				}
-	  			}
-	  		}
+//	        QuanleimuApplication.getImageLoader().disableSampleSize();
+//	  		SimpleImageLoader.Cancel(listUrl);
+//	  		if(listUrl != null){
+//	  			for(int i = 0; i < listUrl.size(); ++ i){
+//	  				String url = listUrl.get(i);
+//	  				if(url != null && !url.equals("")){
+////	  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
+//	  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+////	  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
+//	  				}
+//	  			}
+//	  		}
 	  		listUrl = null;
-//	  		System.gc();
-	        
-	        if(mb != null)
-	        {
-	            mb.recycle();
-	            mb = null;
-	        }
+////	  		System.gc();
+//	        
+//	        if(mb != null)
+//	        {
+//	            mb.recycle();
+//	            mb = null;
+//	        }
 	        super.onDestroy();
 	    }
 	    
 	    @Override
 	    public void onResume()
 	    {
+//	    	Log.d("hahaha", "hahaha,  biggalleryFragment onResume");
 	    	super.onResume();
 	    		QuanleimuApplication.getImageLoader().enableSampleSize();
 		    	if(null == mb){

@@ -575,6 +575,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 							bundle.putInt("postIndex", arg2);
 							bundle.putSerializable("goodsDetail", detail);
 							galleryReturned = false;
+//							Log.d("haha", "hahaha, new big gallery");
 							pushFragment(new BigGalleryFragment(), bundle);		
 						}else{
 //							Log.d("hhah", "hahaha, it workssssssssssss");
@@ -956,6 +957,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		if(PostGoodsFragment.MSG_POST_SUCCEED == requestCode){
 			this.finishFragment(requestCode, result);
 		}else if(BigGalleryFragment.MSG_GALLERY_BACK == requestCode){
+//			Log.d("haha", "hahaha,   from gallery back");
 			galleryReturned = true;
 		}
 	}
