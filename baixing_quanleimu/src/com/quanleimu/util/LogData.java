@@ -5,6 +5,8 @@ import java.util.Map.Entry;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 /**
  * @author xuweiyan@baixing.com
  */
@@ -22,13 +24,15 @@ public class LogData {
 		return map;
 	}
 	
-	public LogData append(String key, String value)
+	public LogData append(Key key, String value)
 	{
-		this.map.put(key, value);
+		String keyName = key.getName();
+		this.map.put(keyName, value);
 		return this;
 	}
 	
 	public void end() {
+		if (!TrackConfig.getInstance().getLoggingFlag()) return;
 		Tracker.getInstance().addLog(this);
 	}
 	

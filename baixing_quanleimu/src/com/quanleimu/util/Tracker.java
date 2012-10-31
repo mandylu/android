@@ -8,15 +8,17 @@ import android.content.Context;
 import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.util.TrackConfig.TrackMobile.Event;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 /**
  * @author xuweiyan@baixing.com
  *Tracker的使用
  *append中键/值在TrackConfig的enum中
- *统计pv:
- *try {Tracker.getInstance().pv().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
- *
- *统计event:
- *try {Tracker.getInstance().event().append("xx","xx").append("xx","xx").end();} catch (NullPointerException e) {}
+ *统计pv示例:
+ *Tracker.getInstance().pv(Url.BUZZ).append(Key.ADID, adId).end();
+ *统计event示例:
+ *Tracker.getInstance().event(Event.DELETED_DELETE).append(Key.ADID, adId).end();
  */
 //singleton
 public class Tracker {
@@ -31,7 +33,6 @@ public class Tracker {
 		{
 			instance = new Tracker();
 		}
-		if (TrackConfig.getInstance().getLoggingFlag() == false) return null;
 		return instance;
 	}
 	//constructor
@@ -42,17 +43,19 @@ public class Tracker {
 		load();
 	}
 	
-	public LogData pv() {
+	public LogData pv(PV url) {
 		LogData data = new LogData(new HashMap<String, String>());
-		data.append("tracktype", "pageview");
-		data.append("timestamp", Communication.getTimeStamp());
+		data.append(Key.TRACKTYPE, "pageview");
+		data.append(Key.TIMESTAMP, Communication.getTimeStamp());
+		data.append(Key.URL, url.getName());
 		return data;
 	}
 	
-	public LogData event() {
+	public LogData event(Event event) {
 		LogData data = new LogData(new HashMap<String, String>());
-		data.append("tracktype", "event");
-		data.append("timestamp", Communication.getTimeStamp());
+		data.append(Key.TRACKTYPE, "event");
+		data.append(Key.TIMESTAMP, Communication.getTimeStamp());
+		data.append(Key.EVENT, event.getName());
 		return data;
 	}
 	

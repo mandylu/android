@@ -53,7 +53,10 @@ public class TrackConfig {
 	}
 	
 	public interface TrackMobile {
-		enum PVKey implements TrackMobile {//每条记录可能的key
+		enum Key implements TrackMobile {//每条记录可能的key
+			TRACKTYPE("tracktype","tracktype"),
+			TIMESTAMP("timestamp","timestamp"),
+			
 			URL("url","页面URL"),
 			FIRSTCATENAME("firstCateName","一级类目名"),
 			SECONDCATENAME("secondCateName","二级类目名"),
@@ -65,11 +68,54 @@ public class TrackConfig {
 			ISLOGIN("isLogin","已登录/未登录"),
 			ADSCOUNT("adsCount","信息条数"),
 			ADSENDERID("adSenderId","ad的发布者的userId"),
-			ADSTATUS("adStatus","正常/审核未通过");
+			ADSTATUS("adStatus","正常/审核未通过"),
+			
+			EVENT("event","事件名"),
+			CITY("city","城市"),
+			BLOCK("block","区块（GPS定位、热门城市、其他城市、搜索）"),
+			GPS_RESULT("GPS_result","GPS定位城市结果成功失败"),
+			CATEGORYCOUNT("categoryCount","类目数"),
+			MAINCATE_ADSCOUNT("mainCate_adsCount","最大类目条数"),
+//			TOTAL_ADSCOUNT("total_adsCount","总条数"),
+			FILTER("filter","筛选条件"),
+			RESULTCATESCOUNT("resultCatesCount","结果类目数"),
+			TOTAL_ADSCOUNT("total_adsCount","总信息数"),
+			SELECTEDROWINDEX("selectedRowIndex","点进去看的所在行（从0开始）"),
+			DIALOG("dialogCount","对话数"),
+			DIALOG_BUYER("dialog_buyer","作为买家对话数"),
+			DIALOG_SELLER("dialog_seller","作为卖家对话数"),
+			POSTSTATUS("postStatus","状态（客户端验证失败，server端机器规则失败，成功）"),
+			POSTFAILREASON("postFailReason","发布失败原因"),
+			POSTPICSCOUNT("postPicsCount","图片数"),
+			POSTDESCRIPTIONTEXTCOUNT("postDescriptionTextCount","描述文字数"),
+			POSTDESCRIPTIONLINECOUNT("postDescriptionLineCount","描述文字行数"),
+			POSTCONTACTTEXTCOUNT("postContactTextCount","联系方式字数"),
+			POSTDETAILPOSITIONAUTO("postDetailPositionAuto","具体地点是否自动定位"),
+			POSTEDSECONDS("postedSeconds","已发布秒数"),
+			SETTINGS_LOGIN_RESULT_STATUS("settings_login_result_status","设置中登录成功/失败状态"),
+			SETTINGS_LOGIN_RESULT_FAIL_REASON("settings_login_result_fail_reason","设置中登录失败状态"),
+			LOGIN_RESULT_STATUS("loginResultStatus","Login结果（成功、出错）"),
+			LOGIN_RESULT_FAIL_REASON("loginResultFailReason","login出错原因"),
+			POSTCOUNT_BEFORELOGIN("postCountBeforeLogin","如果登录成功登录前发帖数"),
+			REGISTER_RESULT_STATUS("registerResultStatus","注册结果（成功、出错）"),
+			REGISTER_RESULT_FAIL_REASON("registerResultFailReason","注册失败原因"),
+			POSTCOUNT_BEFOREREGISTER("postCountBeforeRegister","如果注册成功注册前发帖数"),
+			FORGETPASSWORD_SENDCODE_RESULT_STATUS("forgetPasswordSendCodeResultStatus","发送验证码成功/失败状态"),
+			FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON("forgetPasswordSendCodeResultFailReason","发送验证码失败原因"),
+			FORGETPASSWORD_RESETPASSWORD_RESULT("forgetPasswordResetPasswordResult","重设密码成功/失败状态"),
+			FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON("forgetPasswordResetPasswordResultFailReason","重设密码失败原因"),
+			MENU_SHOW_PAGEURL("menuShowInPageURL","菜单出现的页面URL"),
+			MENU_ACTION_TYPE("menuActionType","菜单动作类型"),
+			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市"),
+			MENU_ACTION_TYPE_SETTINGS("menuActionType_settings","菜单动作设置"),
+			MENU_ACTION_TYPE_FEEDBACK("menuActionType_feedback","菜单动作反馈"),
+			MENU_ACTION_TYPE_EXIT("menuActionType_exit","菜单动作退出"),
+			MENU_ACTION_TYPE_LOGIN("menuActionType_login","菜单动作登录");
+			
 			
 			private String name;
 			private String description;
-			private PVKey(String keyName, String keyDescription) {
+			private Key(String keyName, String keyDescription) {
 				this.name = keyName;
 				this.description = keyDescription;
 			}
@@ -82,7 +128,7 @@ public class TrackConfig {
 			
 		}
 		
-		enum Url implements TrackMobile {//pageview相关的value
+		enum PV implements TrackMobile {//pageview相关的value
 			//页面
 			SELECTCITY("/selectCity","切换城市"),
 			HOME("/home","首页"),
@@ -116,7 +162,7 @@ public class TrackConfig {
 			private String name;
 			private String description;
 
-			private Url(String url, String description) {
+			private PV(String url, String description) {
 				this.name = url;
 				this.description = description;
 			}
@@ -127,67 +173,6 @@ public class TrackConfig {
 				return description;
 			}
 			
-		}
-		
-		enum EventKey implements TrackMobile {
-			EVENT("event","事件名"),
-			CITY("city","城市"),
-			BLOCK("block","区块（GPS定位、热门城市、其他城市、搜索）"),
-			GPS_RESULT("GPS_result","GPS定位城市结果成功失败"),
-			KEYWORD("keyword","关键字"),
-			CATEGORYCOUNT("categoryCount","类目数"),
-			MAINCATE_ADSCOUNT("mainCate_adsCount","最大类目条数"),
-//			TOTAL_ADSCOUNT("total_adsCount","总条数"),
-			FILTER("filter","筛选条件"),
-			SECONDCATENAME("secondCateName","二级类目名"),
-			RESULTCATESCOUNT("resultCatesCount","结果类目数"),
-			TOTAL_ADSCOUNT("total_adsCount","总信息数"),
-			SELECTEDROWINDEX("selectedRowIndex","点进去看的所在行（从0开始）"),
-			ADID("adId","adId"),
-			DIALOG("dialogCount","对话数"),
-			DIALOG_BUYER("dialog_buyer","作为买家对话数"),
-			DIALOG_SELLER("dialog_seller","作为卖家对话数"),
-			POSTSTATUS("postStatus","状态（客户端验证失败，server端机器规则失败，成功）"),
-			POSTFAILREASON("postFailReason","发布失败原因"),
-			POSTPICSCOUNT("postPicsCount","图片数"),
-			POSTDESCRIPTIONTEXTCOUNT("postDescriptionTextCount","描述文字数"),
-			POSTDESCRIPTIONLINECOUNT("postDescriptionLineCount","描述文字行数"),
-			POSTCONTACTTEXTCOUNT("postContactTextCount","联系方式字数"),
-			POSTDETAILPOSITIONAUTO("postDetailPositionAuto","具体地点是否自动定位"),
-			ADSCOUNT("adsCount","信息数"),
-			POSTEDSECONDS("postedSeconds","已发布秒数"),
-			SETTINGS_LOGIN_RESULT_STATUS("settings_login_result_status","设置中登录成功/失败状态"),
-			SETTINGS_LOGIN_RESULT_FAIL_REASON("settings_login_result_fail_reason","设置中登录失败状态"),
-			LOGIN_RESULT_STATUS("loginResultStatus","Login结果（成功、出错）"),
-			LOGIN_RESULT_FAIL_REASON("loginResultFailReason","login出错原因"),
-			POSTCOUNT_BEFORELOGIN("postCountBeforeLogin","如果登录成功登录前发帖数"),
-			REGISTER_RESULT_STATUS("registerResultStatus","注册结果（成功、出错）"),
-			REGISTER_RESULT_FAIL_REASON("registerResultFailReason","注册失败原因"),
-			POSTCOUNT_BEFOREREGISTER("postCountBeforeRegister","如果注册成功注册前发帖数"),
-			FORGETPASSWORD_SENDCODE_RESULT_STATUS("forgetPasswordSendCodeResultStatus","发送验证码成功/失败状态"),
-			FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON("forgetPasswordSendCodeResultFailReason","发送验证码失败原因"),
-			FORGETPASSWORD_RESETPASSWORD_RESULT("forgetPasswordResetPasswordResult","重设密码成功/失败状态"),
-			FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON("forgetPasswordResetPasswordResultFailReason","重设密码失败原因"),
-			MENU_SHOW_PAGEURL("menuShowInPageURL","菜单出现的页面URL"),
-			MENU_ACTION_TYPE("menuActionType","菜单动作类型"),
-			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市"),
-			MENU_ACTION_TYPE_SETTINGS("menuActionType_settings","菜单动作设置"),
-			MENU_ACTION_TYPE_FEEDBACK("menuActionType_feedback","菜单动作反馈"),
-			MENU_ACTION_TYPE_EXIT("menuActionType_exit","菜单动作退出"),
-			MENU_ACTION_TYPE_LOGIN("menuActionType_login","菜单动作登录");
-				
-			private String name;
-			private String description;
-			private EventKey(String name, String description) {
-				this.name = name;
-				this.description = description;
-			}
-			public String getName() {
-				return name;
-			}
-			public String getDescription() {
-				return description;
-			}
 		}
 		
 		enum Event implements TrackMobile {//event相关的value
