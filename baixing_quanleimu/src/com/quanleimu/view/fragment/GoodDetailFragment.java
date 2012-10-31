@@ -248,11 +248,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_DOWN:
 	    case MotionEvent.ACTION_MOVE: 
-	    	((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
+	    	if(getView() != null && getView().findViewById(R.id.svDetail) != null){
+	    		((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
+	    	}
 	        break;
 	    case MotionEvent.ACTION_UP:
 	    case MotionEvent.ACTION_CANCEL:
-	    	((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
+	    	if(getView() != null && getView().findViewById(R.id.svDetail) != null){
+	    		((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
+	    	}
 	        break;		
 	    }
 		return this.keepSilent;
