@@ -30,7 +30,6 @@ import android.os.Environment;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.support.v4.app.FragmentActivity;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
@@ -52,7 +51,6 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -65,10 +63,8 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.LocationService.BXRgcListener;
@@ -117,6 +113,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private PostParamsHolder params;
+	private PostParamsHolder originParams;
 	
 //	private AlertDialog ad; 
 //	private Button photoalbum, photomake, photocancle;
@@ -690,20 +687,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			return false;
 		}
 		
-		// check if description filled.
-		for (String key : postList.keySet())
+		// check if params modified.
+		Set<String> keySet = postList.keySet();
+		for (String key : keySet)
 		{
 			PostGoodsBean bean = postList.get(key);
-			if (bean.getName().equals("description"))
-			{
-				String description = params.getData(bean.getDisplayName());
-				if (description != null && description.trim().length() > 0)
-					return true;
-				break;
-			}
+			String value = params.getData(bean.getDisplayName());
+			String originValue = originParams.getData(bean.getDisplayName());
+			if (value != null && !value.equals(originValue))
+				return true;
 		}
-		
-
 		
 		return false;
 	}
@@ -1551,6 +1544,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			});
 //			layout_txt.addView(v);
 //		}
+		
+		extractInputData(layout_txt, params);
+		originParams = new PostParamsHolder();
+		originParams.merge(params);
+		
 		editpostUI();		
 	}
 	
@@ -2090,6 +2088,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							if(location.subCityName.contains(bean.getLabels().get(t))){
 //								((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
 								params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+								originParams.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
 								return;
 							}
 						}
@@ -2110,6 +2109,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
 			if(chars == null || chars.toString().equals("")){
 				((TextView)locationView.findViewById(R.id.postinput)).setText(text);
+				originParams.put(STRING_DETAIL_POSITION, text, text);
 			}
 		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
