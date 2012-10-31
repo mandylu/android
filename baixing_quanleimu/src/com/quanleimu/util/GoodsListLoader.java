@@ -10,6 +10,7 @@ import java.util.List;
 import org.apache.http.client.HttpClient;
 
 import android.os.Handler;
+import android.util.Log;
 
 import com.quanleimu.entity.GoodsList;
 
@@ -225,6 +226,16 @@ public class GoodsListLoader implements Serializable{
 			GoodsListLoader.this.mCurThread = null;
 		}
 		
+		private boolean wantedExists(ArrayList<String> list){
+			Log.d("wantedExist", list.toString());
+			for(String item : list){
+				if(item.contains("wanted:")){
+					return true;
+				}
+			}
+			return false;
+		}
+		
 		@Override
 		public void run() {
 			if(mCancel) {
@@ -247,7 +258,12 @@ public class GoodsListLoader implements Serializable{
 			}
 			if(mRows > 0)
 				list.add("rows=" + mRows);
-
+			
+			
+			if(!this.wantedExists(list)){//如果没有显式的制定wanted，那么默认wanted＝0, 只显示 “转让信息”
+				list.add("wanted=0");
+			}
+			
 			if(mCancel) {
 				exit();
 				return;
