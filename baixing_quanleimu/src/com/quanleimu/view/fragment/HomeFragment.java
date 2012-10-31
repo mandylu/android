@@ -438,7 +438,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onResume(){
 		super.onResume();
-		Log.d("homefragment", "onresume");
 		if (selectedIndex == 0)
 			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
 		else if (selectedIndex == 1)

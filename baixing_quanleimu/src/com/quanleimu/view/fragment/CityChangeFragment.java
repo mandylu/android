@@ -343,10 +343,15 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SELECTCITY.getName()).end();} catch (NullPointerException e) {}
 		QuanleimuApplication.getApplication().getCurrentLocation(this);
 	}
 	
+	@Override
+	public void onResume() {
+		try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SELECTCITY.getName()).end();} catch (NullPointerException e) {}
+		super.onResume();
+	}
+
 	@Override
 	public void onLocationFetched(BXLocation location) {
 		final View rootView = getView();
