@@ -158,6 +158,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		postList = new LinkedHashMap<String, PostGoodsBean>();
 		
 		params = new PostParamsHolder();
+		originParams = new PostParamsHolder();
 		
 		listUrl = new ArrayList<String>();
 		bitmap_url = new ArrayList<String>(3);
@@ -1547,7 +1548,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 		
 		extractInputData(layout_txt, params);
-		originParams = new PostParamsHolder();
 		originParams.merge(params);
 		
 		editpostUI();		
