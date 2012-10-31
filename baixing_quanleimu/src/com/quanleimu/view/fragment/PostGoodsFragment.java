@@ -869,7 +869,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
 						if(postList.get(key).getName().equals("description")){//generate title from description
 							list.add("title"
-									+ "=" + URLEncoder.encode(values.substring(0, Math.min(25, values.length() - 1)), "UTF-8").replaceAll("%7E", "~"));
+									+ "=" + URLEncoder.encode(values.substring(0, Math.min(25, values.length())), "UTF-8").replaceAll("%7E", "~"));
 						}
 					}catch(UnsupportedEncodingException e){
 						e.printStackTrace();
