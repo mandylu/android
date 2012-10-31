@@ -8,7 +8,7 @@
  	<RelativeLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="90dp"
-	    android:visibility="gone" android:orientation="horizontal" android:id="@+id/userInfoLayout"
+	    android:visibility="visible" android:orientation="horizontal" android:id="@+id/userInfoLayout"
         android:clickable="true"
         android:background="#e4e1d3"
         android:baselineAligned="true"
@@ -46,7 +46,7 @@
                      android:layout_width="wrap_content"
                      android:layout_height="36dp"
                      android:text="小老百姓卖二手物品" android:textStyle="bold" android:gravity="fill_vertical"
-                     android:textColor="#524735" android:textSize="@dimen/font_medium"/>
+                     android:textColor="#524735" android:textSize="@dimen/font_large"/>
 
                  <ImageView
                          android:layout_width="36dp"
