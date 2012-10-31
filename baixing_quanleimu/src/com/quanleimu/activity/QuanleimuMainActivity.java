@@ -190,7 +190,8 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		    @Override
 		    public void onClick(DialogInterface dialog, int which)
 		    {
-
+		    	
+		    	LocationService.getInstance().stop();
 		        if (needShowShortcut && shortcutCheckBox.isChecked())
 		        {
 		            ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
@@ -230,6 +231,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 					Tracker.getInstance().save();
 				} catch (Exception e) {}
 		    	Log.d("quanleimu", "exit");
+		    	dialog.dismiss();
 		        System.exit(0);
 //		            		QuanleimuMainActivity.this.finish();
 		    }
