@@ -40,7 +40,7 @@
     <!-- dialog text confirm -->
     <string name="dialog_message_confirm_exit">确认退出？</string>
     <string name="dialog_message_confirm_clear_cache">确认清空缓存？</string>
-    <string name="dialog_message_discard_input">您所填写的数据将被丢弃,确认丢弃？</string>
+    <string name="dialog_message_discard_input">现在退出内容将会丢失,确认退出吗？</string>
 
     <!-- dialog text waiting -->
     <string name="dialog_message_waiting">请稍后…</string>
