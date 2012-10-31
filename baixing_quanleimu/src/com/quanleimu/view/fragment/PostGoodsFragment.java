@@ -677,11 +677,35 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 
 	private boolean filled() {
+		// check if images uploaded.
+		for (String url : bitmap_url)
+		{
+			if (url != null && url.startsWith("http://")) 
+				return true;
+		}		
+		
 		extractInputData(layout_txt, params);
-		if(!this.getView().findViewById(R.id.goodscontent).isShown() || this.params == null || this.params.getData() == null || this.params.getData().size() == 0){
+		if(!this.getView().findViewById(R.id.goodscontent).isShown() || 
+				this.params == null || this.params.getData() == null || this.params.getData().size() == 0){
 			return false;
 		}
-		return true;
+		
+		// check if description filled.
+		for (String key : postList.keySet())
+		{
+			PostGoodsBean bean = postList.get(key);
+			if (bean.getName().equals("description"))
+			{
+				String description = params.getData(bean.getDisplayName());
+				if (description != null && description.trim().length() > 0)
+					return true;
+				break;
+			}
+		}
+		
+
+		
+		return false;
 	}
 
 	

@@ -87,11 +87,11 @@ public class SearchFragment extends BaseFragment {
 
 			@Override
 			public boolean onKey(View v, int keyCode, KeyEvent event) {
-				if (keyCode == KeyEvent.KEYCODE_ENTER) 
+				if (keyCode == KeyEvent.KEYCODE_ENTER && event.getAction() == KeyEvent.ACTION_UP) 
 				{
 					SearchFragment.this.doSearch();
 					return true;
-				} else if (keyCode == KeyEvent.KEYCODE_BACK)
+				} else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
 				{
 					if (categoryResultCountList != null && categoryResultCountList.size() > 0)
 						SearchFragment.this.showSearchResult(false);

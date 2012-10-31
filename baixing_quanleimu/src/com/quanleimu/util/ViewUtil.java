@@ -130,7 +130,7 @@ public class ViewUtil {
 	
 	public static void pickupPhoto(final Activity context, final int tmpFileIndex)
 	{
-		final String[] names = {"相册","拍照"};
+		final String[] names = {"拍照","相册"};
 		new AlertDialog.Builder(context).setTitle("请选择")//.setMessage("无法确定当前位置")
 		.setItems(names, new DialogInterface.OnClickListener(){
 			
@@ -138,18 +138,18 @@ public class ViewUtil {
 			public void onClick(DialogInterface dialog, int which){
 				switch(which){
 					case 0:
+						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
+								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
+						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+						break;						
+					case 1:
 						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
 						intent3.addCategory(Intent.CATEGORY_OPENABLE);
 						intent3.setType("image/*");
 						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
 						break;
-					case 1:
-						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
-						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 
-						break;
 				}				
 			}
 		})
