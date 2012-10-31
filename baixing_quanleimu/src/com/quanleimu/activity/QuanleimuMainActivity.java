@@ -476,6 +476,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		this.setTheme(R.style.lightTheme);
 		Log.d("push", "push, on create");
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
