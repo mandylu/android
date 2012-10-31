@@ -1546,9 +1546,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			});
 //			layout_txt.addView(v);
 //		}
-		
-		extractInputData(layout_txt, params);
-		originParams.merge(params);
+
+		originParams.merge(params);		
+		extractInputData(layout_txt, originParams);
+
 		
 		editpostUI();		
 	}
