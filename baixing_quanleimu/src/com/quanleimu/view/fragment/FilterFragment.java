@@ -29,6 +29,9 @@ import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.values;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
+import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 
 public class FilterFragment extends BaseFragment implements View.OnClickListener{
@@ -62,6 +65,12 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	private final int MSG_MULTISEL_BACK = 0;
 	
 	private PostParamsHolder parametersHolder;
+
+	@Override
+	public void onStackTop(boolean isBack) {
+		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.LISTINGFILTER.getName()).append(PVKey.SECONDCATENAME.getName(), categoryEnglishName).end();} catch (NullPointerException e) {}
+		super.onStackTop(isBack);
+	}
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

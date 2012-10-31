@@ -2,15 +2,12 @@ package com.quanleimu.view.fragment;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.Editable;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
@@ -39,6 +36,9 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
+import com.quanleimu.util.TrackConfig.TrackMobile.Url;
 
 public class SearchFragment extends BaseFragment {
 
@@ -204,15 +204,16 @@ public class SearchFragment extends BaseFragment {
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-
 		if (isBack)
 		{
+			try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCHRESULTCATEGORY.getName()).append(PVKey.KEYWORD.getName(), searchContent).end();} catch (NullPointerException e) {}
 			etSearch.setText(searchContent);
 			etSearch.setSelection(searchContent.length(), searchContent.length());
 			this.showSearchResult(false);
 		}
 		else
-		{		
+		{	
+			try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCH.getName()).end();} catch (NullPointerException e) {}
 			this.showSearchHistory();
 			etSearch.postDelayed(new Runnable(){
 				@Override
@@ -289,6 +290,8 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
+		Log.d("searchfragment", searchContent);
+		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCHRESULTCATEGORY.getName()).append(PVKey.KEYWORD.getName(), searchContent).end();} catch (NullPointerException e) {}
 		lvSearchHistory.setVisibility(View.GONE);
 		this.hideSoftKeyboard();
 		if (search)

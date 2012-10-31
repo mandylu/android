@@ -6,7 +6,6 @@ import java.util.List;
 import java.util.Map;
 
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,6 +18,9 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.SecondStepCate;
+import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
+import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.Tracker;
 
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
 	
@@ -64,6 +66,14 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	
+	@Override
+	public void onStackTop(boolean isBack) {
+		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.CATEGORIES.getName()).append(PVKey.FIRSTCATENAME.getName(), cate.getEnglishName()).end();} catch (NullPointerException e) {}
+		super.onStackTop(isBack);
+	}
+
+
+
 	protected void onFragmentBackWithData(int requestCode, Object result){
 		if(PostGoodsFragment.MSG_POST_SUCCEED == requestCode){
 			this.finishFragment(requestCode, result);

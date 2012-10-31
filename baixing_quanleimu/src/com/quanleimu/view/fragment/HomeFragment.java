@@ -16,19 +16,14 @@ import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.AdapterView;
-import android.widget.GridView;
 import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GridAdapter;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.HotList;
@@ -37,6 +32,9 @@ import com.quanleimu.entity.UserProfile;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.TrackConfig;
+import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
+import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager;
@@ -271,6 +269,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	
 	@Override
 	public void onStackTop(boolean isBack) {
+		if (selectedIndex == 0)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
+		else if (selectedIndex == 1)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
 		View v = getView();
 		if (v != null)
 		{
@@ -416,7 +418,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onResume(){
 		super.onResume();
-		Log.d("HomeFragment", ""+selectedIndex);
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
@@ -436,6 +437,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onPageSelect(int index) {
 		selectedIndex = index;
+		if (selectedIndex == 0)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
+		else if (selectedIndex == 1)
+			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
 	}
 
 	@Override

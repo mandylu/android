@@ -82,7 +82,7 @@ public class TrackConfig {
 			
 		}
 		
-		enum URL implements TrackMobile {//pageview相关的value
+		enum Url implements TrackMobile {//pageview相关的value
 			//页面
 			SELECTCITY("/selectCity","切换城市"),
 			HOME("/home","首页"),
@@ -116,7 +116,7 @@ public class TrackConfig {
 			private String name;
 			private String description;
 
-			private URL(String url, String description) {
+			private Url(String url, String description) {
 				this.name = url;
 				this.description = description;
 			}
