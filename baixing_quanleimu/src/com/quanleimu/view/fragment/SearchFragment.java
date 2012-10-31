@@ -37,8 +37,8 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Tracker;
-import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
-import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 public class SearchFragment extends BaseFragment {
 
@@ -206,14 +206,14 @@ public class SearchFragment extends BaseFragment {
 	public void onStackTop(boolean isBack) {
 		if (isBack)
 		{
-			try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCHRESULTCATEGORY.getName()).append(PVKey.KEYWORD.getName(), searchContent).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 			etSearch.setText(searchContent);
 			etSearch.setSelection(searchContent.length(), searchContent.length());
 			this.showSearchResult(false);
 		}
 		else
 		{	
-			try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCH.getName()).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.SEARCH).end();
 			this.showSearchHistory();
 			etSearch.postDelayed(new Runnable(){
 				@Override
@@ -291,7 +291,7 @@ public class SearchFragment extends BaseFragment {
 	 */
 	private void showSearchResult(boolean search) {
 		Log.d("searchfragment", searchContent);
-		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SEARCHRESULTCATEGORY.getName()).append(PVKey.KEYWORD.getName(), searchContent).end();} catch (NullPointerException e) {}
+		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 		lvSearchHistory.setVisibility(View.GONE);
 		this.hideSoftKeyboard();
 		if (search)

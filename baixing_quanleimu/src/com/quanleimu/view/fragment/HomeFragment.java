@@ -35,8 +35,8 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.TrackConfig;
-import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
-import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
@@ -439,9 +439,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public void onResume(){
 		super.onResume();
 		if (selectedIndex == 0)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.HOME).end();
 		else if (selectedIndex == 1)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.MY).end();
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
@@ -462,9 +462,9 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public void onPageSelect(int index) {
 		selectedIndex = index;
 		if (selectedIndex == 0)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.HOME.getName()).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.HOME).end();
 		else if (selectedIndex == 1)
-			try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.MY.getName()).end();} catch (NullPointerException e) {}
+			Tracker.getInstance().pv(PV.MY).end();
 	}
 
 	@Override

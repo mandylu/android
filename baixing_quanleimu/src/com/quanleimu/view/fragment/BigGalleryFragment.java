@@ -25,9 +25,7 @@ import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
 import android.util.Log;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
@@ -41,7 +39,10 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.widget.ViewFlow;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	
@@ -235,6 +236,8 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    {
 //	    	Log.d("hahaha", "hahaha,  biggalleryFragment onResume");
 	    	super.onResume();
+	    	Tracker.getInstance().pv(PV.VIEWADPIC).end();
+	    	Log.d("biggalleryfragment", "cate:"+goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId"+goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 	    		QuanleimuApplication.getImageLoader().enableSampleSize();
 		    	if(null == mb){
 					BitmapFactory.Options o =  new BitmapFactory.Options();

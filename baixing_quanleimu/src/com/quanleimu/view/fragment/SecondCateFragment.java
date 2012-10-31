@@ -19,8 +19,8 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.SecondStepCate;
-import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
-import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
@@ -63,7 +63,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	@Override
 	public void onResume(){
 		super.onResume();
-		try{Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.CATEGORIES.getName()).append(PVKey.FIRSTCATENAME.getName(), cate.getEnglishName()).end();} catch (NullPointerException e) {}
+		Tracker.getInstance().pv(PV.CATEGORIES).append(Key.FIRSTCATENAME, cate.getEnglishName()).end();
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	

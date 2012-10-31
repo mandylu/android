@@ -2,19 +2,12 @@ package com.quanleimu.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
-import java.util.Currency;
-import java.util.Date;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
-import android.location.Location;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -22,14 +15,12 @@ import android.view.ViewGroup;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
 import android.widget.AdapterView;
-import android.widget.Button;
 import android.widget.HeaderViewListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
@@ -47,7 +38,7 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.FilterUtil;
 import com.quanleimu.view.FilterUtil.CustomizeItem;
@@ -55,6 +46,9 @@ import com.quanleimu.view.FilterUtil.FilterSelectListener;
 import com.quanleimu.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
@@ -70,7 +64,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	private PullToRefreshListView lvGoodsList;
 	private ProgressBar progressBar;
 //	private int searchType = 0;
-	
+	private String actType = null;
 	private String categoryEnglishName = "";
 	private String searchContent = "";
 //	private String siftResult = "";
@@ -144,6 +138,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		this.categoryEnglishName = getArguments().getString("categoryEnglishName");
 		this.searchContent = getArguments().getString("searchContent");
+		this.actType = getArguments().getString("actType");
 //		if (getArguments().containsKey("siftresult")) //FIXME:CHONG siftresult is removed by chong.
 //		{
 //			this.siftResult = getArguments().getString("siftresult");
@@ -183,6 +178,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	@Override
 	public void onStackTop(boolean isBack) {
+		if (actType != null && actType.equals("search"))//headersearch的流程
+			Tracker.getInstance().pv(PV.SEARCHRESULT).append(Key.SEARCHKEYWORD, searchContent).end();
+//		else
+			
 		super.onStackTop(isBack);
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{

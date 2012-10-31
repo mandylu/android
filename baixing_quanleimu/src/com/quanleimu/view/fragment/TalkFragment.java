@@ -19,6 +19,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
+import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -50,7 +51,12 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.GoodsListLoader;
+import com.quanleimu.util.TrackConfig;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.TrackConfig.TrackMobile.Event;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 public class TalkFragment extends BaseFragment {
 	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
@@ -245,7 +251,8 @@ public class TalkFragment extends BaseFragment {
 		{
 			super.onResume();
 			isAttachedToWindow = true;
-			
+			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
+			Tracker.getInstance().event(Event.DELETED_DELETE).append(Key.ADID, adId).end();
 			//Load history or load msg from server.
 			if (sessionId == null)
 			{

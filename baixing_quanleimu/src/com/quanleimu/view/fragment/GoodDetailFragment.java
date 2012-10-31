@@ -18,7 +18,6 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
-import android.graphics.Rect;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Handler;
@@ -36,7 +35,6 @@ import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
-import android.view.animation.AnimationUtils;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.BaseAdapter;
@@ -54,7 +52,6 @@ import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.color;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.entity.GoodsList;
@@ -66,6 +63,9 @@ import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.TextUtil;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
@@ -123,6 +123,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	@Override
+	public void onStackTop(boolean isBack) {
+		super.onStackTop(isBack);
+	}
+
+	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
 		
@@ -164,7 +169,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onResume(){
 		updateButtonStatus();
-		
+		Tracker.getInstance().pv(PV.VIEWAD).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
+
 //		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onResume();
@@ -1600,6 +1606,19 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
+	private void startBaiduMap(Bundle bundle, GoodsDetail requestDetail) {
+		final BaseActivity baseActivity = (BaseActivity)getActivity();
+		if (baseActivity != null && requestDetail == detail)
+		{
+			baseActivity.getIntent().putExtras(bundle);
+			
+			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+			baseActivity.startActivity(baseActivity.getIntent());
+			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
+//			Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+		}
+	}
+	
 	private void showMap()
 	{
 		if (detail == null)
@@ -1651,14 +1670,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								}
 							}
 							
-							final BaseActivity baseActivity = (BaseActivity)getActivity();
-							if (baseActivity != null && requestDetail == detail)
-							{
-								baseActivity.getIntent().putExtras(bundle);
-								
-								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-								baseActivity.startActivity(baseActivity.getIntent());
-							}
+							startBaiduMap(bundle, requestDetail);
+//							final BaseActivity baseActivity = (BaseActivity)getActivity();
+//							if (baseActivity != null && requestDetail == detail)
+//							{
+//								baseActivity.getIntent().putExtras(bundle);
+//								
+//								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+//								baseActivity.startActivity(baseActivity.getIntent());
+//								Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+//							}
 							return;
 						}
 
@@ -1672,14 +1693,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					bundle.putString("detailPosition", positions);
 					bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
 					
-					final BaseActivity baseActivity = (BaseActivity)getActivity();
-					if (baseActivity != null && requestDetail == detail)
-					{
-						baseActivity.getIntent().putExtras(bundle);
-						
-						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-						baseActivity.startActivity(baseActivity.getIntent());
-					}
+					startBaiduMap(bundle,requestDetail);
+//					final BaseActivity baseActivity = (BaseActivity)getActivity();
+//					if (baseActivity != null && requestDetail == detail)
+//					{
+//						baseActivity.getIntent().putExtras(bundle);
+//						
+//						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+//						baseActivity.startActivity(baseActivity.getIntent());
+//						Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+//					}
 				}
 			});
 			convertThread.start();
@@ -1703,14 +1726,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								bundle.putString("detailPosition", positions);
 								bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
 
-								final BaseActivity baseActivity = (BaseActivity)getActivity();
-								if (baseActivity != null && requestDetail == detail)
-								{
-									baseActivity.getIntent().putExtras(bundle);
-									
-									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-									baseActivity.startActivity(baseActivity.getIntent());
-								}
+								startBaiduMap(bundle, requestDetail);
+//								final BaseActivity baseActivity = (BaseActivity)getActivity();
+//								if (baseActivity != null && requestDetail == detail)
+//								{
+//									baseActivity.getIntent().putExtras(bundle);
+//									
+//									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+//									baseActivity.startActivity(baseActivity.getIntent());
+//									Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+//
+//								}
 							}
 						}catch(UnsupportedEncodingException e){
 							e.printStackTrace();

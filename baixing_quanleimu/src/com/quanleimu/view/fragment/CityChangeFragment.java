@@ -30,8 +30,8 @@ import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Tracker;
-import com.quanleimu.util.TrackConfig.TrackMobile.PVKey;
-import com.quanleimu.util.TrackConfig.TrackMobile.Url;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {
 	// 定义控件名
@@ -348,7 +348,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onResume() {
-		try {Tracker.getInstance().pv().append(PVKey.URL.getName(),Url.SELECTCITY.getName()).end();} catch (NullPointerException e) {}
+		Tracker.getInstance().pv(PV.SELECTCITY).end();
 		super.onResume();
 	}
 
