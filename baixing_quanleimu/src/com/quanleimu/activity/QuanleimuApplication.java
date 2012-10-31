@@ -409,44 +409,35 @@ public class QuanleimuApplication extends Application implements LocationService
 	
 	public interface onLocationFetchedListener{
 		public void onLocationFetched(BXLocation location);//null==location means location-fetching failed
+		public void onGeocodedLocationFetched(BXLocation location);
 	}
 	
-	public boolean getCurrentLocation(final onLocationFetchedListener listener){
-		if(null == listener)
+	private List<onLocationFetchedListener> locationFetchListeners = new ArrayList<onLocationFetchedListener>();
+	public boolean addLocationListener(final onLocationFetchedListener listener){
+		if(null == listener || locationFetchListeners.contains(listener))
 			return false;
 		
 		final BXLocation curLocation = getCurrentPosition(true);
 		if(null == curLocation){
-			listener.onLocationFetched(null);
+			//listener.onLocationFetched(null);
+			locationFetchListeners.add(listener);
+			
+			LocationService.getInstance().addLocationListener(context, this);
+			
 			return false;
 		}		
 
-		if(!curLocation.geocoded){
-			LocationService.getInstance().reverseGeocode(curLocation.fLat, curLocation.fLon, new LocationService.BXRgcListener() {
-				
-				@Override
-				public void onRgcUpdated(BXLocation location) {
-					if(null != location){
-						curLocation.address = location.address;
-						curLocation.adminArea = location.adminArea;
-						curLocation.cityName = location.cityName;
-						curLocation.subCityName = location.subCityName;
-						curLocation.fGeoCodedLat = location.fGeoCodedLat;
-						curLocation.fGeoCodedLon = location.fGeoCodedLon;
-						curLocation.detailAddress = location.detailAddress;
-						curLocation.address = location.address;
-						curLocation.geocoded = location.geocoded;
-						curLocation.postCode = location.postCode;
-						
-						listener.onLocationFetched(curLocation);
-					}
-				}
-			});
-		}else{
-			listener.onLocationFetched(curLocation);
-		}
+		listener.onLocationFetched(curLocation);
+		
+		if (curLocation.geocoded)
+			listener.onGeocodedLocationFetched(curLocation);
 		
 		return true;
+	}
+	
+	public boolean removeLocationListener(onLocationFetchedListener listener)
+	{
+		return this.locationFetchListeners.remove(listener);
 	}
 
 	public void setLocation(BXLocation location_) {
@@ -645,6 +636,25 @@ public class QuanleimuApplication extends Application implements LocationService
 		newLocation.fLon = (float)location_.getLongitude();
 		
 		setLocation(newLocation);
+		
+		LocationService.getInstance().reverseGeocode(newLocation.fLat, newLocation.fLon, new LocationService.BXRgcListener() {
+			
+			@Override
+			public void onRgcUpdated(BXLocation location) {
+				if (null != location) {
+					setLocation(location);
+				}
+				for (onLocationFetchedListener listener : locationFetchListeners)
+				{
+					listener.onGeocodedLocationFetched(location);
+				}					
+			}
+		});
+		
+		for (onLocationFetchedListener listener : locationFetchListeners)
+		{
+			listener.onLocationFetched(newLocation);
+		}
 		
 		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
 	}

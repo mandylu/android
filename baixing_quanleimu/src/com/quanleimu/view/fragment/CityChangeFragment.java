@@ -343,7 +343,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		QuanleimuApplication.getApplication().getCurrentLocation(this);
+		QuanleimuApplication.getApplication().addLocationListener(this);
 	}
 	
 	@Override
@@ -353,7 +353,19 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	}
 
 	@Override
+	public void onPause() {
+		QuanleimuApplication.getApplication().removeLocationListener(this);
+		super.onPause();
+	}
+	
+
+
+	@Override
 	public void onLocationFetched(BXLocation location) {
+	}
+	
+	@Override
+	public void onGeocodedLocationFetched(BXLocation location) {
 		final View rootView = getView();
 		if (rootView != null)
 		{

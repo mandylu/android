@@ -278,7 +278,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	public void onPause() {
-		
+		QuanleimuApplication.getApplication().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
 		
 		super.onPause();
@@ -299,7 +299,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(!isBack && this.goodsDetail == null){
 			inLocating = true;
-			QuanleimuApplication.getApplication().getCurrentLocation(this);
+			QuanleimuApplication.getApplication().addLocationListener(this);
 			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
 		}
 		
@@ -2139,8 +2139,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 	}
 
+
 	@Override
 	public void onLocationFetched(BXLocation location) {
+		// TODO Auto-generated method stub
+		
+	}
+	
+	@Override
+	public void onGeocodedLocationFetched(BXLocation location) {
 		// TODO Auto-generated method stub
 		if(location == null) return;
 		if(handler != null){
@@ -2228,5 +2235,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			detailLocation = null;
 		}
 	}
+
+
+
 	
 }
