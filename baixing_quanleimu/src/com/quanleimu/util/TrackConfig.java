@@ -68,6 +68,7 @@ public class TrackConfig {
 			ADSCOUNT("adsCount","信息条数"),
 			ADSENDERID("adSenderId","ad的发布者的userId"),
 			ADSTATUS("adStatus","正常/审核未通过"),
+			LOGIN_STATUS("loginStatus","已登录/未登录"),
 			
 			EVENT("event","事件名"),
 			CITY("city","城市"),

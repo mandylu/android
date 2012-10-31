@@ -26,7 +26,10 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+
 import android.util.Log;
 
 public class RegisterFragment extends BaseFragment {
@@ -164,6 +167,7 @@ public class RegisterFragment extends BaseFragment {
 	@Override
 	public void onResume(){
 		super.onResume();
+		Tracker.getInstance().pv(PV.REGISTER).end();
 	}
 	
 	@Override

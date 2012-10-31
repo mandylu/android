@@ -232,18 +232,19 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    }
 	    
 	    @Override
+
 	    public void onResume()
 	    {
-//	    	Log.d("hahaha", "hahaha,  biggalleryFragment onResume");
 	    	super.onResume();
-	    	Tracker.getInstance().pv(PV.VIEWADPIC).end();
-	    	Log.d("biggalleryfragment", "cate:"+goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId"+goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-	    		QuanleimuApplication.getImageLoader().enableSampleSize();
-		    	if(null == mb){
-					BitmapFactory.Options o =  new BitmapFactory.Options();
-		            o.inPurgeable = true;
-					mb = BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o);
-		    	}
+	    	Tracker.getInstance().pv(PV.VIEWADPIC).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
+
+	    	QuanleimuApplication.getImageLoader().enableSampleSize();
+			if (null == mb) {
+				BitmapFactory.Options o = new BitmapFactory.Options();
+				o.inPurgeable = true;
+				mb = BitmapFactory.decodeResource(getResources(),
+					R.drawable.loading_210_black, o);
+			}
 	    }
 	    
 	    public void onStackTop()

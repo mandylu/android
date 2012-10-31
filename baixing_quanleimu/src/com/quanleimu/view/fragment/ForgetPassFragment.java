@@ -1,32 +1,28 @@
 package com.quanleimu.view.fragment;
 
+import java.util.Timer;
+import java.util.TimerTask;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
-import android.app.ProgressDialog;
-import android.graphics.Bitmap;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebView;
-import android.webkit.WebViewClient;
-
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.net.URLEncoder;
-import java.util.TimerTask;
-import java.util.Timer;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 
 
 public class ForgetPassFragment extends BaseFragment {
@@ -50,6 +46,11 @@ public class ForgetPassFragment extends BaseFragment {
     private int lessTime = 60;
 
 
+	@Override
+	public void onResume() {
+		Tracker.getInstance().pv(PV.FORGETPASSWORD).end();
+		super.onResume();
+	}
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "找回密码";

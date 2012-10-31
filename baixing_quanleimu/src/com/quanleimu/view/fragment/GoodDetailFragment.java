@@ -63,9 +63,9 @@ import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.TextUtil;
-import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
@@ -91,7 +91,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public GoodsDetail detail = new GoodsDetail();
 //	private View titleControlView = null;
 	private AuthController authCtrl;
-	
+	private UserBean user = null;
 	private String json = "";
 	
 //	private Bundle mBundle;
@@ -169,9 +169,26 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onResume(){
 		updateButtonStatus();
-		Tracker.getInstance().pv(PV.VIEWAD).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
-
-//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+		if (!isMyAd())
+			Tracker.getInstance()
+			.pv(PV.VIEWAD)
+			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.end();
+		else {
+			if (user==null)
+				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+			Tracker.getInstance()
+			.pv(PV.MYVIEWAD)
+			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.append(Key.ADSENDERID, user!=null? user.getId() : null)
+			.append(Key.ADSTATUS, detail.getValueByKey("status"))
+			.end();
+		}
+			
+			
+		//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onResume();
 	}

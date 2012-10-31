@@ -9,6 +9,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,7 +24,10 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.BXUpdateService;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -123,6 +127,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 
     public void onResume() {
         super.onResume();
+		Tracker.getInstance().pv(PV.SETTINGS).end();
 //		((TextView)getView().findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
         this.refreshUI(getView());
     }

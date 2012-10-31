@@ -1,36 +1,22 @@
 package com.quanleimu.view.fragment;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.EditText;
-import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.Util;
 import com.quanleimu.util.LoginUtil;
-import android.util.Log;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.Util;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
 	
@@ -100,6 +86,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	@Override
 	public void onResume() {
 		super.onResume();
+		Tracker.getInstance().pv(PV.LOGIN).end();
 	}
 	
 	

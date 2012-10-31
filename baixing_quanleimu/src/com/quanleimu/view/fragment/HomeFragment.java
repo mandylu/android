@@ -124,7 +124,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void handleRightAction(){
 		this.pushFragment(new GridCateFragment(), this.getArguments());
-//		BxTracker.getInstance().createPageLogData("", "").appendProperty("", "").appendProperty("", "");
 	}
 	
 	@Override
@@ -419,29 +418,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		super.onDestroy();
 	}
 	
-//	public void logPage(int selectedIndex) {
-//		if (selectedIndex == 0) {
-//			// /home
-//			HashMap<String,String> map = new HashMap<String,String>();
-//			map.put("tracktype", "pageview");
-////			map.put("city", "shanghai");
-////			map.put("timestamp", "1234567");
-//			map.put("category", "ershou");
-//			BxTrackData data = new BxTrackData(map);
-//			BxTracker.getInstance().addTrackData(this.getAppContext(), data);
-//		} else if (selectedIndex == 1) {
-//			// /my
-//			
-//		}
-//	}
-	
 	@Override
 	public void onResume(){
 		super.onResume();
 		if (selectedIndex == 0)
 			Tracker.getInstance().pv(PV.HOME).end();
 		else if (selectedIndex == 1)
-			Tracker.getInstance().pv(PV.MY).end();
+			Tracker.getInstance().pv(PV.MY).append(Key.LOGIN_STATUS, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
@@ -464,7 +447,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		if (selectedIndex == 0)
 			Tracker.getInstance().pv(PV.HOME).end();
 		else if (selectedIndex == 1)
-			Tracker.getInstance().pv(PV.MY).end();
+			Tracker.getInstance().pv(PV.MY).append(Key.LOGIN_STATUS, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
 	}
 
 	@Override
