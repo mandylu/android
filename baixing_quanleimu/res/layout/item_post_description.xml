@@ -3,25 +3,31 @@
 	android:id="@+id/postinputlayout"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
-	android:orientation="vertical" 
-	android:padding="10dip">
-
-	<TextView
-	    android:id="@+id/postdescriptionshow"
-	    android:layout_width="wrap_content"
-	    android:layout_height="wrap_content"
-	    android:gravity="left|center_vertical"
-	    android:textSize="18dip"
-	    android:textColor="@drawable/list_titleselector" />	
+	android:orientation="horizontal" >
+	    
+    <TextView
+        android:id="@+id/postdescriptionshow"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:gravity="right|top"
+        android:paddingTop="10dip"
+        android:textColor="#838383"
+        android:textSize="18dip" />	
 
 	<EditText
 	    android:id="@+id/postdescriptioninput"
 	    android:layout_width="fill_parent"
 	    android:layout_height="wrap_content"
-	    android:gravity="top"
-	    android:lines="5"
-	    android:textSize="16dip"
-	    android:hint="请输入">
+		android:layout_marginLeft="15dip"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip" 			    
+	    android:gravity="left|top"
+		android:inputType="textMultiLine"
+	    android:background="@null"
+       	android:ellipsize="end"
+        android:hint="请输入"
+       	android:textColor="@drawable/list_titleselector"
+        android:textColorHint="#d1d0ca">
 	</EditText>
 
 </LinearLayout>
