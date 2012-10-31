@@ -39,7 +39,8 @@ public class LazyImageLoader
 	private DiskIOImageThread diskIOImgThread = new DiskIOImageThread();
 	
 	private Vector<String> urlDequeDownload = new Vector<String>();	
-	private DownloadImageThread downloadImgThread = new DownloadImageThread();
+	private DownloadImageThread[] downloadImgThread = 
+			new DownloadImageThread[]{new DownloadImageThread(), new DownloadImageThread(), new DownloadImageThread()}; 
 	
 	private CallbackManager callbackManager = new CallbackManager();
 
@@ -221,16 +222,18 @@ public class LazyImageLoader
 	
 	synchronized private void startDownloadingTread()
 	{
-		State state = downloadImgThread.getState();
-		
-		if(state== State.NEW)
-		{
-			downloadImgThread.start();
-		}
-		else if(state == State.TERMINATED)
-		{
-			downloadImgThread = new DownloadImageThread();
-			downloadImgThread.start();
+		for(int i = 0; i < downloadImgThread.length; ++ i){
+			State state = downloadImgThread[i].getState();
+			
+			if(state== State.NEW)
+			{
+				downloadImgThread[i].start();
+			}
+			else if(state == State.TERMINATED)
+			{
+				downloadImgThread[i] = new DownloadImageThread();
+				downloadImgThread[i].start();
+			}
 		}
 	}
 	
@@ -362,9 +365,15 @@ public class LazyImageLoader
 		{
 			try
 			{
-				while(isRun && urlDequeDownload.size() > 0)
+				while(isRun)
 				{
-					String url= urlDequeDownload.remove(0);
+					String url = null;
+					synchronized(urlDequeDownload){
+						if(urlDequeDownload.size() <= 0){
+							break;
+						}
+						url= urlDequeDownload.remove(0);
+					}
 					
 					if(null == url || !url.trim().startsWith("http")){
 						continue;
