@@ -46,7 +46,7 @@ public class SimpleImageLoader
 		return QuanleimuApplication.getImageLoader().getFileInDiskCache(url);
 	}
 
-	public static void showImg(final ImageView view,final String url, final String preUrl, Context con, final int defaultResImgId)
+	public static void showImg(final View view,final String url, final String preUrl, Context con, final int defaultResImgId)
 	{
 		view.setTag(url);	
 		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view,defaultResImgId));
@@ -79,7 +79,8 @@ public class SimpleImageLoader
 								if(!url.equals(preUrl)){
 									Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 									if(bmp != null){
-										Drawable curDrawable = view.getDrawable();
+										Drawable curDrawable = 
+												view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
 										if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
 											Bitmap curBmp = ((BitmapDrawable)curDrawable).getBitmap();
 											if(curBmp != null && curBmp.hashCode() == bmp.hashCode()){
@@ -96,7 +97,11 @@ public class SimpleImageLoader
 										}
 									}
 								}							
-								view.setImageBitmap(bitmap_);
+								if(view instanceof ImageView){
+									((ImageView)view).setImageBitmap(bitmap_);
+								}else{
+									view.setBackgroundDrawable(new BitmapDrawable(bitmap_));
+								}
 								increaseBitmapReferenceCount(bitmap_.hashCode(), view.hashCode());
 
 							}else{
@@ -147,7 +152,7 @@ public class SimpleImageLoader
 		}
 	}
 	
-	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final ImageView view, final int defaultImgRes)
+	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final int defaultImgRes)
 	{		
 		return new ImageLoaderCallback()
 		{ 
@@ -162,7 +167,8 @@ public class SimpleImageLoader
 							if(!url.equals(preUrl)){
 								Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 								if(bmp != null){
-									Drawable curDrawable = view.getDrawable();
+									Drawable curDrawable = 
+											view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
 									if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
 										Bitmap curBmp = ((BitmapDrawable)curDrawable).getBitmap();
 										if(curBmp != null && curBmp.hashCode() == bmp.hashCode()){
@@ -178,7 +184,11 @@ public class SimpleImageLoader
 									}
 								}
 							}
-							view.setImageBitmap(bitmap);
+							if(view instanceof ImageView){
+								((ImageView)view).setImageBitmap(bitmap);
+							}else{
+								view.setBackgroundDrawable(new BitmapDrawable(bitmap));
+							}
 							increaseBitmapReferenceCount(bitmap.hashCode(), view.hashCode());
 
 							
@@ -208,7 +218,11 @@ public class SimpleImageLoader
 					//method #fail(String url) maybe not called on main thread(UI thread), we should make sure the UI update on main thread
 					view.postDelayed(new Runnable() {
 						public void run() {
-							view.setImageResource(defaultImgRes);
+							if(view instanceof ImageView){
+								((ImageView)view).setImageResource(defaultImgRes);
+							}else{
+								view.setBackgroundResource(defaultImgRes);
+							}
 						}
 					}, 100);
 					inFailStatus = true;
