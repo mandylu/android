@@ -31,7 +31,10 @@ import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
 import android.support.v4.app.FragmentActivity;
+import android.text.Editable;
 import android.text.InputType;
+import android.text.TextWatcher;
+import android.util.Base64;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -49,6 +52,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -61,20 +65,28 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.LocationService;
+import com.quanleimu.util.LocationService.BXRgcListener;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 
-public class PostGoodsFragment extends BaseFragment implements OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener{
+public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener, TextWatcher{
 
 	public static final int MSG_START_UPLOAD = 5;
 	public static final int MSG_FAIL_UPLOAD = 6;
 	public static final int MSG_SUCCED_UPLOAD = 7;
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	
+	
 	private static final int VALUE_LOGIN_SUCCEEDED = 9;
+	
+	private static final int MSG_GEOCODING_FETCHED = 0x00010010;
+	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
 	
 	static final public int HASH_POST_BEAN = "postBean".hashCode();
 	static final public int HASH_CONTROL = "control".hashCode();
@@ -122,7 +134,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //	private Bundle bundle;
 	
 	private View locationView = null;
-	private View districtView = null;
+//	private View districtView = null;
+	
+	private BXLocation detailLocation = null;
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -434,18 +448,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 	
-	private void postNoRegister(){
+	private void doPost(boolean registered, BXLocation location){
 		showSimpleProgress();
-		new Thread(new UpdateThread(false)).start();
+		new Thread(new UpdateThread(registered, location)).start();		
 	}
+	
+//	private void postNoRegister(){
+//		doPost(false);
+//	}
 
-	private void usercheck() {
-		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			showSimpleProgress();
-			new Thread(new UpdateThread(true)).start();
-		}
-		else {
-			postNoRegister();
+	private boolean usercheck() {
+		return (user != null && user.getPhone() != null && !user.getPhone().equals(""));
+//			doPost(true);
+//		}
+//		else {
+//			doPost(false);
 //			final String[] names = {"免注册发布","已注册用户发布"};
 //			new AlertDialog.Builder(this.getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
 //			.setItems(names, new DialogInterface.OnClickListener(){
@@ -470,7 +487,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //					dialog.dismiss();
 //				}
 //			}).show();
-		}
+//		}
 	}
 	
 	private void showPost()
@@ -608,6 +625,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		}
 	}
 	
+	private boolean gettingLocationFromBaidu = false;
 	@Override
 	public void handleRightAction(){
 		if(uploadCount > 0){
@@ -618,7 +636,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(!check2()){
 				return;
 			}
-			usercheck();
+			if(this.detailLocation != null){
+				doPost(usercheck(), detailLocation);
+			}else{
+				this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
+				retreiveLocation();
+			}
 		}
 	}
 	
@@ -667,8 +690,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
-			if (postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean)) {
-				
+			if (postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean) && !postGoodsBean.getName().equals(STRING_AREA)) {
 				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
 						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
 						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
@@ -712,71 +734,75 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		photocancle.setOnClickListener(this);
 	}
 
-	/**
-	 * 发布线程
-	 * 
-	 * @author Administrator
-	 * 
-	 */
+	private boolean retreiveLocation(){
+		Log.d("location", "location   retreive location");
+		String city = QuanleimuApplication.getApplication().cityName;
+//		if(goodsDetail != null){
+//			String goodsCity = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+//			if(null != goodsCity){
+//				String[]cities = goodsCity.split(",");
+//				if(cities != null && cities.length > 0){
+//					city = cities[0];
+//				}
+//			}
+//		}
+//			for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+//				View v = layout_txt.getChildAt(m);
+//				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+//				if(bean == null) continue;
+//				if(bean.getDisplayName().equals(STRING_AREA)){
+//					TextView tv = (TextView)v.getTag(HASH_CONTROL);
+//					if(tv != null && !tv.getText().toString().equals("")){
+//						city += "," + tv.getText();
+//					}
+//				}
+//			}
+		String addr = "";
+		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+			View v = layout_txt.getChildAt(m);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			if(bean == null) continue;
+			if(bean.getDisplayName().equals(STRING_DETAIL_POSITION)){
+				TextView tv = (TextView)v.getTag(HASH_CONTROL);
+				if(tv != null && !tv.getText().toString().equals("")){
+					addr = tv.getText().toString();
+				}
+				break;
+			}
+		}
+		this.showSimpleProgress();
+		this.gettingLocationFromBaidu = true;
+		return LocationService.getInstance().geocode(addr, city, this);
+//		if(!city.equals("")){
+//			String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+//			try{
+//				String googleJsn = Communication.getDataByUrlGet(googleUrl);
+//				String[] info = googleJsn.split(",");
+//				if(info != null && info.length == 4){
+//					//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT, info[2]);
+//					//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON, info[3]);
+//					list.add("lat=" + info[2]);
+//					list.add("lng=" + info[3]);
+//				}
+//			}catch(UnsupportedEncodingException e){
+//				e.printStackTrace();
+//			}catch(Exception e){
+//				e.printStackTrace();
+//			}
+//		}
+	}
+
 	class UpdateThread implements Runnable {
 		private boolean registered = false;
-		public UpdateThread(boolean registered){
+		private BXLocation location = null;
+		public UpdateThread(boolean registered, BXLocation location){
 			this.registered = registered;
+			this.location = location;
 		}
 		public void run() {
+			Log.d("location", "location, in UpdateThread::run");
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
-
-			String city = QuanleimuApplication.getApplication().cityName;
-			if(goodsDetail != null){
-				String goodsCity = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-				if(null != goodsCity){
-					String[]cities = goodsCity.split(",");
-					if(cities != null && cities.length > 0){
-						city = cities[0];
-					}
-				}
-			}
-			for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-				View v = layout_txt.getChildAt(m);
-				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-				if(bean == null) continue;
-				if(bean.getDisplayName().equals(STRING_AREA)){
-					TextView tv = (TextView)v.getTag(HASH_CONTROL);
-					if(tv != null && !tv.getText().toString().equals("")){
-						city += "," + tv.getText();
-					}
-				}
-			}
-			for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-				View v = layout_txt.getChildAt(m);
-				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-				if(bean == null) continue;
-				if(bean.getDisplayName().equals(STRING_DETAIL_POSITION)){
-					TextView tv = (TextView)v.getTag(HASH_CONTROL);
-					if(tv != null && !tv.getText().toString().equals("")){
-						city += "," + tv.getText();
-					}
-				}
-			}
-			if(!city.equals("")){
-				String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-				try{
-					String googleJsn = Communication.getDataByUrlGet(googleUrl);
-					String[] info = googleJsn.split(",");
-					if(info != null && info.length == 4){
-						//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT, info[2]);
-						//goodsDetail.setValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON, info[3]);
-						list.add("lat=" + info[2]);
-						list.add("lng=" + info[3]);
-					}
-				}catch(UnsupportedEncodingException e){
-					e.printStackTrace();
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}	
-
 
 			if(registered){
 				list.add("mobile=" + mobile);
@@ -794,6 +820,43 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 				apiName = "ad_update";
 			}
+						
+			if(this.location != null){
+				Log.d("location", "location, setDistrictByLocation");
+				setDistrictByLocation(location);
+				
+				String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+						String.valueOf(location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat),
+						String.valueOf(location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon));
+				try{
+					Log.d("location", "location, call baiduurl get data");
+					String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+					Log.d("location", "location, baiduurl returns");
+					JSONObject js = new JSONObject(baiduJsn);
+					Object errorCode = js.get("error");
+					if(errorCode instanceof Integer && (Integer)errorCode == 0){
+						String x = (String)js.get("x");
+						String y = (String)js.get("y");
+						byte[] bytes = Base64.decode(x, Base64.DEFAULT);
+						x = new String(bytes, "UTF-8");
+						
+						bytes = Base64.decode(y, Base64.DEFAULT);
+						y = new String(bytes, "UTF-8");
+						
+						Double dx = Double.valueOf(x);
+						Double dy = Double.valueOf(y);
+						list.add("lat=" + dx);
+						list.add("lng=" + dy);
+						Log.d("location", "location, baiduurl parse succeed");
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+					Log.d("location", "location, baiduurl parse error");
+					list.add("lat=" + (location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat));
+					list.add("lng=" + (location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon));
+				}							
+			}
+			
 			LinkedHashMap<String, String> postMap = params.getData();
 			//发布发布集合
 			for (int i = 0; i < postMap.size(); i++) {
@@ -1265,15 +1328,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
 			}
 			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
+			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
 			locationView = layout;
 			if(this.detailLocation != null && !inLocating){
 				setDetailLocationControl(detailLocation);
 			}
 		}else if(postBean.getName().equals(STRING_AREA)){
-			districtView = layout;
-			if(this.detailLocation != null && !inLocating){
-				setDetailLocationControl(detailLocation);
-			}			
+//			districtView = layout;
+//			if(this.detailLocation != null && !inLocating){
+//				setDetailLocationControl(detailLocation);
+//			}			
 		}
 		if(postBean.getName().equals("contact") && layout != null){
 			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
@@ -1402,7 +1466,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		Log.d(TAG, "start to build layout");
 //		otherProperties.clear();
 		
-		final Activity activity = getActivity();
+//		final Activity activity = getActivity();
 		
 		//根据模板显示
 		if(null == json || json.equals("")) return;
@@ -1421,7 +1485,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				continue;
 			
 			if(postBean.getName().equals(STRING_AREA)){
-				this.appendBeanToLayout(postBean);
+//				this.appendBeanToLayout(postBean);
 				continue;
 			}
 			
@@ -1598,6 +1662,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
 			this.reCreateTitle();
 			this.refreshHeader();
+			break;
+		case MSG_GEOCODING_TIMEOUT:
+		case MSG_GEOCODING_FETCHED:			
+			if(gettingLocationFromBaidu){
+				showSimpleProgress();
+				(new Thread(new UpdateThread(usercheck(), msg.obj == null ? null : (BXLocation)msg.obj))).start();
+				gettingLocationFromBaidu = false;
+			}
 			break;
 		}
 	}
@@ -1981,6 +2053,26 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		return layout;
 	}
 	
+	private void setDistrictByLocation(BXLocation location){
+		if(this.postList != null && postList.size() > 0){
+			Object[] postListKeySetArray = postList.keySet().toArray();
+			for(int i = 0; i < postList.size(); ++ i){
+				PostGoodsBean bean = postList.get(postListKeySetArray[i]);
+				if(bean.getName().equals(STRING_AREA)){
+					if(bean.getLabels() != null){
+						for(int t = 0; t < bean.getLabels().size(); ++ t){
+							if(location.subCityName.contains(bean.getLabels().get(t))){
+//								((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
+								params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+								return;
+							}
+						}
+					}						
+				}
+			}
+		}		
+	}
+	
 	private void setDetailLocationControl(BXLocation location){
 		String text = (location == null) ? "" :
 			((location.detailAddress == null || location.detailAddress.equals("")) ? 
@@ -1994,30 +2086,29 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				((TextView)locationView.findViewById(R.id.postinput)).setText(text);
 			}
 		}
-		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
-			CharSequence chars = ((TextView)districtView.findViewById(R.id.posthint)).getText();
-			if(chars != null && !chars.toString().equals("")) return;
-			if(this.postList != null && postList.size() > 0){
-				Object[] postListKeySetArray = postList.keySet().toArray();
-				for(int i = 0; i < postList.size(); ++ i){
-					PostGoodsBean bean = postList.get(postListKeySetArray[i]);
-					if(bean.getName().equals(STRING_AREA)){
-						if(bean.getLabels() != null){
-							for(int t = 0; t < bean.getLabels().size(); ++ t){
-								if(location.subCityName.contains(bean.getLabels().get(t))){
-									((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
-									params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
-									return;
-								}
-							}
-						}						
-					}
-				}
-			}
-		}
+//		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
+//			CharSequence chars = ((TextView)districtView.findViewById(R.id.posthint)).getText();
+//			if(chars != null && !chars.toString().equals("")) return;
+//			if(this.postList != null && postList.size() > 0){
+//				Object[] postListKeySetArray = postList.keySet().toArray();
+//				for(int i = 0; i < postList.size(); ++ i){
+//					PostGoodsBean bean = postList.get(postListKeySetArray[i]);
+//					if(bean.getName().equals(STRING_AREA)){
+//						if(bean.getLabels() != null){
+//							for(int t = 0; t < bean.getLabels().size(); ++ t){
+//								if(location.subCityName.contains(bean.getLabels().get(t))){
+//									((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
+//									params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+//									return;
+//								}
+//							}
+//						}						
+//					}
+//				}
+//			}
+//		}
 	}
 
-	private BXLocation detailLocation = null;
 	@Override
 	public void onLocationFetched(BXLocation location) {
 		// TODO Auto-generated method stub
@@ -2025,8 +2116,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if(handler != null){
 			handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
 		}
-		detailLocation = location;
+		
 		if(this.inLocating){
+			detailLocation = location;
 			if(locationView != null){
 				this.getActivity().runOnUiThread(new Runnable(){
 					@Override
@@ -2061,7 +2153,50 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	public int getExitAnimation() {
 		return R.anim.zoom_exit;
 	}
-	
-	
+
+	private boolean inreverse = false;
+
+	@Override
+	public void onRgcUpdated(BXLocation location) {
+		Log.d("location", "location   onRgcUpdate");
+		if(!this.gettingLocationFromBaidu) return;
+		// TODO Auto-generated method stub
+		if(!inreverse && location != null && (location.subCityName == null || location.subCityName.equals(""))){
+			Log.d("location", "location   call reverseGeocode");
+			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
+			inreverse = true;
+		}else{
+			Log.d("location", "location   MSG_GEOCODING_FETCHED");
+			sendMessage(MSG_GEOCODING_FETCHED, location);
+		}
+	}
+
+
+
+	@Override
+	public void afterTextChanged(Editable s) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void beforeTextChanged(CharSequence s, int start, int count,
+			int after) {
+		// TODO Auto-generated method stub
+		
+	}
+
+
+
+	@Override
+	public void onTextChanged(CharSequence s, int start, int before, int count) {
+		// TODO Auto-generated method stub
+		if(this.detailLocation == null) return;
+		if(s != null && !s.toString().equals(detailLocation.detailAddress) && !s.toString().equals(detailLocation.subCityName)){
+			detailLocation = null;
+		}
+	}
 	
 }

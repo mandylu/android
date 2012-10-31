@@ -49,67 +49,94 @@ public class LocationService{
 		return s_instance;
 	}
 	
-	public void reverseGeocode(final float lat, final float lon, BXRgcListener callback){
-		if(bMapManager == null) return;
-		class BXSearchListener implements MKSearchListener {
-			BXRgcListener rgcCallback = null;
-			
-			BXSearchListener(BXRgcListener listener){
-				rgcCallback = listener;
-			}
-			
-		    @Override
-		    public void onGetAddrResult(MKAddrInfo result, int iError) {
-		    	BXLocation location = null;
-		    	if(0 == iError){//succeeded!
-		    		location = new BXLocation(false);
-		    		location.fLat = lat;
-		    		location.fLon = lon;
-		    		location.address = result.strBusiness;
-		    		location.detailAddress=result.strAddr;
-		    		location.cityName=result.addressComponents.city.replace("市", "");
-		    		location.subCityName=result.addressComponents.district;
-		    		location.adminArea=result.addressComponents.province;
-		    		if(null != location.cityName && location.cityName.length() > 0)
-		    			location.geocoded = true;
-		    		location.fGeoCodedLat=(float)(1.0f*result.geoPt.getLatitudeE6()/1e6);
-		    		location.fGeoCodedLon=(float)(1.0f*result.geoPt.getLongitudeE6()/1e6);
-		    	}
-		    	
-		    	if(null != rgcCallback){
-		    		rgcCallback.onRgcUpdated(location);
-		    	}
-		    }
-		 
-		    @Override
-		    public void onGetDrivingRouteResult(MKDrivingRouteResult result, int iError) {
-		    }
-		 
-		    @Override
-		    public void onGetPoiResult(MKPoiResult result, int type, int iError) {
-		    }
-		 
-		    @Override
-		    public void onGetTransitRouteResult(MKTransitRouteResult result, int iError) {
-		    }
-		 
-		    @Override
-		    public void onGetWalkingRouteResult(MKWalkingRouteResult result, int iError) {
-		    }
-		 
-		    @Override
-		    public void onGetBusDetailResult(MKBusLineResult result, int iError) {
-		    }
-		 
-		    @Override
-		    public void onGetSuggestionResult(MKSuggestionResult result, int iError) {
-		    }
+	class BXSearchListener implements MKSearchListener {
+		BXRgcListener rgcCallback = null;
+		private float lat = 0;
+		private float lon = 0;
+		BXSearchListener(BXRgcListener listener){
+			rgcCallback = listener;
 		}
 		
+		BXSearchListener(BXRgcListener listener, float lat, float lon){
+			rgcCallback = listener;
+			this.lat = lat;
+			this.lon = lon;
+		}
+		
+	    @Override
+	    public void onGetAddrResult(MKAddrInfo result, int iError) {
+	    	Log.d("location", "location, onGetAddrResult reached");
+	    	BXLocation location = null;
+	    	if(0 == iError){//succeeded!
+	    		location = new BXLocation(false);
+	    		location.address = result.strBusiness;
+	    		location.detailAddress = result.strAddr;
+	    		location.cityName = result.addressComponents == null ? null : result.addressComponents.city.replace("市", "");
+	    		location.subCityName = result.addressComponents == null ? null : result.addressComponents.district;
+	    		location.adminArea = result.addressComponents == null ? null : result.addressComponents.province;
+	    		if(null != location.cityName && location.cityName.length() > 0)
+	    			location.geocoded = true;
+	    		location.fGeoCodedLat = (float)(1.0f*result.geoPt.getLatitudeE6()/1e6);
+	    		location.fGeoCodedLon = (float)(1.0f*result.geoPt.getLongitudeE6()/1e6);
+	    		location.fLat = this.lat == 0 ? location.fGeoCodedLat : this.lat;
+	    		location.fLon = this.lon == 0 ? location.fGeoCodedLon : this.lon;
+
+	    	}
+	    	
+	    	if(null != rgcCallback){
+	    		rgcCallback.onRgcUpdated(location);
+	    	}
+	    }
+	 
+	    @Override
+	    public void onGetDrivingRouteResult(MKDrivingRouteResult result, int iError) {
+	    	Log.d("location", "location, onGetDrivingRouteResult reached");
+	    }
+	 
+	    @Override
+	    public void onGetPoiResult(MKPoiResult result, int type, int iError) {
+	    	Log.d("location", "location, onGetPoiResult reached");
+	    }
+	 
+	    @Override
+	    public void onGetTransitRouteResult(MKTransitRouteResult result, int iError) {
+	    	Log.d("location", "location, onGetTransitRouteResult reached");
+	    }
+	 
+	    @Override
+	    public void onGetWalkingRouteResult(MKWalkingRouteResult result, int iError) {
+	    	Log.d("location", "location, onGetWalkingRouteResult reached");
+	    }
+	 
+	    @Override
+	    public void onGetBusDetailResult(MKBusLineResult result, int iError) {
+	    	Log.d("location", "location, onGetAddrResult reached");
+	    }
+	 
+	    @Override
+	    public void onGetSuggestionResult(MKSuggestionResult result, int iError) {
+	    	Log.d("location", "location, onGetSuggestionResult reached");
+	    }
+	}
+	
+	public boolean geocode(String addr, String city, BXRgcListener callback){
+		if(bMapManager == null) return false;
+				
 		MKSearch searcher = new MKSearch();
 		searcher.init(bMapManager, new BXSearchListener(callback));
-			
-		searcher.reverseGeocode(new GeoPoint((int)(lat*1e6), (int)(lon*1e6)));
+		bMapManager.start();	
+		return searcher.geocode(addr, city) == 0;
+		
+	}
+	
+	public boolean reverseGeocode(final float lat, final float lon, BXRgcListener callback){
+		if(bMapManager == null) return false;
+		
+		
+		MKSearch searcher = new MKSearch();
+		searcher.init(bMapManager, new BXSearchListener(callback, lat, lon));
+		bMapManager.start();
+		return 0 == searcher.reverseGeocode(new GeoPoint((int)(lat*1e6), (int)(lon*1e6)));
 	}
 	
 	public android.location.Location getLastKnownLocation(){
