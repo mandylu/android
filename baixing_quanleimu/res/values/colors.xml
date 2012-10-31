@@ -13,4 +13,8 @@
     <color name="base_green">#86CF2A</color>
     <color name="talk_content_font">#707070</color>
     <color name="tab_gap_color">#363636</color>
+    
+    <!-- common color -->
+    <color name="common_placeholder">#808080</color>
+    <color name="common_background">#f3f1e8</color>
 </resources>

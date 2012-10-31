@@ -604,6 +604,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		description += "\n打电话给我时，请一定说明在百姓网看到的，谢谢！";
 		description = appendPostFromInfo(detail, description);
+		description = appendExtralMetaInfo(detail, description);
 		
 		txt_message1.setText(description);
 		txt_tittle.setText(title);
@@ -683,6 +684,38 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		String postFrom = detail.getValueByKey("postMethod");
 		
 		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom);
+	}
+	
+	
+	private String appendExtralMetaInfo(GoodsDetail detail, String description)
+	{
+		if (detail == null)
+		{
+			return description;
+		}
+		
+		StringBuffer extralInfo = new StringBuffer();
+		ArrayList<String> allMeta = detail.getMetaData();
+		for (String meta : allMeta)
+		{
+			if (!meta.startsWith("价格") && !meta.startsWith("地点") &&
+					!meta.startsWith("地区") && !meta.startsWith("查看") && !meta.startsWith("来自") && !meta.startsWith("具体地点"))
+			{
+				final int splitIndex = meta.indexOf(" ");
+				if (splitIndex != -1)
+				{
+					extralInfo.append(meta.substring(splitIndex)).append(",");
+				}
+			}
+		}
+		
+		if (extralInfo.length() > 0)
+		{
+			extralInfo.deleteCharAt(extralInfo.length() -1 );
+			return extralInfo.append("\n\n").append(description).toString(); 
+		}
+		
+		return description;
 	}
 	
 	private String appendPostFromInfo(GoodsDetail detail, String description)
@@ -944,6 +977,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		
 		String area = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+		String address = detail.getMetaValueByKey("具体地点");
+		if (address != null)
+		{
+			area += "  " + address;
+		}
+		
 		if (area != null)
 		{
 			View areaV = createMetaView(inflater, "地区:", area, new View.OnClickListener() {
@@ -967,20 +1006,22 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			ll_meta.addView(contacV);
 		}
 		
-		ArrayList<String> allMeta = detail.getMetaData();
-		for (String meta : allMeta)
-		{
-			if (!meta.startsWith("价格") &&
-					!meta.startsWith("地区") && !meta.startsWith("查看"))
-			{
-				final int splitIndex = meta.indexOf(" ");
-				if (splitIndex != -1)
-				{
-					ll_meta.addView(createMetaView(inflater, meta.substring(0, splitIndex), meta.substring(splitIndex), null));
-				}
-			}
-		}
+//		ArrayList<String> allMeta = detail.getMetaData();
+//		for (String meta : allMeta)
+//		{
+//			if (!meta.startsWith("价格") &&
+//					!meta.startsWith("地区") && !meta.startsWith("查看"))
+//			{
+//				final int splitIndex = meta.indexOf(" ");
+//				if (splitIndex != -1)
+//				{
+//					ll_meta.addView(createMetaView(inflater, meta.substring(0, splitIndex), meta.substring(splitIndex), null));
+//				}
+//			}
+//		}
 	}
+	
+	
 	
 	private View createMetaView(LayoutInflater inflater, String label, String value, View.OnClickListener clickListener)
 	{
@@ -1402,7 +1443,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		{
 			try {
 				long timeL = Long.parseLong(dateV) * 1000;
-				createTimeView.setText(TextUtil.getTimeDesc(timeL));
+				createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
 			}
 			catch(Throwable t)
 			{
