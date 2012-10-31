@@ -551,7 +551,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	private void showBindDialog(){
 //		String[] items = {"绑定百姓网帐号，网站手机统一管理", "继续发布信息"};
 		new AlertDialog.Builder(this.getActivity())
-		.setMessage("绑定百姓网帐号，网站手机统一管理？")
+		.setMessage(R.string.personalpost_bind_baixing_account)
 //		.setItems(items, new DialogInterface.OnClickListener() {
 //			@Override
 //			public void onClick(DialogInterface dialog, int which) {
