@@ -114,7 +114,7 @@ public class SimpleImageLoader
 		}	
 	}
 	
-	public static void showImg(final ImageView view,final String url, String preUrl, Context con)
+	public static void showImg(final View view,final String url, String preUrl, Context con)
 	{
 		showImg(view, url, preUrl, con, -1);
 	}

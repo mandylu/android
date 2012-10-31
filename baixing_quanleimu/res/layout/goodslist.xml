@@ -21,6 +21,8 @@
             android:id="@+id/lvGoodsList"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/list_margin_LF"
+            android:paddingRight="@dimen/list_margin_LF"
             android:divider="@drawable/list_divider"
             android:dividerHeight="1dp"
             android:fastScrollEnabled="false"

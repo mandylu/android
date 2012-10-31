@@ -737,6 +737,16 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     }
 
     //fixme ming 小手机下载更新失败
+    
+	public int getEnterAnimation()
+	{
+		return 0;
+	}
+	
+	public int getExitAnimation()
+	{
+		return 0;
+	}
 
 }
 
