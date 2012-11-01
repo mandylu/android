@@ -17,6 +17,8 @@ import android.os.Bundle;
 import com.baidu.mapapi.*;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.BXLocation;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
 import android.location.Location;
 import android.util.Log;
@@ -182,6 +184,14 @@ public class LocationService{
 		
 		@Override
 		public void onLocationChanged (Location location){
+			if (location != null) {
+				Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, true)
+						.append(Key.GPS_GEO, String.format("(%f,%f)", location.getLatitude(),location.getLongitude())).end();
+			}else
+			{
+				Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
+			}
+			
 			if(location != null){
 				
 				//纠偏以后的经纬度  

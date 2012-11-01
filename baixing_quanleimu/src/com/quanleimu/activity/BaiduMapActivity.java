@@ -22,6 +22,10 @@ import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+
 import java.util.List;
 
 public class BaiduMapActivity extends MapActivity implements LocationListener{
@@ -163,7 +167,16 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 
 	@Override
 	public void onLocationChanged(Location location) {
+		if (location != null) {
+			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, true)
+					.append(Key.GPS_GEO, String.format("(%f,%f)", location.getLatitude(),location.getLongitude())).end();
+		}else
+		{
+			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
+		}
 		this.updateMyLocationOverlay(location);
 		mBMapMan.getLocationManager().removeUpdates(this);
 	}
+	
+	
 }
