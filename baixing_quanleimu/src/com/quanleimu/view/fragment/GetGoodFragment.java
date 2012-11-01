@@ -183,7 +183,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			Tracker.getInstance()
 			.pv(this.pv)
 			.end();
-//				Log.d("getgood","normal");
 		}
 		goodsListLoader.setHandler(handler);
 	}
