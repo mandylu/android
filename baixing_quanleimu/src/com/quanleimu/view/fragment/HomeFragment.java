@@ -421,10 +421,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onResume(){
 		super.onResume();
-		if (selectedIndex == 0)
-			Tracker.getInstance().pv(PV.HOME).end();
-		else if (selectedIndex == 1)
-			Tracker.getInstance().pv(PV.MY).append(Key.LOGIN_STATUS, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
+		
+		this.onPageSelect(selectedIndex);
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
 //			LocationService.getInstance().addLocationListener(getContext(), this);
@@ -444,10 +442,13 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onPageSelect(int index) {
 		selectedIndex = index;
-		if (selectedIndex == 0)
-			Tracker.getInstance().pv(PV.HOME).end();
-		else if (selectedIndex == 1)
-			Tracker.getInstance().pv(PV.MY).append(Key.LOGIN_STATUS, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
+		if (selectedIndex == 0) {
+			this.pv = PV.HOME;
+			Tracker.getInstance().pv(this.pv).end();
+		}else if (selectedIndex == 1){
+			this.pv = PV.MY;
+			Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
+		}
 	}
 
 	@Override

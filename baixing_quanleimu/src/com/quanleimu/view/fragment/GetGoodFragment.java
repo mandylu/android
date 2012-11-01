@@ -175,15 +175,19 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	public void onResume() {
 		super.onResume();
 		if (actType != null && actType.equals("search"))//from headersearch
+		{	
+			this.pv = PV.SEARCHRESULT;
 			Tracker.getInstance()
-			.pv(PV.SEARCHRESULT)
-			.append(Key.SEARCHKEYWORD, searchContent)
-			.end();
-		else//normal
+				.pv(this.pv)
+				.append(Key.SEARCHKEYWORD, searchContent)
+				.end();
+		}else {//normal
+			this.pv = PV.LISTING;
 			Tracker.getInstance()
-			.pv(PV.LISTING)
+			.pv(this.pv)
 			.end();
 //				Log.d("getgood","normal");
+		}
 		goodsListLoader.setHandler(handler);
 	}
 	

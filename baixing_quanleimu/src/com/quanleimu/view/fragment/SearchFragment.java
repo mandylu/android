@@ -207,6 +207,7 @@ public class SearchFragment extends BaseFragment {
 	public void onStackTop(boolean isBack) {
 		if (isBack)
 		{
+			this.pv = PV.SEARCHRESULTCATEGORY;			
 			Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 			etSearch.setText(searchContent);
 			etSearch.setSelection(searchContent.length(), searchContent.length());
@@ -214,6 +215,7 @@ public class SearchFragment extends BaseFragment {
 		}
 		else
 		{	
+			this.pv = PV.SEARCH;			
 			Tracker.getInstance().pv(PV.SEARCH).end();
 			this.showSearchHistory();
 			etSearch.postDelayed(new Runnable(){
@@ -295,11 +297,9 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		Tracker.getInstance().
-		pv(PV.SEARCHRESULTCATEGORY)
-		.append(Key.SEARCHKEYWORD, searchContent)
-		.end();
-		
+		this.pv = PV.SEARCHRESULTCATEGORY; //FIXME: @zhongjiawu
+		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
+
 		lvSearchHistory.setVisibility(View.GONE);
 		this.hideSoftKeyboard();
 		if (search)

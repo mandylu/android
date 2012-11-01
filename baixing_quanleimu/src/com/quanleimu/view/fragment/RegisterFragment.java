@@ -167,7 +167,8 @@ public class RegisterFragment extends BaseFragment {
 	@Override
 	public void onResume(){
 		super.onResume();
-		Tracker.getInstance().pv(PV.REGISTER).end();
+		this.pv = PV.REGISTER;
+		Tracker.getInstance().pv(this.pv).end();
 	}
 	
 	@Override

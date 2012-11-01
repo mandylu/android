@@ -198,6 +198,18 @@ public class QuanleimuApplication extends Application implements LocationService
 	public List<GoodsDetail> getListMyPost() {
 		return listMyPost;
 	}
+	
+	public boolean isMyAd(String adId) {
+		if(null != listMyPost && null != adId){
+			for(int i = 0; i < listMyPost.size(); ++ i){
+				if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+						.equals(adId)){
+					return true;
+				}
+			}
+		}
+		return false;
+	}
 
 	public void setListMyPost(List<GoodsDetail> listMyPost) {
 		this.listMyPost = listMyPost;

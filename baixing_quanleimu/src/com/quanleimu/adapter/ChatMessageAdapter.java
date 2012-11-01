@@ -17,6 +17,7 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.compare.MsgTimeComparator;
 import com.quanleimu.imageCache.SimpleImageLoader;
+import com.quanleimu.view.fragment.GoodDetailFragment;
 
 public class ChatMessageAdapter extends BaseAdapter {
 
@@ -77,6 +78,16 @@ public class ChatMessageAdapter extends BaseAdapter {
 	@Override
 	public int getCount() {
 		return msgList.size();
+	}
+	
+	public int getMyMsgCount() {
+		int myCount = 0;
+		for (ChatMessage msg : msgList) {
+			if (msg.getFrom().equals(myId)) {
+				myCount++;
+			}
+		}
+		return myCount;
 	}
 
 	@Override

@@ -64,10 +64,13 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	public void onResume(){
 		super.onResume();
 //		Log.d("secondcatefragment","secondcatefragment->isPost"+isPost);
-		if (!isPost)//post
+		if (!isPost) {//post
+			this.pv = PV.CATEGORIES;
 			Tracker.getInstance().pv(PV.CATEGORIES).append(Key.FIRSTCATENAME, cate.getEnglishName()).end();
-		else
+		}else {
+			this.pv = PV.POSTCATE2;
 			Tracker.getInstance().pv(PV.POSTCATE2).end();
+		}
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	

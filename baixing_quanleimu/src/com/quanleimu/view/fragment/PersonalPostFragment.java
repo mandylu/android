@@ -359,14 +359,15 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			hideProgress();
 			
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+			this.pv = (currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED));
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
 				Tracker.getInstance()
-				.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+				.pv(this.pv)
 				.end();
 			} else {//ads count
 				Tracker.getInstance()
-				.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+				.pv(this.pv)
 				.append(Key.ADSCOUNT, gl.getData().size()+"")
 				.end();
 			}

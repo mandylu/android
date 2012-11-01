@@ -127,6 +127,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 
     public void onResume() {
         super.onResume();
+        this.pv = PV.SETTINGS;
 		Tracker.getInstance().pv(PV.SETTINGS).end();
 //		((TextView)getView().findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
         this.refreshUI(getView());

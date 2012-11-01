@@ -236,7 +236,8 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    public void onResume()
 	    {
 	    	super.onResume();
-	    	Tracker.getInstance().pv(PV.VIEWADPIC).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
+	    	this.pv = PV.VIEWADPIC;
+	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
 	    	QuanleimuApplication.getImageLoader().enableSampleSize();
 			if (null == mb) {

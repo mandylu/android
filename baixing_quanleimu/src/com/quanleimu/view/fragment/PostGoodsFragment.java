@@ -278,15 +278,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.pv = PV.EDITPOST;
 		if (goodsDetail!=null)//edit
 			Tracker.getInstance()
-			.pv(PV.EDITPOST)
+			.pv(this.pv)
 			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 			.end();
 		else//new post
 			Tracker.getInstance()
-			.pv(PV.EDITPOST)
+			.pv(this.pv)
 			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.end();
 		

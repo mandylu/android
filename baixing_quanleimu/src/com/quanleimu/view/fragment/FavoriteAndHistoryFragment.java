@@ -108,7 +108,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public void onResume() {
         super.onResume();
-        Tracker.getInstance().pv(isFav?PV.FAVADS:PV.HISTORYADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
+        
+        Tracker.getInstance().pv(this.pv).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
 //      Log.d("fav","isFav:"+isFav+",size:"+glLoader.getGoodsList().getData().size());
         for (int i = 0; i < pullListView.getChildCount(); ++i) {
             ImageView imageView = (ImageView) pullListView.getChildAt(i).findViewById(R.id.ivInfo);

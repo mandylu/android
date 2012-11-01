@@ -40,6 +40,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	
 	public List<String> listsize = new ArrayList<String>();
 
+	
+	
 	// 定义变量
 	public String backPageName = "";
 	private EditText ed_sift;
@@ -68,7 +70,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		Tracker.getInstance().pv(PV.LISTINGFILTER).append(Key.SECONDCATENAME, categoryEnglishName).end();
+		this.pv = PV.LISTINGFILTER;
+		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		super.onStackTop(isBack);
 	}
 

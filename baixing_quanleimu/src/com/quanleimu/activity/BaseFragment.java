@@ -26,6 +26,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CityChangeFragment;
@@ -33,7 +35,7 @@ import com.quanleimu.view.fragment.FeedbackFragment;
 import com.quanleimu.view.fragment.LoginFragment;
 import com.quanleimu.view.fragment.SetMainFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
-
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 /**
  * 
  * @author liuchong
@@ -42,6 +44,8 @@ import com.quanleimu.view.fragment.SetMainFragment;
 public abstract class BaseFragment extends Fragment {
 
 	public static final String TAG = "QLM";//"BaseFragment";
+	public PV pv = null; 
+
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;
 	protected int requestCode = INVALID_REQUEST_CODE;
@@ -309,32 +313,39 @@ public abstract class BaseFragment extends Fragment {
 		{
 			menu.add(0, option, option, OPTION_TITLES[option]);
 		}
+		Tracker.getInstance().event(BxEvent.MENU_SHOW).append(Key.MENU_SHOW_PAGEURL, this.pv.name()).end();
 		super.onPrepareOptionsMenu(menu);
 	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {
-		Toast.makeText(getActivity(), item.getTitle(), Toast.LENGTH_SHORT).show();
+		String action = "";
 		switch (item.getItemId())
 		{
 		case OPTION_CHANGE_CITY:
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", ""));
+			action = "changecity";
 			break;
 		case OPTION_SETTING:
 			this.pushFragment(new SetMainFragment(), createArguments("设置", ""));
+			action = "setting";
 			break;
 		case OPTION_FEEDBACK:
 			this.pushFragment(new FeedbackFragment(), createArguments("反馈", ""));
+			action = "feedback";
 			break;
 		case OPTION_EXIT:
 			QuanleimuMainActivity mainActivity = (QuanleimuMainActivity) this.getActivity();
 			mainActivity.exitMainActivity();
+			action = "exit";
 			break;
 		case OPTION_LOGIN:
 			this.pushFragment(new LoginFragment(), createArguments("登录", ""));		
 			BaseFragment.this.sendMessage(MSG_USER_LOGIN, null);
+			action = "login";
 			break;
 		case OPTION_LOGOUT:
+			action = "logout";
 	        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 	        builder.setTitle(R.string.dialog_confirm_logout)
 	                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
@@ -353,7 +364,7 @@ public abstract class BaseFragment extends Fragment {
 	                }).create().show();
 			break;
 		}
-		
+		Tracker.getInstance().event(BxEvent.MENU_ACTION).append(Key.MENU_ACTION_TYPE, action).end(); 		
 		return super.onOptionsItemSelected(item);
 	}
 	

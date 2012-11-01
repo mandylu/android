@@ -106,11 +106,7 @@ public class TrackConfig {
 			FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON("forgetPasswordResetPasswordResultFailReason","重设密码失败原因"),
 			MENU_SHOW_PAGEURL("menuShowInPageURL","菜单出现的页面URL"),
 			MENU_ACTION_TYPE("menuActionType","菜单动作类型"),
-			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市"),
-			MENU_ACTION_TYPE_SETTINGS("menuActionType_settings","菜单动作设置"),
-			MENU_ACTION_TYPE_FEEDBACK("menuActionType_feedback","菜单动作反馈"),
-			MENU_ACTION_TYPE_EXIT("menuActionType_exit","菜单动作退出"),
-			MENU_ACTION_TYPE_LOGIN("menuActionType_login","菜单动作登录");
+			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市");
 			
 			
 			private String name;

@@ -86,7 +86,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		this.pv = PV.BUZZLISTING;
 //		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
 //		plv.requestFocus();
 		

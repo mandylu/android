@@ -108,6 +108,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.pv = PV.LOGIN;
 		Tracker.getInstance().pv(PV.LOGIN).end();
 	}
 	

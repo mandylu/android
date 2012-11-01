@@ -349,7 +349,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onResume() {
-		Tracker.getInstance().pv(PV.SELECTCITY).end();
+		this.pv = PV.SELECTCITY;
+		Tracker.getInstance().pv(this.pv).end();
 		super.onResume();
 	}
 
@@ -374,10 +375,10 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		
 			if(null == location || !location.geocoded) {
 				tvGPSCityName.setText("定位失败");
-				Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "1").end();
+				Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "0").end();
 				return;
 			}
-			Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "0").end();
+			Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "1").end();
 			
 			
 

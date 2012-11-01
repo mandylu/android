@@ -170,14 +170,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onResume(){
 		updateButtonStatus();
 		if (!isMyAd())
+		{
+			this.pv = PV.VIEWAD;
 			Tracker.getInstance()
-			.pv(PV.VIEWAD)
+			.pv(this.pv)
 			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
 			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 			.end();
-		else {
+		}else {
 			if (user==null)
 				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+			this.pv = PV.MYVIEWAD;
 			Tracker.getInstance()
 			.pv(PV.MYVIEWAD)
 			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
@@ -230,17 +233,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		List<GoodsDetail> myPost = QuanleimuApplication.getApplication().getListMyPost();
-		if(null != myPost){
-			for(int i = 0; i < myPost.size(); ++ i){
-				if(myPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-						.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
-					return true;
-				}
-			}
-		}
-		return false;
+		return QuanleimuApplication.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
 	}
+	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
 		List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();

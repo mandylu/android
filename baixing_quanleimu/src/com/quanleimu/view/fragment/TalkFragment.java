@@ -37,6 +37,7 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.BaseFragment;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.ChatMessageAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
@@ -251,8 +252,9 @@ public class TalkFragment extends BaseFragment {
 		{
 			super.onResume();
 			isAttachedToWindow = true;
+			this.pv = PV.BUZZ;
 			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
-			Tracker.getInstance().event(BxEvent.DELETED_DELETE).append(Key.ADID, adId).end();
+			
 			//Load history or load msg from server.
 			if (sessionId == null)
 			{
@@ -681,10 +683,10 @@ public class TalkFragment extends BaseFragment {
 		
 		protected final void handleMessage(Message msg, Activity activity, View rootView)
 		{
-
+			ChatMessageAdapter adapter = getAdapter(rootView);
 			switch (msg.what) {
 			case MSG_REPLACE_MESSAGES:
-				getAdapter(rootView).refreshData((List<ChatMessage>) msg.obj);
+				adapter.refreshData((List<ChatMessage>) msg.obj);				
 				scrollToBottom(rootView);
 				break;
 			case MSG_MERGE_MESSAGE:
@@ -757,6 +759,17 @@ public class TalkFragment extends BaseFragment {
 				}
 				break;
 			}
+			}
+			
+			if (msg.what == MSG_REPLACE_MESSAGES || msg.what == MSG_MERGE_MESSAGE)
+			{
+				int myMsgCount = adapter.getMyMsgCount();
+				int otherMsgCount = adapter.getCount() - myMsgCount;
+				boolean isMy = QuanleimuApplication.getApplication().isMyAd(adId);
+
+				Tracker.getInstance().event(BxEvent.BUZZLIST)
+						.append(Key.DIALOG_SELLER, isMy ? myMsgCount : otherMsgCount)
+						.append(Key.DIALOG_BUYER, isMy ? otherMsgCount : myMsgCount).end();
 			}
 		
 		}

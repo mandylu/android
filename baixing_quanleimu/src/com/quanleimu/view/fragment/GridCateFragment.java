@@ -101,7 +101,8 @@ public class GridCateFragment extends BaseFragment implements ItemClickListener 
 	@Override
 	public void onResume(){
 		super.onResume();
-		Tracker.getInstance().pv(PV.POSTCATE1).end();
+		this.pv = PV.POSTCATE1;
+		Tracker.getInstance().pv(this.pv).end();
 //		getView().requestFocus();
 	}
 

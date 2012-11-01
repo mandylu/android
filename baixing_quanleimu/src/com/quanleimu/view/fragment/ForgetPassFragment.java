@@ -26,6 +26,7 @@ import com.quanleimu.util.Tracker;
 
 
 public class ForgetPassFragment extends BaseFragment {
+	
     private EditText mobileEt;
     private Button getCodeBtn;
     private TextView lessTimeTv;
@@ -48,7 +49,8 @@ public class ForgetPassFragment extends BaseFragment {
 
 	@Override
 	public void onResume() {
-		Tracker.getInstance().pv(PV.FORGETPASSWORD).end();
+		this.pv = PV.FORGETPASSWORD;
+		Tracker.getInstance().pv(this.pv).end();
 		super.onResume();
 	}
 	public void initTitle(TitleDef title){

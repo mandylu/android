@@ -23,6 +23,8 @@ import com.quanleimu.activity.R;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 
 public class SessionListAdapter extends BaseAdapter {
@@ -134,11 +136,14 @@ public class SessionListAdapter extends BaseAdapter {
 				
 				@Override
 				public void onClick(View v) {
+					Tracker.getInstance().event(BxEvent.BUZZLIST_MANAGE).end();
+					
 					AlertDialog.Builder builder = new AlertDialog.Builder(context);
 	                builder.setTitle("操作")
 	                        .setItems(R.array.item_operate_session,
 	                                new DialogInterface.OnClickListener() {
 	                                    public void onClick(DialogInterface dialog, int which) {
+	                    					Tracker.getInstance().event(BxEvent.BUZZLIST_DELETE).end();	                                    	
 	                                        if (which == 0) {
 	                                        	new Thread(new DeleteSessionThread(list.get(position))).start();
 	                                        }
