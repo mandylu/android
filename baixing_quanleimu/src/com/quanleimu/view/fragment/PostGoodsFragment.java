@@ -68,6 +68,9 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.LocationService.BXRgcListener;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 
@@ -275,6 +278,19 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
+		if (goodsDetail!=null)//edit
+			Tracker.getInstance()
+			.pv(PV.EDITPOST)
+			.append(Key.SECONDCATENAME, categoryEnglishName)
+			.append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.end();
+		else//new post
+			Tracker.getInstance()
+			.pv(PV.EDITPOST)
+			.append(Key.SECONDCATENAME, categoryEnglishName)
+			.end();
+		
+
 	}
 	
 	public void onPause() {
