@@ -13,6 +13,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
+import android.location.Location;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -137,6 +138,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //	private View districtView = null;
 	
 	private BXLocation detailLocation = null;
+    private BXLocation cacheLocation = null;
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -643,6 +645,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean gettingLocationFromBaidu = false;
 	@Override
 	public void handleRightAction(){
+
+        //定位成功的情况下，发布时保存当前经纬度和地理位置
+        if (inLocating == false && locationView != null && cacheLocation != null) {
+            String inputAddress = ((TextView)locationView.findViewById(R.id.postinput)).getText().toString();
+            BXLocation lastLocation = new BXLocation(cacheLocation);
+            lastLocation.detailAddress = inputAddress;
+            Util.saveDataToLocate(getActivity(), "lastLocation", lastLocation);
+        }
+
 		if(uploadCount > 0){
 			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
 		}
@@ -2119,19 +2130,35 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void setDetailLocationControl(BXLocation location){
-		String text = (location == null) ? "" :
-			((location.detailAddress == null || location.detailAddress.equals("")) ? 
-					((location.subCityName == null || location.subCityName.equals("")) ?
-							"" 
-							: location.subCityName)
-					: location.detailAddress);
+        cacheLocation = location;
+        String autoAddress = "";
+        // 优先显示上次存储的记录
+        // 地理定位成功，1KM 外，换定位地址
+
+        BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation");
+        if (lastLocation != null) {
+            autoAddress = lastLocation.detailAddress;
+
+            if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
+                Location newLocation = new Location("newLocation");
+                newLocation.setLatitude(location.fLat);
+                newLocation.setLongitude(location.fLon);
+                Location oldLocation = new Location("oldLocation");
+                oldLocation.setLatitude(lastLocation.fLat);
+                oldLocation.setLongitude(lastLocation.fLon);
+
+                float distance = newLocation.distanceTo(oldLocation);
+                if (distance > 1000) {
+                    autoAddress = location.detailAddress;
+                }
+            }
+        }
+
 		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
 			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
 			if(chars == null || chars.toString().equals("")){
-				if(text != null && !text.equals("")){
-					((TextView)locationView.findViewById(R.id.postinput)).setText(text);
-					originParams.put(STRING_DETAIL_POSITION, text, text);
-				}
+				((TextView)locationView.findViewById(R.id.postinput)).setText(autoAddress);
+				originParams.put(STRING_DETAIL_POSITION, autoAddress, autoAddress);
 			}
 		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
@@ -2230,7 +2257,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	@Override
 	public void afterTextChanged(Editable s) {
-		// TODO Auto-generated method stub
+
 		
 	}
 
