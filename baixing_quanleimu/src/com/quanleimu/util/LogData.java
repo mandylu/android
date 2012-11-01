@@ -24,6 +24,13 @@ public class LogData {
 		return map;
 	}
 	
+	public LogData append(Key key, int value)
+	{
+		String keyName = key.getName();
+		this.map.put(keyName, value+"");
+		return this;
+	}
+	
 	public LogData append(Key key, String value)
 	{
 		String keyName = key.getName();
