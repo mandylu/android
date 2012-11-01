@@ -2096,6 +2096,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void setDistrictByLocation(BXLocation location){
+		if(location == null || location.subCityName == null) return;
 		if(this.postList != null && postList.size() > 0){
 			Object[] postListKeySetArray = postList.keySet().toArray();
 			for(int i = 0; i < postList.size(); ++ i){
