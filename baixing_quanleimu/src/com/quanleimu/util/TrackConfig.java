@@ -125,6 +125,7 @@ public class TrackConfig {
 		}
 		
 		enum PV implements TrackMobile {//pageview相关的value
+			BASE("/base", "没有定义pv的fragment走这里"),
 			//页面
 			SELECTCITY("/selectCity","切换城市"),
 			HOME("/home","首页"),
@@ -151,6 +152,7 @@ public class TrackConfig {
 			BUZZLISTING("/buzzListing","私信列表页"),
 			HISTORYADS("/historyAds","最近浏览"),
 			SETTINGS("/settings","设置"),
+			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
 			FORGETPASSWORD("/forgetPassword","忘记密码");			

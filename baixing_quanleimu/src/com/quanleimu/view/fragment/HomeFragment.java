@@ -447,7 +447,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			Tracker.getInstance().pv(this.pv).end();
 		}else if (selectedIndex == 1){
 			this.pv = PV.MY;
-			Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin() ? "1" : "0").append(Key.USERID, user!=null ? user.getId() : null).end();
+			Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
 		}
 	}
 

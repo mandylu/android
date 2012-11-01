@@ -44,7 +44,7 @@ import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 public abstract class BaseFragment extends Fragment {
 
 	public static final String TAG = "QLM";//"BaseFragment";
-	public PV pv = null; 
+	public PV pv = PV.BASE; 
 
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;

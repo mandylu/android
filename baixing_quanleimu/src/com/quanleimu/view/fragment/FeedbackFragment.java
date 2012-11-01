@@ -27,6 +27,7 @@ import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 
 public class FeedbackFragment extends BaseFragment {
@@ -55,6 +56,12 @@ public class FeedbackFragment extends BaseFragment {
 		return new int[]{OPTION_FEEDBACK};
 	}
 	
+	@Override
+	public void onResume() {
+		// TODO Auto-generated method stub
+		super.onResume();
+		this.pv = PV.FEEDBACK;
+	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
