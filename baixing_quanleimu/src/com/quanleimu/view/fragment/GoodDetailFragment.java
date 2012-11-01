@@ -290,6 +290,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		super.onCreate(savedInstanceState);
 		this.mListLoader = (GoodsListLoader) getArguments().getSerializable("loader");
 		int index = getArguments().getInt("index", 0);
+		if(mListLoader == null 
+				|| mListLoader.getGoodsList() == null 
+				|| mListLoader.getGoodsList().getData() == null
+				|| mListLoader.getGoodsList().getData().size() <= index){
+			return;
+		}
 		detail = mListLoader.getGoodsList().getData().get(index);
 		if (savedInstanceState != null) //
 		{
@@ -303,7 +309,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		
+		if(detail == null || mListLoader == null) return null;
 		final int mCurIndex = getArguments().getInt("index", 0);
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
@@ -380,6 +386,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 			
 			public int getCount() {
+				if(mListLoader == null || mListLoader.getGoodsList() == null || mListLoader.getGoodsList().getData() == null){
+					return 0;
+				}
 				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
 			}
 		});
