@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -173,15 +174,21 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	@Override
 	public void onResume() {
 		super.onResume();
+		if (actType != null && actType.equals("search"))//from headersearch
+			Tracker.getInstance()
+			.pv(PV.SEARCHRESULT)
+			.append(Key.SEARCHKEYWORD, searchContent)
+			.end();
+		else//normal
+			Tracker.getInstance()
+			.pv(PV.LISTING)
+			.end();
+//				Log.d("getgood","normal");
 		goodsListLoader.setHandler(handler);
 	}
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		if (actType != null && actType.equals("search"))//headersearch的流程
-			Tracker.getInstance().pv(PV.SEARCHRESULT).append(Key.SEARCHKEYWORD, searchContent).end();
-//		else
-			
 		super.onStackTop(isBack);
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
