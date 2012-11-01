@@ -421,7 +421,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	@Override
 	public void onResume(){
 		super.onResume();
-		
 		this.onPageSelect(selectedIndex);
 //		LogPage(selectedIndex);
 //		if(!QuanleimuApplication.getApplication().getCurrentLocation(this)){
