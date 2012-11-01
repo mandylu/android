@@ -3,34 +3,30 @@ package com.quanleimu.view.fragment;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 
-import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
-import com.quanleimu.util.TrackConfig.TrackMobile.PV;
-
-import android.util.Log;
 
 public class RegisterFragment extends BaseFragment {
 	private EditText accoutnEt, passwordEt,repasswordEt;
@@ -63,6 +59,12 @@ public class RegisterFragment extends BaseFragment {
 		return v;
 	}
 	
+	@Override
+	public boolean handleBack() {
+		Tracker.getInstance().event(BxEvent.REGISTER_BACK).end();
+		return super.handleBack();
+	}
+
 	public void initTitle(TitleDef title){
 		title.m_title = "注册账号";
 		title.m_visible = true;
@@ -106,12 +108,15 @@ public class RegisterFragment extends BaseFragment {
 				if (json != null) {
 					sendMessage(1, null);
 				} else {
-					sendMessage(2, null);
+					sendMessage(2, "response json is null!");
 				}
+				return;
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
+				sendMessage(2, e.getMessage());
 			} catch (Exception e) {
 				e.printStackTrace();
+				sendMessage(2, e.getMessage());
 			}
 		}
 	}
@@ -145,6 +150,13 @@ public class RegisterFragment extends BaseFragment {
 				String message = json.getString("message");
 				Toast.makeText(activity, message, 0).show();
 				if (!id.equals("")) { // 注册成功
+					//tracker
+					Tracker.getInstance()
+					.event(BxEvent.REGISTER_SUBMIT)
+					.append(Key.REGISTER_RESULT_STATUS, true)
+					.append(Key.POSTCOUNT_BEFOREREGISTER, QuanleimuApplication.getApplication().getListMyPost()==null?0:QuanleimuApplication.getApplication().getListMyPost().size())
+					.end();
+					
 					UserBean user = new UserBean();
 					user.setId(usrId);
 					user.setPhone(accoutnEt.getText().toString());
@@ -153,13 +165,32 @@ public class RegisterFragment extends BaseFragment {
 					Util.saveDataToLocate(activity, "user", user);
 
                     finishFragment(MSG_REGISTER_SUCCESS, null);
+				} else {
+					//tracker
+					Tracker.getInstance()
+					.event(BxEvent.REGISTER_SUBMIT)
+					.append(Key.REGISTER_RESULT_STATUS, false)
+					.append(Key.REGISTER_RESULT_FAIL_REASON, "id is null!")
+					.end();
 				}
 			} catch (JSONException e) {
 				e.printStackTrace();
+				//tracker
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, e.getMessage())
+				.end();
 			}
 			break;
 		case 2:
 			Toast.makeText(activity, "注册未成功，请稍后重试！", 3).show();
+			//tracker
+			Tracker.getInstance()
+			.event(BxEvent.REGISTER_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, (String)msg.obj)
+			.end();
 			break;
 		}
 	}
