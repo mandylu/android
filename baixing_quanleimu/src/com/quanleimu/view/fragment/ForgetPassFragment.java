@@ -9,6 +9,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,8 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 
@@ -165,6 +168,7 @@ public class ForgetPassFragment extends BaseFragment {
     }
 
     private void doPostNewPwdAction() {
+    	Log.d("forget","post new pwd action");
         if (checkAllInputs() == false) {
             return;
         }
@@ -186,7 +190,7 @@ public class ForgetPassFragment extends BaseFragment {
                         sendMessage(MSG_POST_FINISH, null);
                     }
                 } catch (JSONException e) {
-                    sendMessage(MSG_SENT_CODE_ERROR, "网络异常");
+                    sendMessage(MSG_POST_ERROR, "网络异常");
                 }
 
             }
@@ -210,20 +214,48 @@ public class ForgetPassFragment extends BaseFragment {
         switch (msg.what) {
             case MSG_NETWORK_ERROR:
                 Toast.makeText(getActivity(), showMsg, 1).show();
+                //tracker
+                Tracker.getInstance()
+                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, false)
+                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
+                .end();
                 break;
             case MSG_SENT_CODE_ERROR:
                 Toast.makeText(getActivity(), showMsg, 1).show();
                 getCodeBtn.setEnabled(true);
+              //tracker
+                Tracker.getInstance()
+                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, false)
+                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
+                .end();
                 break;
             case MSG_SENT_CODE_FINISH:
                 Toast.makeText(getActivity(), "一分钟后可再次获取", 1).show();
                 disableGetCodeBtn();
+              //tracker
+                Tracker.getInstance()
+                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, true)
+                .end();
                 break;
             case MSG_POST_FINISH:
                 Toast.makeText(getActivity(), showMsg, 1).show();
+              //tracker
+                Tracker.getInstance()
+                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD)
+                .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_STATUS, true)
+                .end();
                 break;
             case MSG_POST_ERROR:
                 Toast.makeText(getActivity(), showMsg, 1).show();
+              //tracker
+                Tracker.getInstance()
+                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD)
+                .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_STATUS, false)
+                .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON, (String)msg.obj)
+                .end();
                 break;
             case MSG_TIMER_1SECOND:
                 lessTime--;
