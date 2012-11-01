@@ -63,7 +63,11 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	@Override
 	public void onResume(){
 		super.onResume();
-		Tracker.getInstance().pv(PV.CATEGORIES).append(Key.FIRSTCATENAME, cate.getEnglishName()).end();
+//		Log.d("secondcatefragment","secondcatefragment->isPost"+isPost);
+		if (!isPost)//post
+			Tracker.getInstance().pv(PV.CATEGORIES).append(Key.FIRSTCATENAME, cate.getEnglishName()).end();
+		else
+			Tracker.getInstance().pv(PV.POSTCATE2).end();
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
 	

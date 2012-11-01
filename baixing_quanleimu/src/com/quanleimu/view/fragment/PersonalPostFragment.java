@@ -10,11 +10,10 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,10 +22,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.BaseActivity;
+import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.GoodsListAdapter;
@@ -39,7 +36,10 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.widget.PullToRefreshListView;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
@@ -358,7 +358,19 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		case MSG_DELETED:
 			hideProgress();
 			
-			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson()); 
+			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+			//tracker
+			if (gl == null || gl.getData() == null) {//no ads count
+				Tracker.getInstance()
+				.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+				.end();
+			} else {//ads count
+				Tracker.getInstance()
+				.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+				.append(Key.ADSCOUNT, gl.getData().size()+"")
+				.end();
+			}
+			
 			if (gl == null || gl.getData().size() == 0) {
 				if(msg.what == MSG_MYPOST) {
 					if(null != listMyPost) listMyPost.clear();
@@ -523,6 +535,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			hideProgress();
+			//tracker
+			Tracker.getInstance()
+			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+			.end();
 			
 			Message msg2 = Message.obtain();
 			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;

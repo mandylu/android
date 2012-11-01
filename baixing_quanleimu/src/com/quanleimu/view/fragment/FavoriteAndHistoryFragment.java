@@ -1,16 +1,21 @@
 package com.quanleimu.view.fragment;
 
+import java.util.ArrayList;
+import java.util.List;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
+
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -23,11 +28,11 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
-
-import java.util.ArrayList;
-import java.util.List;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder {
     private boolean isFav = false;
@@ -103,7 +108,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public void onResume() {
         super.onResume();
-
+        Tracker.getInstance().pv(isFav?PV.FAVADS:PV.HISTORYADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+//      Log.d("fav","isFav:"+isFav+",size:"+glLoader.getGoodsList().getData().size());
         for (int i = 0; i < pullListView.getChildCount(); ++i) {
             ImageView imageView = (ImageView) pullListView.getChildAt(i).findViewById(R.id.ivInfo);
 
@@ -194,12 +200,13 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     @Override
     protected void handleMessage(Message msg, Activity activity, View rootView) {
-
+    	Log.d("fav","handleMessage");
         switch (msg.what) {
             case MSG_UPDATEFAV:
                 hideProgress();
-
+                
                 tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+                Log.d("fav","updatefav.size:"+tempGoodsList.getData().size());
                 if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
                     Message msg2 = Message.obtain();
                     msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
@@ -242,6 +249,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 hideProgress();
 
                 tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+                Log.d("fav","updatehistory.size:"+tempGoodsList.getData().size());
                 if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
                     Message msg2 = Message.obtain();
                     msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
@@ -281,6 +289,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
                 break;
             case MSG_DELETEAD:
+            	Log.d("fav","deleteAd");
                 int pos = (Integer) msg.obj;
                 if (isFav) {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListMyStore();
@@ -304,6 +313,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 adapter.setUiHold(false);
                 break;
             case MSG_DELETEALL:
+            	Log.d("fav","deleteAll");
                 List<GoodsDetail> goodsList = new ArrayList<GoodsDetail>();
                 if (isFav) {
                     QuanleimuApplication.getApplication().setListMyStore(new ArrayList<GoodsDetail>(goodsList));
@@ -335,11 +345,13 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             case MSG_NOMOREFAV:
             case MSG_NOMOREHISTORY:
             case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+            	Log.d("fav","gotmorefav & gotmorhistory &...&network unavailable");
                 hideProgress();
                 onResult(msg.what, glLoader);
                 break;
 
             case MSG_ITEM_OPERATE:
+            	Log.d("fav","item_operate");
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

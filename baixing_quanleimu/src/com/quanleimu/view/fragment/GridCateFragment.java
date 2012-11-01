@@ -7,18 +7,20 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-//import android.widget.AdapterView;
-//import android.widget.AdapterView.OnItemClickListener;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-//import com.quanleimu.adapter.GridAdapter;
-//import com.quanleimu.adapter.GridAdapter.GridInfo;
 import com.quanleimu.entity.FirstStepCate;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.widget.CustomizeGridView;
 import com.quanleimu.widget.CustomizeGridView.GridInfo;
 import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
+//import android.widget.AdapterView;
+//import android.widget.AdapterView.OnItemClickListener;
+//import com.quanleimu.adapter.GridAdapter;
+//import com.quanleimu.adapter.GridAdapter.GridInfo;
 
 public class GridCateFragment extends BaseFragment implements ItemClickListener {
 
@@ -99,6 +101,7 @@ public class GridCateFragment extends BaseFragment implements ItemClickListener 
 	@Override
 	public void onResume(){
 		super.onResume();
+		Tracker.getInstance().pv(PV.POSTCATE1).end();
 //		getView().requestFocus();
 	}
 
