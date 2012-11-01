@@ -11,7 +11,8 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="@drawable/bg_vad_toolbar_item_selector" >
+        android:background="@drawable/bg_vad_toolbar_item_selector"
+            >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -19,7 +20,7 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="3dp" >
+                >
 
 		<ImageView
             android:id="@+id/imageView1"
@@ -58,7 +59,7 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="3dp" >
+                >
 
 		<ImageView
             android:id="@+id/imageView1"
@@ -97,7 +98,7 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingBottom="3dp" >
+                 >
 
 		<ImageView
             android:id="@+id/imageView1"
