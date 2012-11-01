@@ -27,7 +27,7 @@ public class BXViewGroupElement extends ViewGroupElement {
 		viewOperation.drag(0, toX, getViewCenter().getY(), getViewCenter().getY(), 10);
 	}
 	
-	public void scrollTop(float fromY, float toY) {
+	public void scrollByY(float fromY, float toY) {
 		viewOperation.drag(getViewCenter().getX(), getViewCenter().getX(), fromY, toY, 10);
 	}
 }

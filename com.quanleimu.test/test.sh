@@ -4,8 +4,8 @@ echo "START shell"
 
 #adb -s emulator-5556 emu kill;
 #adb -s emulator-5580 emu kill;
-#adb kill-server;
-#adb start-server;
+adb kill-server;
+adb start-server;
 
 (echo "")|android create avd -n testemulator1 -t 2 ;
 
@@ -67,7 +67,7 @@ cd ../
 
 #start testemulator1
 echo "Check emulator-5556 device is connected or wait for one";
-adbState=`adb -s emulator-5556 get-state`
+adbState=`adb -s emulator-5556 get-state | grep device`;
 if [ ! $adbState = "device" ]; then
 	echo "Device emulator-5556 not found -- connect one to continue..."
 	emulator -avd testemulator1 -port 5556 -sdcard com.quanleimu.test/testcase1.img &
@@ -92,7 +92,7 @@ sleep 3;
 
 #start testemulator2
 echo "Check emulator-5580 device is connected or wait for one";
-adbState=`adb -s emulator-5580 get-state`
+adbState=`adb -s emulator-5580 get-state | grep device`
 if [ ! $adbState = "device" ]; then
 	echo "Device emulator-5580 not found -- connect one to continue..."
 	emulator -avd testemulator2 -port 5580 -sdcard com.quanleimu.test/testcase2.img &
@@ -127,7 +127,7 @@ echo "Started java screenshot jar";
 sleep 1;
 
 #start realdevice
-adbState=`adb -s 015d18844854041c get-state`;
+adbState=`adb -s 015d18844854041c get-state | grep device`;
 if [ ! $adbState = "device" ]; then
 	echo "Device 015d18844854041c not found..."
 else
@@ -138,9 +138,10 @@ else
 	adb -s 015d18844854041c shell input keyevent 4
 	#adb -s 015d18844854041c emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	#adb -s 015d18844854041c emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
-	#adb -s 015d18844854041c uninstall com.quanleimu.activity;
-	#adb -s 015d18844854041c install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-	#adb -s 015d18844854041c install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+	adb -s 015d18844854041c uninstall com.quanleimu.activity;
+	adb -s 015d18844854041c uninstall com.quanleimu.test;
+	adb -s 015d18844854041c install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
+	adb -s 015d18844854041c install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 	
 	adb -s 015d18844854041c shell input keyevent 82
 	adb -s 015d18844854041c shell input keyevent 4
@@ -156,7 +157,7 @@ else
 	
 	#test in real device
 	echo "START test post2 $NOW" >> $LOGPATH/runpost2_$LOGNOW.log
-	adb -s 015d18844854041c shell am instrument -w -e class com.quanleimu.activity.test.KeepLiveTest#runPost com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/runpost2_$LOGNOW.log &
+	adb -s 015d18844854041c shell am instrument -w -e class com.quanleimu.activity.test.KeepLiveTest#runAdListing com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/runadlisting2_$LOGNOW.log &
 		
 fi
 #end realdevice

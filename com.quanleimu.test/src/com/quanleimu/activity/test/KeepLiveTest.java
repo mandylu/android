@@ -39,6 +39,7 @@ public class KeepLiveTest extends BaixingTestCase {
         	int index = (int)(Math.random() * 9);
         	Log.i(LOG_TAG, "Start do Category.index." + index);
         	doFirstCategory(index);
+        	Runtime.getRuntime().gc();
         }
 	}
 	
@@ -51,6 +52,7 @@ public class KeepLiveTest extends BaixingTestCase {
         	int index = (int)(Math.random() * 9);
         	Log.i(LOG_TAG, "Start do Post.index." + index);
         	doPost(index);
+        	Runtime.getRuntime().gc();
         }
 	}
 	
