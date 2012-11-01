@@ -8,7 +8,7 @@ import android.content.Context;
 import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.util.TrackConfig.TrackMobile.Event;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 /**
@@ -51,7 +51,7 @@ public class Tracker {
 		return data;
 	}
 	
-	public LogData event(Event event) {
+	public LogData event(BxEvent event) {
 		LogData data = new LogData(new HashMap<String, String>());
 		data.append(Key.TRACKTYPE, "event");
 		data.append(Key.TIMESTAMP, Communication.getTimeStamp());

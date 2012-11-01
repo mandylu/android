@@ -175,7 +175,7 @@ public class TrackConfig {
 			
 		}
 		
-		enum Event implements TrackMobile {//event相关的value
+		enum BxEvent implements TrackMobile {//event相关的value
 			CITY_SELECT("City_Select","City_Select"),
 			CITY_SEARCH("City_Search","City_Search"),
 			HEADERSEARCHRESULT("HeaderSearchResult","HeaderSearchResult"),
@@ -253,7 +253,7 @@ public class TrackConfig {
 			
 			private String name;
 			private String description;
-			private Event(String name, String description) {
+			private BxEvent(String name, String description) {
 				this.name = name;
 				this.description = description;
 			}
