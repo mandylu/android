@@ -38,6 +38,30 @@ public class LogData {
 		return this;
 	}
 	
+	public LogData append(Key key, float value)
+	{
+		String valueString;
+		if (value == (int)value)
+			valueString = (int)value + "";
+		else
+			valueString = value + "";
+		String keyName = key.getName();
+		this.map.put(keyName, valueString);
+		return this;
+	}
+	
+	public LogData append(Key key, double value)
+	{
+		String valueString;
+		if (value == (int)value)
+			valueString = (int)value + "";
+		else
+			valueString = value + "";
+		String keyName = key.getName();
+		this.map.put(keyName, valueString);
+		return this;
+	}
+	
 	public void end() {
 		if (!TrackConfig.getInstance().getLoggingFlag()) return;
 		Tracker.getInstance().addLog(this);
