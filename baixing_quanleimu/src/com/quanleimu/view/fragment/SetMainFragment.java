@@ -21,15 +21,14 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
-import com.quanleimu.util.BXUpdateService;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ParameterHolder;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
+import com.quanleimu.util.*;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+
 
 //import com.quanleimu.entity.AuthDialogListener;
 //import com.quanleimu.entity.WeiboAccessTokenWrapper;
@@ -160,12 +159,14 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                         Util.logout();
                         refreshUI(getView());
                         Toast.makeText(getAppContext(), "已退出", 1).show();
+                        Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CONFIRM).end();
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
+                        Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CANCEL).end();
                     }
                 }).create().show();
     }
@@ -175,25 +176,30 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         switch (v.getId()) {
             case R.id.setFlowOptimize:
                 showFlowOptimizeDialog();
+                Tracker.getInstance().event(BxEvent.SETTINGS_PICMODE).end();
                 break;
             case R.id.setBindID:
                 if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
                     Bundle bundle = createArguments(null, "用户中心");
                     pushFragment(new LoginFragment(), bundle);
+                    Tracker.getInstance().event(BxEvent.SETTINGS_LOGIN).end();
                 } else {
-                    //TODO jiawu 加入确认退出过程
+                    Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT).end();
                     logoutAction();
                 }
 
                 break;
             case R.id.setCheckUpdate:
-//                checkNewVersion();
+                checkNewVersion();
+                Tracker.getInstance().event(BxEvent.SETTINGS_CHECKUPDATE).end();
                 break;
             case R.id.setAbout:
                 pushFragment(new AboutUsFragment(), null);
+                Tracker.getInstance().event(BxEvent.SETTINGS_ABOUT).end();
                 break;
             case R.id.setFeedback:
                 pushFragment(new FeedbackFragment(), createArguments(null, null));
+                Tracker.getInstance().event(BxEvent.SETTINGS_FEEDBACK).end();
                 break;
             default:
                 Toast.makeText(getAppContext(), "no action", 1).show();

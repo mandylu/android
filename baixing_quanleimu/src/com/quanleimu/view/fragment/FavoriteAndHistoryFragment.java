@@ -24,15 +24,14 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
-import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.Helper;
+import com.quanleimu.util.*;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder {
     private boolean isFav = false;
@@ -353,7 +352,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 break;
 
             case MSG_ITEM_OPERATE:
-            	Log.d("fav","item_operate");
+                if (isFav) {
+                    Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
+                } else {
+                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
+                }
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -363,6 +366,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (which == 0) {
                                             sendMessage(MSG_DELETEAD, position);
+                                            if (isFav) {
+                                                Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
+                                            } else {
+                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
+                                            }
                                         }
                                     }
                                 })

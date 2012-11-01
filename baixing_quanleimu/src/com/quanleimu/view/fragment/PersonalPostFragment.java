@@ -1,19 +1,10 @@
 package com.quanleimu.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
-
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,7 +12,6 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -33,14 +23,18 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
-import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
+import com.quanleimu.util.*;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.widget.PullToRefreshListView;
+import org.json.JSONException;
+import org.json.JSONObject;
+
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
 	private final int MSG_MYPOST = 1;
@@ -213,8 +207,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			glLoader.setHandler(handler);
 		}
 		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
-		
+
+        BxEvent bxEvent = BxEvent.SENT_RESULT;
+        int adsCountValue = 0;
+
 		if(TYPE_MYPOST == currentType){
+            bxEvent = BxEvent.SENT_RESULT;
+
 //			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
 //			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
 //			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
@@ -231,8 +230,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			adapter.setList(listMyPost);
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
+            if (listMyPost != null) {
+                adsCountValue = listMyPost.size();
+            }
+
 		}
 		else if(TYPE_INVERIFY == currentType){
+            bxEvent = BxEvent.APPROVING_RESULT;
+
 			lvGoodsList.setVisibility(View.VISIBLE);
 //			ivMyads.setImageResource(R.drawable.bg_segment_sent);
 //			ivMyfav.setImageResource(R.drawable.bg_segment_approving_selected);
@@ -254,6 +259,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				this.onRefresh();
 			}
 			else{
+                adsCountValue = listInVerify.size();
 				adapter.setList(listInVerify);
 				adapter.notifyDataSetChanged();
 				lvGoodsList.invalidateViews();
@@ -264,6 +270,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			}
 		}
 		else{
+            bxEvent = BxEvent.DELETED_RESULT;
 			lvGoodsList.setVisibility(View.VISIBLE);
 //			ivMyads.setImageResource(R.drawable.bg_segment_sent);
 //			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
@@ -283,11 +290,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				this.onRefresh();
 			}
 			else{
+                adsCountValue = listDeleted.size();
 				adapter.setList(listDeleted);
 				adapter.notifyDataSetChanged();
 				lvGoodsList.invalidateViews();
 			}
-		}		
+		}
+
+        Tracker.getInstance().event(bxEvent).append(Key.ADSCOUNT, adsCountValue).end();
 
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {			
 			@Override
@@ -357,7 +367,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		case MSG_INVERIFY:
 		case MSG_DELETED:
 			hideProgress();
-			
+
+
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 			this.pv = (currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED));
 			//tracker
@@ -368,12 +379,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			} else {//ads count
 				Tracker.getInstance()
 				.pv(this.pv)
-				.append(Key.ADSCOUNT, gl.getData().size()+"")
+				.append(Key.ADSCOUNT, gl.getData().size() + "")
 				.end();
 			}
 			
 			if (gl == null || gl.getData().size() == 0) {
 				if(msg.what == MSG_MYPOST) {
+
 					if(null != listMyPost) listMyPost.clear();
 				}
 				else if(msg.what == MSG_INVERIFY) {
@@ -621,10 +633,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         int r_array_item_operate = R.array.item_operate_mypost;
         if (currentType == TYPE_MYPOST) {
             r_array_item_operate = R.array.item_operate_mypost;
+            Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
         } else if (currentType == TYPE_INVERIFY) {
             r_array_item_operate = R.array.item_operate_inverify;
+            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
         } else if (currentType == TYPE_DELETED) {
             r_array_item_operate = R.array.item_operate_deleted;
+            Tracker.getInstance().event(BxEvent.DELETED_MANAGE).end();
         }
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
@@ -633,6 +648,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                     switch (clickedIndex) {
                         case 0://刷新
                             doRefresh(0, adId);
+                            Tracker.getInstance().event(BxEvent.SENT_REFRESH).end();
                             break;
                         case 1://修改
                             GoodsDetail detail = listMyPost.get(pos);
@@ -640,10 +656,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             args.putSerializable("goodsDetail", detail);
                             args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
+                            Tracker.getInstance().event(BxEvent.SENT_EDIT).end();
                             break;
                         case 2://删除
                             showSimpleProgress();
                             new Thread(new MyMessageDeleteThread(adId)).start();
+                            Tracker.getInstance().event(BxEvent.SENT_DELETE).end();
                             break;
                     }
                 } else if (currentType == TYPE_INVERIFY) {
@@ -653,9 +671,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
+                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL).end();
                             break;
                         case 1://删除
                             showSimpleProgress();
+                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE).end();
                             new Thread(new MyMessageDeleteThread(adId)).start();
                             break;
                     }
@@ -664,10 +684,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://恢复
                             showSimpleProgress();
                             new Thread(new MyMessageRestoreThread(adId)).start();
+                            Tracker.getInstance().event(BxEvent.DELETED_RECOVER).end();
                             break;
                         case 1://彻底删除
                             showSimpleProgress();
                             new Thread(new MyMessageDeleteThread(adId)).start();
+                            Tracker.getInstance().event(BxEvent.DELETED_DELETE).end();
                             break;
                     }
                 }

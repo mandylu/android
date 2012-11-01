@@ -36,11 +36,7 @@ import com.quanleimu.entity.ImageList;
 import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
-import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
+import com.quanleimu.util.*;
 import com.quanleimu.view.FilterUtil;
 import com.quanleimu.view.FilterUtil.CustomizeItem;
 import com.quanleimu.view.FilterUtil.FilterSelectListener;
@@ -49,6 +45,7 @@ import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
@@ -340,7 +337,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 //			addParams.add("lat="+curLocation.fLat);
 //			addParams.add("lng="+curLocation.fLon);			
 //		}
-		
+
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
 			goodsListLoader.setNearby(true);
@@ -354,6 +351,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				int index = (int) arg3;//(int) (arg3 - lvGoodsList.getHeaderViewsCount());
 				if(index < 0 || index > goodsListLoader.getGoodsList().getData().size() - 1)
 					return;
+
+                    Tracker.getInstance().event(BxEvent.LISTING_SELECTEDROWINDEX)
+                            .append(Key.SELECTEDROWINDEX, index)
+                            .end();
 
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", goodsListLoader);
@@ -503,6 +504,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(goodsListLoader == null) break;
 			GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			goodsListLoader.setGoodsList(goodsList);
+
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
 				Message msg1 = Message.obtain();
 				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
@@ -534,6 +536,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 
 			hideProgress();
+
+            Tracker.getInstance().event(BxEvent.LISTING)
+                    .append(Key.SEARCHKEYWORD, searchContent)
+                    .append(filterParamHolder.getData())
+                    .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
+                    .end();
 			break;
 		case GoodsListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
@@ -581,6 +589,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				goodsListLoader.setHasMore(true);
 			}
+
+            Tracker.getInstance().event(BxEvent.LISTING_MORE)
+                    .append(Key.SEARCHKEYWORD, searchContent)
+                    .append(filterParamHolder.getData())
+                    .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
+                    .end();
 			
 			hideProgress();			
 			break;

@@ -18,7 +18,10 @@ import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.view.fragment.HomeFragment;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -64,8 +67,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
                         dialog.dismiss();
-                        String x = userProfile.nickName;
-
+                        Tracker.getInstance().event(BxEvent.EDITPROFILE_CANCEL).end();
                     }
                 });
         final AlertDialog dialog = builder.create();
@@ -77,7 +79,6 @@ public class EditUsernameDialogFragment extends DialogFragment {
                     @Override
                     public void onClick(View view) {
                         updateUsername();
-                        String x = userProfile.nickName;
                     }
                 });
 
@@ -107,15 +108,26 @@ public class EditUsernameDialogFragment extends DialogFragment {
                     if (!"0".equals(obj.getString("code"))) {
                         msg.what = HomeFragment.MSG_SHOW_TOAST;
                         msg.obj = obj.get("message");
+                        Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
+                                .append(Key.EDIT_PROFILE_STATUS, false)
+                                .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                                .end();
                     } else {
                         Util.clearData(getActivity(), "userProfile");
                         msg.what = HomeFragment.MSG_EDIT_USERNAME_SUCCESS;
+                        Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
+                                .append(Key.EDIT_PROFILE_STATUS, true)
+                                .end();
                     }
                     handler.sendMessage(msg);
                 } catch (JSONException e) {
                     msg.what = HomeFragment.MSG_SHOW_TOAST;
                     msg.obj = "请求失败";
                     handler.sendMessage(msg);
+                    Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
+                            .append(Key.EDIT_PROFILE_STATUS, false)
+                            .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                            .end();
                 }
 
             }
@@ -126,6 +138,10 @@ public class EditUsernameDialogFragment extends DialogFragment {
                 msg.what = HomeFragment.MSG_SHOW_TOAST;
                 msg.obj = "网络异常，请稍后再试";
                 handler.sendMessage(msg);
+                Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
+                        .append(Key.EDIT_PROFILE_STATUS, false)
+                        .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                        .end();
             }
         });
     }

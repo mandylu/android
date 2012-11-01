@@ -4,9 +4,11 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import com.quanleimu.util.*;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -58,18 +60,12 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ErrorHandler;
-import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.Helper;
-import com.quanleimu.util.TextUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
-import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 
 public class GoodDetailFragment extends BaseFragment implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
 
@@ -894,6 +890,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			bundle.putInt("type", 1);
 			bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 			pushFragment(new FeedbackFragment(), bundle);
+            trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
 			break;
 		case R.id.vad_buzz_btn:
 			if (isCurrentAdFromMobile())
@@ -943,7 +940,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
-			
+
+            trackerLogEvent(BxEvent.MYVIEWAD_REFRESH);
 			break;
 		}
 		case R.id.vad_btn_edit:{
@@ -952,6 +950,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			args.putSerializable("goodsDetail", detail);
 			args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
 			pushFragment(new PostGoodsFragment(), args);
+            trackerLogEvent(BxEvent.MYVIEWAD_EDIT);
 			break;
 		}
 		case R.id.vad_btn_delete:{
@@ -961,7 +960,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				@Override
 				public void onClick(DialogInterface dialog, int which) {
 					showSimpleProgress();
-					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();			
+					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+                    trackerLogEvent(BxEvent.MYVIEWAD_DELETE);
 				}
 			})
 			.setNegativeButton(
@@ -976,6 +976,27 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		}
 	}
+
+
+
+    /**
+     * add track log for MyViewad_Edit MyViewad_Refresh MyViewad_Delete MyViewad_Appeal
+     * @param event
+     */
+    private void trackerLogEvent(BxEvent event) {
+        String tmpCateName = detail.data.get("categoryEnglishName");
+        String secondCategoryName = tmpCateName != null ? tmpCateName : "empty categoryEnglishName";
+        String tmpCreatedTime = detail.data.get("createdTime");
+        long postedSeconds = -1;
+        if (tmpCreatedTime != null) {
+            postedSeconds = new Date().getTime() - new Long(tmpCateName);
+        }
+
+        Tracker.getInstance().event(event)
+                .append(Key.SECONDCATENAME, secondCategoryName)
+                .append(Key.POSTEDSECONDS, postedSeconds)
+                .end();
+    }
 	
 	private boolean galleryReturned = true;
 	

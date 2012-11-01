@@ -75,6 +75,12 @@ public class LogData {
 		this.map.put(keyName, valueString);
 		return this;
 	}
+
+    public LogData append(HashMap aMap)
+    {
+        this.map.putAll(map);
+        return this;
+    }
 	
 	public void end() {
 		if (!TrackConfig.getInstance().getLoggingFlag()) return;
