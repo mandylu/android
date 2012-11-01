@@ -258,6 +258,10 @@ public class SearchFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
+
+		if (searchContent.equals(""))
+			Tracker.getInstance().pv(PV.SEARCH).end();
+		
 		if (null == searchContent || searchContent.length() == 0) {
 			etSearch.postDelayed(new Runnable() {
 				@Override
@@ -291,8 +295,11 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		Log.d("searchfragment", searchContent);
-		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
+		Tracker.getInstance().
+		pv(PV.SEARCHRESULTCATEGORY)
+		.append(Key.SEARCHKEYWORD, searchContent)
+		.end();
+		
 		lvSearchHistory.setVisibility(View.GONE);
 		this.hideSoftKeyboard();
 		if (search)

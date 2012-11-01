@@ -3,6 +3,7 @@ package com.quanleimu.view.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -11,9 +12,12 @@ import android.widget.Toast;
 
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.LoginUtil;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
@@ -25,7 +29,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	
 	public String backPageName = "back";
 	public String categoryEnglishName = "";
-	
 	static public final String KEY_RETURN_CODE ="login_return_code";////the value should be int
 	
 	private boolean bingo;
@@ -39,18 +42,37 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 
 	public void onLoginFail(String message){
 		sendMessage(MSG_LOGINFAIL, message);
+		Tracker.getInstance()
+		.event(BxEvent.LOGIN_SUBMIT)
+		.append(Key.LOGIN_RESULT_STATUS, "0")
+		.append(Key.LOGIN_RESULT_FAIL_REASON, message)
+		.end();
+		Log.d("loginfragment","onLoginFail");
 	}
 	public void onLoginSucceed(String message){
 		sendMessage(MSG_LOGINSUCCESS, message);
+		Log.d("loginfragment","onLoginSucceed");
+		Tracker.getInstance()
+		.event(BxEvent.LOGIN_SUBMIT)
+		.append(Key.LOGIN_RESULT_STATUS, "1")
+		.append(Key.POSTCOUNT_BEFORELOGIN, QuanleimuApplication.getApplication().getListMyPost()==null?0:QuanleimuApplication.getApplication().getListMyPost().size())
+		.end();
 	}
 	public void onRegisterClicked(){
 		sendMessage(MSG_NEWREGISTERVIEW, null);
-
+		Tracker.getInstance().event(BxEvent.LOGIN_REGISTER).end();
 	}
 	public void onForgetClicked(){
+		Tracker.getInstance().event(BxEvent.LOGIN_FORGETPASSWORD).end();
 		sendMessage(MSG_FORGETPASSWORDVIEW, null);
 	}
 	
+	@Override
+	public boolean handleBack() {
+		Log.d("loginfragment","back");//2 times?
+		Tracker.getInstance().event(BxEvent.LOGIN_BACK).end();
+		return super.handleBack();
+	}
 	@Override
 	public void initTitle(TitleDef title){
 		if(null != backPageName)
