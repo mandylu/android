@@ -36,6 +36,7 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
@@ -325,6 +326,11 @@ public class SearchFragment extends BaseFragment {
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
 		case MSG_SEARCH_RESULT:
+
+			
+			int resultCatesCount = 0;
+			int totalAdsCount = 0;
+			int maxAdsCount = 0;
 			if (categoryResultCountList == null || categoryResultCountList.isEmpty())
 			{
 				noResultView.setVisibility(View.VISIBLE);
@@ -338,7 +344,21 @@ public class SearchFragment extends BaseFragment {
 				ResultListAdapter adapter = new ResultListAdapter(activity,
 						R.layout.item_categorysearch, categoryResultCountList);
 				lvSearchResultList.setAdapter(adapter);
+				
+				resultCatesCount = categoryResultCountList.size();
+				for (Pair<SecondStepCate, Integer> pair : categoryResultCountList)
+				{
+					totalAdsCount += pair.second;
+					maxAdsCount = Math.max(maxAdsCount, pair.second);
+				}
 			}
+			
+			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
+					.append(Key.SEARCHKEYWORD, searchContent)
+					.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
+					.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
+					.append(Key.MAXCATE_ADSCOUNT, ""+maxAdsCount).end();
+			
 			this.hideProgress();
 			break;
 		}
@@ -359,7 +379,7 @@ public class SearchFragment extends BaseFragment {
 			}
 			parameters.add("query="
 					+ URLEncoder.encode(SearchFragment.this.searchContent));
-//			parameters.add("timestamp="+new Date().getTime());
+		    parameters.add("cityEnglishName=" + URLEncoder.encode(QuanleimuApplication.getApplication().getCityEnglishName()));
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
 				String json = Communication.getDataByUrl(apiUrl, false);

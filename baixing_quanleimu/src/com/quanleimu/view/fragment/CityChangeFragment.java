@@ -30,6 +30,7 @@ import com.quanleimu.entity.CityDetail;
 import com.quanleimu.jsonutil.LocateJsonData;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.Tracker;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
@@ -373,8 +374,12 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		
 			if(null == location || !location.geocoded) {
 				tvGPSCityName.setText("定位失败");
+				Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "1").end();
 				return;
 			}
+			Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "0").end();
+			
+			
 
 			if(null == tvGPSCityName) return;
 			tvGPSCityName.setText(location.cityName);
@@ -494,6 +499,11 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			Helper.saveDataToLocate(getActivity(), "cityName", city.getName());		
 
 			this.finishFragment();
+			
+			String searchText = searchField.getText().toString().trim();
+			if (searchText.length() > 0)
+				Tracker.getInstance().event(BxEvent.CITY_SEARCH).append(Key.SEARCHKEYWORD, searchText).end();
+			
 		}
 	}
 	

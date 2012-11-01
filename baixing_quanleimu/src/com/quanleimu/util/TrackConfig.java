@@ -75,7 +75,7 @@ public class TrackConfig {
 			BLOCK("block","区块（GPS定位、热门城市、其他城市、搜索）"),
 			GPS_RESULT("GPS_result","GPS定位城市结果成功失败"),
 			CATEGORYCOUNT("categoryCount","类目数"),
-			MAINCATE_ADSCOUNT("mainCate_adsCount","最大类目条数"),
+			MAXCATE_ADSCOUNT("maxCate_adsCount","最大类目条数"),
 //			TOTAL_ADSCOUNT("total_adsCount","总条数"),
 			FILTER("filter","筛选条件"),
 			RESULTCATESCOUNT("resultCatesCount","结果类目数"),
