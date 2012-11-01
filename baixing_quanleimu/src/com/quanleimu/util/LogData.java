@@ -30,6 +30,20 @@ public class LogData {
 		this.map.put(keyName, value+"");
 		return this;
 	}
+
+    public LogData append(Key key, boolean value)
+    {
+        String keyName = key.getName();
+        this.map.put(keyName, value ? "1" : "0");
+        return this;
+    }
+
+    public LogData append(Key key, long value)
+    {
+        String keyName = key.getName();
+        this.map.put(keyName, value+"");
+        return this;
+    }
 	
 	public LogData append(Key key, String value)
 	{
