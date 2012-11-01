@@ -28,6 +28,7 @@ import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CatMainFragment;
@@ -278,6 +279,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	@Override
 	protected void onPause() {
 
+		Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
 		unregisterMsgListener();
 		
 		super.onPause();
@@ -290,6 +292,8 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	
 	@Override
 	protected void onResume() {
+		Tracker.getInstance().event(BxEvent.APP_RESUME).end();
+		
 //		Profiler.markStart("mainresume");
 		bundle.putString("backPageName", "");
 		super.onResume();
@@ -318,7 +322,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	
 	@Override
 	protected void onStop() {
-		// TODO Auto-generated method stub
+		Tracker.getInstance().event(BxEvent.APP_STOP).end();
 		super.onStop();
 	}
 	
@@ -505,6 +509,12 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			}
 		}
 //		Profiler.markEnd("maincreate");
+	}
+	
+	@Override
+	protected void onStart() {
+		Tracker.getInstance().event(BxEvent.APP_START).end();
+		super.onStart();
 	}
 	
 	private void showDataFromAlbamOrPhoto(){
