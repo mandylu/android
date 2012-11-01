@@ -8,7 +8,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,8 +18,6 @@ import android.widget.BaseAdapter;
 import android.widget.ListView;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.SessionListAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
@@ -30,6 +27,9 @@ import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.widget.PullToRefreshListView;
@@ -240,6 +240,8 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 //					findViewById(R.id.session_loading).setVisibility(View.GONE);
 					List<ChatSession> newSessions = ChatSession.fromJson(serverMessage);
 					sendMessage(MSG_NEW_SESSION, newSessions);
+					//tracker
+					Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).end();
 				}
 			}
 			
@@ -247,6 +249,8 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 			public void onException(Exception ex) {
 				//Ignor this exception.
 				sendMessage(MSG_NEW_SESSION_FAIL, null);
+				//tracker
+				Tracker.getInstance().pv(PV.BUZZLISTING).end();
 //				if (getActivity() != null)
 //				{
 //					findViewById(R.id.session_loading).setVisibility(View.GONE);
