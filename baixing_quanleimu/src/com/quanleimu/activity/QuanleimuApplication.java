@@ -1,6 +1,7 @@
 package com.quanleimu.activity;
 
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -39,14 +40,14 @@ import com.quanleimu.util.Util;
 import com.quanleimu.util.BXDatabaseHelper;
 import android.util.Log;
 import android.telephony.TelephonyManager;
-public class QuanleimuApplication extends Application implements LocationService.BXLocationServiceListener{
+public class QuanleimuApplication implements LocationService.BXLocationServiceListener{
 
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
 	public static String version="";
 	public static String channelId;
-	public static Context context;	
+	public static WeakReference<Context> context;	
 	private static LazyImageLoader lazyImageLoader;
 	public static List<String> list;//list of temporarily cache files
 	public static List<HotList> listHot;
@@ -137,7 +138,9 @@ public class QuanleimuApplication extends Application implements LocationService
 		QuanleimuApplication.textMode = tMode;
 		
 		if(null == preferences){
-			preferences = mDemoApp.getApplicationContext().getSharedPreferences("QuanleimuPreferences", MODE_PRIVATE);
+			preferences = context.get() != null ? 
+					context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE)
+					: null;
 		} 
 		
 		SharedPreferences.Editor editor = preferences.edit();
@@ -405,8 +408,9 @@ public class QuanleimuApplication extends Application implements LocationService
 	boolean location_updated = false;
 
 	public BXLocation getCurrentPosition(boolean bRealLocality) {
+		if(context.get() == null) return null;
 		if(null == location){
-			location = (BXLocation)Util.loadDataFromLocate(context, "location_data");
+			location = (BXLocation)Util.loadDataFromLocate(context.get(), "location_data");
 			
 			if(null == location){
 				location = new BXLocation(true);
@@ -426,6 +430,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	
 	private List<onLocationFetchedListener> locationFetchListeners = new ArrayList<onLocationFetchedListener>();
 	public boolean addLocationListener(final onLocationFetchedListener listener){
+		if(context.get() == null) return false;
 		if(null == listener || locationFetchListeners.contains(listener))
 			return false;
 		
@@ -434,7 +439,7 @@ public class QuanleimuApplication extends Application implements LocationService
 			//listener.onLocationFetched(null);
 			locationFetchListeners.add(listener);
 			
-			LocationService.getInstance().addLocationListener(context, this);
+			LocationService.getInstance().addLocationListener(context.get(), this);
 			
 			return false;
 		}		
@@ -453,6 +458,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	}
 
 	public void setLocation(BXLocation location_) {
+		if(context.get() == null) return;
 		if(null == location)
 			getCurrentPosition(false);
 		
@@ -473,7 +479,7 @@ public class QuanleimuApplication extends Application implements LocationService
 				}
 			}
 			
-			Util.saveDataToLocate(context, "location_data", location);
+			Util.saveDataToLocate(context.get(), "location_data", location);
 
 			location_updated = true;
 		}
@@ -519,13 +525,29 @@ public class QuanleimuApplication extends Application implements LocationService
 
 	static public QuanleimuApplication getApplication(){
 		if(null == preferences){
-			preferences = mDemoApp.getApplicationContext().getSharedPreferences("QuanleimuPreferences", MODE_PRIVATE);
+			preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
 			textMode = preferences.getBoolean("isTextMode", false);
 		}
-		
+		if(mDemoApp == null){
+			mDemoApp = new QuanleimuApplication();
+			if(context != null && context.get() != null){
+				dbManager = new BXDatabaseHelper(context.get(), "network.db", null, 1);
+				try{
+					PackageManager packageManager = QuanleimuApplication.getApplication().getApplicationContext().getPackageManager();
+					ApplicationInfo ai = packageManager.getApplicationInfo(context.get().getPackageName(), PackageManager.GET_META_DATA);
+					channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		}
 		return mDemoApp;
 	}
-	static QuanleimuApplication mDemoApp;
+	
+	public QuanleimuApplication(){
+		
+	}
+	static QuanleimuApplication mDemoApp = null;
 
 	
 //	protected ViewStack viewStack;
@@ -559,6 +581,12 @@ public class QuanleimuApplication extends Application implements LocationService
 		}
 		db.close();		
 	}
+	
+	
+	public Context getApplicationContext(){
+		return (QuanleimuApplication.context == null || QuanleimuApplication.context.get() == null) ? 
+				null : QuanleimuApplication.context.get();
+	}
 
 	// 百度MapAPI的管理类
 	//BMapManager mBMapMan = null;
@@ -574,7 +602,7 @@ public class QuanleimuApplication extends Application implements LocationService
 	public static class MyGeneralListener implements MKGeneralListener {
 		@Override
 		public void onGetNetworkState(int iError) {
-			Toast.makeText(QuanleimuApplication.mDemoApp.getApplicationContext(),
+			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(),
 					"您的网络出错啦！", Toast.LENGTH_LONG).show();
 		}
 
@@ -592,34 +620,34 @@ public class QuanleimuApplication extends Application implements LocationService
 	}
 //	static public com.tencent.mm.sdk.openapi.IWXAPI wxapi;
 
-	@Override
-	public void onCreate() {
-//		Profiler.markStart("appcreate");
-		mDemoApp = this;
-		
-//		mBMapMan = new BMapManager(this);
-//		mBMapMan.init(this.mStrKey, new MyGeneralListener());
-
-		context = this.getApplicationContext();
-//		ProfileUtil.markStart("imgLoaderCreate");
-//		lazyImageLoader = new LazyImageLoader();
-//		ProfileUtil.markEnd("imgLoaderCreate");
-		
-		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
-		
-//		LocationService.getInstance().start(context, this);
-
-		try{
-			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
-			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-			channelId = (String)ai.metaData.get("UMENG_CHANNEL");
-		}catch(Exception e){
-			e.printStackTrace();
-		}		
-		
-		super.onCreate();
-//		Profiler.markEnd("appcreate");
-	}
+//	@Override
+//	public void onCreate() {
+////		Profiler.markStart("appcreate");
+//		mDemoApp = this;
+//		
+////		mBMapMan = new BMapManager(this);
+////		mBMapMan.init(this.mStrKey, new MyGeneralListener());
+//
+//		context = this.getApplicationContext();
+////		ProfileUtil.markStart("imgLoaderCreate");
+////		lazyImageLoader = new LazyImageLoader();
+////		ProfileUtil.markEnd("imgLoaderCreate");
+//		
+//		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
+//		
+////		LocationService.getInstance().start(context, this);
+//
+//		try{
+//			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
+//			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
+//			channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+//		}catch(Exception e){
+//			e.printStackTrace();
+//		}		
+//		
+//		super.onCreate();
+////		Profiler.markEnd("appcreate");
+//	}
 	
 //	static public void sendWXRequest(WXMediaMessage msg){
 //		SendMessageToWX.Req req = new SendMessageToWX.Req();
@@ -629,17 +657,17 @@ public class QuanleimuApplication extends Application implements LocationService
 ////		b = false;
 //	}
 
-	@Override
+//	@Override
 	// 建议在您app的退出之前调用mapadpi的destroy()函数，避免重复初始化带来的时间消耗
-	public void onTerminate() {
-		LocationService.getInstance().stop();
-		
-//		if (mBMapMan != null) {
-//			mBMapMan.destroy();
-//			mBMapMan = null;
-//		}
-		super.onTerminate();
-	}
+//	public void onTerminate() {
+//		LocationService.getInstance().stop();
+//		
+////		if (mBMapMan != null) {
+////			mBMapMan.destroy();
+////			mBMapMan = null;
+////		}
+//		super.onTerminate();
+//	}
 
 	@Override
 	public void onLocationUpdated(Location location_) {

@@ -49,8 +49,8 @@ public class Communication implements Comparator<String> {
 	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
 
 	 public static boolean isWifiConnection() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context
-				.getSystemService(Context.CONNECTIVITY_SERVICE);
+		ConnectivityManager connectivityManager = 
+				(ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null
 				&& activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -60,7 +60,7 @@ public class Communication implements Comparator<String> {
 	}
 
 	public static boolean isNetworkActive() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.context
+		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null) {
@@ -91,8 +91,10 @@ public class Communication implements Comparator<String> {
 		list.add("api=mobile.trackdata");//api name
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("uid=" + Util.getMyId(QuanleimuApplication.context) );
-		list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
+		list.add("uid=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
+		if(QuanleimuApplication.getApplication() != null){
+			list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
+		}
 		
 		Collections.sort(list, COMPARATOR);
 
@@ -308,7 +310,7 @@ public class Communication implements Comparator<String> {
 	};
 	
 	private static void registerDevice(HttpClient httpClient){
-		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.context, "user");
+		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
 		if(currentUser != null) return;
 		
 		String apiName = "user_autoregister";
@@ -339,7 +341,7 @@ public class Communication implements Comparator<String> {
 //					user.
 //					user.setPhone(userObj.getString("mobile"));
 					
-					Util.saveDataToLocate(QuanleimuApplication.context, "user", user);
+					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
 				} 
 				return;
 			}
@@ -361,7 +363,7 @@ public class Communication implements Comparator<String> {
 		httpPost.addHeader("Accept-Encoding", "gzip");
 
 		HttpResponse response = null;
-
+		android.util.Log.d("current url:  ", "current url is:  " + url);
 		try {
 			response = httpClient.execute(httpPost);
 		} catch (IllegalStateException e) {

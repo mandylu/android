@@ -352,9 +352,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				QuanleimuApplication.listHot = tempListHot;
 				
 				//save to context data
-				QuanleimuApplication.context.deleteFile("hotlist.json");
+				QuanleimuApplication.getApplication().getApplicationContext().deleteFile("hotlist.json");
 				try {
-					FileOutputStream fo = QuanleimuApplication.context.openFileOutput("hotlist.json", Context.MODE_PRIVATE);
+					FileOutputStream fo = 
+							QuanleimuApplication.getApplication().getApplicationContext().openFileOutput("hotlist.json", Context.MODE_PRIVATE);
 					if(fo != null){
 						BufferedOutputStream outFileStream = new BufferedOutputStream(fo);
 						if(outFileStream != null){
@@ -376,7 +377,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			break;
 		case 4:
 			hideProgress();
-			 Toast.makeText(QuanleimuApplication.context, "网络连接失败，请检查设置！", 3).show();
+			 Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "网络连接失败，请检查设置！", 3).show();
 			//tvInfo.setVisibility(View.VISIBLE);
 			 break;
         case MSG_GETPERSONALPROFILE:
@@ -404,7 +405,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			break;
         case MSG_SHOW_TOAST:
             hideProgress();
-            Toast.makeText(QuanleimuApplication.context, msg.obj.toString(), 1).show();
+            Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), msg.obj.toString(), 1).show();
             break;
         case MSG_SHOW_PROGRESS:
             showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);

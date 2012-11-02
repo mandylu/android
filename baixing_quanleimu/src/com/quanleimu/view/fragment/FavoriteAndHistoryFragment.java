@@ -237,7 +237,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     tempGoodsList.setData(tmp);
 
                     QuanleimuApplication.getApplication().setListMyStore(favList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", favList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
                     adapter.setList(tempGoodsList.getData());
                     glLoader.setGoodsList(tempGoodsList);
                     glLoader.setHasMore(tempGoodsList.getData().size() < favList.size());
@@ -280,7 +280,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     tempGoodsList.setData(tmp);
 
                     QuanleimuApplication.getApplication().setListLookHistory(historyList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listLookHistory", historyList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", historyList);
                     adapter.setList(tempGoodsList.getData());
                     glLoader.setGoodsList(tempGoodsList);
                     glLoader.setHasMore(tempGoodsList.getData().size() < historyList.size());
@@ -298,14 +298,14 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     if (goodsList != tempGoodsList.getData())
                         tempGoodsList.getData().remove(pos);
                     //QuanleimuApplication.getApplication().setListMyStore(goodsList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", goodsList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", goodsList);
                 } else {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListLookHistory();
                     goodsList.remove(pos);
                     if (goodsList != tempGoodsList.getData())
                         tempGoodsList.getData().remove(pos);
                     //QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listLookHistory", goodsList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", goodsList);
                 }
 
                 adapter.setList(tempGoodsList.getData());
@@ -318,10 +318,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 List<GoodsDetail> goodsList = new ArrayList<GoodsDetail>();
                 if (isFav) {
                     QuanleimuApplication.getApplication().setListMyStore(new ArrayList<GoodsDetail>(goodsList));
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", new ArrayList<GoodsDetail>(goodsList));
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", new ArrayList<GoodsDetail>(goodsList));
                 } else {
                     QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listLookHistory", new ArrayList<GoodsDetail>(goodsList));
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", new ArrayList<GoodsDetail>(goodsList));
                 }
 
                 glLoader.getGoodsList().setData(goodsList);
@@ -492,7 +492,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     }
 
                     QuanleimuApplication.getApplication().setListMyStore(favList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", favList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
 
                     adapter.setList(tempGoodsList.getData());
                     adapter.notifyDataSetChanged();
@@ -531,7 +531,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     }
 
                     QuanleimuApplication.getApplication().setListLookHistory(historyList);
-                    Helper.saveDataToLocate(QuanleimuApplication.context, "listLookHistory", historyList);
+                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", historyList);
 
                     adapter.setList(tempGoodsList.getData());
                     adapter.notifyDataSetChanged();

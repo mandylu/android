@@ -98,7 +98,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		this.setContentView(R.layout.baidumaplayout);
 		if (mBMapMan == null) 
 		{
-			mBMapMan = new BMapManager(QuanleimuApplication.getApplication());
+			mBMapMan = new BMapManager(QuanleimuApplication.getApplication().getApplicationContext());
 			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
 		}
 		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {

@@ -1,5 +1,6 @@
 package com.quanleimu.activity;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -56,7 +57,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	public QuanleimuMainActivity(){
 		super();
 		
-		QuanleimuApplication.getApplication().setErrorHandler(this);
+		
 	}
 	
 	public void onSwitchToTab(ETAB_TYPE tabType){
@@ -233,7 +234,8 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				} catch (Exception e) {}
 		    	Log.d("quanleimu", "exit");
 		    	dialog.dismiss();
-		        System.exit(0);
+		    	QuanleimuMainActivity.this.finish();
+//		        System.exit(0);
 //		            		QuanleimuMainActivity.this.finish();
 		    }
 		});
@@ -487,6 +489,8 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
+		QuanleimuApplication.context = new WeakReference<Context>(this);
+		QuanleimuApplication.getApplication().setErrorHandler(this);
 		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);
 		

@@ -33,7 +33,7 @@ public class LazyImageLoader
 	
 	
 	
-	private ImageManager imgManger = new ImageManager(QuanleimuApplication.context);
+	private ImageManager imgManger = new ImageManager(QuanleimuApplication.getApplication().getApplicationContext());
 	
 	private Vector<String> urlDequeDiskIO = new Vector<String>();
 	private DiskIOImageThread diskIOImgThread = new DiskIOImageThread();

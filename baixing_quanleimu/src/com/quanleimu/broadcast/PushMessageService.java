@@ -1,6 +1,8 @@
 package com.quanleimu.broadcast;
 
 
+import java.lang.ref.WeakReference;
+
 import android.app.Service;
 import android.content.BroadcastReceiver;
 import android.content.Context;
@@ -13,6 +15,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.broadcast.push.PushDispatcher;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.util.Communication;
@@ -72,6 +75,9 @@ public class PushMessageService extends Service
 	{
 		TraceUtil.trace(TAG, "service create start");
 		super.onCreate();
+		if(QuanleimuApplication.context == null){
+			QuanleimuApplication.context = new WeakReference<Context>(this);
+		}
 		HandlerThread thread = new HandlerThread(SERVICE_THREAD_NAME);
 		thread.start();
         sServiceLooper = thread.getLooper();

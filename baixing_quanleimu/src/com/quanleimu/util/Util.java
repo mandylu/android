@@ -1337,8 +1337,8 @@ public class Util {
      */
     public static void logout()
 	{
-        Util.clearData(QuanleimuApplication.getApplication(), "user");
-        Util.clearData(QuanleimuApplication.getApplication(), "userProfile");
+        Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "user");
+        Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "userProfile");
 		currentUserId = null;
 	}
 
@@ -1347,7 +1347,7 @@ public class Util {
      * @return 返回当前 UserBean user，未登录情况下返回 null
      */
     public static UserBean getCurrentUser() {
-        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication(), "user");
+        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
         return user;
     }
     

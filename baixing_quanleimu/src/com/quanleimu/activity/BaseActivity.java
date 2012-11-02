@@ -50,7 +50,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
-	protected QuanleimuApplication myApp; 
+//	protected QuanleimuApplication myApp; 
 //	protected ImageView ivHomePage,ivPostGoods,ivMyCenter;
 	protected View v = null; 
 	protected ProgressDialog pd;
@@ -70,12 +70,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     public void onSaveInstanceState(Bundle savedInstanceState) {
 		Log.d("baseactivity", "save");
 		LocationService.getInstance().stop();
-		savedInstanceState.putString("cityEnglishName", myApp.getCityEnglishName());
-		savedInstanceState.putString("cityName", myApp.getCityName());
+		savedInstanceState.putString("cityEnglishName", QuanleimuApplication.getApplication().getCityEnglishName());
+		savedInstanceState.putString("cityName", QuanleimuApplication.getApplication().getCityName());
 		
 		ArrayList<String>strDetails = new ArrayList<String>();
-		for(int i = 0; i < myApp.getListCityDetails().size(); ++ i){
-			CityDetail detail = myApp.getListCityDetails().get(i);
+		for(int i = 0; i < QuanleimuApplication.getApplication().getListCityDetails().size(); ++ i){
+			CityDetail detail = QuanleimuApplication.getApplication().getListCityDetails().get(i);
 			String tstrDetail = "englishName=" + detail.getEnglishName()
 					+ ",id=" + detail.getId()
 					+ ",name=" + detail.getName()
@@ -95,8 +95,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     	Log.d("baseactivity", "restore");
 //    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
     	super.onRestoreInstanceState(savedInstanceState);
-		myApp.setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
-		myApp.setCityName(savedInstanceState.getString("cityName"));
+    	QuanleimuApplication.getApplication().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
+    	QuanleimuApplication.getApplication().setCityName(savedInstanceState.getString("cityName"));
 		
 		ArrayList<String>listDetails = savedInstanceState.getStringArrayList("cityDetails");
 		
@@ -122,7 +122,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			}
 			cityDetails.add(detail);
 		}
-		myApp.setListCityDetails(cityDetails);
+		QuanleimuApplication.getApplication().setListCityDetails(cityDetails);
 		
     }
 	
@@ -258,7 +258,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		}
 //		v =findViewById(R.id.linearBottom);
 		MobclickAgent.onError(this);
-		myApp = (QuanleimuApplication) getApplication();
+//		myApp = (QuanleimuApplication) getApplication();
 		//LoadImage = new LoadImage();
 		//判断Intent和Bundle
 		intent = getIntent();

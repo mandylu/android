@@ -38,7 +38,7 @@ public class Tracker {
 	//constructor
 	private Tracker()
 	{
-		context = QuanleimuApplication.context;
+		context = QuanleimuApplication.getApplication().getApplicationContext();
 		dataList = new ArrayList<String>();
 		load();
 	}

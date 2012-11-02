@@ -883,9 +883,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				myStore.add(0, detail);
 			}		
 			QuanleimuApplication.getApplication().setListMyStore(myStore);
-			Helper.saveDataToLocate(QuanleimuApplication.context, "listMyStore", myStore);
+			Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", myStore);
 			updateTitleBar(getTitleDef());
-			Toast.makeText(QuanleimuApplication.context, "收藏成功", 3).show();
+			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else /*if (0 == btnStatus)*/ {
 //			btnStatus = -1;

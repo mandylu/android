@@ -2,6 +2,7 @@ package com.quanleimu.broadcast;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import org.json.JSONObject;
@@ -110,7 +111,6 @@ public class BXNotificationService extends Service {
 			if(timeObj != null){
 				list.add("pushCode=" + URLEncoder.encode((String)timeObj));
 			}
-
 			String url = Communication.getApiUrl(apiName, list);
 			if(url.contains("version=")){
 				int index = url.indexOf("version=");
@@ -221,6 +221,10 @@ public class BXNotificationService extends Service {
 
 	@Override
 	public void onCreate() {
+		super.onCreate();
+		if(QuanleimuApplication.context == null){
+			QuanleimuApplication.context = new WeakReference<Context>(this);
+		}
 		networkStateReceiver = new BroadcastReceiver() {
 
 			@Override

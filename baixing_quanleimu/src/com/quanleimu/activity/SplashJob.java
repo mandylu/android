@@ -189,7 +189,7 @@ public class SplashJob {
 //					if (allCates == null) {
 //					} else {
                     //todo 不做保护，拿不到类目的情况时有发生，需要处理
-						parentActivity.myApp.setListFirst(allCates.getChildren());
+					QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
 //					}
 				}
 			}
@@ -217,20 +217,20 @@ public class SplashJob {
 					if (cityList == null || cityList.getListDetails() == null
 							|| cityList.getListDetails().size() == 0) {
 					} else {
-						parentActivity.myApp.setListCityDetails(cityList.getListDetails());
+						QuanleimuApplication.getApplication().setListCityDetails(cityList.getListDetails());
 						
 						//update current city name
 						String chengshiName = (String) Helper.loadDataFromLocate(parentActivity, "cityName");
 						if (chengshiName == null || chengshiName.equals("")) {
 						} else {
-							parentActivity.myApp.setCityName(chengshiName);
+							QuanleimuApplication.getApplication().setCityName(chengshiName);
 							
-							for(int i=0;i<parentActivity.myApp.getListCityDetails().size();i++)
+							for(int i=0;i< QuanleimuApplication.getApplication().getListCityDetails().size();i++)
 							{
-								if(chengshiName.equals(parentActivity.myApp.getListCityDetails().get(i).getName()))
+								if(chengshiName.equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
 								{
-									String cityName1 = parentActivity.myApp.getListCityDetails().get(i).getEnglishName();
-									parentActivity.myApp.setCityEnglishName(cityName1);
+									String cityName1 = QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName();
+									QuanleimuApplication.getApplication().setCityEnglishName(cityName1);
 									break;
 								}
 							}
@@ -264,7 +264,7 @@ public class SplashJob {
 			{
 				listRemark = null;
 			}
-			parentActivity.myApp.setListRemark(listRemark);
+			QuanleimuApplication.getApplication().setListRemark(listRemark);
 
 			// 获取我的浏览历史以及我的收藏
 			Object objLookHistory = Helper.loadDataFromLocate(parentActivity, "listLookHistory");
@@ -277,7 +277,7 @@ public class SplashJob {
 			{
 				listLookHistory = null;
 			}
-			parentActivity.myApp.setListLookHistory(listLookHistory);
+			QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
 
 			Object objStore = Helper.loadDataFromLocate(parentActivity, "listMyStore");
 			List<GoodsDetail> listMyStore;
@@ -289,11 +289,11 @@ public class SplashJob {
 			{
 				listMyStore = null;
 			}
-			parentActivity.myApp.setListMyStore(listMyStore);
+			QuanleimuApplication.getApplication().setListMyStore(listMyStore);
 			
 			Object personalMark = Helper.loadDataFromLocate(parentActivity, "personMark");
 			if(personalMark != null){
-				parentActivity.myApp.setPersonMark((String)personalMark);
+				QuanleimuApplication.getApplication().setPersonMark((String)personalMark);
 			}
 			myHandler.sendEmptyMessage(2);
 		}

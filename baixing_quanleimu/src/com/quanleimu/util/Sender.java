@@ -30,7 +30,7 @@ public class Sender implements Runnable{
 	}
 	//constructor
 	private Sender() {
-		context = QuanleimuApplication.context;
+		context = QuanleimuApplication.getApplication().getApplicationContext();
 		queue = new ArrayList<ArrayList<String>>();
 		startThread();
 	}
@@ -41,6 +41,7 @@ public class Sender implements Runnable{
 	
 	public void notifyNetworkReady()
 	{
+		
 		synchronized (sendMutex) {
 			this.sendMutex.notifyAll();
 		}
