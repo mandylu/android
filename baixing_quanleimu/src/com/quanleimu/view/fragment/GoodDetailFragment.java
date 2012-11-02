@@ -761,7 +761,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				final int splitIndex = meta.indexOf(" ");
 				if (splitIndex != -1)
 				{
-					extralInfo.append(meta.substring(splitIndex)).append(",");
+					extralInfo.append(meta.substring(splitIndex).trim()).append(",");
 				}
 			}
 		}
@@ -892,10 +892,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
-	@Override
-	public void handleRightAction(){
-		handleStoreBtnClicked();
-	}
+//	@Override
+//	public void handleRightAction(){
+//		handleStoreBtnClicked();
+//	}
 	
 	class ManagerAlertDialog extends AlertDialog{
 		public ManagerAlertDialog(Context context, int theme){
