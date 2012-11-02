@@ -4,8 +4,7 @@
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
-	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/com.quanleimu.activity.QuanleimuMainActivity"/>
-	<classpathentry kind="lib" path="/Users/wyhw/android-sdk-macosx/tools/lib/ddmlib.jar"/>
-	<classpathentry kind="lib" path="/Users/wyhw/android_baixing/trunk/com.quanleimu.test/libs/junit.jar"/>
+	<classpathentry combineaccessrules="false" exported="true" kind="src" path="/android_baixing"/>
+	<classpathentry kind="lib" path="~/android-sdk-macosx/tools/lib/ddmlib.jar"/>s
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
