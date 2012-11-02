@@ -480,6 +480,10 @@ public class Communication implements Comparator<String> {
 				url.substring(0, url.indexOf("/?") + 2));
 		StringEntity se;
 		if (isGzipped) {
+			//datasize字段统计字节数
+			url += "&datasize=";
+			url += GzipUtil.compress(url.substring(url.indexOf("/?") + 2)).getBytes().length;
+			
 			se = new StringEntity(GzipUtil.compress(url.substring(url.indexOf("/?") + 2)));
 			httpPost.setEntity(se);
 			se.setContentType("application/zip");//application/zip
@@ -710,10 +714,9 @@ public class Communication implements Comparator<String> {
 		url += jsonStr;
 		
 		try {
-			System.out.println(Communication.getDataByGzipUrl(url, true));
-			Log.d("sender", "try sending");
+//			Log.d("sender", "try sending");
 			String result = Communication.getDataByGzipUrl(url, true);
-			Log.d("sender", result);
+//			Log.d("sender", result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");
 			if (code == 0)
