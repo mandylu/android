@@ -1762,7 +1762,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		String latV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
 		String lonV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-		if(latV != null && !latV.equals("false") && !latV.equals("") && lonV != null && !lonV.equals("false") && !lonV.equals(""))
+		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
 		{
 			final double lat = Double.valueOf(latV);
 			final double lon = Double.valueOf(lonV);
