@@ -22,7 +22,7 @@
                 android:cursorVisible="true"
                 android:focusableInTouchMode="true"
                 android:gravity="top"
-                android:hint="您的反馈，将令我们做得更好"
+                android:hint="请输入反馈，我们将会为您做的更好"
                 android:marqueeRepeatLimit="marquee_forever"
                 android:minLines="6"
                 android:typeface="monospace" >
@@ -36,7 +36,7 @@
                 android:layout_alignRight="@+id/etOpinion"
                 android:layout_below="@+id/etOpinion"
                 android:ems="10"
-                android:hint="请留下您的联系方式"
+                android:hint="留下手机号，以便我们给您回复"
                 android:singleLine="true" />
         </RelativeLayout>
     </ScrollView>
