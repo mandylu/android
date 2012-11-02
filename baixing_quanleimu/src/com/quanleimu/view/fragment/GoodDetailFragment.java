@@ -474,12 +474,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
 							mListLoader.setHasMore(true);
-							
+							notifyPageDataChange(true);
 							break;
 						case GoodsListLoader.MSG_NO_MORE:					
 							onNoMore();
 							
 							mListLoader.setHasMore(false);
+							notifyPageDataChange(false);
 							
 							break;
 						case GoodsListLoader.MSG_FINISH_GET_MORE:	
@@ -495,6 +496,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								onNoMore();
 								
 								mListLoader.setHasMore(false);
+								notifyPageDataChange(false);
 							} else {
 								List<GoodsDetail> listCommonGoods =  goodsList1.getData();
 								for(int i=0;i<listCommonGoods.size();i++)
@@ -504,7 +506,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								//QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
 								
 								mListLoader.setHasMore(true);
-								
+								notifyPageDataChange(true);
 								onGotMore();
 							}
 							break;
@@ -556,6 +558,39 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private boolean isValidMessage()
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
+	
+	private void notifyPageDataChange(boolean hasMore)
+	{
+		PagerAdapter adapter = getContentPageAdapter();
+		if (adapter != null)
+		{
+			adapter.notifyDataSetChanged();
+		}
+		View rootView = getView();
+		if (rootView == null)
+		{
+			return;
+		}
+		
+		View page = loadingMorePage.get();
+		final ViewPager vp = (ViewPager) rootView.findViewById(R.id.svDetail);
+		if (!hasMore && page != null && vp != null)
+		{
+			vp.removeView(page);
+		}
+	}
+	
+	private PagerAdapter getContentPageAdapter()
+	{
+		View root = getView(); 
+		if (root == null)
+		{
+			return null;
+		}
+		
+		final ViewPager vp = (ViewPager) root.findViewById(R.id.svDetail);
+		return vp == null ? null : vp.getAdapter();
 	}
 	
 	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
