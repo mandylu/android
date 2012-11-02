@@ -1,6 +1,7 @@
 package com.quanleimu.activity.test;
 
 import java.io.File;
+import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -9,6 +10,7 @@ import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.utils.SleepUtils;
+import org.athrun.android.framework.utils.ViewFinder;
 import org.athrun.android.framework.viewelement.AbsListViewElement;
 import org.athrun.android.framework.viewelement.IViewElement;
 import org.athrun.android.framework.viewelement.ScrollViewElement;
@@ -17,6 +19,7 @@ import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 
 import android.util.Log;
+import android.widget.TextView;
 import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 public class BxBaseTestCase extends AthrunTestCase {
@@ -28,7 +31,16 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
 	public static final String CATEGROY_GRIDVIEW_NAME_ID = "itemtext";
 	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
+	public static final String TAB_ID_HOME = "ivHomePage";
+	public static final String TAB_ID_HOME_V3 = "tab_text_1";
+	public static final String TAB_ID_HOME_TEXT = "浏览信息";
+	public static final String TAB_ID_POST = "right_btn_txt";
+	public static final String TAB_ID_POST_TEXT = "发布";
+	public static final String TAB_ID_MY = "ivMyCenter";
+	public static final String TAB_ID_MY_V3 = "tab_text_2";
+	public static final String TAB_ID_MY_TEXT = "用户中心";
 	//Home ID
+	public static final String HOME_APP_NAME_ID = "title_label_app_name";
 	public static final String HOME_FIRST_RUN_ID = "topguide";
 	public static final String HOME_FIRST_RUN_ID_V3 = "etSearchCity";
 	public static final String HOME_CATEGORY_VIEWLIST_ID = "cateSelection";
@@ -38,14 +50,6 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String HOME_BACK_BUTTON_TEXT = "否";
 
 	public static final String HOME_MARK_TEXTS = "浏览信息,物品交易,全职招聘,求职简历";
-	public static final String TAB_ID_HOME = "ivHomePage";
-	public static final String TAB_ID_HOME_V3 = "tab_text_1";
-	public static final String TAB_ID_HOME_TEXT = "浏览信息";
-	public static final String TAB_ID_POST = "right_btn_txt";
-	public static final String TAB_ID_POST_TEXT = "发布";
-	public static final String TAB_ID_MY = "ivMyCenter";
-	public static final String TAB_ID_MY_V3 = "tab_text_2";
-	public static final String TAB_ID_MY_TEXT = "用户中心";
 	
 	public static final String SEARCH_MARK_BUTTON_ID = "globalSearch";
 	public static final String SEARCH_TEXTVIEW_ID = "etSearch";
@@ -55,6 +59,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String SEARCH_CATEGORY_RESULT_ID = "lvSearchResultList";
 	
 	public static final String CATEGORY_VIEWLIST_ID = "cateSelection";
+	
+	public static final String CITY_SELECT_TEXT = "选择城市";
 	
 	//AdList && AdView ID
 	public static final String AD_VIEWLIST_MARK_ID = "goods_item_view_root";
@@ -68,8 +74,16 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String AD_IMAGES_VIEWLIST_ID = "glDetail";
 	public static final String AD_VIEWLIST_MORE_ID = "pulldown_to_getmore";
 	public static final String AD_VIEWLIST_IMAGE_ID = "ivInfo";
+	public static final String AD_DETAILVIEW_NO_IMAGE_TEXT = "暂无图片";
+	public static final String AD_DETAIL_META_LABEL_ID = "tvmetatxt";
+	public static final String AD_DETAIL_META_VALUE_ID = "tvmeta";
+	public static final String AD_DETAIL_META_AREA_TEXT = "地区";
+	
+	public static final String AD_DETAIL_MAP_TITLE_ID = "tvTitle";
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
+	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";
+	public static final String AD_BIG_IMAGE_SAVED_TEXT = "成功";
 	
 	//POST ID
 	public static final String POST_FORM_MARK_ID = "layout_txt";
@@ -575,5 +589,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 
 		return false;
+	}
+	
+	boolean waitForSubText(String text, int timeout) {
+		ViewFinder viewFinder = new ViewFinder();
+		ArrayList<TextView> textViews = viewFinder.findViewsByText(text, false, timeout);
+		return textViews.isEmpty() ? false : true;
 	}
 }

@@ -500,6 +500,26 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return detailView;
 	}
 	
+	public void openAdWithPic(boolean havPic) throws Exception {
+		for (int i = 0; i < 20; i++) {
+			assertNotNull(openAdByIndex(i));
+			TimeUnit.SECONDS.sleep(1);
+			ViewElement v = findElementByText(AD_DETAILVIEW_NO_IMAGE_TEXT, 0, true);
+			if ((havPic && v == null) || (!havPic && v != null)) break;
+			goBack();
+		}
+	}
+	
+	public TextViewElement findDetailViewMetaByName(String metaName) throws Exception {
+		for(int i = 0; i < 20; i++) {
+			TextViewElement v = findElementById(AD_DETAIL_META_LABEL_ID, i, TextViewElement.class);
+			if (v != null && v.getText().contains(metaName)) {
+				return findElementById(AD_DETAIL_META_VALUE_ID, i, TextViewElement.class);
+			}
+		}
+		return null;
+	}
+	
 	public ViewElement scrollAdListViewToFooter(BXViewGroupElement lv) throws Exception {
 
 		//检查底部提示：点击载入下30条
@@ -683,4 +703,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}
 	}
+	
+	public void setAdListingViewType(String viewType) throws Exception {
+		openTabbar(TAB_ID_MY_V3);
+		openMyGridByText(MY_SETTING_BUTTON_TEXT);
+		selectMetaByName(null, MY_SETTING_VIETTYPE_TEXT);
+		//点击图片模式
+		ViewElement v = findElementByText(viewType, 0, true);
+		assertNotNull(v);
+		v.doClick();
+	}
+
 }

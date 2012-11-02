@@ -41,17 +41,17 @@ public class AndroidScreen {
             	if (d != null) {
             		setDevice(d);
                 	BXOutputReceiver rev = new BXOutputReceiver();
+                	String errLockFile = "bxtestcase_err.lock";
                 	d.executeShellCommand("ls /mnt/sdcard/Athrun/", rev);
                 	//logger.debug(d.toString() + "recieved:" + rev.revString);
                 	//String errLockFile = d.toString() + "_err.lock";
-                	String errLockFile = "bxtestcase_err.lock";
                 	if (rev.revString.indexOf(errLockFile) > 0) {
                 		Image img = fetchScreen();
                 		if (img != null) {
                 			saveImage(img);
                 			logger.debug("image saved");
                 		}
-                		d.executeShellCommand("rm /mnt/sdcard/Athrun/" + errLockFile, rev);
+                		d.executeShellCommand("rm /mnt/sdcard/Athrun/" + errLockFile + "*", rev);
                 		sleep(1 * 1000);
                 		Date nowTime=new Date();
                 		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");

@@ -23,8 +23,6 @@ public class MainActivityTest extends BaixingTestCase {
 	private static final String SCREEN_LOG_TAG = "TestKeyGuardTest";
 	
 	public MainActivityTest() throws Exception {
-		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
 	}
 	
 	@Test

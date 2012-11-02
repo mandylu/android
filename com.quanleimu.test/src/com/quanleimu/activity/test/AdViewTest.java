@@ -1,84 +1,94 @@
 package com.quanleimu.activity.test;
 
+import java.util.concurrent.TimeUnit;
+
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
+import org.athrun.android.framework.viewelement.TextViewElement;
+import org.athrun.android.framework.viewelement.ViewElement;
+
+import android.util.Log;
 
 
 public class AdViewTest extends BaixingTestCase {
-	private static final String LOG_TAG = "MainActivityTest";
+	public static final String TEST_DATA_CATEGORY_NZN = "女找男";
+	public static final String TEST_DATA_CATEGORY_QICHE = "二手轿车";
 	
 	public AdViewTest() throws Exception {
-		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
-	}
-	
-	@Test
-	
-public void testPicSave() throws Exception {
 		
-		//android2.7.2
+	}
+		
+	@Test
+	public void testPicSave() throws Exception {
+		
+		//android3.0
 		//首页点击交友活动>女找男
+		openTabbar(TAB_ID_HOME_V3);
+		openCategoryByIndex(6, 1);
 		//检查列表的title view文字部分包含“女找男”
+		ViewElement v = findElementByText(TEST_DATA_CATEGORY_NZN);
+		assertNotNull(v);
 		//选择一个带图信息进入
+		openAdWithPic(true);
 		//点击图片
+		showAdPic(0);
 		//检查title右侧包含button“保存”
+		v = findElementByText(AD_BIG_IMAGE_SAVE_TEXT);
+		assertNotNull(v);
 		//点击左上方button返回
-		//点击图片再次进入
-		//点击右上方按钮保存
-		//检查弹出式提示信息，包含“成功”
+		goBack(true);
 		
+		//点击图片再次进入
+		showAdPic(0);
+		//点击右上方按钮保存
+		v.doClick();
+		//检查弹出式提示信息，包含“成功”
+		assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 1000));
 	}
 	
 	@Test
-	
 	public void testMapView() throws Exception {
 			
-		//android2.7.2
-	    //进入类目车辆买卖>二手轿车
-		//检查列表的title view文字部分包含"二手轿车"
-		//选择一个不带图信息进入
-		//提取当前信息地区地点信息，如“浦东金桥”
-		//点击地图查看
-		//检查页面title包含当前地区地点文字“金桥”
-	    //检查地图正文部分，文字包含文字“金桥”
-		}
-		
-	@Test
-	
-public void testNewPicSave() throws Exception {
-		
 		//android3.0
-		//首页点击交友活动>女找男
-		//检查列表的title view文字部分包含“女找男”
-		//选择一个带图信息进入
-		//点击图片
-		//检查title右侧包含button“保存”
-		//点击左上方button返回
-		//点击图片再次进入
-		//点击右上方按钮保存
-		//检查弹出式提示信息，包含“成功”
-		
+	    //进入类目车辆买卖>二手轿车
+		openTabbar(TAB_ID_HOME_V3);
+		openCategoryByIndex(1, 0);
+		//检查列表的title view文字部分包含"二手轿车"
+		ViewElement v = findElementByText(TEST_DATA_CATEGORY_QICHE);
+		assertNotNull(v);
+		//选择一个不带图信息进入
+		openAdWithPic(false);
+		//提取当前信息的地区地点信息，如“浦东金桥”
+		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
+		assertNotNull(tv);
+		checkMap();
+		//选择一个带图的信息进入
+		openAdWithPic(true);
+		//提取当前信息的地区地点信息，如“徐汇交大”
+		tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
+		checkMap();
 	}
 	
-	@Test
-	
-	public void testNewMapView() throws Exception {
-			
-		//android3.0
-	    //进入类目车辆买卖>二手轿车
-		//检查列表的title view文字部分包含"二手轿车"
-		//选择一个不带图信息进入
+	private void checkMap() throws Exception {
 		//提取当前信息的地区地点信息，如“浦东金桥”
-		//点击地图查看
-		//检查页面title包含当前地区地点文字“金桥”
-	    //检查地图正文部分，文字包含文字“金桥”
-		//点击返回
-		//点击返回
-		//选择一个带图的信息进入
-		//提取当前信息的地区地点信息，如“徐汇交大”
-		//点击地图查看
-		//检查页面title包含当前地区地点文字“交大”
-	    //检查地图正文部分，文字包含文字“交大”
+		TextViewElement tv = findDetailViewMetaByName("地区");
+		assertNotNull(tv);
+		if (tv != null) {
+			//点击地图查看
+			tv.doClick();
+			TimeUnit.SECONDS.sleep(1);
+			assertNull(findElementByText(TEST_DATA_CATEGORY_QICHE));
+			//检查页面title包含当前地区地点文字“金桥”
+			String area = tv.getText();
+			tv = findElementById(AD_DETAIL_MAP_TITLE_ID, TextViewElement.class);
+			assertNotNull(tv);
+			boolean found = false;
+			assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);
 		}
+		//点击返回
+		goBack();
+		//点击返回
+		goBack();
+	}
 		
 }
