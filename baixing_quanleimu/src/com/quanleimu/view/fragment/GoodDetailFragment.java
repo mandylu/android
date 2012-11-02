@@ -73,7 +73,6 @@ import com.quanleimu.util.ViewUtil;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
 import com.quanleimu.widget.HorizontalListView;
-import com.quanleimu.util.TrackConfig.*;
 
 
 public class GoodDetailFragment extends BaseFragment implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
@@ -819,6 +818,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void startChat()
 	{
+		Log.d("track","VIEWAD_BUZZ");
+		//tracker
+		Tracker.getInstance()
+		.event(BxEvent.VIEWAD_BUZZ)
+		.end();
 		if (this.fromChat)
 		{
 			this.finishFragment();
@@ -852,7 +856,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void handleStoreBtnClicked(){
 		if(handleRightBtnIfInVerify()) return;
-		if(/*-1 == btnStatus*/!isInMyStore()){
+		Log.d("tracker",!isInMyStore()?"VIEWAD_FAV":"VIEWAD_UNFAV");
+		//tracker
+		Tracker.getInstance()
+		.event(!isInMyStore()?BxEvent.VIEWAD_FAV:BxEvent.VIEWAD_UNFAV)
+		.append(Key.SECONDCATENAME, detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+		.append(Key.ADID, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+		.end();
+		
+		if(/*-1 == btnStatus*/!isInMyStore()){			
 //			btnStatus = 0;
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
 			
@@ -912,6 +924,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			break;
 		case R.id.vad_call_btn:
 		{
+			Log.d("tracker","VIEWAD_MOBILECALLCLICK");
+			//tracker
+			Tracker.getInstance()
+			.event(BxEvent.VIEWAD_MOBILECALLCLICK)
+			.end();
 			startContact(false);
 			break;
 		}
@@ -1083,6 +1100,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				
 				@Override
 				public void onClick(View v) {
+					Log.d("tracker","VIEWAD_MOBILENUMBERCLICK");
+					//tracker
+					Tracker.getInstance()
+					.event(BxEvent.VIEWAD_MOBILENUMBERCLICK)
+					.end();
 					startContact(false);
 				}
 			} : null);
@@ -1647,6 +1669,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public boolean onContextItemSelected(MenuItem menuItem) {
 		
 		View v = getView();
+//		Log.d("goodetail","itemselect:"+menuItem.getItemId());
 		switch (menuItem.getItemId())
 		{
 		case R.id.vad_send_message + 1: {
@@ -1666,6 +1689,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void startContact(boolean sms)
 	{
+		if (sms){//右下角发短信
+			Log.d("tracker","VIEWAD_SMS");
+			Tracker.getInstance()
+			.event(BxEvent.VIEWAD_SMS)
+			.end();
+		}
+			
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
 		if (contact != null)
 		{

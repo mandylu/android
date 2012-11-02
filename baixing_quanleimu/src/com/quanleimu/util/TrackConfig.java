@@ -186,6 +186,7 @@ public class TrackConfig {
 			VIEWAD_FAV("Viewad_Fav","Viewad_Fav"),
 			VIEWAD_UNFAV("Viewad_Unfav","Viewad_Unfav"),
 			VIEWAD_SMS("Viewad_SMS","Viewad_SMS"),
+			VIEWAD_BUZZ("Viewad_Buzz","Viewad_Buzz"),
 			BUZZLIST("BuzzList","BuzzList"),
 			POST_POSTBTNHEADERCLICKED("Post_PostBtnHeaderClicked","Post_PostBtnHeaderClicked"),
 			POST_POSTBTNCONTENTCLICKED("Post_PostBtnContentClicked","Post_PostBtnContentClicked"),
