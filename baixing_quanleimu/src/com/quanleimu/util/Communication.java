@@ -311,7 +311,15 @@ public class Communication implements Comparator<String> {
 	
 	private static void registerDevice(HttpClient httpClient){
 		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
-		if(currentUser != null) return;
+		if(currentUser == null){
+			UserBean anonymousUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser");
+			if(anonymousUser != null){
+				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+				return;
+			}
+		}else{
+			return;
+		}
 		
 		String apiName = "user_autoregister";
 		ArrayList<String> list = new ArrayList<String>();
@@ -342,6 +350,7 @@ public class Communication implements Comparator<String> {
 //					user.setPhone(userObj.getString("mobile"));
 					
 					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
+					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymouUser", user);
 				} 
 				return;
 			}

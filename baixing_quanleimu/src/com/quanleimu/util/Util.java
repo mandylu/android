@@ -1340,6 +1340,11 @@ public class Util {
         Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "user");
         Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "userProfile");
 		currentUserId = null;
+		
+		UserBean anonymousUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser");
+		if(anonymousUser != null){
+			Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+		}
 	}
 
     /**
