@@ -92,7 +92,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 				{
 					@Override
 					public void onClick(DialogInterface dialog, int which) {
-						System.exit(0);
+						//System.exit(0);
+						CityChangeFragment.this.getActivity().finish();
 					}
 				});
 				builder.create().show();
