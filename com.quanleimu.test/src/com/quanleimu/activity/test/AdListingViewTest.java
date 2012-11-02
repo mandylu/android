@@ -83,17 +83,33 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
+		openTabbar(TAB_ID_HOME_V3);
 		//点击物品交易>台式电脑
+		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
+		v = findElementById(AD_VIEWLIST_IMAGE_ID);
+		assertNotNull(v);
 		//点击返回
+		goBack();
 		//点击返回
+		goBack();
 		//点击我的百姓网>设置>流量优化设置
+		openTabbar(TAB_ID_MY_V3);
+		openMyGridByText(MY_SETTING_BUTTON_TEXT);
+		selectMetaByName(null, MY_SETTING_VIETTYPE_TEXT);
 		//点击省流量模式
+		v = findElementByText(MY_SETTING_VIETTYPE_NO_PIC_TEXT, 0, true);
+		assertNotNull(v);
+		v.doClick();
 		//点击返回
+		goBack();
 		//点击浏览信息
+		openTabbar(TAB_ID_HOME_V3);
 		//点击物品交易>台式电脑
+		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		TimeUnit.SECONDS.sleep(10);
+		v = findElementById(AD_VIEWLIST_IMAGE_ID);
+		assertNull(v);
 		
 	}
 }

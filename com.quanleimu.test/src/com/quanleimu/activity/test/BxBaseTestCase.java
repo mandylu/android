@@ -67,6 +67,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String AD_DETAILVIEW_TITLE_ID = "goods_tittle";
 	public static final String AD_IMAGES_VIEWLIST_ID = "glDetail";
 	public static final String AD_VIEWLIST_MORE_ID = "pulldown_to_getmore";
+	public static final String AD_VIEWLIST_IMAGE_ID = "ivInfo";
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	
@@ -128,6 +129,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String MY_SETTING_VIETTYPE_TEXT = "流量优化设置";
 	public static final String MY_SETTING_VIETTYPE_PIC_TEXT = "图片模式";
+	public static final String MY_SETTING_VIETTYPE_NO_PIC_TEXT = "省流量模式";
 	
 	//Msgbox Texts
 	public static final String MSGBOX_TITLE_TEXT = "提示";
