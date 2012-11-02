@@ -1039,7 +1039,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         String tmpCreatedTime = detail.data.get("createdTime");
         long postedSeconds = -1;
         if (tmpCreatedTime != null) {
-            postedSeconds = new Date().getTime() - new Long(tmpCateName);
+            postedSeconds = new Date().getTime() - Long.valueOf(tmpCreatedTime);
         }
 
         Tracker.getInstance().event(event)
