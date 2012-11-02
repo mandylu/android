@@ -145,6 +145,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 //	private View categoryItem = null;
 	
+    
+    private EditText etDescription = null;
+    private EditText etContact = null;
 	
 	
 	@Override
@@ -950,9 +953,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 			//发布图片
 			String images = "";
+			int imgCount = 0;
 			for (int i = 0; i < bitmap_url.size(); i++) {				
 				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
 					images += "," + bitmap_url.get(i);
+					imgCount++;
 				}
 			}
 			if(images != null && images.length() > 0 && images.charAt(0) == ','){
@@ -965,6 +970,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			// list.add("title=" + "111");
 			// list.add("description=" +
 			// URLEncoder.encode(descriptionEt.getText().toString()));
+			int    errorCode = 0;
 			String errorMsg = "内部错误，发布失败";
 			String url = Communication.getApiUrl(apiName, list);
 			try {
@@ -977,11 +983,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //					myHandler.sendEmptyMessage(3);
 //					Log.d("person","case 3");
 					sendMessage(3, null);
-					return;
+					
+					errorCode = code;
+					errorMsg = message;
+				}else {
+					errorCode = -1;
+					errorMsg = "decode json error";
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
 			} catch (Communication.BXHttpException e) {
+				errorCode = e.errorCode;
 				if(e.errorCode == 414){
 					errorMsg = "内容超出规定长度，请修改后重试";
 				}
@@ -991,7 +1003,25 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 			} catch(Exception e){
 				e.printStackTrace();
+				errorCode = -2;
+				errorMsg = e.getMessage();
 			}
+			
+			BxEvent event = goodsDetail != null ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
+			int lineCount = etDescription != null ? etDescription.getLineCount() : 1;
+			int descLength = etDescription != null ? etDescription.getText().length() : 0;
+			int contactLength = etContact != null ? etContact.getText().length() : 0;
+			Tracker.getInstance().event(event)
+					.append(Key.POSTSTATUS, errorCode)
+					.append(Key.POSTFAILREASON, errorMsg)
+					.append(Key.POSTPICSCOUNT, imgCount)
+					.append(Key.POSTDESCRIPTIONLINECOUNT, lineCount)
+					.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
+					.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
+					.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+					.end();
+			
+			
 			hideProgress();
 			final String fmsg = errorMsg;
 			((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
@@ -1413,8 +1443,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			}			
 		}
 		if(postBean.getName().equals("contact") && layout != null){
-			((EditText)layout.getTag(HASH_CONTROL)).setText(mobile);
+			etContact = ((EditText)layout.getTag(HASH_CONTROL));
+			etContact.setText(mobile);
 		}
+		if (postBean.getName().equals("description") && layout != null){
+			etDescription = (EditText) layout.getTag(HASH_CONTROL);
+		}
+		
 		if (postBean.getControlType().equals("image")) {
 			this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
 			layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
@@ -1468,6 +1503,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
 	private String[] hiddenItemNames = {"wanted", "faburen"};//must be selected type
 	private int [] hiddenItemValuesIndexes = {1, 0};
+	private boolean autoLocated;
 	
 	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
@@ -2191,6 +2227,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
 			if(chars == null || chars.toString().equals("")){
 				((TextView)locationView.findViewById(R.id.postinput)).setText(autoAddress);
+				autoLocated = true;
 				originParams.put(STRING_DETAIL_POSITION, autoAddress, autoAddress);
 			}
 		}
