@@ -61,7 +61,7 @@ import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 
 public class TalkFragment extends BaseFragment {
 	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
-		public static String CURRENT_RECEIVER_RRICKY = null;
+		public static String CURRENT_RECEIVER_TRICKY = null;
 		
 		public static final int MAX_REQ_COUNT = 100;
 		private static final int MSG_GETPROFILE = 1;
@@ -314,7 +314,7 @@ public class TalkFragment extends BaseFragment {
 			
 			unregisterReceiver();
 			
-			CURRENT_RECEIVER_RRICKY = null;
+			CURRENT_RECEIVER_TRICKY = null;
 		}
 		
 		@Override

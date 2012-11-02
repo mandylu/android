@@ -44,12 +44,12 @@ public class ChatMessageHandler extends PushHandler {
 			cxt.sendBroadcast(intent);
 			
 			//Update UI or schedule status bar notification.
-			if (TalkFragment.CURRENT_RECEIVER_RRICKY != null && 
-					msg.getFrom().equals(TalkFragment.CURRENT_RECEIVER_RRICKY))
+			if (TalkFragment.CURRENT_RECEIVER_TRICKY != null && 
+					msg.getFrom().equals(TalkFragment.CURRENT_RECEIVER_TRICKY))
 			{
 				//TODO: update badge count.
 			}
-			else if (!isUIActive(QuanleimuMainActivity.class.getName()))
+			else/* if (!isUIActive(QuanleimuMainActivity.class.getName()))*/
 			{
 				final String titleText = jsonObj.has("text") ? jsonObj.getString("text") : "私信提醒";
 				Bundle bundle = new Bundle();
