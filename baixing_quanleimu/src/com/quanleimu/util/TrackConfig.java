@@ -52,8 +52,8 @@ public class TrackConfig {
 		}
 	}
 	
-	public interface TrackMobile {
-		enum Key implements TrackMobile {//每条记录可能的key
+	public static interface TrackMobile {
+		public static enum Key implements TrackMobile {//每条记录可能的key
 			TRACKTYPE("tracktype","tracktype"),
 			TIMESTAMP("timestamp","timestamp"),
 			
@@ -125,7 +125,7 @@ public class TrackConfig {
 			
 		}
 		
-		enum PV implements TrackMobile {//pageview相关的value
+		public static enum PV implements TrackMobile {//pageview相关的value
 			BASE("/base", "没有定义pv的fragment走这里"),
 			//页面
 			SELECTCITY("/selectCity","切换城市"),
@@ -174,7 +174,7 @@ public class TrackConfig {
 			
 		}
 		
-		enum BxEvent implements TrackMobile {//event相关的value
+		public static enum BxEvent implements TrackMobile {//event相关的value
 			CITY_SELECT("City_Select","City_Select"),
 			CITY_SEARCH("City_Search","City_Search"),
 			HEADERSEARCHRESULT("HeaderSearchResult","HeaderSearchResult"),

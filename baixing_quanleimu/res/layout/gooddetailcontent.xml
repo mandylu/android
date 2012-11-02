@@ -168,14 +168,22 @@
 								    android:visibility="gone"
 								    android:textColor="@color/common_placeholder"/>
 								
-		                        <Gallery
+								   <com.quanleimu.widget.HorizontalListView
+		                            android:id="@+id/glDetail"
+		                            android:layout_centerInParent="true"
+		                            android:layout_marginLeft="@dimen/list_margin_LF"
+		                            android:layout_width="fill_parent"
+		                            android:layout_height="fill_parent"
+		                            />
+		                        
+		                        <!--Gallery
 		                            android:id="@+id/glDetail"
 		                            android:layout_width="fill_parent"
 		                            android:layout_height="wrap_content"
 		                            android:animationCache="false"
 		                            android:animationDuration="0"
 		                            >
-		                        </Gallery>
+		                        </Gallery-->
 		                    </RelativeLayout>
 
 		                    <LinearLayout
