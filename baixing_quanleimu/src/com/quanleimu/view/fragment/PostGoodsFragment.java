@@ -13,7 +13,6 @@ import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import android.location.Location;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -25,6 +24,7 @@ import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
 import android.graphics.BitmapFactory;
+import android.location.Location;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -69,6 +69,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.LocationService.BXRgcListener;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
@@ -93,7 +94,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
 	
 	static final public String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
-	
+	static final public String KEY_IS_EDITPOST = "isEditPost"; 
+	static final public String KEY_CATE_ENGLISHNAME = "cateEnglishName";
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
 	
@@ -541,7 +543,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onClick(View v) {
 		final Activity activity = getActivity();
-		
 		if (v.getId() == R.id.iv_1 || v.getId() == R.id.iv_2 || v.getId() == R.id.iv_3) {
 			for (int i = 0; i < imgs.length; i++) {
 				if (imgs[i].equals(v)) {
@@ -611,8 +612,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		} 
 		else if(v.getId() == R.id.iv_post_finish){
-			this.handleRightAction();
+			postFinish();
 		}
+//		else if (v.getId() == R.id.right_action){
+//			Log.d("postgoods","R.id.right_action");
+//		}
 //		else if (v == photoalbum) {
 //			// 相册
 //			if (ad.isShowing()) {
@@ -642,11 +646,32 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 	}
 	
+	private void postFinish() {
+		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNCONTENTCLICKED":"EDITPOST_POSTBTNCONTENTCLICKED");
+		//tracker
+		Tracker.getInstance()
+		.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
+		.append(Key.SECONDCATENAME, categoryEnglishName)
+		.end();
+		
+		this.postAction();
+	}
+	
 	private boolean gettingLocationFromBaidu = false;
 	@Override
 	public void handleRightAction(){
-
-        //定位成功的情况下，发布时保存当前经纬度和地理位置
+		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNHEADERCLICKED":"EDITPOST_POSTBTNHEADERCLICKED");
+		//tracker
+		Tracker.getInstance()
+		.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
+		.append(Key.SECONDCATENAME, categoryEnglishName)
+		.end();
+		
+		this.postAction();
+	}
+	
+	private void postAction() {
+		//定位成功的情况下，发布时保存当前经纬度和地理位置
         if (inLocating == false && locationView != null && cacheLocation != null) {
             String inputAddress = ((TextView)locationView.findViewById(R.id.postinput)).getText().toString();
             BXLocation lastLocation = new BXLocation(cacheLocation);
@@ -950,6 +975,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					code = json.getInt("code");
 					message = json.getString("message");
 //					myHandler.sendEmptyMessage(3);
+//					Log.d("person","case 3");
 					sendMessage(3, null);
 					return;
 				}
@@ -1689,6 +1715,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							lp = id;
 						}
 						args.putString("lastPost", lp);
+						
+						args.putString("cateEnglishName", categoryEnglishName);
+						args.putBoolean(KEY_IS_EDITPOST, goodsDetail!=null);
 						
 						args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
 						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);

@@ -1,10 +1,19 @@
 package com.quanleimu.view.fragment;
 
+import java.io.IOException;
+import java.io.UnsupportedEncodingException;
+import java.util.ArrayList;
+import java.util.List;
+
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -12,6 +21,7 @@ import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
+
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -23,18 +33,15 @@ import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.*;
+import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.GoodsListLoader;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.Util;
 import com.quanleimu.widget.PullToRefreshListView;
-import org.json.JSONException;
-import org.json.JSONObject;
-
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-import java.util.List;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
 	private final int MSG_MYPOST = 1;
@@ -361,7 +368,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
-
 		switch (msg.what) {
 		case MSG_MYPOST:
 		case MSG_INVERIFY:
@@ -577,6 +583,22 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		return true;
 	}
 	
+	private boolean isEditPost() {
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_IS_EDITPOST)){
+			return bundle.getBoolean(PostGoodsFragment.KEY_IS_EDITPOST);
+		}
+		return false;
+	}
+	
+	private String getPostCateEnglishName() {
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_IS_EDITPOST)){
+			return bundle.getString(PostGoodsFragment.KEY_CATE_ENGLISHNAME);
+		}
+		return "";
+	}
+	
 	private void showBindDialog(){
 //		String[] items = {"绑定百姓网帐号，网站手机统一管理", "继续发布信息"};
 		new AlertDialog.Builder(this.getActivity())
@@ -600,7 +622,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				// TODO Auto-generated method stub
+//				Log.d("person","isEditPost:"+isEditPost()+",cateName:"+getPostCateEnglishName());
+				//tracker
+				Tracker.getInstance()
+				.event(BxEvent.POST_POSTWITHLOGIN)
+				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+				.end();
+				
 				dialog.dismiss();
 				BaseActivity activity = (BaseActivity)getActivity();
 				if(activity != null){
@@ -611,7 +639,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		.setNegativeButton("否", new DialogInterface.OnClickListener() {
 			
 			@Override
-			public void onClick(DialogInterface dialog, int which) {							
+			public void onClick(DialogInterface dialog, int which) {	
+				//tracker
+				Tracker.getInstance()
+				.event(BxEvent.POST_POSTWITHOUTLOGIN)
+				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+				.end();
 				dialog.dismiss();
 			}
 		}).show();
