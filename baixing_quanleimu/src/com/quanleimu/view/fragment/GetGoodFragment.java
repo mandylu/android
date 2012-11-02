@@ -22,6 +22,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
@@ -630,7 +631,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 			@Override
 			public void onClick(View v) {
-				if (v.getId() == R.id.filter_item_more)
+				if (v.getId() == R.id.filter_item_more || v.getId() == R.id.filter_item_single)
 				{
 					if(categoryEnglishName == null || categoryEnglishName.equals("")){
 						pushAndFinish(new SearchFragment(), createArguments(null, null));
@@ -690,9 +691,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			v.setOnClickListener(listener);
 		}
 		
+		View fItemParent = getView().findViewById(R.id.filter_parent);
+		View moreItem = getView().findViewById(R.id.filter_item_more);
+		View singleFilter = getView().findViewById(R.id.filter_item_single);
 		if (fss != null)
 		{
 			FilterUtil.loadFilterBar(fss, filterParamHolder, actionViews);
+			singleFilter.setVisibility(View.GONE);
+			fItemParent.setVisibility(View.VISIBLE);
+			moreItem.setVisibility(View.VISIBLE);
 		}
 		else
 		{
@@ -700,9 +707,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			{
 				view.setVisibility(View.GONE);
 			}
+			singleFilter.setVisibility(View.VISIBLE);
+			fItemParent.setVisibility(View.GONE);
+			moreItem.setVisibility(View.GONE);
 		}
 		
-		getView().findViewById(R.id.filter_item_more).setOnClickListener(listener);
+		singleFilter.setOnClickListener(listener);
+		moreItem.setOnClickListener(listener);
 		
 	}
 	

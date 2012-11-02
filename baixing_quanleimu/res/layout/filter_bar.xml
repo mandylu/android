@@ -5,6 +5,23 @@
     android:layout_height="@dimen/tab_height"
    	android:background="@color/tab_bg"
     android:orientation="vertical" >
+    
+    <RelativeLayout 
+        android:id="@+id/filter_item_single"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true">
+        <TextView
+        android:id="@+id/filter_name"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:singleLine="true"
+        android:textColor="#ffffff"
+        android:textSize="@dimen/tab_font_size"
+        android:text="筛选信息" />
+    </RelativeLayout>
   
       <RelativeLayout
           android:id="@+id/filter_item_more"
