@@ -269,7 +269,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		}		
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_DOWN:
-	    	Log.d("POINTER", "action down on gallery area");
 	    case MotionEvent.ACTION_MOVE: 
 	    	if(getView() != null && getView().findViewById(R.id.svDetail) != null){
 	    		((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(true);
@@ -438,7 +437,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //	                        g.dispatchTouchEvent(event);  
 //	                        return true;
 //	                }  
-	                Log.e("POINTER", "do not handle pointer on viewpager");                  
 	                return false;  
 			}
         	
