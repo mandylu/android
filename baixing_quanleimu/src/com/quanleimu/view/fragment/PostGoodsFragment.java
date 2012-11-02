@@ -2152,6 +2152,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
                     autoAddress = location.detailAddress;
                 }
             }
+        } else { //没有存储地址，则显示新定位地址
+            if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
+                autoAddress = location.detailAddress;
+            }
         }
 
 		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
