@@ -837,7 +837,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			View v = layout_txt.getChildAt(m);
 			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
 			if(bean == null) continue;
-			if(bean.getDisplayName().equals(STRING_DETAIL_POSITION)){
+			if(bean.getName().equals(STRING_DETAIL_POSITION)){
 				TextView tv = (TextView)v.getTag(HASH_CONTROL);
 				if(tv != null && !tv.getText().toString().equals("")){
 					addr = tv.getText().toString();
@@ -2237,7 +2237,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(chars == null || chars.toString().equals("")){
 				((TextView)locationView.findViewById(R.id.postinput)).setText(autoAddress);
 				autoLocated = true;
-				originParams.put(STRING_DETAIL_POSITION, autoAddress, autoAddress);
+				for (String key : postList.keySet())
+				{
+					PostGoodsBean bean = postList.get(key);
+					if (bean.getName().equals(STRING_DETAIL_POSITION)) {
+						originParams.put(bean.getDisplayName(), autoAddress, autoAddress);
+					}
+				}
 			}
 		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
