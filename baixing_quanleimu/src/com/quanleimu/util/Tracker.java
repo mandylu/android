@@ -28,8 +28,7 @@ public class Tracker {
 	private static Tracker instance = null;
 	public static Tracker getInstance()
 	{
-		Log.d("tracker", "flag"+TrackConfig.getInstance().getLoggingFlag());
-		if (instance == null && TrackConfig.getInstance().getLoggingFlag())
+		if (instance == null)
 		{
 			instance = new Tracker();
 		}

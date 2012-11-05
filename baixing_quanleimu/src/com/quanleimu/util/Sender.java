@@ -23,7 +23,7 @@ public class Sender implements Runnable{
 	//singleton
 	private static Sender instance = null;
 	public static Sender getInstance() {
-		if (instance == null &&  TrackConfig.getInstance().getLoggingFlag()) {
+		if (instance == null) {
 			instance = new Sender();
 		}
 		return instance;
