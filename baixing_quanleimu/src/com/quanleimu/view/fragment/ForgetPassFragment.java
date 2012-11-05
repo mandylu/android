@@ -99,6 +99,11 @@ public class ForgetPassFragment extends BaseFragment {
     private boolean checkMobile() {
         String mobile = mobileEt.getText().toString();
         if (mobile == null || mobile.length() != 11) {
+        	Tracker.getInstance()
+			.event(BxEvent.FORGETPASSWORD_SENDCODE_RESULT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "mobile number not 11 bits!")
+			.end();
             Toast.makeText(getActivity(), "请输入11位手机号", 1).show();
             return false;
         }
@@ -126,6 +131,11 @@ public class ForgetPassFragment extends BaseFragment {
         }
 
         if (tip != null) {
+        	Tracker.getInstance()
+			.event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, tip)
+			.end();
             Toast.makeText(getActivity(), tip, 1).show();
             return false;
         }
@@ -168,7 +178,6 @@ public class ForgetPassFragment extends BaseFragment {
     }
 
     private void doPostNewPwdAction() {
-    	Log.d("forget","post new pwd action");
         if (checkAllInputs() == false) {
             return;
         }
@@ -216,7 +225,7 @@ public class ForgetPassFragment extends BaseFragment {
                 Toast.makeText(getActivity(), showMsg, 1).show();
                 //tracker
                 Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .event(BxEvent.FORGETPASSWORD_SENDCODE_RESULT)
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, false)
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
                 .end();
@@ -226,7 +235,7 @@ public class ForgetPassFragment extends BaseFragment {
                 getCodeBtn.setEnabled(true);
               //tracker
                 Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, false)
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
                 .end();
@@ -236,7 +245,7 @@ public class ForgetPassFragment extends BaseFragment {
                 disableGetCodeBtn();
               //tracker
                 Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_SENDCODE)
+                .event(BxEvent.FORGETPASSWORD_SENDCODE_RESULT)
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, true)
                 .end();
                 break;
@@ -244,7 +253,7 @@ public class ForgetPassFragment extends BaseFragment {
                 Toast.makeText(getActivity(), showMsg, 1).show();
               //tracker
                 Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD)
+                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
                 .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_STATUS, true)
                 .end();
                 break;
@@ -252,7 +261,7 @@ public class ForgetPassFragment extends BaseFragment {
                 Toast.makeText(getActivity(), showMsg, 1).show();
               //tracker
                 Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD)
+                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
                 .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_STATUS, false)
                 .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON, (String)msg.obj)
                 .end();

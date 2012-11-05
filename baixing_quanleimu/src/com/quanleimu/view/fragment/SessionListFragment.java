@@ -245,7 +245,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 					if (newSessions!=null)
 						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).end();
 					else
-						Tracker.getInstance().pv(PV.BUZZLISTING).end();
+						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
 				}
 			}
 			
@@ -254,7 +254,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 				//Ignor this exception.
 				sendMessage(MSG_NEW_SESSION_FAIL, null);
 				//tracker
-				Tracker.getInstance().pv(PV.BUZZLISTING).end();
+				Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
 //				if (getActivity() != null)
 //				{
 //					findViewById(R.id.session_loading).setVisibility(View.GONE);

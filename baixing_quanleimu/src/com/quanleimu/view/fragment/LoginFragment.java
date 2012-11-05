@@ -55,7 +55,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		Tracker.getInstance()
 		.event(BxEvent.LOGIN_SUBMIT)
 		.append(Key.LOGIN_RESULT_STATUS, "1")
-		.append(Key.POSTCOUNT_BEFORELOGIN, QuanleimuApplication.getApplication().getListMyPost()==null?0:QuanleimuApplication.getApplication().getListMyPost().size())
 		.end();
 	}
 	public void onRegisterClicked(){
@@ -69,7 +68,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	
 	@Override
 	public boolean handleBack() {
-		Log.d("loginfragment","back");//2 times?
 		Tracker.getInstance().event(BxEvent.LOGIN_BACK).end();
 		return super.handleBack();
 	}

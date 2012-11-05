@@ -78,12 +78,27 @@ public class RegisterFragment extends BaseFragment {
 
 	private boolean check() {
 		if (accoutnEt.getText().toString().trim().equals("")) {
+			Tracker.getInstance()
+			.event(BxEvent.REGISTER_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
+			.end();
 			Toast.makeText(getActivity(), "账号不能为空！", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (passwordEt.getText().toString().trim().equals("")) {
+			Tracker.getInstance()
+			.event(BxEvent.REGISTER_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
+			.end();
 			Toast.makeText(getActivity(), "密码不能为空！", Toast.LENGTH_SHORT).show();
 			return false;
 		} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
+			Tracker.getInstance()
+			.event(BxEvent.REGISTER_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
+			.end();
 			Toast.makeText(getActivity(), "密码不一致！", Toast.LENGTH_SHORT).show();
 			return false;
 		}
@@ -154,7 +169,6 @@ public class RegisterFragment extends BaseFragment {
 					Tracker.getInstance()
 					.event(BxEvent.REGISTER_SUBMIT)
 					.append(Key.REGISTER_RESULT_STATUS, true)
-					.append(Key.POSTCOUNT_BEFOREREGISTER, QuanleimuApplication.getApplication().getListMyPost()==null?0:QuanleimuApplication.getApplication().getListMyPost().size())
 					.end();
 					
 					UserBean user = new UserBean();
@@ -170,7 +184,7 @@ public class RegisterFragment extends BaseFragment {
 					Tracker.getInstance()
 					.event(BxEvent.REGISTER_SUBMIT)
 					.append(Key.REGISTER_RESULT_STATUS, false)
-					.append(Key.REGISTER_RESULT_FAIL_REASON, "id is null!")
+					.append(Key.REGISTER_RESULT_FAIL_REASON, message)
 					.end();
 				}
 			} catch (JSONException e) {

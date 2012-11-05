@@ -490,6 +490,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //	}
 
 	private boolean usercheck() {
+		if (user == null || user.getPhone() == null || user.getPhone().equals(""))
+			postResultLog(0, "user does not exist!");
 		return (user != null && user.getPhone() != null && !user.getPhone().equals(""));
 //			doPost(true);
 //		}
@@ -666,7 +668,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNCONTENTCLICKED":"EDITPOST_POSTBTNCONTENTCLICKED");
 		//tracker
 		Tracker.getInstance()
-		.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
+		.event(goodsDetail==null?BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
 		.end();
 		
@@ -696,6 +698,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
         }
 
 		if(uploadCount > 0){
+			postResultLog(0, "图片正在上传");
 			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
 		}
 		else{
@@ -706,6 +709,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(this.detailLocation != null){
 				doPost(usercheck(), detailLocation);
 			}else{
+				postResultLog(0,"No detailLocation!");
 				this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 				retreiveLocation();
 			}
@@ -783,6 +787,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
 						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
 					if(postGoodsBean.getName().equals("images"))continue;
+					postResultLog(0, "请填写" + postGoodsBean.getDisplayName() + "!");
 					Toast.makeText(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
 					return false;
 				}
@@ -794,6 +799,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					return true;
 				}
 			}
+			postResultLog(0,"传张照片吧，让大家更好地认识你^-^");
 			Toast.makeText(this.getActivity(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
 			return false;
 		}
@@ -1024,17 +1030,28 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			int lineCount = etDescription != null ? etDescription.getLineCount() : 1;
 			int descLength = etDescription != null ? etDescription.getText().length() : 0;
 			int contactLength = etContact != null ? etContact.getText().length() : 0;
-			Tracker.getInstance().event(event)
-					.append(Key.POSTSTATUS, errorCode)
-					.append(Key.POSTFAILREASON, errorMsg)
-					.append(Key.POSTPICSCOUNT, imgCount)
-					.append(Key.POSTDESCRIPTIONLINECOUNT, lineCount)
-					.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
-					.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
-					.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
-					.end();
-			
-			
+			if (errorMsg.equals("发布成功"))
+				Tracker.getInstance().event(event)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
+				.append(Key.POSTSTATUS, 1)
+				.append(Key.POSTPICSCOUNT, imgCount)
+				.append(Key.POSTDESCRIPTIONLINECOUNT, lineCount)
+				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
+				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
+				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+				.end();
+			else
+				Tracker.getInstance().event(event)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
+				.append(Key.POSTSTATUS, errorCode)
+				.append(Key.POSTFAILREASON, errorMsg)
+				.append(Key.POSTPICSCOUNT, imgCount)
+				.append(Key.POSTDESCRIPTIONLINECOUNT, lineCount)
+				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
+				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
+				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+				.end();
+						
 			hideProgress();
 			final String fmsg = errorMsg;
 			((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
@@ -1047,6 +1064,33 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 
+	private void postResultLog(int errorCode, String errorMsg) {
+		//发布图片
+		String images = "";
+		int imgCount = 0;
+		for (int i = 0; i < bitmap_url.size(); i++) {				
+			if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
+				images += "," + bitmap_url.get(i);
+				imgCount++;
+			}
+		}
+		
+		BxEvent event = goodsDetail != null ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
+		int lineCount = etDescription != null ? etDescription.getLineCount() : 1;
+		int descLength = etDescription != null ? etDescription.getText().length() : 0;
+		int contactLength = etContact != null ? etContact.getText().length() : 0;
+		Tracker.getInstance().event(event)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
+				.append(Key.POSTSTATUS, errorCode)
+				.append(Key.POSTFAILREASON, errorMsg)
+				.append(Key.POSTPICSCOUNT, imgCount)
+				.append(Key.POSTDESCRIPTIONLINECOUNT, lineCount)
+				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
+				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
+				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+				.end();
+	}
+	
 	/**
 	 * 获取模板线程
 	 */

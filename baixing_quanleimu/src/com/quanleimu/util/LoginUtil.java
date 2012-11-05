@@ -19,6 +19,8 @@ import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
 public class LoginUtil implements View.OnClickListener{
 	static public interface LoginListener{
@@ -81,10 +83,21 @@ public class LoginUtil implements View.OnClickListener{
 	}
 
 	private boolean check(String account, String password) {
+		String tip = "";
 		if (account == null || account.trim().equals("")) {
+			Tracker.getInstance()
+			.event(BxEvent.LOGIN_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
+			.end();
 			Toast.makeText(view.getContext(), "账号不能为空！", 0).show();
 			return false;
 		} else if (password == null || password.trim().equals("")) {
+			Tracker.getInstance()
+			.event(BxEvent.LOGIN_SUBMIT)
+			.append(Key.REGISTER_RESULT_STATUS, false)
+			.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
+			.end();
 			Toast.makeText(view.getContext(), "密码不能为空！", 0).show();
 			return false;
 		}
