@@ -72,7 +72,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         pullListView.setOnItemClickListener(new OnItemClickListener() {
             public void onItemClick(AdapterView<?> arg0, View arg1, int position, long id) {
                 position = position - pullListView.getHeaderViewsCount();
-                if (position < 0 || position >= tempGoodsList.getData().size()) return;
+                if (position < 0 || tempGoodsList == null || tempGoodsList.getData() == null || position >= tempGoodsList.getData().size()) return;
 
                 GoodDetailFragment f = new GoodDetailFragment();
                 f.setListHolder(FavoriteAndHistoryFragment.this);
