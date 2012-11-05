@@ -533,17 +533,20 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			lvGoodsList.onRefreshComplete();
 			
 			//if currently using offline data, start fetching online data
-			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus())
-				lvGoodsList.fireRefresh();
+			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
+                lvGoodsList.fireRefresh();
+            } else { //非缓存情况下才加此 log
+                Tracker.getInstance().event(BxEvent.LISTING)
+                        .append(Key.SEARCHKEYWORD, searchContent)
+                        .append(filterParamHolder.getData())
+                        .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
+                        .end();
+            }
+
 				//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 
 			hideProgress();
 
-            Tracker.getInstance().event(BxEvent.LISTING)
-                    .append(Key.SEARCHKEYWORD, searchContent)
-                    .append(filterParamHolder.getData())
-                    .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
-                    .end();
 			break;
 		case GoodsListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
