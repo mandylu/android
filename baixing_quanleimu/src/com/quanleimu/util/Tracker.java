@@ -43,7 +43,7 @@ public class Tracker {
 	}
 	
 	public LogData pv(PV url) {
-		Log.d("trackmobile",url.getName());
+//		Log.d("trackmobile","@"+url.getName());
 		LogData data = new LogData(new HashMap<String, String>());
 		data.append(Key.TRACKTYPE, "pageview");
 		data.append(Key.TIMESTAMP, Communication.getTimeStamp());
@@ -52,7 +52,7 @@ public class Tracker {
 	}
 	
 	public LogData event(BxEvent event) {
-		Log.d("trackmobile",event.getName());
+//		Log.d("trackmobile","@"+event.getName());
 		LogData data = new LogData(new HashMap<String, String>());
 		data.append(Key.TRACKTYPE, "event");
 		data.append(Key.TIMESTAMP, Communication.getTimeStamp());

@@ -6,6 +6,8 @@ import java.util.Map.Entry;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.util.Log;
+
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 /**
  * @author xuweiyan@baixing.com
@@ -84,6 +86,9 @@ public class LogData {
 	
 	public void end() {
 		if (!TrackConfig.getInstance().getLoggingFlag()) return;
+//		for (Entry<String,String> e : map.entrySet()) {
+//			Log.d("trackmobile", "==="+e.getKey()+"=>"+e.getValue());
+//		}
 		Tracker.getInstance().addLog(this);
 	}
 	
