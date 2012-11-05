@@ -130,7 +130,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		ivMyads.setOnClickListener(this);
 //		ivMyfav.setOnClickListener(this);
 //		ivMyhistory.setOnClickListener(this);
-		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+		if (currentType == TYPE_MYPOST)
+			listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		
 		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost);
         adapter.setHasDelBtn(true);
