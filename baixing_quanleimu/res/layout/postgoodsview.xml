@@ -19,9 +19,9 @@
             android:clickable="true"
             android:focusableInTouchMode="true"
             android:orientation="vertical"
-            android:paddingLeft="16dip"
-            android:paddingRight="16dip"
-            android:paddingTop="12dip" >
+            android:paddingLeft="8dip"
+            android:paddingRight="8dip"
+            android:paddingTop="8dip" >
 
             <LinearLayout
                 android:id="@+id/layout_txt"

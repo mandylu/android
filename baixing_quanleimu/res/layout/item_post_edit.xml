@@ -3,6 +3,7 @@
     android:id="@+id/postinputlayout"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
+    android:background="@drawable/post_box"
     android:orientation="horizontal" >
 
     <TextView
@@ -33,7 +34,8 @@
             android:gravity="left|center_vertical"
             android:hint="请输入"
             android:paddingRight="5dip"
-            android:singleLine="true"
+            android:singleLine="false"
+            android:inputType="textMultiLine"
             android:textColor="@drawable/list_titleselector"
             android:textColorHint="#d1d0ca" >
         </EditText>
@@ -42,7 +44,7 @@
             android:id="@+id/postunit"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
-            android:layout_marginRight="5dp"
+            android:layout_marginRight="8dp"
             android:layout_alignParentRight="true"
             android:gravity="center_vertical"
             android:textColor="#82807C"

@@ -2175,7 +2175,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			});
 		}
 		if (layout != null) {
-			layout.setBackgroundResource(R.drawable.post_box);
+//			layout.setBackgroundResource(R.drawable.post_box);
 			LinearLayout.LayoutParams layoutParams = (LayoutParams) layout.getLayoutParams();
 			if (layoutParams == null)
 				layoutParams = new LinearLayout.LayoutParams(

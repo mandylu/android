@@ -3,15 +3,16 @@
     android:id="@+id/post_select"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
-    android:background="@drawable/list_selector" >
+    android:background="@drawable/post_select_selector" >
 
     <ImageView
         android:id="@+id/post_next"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
-        android:src="@drawable/icon_triangle" >
+        android:layout_marginRight="8dp"
+        android:src="@drawable/post_select_arrow" >
     </ImageView>
 
     <TextView

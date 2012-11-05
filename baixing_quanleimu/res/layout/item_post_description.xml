@@ -3,6 +3,7 @@
 	android:id="@+id/postinputlayout"
 	android:layout_width="fill_parent"
 	android:layout_height="wrap_content"
+	android:background="@drawable/post_box"
 	android:orientation="horizontal" >
 	    
     <TextView
