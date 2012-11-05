@@ -577,8 +577,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	@Override
 	public boolean handleBack(){
 		Bundle bundle = createArguments(null, null);
-		bundle.putInt("defaultPageIndex", 1);
-		((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
+//		bundle.putInt("defaultPageIndex", 1);
+		((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
 		return true;
 	}
 	
