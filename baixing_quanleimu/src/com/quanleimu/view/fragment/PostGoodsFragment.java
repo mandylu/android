@@ -528,7 +528,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				sendMessage(1, null);
 //				addCategoryItem();
 //				buildPostLayout();
-				new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
+				showSimpleProgress();
+				new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
+
+//				new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 			} else {
 //				myHandler.sendEmptyMessage(1);
 //				sendMessage(1, null);
@@ -537,7 +540,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		} else {
 			showSimpleProgress();
-			new Thread(new GetCategoryMetaThread(true,cityEnglishName)).start();
+			new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
 		}
 
 		loadCachedData();
@@ -1042,16 +1045,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	class GetCategoryMetaThread implements Runnable {
 
-		private boolean isUpdate;
+//		private boolean isUpdate;
 		private String cityEnglishName = null;
 
-		public GetCategoryMetaThread(boolean isUpdate, String cityEnglishName) {
+		public GetCategoryMetaThread(String cityEnglishName) {
 			this.cityEnglishName = cityEnglishName;
-			this.isUpdate = isUpdate;
+//			this.isUpdate = isUpdate;
 		}
-		public GetCategoryMetaThread(boolean isUpdate) {
-			this.isUpdate = isUpdate;
-		}
+//		public GetCategoryMetaThread() {
+//			this.isUpdate = isUpdate;
+//		}
 		
 
 		@Override
@@ -1082,9 +1085,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						//保存模板
 						Helper.saveDataToLocate(activity, categoryEnglishName
 								+ this.cityEnglishName, postMu);
-						if (isUpdate) {
+//						if (isUpdate) {
 							sendMessage(1, null);
-						}
+//						}
 					}
 				} else {
 					// {"error":{"code":0,"message":"\u66f4\u65b0\u4fe1\u606f\u6210\u529f"},"id":"191285466"}
