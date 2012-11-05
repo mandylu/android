@@ -374,10 +374,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		case MSG_INVERIFY:
 		case MSG_DELETED:
 			hideProgress();
-
-
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
-			this.pv = (currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED));
+			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(currentType==TYPE_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED));
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
 				Tracker.getInstance()

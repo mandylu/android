@@ -178,11 +178,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			Tracker.getInstance()
 				.pv(this.pv)
 				.append(Key.SEARCHKEYWORD, searchContent)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
 				.end();
 		}else {//normal
 			this.pv = PV.LISTING;
 			Tracker.getInstance()
 			.pv(this.pv)
+			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.end();
 		}
 		goodsListLoader.setHandler(handler);

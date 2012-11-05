@@ -70,8 +70,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		this.pv = PV.LISTINGFILTER;
-		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		super.onStackTop(isBack);
 	}
 
@@ -115,6 +113,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	public void onResume()
 	{
 		super.onResume();
+		this.pv = PV.LISTINGFILTER;
+		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		
 		// AND 地区_s:m7259
 		PostMu postMu = (PostMu) Util

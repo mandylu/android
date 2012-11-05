@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -240,8 +241,11 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 //					findViewById(R.id.session_loading).setVisibility(View.GONE);
 					List<ChatSession> newSessions = ChatSession.fromJson(serverMessage);
 					sendMessage(MSG_NEW_SESSION, newSessions);
-					//tracker
-					Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).end();
+					//tracker					
+					if (newSessions!=null)
+						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).end();
+					else
+						Tracker.getInstance().pv(PV.BUZZLISTING).end();
 				}
 			}
 			

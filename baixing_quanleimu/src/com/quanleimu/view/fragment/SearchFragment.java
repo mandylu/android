@@ -92,14 +92,16 @@ public class SearchFragment extends BaseFragment {
 				{
 					SearchFragment.this.doSearch();
 					return true;
-				} else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
-				{
-					if (categoryResultCountList != null && categoryResultCountList.size() > 0)
-						SearchFragment.this.showSearchResult(false);
-					else
-						SearchFragment.this.showSearchHistory();
-					return false;
-				}else
+				} 
+//					else if (keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_DOWN)
+//				{
+//					if (categoryResultCountList != null && categoryResultCountList.size() > 0)
+//						SearchFragment.this.showSearchResult(false);
+//					else
+//						SearchFragment.this.showSearchHistory();
+//					return false;
+//				}
+				else
 				{
 					return false;
 				}
@@ -209,16 +211,12 @@ public class SearchFragment extends BaseFragment {
 	public void onStackTop(boolean isBack) {
 		if (isBack)
 		{
-			this.pv = PV.SEARCHRESULTCATEGORY;			
-			Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 			etSearch.setText(searchContent);
 			etSearch.setSelection(searchContent.length(), searchContent.length());
 			this.showSearchResult(false);
 		}
 		else
 		{	
-			this.pv = PV.SEARCH;			
-			Tracker.getInstance().pv(PV.SEARCH).end();
 			this.showSearchHistory();
 			etSearch.postDelayed(new Runnable(){
 				@Override
@@ -299,7 +297,7 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		this.pv = PV.SEARCHRESULTCATEGORY; //FIXME: @zhongjiawu
+		this.pv = PV.SEARCHRESULTCATEGORY;
 		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 
 		lvSearchHistory.setVisibility(View.GONE);

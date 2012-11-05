@@ -397,6 +397,26 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			
 			public void onPageSelected(int pos) {
 				keepSilent = false;//magic flag to refuse unexpected touch event
+				//tracker
+				if (!isMyAd())
+				{
+					GoodDetailFragment.this.pv = PV.VIEWAD;
+					Tracker.getInstance()
+					.pv(GoodDetailFragment.this.pv)
+					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+					.end();
+				}else {
+					GoodDetailFragment.this.pv = PV.MYVIEWAD;
+					Tracker.getInstance()
+					.pv(PV.MYVIEWAD)
+					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+					.append(Key.ADSENDERID, user!=null? user.getId() : null)
+					.append(Key.ADSTATUS, detail.getValueByKey("status"))
+					.end();
+				}
+				
 				if (pos != mListLoader.getGoodsList().getData().size())
 				{
 					detail = mListLoader.getGoodsList().getData().get(pos);
