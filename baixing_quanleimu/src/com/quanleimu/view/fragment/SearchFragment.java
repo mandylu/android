@@ -304,7 +304,7 @@ public class SearchFragment extends BaseFragment {
 		this.hideSoftKeyboard();
 		if (search)
 		{
-			this.showProgress("消息", "搜索中...", false);			
+			this.showProgress("消息", "搜索中...", true);			
 			new Thread(new SearchCategoryListThread()).start();
 		}
 		else

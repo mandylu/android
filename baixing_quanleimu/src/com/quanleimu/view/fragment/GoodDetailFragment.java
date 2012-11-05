@@ -560,6 +560,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void notifyPageDataChange(boolean hasMore)
 	{
+		if(keepSilent) return;
 		PagerAdapter adapter = getContentPageAdapter();
 		if (adapter != null)
 		{
@@ -571,7 +572,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			return;
 		}
 		
-		View page = loadingMorePage.get();
+		View page = loadingMorePage == null ? null : loadingMorePage.get();
 		final ViewPager vp = (ViewPager) rootView.findViewById(R.id.svDetail);
 		if (!hasMore && page != null && vp != null)
 		{
