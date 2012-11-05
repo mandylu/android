@@ -112,7 +112,9 @@ public class TalkFragment extends BaseFragment {
 			if (bundle != null)
 			{
 				targetUserId = bundle.getString("receiverId");
-				myUserId = Util.getMyId(getActivity()); //FIXME: this is load from file, may cost times to load it on main thread.
+				//FIXME: this is load from file, may cost times to load it on main thread.				
+				myUserId = Util.getMyId(getActivity()); 
+				
 				adId = bundle.getString("adId");
 				if(bundle.containsKey("receiverNick")){
 					adTitle = bundle.getString("receiverNick");
@@ -529,6 +531,9 @@ public class TalkFragment extends BaseFragment {
 			
 			public void run() 
 			{
+				if (myUserId == null)
+					return;
+				
 				ArrayList<String> cmdOpts = new ArrayList<String>();
 				cmdOpts.add("u_id=" + URLEncoder.encode(myUserId));
 				if (sessionId != null)
@@ -586,6 +591,9 @@ public class TalkFragment extends BaseFragment {
 
 			@Override
 			public void run() {
+				if (myUserId == null) 
+					return;
+				
 				ArrayList<String> cmdOpts = new ArrayList<String>();
 				cmdOpts.add("u_id_from=" + URLEncoder.encode(myUserId));
 				cmdOpts.add("u_id_to=" + URLEncoder.encode(targetUserId));
@@ -653,6 +661,9 @@ public class TalkFragment extends BaseFragment {
 					sendMessage(MSG_SCROLL_BOTTOM, null);
 					break;
 				case R.id.im_send_btn:
+					if (myUserId == null)
+						return;
+					
 					EditText text = (EditText) getView().findViewById(R.id.im_input_box);
 					if (text.length() != 0)
 					{
