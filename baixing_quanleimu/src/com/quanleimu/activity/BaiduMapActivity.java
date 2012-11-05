@@ -1,5 +1,6 @@
 package com.quanleimu.activity;
 
+import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Canvas;
@@ -26,6 +27,7 @@ import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
+import java.lang.ref.WeakReference;
 import java.util.List;
 
 public class BaiduMapActivity extends MapActivity implements LocationListener{
@@ -95,6 +97,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(QuanleimuApplication.context == null){
+			QuanleimuApplication.context = new WeakReference<Context>(this);
+		}
 		this.setContentView(R.layout.baidumaplayout);
 		if (mBMapMan == null) 
 		{

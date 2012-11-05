@@ -255,6 +255,9 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    @Override
 	    public void handleRightAction(){
 	    	ViewFlow vfCoupon = (ViewFlow)getView().findViewById(R.id.vfCoupon);
+	    	if(vfCoupon == null || vfCoupon.getSelectedView() == null || vfCoupon.getSelectedView().getTag() == null){
+	    		return;
+	    	}
 	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
 	    	if(filePath == null) return;
 	    	
