@@ -330,6 +330,11 @@ public class ChatMessageDatabase extends Database
 					i++;
 				}
 			}
+			if (cur != null)
+			{
+				cur.deactivate();
+				cur.close();
+			}
 		} 
 		catch(Throwable t)
 		{

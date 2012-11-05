@@ -1740,9 +1740,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	private void startBaiduMap(Bundle bundle, GoodsDetail requestDetail) {
+		if(keepSilent) return;
 		final BaseActivity baseActivity = (BaseActivity)getActivity();
-		if (baseActivity != null && requestDetail == detail)
-		{
+		if (baseActivity != null && requestDetail == detail){
 			baseActivity.getIntent().putExtras(bundle);
 			
 			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
