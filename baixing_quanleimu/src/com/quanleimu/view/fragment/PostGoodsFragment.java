@@ -43,6 +43,7 @@ import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
@@ -348,7 +349,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
 		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
-		v.findViewById(R.id.iv_post_finish).setOnClickListener(this);
+		Button button = (Button) v.findViewById(R.id.iv_post_finish);
+		button.setOnClickListener(this);
+		if (goodsDetail == null)
+			button.setText("立即免费发布");
+		else
+			button.setText("立即更新信息");
+		
+
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		

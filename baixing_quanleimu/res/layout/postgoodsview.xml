@@ -36,13 +36,16 @@
                     layout="@layout/post_image_layout" />
             </LinearLayout>
 
-            <ImageView
+            <Button
+                android:text="立即免费发布"
+                android:textColor="#FFFFFF"
+                android:textSize="18dp"
                 android:id="@+id/iv_post_finish"
                 android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
+                android:layout_height="48dp"
                 android:layout_marginTop="12dip"
                 android:background="@drawable/post_finish_btn" >
-            </ImageView>
+            </Button>
         </LinearLayout>
     </ScrollView>
 
