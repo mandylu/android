@@ -18,6 +18,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
+import android.widget.TabHost;
 
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
@@ -32,6 +33,9 @@ import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.CustomizeTabHost;
+import com.quanleimu.view.CustomizeTabHost.TabIconRes;
+import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
 import com.quanleimu.view.fragment.CatMainFragment;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
@@ -41,10 +45,9 @@ import com.quanleimu.view.fragment.TalkFragment;
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
+public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEventHandler,*/ JobDoneListener, TabSelectListener {
 	
-//	private BaseView currentView;
-	private boolean needClearViewStack = false;
+	private CustomizeTabHost globalTabCtrl;// = new CustomizeTabHost();
 	
 	public static boolean isInActiveStack;
 	
@@ -127,6 +130,13 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			break;			
 		}
 
+	}
+	
+	protected void onStatckTop(BaseFragment f) {
+//		if (f.hasGlobalTab())
+		{
+			findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+		}
 	}
 	
 	
@@ -401,6 +411,12 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			Tracker.getInstance().save();
 		} catch (Exception e) {
 		}
+		
+		if (globalTabCtrl != null)
+		{
+			savedInstanceState.putSerializable("tabCtrl", globalTabCtrl);
+		}
+		
 		super.onSaveInstanceState(savedInstanceState);
 	}
 	
@@ -489,6 +505,20 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
+
+		if (savedInstanceState != null)
+		{
+			globalTabCtrl = (CustomizeTabHost)savedInstanceState.get("tabCtrl");
+		}
+		
+		if (globalTabCtrl == null) {
+	        String tabBrowse = getString(R.string.tab_browse);
+	        String tabUserCenter = getString(R.string.tab_user_center);
+	        String tabPost = getString(R.string.tab_post);
+			globalTabCtrl = CustomizeTabHost.createTabHost(0, new String[] {tabBrowse, tabPost, tabUserCenter}, 
+					new TabIconRes[] {TabIconRes.NO_ICON, TabIconRes.NO_ICON, TabIconRes.NO_ICON});
+		}
+		
 		QuanleimuApplication.context = new WeakReference<Context>(this);
 		QuanleimuApplication.getApplication().setErrorHandler(this);
 		Intent pushIntent = new Intent(this, com.quanleimu.broadcast.BXNotificationService.class);
@@ -501,6 +531,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		
 		setContentView(R.layout.main_activity);
 		findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
+		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		
 		splashJob = new SplashJob(this, this);
 		
@@ -733,6 +764,34 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		if (msgListener != null)
 		{
 			unregisterReceiver(msgListener);
+		}
+	}
+
+	private int lastIndex;
+	@Override
+	public void beforeChange(int currentIndex, int nextIndex) {
+		if (nextIndex != 1)
+		{
+			lastIndex = nextIndex;
+		}
+	}
+
+	/**
+	 * This code only have short life and will be replaced with new logic after 3.0 release. So just ignor if you think it's ugly
+	 */
+	public void afterChange(int newSelectIndex) {
+		switch(newSelectIndex)
+		{
+		case 0:
+			this.pushFragment(new HomeFragment(), bundle, true);
+			break;
+		case 1:
+			pushFragment(new GridCateFragment(), bundle, false);
+			globalTabCtrl.showTab(lastIndex);
+			break;
+		case 2:
+			this.pushFragment(new PersonalInfoFragment(), bundle, true);
+			break;
 		}
 	}
 	

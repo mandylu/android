@@ -28,6 +28,9 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.webkit.WebChromeClient.CustomViewCallback;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -51,31 +54,58 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LoginUtil;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.fragment.HomeFragment.GetPersonalProfileThread;
+import com.quanleimu.widget.CustomizeGridView;
+import com.quanleimu.widget.EditUsernameDialogFragment;
+import com.quanleimu.widget.CustomizeGridView.GridInfo;
+import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 
-public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener {
+public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, ItemClickListener {
 
 	public static final int REQ_EDIT_PROFILE = 1;
 	public static final int REQ_REGISTER = 2;
+	
+	public static final int INDEX_POSTED = 0;
+	public static final int INDEX_LIMITED = 1;
+	public static final int INDEX_DELETED = 2;
+	public static final int INDEX_FAVORITE = 3;
+	public static final int INDEX_MESSAGE = 4;
+	public static final int INDEX_HISTORY = 5;
+	public static final int INDEX_SETTING = 6;	
+	
+	public int postNum = 0;
+	public int limitedNum = 0;
+	public int deletedNum = 0;
+	public int favoriteNum = 0;
+	public int unreadMessageNum = 0;
+	public int historyNum = 0;
+	
+    private UserProfile userProfile;
+    
+    private EditUsernameDialogFragment editUserDlg;
 	
 	private Bundle bundle = null;
 	private UserBean user = null;
 	private String json = null;
 	private String upJson = null;
-	private String locationJson = null;
+//	private String locationJson = null;
 	private String sessionsJson = null;
 	static final int MSG_GETPERSONALADS = 1;
-	static final int MSG_GETPERSONALPROFILE = 2;
+	public static final int MSG_GETPERSONALPROFILE = 2;
 	static final int MSG_GETPERSONALLOCATION = 3;
 	static final int MSG_GETPERSONALSESSIONS = 4;
 	static final int MSG_LOGINSUCCESS = 5;
 	static final int MSG_LOGINFAIL = 6;
 	static final int MSG_NEWREGISTERVIEW = 7;
 	static final int MSG_FORGETPASSWORDVIEW = 8;
-	
-	private List<ChatSession> sessions = null;
+    public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
+    public static final int MSG_SHOW_TOAST = 101;
+    public static final int MSG_SHOW_PROGRESS = 102;
+
+//	private List<ChatSession> sessions = null;
 	private UserProfile up = null;
-	private BroadcastReceiver chatMessageReceiver;
-	private LoginUtil loginHelper;
+//	private BroadcastReceiver chatMessageReceiver;
+//	private LoginUtil loginHelper;
 	
 	@Override
 	public void onLoginFail(String message){
@@ -92,13 +122,23 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 	@Override
 	public void initTitle(TitleDef title) {
-//		title.m_leftActionHint = "设置";
-//		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-		title.m_title = "用户中心";
-//		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_CUSTOM;
-//		title.m_rightActionHint = "";
-//		title.rightCustomResourceId = R.drawable.btn_refresh;
-		title.m_visible = true;
+		LayoutInflater inflator = LayoutInflater.from(getActivity());
+		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
+
+		title.hasGlobalSearch = true;
+		
+		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
+		
+		logoRoot.setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+			}
+		});
+	}
+	
+	public boolean hasGlobalTab()
+	{
+		return true;
 	}
 
 	@Override
@@ -122,56 +162,70 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		logCreateView(savedInstanceState);
 		if (savedInstanceState != null)
 		{
 			Log.d(TAG, "recreate view from saved data." + this.getClass().getName());
 		}
 
 		View v = inflater.inflate(R.layout.personalentryview, null);
-		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
-		v.findViewById(R.id.rl_wohistory).setOnClickListener(this);
-		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
-		v.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
-		v.findViewById(R.id.personalEdit).setOnClickListener(this);
-		this.loginHelper = null;
+
+		int[] icons = { R.drawable.icon_my_posted, R.drawable.icon_my_limited,
+				R.drawable.icon_my_deleted, R.drawable.icon_my_fav,
+				R.drawable.icon_my_mail, R.drawable.icon_my_history,
+				R.drawable.icon_my_setting };
+
+		String[] texts = { "已发布", "审核未通过", "已删除", "收藏", "私信", "最近浏览", "设置" };
+
+		int[] numbers = { postNum, limitedNum, deletedNum, favoriteNum,
+				unreadMessageNum, historyNum, 0 };
+
+		boolean[] stars = { false, false, false, false, (unreadMessageNum > 0),
+				false, false };
+
+		List<GridInfo> gitems = new ArrayList<GridInfo>();
+		for (int i = 0; i < icons.length; i++) {
+			GridInfo gi = new GridInfo();
+			gi.imgResourceId = icons[i];
+			gi.text = texts[i];
+			// gi.number = numbers[i]; //数字不用加
+			gi.starred = stars[i];
+			gitems.add(gi);
+		}
+
+		// GridAdapter adapter = new GridAdapter(this.getActivity());
+		// adapter.setList(gitems, 3);
+		CustomizeGridView gv = (CustomizeGridView) v
+				.findViewById(R.id.gridcategory);
+		gv.setData(gitems, 3);
+		gv.setItemClickListener(this);
+		// gv.setAdapter(adapter);
+		// gv.setOnItemClickListener(this);
+
+		reloadUser(v);
+		
+//		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
+//		v.findViewById(R.id.rl_wohistory).setOnClickListener(this);
+//		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
+//		v.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
+//		v.findViewById(R.id.personalEdit).setOnClickListener(this);
+//		this.loginHelper = null;
+		
+		
 		return v;
 	}
 	
-	private void switchLayoutOnLogin(boolean logined){
-		View root = getView();
-		if(logined){
-			root.findViewById(R.id.rl_login).setVisibility(View.GONE);
-			root.findViewById(R.id.rl_profile).setVisibility(View.VISIBLE);
-			TitleDef title = this.getTitleDef();//new TitleDef();
-			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-			title.m_title = "用户中心";
-			title.m_leftActionHint="注销";
-			title.m_rightActionHint="设置";
-			root.findViewById(R.id.profile_background).setVisibility(View.VISIBLE);
-			root.findViewById(R.id.seperator_login).setVisibility(View.GONE);
-//			m_viewInfoListener.onTitleChanged(title);
-			refreshHeader();
-		}else{
-			if(loginHelper == null){
-				loginHelper = new LoginUtil(root.findViewById(R.id.rl_login), this);
-			}
-			root.findViewById(R.id.rl_login).setVisibility(View.VISIBLE);
-			root.findViewById(R.id.rl_profile).setVisibility(View.GONE);
-			TitleDef title = this.getTitleDef();
-			title.m_leftActionHint="";
-			title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
-			title.m_title = "用户中心";
-			title.m_rightActionHint="设置";
-//			m_viewInfoListener.onTitleChanged(title);
-			refreshHeader();
-			root.findViewById(R.id.profile_background).setVisibility(View.GONE);
-			root.findViewById(R.id.seperator_login).setVisibility(View.VISIBLE);
-		}
-
-	}
-	
-	
+    private void reloadUser(View v) {
+        //set user profile info view
+        user = Util.getCurrentUser();
+        if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
+            userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile");
+            if (userProfile != null) {
+                fillProfile(userProfile, v);
+            } else {
+                new Thread(new GetPersonalProfileThread()).start();
+            }
+        }
+    }
 	
 	@Override
 	public void onPause() {
@@ -184,140 +238,64 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void onResume() {
 		super.onResume();
 		
-		refreshUI(getView());
-		
 		
 		registerReceiver();
 	}
 	
 	private void registerReceiver()
 	{
-		if (chatMessageReceiver == null)
-		{
-			chatMessageReceiver = new BroadcastReceiver() {
-
-				public void onReceive(Context outerContext, Intent outerIntent) {
-					View v = getView();
-					if (v != null)
-					{
-						updateMessageCountInfo(v);
-					}
-					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
-					{
-						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (!hasSession(msg.getSession()))
-						{
-							new Thread(new GetPersonalSessionsThread()).start();
-						}
-					}
-				}
-			};
-		}
-		
-		getActivity().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+//		if (chatMessageReceiver == null)
+//		{
+//			chatMessageReceiver = new BroadcastReceiver() {
+//
+//				public void onReceive(Context outerContext, Intent outerIntent) {
+//					View v = getView();
+//					if (v != null)
+//					{
+//						updateMessageCountInfo(v);
+//					}
+//					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
+//					{
+//						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+//						if (!hasSession(msg.getSession()))
+//						{
+//							new Thread(new GetPersonalSessionsThread()).start();
+//						}
+//					}
+//				}
+//			};
+//		}
+//		
+//		getActivity().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
 	}
 	
 	private void unregisterReceiver()
 	{
-		if (chatMessageReceiver != null)
-		{
-			getActivity().unregisterReceiver(chatMessageReceiver);
-		}
+//		if (chatMessageReceiver != null)
+//		{
+//			getActivity().unregisterReceiver(chatMessageReceiver);
+//		}
 	}
 	
-	private boolean hasSession(String sessionId)
-	{
-		if (this.sessions == null || this.sessions.size() == 0)
-		{
-			return false;
-		}
-		
-		for (ChatSession session : this.sessions)
-		{
-			if (sessionId.equals(session.getSessionId()))
-			{
-				return true;
-			}
-		}
-		
-		return false;
-	}
+//	private boolean hasSession(String sessionId)
+//	{
+//		if (this.sessions == null || this.sessions.size() == 0)
+//		{
+//			return false;
+//		}
+//		
+//		for (ChatSession session : this.sessions)
+//		{
+//			if (sessionId.equals(session.getSessionId()))
+//			{
+//				return true;
+//			}
+//		}
+//		
+//		return false;
+//	}
 
 
-	private void clearProfile(){
-		Activity activity = getActivity();
-		((TextView)activity.findViewById(R.id.personalNick)).setText("");
-		((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageDrawable(null);
-		((ImageView)activity.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
-		((TextView)activity.findViewById(R.id.personalLocation)).setText("");
-		((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
-	}
-	
-	
-	public void onClick(View v) {
-		switch(v.getId()){
-		case R.id.rl_wofav:
-			if(QuanleimuApplication.getApplication().getListMyStore() != null 
-				&& QuanleimuApplication.getApplication().getListMyStore().size() > 0){
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", true);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);
-			}
-			break;
-		case R.id.rl_wohistory:
-			if(QuanleimuApplication.getApplication().getListLookHistory() != null
-				&& QuanleimuApplication.getApplication().getListLookHistory().size() > 0){
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", false);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);
-			}
-			break;
-		case R.id.rl_wosent:
-			if(user == null){
-//				Bundle bundle = createArguments(null, "用户中心");
-//				pushFragment(new LoginFragment(), bundle);
-			}else{
-				pushFragment(new PersonalPostFragment(), null);
-			}			
-			break;
-		case R.id.rl_woprivatemsg:
-			if(user == null){
-//				Bundle bundle = createArguments(null, "用户中心");
-//				pushFragment(new LoginFragment(), bundle);
-			}else{
-				if ( this.sessions != null)
-				{
-					Bundle bundle = createArguments(null, null);
-					ArrayList tmpList = new ArrayList();
-					tmpList.addAll(this.sessions);
-					bundle.putSerializable("sessions", tmpList);
-					pushFragment(new SessionListFragment(), bundle);
-				}
-			}						
-			break;
-		case R.id.personalEdit:
-			if(user == null){
-				Bundle bundle = createArguments(null,  "用户中心");
-//				bundle.putString("backPageName", "用户中心");
-//				bundle.putInt(ARG_COMMON_REQ_CODE, REQ_REGISTER);
-				pushFragment(new LoginFragment(), bundle);
-			}else if (up != null){
-				Bundle bundle = createArguments(null, null);
-				bundle.putInt(ARG_COMMON_REQ_CODE, REQ_EDIT_PROFILE);
-				bundle.putSerializable("profile", up);
-				if(null != ((TextView)getView().findViewById(R.id.personalLocation)).getText()){
-					bundle.putSerializable("cityName", 
-							((TextView)getView().findViewById(R.id.personalLocation)).getText().toString());
-				}
-				pushFragment(new ProfileEditFragment(), bundle);
-			}	
-			break;
-		default:
-			break;
-		}
-	}
-	
-	
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result) {
 		if (requestCode == REQ_EDIT_PROFILE && result != null)
@@ -391,17 +369,11 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			pushFragment(new RegisterFragment(), bundle); //FIXME:
 //			m_viewInfoListener.onNewView(new RegisterView(PersonalCenterEntryView.this.getContext()));
 			break;
-		case MSG_LOGINSUCCESS:
-			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
-			}else{
-				Toast.makeText(activity, "登陆成功", 0).show();
-			}
-			if (rootView != null)
-			{
-				refreshUI(rootView);
-			}
-			break;				
+        case MSG_EDIT_USERNAME_SUCCESS:
+            hideProgress();
+            editUserDlg.dismiss();
+            reloadUser(getView());
+			break;			
 		case MSG_LOGINFAIL:
 			if(msg.obj != null && msg.obj instanceof String){
 				Toast.makeText(activity, (String)msg.obj, 0).show();
@@ -410,26 +382,26 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			break;
 		case MSG_GETPERSONALADS:
-			hideProgress();
-			
-			if (json != null) {
-				GoodsList gl = JsonUtil.getGoodsListFromJson(json);
-				
-				List<GoodsDetail> listMyPost = gl.getData();
-				if(listMyPost != null){
-					for(int i = listMyPost.size() - 1; i >= 0; -- i){
-						if(!listMyPost.get(i).getValueByKey("status").equals("0")){
-							listMyPost.remove(i);
-						}
-					}
-				}
-				if(getActivity() != null)
-				{
-					TextView tvPersonalAds = (TextView) getActivity().findViewById(R.id.tv_sentcount);
-					tvPersonalAds.setText(String.valueOf((listMyPost == null) ? 0 : listMyPost.size()));
-				}
-				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-			}
+//			hideProgress();
+//			
+//			if (json != null) {
+//				GoodsList gl = JsonUtil.getGoodsListFromJson(json);
+//				
+//				List<GoodsDetail> listMyPost = gl.getData();
+//				if(listMyPost != null){
+//					for(int i = listMyPost.size() - 1; i >= 0; -- i){
+//						if(!listMyPost.get(i).getValueByKey("status").equals("0")){
+//							listMyPost.remove(i);
+//						}
+//					}
+//				}
+//				if(getActivity() != null)
+//				{
+//					TextView tvPersonalAds = (TextView) getActivity().findViewById(R.id.tv_sentcount);
+//					tvPersonalAds.setText(String.valueOf((listMyPost == null) ? 0 : listMyPost.size()));
+//				}
+//				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+//			}
 			break;
 		case MSG_GETPERSONALPROFILE:
 			if(upJson != null){
@@ -438,137 +410,50 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				{
 					Util.saveDataToLocate(getActivity(), "userProfile", up);
 					if(up != null){
-						fillProfile(up);
+						fillProfile(up,rootView);
 					}
 				}
 			}
 			break;
 		case MSG_GETPERSONALLOCATION:
-			if(locationJson != null){
-				try{
-					JSONArray metaAry = new JSONArray(locationJson);
-					if(metaAry != null && metaAry.length() > 0){
-						JSONObject meta = metaAry.getJSONObject(0);
-						if(meta != null){
-							if(meta.has("displayName")){
-								String location = meta.getString("displayName");
-								if(location != null){
-									((TextView)getActivity().findViewById(R.id.personalLocation)).setText(location);
-								}
-							}								
-						}
-					}
-				}catch(JSONException e){
-					e.printStackTrace();
-				}
-			}
+//			if(locationJson != null){
+//				try{
+//					JSONArray metaAry = new JSONArray(locationJson);
+//					if(metaAry != null && metaAry.length() > 0){
+//						JSONObject meta = metaAry.getJSONObject(0);
+//						if(meta != null){
+//							if(meta.has("displayName")){
+//								String location = meta.getString("displayName");
+//								if(location != null){
+//									((TextView)getActivity().findViewById(R.id.personalLocation)).setText(location);
+//								}
+//							}								
+//						}
+//					}
+//				}catch(JSONException e){
+//					e.printStackTrace();
+//				}
+//			}
 			break;
 		case MSG_GETPERSONALSESSIONS:
-			if(this.sessions != null){
-				updateMessageCountInfo(rootView);
-			}
+//			if(this.sessions != null){
+//				updateMessageCountInfo(rootView);
+//			}
 			break;
 		}
 	
 	}
 
-	@Override
-	public boolean handleBack() {
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-		builder.setTitle("提示:")
-				.setMessage("确定注销？")
-				.setNegativeButton("取消", new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface dialog, int which){
-						dialog.dismiss();
-					}
-				})
-				.setPositiveButton("确定", new DialogInterface.OnClickListener(){
-					@Override
-					public void onClick(DialogInterface dialog, int which){
-
-						Util.logout();
-						if(bundle != null){
-							bundle.remove("lastPost");
-						}
-						QuanleimuApplication.getApplication().setListMyPost(null);
-						refreshUI(getView());
-					}					
-				});
-		builder.show();
-		
-		return true;
-	}
-	
-	private void refreshUI (View rootView)
-	{
-		Activity activity = this.getActivity();
-		user = (UserBean) Util.loadDataFromLocate(activity, "user");
-		up = (UserProfile) Util.loadDataFromLocate(activity, "userProfile");
-		List<GoodsDetail> history = QuanleimuApplication.getApplication().getListLookHistory();
-		TextView tvHistory = (TextView)activity.findViewById(R.id.tv_historycount);
-		tvHistory.setText(String.valueOf(history == null ? 0 : history.size()));
-		
-		List<GoodsDetail> favs = QuanleimuApplication.getApplication().getListMyStore();
-		TextView tvFav = (TextView)activity.findViewById(R.id.tv_favcount);
-		tvFav.setText(String.valueOf(favs == null ? 0 : favs.size()));
-
-		if(user != null && ((this.bundle != null && bundle.getInt("forceUpdate") == 1)
-			|| QuanleimuApplication.getApplication().getListMyPost() == null)){
-			((TextView)activity.findViewById(R.id.btn_editprofile)).setText("编辑");
-			if (bundle != null) {
-				bundle.remove("forceUpdate");
-			}
-			forceUpdate();
-			switchLayoutOnLogin(true);
-		}
-		else{
-			TextView tvPersonalAds = (TextView)activity.findViewById(R.id.tv_sentcount);
-			tvPersonalAds.setText(String.valueOf(QuanleimuApplication.getApplication().getListMyPost() == null ?
-					0 : QuanleimuApplication.getApplication().getListMyPost().size()));		
-			if(user == null){
-			    ((TextView)activity.findViewById(R.id.btn_editprofile)).setText("登陆");
-				clearProfile();
-				((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("未登陆");
-				tvPersonalAds.setText("未登陆");
-				switchLayoutOnLogin(false);
-			}else{
-				switchLayoutOnLogin(true);
-				((TextView)rootView.findViewById(R.id.btn_editprofile)).setText("编辑");
-				if(up == null || (up.createTime.equals(""))){
-					new Thread(new GetPersonalProfileThread()).start();
-				}
-				else{
-					this.fillProfile(up);
-				}
-				if(this.sessions == null){
-					((TextView)activity.findViewById(R.id.tv_buzzcount)).setText("0");
-					new Thread(new GetPersonalSessionsThread()).start();
-				}else{
-//					((TextView)this.findViewById(R.id.tv_buzzcount)).setText(String.valueOf(sessions.size()));
-					updateMessageCountInfo(rootView);
-				}
-			}
-		}
-	}
-	
-	
-
-	
-	@Override
-	public void handleRightAction() {
-		pushFragment(new SetMainFragment(), null);
-	}
 	private void updateMessageCountInfo(View rootView)
 	{
-		if (this.sessions != null)
-		{
-			ChatMessageDatabase.prepareDB(getActivity());
-			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getActivity())));
-			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
-		}else{
-			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("0未读");
-		}
+//		if (this.sessions != null)
+//		{
+//			ChatMessageDatabase.prepareDB(getActivity());
+//			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getActivity())));
+//			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
+//		}else{
+//			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("0未读");
+//		}
 	}
 	
 	class GetLocationThread implements Runnable{
@@ -578,31 +463,31 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		private String objId = "";
 		@Override
 		public void run() {
-			String apiName = "metaobject";
-			ArrayList<String> list = new ArrayList<String>();
-			 
-			list.add("objIds=" + objId);
-			
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				locationJson = Communication.getDataByUrl(url, false);
-				sendMessage(MSG_GETPERSONALLOCATION, null);
-				return;
-			} catch (UnsupportedEncodingException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (IOException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (Communication.BXHttpException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			}
-
-			hideProgress();
+//			String apiName = "metaobject";
+//			ArrayList<String> list = new ArrayList<String>();
+//			 
+//			list.add("objIds=" + objId);
+//			
+//			String url = Communication.getApiUrl(apiName, list);
+//			try {
+//				locationJson = Communication.getDataByUrl(url, false);
+//				sendMessage(MSG_GETPERSONALLOCATION, null);
+//				return;
+//			} catch (UnsupportedEncodingException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			} catch (IOException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			} catch (Communication.BXHttpException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			}
+//
+//			hideProgress();
 		}		
 	}
 	
@@ -623,114 +508,151 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	class GetPersonalSessionsThread implements Runnable {
 		@Override
 		public void run() {
-			if (user == null)
-			{
-				return;
-			}
-			
-			String apiName = "read_session";
-			ArrayList<String> list = new ArrayList<String>();
-			 
-			list.add("u_id=" + user.getId());
-			
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				sessionsJson = Communication.getDataByUrl(url, true); //Only load cached data here.
-				if(sessionsJson != null){
-					sessions = ChatSession.fromJson(sessionsJson);
-				}
-				sendMessage(MSG_GETPERSONALSESSIONS, null);
-				return;
-			} catch (UnsupportedEncodingException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (IOException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (Communication.BXHttpException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			}
-
-			hideProgress();
+//			if (user == null)
+//			{
+//				return;
+//			}
+//			
+//			String apiName = "read_session";
+//			ArrayList<String> list = new ArrayList<String>();
+//			 
+//			list.add("u_id=" + user.getId());
+//			
+//			String url = Communication.getApiUrl(apiName, list);
+//			try {
+//				sessionsJson = Communication.getDataByUrl(url, true); //Only load cached data here.
+//				if(sessionsJson != null){
+//					sessions = ChatSession.fromJson(sessionsJson);
+//				}
+//				sendMessage(MSG_GETPERSONALSESSIONS, null);
+//				return;
+//			} catch (UnsupportedEncodingException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			} catch (IOException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			} catch (Communication.BXHttpException e) {
+//				Message msg2 = Message.obtain();
+//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
+//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+//			}
+//
+//			hideProgress();
 		}
 	}	
 	
+	private void fillProfile(UserProfile up, View userInfoView){
+        View activity = userInfoView;
+
+        if(up.nickName != null){
+            ((TextView)activity.findViewById(R.id.userInfoNickname)).setText(up.nickName);
+        }else{
+            ((TextView)activity.findViewById(R.id.userInfoNickname)).setText("");
+        }
+        // 新版本只保留 nickname
+        if(up.createTime != null && !up.equals("")){
+            try{
+                Date date = new Date(Long.parseLong(up.createTime) * 1000);
+                SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月", Locale.SIMPLIFIED_CHINESE);
+                ((TextView)activity.findViewById(R.id.userInfoJoinDays)).setText(df.format(date) + "");
+            }catch(Exception e){
+                e.printStackTrace();
+            }
+        }
+        
+        View userInfoLayout = activity.findViewById(R.id.userInfoLayout);
+        userInfoLayout.setVisibility(View.VISIBLE);
+        View editBtn = activity.findViewById(R.id.userInfo_editUsername_btn);
+        editBtn.setOnClickListener(this);
+    }
 	
-	private void fillProfile(UserProfile up){
-		
-		if (this.getActivity() == null)
+	@Override
+	public void onItemClick(GridInfo info, int index) {	
+		switch (index)
 		{
-			return;
-		}
-		
-		Activity activity = this.getActivity();
-		
-		if(up.nickName != null){
-			((TextView)activity.findViewById(R.id.personalNick)).setText(up.nickName);
-		}else{
-			((TextView)activity.findViewById(R.id.personalNick)).setText("");
-		}
-		boolean showBoy = true;
-		if(up.gender != null && !up.equals("")){
-			if(up.gender.equals("男")){
-				((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_male);
-//				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
-			}else if(up.gender.equals("女")){
-				((ImageView)activity.findViewById(R.id.personalGenderImage)).setImageResource(R.drawable.pic_wo_female);
-				showBoy = false;
-//				((ImageView)this.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_girl);
+		case INDEX_POSTED:
+            {
+            	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);				
+            }
+			break;
+		case INDEX_LIMITED:
+			{
+				pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
 			}
-		}else{
-			((ImageView)activity.findViewById(R.id.personalImage)).setImageResource(R.drawable.pic_my_avator_boy);
-		}
-		
-		if(up.location != null && !up.location.equals("")){
-			(new Thread(new GetLocationThread(up.location))).start();
-		}else{
-			((TextView)activity.findViewById(R.id.personalLocation)).setText("");
-		}
-		
-		if(up.createTime != null && !up.equals("")){
-			try{
-				Date date = new Date(Long.parseLong(up.createTime) * 1000);
-				SimpleDateFormat df = new SimpleDateFormat("yyyy年MM月", Locale.SIMPLIFIED_CHINESE);
-				((TextView)activity.findViewById(R.id.personalRegisterTime)).setText(df.format(date) + "注册");
-			}catch(Exception e){
-				e.printStackTrace();
+			break;
+		case INDEX_DELETED:
+            {
+            	pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
+            }
+            break;
+		case INDEX_FAVORITE:
+			{
+				Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", true);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);					
 			}
-		}else{
-			((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
-		}
-		String image = null;
-		if(up.resize180Image != null && !up.resize180Image.equals("")){
-			image = up.resize180Image;
-		}
-		if(image != null && !image.equals("") && !image.equals("null")){
-			int height = activity.findViewById(R.id.personalImage).getMeasuredHeight();
-			int width = activity.findViewById(R.id.personalImage).getMeasuredWidth();
-			if(height <= 0 || width <= 0){
-				Drawable img = ((ImageView)activity.findViewById(R.id.personalImage)).getDrawable();
-				if(img != null){
-					height = img.getIntrinsicHeight();
-					width = img.getIntrinsicWidth();
-				}
+			break;
+		case INDEX_MESSAGE:
+			{
+				Bundle bundle = createArguments(null, null);
+				ArrayList<ChatSession> tmpList = new ArrayList<ChatSession>();
+//				tmpList.addAll(this.sessions); 需要获取 sessions 数据
+				bundle.putSerializable("sessions", tmpList);
+				pushFragment(new SessionListFragment(), bundle);
 			}
-			if(height > 0 && width > 0){
-				ViewGroup.LayoutParams lp = activity.findViewById(R.id.personalImage).getLayoutParams();
-				lp.height = height;
-				lp.width = width;
-				activity.findViewById(R.id.personalImage).setLayoutParams(lp);
+			break;
+		case INDEX_HISTORY:
+			{
+				Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", false);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);
 			}
-				
-			SimpleImageLoader.showImg((ImageView)activity.findViewById(R.id.personalImage), 
-					image, null, activity, showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
-		}else{
-			((ImageView)activity.findViewById(R.id.personalImage)).setImageResource(showBoy ? R.drawable.pic_my_avator_boy : R.drawable.pic_my_avator_girl);
+			break;
+		case INDEX_SETTING:
+			{
+				pushFragment(new SetMainFragment(), null);
+			}
+			break;
 		}
 	}
 	
+	
+	private void pushPersonalPostFragment(int type) {
+		Bundle bundle = createArguments(null, null);
+		bundle.putInt(PersonalPostFragment.TYPE_KEY, type);
+		pushFragment(new PersonalPostFragment(), bundle);
+	}
+    
+    @Override
+    public void onClick(View v) {
+        switch(v.getId()){
+            case R.id.userInfo_editUsername_btn:
+                editUserDlg = new EditUsernameDialogFragment();
+                editUserDlg.handler = this.handler;
+                editUserDlg.show(getFragmentManager(), null);
+                break;
+
+            default:
+                break;
+        }
+    }
+    
+	@Override
+	public void handleSearch() {
+		this.pushFragment(new SearchFragment(), this.getArguments());
+	};
+	
+	public int getEnterAnimation()
+	{
+		return 0;
+	}
+	
+	public int getExitAnimation()
+	{
+		return 0;
+	}
+
 }

@@ -9,6 +9,8 @@
 	    android:background="#f3f1e8"
     	android:focusableInTouchMode="false">
 	    	
-    	<include layout="@layout/tab_with_pager"/>
+ <!--    	<include layout="@layout/tab_with_pager"/> -->
+ 
+ <include layout="@layout/gridcategory"/>
 								    
 </LinearLayout>

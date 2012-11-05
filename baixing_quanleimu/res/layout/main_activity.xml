@@ -4,9 +4,21 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
 
+    <LinearLayout 
+        android:id="@+id/tab_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+    	android:layout_alignParentLeft="true"
+        >
+        <include
+    			layout="@layout/common_tab_layout" />
+    </LinearLayout>
+        
     <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_above="@+id/tab_parent"
         android:orientation="vertical" >
 
 		<include layout="@layout/common_title"/>

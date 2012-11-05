@@ -700,5 +700,9 @@ public abstract class BaseFragment extends Fragment {
 		return this.getActivity() != null;
 	}
 	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 	
 }

@@ -200,8 +200,16 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			}
 			findViewById(R.id.splash_cover).setVisibility(View.GONE);
 			
+			onStatckTop(f);
 		}
 	
+	}
+	
+	/**
+	 * Sub class may need to do something when specified fragment is pushed to stack.
+	 */
+	protected void onStatckTop(BaseFragment f) {
+		
 	}
 	
 	public final void showFirstRun(BaseFragment f)

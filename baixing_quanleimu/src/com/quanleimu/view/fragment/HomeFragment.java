@@ -69,7 +69,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public int unreadMessageNum = 0;
 	public int historyNum = 0;
 
-	private CustomizePagerManager pageMgr;
+//	private CustomizePagerManager pageMgr;
 	private int selectedIndex = 0;
 
     private UserBean user;
@@ -90,8 +90,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
 
 		title.hasGlobalSearch = true;
-		title.m_rightActionHint = "发布";
-		title.m_rightActionBg = R.drawable.bg_post_selector;
 		
 		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
 		
@@ -144,13 +142,22 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		if(bundle != null && bundle.containsKey("defaultPageIndex")){
 			selectedIndex = bundle.getInt("defaultPageIndex");
 		}
-        String tabBrowse = getString(R.string.tab_browse);
-        String tabUserCenter = getString(R.string.tab_user_center);
-
-		pageMgr = CustomizePagerManager.createManager(
-                new String[] {tabBrowse, tabUserCenter},
-                selectedIndex);
+//        String tabBrowse = getString(R.string.tab_browse);
+//        String tabUserCenter = getString(R.string.tab_user_center);
+//        String tabPost = getString(R.string.tab_post);
+        
+//		pageMgr = CustomizePagerManager.createManager(
+//                new String[] {tabBrowse, tabPost, tabUserCenter},
+//                new int[][] {
+//                },
+//                selectedIndex);
 	}
+	
+	public boolean hasGlobalTab()
+	{
+		return true;
+	}
+	
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -159,121 +166,29 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 
 		View v = inflater.inflate(R.layout.homepageview, null);
 
-		pageMgr.attachView(v, this, this);
+//		pageMgr.attachView(v, this, this);
 		
-		return v;
+		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
+						   R.drawable.icon_category_jianzhi,     R.drawable.icon_category_vita, 	R.drawable.icon_category_friend, 	R.drawable.icon_category_pet,
+						   R.drawable.icon_category_service,     R.drawable.icon_category_education};
+		String []texts 	= {"物品交易", "车辆买卖", "房屋租售", "全职招聘", 
+						   "兼职招聘", "求职简历", "交友活动", "宠物", 
+						   "生活服务", "教育培训"};
 		
-		/*
-		LinearLayout hotlistView = (LinearLayout)inflater.inflate(R.layout.hotlist, null);
-		rlHotList = (RelativeLayout)hotlistView.findViewById(R.id.rlHotList);
-		glDetail = (ViewFlow) hotlistView.findViewById(R.id.glDetail);
-		glDetail.setFadingEdgeLength(10);
-		indicator = (CircleFlowIndicator) hotlistView.findViewById(R.id.viewflowindic);
-		glDetail.setFlowIndicator(indicator);
-
-		glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
-					long arg3) {
-				if (listHot.get(arg2).getType() == 0) {
-					Bundle bundle = createArguments(listHot.get(arg2).getHotData().getTitle(), "首页");
-					bundle.putString("actType", "homepage");
-					bundle.putString("searchContent", (listHot.get(arg2)
-							.getHotData().getKeyword()));
-					
-					pushFragment(new SearchGoodsFragment(), bundle);
-				} else if (listHot.get(arg2).getType() == 1) {
-					Intent i = new Intent(Intent.ACTION_VIEW, Uri.parse(listHot
-							.get(arg2).getHotData().getWeburl()));
-					startActivity(i);
-				}else if(listHot.get(arg2).getType() == 2){
-					Bundle bundle = createArguments(listHot.get(arg2).getHotData().getTitle(), "首页");
-					bundle.putString("actType", "homepage");
-					bundle.putString("categoryEnglishName", (listHot.get(arg2)
-							.getHotData().getKeyword()));
-					
-					pushFragment(new GetGoodFragment(), bundle);
-				}
-				BXStatsHelper.getInstance().increase(BXStatsHelper.TYPE_HOTS_SEND, null);
-			}
-		});
-		
-		listHot = QuanleimuApplication.listHot;
-		if(listHot == null){	
-			//try to load from last-saved hot-list file
-			boolean lastSavedValid = true;
-			try {
-				FileInputStream jsonFile = getActivity().openFileInput("hotlist.json");
-				BufferedInputStream bufferedStream = new BufferedInputStream(jsonFile);
-				int bytesJson = bufferedStream.available();
-				byte[] json = new byte[bytesJson];
-				int readBytes = bufferedStream.read(json, 0, bytesJson);
-				
-				String jsonRaw = new String(json, 0, readBytes);
-				String jsonDecoded = Communication.decodeUnicode(jsonRaw);
-				listHot = JsonUtil.parseCityHotFromJson(jsonDecoded);
-				
-				for(int i = 0; i < listHot.size(); ++i){
-					if(!QuanleimuApplication.getImageLoader().checkWithImmediateIO(listHot.get(i).imgUrl)){
-						lastSavedValid = false;
-					}
-				}
-				
-				if(listHot == null || listHot.size() == 0)	lastSavedValid = false;
-				
-			} catch (FileNotFoundException e) {
-				lastSavedValid = false;
-			}catch(IOException e){
-				lastSavedValid = false;
-			}
-			
-			//if last-saved is not ready, parse from initial hot-list in asset 
-			if(!lastSavedValid){
-				try {
-					InputStream jsonFile = getActivity().getAssets().open("hotlist.json");
-					BufferedInputStream bufferedStream = new BufferedInputStream(jsonFile);
-					int bytesJson = bufferedStream.available();
-					byte[] json = new byte[bytesJson];
-					int readBytes = bufferedStream.read(json, 0, bytesJson);
-					
-					String jsonDecoded = Communication.decodeUnicode(new String(json, 0, readBytes));
-					listHot = JsonUtil.parseCityHotFromJson(jsonDecoded);
-				} catch (IOException e) {
-					e.printStackTrace();
-				}
-			}
-			
-
-			if(listHot == null)	listHot = new ArrayList<HotList>();
-			
-//			new Thread(new HotListThread()).start(); 
+		List<GridInfo> gitems = new ArrayList<GridInfo>();
+		for (int i = 0; i < icons.length; i++)
+		{
+			GridInfo gi = new GridInfo();
+			gi.imgResourceId = icons[i];
+			gi.text = texts[i];
+			gitems.add(gi);
 		}
-		
-		adapter = new HotListAdapter(getActivity(), 
-				listHot, 
-				tempListHot, 
-				QuanleimuApplication.getImageLoader());
-		glDetail.setAdapter(adapter);
-		
-		final TextView editSearch = (TextView) v.findViewById(R.id.etSearch);
-		
-		v.findViewById(R.id.rlSearch).setOnClickListener(new OnClickListener(){
-			@Override
-			public void onClick(View v) {
-				Bundle bundle = new Bundle();
-				bundle.putString("backPageName", "首页");
-				bundle.putString("searchContent", editSearch.getText().toString());
-				bundle.putString("actType", "search");
 
-				pushFragment(new SearchFragment(), bundle);
-			}
-		});
+		CustomizeGridView gv = (CustomizeGridView) v.findViewById(R.id.gridcategory);
+		gv.setData(gitems, 3);
+		gv.setItemClickListener(this);
 		
-		((TextView)v.findViewById(R.id.tvCityName)).setText(cityName);
-		
-		Log.w(TAG, "do we have view here homeFragmengCreatView ? " + (this.getView() != null));
 		return v;
-		*/
 	}
 	
 	
@@ -657,9 +572,10 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
             }catch(Exception e){
                 e.printStackTrace();
             }
-        }else{
-            ((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
         }
+//        else{
+//            ((TextView)activity.findViewById(R.id.personalRegisterTime)).setText("");
+//        }
 //        String image = null;
 //        if(up.resize180Image != null && !up.resize180Image.equals("")){
 //            image = up.resize180Image;

@@ -9,6 +9,7 @@ import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.view.View;
 
 import com.quanleimu.activity.R;
+import com.quanleimu.view.CustomizeTabHost.TabIconRes;
 import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
 
 public class CustomizePagerManager implements TabSelectListener {
@@ -33,10 +34,15 @@ public class CustomizePagerManager implements TabSelectListener {
 		
 	}
 	
-	public static CustomizePagerManager createManager(String[] tabTitles, int selectIndex)
+	public static CustomizePagerManager createManager(String[] tabTitles, int[][] tabIcons, int selectIndex)
 	{
 		CustomizePagerManager instance = new CustomizePagerManager();
-		instance.tabHost = CustomizeTabHost.createTabHost(selectIndex, tabTitles);
+		TabIconRes[] tabIconDef = new TabIconRes[tabTitles.length];
+		for (int i=0; i<tabTitles.length; i++)
+		{
+			tabIconDef[i] = i < tabIcons.length ? new TabIconRes(tabIcons[i][1],	tabIcons[i][0]) : TabIconRes.NO_ICON;
+		}
+		instance.tabHost = CustomizeTabHost.createTabHost(selectIndex, tabTitles, tabIconDef);
 		
 		return instance;
 	}

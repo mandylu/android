@@ -2,10 +2,15 @@ package com.quanleimu.view;
 
 import java.io.Serializable;
 
+import org.jivesoftware.smackx.pubsub.GetItemsRequest;
+
 import com.quanleimu.activity.R;
 
 import android.app.Activity;
+import android.content.res.Resources;
 import android.view.View;
+import android.view.ViewGroup;
+import android.widget.ImageView;
 import android.widget.TextView;
 
 
@@ -28,17 +33,31 @@ public final class CustomizeTabHost implements Serializable
         public void beforeChange(int currentIndex, int nextIndex);
         public void afterChange(int newSelectIndex);
     }
+	
+	public static final class TabIconRes implements Serializable {
+	/**
+		 * 
+		 */
+		private static final long serialVersionUID = 6132394089130310112L;
+		public static final TabIconRes NO_ICON = new TabIconRes(-1, -1);
+		private int selectIconRes;
+		private int unselectIconRes;
+		public TabIconRes(int select, int unselect) {
+			this.selectIconRes = select;
+			this.unselectIconRes = unselect;
+		}
+		
+		public int getRes(boolean isSelect) {
+			return isSelect ? selectIconRes : unselectIconRes;
+		}
+	}
     
     private transient TabSelectListener tabChangeListener;
     
-    //TODO: should do refactor later. Hold view instance may cause memory issue.
-    protected transient View[] tabButtons = new View[4];
-
-    private transient View[] tabArrows = new View[4];
-
-    protected transient TextView[] tabTexts = new TextView[4];
+    private transient ViewGroup tabBarRoot;
     
     private String[] tabLabels;
+    private TabIconRes[] tabIconsRes;
     
     private int currentFocusIndex;
     private int tabCount;
@@ -49,12 +68,13 @@ public final class CustomizeTabHost implements Serializable
         
     }
     
-    public static CustomizeTabHost createTabHost(int focusIndex, String[] tabString)
+    public static CustomizeTabHost createTabHost(int focusIndex, String[] tabString, TabIconRes[] tabIcons)
     {
         CustomizeTabHost tabHost = new CustomizeTabHost();
         tabHost.tabCount = tabString.length;
         tabHost.currentFocusIndex = focusIndex;
         tabHost.tabLabels = tabString;
+        tabHost.tabIconsRes = tabIcons;
         
         return tabHost;
     }
@@ -63,13 +83,17 @@ public final class CustomizeTabHost implements Serializable
     {
     	this.setTabSelectListener(listener);
     	
+    	this.tabBarRoot = (ViewGroup) v;
+    	
     	this.initTabButton(v, this.tabCount);
     	this.showTab(this.currentFocusIndex);
     	
-    	int i = 0;
-    	for (String s : tabLabels)
+    	Resources res = v.getContext().getResources();
+    	for (int i=0; i<tabLabels.length; i++)
     	{
-    		this.setTabText(i++, s);
+    		this.setTabText(i, tabLabels[i]);
+    		this.setTabIcon(i, tabIconsRes[i]);
+    		getTabItem(i).setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
     	}
     }
     
@@ -80,12 +104,22 @@ public final class CustomizeTabHost implements Serializable
     
     private void setTabText(int index, CharSequence text)
     {
-        tabTexts[index].setText(text);
+    	View rootView = getTabItem(index);
+    	TextView textView = (TextView) rootView.findViewById(R.id.tab_text);
+    	textView.setText(text);
     }
     
-    private void setTabText(int index, int resId)
+    private void setTabIcon(int index, TabIconRes res)
     {
-        tabTexts[index].setText(resId);
+    	ImageView icon = (ImageView) getTabItem(index).findViewById(R.id.tab_icon);
+    	if (res == TabIconRes.NO_ICON)
+    	{
+    		icon.setVisibility(View.GONE);
+    	}
+    	else
+    	{
+    		icon.setImageResource(res.getRes(index == this.currentFocusIndex));
+    	}
     }
     
     public void setTabSelectListener(TabSelectListener listener)
@@ -93,59 +127,38 @@ public final class CustomizeTabHost implements Serializable
         tabChangeListener = listener;
     }
     
-    
     private void initTabButton(View rootView, int num)
     {
-        tabButtons[0] = rootView.findViewById(R.id.tab_button_1);
-        tabButtons[1] = rootView.findViewById(R.id.tab_button_2);
-        tabButtons[2] = rootView.findViewById(R.id.tab_button_3);
-        tabButtons[3] = rootView.findViewById(R.id.tab_button_4);
-
-        tabArrows[0] = rootView.findViewById(R.id.tab_arrow_1);
-        tabArrows[1] = rootView.findViewById(R.id.tab_arrow_2);
-        tabArrows[2] = rootView.findViewById(R.id.tab_arrow_3);
-        tabArrows[3] = rootView.findViewById(R.id.tab_arrow_4);
-
-        tabTexts[0] = (TextView) rootView.findViewById(R.id.tab_text_1);
-        tabTexts[1] = (TextView) rootView.findViewById(R.id.tab_text_2);
-        tabTexts[2] = (TextView) rootView.findViewById(R.id.tab_text_3);
-        tabTexts[3] = (TextView) rootView.findViewById(R.id.tab_text_4);
+    	for (int i=0; i<num; i++)
+    	{
+    		getTabItem(i).setTag(i);
+    	}
         
         for (int i = num; i < 4; i++)
         {
-            tabButtons[i].setVisibility(View.GONE);
+        	getTabItem(i).setVisibility(View.GONE);
         }
         
-        initTabSelectAction();
+        initTabSelectAction(num);
     }
     
-    private void initTabSelectAction()
+    private View getTabItem(int index) {
+    	return tabBarRoot.getChildAt(index);
+    }
+    
+    private void initTabSelectAction(int count)
     {
         View.OnClickListener listener = new View.OnClickListener()
         {
             public void onClick(View v)
             {
-                switch(v.getId())
-                {
-                    case R.id.tab_button_1:
-                        switchTab(0);
-                        break;
-                    case R.id.tab_button_2:
-                        switchTab(1);
-                        break;
-                    case R.id.tab_button_3:
-                        switchTab(2);
-                        break;
-                    case R.id.tab_button_4:
-                        switchTab(3);
-                        break;
-                }
+            	switchTab((Integer) v.getTag());
             }
         };
         
-        for (View tabBtn : tabButtons)
+        for (int i=0; i<count; i++)
         {
-            tabBtn.setOnClickListener(listener);
+            getTabItem(i).setOnClickListener(listener);
         }
     }
     
@@ -182,39 +195,30 @@ public final class CustomizeTabHost implements Serializable
     	return this.tabCount;
     }
     
-    public void showTab(int index)
+    public void showTab(final int index)
     {
     	setCurrentFocusIndex(index);
     	
-        for (int i = 0; i < tabArrows.length; i++)
-        {
-            if (tabArrows[i] != null)
-            {
-                if (i == index)
-                {
-                    tabArrows[i].setVisibility(View.VISIBLE);
-                }
-                else
-                {
-                    tabArrows[i].setVisibility(View.INVISIBLE);
-                }
-            }
-        }
-
-        for (int i = 0; i < tabTexts.length; i++)
-        {
-            if (tabTexts[i] != null)
-            {
-                if (i == index)
-                {
-                    tabTexts[i].setTextColor(0xFFFFF153);
-                }
-                else
-                {
-                    tabTexts[i].setTextColor(0XFFECECE4);
-                }
-            }
-        }
+    	Resources res = this.tabBarRoot.getResources();
+    	for (int i = 0; i<tabCount; i++)
+    	{
+    		View tabItem = getTabItem(i);
+    		
+    		//Tab Arrow indicator visibility 
+    		tabItem.findViewById(R.id.tab_arrow).setVisibility(i == index ? View.VISIBLE : View.INVISIBLE);
+    		
+    		//Tab text
+    		int textColor = res.getColor(i == index ? R.color.tab_font_foucs : R.color.tab_font);
+    		((TextView)tabItem.findViewById(R.id.tab_text)).setTextColor(textColor);
+    		
+    		//Tab icon
+    		ImageView icon = (ImageView)  tabItem.findViewById(R.id.tab_icon);
+    		icon.setImageResource(tabIconsRes[i].getRes(i == index));
+    		
+    		//Tab bg
+    		tabItem.setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
+    	}
+    	
     }
     
 }

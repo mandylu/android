@@ -13,7 +13,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
@@ -22,7 +21,8 @@ import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
-import com.quanleimu.view.fragment.HomeFragment;
+import com.quanleimu.view.fragment.PersonalInfoFragment;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -95,7 +95,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
         params.addParameter("nickname", editUsernameEt.getText().toString());
         params.addParameter("userId", userProfile.userId);
         Message msg = handler.obtainMessage();
-        msg.what = HomeFragment.MSG_SHOW_PROGRESS;
+        msg.what = PersonalInfoFragment.MSG_SHOW_PROGRESS;
         handler.sendMessage(msg);
 
         Communication.executeAsyncPostTask("user_profile_update", params, new Communication.CommandListener() {
@@ -106,7 +106,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
                 try {
                     JSONObject obj = new JSONObject(serverMessage).getJSONObject("error");
                     if (!"0".equals(obj.getString("code"))) {
-                        msg.what = HomeFragment.MSG_SHOW_TOAST;
+                        msg.what = PersonalInfoFragment.MSG_SHOW_TOAST;
                         msg.obj = obj.get("message");
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, false)
@@ -114,14 +114,14 @@ public class EditUsernameDialogFragment extends DialogFragment {
                                 .end();
                     } else {
                         Util.clearData(getActivity(), "userProfile");
-                        msg.what = HomeFragment.MSG_EDIT_USERNAME_SUCCESS;
+                        msg.what = PersonalInfoFragment.MSG_EDIT_USERNAME_SUCCESS;
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, true)
                                 .end();
                     }
                     handler.sendMessage(msg);
                 } catch (JSONException e) {
-                    msg.what = HomeFragment.MSG_SHOW_TOAST;
+                    msg.what = PersonalInfoFragment.MSG_SHOW_TOAST;
                     msg.obj = "请求失败";
                     handler.sendMessage(msg);
                     Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
@@ -135,7 +135,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
             @Override
             public void onException(Exception ex) {
                 Message msg = handler.obtainMessage();
-                msg.what = HomeFragment.MSG_SHOW_TOAST;
+                msg.what = PersonalInfoFragment.MSG_SHOW_TOAST;
                 msg.obj = "网络异常，请稍后再试";
                 handler.sendMessage(msg);
                 Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
