@@ -12,9 +12,11 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
@@ -131,7 +133,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.citychange, null);
-		
+		rootView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		// 获取热门城市列表数据
 		listHotCity = LocateJsonData.hotCityList();
 		QuanleimuApplication.getApplication().setListHotCity(listHotCity);
@@ -163,7 +165,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 
 			tvCityName.setText(city.getName());
 			ivChoose.setVisibility(View.INVISIBLE);
-			v.setTag(city);
+			v.setTag(new Pair<CityDetail, String>(city, "hotcity"));
 			v.setOnClickListener(this);
 			if (i == listHotCity.size() - 1) {
 				v.findViewById(R.id.citychange_border).setVisibility(View.GONE);
@@ -262,7 +264,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 									ivChoose.setVisibility(View.GONE);						
 
 									// 设置标志位
-									vCity.setTag(city);
+									vCity.setTag(new Pair<CityDetail, String>(city, "othercity"));
 									vCity.setOnClickListener(CityChangeFragment.this);
 									linearCities.addView(vCity);
 								}
@@ -319,7 +321,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 						ivChoose.setImageResource(R.drawable.gou);
 						tvCityName.setText(city.getName());
 						ivChoose.setVisibility(View.INVISIBLE);
-						v.setTag(city);
+						v.setTag(new Pair<CityDetail, String>(city, "search"));
 						v.setOnClickListener(CityChangeFragment.this);
 						filteredList.addView(v);						
 					}
@@ -367,6 +369,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	public void onLocationFetched(BXLocation location) {
 	}
 	
+	
+	private boolean located = false;
 	@Override
 	public void onGeocodedLocationFetched(BXLocation location) {
 		final View rootView = getView();
@@ -376,10 +380,10 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		
 			if(null == location || !location.geocoded) {
 				tvGPSCityName.setText("定位失败");
-				Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "0").end();
+				located = false;
 				return;
 			}
-			Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.GPS_RESULT, "1").end();
+			located = true;
 			
 			
 
@@ -387,25 +391,33 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			tvGPSCityName.setText(location.cityName);
 
 			RelativeLayout linearGpsCity = (RelativeLayout)rootView.findViewById(R.id.linearGpsCityItem);
-
-			linearGpsCity.setOnClickListener(new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-
-					for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++){
-						if(((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
-						{
-							QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
-							break;
-						}
-					}
-					QuanleimuApplication.getApplication().setCityName(((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString());
-					Helper.saveDataToLocate(getActivity(), "cityName", ((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString());
-					
-					finishFragment();
+			
+			for(CityDetail city : QuanleimuApplication.getApplication().getListCityDetails()){
+				if (location.cityName.equals(city.getName())) {
+					linearGpsCity.setTag(new Pair<CityDetail, String>(city, "gpscity"));
+					linearGpsCity.setOnClickListener(this);
+					break;
 				}
-			});	
+			}
+//
+//			linearGpsCity.setOnClickListener(new View.OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//
+//					for(int i=0;i<QuanleimuApplication.getApplication().getListCityDetails().size();i++){
+//						if(((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString().equals(QuanleimuApplication.getApplication().getListCityDetails().get(i).getName()))
+//						{
+//							QuanleimuApplication.getApplication().setCityEnglishName(QuanleimuApplication.getApplication().getListCityDetails().get(i).getEnglishName());
+//							break;
+//						}
+//					}
+//					QuanleimuApplication.getApplication().setCityName(((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString());
+//					Helper.saveDataToLocate(getActivity(), "cityName", ((TextView) rootView.findViewById(R.id.tvGPSCityName)).getText().toString());
+//					
+//					finishFragment();
+//				}
+//			});	
 		}
 		
 	}
@@ -493,7 +505,9 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 
 	@Override
 	public void onClick(View v) {
-		CityDetail city = (CityDetail) v.getTag();
+		Pair<CityDetail, String> pair = (Pair<CityDetail, String>) v.getTag();
+		CityDetail city = pair.first;
+		String block = pair.second;
 		if (city.getClass().equals(CityDetail.class))
 		{
 			QuanleimuApplication.getApplication().setCityEnglishName(city.getEnglishName());
@@ -503,8 +517,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			this.finishFragment();
 			
 			String searchText = searchField.getText().toString().trim();
-			if (searchText.length() > 0)
-				Tracker.getInstance().event(BxEvent.CITY_SEARCH).append(Key.SEARCHKEYWORD, searchText).end();
+			
+			Tracker.getInstance().event(BxEvent.CITY_SELECT).append(Key.CITY, city.getEnglishName()).append(Key.BLOCK, block).append(Key.GPS_RESULT, located).append(Key.SEARCHKEYWORD, searchText).end();
 			
 		}
 	}
