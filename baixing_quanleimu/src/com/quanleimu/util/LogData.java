@@ -78,7 +78,7 @@ public class LogData {
 
     public LogData append(HashMap aMap)
     {
-        this.map.putAll(map);
+        this.map.putAll(aMap);
         return this;
     }
 	
