@@ -3,6 +3,7 @@ package com.quanleimu.view.fragment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import org.json.JSONException;
@@ -673,6 +674,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             r_array_item_operate = R.array.item_operate_deleted;
             Tracker.getInstance().event(BxEvent.DELETED_MANAGE).end();
         }
+        final GoodsDetail detail = listMyPost.get(pos);
+        String tmpInsertedTime = detail.data.get("insertedTime");
+        long tmpPostedSeconds = -1;
+        if (tmpInsertedTime != null) {
+            long nowTime = new Date().getTime() / 1000;
+            tmpPostedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
+        }
+        final long postedSeconds = tmpPostedSeconds;
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
@@ -680,20 +689,26 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                     switch (clickedIndex) {
                         case 0://刷新
                             doRefresh(0, adId);
-                            Tracker.getInstance().event(BxEvent.SENT_REFRESH).end();
+                            Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                         case 1://修改
-                            GoodsDetail detail = listMyPost.get(pos);
+
                             Bundle args = createArguments(null, null);
                             args.putSerializable("goodsDetail", detail);
                             args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
-                            Tracker.getInstance().event(BxEvent.SENT_EDIT).end();
+                            Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                         case 2://删除
                             showSimpleProgress();
                             new Thread(new MyMessageDeleteThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.SENT_DELETE).end();
+                            Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                     }
                 } else if (currentType == TYPE_INVERIFY) {
@@ -703,11 +718,15 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
-                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL).end();
+                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                         case 1://删除
                             showSimpleProgress();
-                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE).end();
+                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             new Thread(new MyMessageDeleteThread(adId)).start();
                             break;
                     }
@@ -716,12 +735,16 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://恢复
                             showSimpleProgress();
                             new Thread(new MyMessageRestoreThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.DELETED_RECOVER).end();
+                            Tracker.getInstance().event(BxEvent.DELETED_RECOVER)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                         case 1://彻底删除
                             showSimpleProgress();
                             new Thread(new MyMessageDeleteThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.DELETED_DELETE).end();
+                            Tracker.getInstance().event(BxEvent.DELETED_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
                             break;
                     }
                 }

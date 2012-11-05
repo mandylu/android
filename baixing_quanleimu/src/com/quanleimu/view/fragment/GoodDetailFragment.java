@@ -1090,10 +1090,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
     private void trackerLogEvent(BxEvent event) {
         String tmpCateName = detail.data.get("categoryEnglishName");
         String secondCategoryName = tmpCateName != null ? tmpCateName : "empty categoryEnglishName";
-        String tmpCreatedTime = detail.data.get("createdTime");
+        String tmpInsertedTime = detail.data.get("insertedTime");
         long postedSeconds = -1;
-        if (tmpCreatedTime != null) {
-            postedSeconds = new Date().getTime() - Long.valueOf(tmpCreatedTime);
+        if (tmpInsertedTime != null) {
+            long nowTime = new Date().getTime() / 1000;
+            postedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
         }
 
         Tracker.getInstance().event(event)

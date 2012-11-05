@@ -20,6 +20,7 @@ public class GoodsDetail implements Serializable{
 		EDATAKEYS_LAT("lat"),
 		EDATAKEYS_LON("lng"),
 		EDATAKEYS_DATE("createdTime"),
+        EDATAKEYS_POST_TIME("insertedTime"),
 		EDATAKEYS_ID("id"),
 		EDATAKEYS_CATEGORYENGLISHNAME("categoryEnglishName"),
 		EDATAKEYS_CITYENGLISHNAME("cityEnglishName"),
@@ -102,6 +103,9 @@ public class GoodsDetail implements Serializable{
 		case EDATAKEYS_DATE:
 			key = "createdTime";
 			break;
+        case EDATAKEYS_POST_TIME:
+            key = "insertedTime";
+            break;
 		case EDATAKEYS_ID:
 			key = "id";
 			break;
