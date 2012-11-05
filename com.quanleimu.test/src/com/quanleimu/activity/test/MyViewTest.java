@@ -2,63 +2,50 @@ package com.quanleimu.activity.test;
 
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
+import org.athrun.android.framework.viewelement.TextViewElement;
 
 
 public class MyViewTest extends BaixingTestCase {
-	private static final String LOG_TAG = "MainActivityTest";
 	
 	public MyViewTest() throws Exception {
-		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
 	}
 	
 	@Test
-	
 	public void testMyProfile() throws Exception {
-		
-		//android2.7.2
-		//进入“我的”
-		//检查是否包含登录按钮
-		//1.包含 2.不包含
-		//若为1,输入正确用户名，密码
-		//点击登录
-		//等待3s
-		//点击编辑按钮进入个人资料
-	    //点击用户名，清空
-		//检查，确保用户名＝Null
-		//点击用户名，输入“tester”
-		//点击性别
-		//检查弹出框，包含两个可选项“男”“女”
-		//点击“女”
-		//点击城市
-		//检查页面title＝“选择常居地”
-		//点击“北京”
-		//检查页面title＝“北京”
-		//点击“朝阳”
-		//检查页面title＝"朝阳"
-		//点击“西坝河”
-		//点击完成
-		//检查结果：用户名＝“tester”，性别＝“女”，城市＝“北京”
-		
-	}
-	
-	@Test
-	
-	public void testNewMyProfile() throws Exception {
 		
 		//android3.0
 		//进入“我的百姓网”页面
+		openTabbar(TAB_ID_HOME_V3);
+		logout();
 		//检查是否包含登录按钮
+		assertNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
 		//若包含登录按钮,则输入正确用户名，密码
 		//点击登录
 		//等待3s
+		logon();
 		//检查是否包含登录按钮，确保登录成功
+		assertNotNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
 		//点击编辑按钮进入个人资料
+		clickById(MY_PROFILE_EDIT_BUTTON_ID);
 	    //点击用户名，清空
+		TextViewElement tv = findElementById(MY_PROFILE_EDIT_USERNAME_ID, TextViewElement.class);
+		String oldName = tv.getText();
+		tv.clearText();
 		//检查，确保用户名＝Null
+		assertEquals(tv.getText(), "");
 		//点击用户名，输入“tester”
+		int rand = (int)(Math.random() * 100000);
+		String tmpName = "tester" + String.valueOf(rand);
+		tv.inputText(tmpName);
 		//点击完成
+		clickByText(MY_PROFILE_EDIT_UPDATE_TEXT, true);
 		//检查结果：用户名＝“tester”
+		assertEquals(findElementById(MY_PROFILE_USERNAME_ID, TextViewElement.class).getText(), tmpName);
 		
+		//恢复数据
+		clickById(MY_PROFILE_EDIT_BUTTON_ID);
+		tv = findElementById(MY_PROFILE_EDIT_USERNAME_ID, TextViewElement.class);
+		tv.setText(oldName);
+		clickByText(MY_PROFILE_EDIT_UPDATE_TEXT, true);
 	}
 }

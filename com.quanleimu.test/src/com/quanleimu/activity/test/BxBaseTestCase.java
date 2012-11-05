@@ -60,21 +60,20 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String CATEGORY_VIEWLIST_ID = "cateSelection";
 	
-	public static final String CITY_SELECT_TEXT = "选择城市";
-	
 	//AdList && AdView ID
 	public static final String AD_VIEWLIST_MARK_ID = "goods_item_view_root";
 	public static final String AD_VIEWLIST_ITEM_TITLE_ID = "tvDes";
 	public static final String AD_VIEWLIST_ITEM_DATE_ID = "tvUpdateDate";
 	public static final String AD_VIEWLIST_ID = "lvGoodsList";
 	public static final String AD_DETAILVIEW_ID = "svDetail";
+	public static final String AD_DETAILVIEW_DESC_ID = "llgl";
 	public static final String AD_DETAILVIEW_PREV_ID = "btn_prev";
 	public static final String AD_DETAILVIEW_NEXT_ID = "btn_next";
 	public static final String AD_DETAILVIEW_TITLE_ID = "goods_tittle";
 	public static final String AD_IMAGES_VIEWLIST_ID = "glDetail";
 	public static final String AD_VIEWLIST_MORE_ID = "pulldown_to_getmore";
 	public static final String AD_VIEWLIST_IMAGE_ID = "ivInfo";
-	public static final String AD_DETAILVIEW_NO_IMAGE_TEXT = "暂无图片";
+	public static final String AD_DETAILVIEW_NO_IMAGE_ID = "vad_no_img_tip";
 	public static final String AD_DETAIL_META_LABEL_ID = "tvmetatxt";
 	public static final String AD_DETAIL_META_VALUE_ID = "tvmeta";
 	public static final String AD_DETAIL_META_AREA_TEXT = "地区";
@@ -84,6 +83,9 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";
 	public static final String AD_BIG_IMAGE_SAVED_TEXT = "成功";
+	public static final String AD_FAVORITE_BUTTON_ID = "btn_fav_unfav";
+	public static final String AD_FAVORITE_ADD_IMG = "icon_fav";
+	public static final String AD_FAVORITE_REMOVE_IMG = "icon_unfav";
 	
 	//POST ID
 	public static final String POST_FORM_MARK_ID = "layout_txt";
@@ -117,6 +119,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_LISTING_HISTORY_TEXT = "最近浏览";
 	public static final String MY_LISTING_HISTORY_COUNTER_ID = "tv_historycount";
 	public static final String MY_AD_FxH_VIEWLIST_ID = "plvlist";
+	public static final String MY_LISTING_FAVORITE_TEXT = "收藏";
 	
 	public static final String MY_SETTING_BUTTON_TEXT = "设置";
 	public static final String MY_LOGIN_BUTTON_TEXT = "登录百姓网";
@@ -131,6 +134,10 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_DELETE_ALL_BUTTON_ID = "清空";
 	public static final String MY_BIND_DIALOG_OK_BUTTON_ID = "是";
 	public static final String MY_BIND_DIALOG_NO_BUTTON_ID = "否";
+	public static final String MY_PROFILE_USERNAME_ID = "userInfoNickname";
+	public static final String MY_PROFILE_EDIT_BUTTON_ID = "userInfo_editUsername_btn";
+	public static final String MY_PROFILE_EDIT_USERNAME_ID = "dialog_edit_username_et";
+	public static final String MY_PROFILE_EDIT_UPDATE_TEXT = "修改";
 	
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
 	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "vad_btn_delete";
@@ -351,7 +358,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	private void startScreen() throws Exception {
-		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
+		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
 		if (v != null) {
 			v.doClick();
@@ -361,7 +368,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	private void startScreen_v3() throws Exception {
 		Log.i(LOG_TAG, "This is a test for startScreen_v3() method");
-		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 5000));
+		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
 		TextViewElement v = findElementById(HOME_FIRST_RUN_ID_V3, TextViewElement.class);
 		if (v != null) {
 			v.setText(TEST_DATA_DEFAULT_CITYNAME);
@@ -425,6 +432,41 @@ public class BxBaseTestCase extends AthrunTestCase {
 			if (loop++ > 10) break;
 		}
 		return v3;
+	}
+	
+	public void clickById(String vId) throws Exception {
+		ViewElement v = findElementById(vId);
+		clickView(v);
+	}
+	
+	public <T extends ViewElement> T clickById(String vId, Class<T> returnType) throws Exception {
+		T v = findElementById(vId, returnType);
+		clickView(v);
+		return v;
+	}
+	
+	public TextViewElement clickByText(String text) throws Exception {
+		TextViewElement v = findElementByText(text);
+		clickView(v);
+		return v;
+	}
+	
+	public TextViewElement clickByText(String text, boolean match) throws Exception {
+		TextViewElement v = findElementByText(text, 0, match);
+		clickView(v);
+		return v;
+	}
+	
+	public void clickView(ViewElement v) throws Exception {
+		assertNotNull(v);
+		v.doClick();
+		TimeUnit.SECONDS.sleep(1);
+	}
+	
+	public String getTextByElementId(String vId) throws Exception {
+		TextViewElement titleView = findElementById(vId, TextViewElement.class);
+		assertNotNull(titleView);
+		return titleView.getText();
 	}
 	
 	public ScrollViewElement getPostScrollView() throws Exception {
@@ -564,11 +606,23 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return lastIndex;
 	}
 	
+	public void scrollBottom(int pageSize, String viewId) throws Exception {
+		BXViewGroupElement bv = findElementById(viewId, BXViewGroupElement.class);
+		assertNotNull(bv);
+		scrollY(pageSize, viewId, bv.getHeight() / 2 - bv.getHeight() /3, bv.getHeight() / 2 + bv.getHeight() /3);
+	}
+	
 	public void scrollTop(int pageSize, String viewId) throws Exception {
+		BXViewGroupElement bv = findElementById(viewId, BXViewGroupElement.class);
+		assertNotNull(bv);
+		scrollY(pageSize, viewId, bv.getHeight() / 2 - bv.getHeight() /3, bv.getHeight() / 2 + bv.getHeight() /3);
+	}
+	
+	public void scrollY(int pageSize, String viewId, int fromY, int toY) throws Exception {
 		for (int i = 0; i < pageSize; i++) {
 			BXViewGroupElement bv = findElementById(viewId, BXViewGroupElement.class);
-			int height = bv.getHeight();
-			bv.scrollByY(height / 2 - height /3, height / 2 + height /3);
+			assertNotNull(bv);
+			bv.scrollByY(fromY, toY);
 			TimeUnit.SECONDS.sleep(2);
 		}
 	}

@@ -501,11 +501,21 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openAdWithPic(boolean havPic) throws Exception {
+		AbsListViewElement avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
+		assertNotNull(avl);
 		for (int i = 0; i < 20; i++) {
 			assertNotNull(openAdByIndex(i));
-			TimeUnit.SECONDS.sleep(1);
-			ViewElement v = findElementByText(AD_DETAILVIEW_NO_IMAGE_TEXT, 0, true);
-			if ((havPic && v == null) || (!havPic && v != null)) break;
+			TimeUnit.SECONDS.sleep(2);
+			/*ViewGroupElement ilv = findElementById(AD_DETAILVIEW_DESC_ID, ViewGroupElement.class);
+			ViewGroupElement v = ilv.findElementById(AD_IMAGES_VIEWLIST_ID, ViewGroupElement.class);
+			Log.i(LOG_TAG, "openAdWithPic:ilv" + v.getChildCount());
+			if ((havPic && v != null) || (!havPic && v == null)) {
+				break;
+			}*/
+			if(showAdPic(0)) {
+				goBack();
+				if (havPic) break;
+			} else if (!havPic) break;
 			goBack();
 		}
 	}
