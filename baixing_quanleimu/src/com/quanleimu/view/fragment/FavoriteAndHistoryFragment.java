@@ -108,8 +108,12 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     public void onResume() {
         super.onResume();
         this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
-        
-        Tracker.getInstance().pv(this.pv).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+
+        int adsCount = 0; //恶心的判断，能否有办法去除？
+        if (glLoader != null && glLoader.getGoodsList() != null && glLoader.getGoodsList().getData() != null) {
+            adsCount = glLoader.getGoodsList().getData().size();
+        }
+        Tracker.getInstance().pv(this.pv).append(Key.ADSCOUNT, adsCount).end();
 //      Log.d("fav","isFav:"+isFav+",size:"+glLoader.getGoodsList().getData().size());
         for (int i = 0; i < pullListView.getChildCount(); ++i) {
             ImageView imageView = (ImageView) pullListView.getChildAt(i).findViewById(R.id.ivInfo);
