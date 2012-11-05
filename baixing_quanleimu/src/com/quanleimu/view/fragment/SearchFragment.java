@@ -125,6 +125,8 @@ public class SearchFragment extends BaseFragment {
 
 		View rootV = inflater.inflate(R.layout.search, null);
 
+		rootV.setLayoutParams(FFlayoutParams);
+		
 		// 通过ID获取控件
 		lvSearchHistory = (ListView) rootV.findViewById(R.id.lvSearchHistory);
 		lvSearchResultList = (ListView) rootV

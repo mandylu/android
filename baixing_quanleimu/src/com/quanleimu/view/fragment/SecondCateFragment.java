@@ -10,6 +10,7 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
@@ -42,6 +43,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v =  inflater.inflate(R.layout.secondcate, null);
+		v.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		
 		GridView gridView = (GridView) v.findViewById(R.id.gridSecCategory);
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
