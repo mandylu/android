@@ -1468,7 +1468,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(layout != null){
 			layout_txt.addView(layout);
 		}
-		layout_txt.addView(border);
+		//layout_txt.addView(border);
 	
 	}
 	
@@ -2168,6 +2168,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				}
 			});
+		}
+		if (layout != null) {
+			layout.setBackgroundResource(R.drawable.post_box);
+			LinearLayout.LayoutParams layoutParams = (LayoutParams) layout.getLayoutParams();
+			if (layoutParams == null)
+				layoutParams = new LinearLayout.LayoutParams(
+				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+			layoutParams.bottomMargin = 10;
+			layout.setLayoutParams(layoutParams);
 		}
 		return layout;
 	}

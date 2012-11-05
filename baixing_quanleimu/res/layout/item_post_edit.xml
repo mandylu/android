@@ -42,6 +42,7 @@
             android:id="@+id/postunit"
             android:layout_width="wrap_content"
             android:layout_height="fill_parent"
+            android:layout_marginRight="5dp"
             android:layout_alignParentRight="true"
             android:gravity="center_vertical"
             android:textColor="#82807C"
