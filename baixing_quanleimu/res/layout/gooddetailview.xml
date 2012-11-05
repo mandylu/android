@@ -3,7 +3,7 @@
     android:id="@+id/gooddetaillayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@drawable/home_bg" >
+    android:background="#f3f1e8" >
 
     <LinearLayout
         android:id="@+id/phonelayout"

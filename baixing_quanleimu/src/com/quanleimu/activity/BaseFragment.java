@@ -165,7 +165,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.setHasOptionsMenu(true);
+//		this.setHasOptionsMenu(true);
 		handler = new Handler() {
 			@Override
 			public void handleMessage(Message msg) {
@@ -306,16 +306,16 @@ public abstract class BaseFragment extends Fragment {
 //		super.onCreateOptionsMenu(menu, inflater);
 //	}
 	
-	@Override
-	public void onPrepareOptionsMenu(Menu menu) {
-		this.initOptionMenu();
-		menu.clear();		
-		for (int option : options)
-		{
-			menu.add(0, option, option, OPTION_TITLES[option]);
-		}
-		super.onPrepareOptionsMenu(menu);
-	}
+//	@Override
+//	public void onPrepareOptionsMenu(Menu menu) {
+//		this.initOptionMenu();
+//		menu.clear();		
+//		for (int option : options)
+//		{
+//			menu.add(0, option, option, OPTION_TITLES[option]);
+//		}
+//		super.onPrepareOptionsMenu(menu);
+//	}
 	
 	@Override
 	public boolean onOptionsItemSelected(MenuItem item) {

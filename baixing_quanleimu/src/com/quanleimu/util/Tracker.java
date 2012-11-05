@@ -85,7 +85,8 @@ public class Tracker {
 		if (context != null)
 			try {
 				List<String> oldList = (ArrayList<String>)Util.loadDataFromLocate(context, TRACKER_FILE);
-				if (oldList != null) {					
+				if (oldList != null) {	
+					Log.d("oldlist",  "old list:  " + oldList.size());
 					dataList.addAll(oldList);//添加记录到内存
 					Util.clearData(context, TRACKER_FILE);
 				}

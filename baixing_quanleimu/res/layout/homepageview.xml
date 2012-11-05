@@ -6,7 +6,7 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:focusable="false"
-	    android:background="@drawable/home_bg"
+	    android:background="#f3f1e8"
     	android:focusableInTouchMode="false">
 	    	
     	<include layout="@layout/tab_with_pager"/>
