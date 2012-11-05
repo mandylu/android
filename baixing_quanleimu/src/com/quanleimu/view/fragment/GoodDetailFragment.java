@@ -173,15 +173,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onResume(){
 		updateButtonStatus();
-		if (!isMyAd())
+		if (isMyAd() || !isValidMessage())
 		{
-			this.pv = PV.VIEWAD;
-			Tracker.getInstance()
-			.pv(this.pv)
-			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
-			.end();
-		}else {
 			if (user==null)
 				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
 			this.pv = PV.MYVIEWAD;
@@ -192,8 +185,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.append(Key.ADSENDERID, user!=null? user.getId() : null)
 			.append(Key.ADSTATUS, detail.getValueByKey("status"))
 			.end();
-		}
-			
+		} else {
+			this.pv = PV.VIEWAD;
+			Tracker.getInstance()
+			.pv(this.pv)
+			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.end();
+		}	
 			
 		//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
@@ -398,15 +397,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			public void onPageSelected(int pos) {
 				keepSilent = false;//magic flag to refuse unexpected touch event
 				//tracker
-				if (!isMyAd())
+				if (isMyAd() || !isValidMessage())
 				{
-					GoodDetailFragment.this.pv = PV.VIEWAD;
-					Tracker.getInstance()
-					.pv(GoodDetailFragment.this.pv)
-					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
-					.end();
-				}else {
 					GoodDetailFragment.this.pv = PV.MYVIEWAD;
 					Tracker.getInstance()
 					.pv(PV.MYVIEWAD)
@@ -414,6 +406,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 					.append(Key.ADSENDERID, user!=null? user.getId() : null)
 					.append(Key.ADSTATUS, detail.getValueByKey("status"))
+					.end();
+				} else {
+					GoodDetailFragment.this.pv = PV.VIEWAD;
+					Tracker.getInstance()
+					.pv(GoodDetailFragment.this.pv)
+					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 					.end();
 				}
 				
