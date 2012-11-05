@@ -231,7 +231,6 @@ public class GoodsListAdapter extends BaseAdapter {
 				LayoutInflater inflater = LayoutInflater.from(context);
 				v = inflater.inflate(R.layout.goodslist_empty_hint, null);
 			}
-			
 			return v;
 		}else{
 			ViewHolder holder;
@@ -264,7 +263,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				text.setText(g.filterHint);
 				TextView countTxt = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_result_count);
 				countTxt.setText(g.resultCount + "");
-				v.setEnabled(false);
+				v.setEnabled(false);	
 				return v;
 			}
 			else
@@ -439,7 +438,7 @@ public class GoodsListAdapter extends BaseAdapter {
                     msg.what = messageWhat;
                     handler.sendMessage(msg);
 				}
-			});
+			});	
 			return v;
 		}
 	}

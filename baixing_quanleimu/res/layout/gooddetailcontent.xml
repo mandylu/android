@@ -121,7 +121,7 @@
 		                	<RelativeLayout
 		                        android:layout_width="fill_parent"
 		                        android:layout_height="56dp"
-		                        android:paddingRight="@dimen/list_margin_LF"
+		                        android:paddingRight="@dimen/vad_margin_LF"
 		                        android:id="@+id/vad_title_parent"
 		                        >
 		
@@ -188,8 +188,8 @@
 
 		                    <LinearLayout
 		                        android:id="@+id/meta"
-								android:layout_marginLeft="@dimen/list_margin_LF"
-		                		android:layout_marginRight="@dimen/list_margin_LF"
+								android:layout_marginLeft="@dimen/vad_margin_LF"
+		                		android:layout_marginRight="@dimen/vad_margin_LF"
 		                        android:layout_width="fill_parent"
 		                        android:layout_height="wrap_content"
 		                        android:orientation="vertical">
@@ -201,7 +201,7 @@
 		                        android:layout_height="wrap_content"
 		                        android:lineSpacingExtra="2dp"
 		                        android:gravity="left|top"
-		                        android:padding="@dimen/list_margin_LF"
+		                        android:padding="@dimen/vad_margin_LF"
 		                        android:textColor="#000000"
 		                        android:textSize="@dimen/font_small" >
 		                    </TextView>
