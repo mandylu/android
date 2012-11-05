@@ -282,7 +282,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (iv != null) {
 			iv.doClick();
 			SleepUtils.sleep(300);
-			ViewElement v = findElementByText("拍照", 0, true);
+			ViewElement v = findElementByText(POST_CAMERA_PHOTO_TEXT, 0, true);
 			assertNotNull(v);
 			//v.doClick();
 			SleepUtils.sleep(300);
@@ -322,6 +322,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 
 	public String doPostByData(String[][] postData) throws Exception {
+		String title = postEnterData(postData);
+		postSend();
+		if (afterPostSend() == false) return "";
+		return title;
+	}
+	
+	public String postEnterData(String[][] postData) throws Exception {
 		String title = "";
 		for (int i = 0; i < postData.length; i++) {
 			METATYPE type = METATYPE.valueOf(postData[i][0]);
@@ -342,13 +349,27 @@ public class BaixingTestCase extends BxBaseTestCase {
 			case TEXT:
 			case TITLE:
 				String txtVal = postData[i][2];
-				if (type == METATYPE.TITLE) title = txtVal;
-				setMetaByName(postData[i][1], txtVal);
+				if (type == METATYPE.TITLE) {
+					int rand = (int)(Math.random() * 1000000);
+					title = txtVal + String.valueOf(rand);
+					setMetaByName(postData[i][1], title);
+				} else {
+					setMetaByName(postData[i][1], txtVal);
+				}
 				break;
 			}
 		}
-		
-		postSend();
+		return title;
+	}
+	
+	public void postSend() throws Exception {
+		ViewElement eld = findElementByText(POST_SEND);
+		assertNotNull(eld);
+		eld.doClick();
+		waitForHideMsgbox(10 * 1000);
+	}
+	
+	public boolean afterPostSend() throws Exception {
 		ViewElement eld = findElementByText(POST_SEND);
 		if (eld != null) {
 			goBack();
@@ -358,17 +379,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 			goBack();
 			goBack();
-			return "";
+			return false;
 		}
-
-		return title;
-	}
-	
-	public void postSend() throws Exception {
-		ViewElement eld = findElementByText(POST_SEND);
-		assertNotNull(eld);
-		eld.doClick();
-		waitForHideMsgbox(10 * 1000);
+		return true;
 	}
 	
 	public void openHomeCategoryByIndex(int index) throws Exception {

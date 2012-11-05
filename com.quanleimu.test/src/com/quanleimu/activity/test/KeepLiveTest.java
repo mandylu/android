@@ -13,8 +13,101 @@ import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
 
 public class KeepLiveTest extends BaixingTestCase {
-	private static final String LOG_TAG = "ListingKeepLiveTest";
 	private boolean willFinished = false;
+
+	private static String postDataJiaju[][] = {
+		{"CATEGORY", "0", "家具"}, //物品交易
+		//{"SELECT", "供求", "转让"},
+		{"TEXT", "价格", "10020"}, //价格 （todo：价格不能超过N位）
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "物品交易标题家具"},
+		//{"SELECT", "发布人", "个人"},
+		{"SELECT", "地点", "宝山,全部"}
+	};
+	private static String postDataQiecheyongpin[][] = {
+		{"CATEGORY", "1", "汽车用品"}, //车辆买卖， 汽车用品
+		//{"SELECT", "供求", "出售"},
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "测试汽车用品标题"},
+		//{"SELECT", "发布人", "个人"},
+		{"SELECT", "地区", "宝山,全部"}
+	};
+	private static String postDataXiezilou[][] = {
+		{"CATEGORY", "2", "写字楼出租"}, //房屋租售
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		//{"SELECT", "供求", "出租"},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "测试写字楼出租"},
+		{"SELECT", "地区", "宝山,全部"}
+	};
+	private static String postDataQitazhaopin[][] = {
+		{"CATEGORY", "3", "其它招聘"}, //全职招聘
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		//{"SELECT", "供求", "招聘"},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "招聘职位", "招聘职位测试标题"},
+		{"TEXT", "工资", "500"},
+		{"SELECT", "工作地点", "奉贤,全部"},
+		//{"SELECT", "发布人", "公司直招"},
+		//{"MULTISELECT", "入职前交费项", "体检费,押金,伙食费"},
+		//{"SELECT", "入职前需交费", "无需缴纳"},
+		//{"SELECT", "是否退款", "不予退还所交费用"},
+		{"TEXT", "公司名称", "公司名测试"}
+	};
+	private static String postDataYanyuan[][] = {
+		{"CATEGORY", "4", "演员"}, //兼职招聘
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "兼职测试演员"},
+		{"TEXT", "工资", "50"},
+		{"SELECT", "工作地点", "宝山,全部"}
+		//{"SELECT", "发布人", "职业介绍"}
+	};
+	private static String postDataJianzhiJianli[][] = {
+		{"CATEGORY", "5", "兼职求职简历"}, //求职简历
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"SELECT", "现居住地", "宝山,全部"},
+		{"MULTISELECT", "求职意向", "模特,网站,摄影"},
+		{"TEXT", "姓名", "测试员R"},
+		//{"SELECT", "发布人", "个人"},
+		{"TITLE", "简历标题", "兼职求职测试"}
+	};
+	private static String postDataXunren[][] = {
+		{"CATEGORY", "6", "寻人/寻物"}, //交友活动
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "这时一个寻物的测试"},
+		{"SELECT", "地点", "宝山,全部"}
+	};
+	private static String postDataChongwuyongpin[][] = {
+		{"CATEGORY", "7", "宠物用品/食品"}, //宠物
+		//{"SELECT", "供求", "出售"},
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "食品用品测试标题宠物"},
+		//{"SELECT", "发布人", "个人"},
+		{"SELECT", "地点", "宝山,全部"}
+	};
+	private static String postDataLipindingzhi[][] = {
+		{"CATEGORY", "8", "礼品定制"}, //生活服务
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "标题", "礼品定制测试标题"},
+		{"SELECT", "地区", "宝山,全部"},
+		{"TEXT", "公司名称", "测试公司"}
+	};
+	private static String postDataWaiyupeixun[][] = {
+		{"CATEGORY", "9", "外语培训"}, //教育培训
+		//{"DESC", "详细说明", "详细说明测试教育培训"},
+		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "具体地点", "测试具体地点测试"},
+		{"TITLE", "信息标题", "外语培训测试标题"},
+		{"SELECT", "上课地点", "宝山,全部"},
+		{"TEXT", "学校名称", "测试学校"}
+	};
 	
 	public KeepLiveTest() throws Exception {
 		super();

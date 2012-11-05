@@ -109,7 +109,7 @@ public class MainActivityTest extends BaixingTestCase {
 		TimeUnit.SECONDS.sleep(1);
 		doClickPostPhoto();
 		TimeUnit.SECONDS.sleep(5);
-		ViewElement v = findElementByText("取消", 0, true);
+		ViewElement v = findElementByText(MSGBOX_CANCEL_TEXT, 0, true);
 		assertNotNull(v);
 		v.doClick();
 	}
