@@ -88,7 +88,6 @@ public class Communication implements Comparator<String> {
 		list.add("udid=" + QuanleimuApplication.udid);
 		list.add("version=" + QuanleimuApplication.version);
 		list.add("api_key=" + apiKey);
-		list.add("api=mobile.trackdata");//api name
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
 		list.add("uid=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
@@ -716,7 +715,7 @@ public class Communication implements Comparator<String> {
 		try {
 //			Log.d("sender", "try sending");
 			String result = Communication.getDataByGzipUrl(url, true);
-//			Log.d("sender", result);
+			Log.d("communication", result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");
 			if (code == 0)
