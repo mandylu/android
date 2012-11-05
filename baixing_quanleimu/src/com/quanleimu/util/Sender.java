@@ -4,6 +4,8 @@ import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -131,10 +133,31 @@ public class Sender implements Runnable{
 		return result;
 	}
 	
+	
+	public static boolean executeSyncPostTask(final String apiName, final String jsonStr) {
+		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+		url += "&json=";
+		url += jsonStr;
+		
+		try {
+//			Log.d("sender", "try sending");
+			String result = Communication.getDataByGzipUrl(url, true);
+			Log.d("communication", result);
+			JSONObject error = new JSONObject(result);
+			int code = (Integer) error.getJSONObject("error").get("code");
+			if (code == 0)
+				return true;
+			else
+				return false;
+		} catch (Exception e) {
+			return false;
+		}
+	}
+	
 	private boolean sendList(final List<String> list) {//TODO:流量统计:统计每次上传成功的字节数
 		String jsonStr = convertListToJson(list);
 		
-		boolean succed = Communication.executeSyncPostTask(apiName, jsonStr);
+		boolean succed = Sender.executeSyncPostTask(apiName, jsonStr);
 		Log.d("sender", "after executeSyncPostTask");
 		return succed;
 	}

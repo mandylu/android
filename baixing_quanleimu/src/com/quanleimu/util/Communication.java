@@ -706,27 +706,6 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
-	
-	public static boolean executeSyncPostTask(final String apiName, final String jsonStr) {
-		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-		url += "&json=";
-		url += jsonStr;
-		
-		try {
-//			Log.d("sender", "try sending");
-			String result = Communication.getDataByGzipUrl(url, true);
-			Log.d("communication", result);
-			JSONObject error = new JSONObject(result);
-			int code = (Integer) error.getJSONObject("error").get("code");
-			if (code == 0)
-				return true;
-			else
-				return false;
-		} catch (Exception e) {
-			return false;
-		}
-	}
-	
 	public static void executeAsyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
 		
 		executeAsyncTask(false, apiName, params, listener);
