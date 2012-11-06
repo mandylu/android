@@ -49,9 +49,8 @@ public class Sender implements Runnable{
 	}
 	
 	public void addToQueue(String dataString) {
-		String newString = dataString;
 		synchronized (queue) {
-			queue.add(newString);
+			queue.add(dataString);
 			queue.notifyAll();
 		}
 		
