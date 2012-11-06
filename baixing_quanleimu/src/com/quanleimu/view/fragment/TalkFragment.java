@@ -771,17 +771,6 @@ public class TalkFragment extends BaseFragment {
 				break;
 			}
 			}
-			
-			if (msg.what == MSG_REPLACE_MESSAGES || msg.what == MSG_MERGE_MESSAGE)
-			{
-				int myMsgCount = adapter.getMyMsgCount();
-				int otherMsgCount = adapter.getCount() - myMsgCount;
-				boolean isMy = QuanleimuApplication.getApplication().isMyAd(adId);
-
-				Tracker.getInstance().event(BxEvent.BUZZLIST)
-						.append(Key.DIALOG_SELLER, isMy ? myMsgCount : otherMsgCount)
-						.append(Key.DIALOG_BUYER, isMy ? otherMsgCount : myMsgCount).end();
-			}
 		
 		}
 		

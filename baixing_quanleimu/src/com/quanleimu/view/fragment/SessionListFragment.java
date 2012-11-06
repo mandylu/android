@@ -242,10 +242,17 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 					List<ChatSession> newSessions = ChatSession.fromJson(serverMessage);
 					sendMessage(MSG_NEW_SESSION, newSessions);
 					//tracker					
-					if (newSessions!=null)
-						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).end();
-					else
+					if (newSessions!=null && !newSessions.isEmpty()){
+						StringBuffer sb = new StringBuffer();
+						for (ChatSession session : newSessions)
+						{
+							sb.append(session.getAdId()).append(',');
+						}
+						sb.deleteCharAt(sb.length()-1);
+						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).append(Key.ADID, sb.toString()).end();
+					}else{
 						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
+					}
 				}
 			}
 			
