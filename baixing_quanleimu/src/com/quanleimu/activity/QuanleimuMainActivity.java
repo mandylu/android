@@ -515,7 +515,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	        String tabUserCenter = getString(R.string.tab_user_center);
 	        String tabPost = getString(R.string.tab_post);
 			globalTabCtrl = CustomizeTabHost.createTabHost(0, new String[] {tabBrowse, tabPost, tabUserCenter}, 
-					new TabIconRes[] {TabIconRes.NO_ICON, TabIconRes.NO_ICON, TabIconRes.NO_ICON});
+					new TabIconRes[] {new TabIconRes(R.drawable.icon_footer_category_on, R.drawable.icon_footer_category),
+					new TabIconRes(R.drawable.icon_footer_post_on, R.drawable.icon_footer_post),
+					new TabIconRes(R.drawable.icon_footer_profile_on, R.drawable.icon_footer_profile)});
 		}
 		
 		QuanleimuApplication.context = new WeakReference<Context>(this);

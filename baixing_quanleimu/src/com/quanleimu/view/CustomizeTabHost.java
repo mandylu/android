@@ -211,8 +211,8 @@ public final class CustomizeTabHost implements Serializable
     		int textColor = res.getColor(i == index ? R.color.tab_font_foucs : R.color.tab_font);
     		((TextView)tabItem.findViewById(R.id.tab_text)).setTextColor(textColor);
     		
-//    		//Tab icon 
-//    		this.setTabIcon(i, tabIconsRes[i]);
+    		//Tab icon 
+    		this.setTabIcon(i, tabIconsRes[i]);
     		
     		//Tab bg
     		tabItem.setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));

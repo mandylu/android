@@ -242,8 +242,8 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 				this.finishFragment(getArguments().getInt(KEY_RETURN_CODE), null);
 			}else{
 				Bundle bundle = createArguments(null, null);
-				bundle.putInt("defaultPageIndex", 1);
-				((BaseActivity)this.getActivity()).pushFragment(new HomeFragment(), bundle, true);
+//				bundle.putInt("defaultPageIndex", 1);
+				((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
 			}
 			break;
 		case MSG_LOGINFAIL:
