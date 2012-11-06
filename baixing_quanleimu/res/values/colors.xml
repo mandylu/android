@@ -17,6 +17,10 @@
     <color name="font_title">#5c5c5c</color>
     <color name="font_filter_bar">#7b7b7b</color>
     <color name="bg_screen">#ffffff</color>
+    <color name="vad_meta_price">#e86e02</color>
+    <color name="vad_meta_label">#707070</color>
+    <color name="vad_meta_content">#333333</color>
+    
     
     <!-- common color -->
     <color name="common_placeholder">#808080</color>

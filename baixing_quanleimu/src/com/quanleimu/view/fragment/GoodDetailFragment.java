@@ -1125,7 +1125,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		String price = detail.getValueByKey(EDATAKEYS.EDATAKEYS_PRICE);
 		if (price != null && !"".equals(price))
 		{
-			ll_meta.addView(createMetaView(inflater, "价格:", price, null));
+			View item = createMetaView(inflater, "价格:", price, null);
+			ll_meta.addView(item);
+			((TextView) item.findViewById(R.id.tvmeta)).setTextColor(getResources().getColor(R.color.vad_meta_price));
 		}
 		
 		
