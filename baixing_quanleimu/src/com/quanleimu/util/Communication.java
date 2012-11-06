@@ -47,7 +47,7 @@ public class Communication implements Comparator<String> {
 //	 public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
 	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
-
+	 
 	 public static boolean isWifiConnection() {
 		ConnectivityManager connectivityManager = 
 				(ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
@@ -478,11 +478,7 @@ public class Communication implements Comparator<String> {
 		HttpPost httpPost = new HttpPost(
 				url.substring(0, url.indexOf("/?") + 2));
 		StringEntity se;
-		if (isGzipped) {
-			//datasize字段统计字节数
-			url += "&datasize=";
-			url += GzipUtil.compress(url.substring(url.indexOf("/?") + 2)).getBytes().length;
-			
+		if (isGzipped) {			
 			se = new StringEntity(GzipUtil.compress(url.substring(url.indexOf("/?") + 2)));
 			httpPost.setEntity(se);
 			se.setContentType("application/zip");//application/zip

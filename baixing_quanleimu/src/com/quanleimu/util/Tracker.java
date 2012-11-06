@@ -1,8 +1,6 @@
 package com.quanleimu.util;
 
-import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.List;
 
 import android.content.Context;
 import android.util.Log;
@@ -24,7 +22,10 @@ import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 public class Tracker {
 	private static final String TRACKER_FILE = "bx_tracker.log";//saved file
 	private Context context = null;
-	private List<String> dataList = null;
+	private static final String TRACKER_DIR = "tracker_dir";
+
+	private int size;
+	private String dataString = null;
 	private static Tracker instance = null;
 	public static Tracker getInstance()
 	{
@@ -38,7 +39,8 @@ public class Tracker {
 	private Tracker()
 	{
 		context = QuanleimuApplication.getApplication().getApplicationContext();
-		dataList = new ArrayList<String>();
+		dataString = "";
+		size = 0;
 		load();
 	}
 	
@@ -62,12 +64,12 @@ public class Tracker {
 	
 	public void addLog(LogData log)
 	{
-		dataList.add(log.toJsonObj().toString());
-		Log.d("tracker", "addLog->dataList.size:"+dataList.size());
-		if (dataList.size()>100) {//100 items
+		dataString += log.toJsonObj().toString() + ",";
+		size++;
+		if (size > 10) {//100 items
 			try {
 				Log.d("sender", "try to addLog");
-				Sender.getInstance().addToQueue(dataList);//in case sender is null right now
+				Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
 				clear();
 			} catch (Exception e) {Log.d("sender", "sender is null when track.addLog");}
 		}
@@ -76,26 +78,28 @@ public class Tracker {
 	public void save() {
 		if (context != null)
 			try {
-				Util.saveDataToLocate(context, TRACKER_FILE, dataList);
+				Util.saveDataToFile(context, TRACKER_DIR, TRACKER_FILE, dataString.getBytes());
 			} catch (Exception e) {}
 	}
 	
-	@SuppressWarnings("unchecked")
 	private void load() {
 		if (context != null)
 			try {
-				List<String> oldList = (ArrayList<String>)Util.loadDataFromLocate(context, TRACKER_FILE);
-				if (oldList != null) {	
-					Log.d("oldlist",  "old list:  " + oldList.size());
-					dataList.addAll(oldList);//添加记录到内存
-					Util.clearData(context, TRACKER_FILE);
+				String absolutePath = Util.listFiles(context, TRACKER_DIR).get(0);
+				String oldString = new String(Util.loadData(absolutePath));
+				if (oldString != null) {
+					if (dataString.equals(""))
+						dataString = oldString;
+					else
+						dataString += "," + oldString;
+					Util.clearFile(absolutePath);
 				}
-				Log.d("tracker","Load->dataList.size:"+dataList.size());
 			} catch (Exception e) {}
 	}
 	
 	public void clear()
 	{
-		dataList.clear();
+		dataString = "";
+		size = 0;
 	}
 }

@@ -436,6 +436,9 @@ public class Util {
 		
 	}
 	
+	public static void clearFile(String absolutePath) {
+		new File(absolutePath).delete();
+	}
 	
 	public static void clearData(Context context, String file){
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){

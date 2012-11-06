@@ -1,6 +1,5 @@
 package com.quanleimu.util;
 
-import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -15,11 +14,11 @@ import com.quanleimu.activity.QuanleimuApplication;
 public class Sender implements Runnable{
 	private Context context = null;
 	private static String apiName = "trackdata";
-	private List<ArrayList<String>> queue = null;
-	private static final String SENDER_DIR = "BxLogDir";
+	private List<String> queue = null;
+	private static final String SENDER_DIR = "sender_dir";
 	private static final String SENDER_FILE_PREFIX = "bx_sender";//记录文件
 	private static final String SENDER_FILE_SUFFIX = ".log";//记录文件
-	
+	private long dataSize = 0;
 	private Object sendMutex = new Object();
 
 	//singleton
@@ -33,7 +32,7 @@ public class Sender implements Runnable{
 	//constructor
 	private Sender() {
 		context = QuanleimuApplication.getApplication().getApplicationContext();
-		queue = new ArrayList<ArrayList<String>>();
+		queue = new ArrayList<String>();
 		startThread();
 	}
 	
@@ -49,12 +48,10 @@ public class Sender implements Runnable{
 		}
 	}
 	
-	public void addToQueue(List<String> dataList) {
-		//if there's no newList, queue's item would refer to a zero-sized list
-		List<String> newList = new ArrayList<String>();
-		newList.addAll(dataList);
+	public void addToQueue(String dataString) {
+		String newString = dataString;
 		synchronized (queue) {
-			queue.add((ArrayList<String>)newList);
+			queue.add(newString);
 			queue.notifyAll();
 		}
 		
@@ -64,7 +61,7 @@ public class Sender implements Runnable{
 		}
 	}
 	
-	public List<ArrayList<String>> getQueue() {
+	public List<String> getQueue() {
 		return queue;
 	}
 
@@ -82,25 +79,26 @@ public class Sender implements Runnable{
 	}
 	
 	//save queue into files.
-	public void save() {//TODO:which callbacks to call?
-		List<ArrayList<String>> newQueue = new ArrayList<ArrayList<String>>();
+	public void save() {
+		dataSize = 0;
+		List<String> newQueue = new ArrayList<String>();
 		//in locker,addall is lightweight operation, not write file operation
 		synchronized (queue) {
 			newQueue.addAll(queue);
 			queue.clear();
 		}
-		for (ArrayList<String> data : newQueue) {
+		for (String data : newQueue) {
 			saveListToFile(data);
 		}
 		newQueue.clear();
 	}
 	
-	private void saveListToFile(ArrayList<String> data)
+	private void saveListToFile(String data)
 	{
 		if (context != null) {
 			String fileName = SENDER_FILE_PREFIX + System.currentTimeMillis()/1000 + SENDER_FILE_SUFFIX;
 			try {
-				Util.saveSerializableToPath(context, SENDER_DIR, fileName, data);			
+				Util.saveDataToFile(context, SENDER_DIR, fileName, data.getBytes());
 			} catch (Exception e) {}			
 		}
 	}
@@ -123,14 +121,8 @@ public class Sender implements Runnable{
 		return list.get(0);
 	}
 	
-	private String convertListToJson(List<String> list) {
-		String result = "[";
-		for (String d : list) {
-			result += d + ",";
-		}
-		result = result.substring(0, result.length()-1);
-		result += "]";
-		return result;
+	private String convertListToJson(String list) {
+		return "[" + list + "]";
 	}
 	
 	
@@ -140,9 +132,8 @@ public class Sender implements Runnable{
 		url += jsonStr;
 		
 		try {
-//			Log.d("sender", "try sending");
+			Log.d("sender", "try sending");
 			String result = Communication.getDataByGzipUrl(url, true);
-			Log.d("communication", result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");
 			if (code == 0)
@@ -154,13 +145,20 @@ public class Sender implements Runnable{
 		}
 	}
 	
-	private boolean sendList(final List<String> list) {//TODO:流量统计:统计每次上传成功的字节数
+	private boolean sendList(final String list) {//TODO:流量统计:统计每次上传成功的字节数
 		String jsonStr = convertListToJson(list);
-		
+		Log.d("sendlist",jsonStr);
 		boolean succed = Sender.executeSyncPostTask(apiName, jsonStr);
-		Log.d("sender", "after executeSyncPostTask");
+		if (succed)
+			try {
+				dataSize += GzipUtil.compress(jsonStr).getBytes().length;
+				Log.d("datasize","datasize:"+dataSize);
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
 		return succed;
 	}
+	
 	private boolean isQueueTooFull() {//确保在断网的时候，queue里面的数据不会无限制堆积，多出的部分存成文件
 		int size = 0;
 		synchronized (queue) {
@@ -174,7 +172,7 @@ public class Sender implements Runnable{
 		Log.d("sender", "run");
 		while(TrackConfig.getInstance().getLoggingFlag()) {//config flag
 				//First step : send memory data if there is any.
-				ArrayList<String> list = null;
+				String list = null;
 				synchronized (queue) {
 					int size = 0;
 					size = queue.size();//TODO:is "size" neccessary?
@@ -196,12 +194,11 @@ public class Sender implements Runnable{
 					String recordPath = loadRecord();
 					if (recordPath != null)
 					{
-						@SuppressWarnings("unchecked")
-						ArrayList<String> singleRecordList = (ArrayList<String>)Util.loadSerializable(recordPath);
+						String singleRecordList = new String(Util.loadData(recordPath));
 						if (singleRecordList != null && sendList(singleRecordList))
 						{
 							try {
-								new File(recordPath).delete();
+								Util.clearFile(recordPath);
 							} catch (Exception e) {}
 						}
 					}
