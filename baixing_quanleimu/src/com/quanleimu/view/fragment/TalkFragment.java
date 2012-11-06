@@ -298,10 +298,13 @@ public class TalkFragment extends BaseFragment {
 			}
 			
 			getActivity().registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
+			CURRENT_RECEIVER_TRICKY = targetUserId;
 		}
 		
 		protected void unregisterReceiver()
 		{
+			CURRENT_RECEIVER_TRICKY = null;
+			
 			if (msgListener != null)
 			{
 				getActivity().unregisterReceiver(msgListener);
@@ -315,8 +318,6 @@ public class TalkFragment extends BaseFragment {
 			this.isAttachedToWindow = false;
 			
 			unregisterReceiver();
-			
-			CURRENT_RECEIVER_TRICKY = null;
 		}
 		
 		@Override

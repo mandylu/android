@@ -13,7 +13,7 @@
 	<color name="list_line">#C1C1B9</color>
     <color name="base_green">#86CF2A</color>
     <color name="talk_content_font">#707070</color>
-    <color name="tab_gap_color">#363636</color>
+    <color name="tab_gap_color">#d3d3d3</color>
     <color name="font_title">#5c5c5c</color>
     <color name="font_filter_bar">#7b7b7b</color>
     <color name="bg_screen">#ffffff</color>
