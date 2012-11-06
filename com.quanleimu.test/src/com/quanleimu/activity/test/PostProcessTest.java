@@ -94,3 +94,4 @@ public class PostProcessTest extends BaixingTestCase {
 		//若提示“发布成功”则在已发布列表确认生成
 		//若提示版规错误，则在未审核通过列表确认生成
 	}
+}

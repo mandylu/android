@@ -40,33 +40,88 @@ public class AndroidScreen {
             for (IDevice d : devices) {
             	if (d != null) {
             		setDevice(d);
-                	BXOutputReceiver rev = new BXOutputReceiver();
-                	String errLockFile = "bxtestcase_err.lock";
-                	d.executeShellCommand("ls /mnt/sdcard/Athrun/", rev);
-                	//logger.debug(d.toString() + "recieved:" + rev.revString);
-                	//String errLockFile = d.toString() + "_err.lock";
-                	if (rev.revString.indexOf(errLockFile) > 0) {
-                		Image img = fetchScreen();
-                		if (img != null) {
-                			saveImage(img);
-                			logger.debug("image saved");
-                		}
-                		d.executeShellCommand("rm /mnt/sdcard/Athrun/" + errLockFile + "*", rev);
-                		sleep(1 * 1000);
-                		Date nowTime=new Date();
-                		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");
-                    	BXOutputReceiver log = new BXOutputReceiver();
-                    	log.logFile = "logs/logcat/test_" + d.toString() + "_" + time.format(nowTime) + ".log";
-                		d.executeShellCommand("logcat -d", log);
-                		sleep(1 * 1000);
-                		d.executeShellCommand("logcat -c", rev);
-                	}
+                	saveScreen(d);
+                	clickScreen(d, "baixing_camera_waiting_close.lock", 400, 710);
+                	sendKeyCode(d, "baixing_gallery_waiting_close.lock", 4);//KEYCODE_BACK
                 } else {
                     sleep(CONNECTING_PAUSE);
                 }
             }
             //break;
         }
+    }
+    
+    private void saveScreen(IDevice d) throws Exception {
+    	
+    	String errLockFile = "bxtestcase_err.lock";
+    	String lockDir = checkStatusFile(d, errLockFile);
+    	if (lockDir != null) {
+    		BXOutputReceiver rev = new BXOutputReceiver();
+    		Image img = fetchScreen();
+    		if (img != null) {
+    			saveImage(img);
+    			logger.debug("image saved");
+    		}
+    		d.executeShellCommand("rm " + lockDir + errLockFile + "*", rev);
+    		sleep(1 * 1000);
+    		Date nowTime=new Date();
+    		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");
+        	BXOutputReceiver log = new BXOutputReceiver();
+        	log.logFile = "logs/logcat/test_" + d.toString() + "_" + time.format(nowTime) + ".log";
+    		d.executeShellCommand("logcat -d", log);
+    		sleep(1 * 1000);
+    		d.executeShellCommand("logcat -c", rev);
+    	}
+    }
+    
+    private void clickScreen(IDevice d, String statusFile, int x, int y) throws Exception {
+    	
+    	String lockDir = checkStatusFile(d, statusFile);
+    	if (lockDir != null) {
+    		BXOutputReceiver rev = new BXOutputReceiver();
+    		d.executeShellCommand("sendevent /dev/input/event0 3 0 " + x, rev);
+    		d.executeShellCommand("sendevent /dev/input/event0 3 1 " + y, rev);
+    		d.executeShellCommand("sendevent /dev/input/event0 1 330 1", rev); //touch
+    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+    		d.executeShellCommand("sendevent /dev/input/event0 1 330 0", rev); //untouch
+    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+    		logger.debug(d.toString() + " sendevent:" + rev.revString);
+    		d.executeShellCommand("rm " + lockDir + statusFile + "*", rev);
+    		sleep(1 * 1000);
+    	}
+    }
+    
+    private void sendKeyCode(IDevice d, String statusFile, int keycode) throws Exception {
+    	
+    	String lockDir = checkStatusFile(d, statusFile);
+    	if (lockDir != null) {
+    		BXOutputReceiver rev = new BXOutputReceiver();
+    		d.executeShellCommand("input keyevent 4 " + keycode, rev);
+    		logger.debug(d.toString() + " sendevent:" + rev.revString);
+    		d.executeShellCommand("rm " + lockDir + statusFile + "*", rev);
+    		sleep(1 * 1000);
+    	}
+    }
+    
+    private String checkStatusFile(IDevice d, String lockFile) throws Exception {
+    	BXOutputReceiver rev = new BXOutputReceiver();
+    	String lockDir = "/mnt/sdcard/Athrun/";
+    	d.executeShellCommand("ls " + lockDir, rev);
+    	//logger.debug(d.toString() + "recieved:" + rev.revString);
+    	//String errLockFile = d.toString() + "_err.lock";
+    	
+    	if (rev.revString.indexOf("No such file or directory") > 0) {
+    		//logger.info("ls " + lockDir + " ", rev.revString);
+    		lockDir = "/sdcard/Athrun/";
+    		rev.revString = "";
+        	d.executeShellCommand("ls " + lockDir, rev);
+    	}
+
+		//logger.info("ls " + lockDir + " 2 ", rev.revString);
+    	if (rev.revString.indexOf(lockFile) > 0) {
+    		return lockDir;
+    	}
+    	return null;
     }
     
 	private void initBridge() {

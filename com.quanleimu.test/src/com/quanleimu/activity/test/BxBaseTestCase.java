@@ -19,6 +19,7 @@ import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 
+import android.os.Environment;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -28,6 +29,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String LOG_TAG = "BaixingTest";
 	
 	//Common ID
+	public static final String CAMERA_LOCK_FILE = "baixing_camera_waiting_close.lock";
+	public static final String GALLERY_LOCK_FILE = "baixing_gallery_waiting_close.lock";
 	public static final String BACK_BUTTON_TEXT = "返回";
 	public static final String BACK_BUTTON_ID = "left_action";
 	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
@@ -37,10 +40,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String TAB_ID_HOME_V3 = "tab_button_1";
 	public static final String TAB_ID_HOME_TEXT = "浏览信息";
 	public static final String TAB_ID_POST = "tab_button_2";
-	public static final String TAB_ID_POST_TEXT = "发布";
+	public static final String TAB_ID_POST_TEXT = "免费发布";
 	public static final String TAB_ID_MY = "ivMyCenter";
 	public static final String TAB_ID_MY_V3 = "tab_button_3";
 	public static final String TAB_ID_MY_TEXT = "用户中心";
+	public static final String TAB_TEXT_ID = "tab_text";
 	//Home ID
 	public static final String HOME_APP_NAME_ID = "title_label_app_name";
 	public static final String HOME_FIRST_RUN_ID = "topguide";
@@ -66,15 +70,18 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String AD_VIEWLIST_MARK_ID = "goods_item_view_root";
 	public static final String AD_VIEWLIST_ITEM_TITLE_ID = "tvDes";
 	public static final String AD_VIEWLIST_ITEM_DATE_ID = "tvUpdateDate";
+	public static final String AD_VIEWLIST_MORE_ID = "pulldown_to_getmore";
+	public static final String AD_VIEWLIST_ITEM_IMAGE_ID = "ivInfo";
+	public static final String AD_VIEWLIST_ITEM_IMAGE_IMG = "home_bg_thumb_2x";
+	
 	public static final String AD_VIEWLIST_ID = "lvGoodsList";
+	
 	public static final String AD_DETAILVIEW_ID = "svDetail";
 	public static final String AD_DETAILVIEW_DESC_ID = "llgl";
 	public static final String AD_DETAILVIEW_PREV_ID = "btn_prev";
 	public static final String AD_DETAILVIEW_NEXT_ID = "btn_next";
 	public static final String AD_DETAILVIEW_TITLE_ID = "goods_tittle";
 	public static final String AD_IMAGES_VIEWLIST_ID = "glDetail";
-	public static final String AD_VIEWLIST_MORE_ID = "pulldown_to_getmore";
-	public static final String AD_VIEWLIST_IMAGE_ID = "ivInfo";
 	public static final String AD_DETAILVIEW_NO_IMAGE_ID = "vad_no_img_tip";
 	public static final String AD_DETAIL_META_LABEL_ID = "tvmetatxt";
 	public static final String AD_DETAIL_META_VALUE_ID = "tvmeta";
@@ -93,7 +100,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_FORM_MARK_ID = "layout_txt";
 	public static final String POST_SCROLLVIEW_ID = "scrollView1";
 	public static final String POST_SCROLLVIEW_PARENT_ID = "postgoodslayout";
-	public static final String POST_CATEGORY_GRIDVIEW_ID = "gridcategory";
+	public static final String POST_CATEGORY_GRIDVIEW_ID = "firstcategory";
 	public static final String POST_SECOND_CATEGORY_LISTVIEW_ID = "post_other_list";
 	public static final int POST_CATEGORY_SELEC_INDEX = 0;
 	public static final String POST_META_LISTVIEW_ID = "post_other_list";
@@ -200,14 +207,29 @@ public class BxBaseTestCase extends AthrunTestCase {
 		startScreen_v3();
 	}
 	
-	public static void waitScreenSave() {
-		String lockFilePath = "/mnt/sdcard/Athrun/bxtestcase_err.lock";
+	public static String lockStatus(String statusFile) {
+		String lockDirPath = "/mnt/sdcard/Athrun/";
+		File d = new File(lockDirPath);
+		if (!d.exists()) {
+			lockDirPath = Environment.getExternalStorageDirectory().getPath()  + "/Athrun/";
+			d = new File(lockDirPath);
+			if (!d.exists()) {
+				return null;
+			}
+		}
+		
+		String lockFilePath = lockDirPath + statusFile;
 		LogConfigurator logConfigurator = new LogConfigurator();
 		logConfigurator.setFileName(lockFilePath);
 		logConfigurator.setRootLevel(Level.INFO);
 		logConfigurator.configure();
 		Logger logger = Logger.getLogger(BaixingTestCase.class);
 		logger.info("lock");
+		return lockFilePath;
+	}
+	
+	public static void waitScreenSave() {
+		String lockFilePath = lockStatus("bxtestcase_err.lock");
 		/*try {
 			File lockFile = new File(lockFilePath);
     		if (!lockFile.exists()) {
@@ -216,6 +238,7 @@ public class BxBaseTestCase extends AthrunTestCase {
     	} catch (Exception ex) {
     		AthrunTestCase.assertTrue("Cannot created err lock file.", true);
     	}*/
+		if (lockFilePath == null) return;
 		final Timer timer = new Timer();
 		class BxTimerTask extends TimerTask {
 			public boolean willStopped = false;
@@ -429,18 +452,19 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void openTabbar(String vId) throws Exception {
-		TextViewElement v = findElementById(vId, TextViewElement.class);;
+		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
 		int i = 0;
 		while(v == null) {
 			goBack();
 			if (checkHomeAlert()) break;
 			if (i++ > 10) break;
-			v = findElementById(vId, TextViewElement.class);
+			v = findElementById(vId, ViewGroupElement.class);
 		}
 		if (v != null) {
-			if ((vId.equals(TAB_ID_HOME_V3) && v.getText().equals(TAB_ID_HOME_TEXT))
-				|| (vId.equals(TAB_ID_MY_V3) && v.getText().equals(TAB_ID_MY_TEXT))
-				|| (vId.equals(TAB_ID_POST) && v.getText().equals(TAB_ID_POST_TEXT)))
+			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
+				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
+				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
 			{
 				v.doClick();
 				TimeUnit.SECONDS.sleep(1);
@@ -463,25 +487,27 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return null;
 	}
 	
-	public TextViewElement getGridItemByIndex(int index, String gridId) throws Exception {
+	public <T extends ViewElement> T getGridItemByIndex(int index, String gridId) throws Exception {
 		TextViewElement textView = null;
 		ViewGroupElement gridView = null;
 		try {
 			gridView = findElementById(gridId, ViewGroupElement.class);
 			assertNotNull(gridView);
-			//ViewGroupElement item = gridView.getChildByIndex(index, ViewGroupElement.class);
-			//assertNotNull(item);
 			textView = findElementById(CATEGROY_GRIDVIEW_NAME_ID, index,
 					TextViewElement.class);
 			if (textView != null) {
 				TimeUnit.MILLISECONDS.sleep(300);
 				assertNotNull(textView.getText());
 				assertTrue(textView.getText().length() > 0);
+			} else {
+				ViewGroupElement item = gridView.getChildByIndex(index, ViewGroupElement.class);
+				//assertNotNull(item);
+				if (item != null) return (T)item;
 			}
 		} catch (Exception ex) {
 			assertNotNull(gridView);
 		}
-		return textView;
+		return (T)textView;
 	}
 	
 	public boolean showNextView(String viewId) throws Exception {

@@ -88,10 +88,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 		logon();
 		
 		openTabbar(TAB_ID_POST);
-		TextViewElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
+		ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
 		if (catTextView != null) {
 			catTextView.doClick();
-			waitForHideMsgbox(5000);
+			waitForHideMsgbox(3000);
 		}
 	}
 	
@@ -516,20 +516,59 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void openAdWithPic(boolean havPic) throws Exception {
 		AbsListViewElement avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
 		assertNotNull(avl);
-		for (int i = 0; i < 20; i++) {
+		/*for (int i = 0; i < 20; i++) {
 			assertNotNull(openAdByIndex(i));
 			TimeUnit.SECONDS.sleep(2);
-			/*ViewGroupElement ilv = findElementById(AD_DETAILVIEW_DESC_ID, ViewGroupElement.class);
+			/ *ViewGroupElement ilv = findElementById(AD_DETAILVIEW_DESC_ID, ViewGroupElement.class);
 			ViewGroupElement v = ilv.findElementById(AD_IMAGES_VIEWLIST_ID, ViewGroupElement.class);
 			Log.i(LOG_TAG, "openAdWithPic:ilv" + v.getChildCount());
 			if ((havPic && v != null) || (!havPic && v == null)) {
 				break;
-			}*/
+			}* /
 			if(showAdPic(0)) {
 				goBack();
 				if (havPic) break;
 			} else if (!havPic) break;
 			goBack();
+		}*/
+		ViewGroupElement avi = null;
+		int loop = 0;
+		for(int i = 0; i < 20; i++) {
+			try {
+				avi = findElementById(AD_VIEWLIST_MARK_ID, i, ViewGroupElement.class);
+				Log.i(LOG_TAG, "openAdWithPic:ilv" + avi.getChildCount());
+				if (avi != null) {
+					ViewElement v = avi.findElementById(AD_VIEWLIST_ITEM_TITLE_ID);
+					Log.i(LOG_TAG, "openAdWithPic:ilv v1");
+					if (v == null) {
+						avl.scrollToNextScreen();
+						TimeUnit.SECONDS.sleep(1);
+						continue;
+					}
+					v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
+					Log.i(LOG_TAG, "openAdWithPic:ilv v2");
+					if (v == null) {
+						avl.scrollToNextScreen();
+						TimeUnit.SECONDS.sleep(1);
+						continue;
+					}
+					Log.i(LOG_TAG, "openAdWithPic:ilv v3");
+					BXImageViewElement iv = avi.findElementById(AD_VIEWLIST_ITEM_IMAGE_ID, BXImageViewElement.class);
+					if (iv == null) continue;
+					Log.i(LOG_TAG, "openAdWithPic:ilv v4" + iv.getTag());
+					//if (!iv.checkImageByName(AD_VIEWLIST_ITEM_IMAGE_IMG)) continue;  //TODO
+					if (iv.getTag() == null || iv.getTag().length() == 0) continue; 
+					Log.i(LOG_TAG, "openAdWithPic:ilv v5");
+					avi.doClick();
+					TimeUnit.SECONDS.sleep(1);
+					break;
+				}
+			} catch (IndexOutOfBoundsException ex) {
+				if (loop++ > 5) break;
+				avl.scrollToNextScreen();
+				TimeUnit.SECONDS.sleep(1);
+				i = 0;
+			}
 		}
 	}
 	

@@ -81,7 +81,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
-		ViewElement v = findElementById(AD_VIEWLIST_IMAGE_ID);
+		ViewElement v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		assertNotNull(v);
 		//点击返回
 		goBack();
@@ -96,7 +96,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		v = findElementById(AD_VIEWLIST_IMAGE_ID);
+		v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		assertNull(v);
 		goBack();
 		goBack();
