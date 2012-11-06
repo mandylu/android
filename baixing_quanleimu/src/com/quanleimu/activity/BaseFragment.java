@@ -477,14 +477,17 @@ public abstract class BaseFragment extends Fragment {
 	protected final void pushAndFinish(BaseFragment f, Bundle bundle)
 	{
 		BaseActivity activity = (BaseActivity) this.getActivity();
-		activity.pushFragment(f, bundle, this.getName());
+		if(activity != null){
+			activity.pushFragment(f, bundle, this.getName());
+		}
 	}
 	
 	protected void pushFragment(BaseFragment f, Bundle bundle)
-	{
-		
+	{		
 		BaseActivity activity = (BaseActivity) this.getActivity();
-		activity.pushFragment(f, bundle, false);
+		if(activity != null){
+			activity.pushFragment(f, bundle, false);
+		}
 	}
 	
 	protected final String getFragmentName()
