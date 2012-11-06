@@ -50,7 +50,9 @@ public class LogData {
 	public LogData append(Key key, String value)
 	{
 		String keyName = key.getName();
-		this.map.put(keyName, value);
+        if (value != null) {
+            this.map.put(keyName, value);
+        }
 		return this;
 	}
 	

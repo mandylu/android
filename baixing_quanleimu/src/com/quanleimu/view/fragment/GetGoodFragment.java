@@ -3,6 +3,7 @@ package com.quanleimu.view.fragment;
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
@@ -536,9 +537,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
                 lvGoodsList.fireRefresh();
             } else { //非缓存情况下才加此 log
+                HashMap tmpMap = (HashMap)filterParamHolder.getData().clone(); //筛选关键字重设 key
+                if (tmpMap.containsKey("")) {
+                    tmpMap.put(Key.LISTINGFILTERKEYWORD.getName(), tmpMap.get(""));
+                    tmpMap.remove("");
+                }
+
                 Tracker.getInstance().event(BxEvent.LISTING)
                         .append(Key.SEARCHKEYWORD, searchContent)
-                        .append(filterParamHolder.getData())
+                        .append(tmpMap)
                         .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
                         .end();
             }
@@ -595,9 +602,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				goodsListLoader.setHasMore(true);
 			}
 
+            HashMap tmpMap = (HashMap)filterParamHolder.getData().clone(); //筛选关键字重设 key
+            if (tmpMap.containsKey("")) {
+                tmpMap.put(Key.LISTINGFILTERKEYWORD.getName(), tmpMap.get(""));
+                tmpMap.remove("");
+            }
+
             Tracker.getInstance().event(BxEvent.LISTING_MORE)
                     .append(Key.SEARCHKEYWORD, searchContent)
-                    .append(filterParamHolder.getData())
+                    .append(tmpMap)
                     .append(Key.TOTAL_ADSCOUNT, goodsListLoader.getGoodsList().getData().size())
                     .end();
 			

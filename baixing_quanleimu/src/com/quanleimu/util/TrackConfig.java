@@ -41,7 +41,7 @@ public class TrackConfig {
 			try {
 				response = Communication.getDataByUrl(url, true);
 			} catch (Exception e) {
-
+                //todo ming mobile_config 这样用就被限制死了
 			} finally {
 				if (response != null && response.equals("\"false\"")) {
 					isLogging = false;
@@ -61,6 +61,7 @@ public class TrackConfig {
 			FIRSTCATENAME("firstCateName","一级类目名"),
 			SECONDCATENAME("secondCateName","二级类目名"),
 			SEARCHKEYWORD("searchKeyword","搜索关键字"),
+            LISTINGFILTERKEYWORD("listingFilterKeyword", "listing页面筛选关键字"),
 			LISTINGFILTER("listingFilter","listing页面筛选条件"),
 			ADID("adId","adId"),
 			USERID("userId","userId"),
