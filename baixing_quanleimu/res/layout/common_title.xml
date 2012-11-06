@@ -31,12 +31,10 @@
         android:paddingLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_toRightOf="@+id/left_line"
-        android:layout_centerVertical="true"
+        android:layout_centerInParent="true"
         android:gravity="center"
         android:text="首页"
-        android:textColor="#ffffff"
-        android:shadowColor="#68a523"
+        android:textColor="@color/font_title"
         android:textSize="18sp" >
     </TextView>
     
@@ -90,7 +88,7 @@
                 android:layout_height="wrap_content"
                 android:gravity="center"
                 android:text="发布 "
-                android:textColor="#ffffff"
+                android:textColor="@color/font_title"
                 android:textSize="18sp" >
             </TextView>
 

@@ -134,8 +134,8 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		else
 		{
 			title.hasGlobalSearch = true;
-			title.m_rightActionHint = "发布";
-			title.m_rightActionBg = R.drawable.bg_post_selector;
+//			title.m_rightActionHint = "发布";
+//			title.m_rightActionBg = R.drawable.bg_post_selector;
 		}
 	}
 	

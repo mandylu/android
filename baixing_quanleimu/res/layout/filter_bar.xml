@@ -3,7 +3,7 @@
     android:id="@+id/RelativeLayout1"
     android:layout_width="match_parent"
     android:layout_height="@dimen/tab_height"
-   	android:background="@color/tab_bg"
+   	android:background="@drawable/bg_filter_bar"
     android:orientation="vertical" >
     
     <RelativeLayout 
@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:singleLine="true"
-        android:textColor="#ffffff"
+        android:textColor="@color/font_filter_bar"
         android:textSize="@dimen/tab_font_size"
         android:text="筛选信息" />
     </RelativeLayout>
@@ -43,7 +43,7 @@
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:singleLine="true"
-        android:textColor="#ffffff"
+        android:textColor="@color/font_filter_bar"
         android:textSize="@dimen/tab_font_size"
         android:text="更多" />
       </RelativeLayout>
@@ -53,7 +53,6 @@
     android:layout_toLeftOf="@+id/filter_item_more"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/tab_height"
-    android:background="@color/tab_bg"
     android:orientation="horizontal" >
     <RelativeLayout
         android:id="@+id/filter_item_1"
@@ -72,7 +71,7 @@
             android:layout_toLeftOf="@+id/arrow_down"
             android:singleLine="true"
             android:text="全部"
-            android:textColor="#ffffff"
+            android:textColor="@color/font_filter_bar"
             android:textSize="@dimen/tab_font_size" />
 
         <ImageView
@@ -111,7 +110,7 @@
             android:layout_toLeftOf="@+id/arrow_down"
             android:singleLine="true"
             android:text="全部"
-            android:textColor="#ffffff"
+            android:textColor="@color/font_filter_bar"
             android:textSize="@dimen/tab_font_size" />
 		<ImageView
             android:id="@+id/arrow_down"
@@ -147,7 +146,7 @@
             android:layout_centerVertical="true"
             android:singleLine="true"
             android:text="全部"
-            android:textColor="#ffffff"
+            android:textColor="@color/font_filter_bar"
             android:textSize="@dimen/tab_font_size" />
         
                 <ImageView

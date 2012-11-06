@@ -1569,7 +1569,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		title.m_visible = true;
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-		title.m_titleControls = title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
+		title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
 		
 		updateTitleBar(title);
 	}

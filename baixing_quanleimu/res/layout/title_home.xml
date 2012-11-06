@@ -7,11 +7,9 @@
         android:id="@+id/logo_root"
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
-        android:paddingLeft="14dp"
-        android:layout_centerVertical="true"
-        android:gravity="center_vertical"
+        android:layout_centerInParent="true"
+        android:gravity="center"
         android:background="@drawable/title_bg_selector"
-        android:layout_toRightOf="@+id/title_label_city"
         android:orientation="horizontal" >
        <TextView
         android:id="@+id/title_label_city"
@@ -19,7 +17,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="上海"
-        android:textColor="@android:color/white"
+        android:textColor="@color/font_title"
        	android:textSize="22dp" />
        
       <TextView
@@ -28,7 +26,7 @@
         android:layout_height="wrap_content"
         android:gravity="center"
         android:text="百姓网"
-        android:textColor="@android:color/white"
+        android:textColor="@color/font_title"
        	android:textSize="22dp" />
 
        <ImageView

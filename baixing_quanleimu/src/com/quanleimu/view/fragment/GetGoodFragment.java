@@ -84,8 +84,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
-		title.m_rightActionHint = "发布";
-		title.m_rightActionBg = R.drawable.bg_post_selector;
+//		title.m_rightActionHint = "发布";
+//		title.m_rightActionBg = R.drawable.bg_post_selector;
 	}
 	
 	public void initTab(TabDef tab){

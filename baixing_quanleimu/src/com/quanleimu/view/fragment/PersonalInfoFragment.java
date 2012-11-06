@@ -158,7 +158,20 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			Log.e(TAG, "check if arguments is auto saved ? restore:" + this.getArguments());
 		}
 	}
+	
+	
 
+	@Override
+	public void onStackTop(boolean isBack) {
+		String cityName = QuanleimuApplication.getApplication().getCityName();
+		if (null == cityName || "".equals(cityName)) {
+			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+		}else
+		{
+			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
+			titleLabel.setText(QuanleimuApplication.getApplication().getCityName());			
+		}
+	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
