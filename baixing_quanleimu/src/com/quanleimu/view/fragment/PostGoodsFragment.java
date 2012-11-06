@@ -1006,10 +1006,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					errorMsg = message;
 				}else {
 					errorCode = -1;
-					errorMsg = "decode json error";
+					errorMsg = "解析错误";
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
+				errorMsg = "解析错误";
 			} catch (Communication.BXHttpException e) {
 				errorCode = e.errorCode;
 				if(e.errorCode == 414){
@@ -1022,7 +1023,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			} catch(Exception e){
 				e.printStackTrace();
 				errorCode = -2;
-				errorMsg = e.getMessage();
+//				errorMsg = e.getMessage();
+				errorMsg = "发布失败";
 			}
 			
 			BxEvent event = goodsDetail != null ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
