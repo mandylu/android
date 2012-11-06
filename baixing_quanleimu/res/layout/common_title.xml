@@ -35,7 +35,6 @@
     
     <TextView
         android:id="@+id/tvTitle"
-        android:paddingLeft="16dp"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
@@ -106,7 +105,7 @@
     
 	<LinearLayout
         android:id="@+id/linearTitleControls"
-        android:layout_toRightOf="@+id/tvTitle"
+        android:layout_toRightOf="@+id/left_line"
         android:layout_toLeftOf="@+id/right_action_parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
