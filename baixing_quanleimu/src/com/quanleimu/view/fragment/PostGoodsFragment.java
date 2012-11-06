@@ -709,7 +709,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(this.detailLocation != null){
 				doPost(usercheck(), detailLocation);
 			}else{
-				postResultLog(0,"No detailLocation!");
 				this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 				retreiveLocation();
 			}
