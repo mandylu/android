@@ -158,17 +158,16 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
         BaseFragment currentFragmet = getCurrentFragment();
         
 		try{
-			if(true/*null == currentView || !currentView.onBack()*/){
-		    	if( currentFragmet != null && getSupportFragmentManager().getBackStackEntryCount()>1){
-		    		if (!currentFragmet.handleBack())
-		    		{
-		    			popFragment(currentFragmet);
-		    		}
-		    		
-		    	}else{
-		    		exitMainActivity();
-		    	}	
-			}
+	    	if( currentFragmet != null && !currentFragmet.handleBack()){
+    			if (getSupportFragmentManager().getBackStackEntryCount()>1)
+    			{
+    				popFragment(currentFragmet);
+    			}
+    			else
+    			{
+    				exitMainActivity();
+    			}
+	    	}	
 		}catch(Exception e){
 			e.printStackTrace();
 		}
@@ -666,7 +665,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			
 			break;
 		case R.id.left_action:
-			if (!getCurrentFragment().handleBack())
+//			if (!getCurrentFragment().handleBack())
 			{
 				this.handleBack();
 			}
