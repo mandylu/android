@@ -144,7 +144,7 @@ public class Sender implements Runnable{
 		}
 	}
 	
-	private boolean sendList(final String list) {//TODO:流量统计:统计每次上传成功的字节数
+	private boolean sendList(final String list) {//流量统计:统计每次上传成功的字节数
 		String jsonStr = convertListToJson(list);
 		Log.d("sendlist",jsonStr);
 		boolean succed = Sender.executeSyncPostTask(apiName, jsonStr);

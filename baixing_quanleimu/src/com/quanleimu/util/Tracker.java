@@ -66,7 +66,7 @@ public class Tracker {
 	{
 		dataString += log.toJsonObj().toString() + ",";
 		size++;
-		if (size > 10) {//100 items
+		if (size > 10) {//100 items,10 for testing
 			try {
 				Log.d("sender", "try to addLog");
 				Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
