@@ -16,6 +16,7 @@
     <color name="tab_gap_color">#363636</color>
     <color name="font_title">#5c5c5c</color>
     <color name="font_filter_bar">#7b7b7b</color>
+    <color name="bg_screen">#ffffff</color>
     
     <!-- common color -->
     <color name="common_placeholder">#808080</color>
