@@ -68,7 +68,9 @@ cd ../
 #start testemulator1
 echo "Check emulator-5556 device is connected or wait for one";
 adbState=`adb -s emulator-5556 get-state | grep device`;
-if [ ! $adbState = "device" ]; then
+if [ $adbState = "device" ]; then
+    echo "..."
+else
 	echo "Device emulator-5556 not found -- connect one to continue..."
 	emulator -avd testemulator1 -port 5556 -sdcard com.quanleimu.test/testcase1.img &
 	adb -s emulator-5556 wait-for-device
@@ -93,7 +95,9 @@ sleep 3;
 #start testemulator2
 echo "Check emulator-5580 device is connected or wait for one";
 adbState=`adb -s emulator-5580 get-state | grep device`
-if [ ! $adbState = "device" ]; then
+if [ $adbState = "device" ]; then
+    echo "..."
+else
 	echo "Device emulator-5580 not found -- connect one to continue..."
 	emulator -avd testemulator2 -port 5580 -sdcard com.quanleimu.test/testcase2.img &
 	adb -s emulator-5580 wait-for-device
@@ -128,9 +132,7 @@ sleep 1;
 
 #start realdevice
 adbState=`adb -s 015d18844854041c get-state | grep device`;
-if [ ! $adbState = "device" ]; then
-	echo "Device 015d18844854041c not found..."
-else
+if [ $adbState = "device" ]; then
 	echo "Device 015d18844854041c connected."
 
 	echo "reinstall pkg";	
@@ -157,8 +159,9 @@ else
 	
 	#test in real device
 	echo "START test post2 $NOW" >> $LOGPATH/runpost2_$LOGNOW.log
-	adb -s 015d18844854041c shell am instrument -w -e class com.quanleimu.activity.test.KeepLiveTest#runAdListing com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/runadlisting2_$LOGNOW.log &
-		
+	adb -s 015d18844854041c shell am instrument -w -e class com.quanleimu.activity.test com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/runtest_$LOGNOW.log &
+else
+	echo "Device 015d18844854041c not found..."
 fi
 #end realdevice
 

@@ -9,6 +9,7 @@ import java.util.concurrent.TimeUnit;
 import org.apache.log4j.Level;
 import org.apache.log4j.Logger;
 import org.athrun.android.framework.AthrunTestCase;
+import org.athrun.android.framework.utils.RClassUtils;
 import org.athrun.android.framework.utils.SleepUtils;
 import org.athrun.android.framework.utils.ViewFinder;
 import org.athrun.android.framework.viewelement.AbsListViewElement;
@@ -19,6 +20,7 @@ import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 
 import android.util.Log;
+import android.view.View;
 import android.widget.TextView;
 import de.mindpipe.android.logging.log4j.LogConfigurator;
 
@@ -32,12 +34,12 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String CATEGROY_GRIDVIEW_NAME_ID = "itemtext";
 	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
 	public static final String TAB_ID_HOME = "ivHomePage";
-	public static final String TAB_ID_HOME_V3 = "tab_text_1";
+	public static final String TAB_ID_HOME_V3 = "tab_button_1";
 	public static final String TAB_ID_HOME_TEXT = "浏览信息";
-	public static final String TAB_ID_POST = "right_btn_txt";
+	public static final String TAB_ID_POST = "tab_button_2";
 	public static final String TAB_ID_POST_TEXT = "发布";
 	public static final String TAB_ID_MY = "ivMyCenter";
-	public static final String TAB_ID_MY_V3 = "tab_text_2";
+	public static final String TAB_ID_MY_V3 = "tab_button_3";
 	public static final String TAB_ID_MY_TEXT = "用户中心";
 	//Home ID
 	public static final String HOME_APP_NAME_ID = "title_label_app_name";
@@ -289,6 +291,28 @@ public class BxBaseTestCase extends AthrunTestCase {
 			TimeUnit.SECONDS.sleep(10);
 		}
 	}
+	
+	public <T> T findElementById(String literalId, int index, Class<T> returnType) throws Exception {
+		T v = null;
+		try {
+			 v = super.findElementById(literalId, index, returnType);
+		} catch (NoSuchFieldException ex) {}
+		return v;
+	}
+	
+	public <T> T findElementById(String literalId,
+			Class<T> returnType) throws Exception {
+		return this.findElementById(literalId, 0, returnType);
+	}
+	
+	public ViewElement findElementById(String literalId, int index) throws Exception {
+		return this.findElementById(literalId, index, ViewElement.class);
+	}
+	
+	public ViewElement findElementById(String literalId) throws Exception {
+		return this.findElementById(literalId, 0);
+	}
+	
 	public boolean findElementByTexts(String texts) throws Exception {
 		String[] lstText = texts.split(",");
 		for(int i = 0; i < lstText.length; i++) {
