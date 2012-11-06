@@ -29,6 +29,15 @@
         android:textSize="14sp" >
     </TextView>
     
+    
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dip"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/list_divider" >
+    </View>
+    
     <ImageView
         android:id="@+id/action_indicator_img"
         android:layout_width="wrap_content"
@@ -38,13 +47,5 @@
         android:visibility="invisible"
         android:src="@drawable/icon_triangle" >
     </ImageView>
-    
-    <View
-        android:layout_width="fill_parent"
-        android:layout_height="1dip"
-        android:layout_marginTop="10dip"
-        android:layout_alignParentBottom="true"
-        android:background="@drawable/list_divider" >
-    </View>
 
 </RelativeLayout>

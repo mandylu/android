@@ -53,13 +53,15 @@ public abstract class BaseFragment extends Fragment {
 	
 	public final int MSG_USER_LOGIN 		= 10001;
 	public final int MSG_USER_LOGOUT 	 	= 10002;
-
+	
 	/**
 	 * Argument keys.
 	 */
 	public static final String ARG_COMMON_TITLE = "name";
 	public static final String ARG_COMMON_BACK_HINT = "backPageName";
 	public static final String ARG_COMMON_REQ_CODE = "reqestCode";
+	public static final String ARG_COMMON_ANIMATION_IN = "inAnimation";
+	public static final String ARG_COMMON_ANIMATION_EXIT = "exitAnimation";
 	
 	private ProgressDialog pd;
 	
@@ -154,12 +156,12 @@ public abstract class BaseFragment extends Fragment {
 	
 	public int getEnterAnimation()
 	{
-		return R.anim.right_to_left_enter;
+		return getArguments() == null ? R.anim.right_to_left_enter : getArguments().getInt(ARG_COMMON_ANIMATION_IN, R.anim.right_to_left_enter);
 	}
 	
 	public int getExitAnimation()
 	{
-		return R.anim.left_to_right_exit;
+		return getArguments() == null ? R.anim.left_to_right_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, R.anim.left_to_right_exit);
 	}
 
 	@Override

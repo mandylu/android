@@ -157,7 +157,7 @@
 		                        android:layout_height="122dp"
 		                        android:paddingTop="8dp"
 		                        android:paddingBottom="8dp"
-		                        android:background="#e7e5d9" >
+		                        android:background="#ebebeb" >
 								<TextView android:id="@+id/vad_no_img_tip"
 								    android:layout_width="fill_parent"
 								    android:layout_height="wrap_content"

@@ -778,7 +778,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			this.pushFragment(new HomeFragment(), bundle, true);
 			break;
 		case 1:
-			pushFragment(new GridCateFragment(), bundle, false);
+			Bundle args = new Bundle(bundle);
+			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
+			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
+			pushFragment(new GridCateFragment(), args, false);
 			globalTabCtrl.showTab(lastIndex);
 			break;
 		case 2:

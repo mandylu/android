@@ -972,7 +972,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onClick(View v) {
 		View rootView = getView();
 		switch (v.getId()) {
-		case R.id.btn_fav_unfav:
+		case R.id.vad_title_fav_parent:
 			handleStoreBtnClicked();
 			break;
 		case R.id.vad_call_btn:
@@ -1586,11 +1586,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
 		}
 		
-		ImageView favBtn = (ImageView) title.m_titleControls.findViewById(R.id.btn_fav_unfav);
+		title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setOnClickListener(this);
+		TextView favBtn = (TextView) title.m_titleControls.findViewById(R.id.btn_fav_unfav);
 		if (favBtn != null)
 		{
-			favBtn.setOnClickListener(this);
-			favBtn.setImageResource(isInMyStore() ? R.drawable.icon_unfav : R.drawable.icon_fav);
+			favBtn.setText(isInMyStore() ? "取消收藏" : "收藏");
+//			favBtn.setImageResource(isInMyStore() ? R.drawable.icon_unfav : R.drawable.icon_fav);
 		}
 		
 		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);

@@ -42,7 +42,7 @@
         android:gravity="center"
         android:text="首页"
         android:textColor="@color/font_title"
-        android:textSize="18sp" >
+        android:textSize="@dimen/font_medium" >
     </TextView>
     
     <LinearLayout
@@ -98,7 +98,7 @@
                 android:gravity="center"
                 android:text="发布 "
                 android:textColor="@color/font_title"
-                android:textSize="18sp" >
+                android:textSize="@dimen/font_medium" >
             </TextView>
 
         </RelativeLayout>

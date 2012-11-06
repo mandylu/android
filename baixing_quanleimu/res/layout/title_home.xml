@@ -8,7 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:paddingLeft="@dimen/title_action_right_width"
+        android:paddingLeft="@dimen/title_action_width"
         android:gravity="center"
         android:background="@drawable/title_bg_selector"
         android:orientation="horizontal" >

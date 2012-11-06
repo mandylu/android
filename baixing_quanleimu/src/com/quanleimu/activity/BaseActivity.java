@@ -37,9 +37,8 @@ import com.quanleimu.util.LocationService;
 import com.quanleimu.view.fragment.FirstRunFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
- * 父类Activity
- * @author henry_yang
- *
+ * change author cause logic changed a lot.
+ * @author liuchong 
  */
 public class BaseActivity extends FragmentActivity implements OnClickListener{
 
@@ -421,6 +420,11 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	public final void pushFragment(BaseFragment fragment, Bundle bundle, String popTo)
 	{
 		if(savedInstance) return;
+		
+		if (bundle != null)
+		{
+			fragment.setArguments(bundle);
+		}
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.setCustomAnimations(fragment.getEnterAnimation(), /*R.anim.right_to_left_exit*/0, /*R.anim.left_to_right_enter*/0, fragment.getExitAnimation());
@@ -430,10 +434,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		}
 		
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
-		if (bundle != null)
-		{
-			fragment.setArguments(bundle);
-		}
+		
 		
 		ft.replace(R.id.contentLayout, fragment);
 		ft.addToBackStack(fragment.getName());
