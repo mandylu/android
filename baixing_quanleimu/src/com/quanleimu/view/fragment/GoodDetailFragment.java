@@ -8,6 +8,7 @@ import java.util.Date;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jivesoftware.smack.util.Base64;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -26,7 +27,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.util.Base64;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -1801,10 +1801,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						if(errorCode instanceof Integer && (Integer)errorCode == 0){
 							String x = (String)js.get("x");
 							String y = (String)js.get("y");
-							byte[] bytes = Base64.decode(x, Base64.DEFAULT);
+							byte[] bytes = Base64.decode(x);
 							x = new String(bytes, "UTF-8");
 							
-							bytes = Base64.decode(y, Base64.DEFAULT);
+							bytes = Base64.decode(y);
 							y = new String(bytes, "UTF-8");
 							
 							Double dx = Double.valueOf(x);
