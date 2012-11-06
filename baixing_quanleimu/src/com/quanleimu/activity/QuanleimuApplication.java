@@ -41,7 +41,6 @@ import com.quanleimu.util.BXDatabaseHelper;
 import android.util.Log;
 import android.telephony.TelephonyManager;
 public class QuanleimuApplication implements LocationService.BXLocationServiceListener{
-
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
@@ -49,11 +48,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public static String channelId;
 	public static WeakReference<Context> context;	
 	private static LazyImageLoader lazyImageLoader;
-	public static List<String> list;//list of temporarily cache files
-	public static List<HotList> listHot;
 	public static boolean update = false;
 	public static boolean textMode = false;
-//	private static AccessToken accessToken = null;
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
@@ -569,7 +565,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	
 	
 	public void ClearCache(){
-		listHot = null;
 		SQLiteDatabase db = dbManager.getWritableDatabase();
 		try{
 			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME, new String[]{});

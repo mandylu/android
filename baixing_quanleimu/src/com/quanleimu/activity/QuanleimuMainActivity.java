@@ -202,20 +202,11 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		    public void onClick(DialogInterface dialog, int which)
 		    {
 		    	
-		    	LocationService.getInstance().stop();
+		    		LocationService.getInstance().stop();
 		        if (needShowShortcut && shortcutCheckBox.isChecked())
 		        {
 		            ShortcutUtil.addShortcut(QuanleimuMainActivity.this);
 		        }
-
-		        if (QuanleimuApplication.list != null && QuanleimuApplication.list.size() != 0)
-		        {
-		            for (String s : QuanleimuApplication.list)
-		            {
-		                deleteFile(s);
-		            }
-		        }
-
 		        SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
 		        SharedPreferences.Editor editor = settings.edit();
 		        editor.putString("hasShowShortcut", "yes");

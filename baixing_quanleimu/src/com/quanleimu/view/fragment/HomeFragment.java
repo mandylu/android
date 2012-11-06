@@ -1,9 +1,5 @@
 package com.quanleimu.view.fragment;
 
-import java.io.BufferedOutputStream;
-import java.io.FileNotFoundException;
-import java.io.FileOutputStream;
-import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
@@ -11,12 +7,9 @@ import java.util.List;
 import java.util.Locale;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,27 +21,20 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.ChatSession;
 import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.entity.UserProfile;
-import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.TrackConfig;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.CategorySelectionView;
-import com.quanleimu.view.CustomizePagerManager;
 import com.quanleimu.view.CustomizePagerManager.PageProvider;
 import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
 import com.quanleimu.widget.CustomizeGridView;
 import com.quanleimu.widget.CustomizeGridView.GridInfo;
 import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 import com.quanleimu.widget.EditUsernameDialogFragment;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 public class HomeFragment extends BaseFragment implements PageProvider, PageSelectListener, ItemClickListener , View.OnClickListener{
 
@@ -68,8 +54,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public int favoriteNum = 0;
 	public int unreadMessageNum = 0;
 	public int historyNum = 0;
-
-//	private CustomizePagerManager pageMgr;
 	private int selectedIndex = 0;
 
     private UserBean user;
@@ -79,10 +63,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
-
-	private String json;
-	private List<HotList> tempListHot = new ArrayList<HotList>();
-	private List<Boolean> tempUpdated = new ArrayList<Boolean>();
     private EditUsernameDialogFragment editUserDlg;
 
 	protected void initTitle(TitleDef title) {
@@ -128,13 +108,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	public void handleSearch() {
 		this.pushFragment(new SearchFragment(), this.getArguments());
 	};
-	
-	
-//	@Override
-//	protected int getFirstRunId() {
-//		return R.layout.first_run_main;
-//	}
-
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -142,15 +115,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		if(bundle != null && bundle.containsKey("defaultPageIndex")){
 			selectedIndex = bundle.getInt("defaultPageIndex");
 		}
-//        String tabBrowse = getString(R.string.tab_browse);
-//        String tabUserCenter = getString(R.string.tab_user_center);
-//        String tabPost = getString(R.string.tab_post);
-        
-//		pageMgr = CustomizePagerManager.createManager(
-//                new String[] {tabBrowse, tabPost, tabUserCenter},
-//                new int[][] {
-//                },
-//                selectedIndex);
 	}
 	
 	public boolean hasGlobalTab()
@@ -190,9 +154,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		
 		return v;
 	}
-	
-	
-	
 	@Override
 	public void onStackTop(boolean isBack) {
 		View v = getView();
@@ -204,8 +165,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
 			}
 		}
-//		new Thread(new HotListThread()).start(); 
-		
 		//Mobile Track Config入口
 		TrackConfig.getInstance().getConfig();//获取config
 		
@@ -218,113 +177,48 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 			titleLabel.setText(QuanleimuApplication.getApplication().getCityName());			
 		}
 	}
-
-
-
-//	class HotListThread implements Runnable {
-//
-//		@Override
-//		public void run() {
-//			String apiName = "city_hotlist";
-//			ArrayList<String> list = new ArrayList<String>();
-//			list.add("v=_v2");
-//			String url = Communication.getApiUrl(apiName, list);
-//			try {
-//				json = Communication.getDataByUrl(url, true);
-//				if (json != null) {
-////					myHandler.sendEmptyMessage(1);
-//					sendMessage(1, null);
-//				} else {
-////					myHandler.sendEmptyMessage(2);
-//					sendMessage(2, null);
-//				}
-//			} catch (UnsupportedEncodingException e) {
-////				myHandler.sendEmptyMessage(4);
-//				sendMessage(4, null);
-//			} catch (IOException e) {
-////				myHandler.sendEmptyMessage(4);
-//				sendMessage(4, null);
-//			} catch (Communication.BXHttpException e){
-//				
-//			}
-//
-//		}
-//	}
-	
-	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
-
 		switch (msg.what) {
-		case 1:
-			tempListHot = JsonUtil.parseCityHotFromJson(Communication
-					.decodeUnicode(json));
-			if(tempListHot != null){
-				for(int i = 0; i < tempListHot.size(); ++i){
-					tempUpdated.add(false);
-				}
-
-				QuanleimuApplication.listHot = tempListHot;
-				
-				//save to context data
-				QuanleimuApplication.getApplication().getApplicationContext().deleteFile("hotlist.json");
-				try {
-					FileOutputStream fo = 
-							QuanleimuApplication.getApplication().getApplicationContext().openFileOutput("hotlist.json", Context.MODE_PRIVATE);
-					if(fo != null){
-						BufferedOutputStream outFileStream = new BufferedOutputStream(fo);
-						if(outFileStream != null){
-							outFileStream.write(json.getBytes(), 0, json.length());
-							outFileStream.flush();
-							outFileStream.close();
-						}
-					}				} catch (FileNotFoundException e) {
-					e.printStackTrace();
-				}catch(IOException e){
-					e.printStackTrace();
-				}
-			}
-			
-
-			break;
-		case 2:
-			hideProgress();
-			break;
-		case 4:
-			hideProgress();
-			 Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "网络连接失败，请检查设置！", 3).show();
-			//tvInfo.setVisibility(View.VISIBLE);
-			 break;
-        case MSG_GETPERSONALPROFILE:
-            if(userProfileJson != null){
-                userProfile = UserProfile.from(userProfileJson);
-                if (getActivity() != null)
-                {
-                    Util.saveDataToLocate(getActivity(), "userProfile", userProfile);
-                    if(userProfile != null){
-                        fillProfile(userProfile, getView());
-                    }
-                }
-            }
-            break;
-        case MSG_USER_LOGOUT:
-        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
-			break;
-        case MSG_USER_LOGIN:
-        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
-            break;
-        case MSG_EDIT_USERNAME_SUCCESS:
-            hideProgress();
-            editUserDlg.dismiss();
-            reloadUser(getView());
-			break;
-        case MSG_SHOW_TOAST:
-            hideProgress();
-            Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), msg.obj.toString(), 1).show();
-            break;
-        case MSG_SHOW_PROGRESS:
-            showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);
-            break;
+			case 1:
+				break;
+			case 2:
+				hideProgress();
+				break;
+			case 4:
+				hideProgress();
+				Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "网络连接失败，请检查设置！", 3).show();
+				break;
+	        case MSG_GETPERSONALPROFILE:
+	            if(userProfileJson != null){
+	                userProfile = UserProfile.from(userProfileJson);
+	                if (getActivity() != null)
+	                {
+	                    Util.saveDataToLocate(getActivity(), "userProfile", userProfile);
+	                    if(userProfile != null){
+	                        fillProfile(userProfile, getView());
+	                    }
+	                }
+	            }
+	            break;
+	        case MSG_USER_LOGOUT:
+	        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
+				break;
+	        case MSG_USER_LOGIN:
+	        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
+	            break;
+	        case MSG_EDIT_USERNAME_SUCCESS:
+	            hideProgress();
+	            editUserDlg.dismiss();
+	            reloadUser(getView());
+				break;
+	        case MSG_SHOW_TOAST:
+	            hideProgress();
+	            Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), msg.obj.toString(), 1).show();
+	            break;
+	        case MSG_SHOW_PROGRESS:
+	            showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);
+	            break;
 		}
 	}
 	
