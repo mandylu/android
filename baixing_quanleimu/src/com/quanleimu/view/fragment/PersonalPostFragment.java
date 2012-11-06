@@ -657,7 +657,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
      */
     private void showItemOperateMenu(final Message msg) {
         final int pos = msg.arg2;
-        final String adId = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+        final GoodsDetail detail = glLoader.getGoodsList().getData().get(pos);        
+        final String adId = detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
         // 弹出 menu 确认操作
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -674,7 +675,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             r_array_item_operate = R.array.item_operate_deleted;
             Tracker.getInstance().event(BxEvent.DELETED_MANAGE).end();
         }
-        final GoodsDetail detail = listMyPost.get(pos);
+
         String tmpInsertedTime = detail.data.get("insertedTime");
         long tmpPostedSeconds = -1;
         if (tmpInsertedTime != null) {
