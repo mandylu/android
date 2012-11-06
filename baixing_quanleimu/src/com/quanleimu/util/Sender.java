@@ -18,7 +18,7 @@ public class Sender implements Runnable{
 	private static final String SENDER_DIR = "sender_dir";
 	private static final String SENDER_FILE_PREFIX = "bx_sender";//记录文件
 	private static final String SENDER_FILE_SUFFIX = ".log";//记录文件
-	private long dataSize = 0;
+	private long dataSize;
 	private Object sendMutex = new Object();
 
 	//singleton
@@ -31,6 +31,7 @@ public class Sender implements Runnable{
 	}
 	//constructor
 	private Sender() {
+		dataSize = 0;
 		context = QuanleimuApplication.getApplication().getApplicationContext();
 		queue = new ArrayList<String>();
 		startThread();
@@ -79,7 +80,6 @@ public class Sender implements Runnable{
 	
 	//save queue into files.
 	public void save() {
-		dataSize = 0;
 		List<String> newQueue = new ArrayList<String>();
 		//in locker,addall is lightweight operation, not write file operation
 		synchronized (queue) {
@@ -151,7 +151,7 @@ public class Sender implements Runnable{
 		if (succed)
 			try {
 				dataSize += GzipUtil.compress(jsonStr).getBytes().length;
-				Log.d("datasize","datasize:"+dataSize);
+				Log.d("datasize","datasize:"+(dataSize/1024/1024!=0?dataSize/1024.0/1024+"MB":(dataSize/1024!=0?dataSize/1024.0+"KB":dataSize+"B")));
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
