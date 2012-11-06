@@ -20,6 +20,7 @@
     <color name="vad_meta_price">#e86e02</color>
     <color name="vad_meta_label">#707070</color>
     <color name="vad_meta_content">#333333</color>
+    <color name="title_gap_line">#d3d3d3</color>
     
     
     <!-- common color -->
