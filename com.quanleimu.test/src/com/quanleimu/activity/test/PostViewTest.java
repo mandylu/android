@@ -1,5 +1,6 @@
 package com.quanleimu.activity.test;
 
+import org.athrun.android.framework.AthrunDevice;
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
 
@@ -64,10 +65,10 @@ public class PostViewTest extends BaixingTestCase {
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
 		//选择拍照button
-		//clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
+		clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
 		//检查拍照页面弹出
 		//点击手机自带的返回键
-		goBack();
+		goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
 		assertNotNull(findElementByText(TEST_DATA_SHEYING));
 		assertNotNull(findElementByText(POST_SEND));
@@ -75,10 +76,10 @@ public class PostViewTest extends BaixingTestCase {
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
 		//选择相册button
-		//clickByText(POST_GALLERY_PHOTO_TEXT); //TODO 手机没有自带返回键或无效
+		clickByText(POST_GALLERY_PHOTO_TEXT); //TODO 手机没有自带返回键或无效
 		//检查相册选择页面弹出
 		//点击手机自带的返回键
-		goBack();
+		goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
 		assertNotNull(findElementByText(TEST_DATA_SHEYING));
 		assertNotNull(findElementByText(POST_SEND));

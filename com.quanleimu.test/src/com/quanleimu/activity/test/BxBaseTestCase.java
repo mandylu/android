@@ -187,6 +187,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	@SuppressWarnings("unchecked")
 	public BxBaseTestCase() throws Exception {
 		super("com.quanleimu.activity", "com.quanleimu.activity.QuanleimuMainActivity");
+		AthrunTestCase.setMaxTimeToFindView(3000);
 	}
 	
 	@Override
@@ -367,8 +368,14 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void clickView(ViewElement v) throws Exception {
-		assertNotNull(v);
-		v.doClick();
+		clickView(v, true);
+	}
+	
+	public void clickView(ViewElement v, boolean asserted) throws Exception {
+		if (asserted) {
+			assertNotNull(v);
+		}
+		if (v != null) v.doClick();
 		TimeUnit.SECONDS.sleep(1);
 	}
 	

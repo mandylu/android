@@ -11,8 +11,6 @@ public class FavoriteTest extends BaixingTestCase {
 	public static final String TEST_DATA_CATEGORY_ZUFANG = "租房";
 	
 	public FavoriteTest() throws Exception {
-		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
 	}
 	
 	@Test

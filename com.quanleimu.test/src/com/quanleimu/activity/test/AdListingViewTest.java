@@ -34,17 +34,20 @@ public class AdListingViewTest extends BaixingTestCase {
 		//向下浏览30个信息
 		goBack();
 
+		//验证是 Listing 页面
 		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
 		assertNotNull(lv);
+		//向下滚动
 		ViewElement footer = scrollAdListViewToFooter(lv);
 		assertNotNull(footer);
 		TimeUnit.SECONDS.sleep(2);
+		//试图点击（有可能已经自动加载了）
 		footer = findElementById(AD_VIEWLIST_MORE_ID);
 		if (footer != null) footer.doClick();
 		TimeUnit.SECONDS.sleep(1);
+	    //向下拖动
 		footer = scrollAdListViewToFooter(lv);
 		assertNotNull(footer);
-	    //向下拖动
 		TimeUnit.SECONDS.sleep(1);
 		//页面展开后，点击最后一个信息进入
 		ViewGroupElement av = null;
