@@ -8,11 +8,11 @@
         android:id="@+id/gridSecCategory"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:listSelector="@drawable/list_selector"
         android:gravity="center"
         android:horizontalSpacing="10dp"
         android:numColumns="2"
-        android:stretchMode="columnWidth"
-        android:verticalSpacing="5dp" />
+        android:stretchMode="columnWidth"/>
     
 </LinearLayout>
 	

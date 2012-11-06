@@ -3,7 +3,8 @@
 	<!--触摸模式下单击时的背景颜色  -->  
 	<item android:state_focused="false" android:state_pressed="true">
 			<shape  android:shape="rectangle">  
-      		<gradient android:startColor="#52adcd" android:endColor="#1c87b1"  android:angle="270" />    
+      		<!-- <gradient android:startColor="#52adcd" android:endColor="#1c87b1"  android:angle="270" /> -->    
+      		<solid android:color="#e5e5e5"/>
 			</shape>
 	</item>      
 </selector>  
