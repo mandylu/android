@@ -9,7 +9,7 @@
 	<color name="tab_font">#ffffff</color>
 	<color name="category_grid_font">#4b4b4b</color>
 	<color name="category_second_font">#BEBEBE</color>
-	<color name="list_seperator">#CECBC4</color>
+	<color name="list_seperator">#D6D6D6</color>
 	<color name="list_line">#C1C1B9</color>
     <color name="base_green">#86CF2A</color>
     <color name="talk_content_font">#707070</color>

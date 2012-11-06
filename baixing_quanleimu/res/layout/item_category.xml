@@ -16,15 +16,15 @@
            android:id="@+id/ivCategoryImage"
            android:layout_width="30dp"
            android:layout_height="30dp"
-           android:layout_marginLeft="10dp"
+           android:layout_marginLeft="0dp"
            android:src="@drawable/icon_category_car" />
     	
 	    <TextView
 	        android:id="@+id/tvCategoryName"
 	        android:layout_width="wrap_content"
 	        android:layout_height="wrap_content"
-           	android:layout_marginLeft="15dp"	           
-	        android:textSize="22dp"
+           	android:layout_marginLeft="15dp"         
+	        android:textSize="16sp"
 	        android:text="AAA"
 	        />
 	</LinearLayout>
