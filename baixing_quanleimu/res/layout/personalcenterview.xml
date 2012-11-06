@@ -4,7 +4,7 @@
         android:id="@+id/relativeLayout1"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:background="#f3f1e8" >
+        android:background="@color/bg_screen" >
 
         <LinearLayout
             android:id="@+id/linearType"
@@ -58,7 +58,7 @@
 		         android:focusable="true" 
 				 android:divider="@drawable/list_divider"
 				 android:dividerHeight="1dp"
-				 android:background="#f3f1e8"
+				 android:background="@color/bg_screen"
 		         android:layout_height="fill_parent"
 		         android:headerDividersEnabled="false"
 		         android:footerDividersEnabled="false"

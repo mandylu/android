@@ -5,7 +5,7 @@
   	 android:layout_height="fill_parent"
   	 android:orientation="vertical"
   	 android:focusableInTouchMode="true"
-  	 android:background="#f3f1e8"
+  	 android:background="@color/bg_screen"
   	 android:focusable="true">
 
   	 <LinearLayout

@@ -207,13 +207,12 @@ public final class CustomizeTabHost implements Serializable
     		//Tab Arrow indicator visibility 
     		tabItem.findViewById(R.id.tab_arrow).setVisibility(i == index ? View.VISIBLE : View.INVISIBLE);
     		
-    		//Tab text
+    		//Tab text color
     		int textColor = res.getColor(i == index ? R.color.tab_font_foucs : R.color.tab_font);
     		((TextView)tabItem.findViewById(R.id.tab_text)).setTextColor(textColor);
     		
-    		//Tab icon
-    		ImageView icon = (ImageView)  tabItem.findViewById(R.id.tab_icon);
-    		icon.setImageResource(tabIconsRes[i].getRes(i == index));
+//    		//Tab icon 
+//    		this.setTabIcon(i, tabIconsRes[i]);
     		
     		//Tab bg
     		tabItem.setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));

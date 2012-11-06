@@ -41,7 +41,7 @@
         android:layout_centerVertical="true"
         android:gravity="center"
         android:text="位置"
-        android:textColor="#ffffff"
+        android:textColor="@color/font_title"
         android:textSize="18sp" >
     </TextView>
     </RelativeLayout>

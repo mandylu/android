@@ -7,7 +7,7 @@
 	    android:layout_height="fill_parent"
 	    android:orientation="vertical"
 	    android:focusable="false"
-	    android:background="#f3f1e8"
+	    android:background="@color/bg_screen"
     		android:focusableInTouchMode="false">
 			
 			<com.quanleimu.view.CategorySelectionView
