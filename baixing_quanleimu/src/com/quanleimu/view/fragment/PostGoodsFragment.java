@@ -124,7 +124,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 //	private AlertDialog ad; 
 //	private Button photoalbum, photomake, photocancle;
-	private ArrayList<String>bitmap_url;
+	private ArrayList<String> bitmap_url;
+	private ArrayList<String> origin_bitmap_url;
 	private ImageView[] imgs;
 	private Bitmap[] cachedBps;
 	private String mobile, password;
@@ -176,6 +177,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		bitmap_url.add(null);
 		bitmap_url.add(null);
 		bitmap_url.add(null);
+		origin_bitmap_url = (ArrayList<String>) bitmap_url.clone();
+		
 		currentImgView = -1;
 		uploadCount = 0;
 		
@@ -745,14 +748,31 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 	}
+	
+	private static String trimUnit(String value, String unit) {
+		if (unit == null || unit.length() == 0 || value == null || value.length() == 0)
+			return value;
+		int pos = value.indexOf(unit);
+		if(pos != -1){
+			value = value.substring(0, pos);
+		}
+		return value;
+	}
 
 	private boolean filled() {
 		// check if images uploaded.
-		for (String url : bitmap_url)
-		{
-			if (url != null && url.startsWith("http://")) 
+//		for (String url : bitmap_url)
+//		{
+//			if (url != null && url.startsWith("http://")) 
+//				return true;
+//		}
+		for (int i = 0; i < bitmap_url.size(); i++) {
+			String url = bitmap_url.get(i);
+			String originUrl = origin_bitmap_url.get(i);
+			if (url != originUrl) {
 				return true;
-		}		
+			}
+		}
 		
 		extractInputData(layout_txt, params);
 		if(!this.getView().findViewById(R.id.goodscontent).isShown() || 
@@ -765,8 +785,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		for (String key : keySet)
 		{
 			PostGoodsBean bean = postList.get(key);
-			String value = params.getData(bean.getDisplayName());
-			String originValue = originParams.getData(bean.getDisplayName());
+			String value = trimUnit(params.getData(bean.getDisplayName()), bean.getUnit());
+			String originValue = trimUnit(originParams.getData(bean.getDisplayName()), bean.getUnit());
+			
 			if (value != null && !value.equals(originValue))
 				return true;
 		}
@@ -1562,6 +1583,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private String[] hiddenItemNames = {"wanted", "faburen"};//must be selected type
 	private int [] hiddenItemValuesIndexes = {1, 0};
 	private boolean autoLocated;
+
 	
 	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
@@ -1695,11 +1717,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			layout_txt.addView(v);
 //		}
 
-		originParams.merge(params);		
-		extractInputData(layout_txt, originParams);
-
 		
-		editpostUI();		
+		editpostUI();
+		originParams.merge(params);		
+		extractInputData(layout_txt, originParams);		
 	}
 	
 	
@@ -2030,6 +2051,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				try {
 					Bitmap tbitmap = Util.getImage(smalls.get(t));
 					PostGoodsFragment.this.bitmap_url.set(t, bigs.get(t));
+					PostGoodsFragment.this.origin_bitmap_url.set(t, bigs.get(t));
 					activity.runOnUiThread(new SetBitmapThread(t, tbitmap));
 					
 				} catch (Exception e) {
