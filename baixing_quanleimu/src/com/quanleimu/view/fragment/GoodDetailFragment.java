@@ -419,7 +419,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
 			}
 		});
-        if(mCurIndex == 0) return v;
+//        if(mCurIndex == 0) return v; //removed by chong, why not continue? 
         vp.setCurrentItem(mCurIndex);
         vp.setOnPageChangeListener(new OnPageChangeListener() {
 			private int currentPage = 0;
