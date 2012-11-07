@@ -61,6 +61,7 @@ public class PostViewTest extends BaixingTestCase {
 		
 		//android3.0
 		//home页点击右上方“发布”按钮
+		openTabbar(TAB_ID_POST);
 		//点击类目“生活服务”>"摄影"
 		String title = postEnterData(postDataSheying);
 		//检查页面title为“发布”
@@ -74,14 +75,10 @@ public class PostViewTest extends BaixingTestCase {
 		//检查拍照页面弹出
 		//点击手机自带的返回键
 		TimeUnit.SECONDS.sleep(1);
-		String xy = "400,710";
-		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
-			xy = "100,710";
-		}
-		lockStatus(CAMERA_LOCK_FILE, xy);
-		TimeUnit.SECONDS.sleep(2);
+		waitClickCamera();
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
+		TimeUnit.SECONDS.sleep(1);
 		assertNotNull(findElementByText(TEST_DATA_SHEYING));
 		assertNotNull(findElementByText(POST_SEND));
 		//再次点击拍照按钮
@@ -92,8 +89,7 @@ public class PostViewTest extends BaixingTestCase {
 		//检查相册选择页面弹出
 		//点击手机自带的返回键
 		TimeUnit.SECONDS.sleep(1);
-		lockStatus(GALLERY_LOCK_FILE, String.valueOf(KeyEvent.KEYCODE_BACK));
-		TimeUnit.SECONDS.sleep(2);
+		waitSendKey(KeyEvent.KEYCODE_BACK);
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
 		assertNotNull(findElementByText(TEST_DATA_SHEYING));

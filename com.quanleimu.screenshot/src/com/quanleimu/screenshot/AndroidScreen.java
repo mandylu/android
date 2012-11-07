@@ -25,13 +25,13 @@ import org.slf4j.LoggerFactory;
 public class AndroidScreen {
     private final Logger logger = LoggerFactory.getLogger(AndroDemon.class);
     public static final int CONNECTING_PAUSE = 200;
+    public static final int WAITING_PAUSE = 50;
 	private String sdkPath;
     private AndroidDebugBridge bridge;
     private IDevice device;
     private final Map<String, IDevice> devices = new HashMap<String, IDevice>();
 
     public void run() throws Exception {
-    	System.out.println("xxx");
     	initBridge();
     	sleep(5 * 1000);
     	while (true) {
@@ -41,8 +41,9 @@ public class AndroidScreen {
             	if (d != null) {
             		setDevice(d);
                 	saveScreen(d);
-                	clickScreen(d, "baixing_camera_waiting_close.lock");
-                	sendKeyCode(d, "baixing_gallery_waiting_close.lock");//KEYCODE_BACK
+                	clickScreen(d);
+                	sendKeyCode(d);//KEYCODE_BACK
+                	sleep(WAITING_PAUSE);
                 } else {
                     sleep(CONNECTING_PAUSE);
                 }
@@ -62,19 +63,18 @@ public class AndroidScreen {
     			saveImage(img);
     			logger.debug("image saved");
     		}
-    		sleep(1 * 300);
     		Date nowTime=new Date();
     		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");
         	BXOutputReceiver log = new BXOutputReceiver();
         	log.logFile = "logs/logcat/test_" + d.toString() + "_" + time.format(nowTime) + ".log";
     		d.executeShellCommand("logcat -d", log);
-    		sleep(1 * 300);
+    		sleep(WAITING_PAUSE);
     		d.executeShellCommand("logcat -c", rev);
     	}
     }
     
-    private void clickScreen(IDevice d, String statusFile) throws Exception {
-    	
+    private void clickScreen(IDevice d) throws Exception {
+    	String statusFile = "baixing_waiting_click.lock";
     	String retString = checkStatusFile(d, statusFile);
     	
     	if (retString != null) {
@@ -82,26 +82,34 @@ public class AndroidScreen {
     		if (sParam == null) return;
     		String[] params = sParam.split(",");
     		BXOutputReceiver rev = new BXOutputReceiver();
-    		d.executeShellCommand("sendevent /dev/input/event0 3 0 " + params[0], rev);
-    		d.executeShellCommand("sendevent /dev/input/event0 3 1 " + params[1], rev);
-    		d.executeShellCommand("sendevent /dev/input/event0 1 330 1", rev); //touch
-    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
-    		d.executeShellCommand("sendevent /dev/input/event0 1 330 0", rev); //untouch
-    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+    		if (d.toString().equals("015d18844854041c") || d.toString().equals("015d1458a51c0c0e")) {
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 53 " + params[0], rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 54 " + params[1], rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 57 1", rev); //touch
+	    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 57 0", rev); //untouch
+	    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+    		} else {
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 0 " + params[0], rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 3 1 " + params[1], rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 1 330 1", rev); //touch
+	    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+	    		d.executeShellCommand("sendevent /dev/input/event0 1 330 0", rev); //untouch
+	    		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
+    		}
     		logger.debug(d.toString() + " sendevent:" + rev.revString + "p:x" + params[0] + ":y" + params[1]);
-    		sleep(1 * 300);
     	}
     }
     
-    private void sendKeyCode(IDevice d, String statusFile) throws Exception {
-    	
+    private void sendKeyCode(IDevice d) throws Exception {
+    	String statusFile = "baixing_waiting_sendkey.lock";
     	String retString = checkStatusFile(d, statusFile);
     	if (retString != null) {
     		String sParam = parseStatusParam(retString);
+    		if (sParam == null) return;
     		BXOutputReceiver rev = new BXOutputReceiver();
     		d.executeShellCommand("input keyevent " + sParam, rev);
     		logger.debug(d.toString() + " sendevent:" + rev.revString + "p:" + sParam);
-    		sleep(1 * 300);
     	}
     }
     

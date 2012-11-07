@@ -189,6 +189,8 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testScrollToNextScreen() throws Exception {
+		logon();
+		openTabbar(TAB_ID_POST);
 		openPostFirstCategory(0);
 		AbsListViewElement catListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);

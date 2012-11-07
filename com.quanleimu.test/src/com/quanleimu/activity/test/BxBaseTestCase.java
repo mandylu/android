@@ -19,8 +19,10 @@ import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 
+import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.View;
 import android.widget.TextView;
 import de.mindpipe.android.logging.log4j.LogConfigurator;
@@ -29,8 +31,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String LOG_TAG = "BaixingTest";
 	
 	//Common ID
-	public static final String CAMERA_LOCK_FILE = "baixing_camera_waiting_close.lock";
-	public static final String GALLERY_LOCK_FILE = "baixing_gallery_waiting_close.lock";
+	public static final String CAMERA_LOCK_FILE = "baixing_waiting_click.lock";
+	public static final String GALLERY_LOCK_FILE = "baixing_waiting_sendkey.lock";
 	public static final String BACK_BUTTON_TEXT = "返回";
 	public static final String BACK_BUTTON_ID = "left_action";
 	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
@@ -207,14 +209,14 @@ public class BxBaseTestCase extends AthrunTestCase {
 		startScreen_v3();
 	}
 	
-	public static String lockStatus(String statusFile, String params) {
+	public static void lockStatus(String statusFile, String params) {
 		String lockDirPath = "/mnt/sdcard/Athrun/";
 		File d = new File(lockDirPath);
 		if (!d.exists()) {
 			lockDirPath = Environment.getExternalStorageDirectory().getPath()  + "/Athrun/";
 			d = new File(lockDirPath);
 			if (!d.exists()) {
-				return null;
+				return;
 			}
 		}
 		
@@ -225,20 +227,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		logConfigurator.configure();
 		Logger logger = Logger.getLogger(BaixingTestCase.class);
 		logger.info("lock_params:" + params);
-		return lockFilePath;
-	}
-	
-	public static void waitScreenSave() {
-		String lockFilePath = lockStatus("bxtestcase_err.lock", "");
-		/*try {
-			File lockFile = new File(lockFilePath);
-    		if (!lockFile.exists()) {
-    			lockFile.createNewFile();
-    		}
-    	} catch (Exception ex) {
-    		AthrunTestCase.assertTrue("Cannot created err lock file.", true);
-    	}*/
-		if (lockFilePath == null) return;
+
 		final Timer timer = new Timer();
 		class BxTimerTask extends TimerTask {
 			public boolean willStopped = false;
@@ -252,7 +241,7 @@ public class BxBaseTestCase extends AthrunTestCase {
         timer.schedule(tt, 10 * 1000); // N秒 * 1000
         while(!tt.willStopped) {
         	try {
-        		Thread.sleep(1 * 1000);
+        		Thread.sleep(1 * 100);
         		File file = new File(lockFilePath);
         		if (!file.exists()) {
         			timer.cancel();
@@ -260,6 +249,38 @@ public class BxBaseTestCase extends AthrunTestCase {
         		}
         	} catch (Exception ex) {}
         }
+	}
+	
+	public static void waitScreenSave() {
+		lockStatus("bxtestcase_err.lock", "");
+		/*try {
+			File lockFile = new File(lockFilePath);
+    		if (!lockFile.exists()) {
+    			lockFile.createNewFile();
+    		}
+    	} catch (Exception ex) {
+    		AthrunTestCase.assertTrue("Cannot created err lock file.", true);
+    	}*/
+	}
+	
+	public static void waitClickXY(int x, int y) {
+		lockStatus(CAMERA_LOCK_FILE, x + "," + y);
+	}
+	
+	public static void waitClickCamera() {
+		int x = 400, y = 710;
+		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
+			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
+			x= 100; y = 710;
+			if (Build.MODEL.equals("Nexus 7")) {
+				x = 150; y = 1810;
+			}
+		}
+		waitClickXY(x, y);
+	}
+	
+	public static void waitSendKey(int keycode) {
+		lockStatus(GALLERY_LOCK_FILE, String.valueOf(keycode));
 	}
 	
 	public static void assertNotNull(Object object) {

@@ -141,12 +141,36 @@ public class KeepLiveTest extends BaixingTestCase {
 	 */
 	@Test
 	public void runPost() throws Exception {
+		logon();
         while(!willFinished) {
         	int index = (int)(Math.random() * 9);
         	Log.i(LOG_TAG, "Start do Post.index." + index);
         	doPost(index);
         	Runtime.getRuntime().gc();
         }
+	}
+	
+	/*
+	 * Start run post all category Test
+	 */
+	@Test
+	public void runPostAll() throws Exception {
+		openTabbar(TAB_ID_POST);
+		for (int i = 0; i < 10; i++) {
+			openPostFirstCategory(i);
+			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
+					AbsListViewElement.class);
+			assertNotNull(subCatListView);
+			int count = subCatListView.getChildCount();
+			subCatListView = null;
+			Log.i(LOG_TAG, "runPostAll:" + count);
+			for(int j = 0; j < count ; j++) {
+				openSecondCategoryByIndex(j);
+				Log.i(LOG_TAG, "runPostAll:" + j);
+				goBack();
+			}
+			break;
+		}
 	}
 	
 	private void doFirstCategory(int index) throws Exception {
@@ -185,6 +209,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	}
 	
 	private void doPost(int index) throws Exception {
+		openTabbar(TAB_ID_POST);
 		String[][] postData = postDataQiecheyongpin;
 		if (index == 0) postData = postDataJiaju;
 		if (index == 2) postData = postDataXiezilou;
@@ -198,8 +223,6 @@ public class KeepLiveTest extends BaixingTestCase {
 		String title = doPostByData(postData);
 		if (title.length() > 0) {
 			deleteAdByText(title);
-		} else {
-			openTabbar(TAB_ID_POST);
 		}
 	}
 	

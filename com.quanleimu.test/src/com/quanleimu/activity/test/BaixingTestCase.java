@@ -84,10 +84,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openPostFirstCategory(int firstCatIndex) throws Exception {
-
-		logon();
-		
-		openTabbar(TAB_ID_POST);
 		ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
 		if (catTextView != null) {
 			catTextView.doClick();
