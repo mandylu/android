@@ -28,6 +28,7 @@ import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.LocationService;
+import com.quanleimu.util.MobileConfig;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
@@ -312,6 +313,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		{
 			responseOnResume();
 		}
+		
+		MobileConfig.getInstance().syncMobileConfig();
+		
 //		Profiler.markEnd("mainresume");
 		
 //		MobclickAgent.onResume(this);

@@ -3,12 +3,7 @@ package com.quanleimu.util;
 import java.util.ArrayList;
 
 public class TrackConfig {
-	
-	
-	private  String response;
-	private boolean isLogging = true;//default config
-	private boolean hasResponseFromApi = false;
-	
+
 	private static TrackConfig instance = null;
 	public static TrackConfig getInstance() {
 		if (instance==null) {
@@ -22,35 +17,9 @@ public class TrackConfig {
 	}
 
 	public boolean getLoggingFlag() {
-		return isLogging;
+		return MobileConfig.getInstance().isEnableTracker();
 	}
 	
-	public void getConfig() {
-		if (hasResponseFromApi == false) {
-			hasResponseFromApi = true;
-			new Thread(new ConfigRunnable()).start();
-		}
-	}
-	
-	class ConfigRunnable implements Runnable {
-
-		@Override
-		public void run() {
-			String apiName = "mobile_config";
-			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-			try {
-				response = Communication.getDataByUrl(url, true);
-			} catch (Exception e) {
-                //todo ming mobile_config 这样用就被限制死了
-			} finally {
-				if (response != null && response.equals("\"false\"")) {
-					isLogging = false;
-				}else if (response != null && response.equals("\"true\"")){
-					isLogging = true;
-				}
-			}
-		}
-	}
 	
 	public static interface TrackMobile {
 		public static enum Key implements TrackMobile {//每条记录可能的key
@@ -171,8 +140,7 @@ public class TrackConfig {
 			}
 			public String getDescription() {
 				return description;
-			}
-			
+			}	
 		}
 		
 		public static enum BxEvent implements TrackMobile {//event相关的value

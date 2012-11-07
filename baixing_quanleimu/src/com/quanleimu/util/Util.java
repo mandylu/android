@@ -20,6 +20,7 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -51,6 +52,7 @@ import android.os.Message;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
+import android.util.Pair;
 import android.view.Display;
 
 import com.quanleimu.activity.QuanleimuApplication;
@@ -446,6 +448,26 @@ public class Util {
 		}
 		
 		context.deleteFile(file);
+	}
+	
+	/**
+	 * 将数据Object从手机内存中读出来, 同时将修改时间返回(单位秒)。
+	 * @param context
+	 * @param filename
+	 * @return Pair(LastModifiedTimeStamp, Object): if file not exist, LastModifiedTimeStamp = 0;  
+	 */
+	public static Pair<Long, Object> loadDataAndTimestampFromLocate(Context context, String filename) {
+		if(filename != null && !filename.equals("") && filename.charAt(0) != '_'){
+			filename = "_" + filename;
+		}
+		
+		File file = context.getFileStreamPath(filename);
+		long timestamp = file.lastModified()/1000;
+		
+		Object obj = Util.loadDataFromLocate(context, filename);
+
+		Pair<Long, Object> pair = new Pair<Long, Object>(timestamp, obj);
+		return pair;
 	}
 
 	//将数据从手机内存中读出来

@@ -165,8 +165,8 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
 			}
 		}
-		//Mobile Track Config入口
-		TrackConfig.getInstance().getConfig();//获取config
+//		//Mobile Track Config入口
+//		TrackConfig.getInstance().getConfig();//获取config
 		
 		String cityName = QuanleimuApplication.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {
