@@ -4,7 +4,6 @@
     android:layout_width="fill_parent"
     android:layout_height="88dp"
     android:paddingLeft="@dimen/list_margin_LF"
-    android:paddingRight="@dimen/list_margin_LF"
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:background = "@drawable/list_selector"
@@ -113,28 +112,30 @@
             android:layout_alignParentRight="true"
             android:id="@+id/rlListOperate"
             android:clickable="true"
+            android:paddingRight="@dimen/list_margin_LF"
             android:layout_alignParentLeft="false"
             android:layout_alignParentTop="false"
             android:background="@drawable/list_selector">
 
+
+        <Button
+            android:id="@+id/btnListOperate"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/btn_circle_arrow"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+        
         <View
             android:id="@+id/lineView"
             android:layout_width="1dp"
             android:layout_height="20dp"
             android:layout_centerVertical="true"
-            android:background="#c1c1b9" />
-
-        <Button
-            android:id="@+id/btnListOperate"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="false"
-            android:background="@drawable/btn_circle_arrow"
-            android:clickable="false"
-            android:focusable="false"
-            android:layout_alignParentLeft="false"
-            android:layout_alignParentBottom="false"
-            android:layout_centerInParent="true"/>
+            android:background="#c1c1b9"
+            android:layout_marginRight="@dimen/list_margin_LF"
+            android:layout_toLeftOf="@+id/btnListOperate" />
     </RelativeLayout>
 
 </RelativeLayout>
