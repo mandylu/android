@@ -44,6 +44,7 @@ import android.widget.ImageButton;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
+import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -102,7 +103,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private Bitmap mb_loading = null;
 	
-	private int type = 240;//width of screen
+//	private int type = 240;//width of screen
 //	private int paddingLeftMetaPixel = 16;//meta, right part, value
 	
 	private boolean keepSilent = false;
@@ -112,13 +113,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private IListHolder mHolder = null;
 	
-	private Dialog manageDlg = null;
+//	private Dialog manageDlg = null;
 	
 	private WeakReference<View> loadingMorePage;
 	
-	private boolean initCalled = false;
+//	private boolean initCalled = false;
 	
 	private boolean fromChat = false;
+	
+	List<View> pages = new ArrayList<View>();
 	
 	enum REQUEST_TYPE{
 		REQUEST_TYPE_REFRESH,
@@ -304,6 +307,28 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		this.fromChat = this.getArguments().getBoolean("fromChat");
 	}
+	
+	private View getNewPage(){
+		for(int i = 0; i < pages.size(); ++ i){
+			if(pages.get(i).getTag() == null){
+				return pages.get(i);
+			}
+		}
+		View detail = LayoutInflater.from(this.getAppContext()).inflate(R.layout.gooddetailcontent, null);
+		pages.add(detail);
+		return detail;
+	}
+	
+	private void removePage(View page){
+		for(int i = 0; i < pages.size(); ++ i){
+			if(pages.get(i) != null && page.hashCode() == pages.get(i).hashCode()){
+				HorizontalListView glDetail = (HorizontalListView) pages.get(i).findViewById(R.id.glDetail);
+//				glDetail.setVisibility(View.GONE);
+				glDetail.setAdapter(null);
+				pages.get(i).setTag(null);
+			}
+		}
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -314,7 +339,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		WindowManager wm = 
 				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		type = wm.getDefaultDisplay().getWidth();
+//		type = wm.getDefaultDisplay().getWidth();
 		
 		//different padding for meta value to avoid overlapping display
 //		if (type < 480) {
@@ -331,12 +356,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_post_loading, o);
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
+        final int current = vp.getCurrentItem();
         vp.setAdapter(new PagerAdapter() {
 			
 			public Object instantiateItem(View arg0, int position) 
 			{
+				Log.d("instantiateItem", "instantiateItem:    " + position);
 				Integer posObj = Integer.valueOf(position);
-				View detail = LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
+				View detail = getNewPage();//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				detail.setTag(posObj);
 				
 				detail.setTag(R.id.accountEt, detail);
@@ -363,7 +390,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
                 ((ViewPager) arg0).removeView((View) arg2);
                 
                 final Integer pos = (Integer) ((View) arg2).getTag();
-                arg2 = null;
+//                arg2 = null;
                 if (pos < mListLoader.getGoodsList().getData().size())
                 {
 //                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
@@ -376,6 +403,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	            		}
                 	}
                 }
+                removePage((View)arg2);
                 
                 
             }
@@ -391,10 +419,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
 			}
 		});
+        if(mCurIndex == 0) return v;
         vp.setCurrentItem(mCurIndex);
         vp.setOnPageChangeListener(new OnPageChangeListener() {
-			
+			private int currentPage = 0;
 			public void onPageSelected(int pos) {
+				currentPage = pos;
 				keepSilent = false;//magic flag to refuse unexpected touch event
 				//tracker
 				if (isMyAd() || !isValidMessage())
@@ -430,14 +460,55 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), true);
 				}
+				
+//				List<String>listUrl = getImageUrls(detail);
+//				if(listUrl != null && listUrl.size() > 0){
+//					HorizontalListView glDetail = (HorizontalListView) v.findViewById(R.id.glDetail);
+//					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
+//					glDetail.setOnTouchListener(GoodDetailFragment.this);
+//					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+//	
+//						@Override
+//						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+//							if(galleryReturned){
+//								Bundle bundle = createArguments(null, null);
+//								bundle.putInt("postIndex", arg2);
+//								bundle.putSerializable("goodsDetail", detail);
+//								galleryReturned = false;
+//								pushFragment(new BigGalleryFragment(), bundle);		
+//							}
+//						}
+//					});
+//				}
+
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				
+				currentPage = arg0;
 			}
 			
 			public void onPageScrollStateChanged(int arg0) {
+				if(arg0 != ViewPager.SCROLL_STATE_IDLE) return;
 				
+				List<String>listUrl = getImageUrls(detail);
+				if(listUrl != null && listUrl.size() > 0){
+					HorizontalListView glDetail = (HorizontalListView) v.findViewById(R.id.glDetail);
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
+					glDetail.setOnTouchListener(GoodDetailFragment.this);
+					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+							if(galleryReturned){
+								Bundle bundle = createArguments(null, null);
+								bundle.putInt("postIndex", arg2);
+								bundle.putSerializable("goodsDetail", detail);
+								galleryReturned = false;
+								pushFragment(new BigGalleryFragment(), bundle);		
+							}
+						}
+					});
+				}				
 			}
 		});
 
@@ -552,7 +623,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
 								page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
 								final Integer tag = (Integer)page.getTag();
-								initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
+								if(tag != null){
+									initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
+								}
 							}
 							
 						}, 10);
@@ -619,7 +692,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		WindowManager wm = 
 				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		type = wm.getDefaultDisplay().getWidth();
+//		type = wm.getDefaultDisplay().getWidth();
 		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
 		
@@ -661,35 +734,43 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}else{
 				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
 				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
-				
+				int cur = pager != null ? pager.getCurrentItem() : -1;
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
-				glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
-				glDetail.setOnTouchListener(this);
-//				Gallery glDetail = (Gallery) contentView.findViewById(R.id.glDetail);
-//				glDetail.setOnItemSelectedListener(this);
-//				glDetail.setFadingEdgeLength(10);
-//				glDetail.setSpacing(40);
-//				
-//				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl, pageIndex);
-//				glDetail.setAdapter(adapter);
-//				glDetail.setOnTouchListener(this);
-//				glDetail.setSpacing(0);
-				glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-
-					@Override
-					public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-						if(galleryReturned){
-							Bundle bundle = createArguments(null, null);
-							bundle.putInt("postIndex", arg2);
-							bundle.putSerializable("goodsDetail", detail);
-							galleryReturned = false;
-//							Log.d("haha", "hahaha, new big gallery");
-							pushFragment(new BigGalleryFragment(), bundle);		
-						}else{
-//							Log.d("hhah", "hahaha, it workssssssssssss");
+				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
+				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
+					glDetail.setOnTouchListener(this);
+	//				Gallery glDetail = (Gallery) contentView.findViewById(R.id.glDetail);
+	//				glDetail.setOnItemSelectedListener(this);
+	//				glDetail.setFadingEdgeLength(10);
+	//				glDetail.setSpacing(40);
+	//				
+	//				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl, pageIndex);
+	//				glDetail.setAdapter(adapter);
+	//				glDetail.setOnTouchListener(this);
+	//				glDetail.setSpacing(0);
+					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+	
+						@Override
+						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+							if(galleryReturned){
+								Bundle bundle = createArguments(null, null);
+								bundle.putInt("postIndex", arg2);
+								bundle.putSerializable("goodsDetail", detail);
+								galleryReturned = false;
+	//							Log.d("haha", "hahaha, new big gallery");
+								pushFragment(new BigGalleryFragment(), bundle);		
+							}else{
+	//							Log.d("hhah", "hahaha, it workssssssssssss");
+							}
 						}
+					});
+				}else{
+					for(int i = 0; i < listUrl.size(); ++ i){
+						listUrl.set(i, "");
 					}
-				});
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
+				}
 //				glDetail.setSelection(adapter.getCount() > 1 ? 1 : 0);
 				
 			}
@@ -1515,6 +1596,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			this.listUrl = listUrl;
 			position = detailPostion;
 		}
+		
+		public void setContent(List<String> listUrl){
+			this.listUrl = listUrl;
+		}
 
 		@Override
 		public int getCount() {
@@ -1546,7 +1631,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			ImageView iv = (ImageView) root.findViewById(R.id.ivGoods);
 			iv.setImageBitmap(mb_loading);
 			
-			if (listUrl.size() != 0 && listUrl.get(position) != null) {
+			if (listUrl.size() != 0 && listUrl.get(position) != null && !listUrl.get(position).equals("")) {
 				String prevTag = (String)iv.getTag();
 				iv.setTag(listUrl.get(position));
 				SimpleImageLoader.showImg(iv, listUrl.get(position), prevTag, context);

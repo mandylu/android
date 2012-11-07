@@ -130,7 +130,8 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 			mAdapter.unregisterDataSetObserver(mDataObserver);
 		}
 		mAdapter = adapter;
-		mAdapter.registerDataSetObserver(mDataObserver);
+		if(mAdapter != null)
+			mAdapter.registerDataSetObserver(mDataObserver);
 		reset();
 	}
 	
@@ -161,7 +162,7 @@ public class HorizontalListView extends AdapterView<ListAdapter> {
 	@Override
 	protected synchronized void onLayout(boolean changed, int left, int top, int right, int bottom) {
 		super.onLayout(changed, left, top, right, bottom);
-
+//		Log.d("instantiateItem", "instantiateItem:    onLayout" +  this);
 		if(mAdapter == null){
 			return;
 		}
