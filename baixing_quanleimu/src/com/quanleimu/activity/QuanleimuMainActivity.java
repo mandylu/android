@@ -314,8 +314,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			responseOnResume();
 		}
 		
-		MobileConfig.getInstance().syncMobileConfig();
-		
 //		Profiler.markEnd("mainresume");
 		
 //		MobclickAgent.onResume(this);
