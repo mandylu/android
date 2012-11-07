@@ -8,18 +8,19 @@
 
     <TextView
         android:id="@+id/postshow"
-        android:layout_width="80dip"
+        android:layout_width="88dip"
         android:layout_height="fill_parent"
-        android:gravity="right|center_vertical"
+        android:gravity="left|top"
         android:paddingBottom="10dip"
         android:paddingTop="10dip"
+        android:paddingLeft="10dip"        
         android:textColor="#838383"
         android:textSize="18dip" />
 
     <RelativeLayout
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_marginLeft="15dip"
+        android:layout_marginLeft="10dip"
         android:gravity="center_vertical"
         android:paddingBottom="10dip"
         android:paddingTop="10dip" >
@@ -36,6 +37,7 @@
             android:paddingRight="5dip"
             android:singleLine="false"
             android:inputType="textMultiLine"
+            android:textSize="18dip"
             android:textColor="@drawable/list_titleselector"
             android:textColorHint="#d1d0ca" >
         </EditText>
