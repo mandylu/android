@@ -55,7 +55,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	private int messageWhat = -1;
 	private boolean uiHold = false; 
 	
-	private RelativeLayout.LayoutParams lp = null;
+//	private RelativeLayout.LayoutParams lp = null;
 	
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
@@ -103,28 +103,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
-		int type = Util.getWidthByContext(context);
 		
-		switch (type) {
-		case 240:
-			lp = new RelativeLayout.LayoutParams(45, 45);
-			break;
-		case 320:
-			lp = new RelativeLayout.LayoutParams(60, 60);
-			break;
-		case 480:
-			lp = new RelativeLayout.LayoutParams(90, 90);
-			break;
-		case 540:
-			lp = new RelativeLayout.LayoutParams(100, 100);
-			break;
-		case 640:
-			lp = new RelativeLayout.LayoutParams(120, 120);
-			break;
-		default:
-			 lp= new RelativeLayout.LayoutParams(140,140);
-			break;
-		}
 	}
 
 	@Override
@@ -302,7 +281,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.ivInfo.setVisibility(View.GONE);
 			}
 			
-			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
+//			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
 			if(!QuanleimuApplication.isTextMode()){
 				
 				List<String> listUrlsToCancel = new ArrayList<String>();
@@ -310,7 +289,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				String strTag = null;
 				if(null != holder.ivInfo.getTag()) strTag = holder.ivInfo.getTag().toString();
 				
-				holder.ivInfo.setLayoutParams(lp);
+//				holder.ivInfo.setLayoutParams(lp);
 				
 				if (list.get(position).getImageList() == null
 						|| list.get(position).getImageList().equals("")
