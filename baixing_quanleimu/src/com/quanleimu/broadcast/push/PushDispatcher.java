@@ -4,6 +4,11 @@ import org.json.JSONObject;
 
 import android.content.Context;
 
+/**
+ * 
+ * @author liuchong
+ *
+ */
 public class PushDispatcher {
 	private Context context;
 	private PushHandler[] handlers;// = new ArrayList<PushHandler>();

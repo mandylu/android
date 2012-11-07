@@ -7,6 +7,11 @@ import android.app.ActivityManager;
 import android.content.ComponentName;
 import android.content.Context;
 
+/**
+ * 
+ * @author liuchong
+ *
+ */
 public abstract class PushHandler {
 
 	protected Context cxt;
