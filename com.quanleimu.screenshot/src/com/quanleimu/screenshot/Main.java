@@ -6,7 +6,7 @@ public class Main {
 		System.out.println ("Hello World!");
 		AndroidScreen screen = new AndroidScreen();
 		try {
-			screen.test();
+			screen.run();
 		} catch (Exception ex) {
 			System.out.println(ex.getMessage());
 		}

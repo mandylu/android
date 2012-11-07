@@ -6,6 +6,9 @@ import org.athrun.android.framework.AthrunDevice;
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
 
+import android.os.Build;
+import android.view.KeyEvent;
+
 
 public class PostViewTest extends BaixingTestCase {
 
@@ -71,7 +74,11 @@ public class PostViewTest extends BaixingTestCase {
 		//检查拍照页面弹出
 		//点击手机自带的返回键
 		TimeUnit.SECONDS.sleep(1);
-		lockStatus(CAMERA_LOCK_FILE);
+		String xy = "400,710";
+		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
+			xy = "100,710";
+		}
+		lockStatus(CAMERA_LOCK_FILE, xy);
 		TimeUnit.SECONDS.sleep(2);
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
@@ -81,11 +88,11 @@ public class PostViewTest extends BaixingTestCase {
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
 		//选择相册button
-		clickByText(POST_GALLERY_PHOTO_TEXT); 
+		clickByText(POST_GALLERY_PHOTO_TEXT);
 		//检查相册选择页面弹出
 		//点击手机自带的返回键
 		TimeUnit.SECONDS.sleep(1);
-		lockStatus(GALLERY_LOCK_FILE);
+		lockStatus(GALLERY_LOCK_FILE, String.valueOf(KeyEvent.KEYCODE_BACK));
 		TimeUnit.SECONDS.sleep(2);
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”

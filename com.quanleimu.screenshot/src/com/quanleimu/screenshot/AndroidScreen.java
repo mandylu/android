@@ -30,7 +30,7 @@ public class AndroidScreen {
     private IDevice device;
     private final Map<String, IDevice> devices = new HashMap<String, IDevice>();
 
-    public void test() throws Exception {
+    public void run() throws Exception {
     	System.out.println("xxx");
     	initBridge();
     	sleep(5 * 1000);
@@ -41,8 +41,8 @@ public class AndroidScreen {
             	if (d != null) {
             		setDevice(d);
                 	saveScreen(d);
-                	clickScreen(d, "baixing_camera_waiting_close.lock", 400, 710);
-                	sendKeyCode(d, "baixing_gallery_waiting_close.lock", 4);//KEYCODE_BACK
+                	clickScreen(d, "baixing_camera_waiting_close.lock");
+                	sendKeyCode(d, "baixing_gallery_waiting_close.lock");//KEYCODE_BACK
                 } else {
                     sleep(CONNECTING_PAUSE);
                 }
@@ -62,44 +62,46 @@ public class AndroidScreen {
     			saveImage(img);
     			logger.debug("image saved");
     		}
-    		d.executeShellCommand("rm " + lockDir + errLockFile + "*", rev);
-    		sleep(1 * 1000);
+    		sleep(1 * 300);
     		Date nowTime=new Date();
     		SimpleDateFormat time=new SimpleDateFormat("yyyyMMdd");
         	BXOutputReceiver log = new BXOutputReceiver();
         	log.logFile = "logs/logcat/test_" + d.toString() + "_" + time.format(nowTime) + ".log";
     		d.executeShellCommand("logcat -d", log);
-    		sleep(1 * 1000);
+    		sleep(1 * 300);
     		d.executeShellCommand("logcat -c", rev);
     	}
     }
     
-    private void clickScreen(IDevice d, String statusFile, int x, int y) throws Exception {
+    private void clickScreen(IDevice d, String statusFile) throws Exception {
     	
-    	String lockDir = checkStatusFile(d, statusFile);
-    	if (lockDir != null) {
+    	String retString = checkStatusFile(d, statusFile);
+    	
+    	if (retString != null) {
+    		String sParam = parseStatusParam(retString);
+    		if (sParam == null) return;
+    		String[] params = sParam.split(",");
     		BXOutputReceiver rev = new BXOutputReceiver();
-    		d.executeShellCommand("sendevent /dev/input/event0 3 0 " + x, rev);
-    		d.executeShellCommand("sendevent /dev/input/event0 3 1 " + y, rev);
+    		d.executeShellCommand("sendevent /dev/input/event0 3 0 " + params[0], rev);
+    		d.executeShellCommand("sendevent /dev/input/event0 3 1 " + params[1], rev);
     		d.executeShellCommand("sendevent /dev/input/event0 1 330 1", rev); //touch
     		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
     		d.executeShellCommand("sendevent /dev/input/event0 1 330 0", rev); //untouch
     		d.executeShellCommand("sendevent /dev/input/event0 0 0 0", rev);
-    		logger.debug(d.toString() + " sendevent:" + rev.revString);
-    		d.executeShellCommand("rm " + lockDir + statusFile + "*", rev);
-    		sleep(1 * 1000);
+    		logger.debug(d.toString() + " sendevent:" + rev.revString + "p:x" + params[0] + ":y" + params[1]);
+    		sleep(1 * 300);
     	}
     }
     
-    private void sendKeyCode(IDevice d, String statusFile, int keycode) throws Exception {
+    private void sendKeyCode(IDevice d, String statusFile) throws Exception {
     	
-    	String lockDir = checkStatusFile(d, statusFile);
-    	if (lockDir != null) {
+    	String retString = checkStatusFile(d, statusFile);
+    	if (retString != null) {
+    		String sParam = parseStatusParam(retString);
     		BXOutputReceiver rev = new BXOutputReceiver();
-    		d.executeShellCommand("input keyevent 4 " + keycode, rev);
-    		logger.debug(d.toString() + " sendevent:" + rev.revString);
-    		d.executeShellCommand("rm " + lockDir + statusFile + "*", rev);
-    		sleep(1 * 1000);
+    		d.executeShellCommand("input keyevent " + sParam, rev);
+    		logger.debug(d.toString() + " sendevent:" + rev.revString + "p:" + sParam);
+    		sleep(1 * 300);
     	}
     }
     
@@ -119,7 +121,21 @@ public class AndroidScreen {
 
 		//logger.info("ls " + lockDir + " 2 ", rev.revString);
     	if (rev.revString.indexOf(lockFile) > 0) {
-    		return lockDir;
+    		rev.revString = "";
+    		d.executeShellCommand("cat " + lockDir + lockFile, rev);
+    		String retString = rev.revString;
+    		logger.debug(d.toString() + " cat:" + lockDir + lockFile + " rev:" + retString);
+    		d.executeShellCommand("rm " + lockDir + lockFile + "*", rev);
+    		return retString;
+    	}
+    	return null;
+    }
+    
+    private String parseStatusParam(String retString) {
+    	String mark = "lock_params:";
+    	int start = retString.indexOf(mark);
+    	if (start > 0) {
+    		return retString.substring(start + mark.length()).trim();
     	}
     	return null;
     }
@@ -143,21 +159,21 @@ public class AndroidScreen {
 
             @Override
             public void deviceConnected(IDevice device) {
-                logger.info("deviceConnected: {}", device + "." + device.toString());
+                logger.debug("deviceConnected: {}", device + "." + device.toString());
                 addDevice(device);
                 devices.put(device.toString(), device);
             }
 
             @Override
             public void deviceDisconnected(IDevice device) {
-                logger.trace("deviceDisconnected: {}", device);
+                logger.debug("deviceDisconnected: {}", device);
                 removeDeviceByName(device.toString());
                 //removeDevice(device);
             }
 
             @Override
             public void deviceChanged(IDevice device, int changeMask) {
-                logger.trace("deviceChanged: {} - {}", device, changeMask);
+                logger.debug("deviceChanged: {} - {}", device, changeMask);
             }
 
         });

@@ -68,7 +68,7 @@ cd ../
 #start testemulator1
 echo "Check emulator-5556 device is connected or wait for one";
 adbState=`adb -s emulator-5556 get-state | grep device`;
-if [ $adbState = "device" ]; then
+if [ "$adbState" = "device" ]; then
     echo "..."
 else
 	echo "Device emulator-5556 not found -- connect one to continue..."
@@ -95,7 +95,7 @@ sleep 3;
 #start testemulator2
 echo "Check emulator-5580 device is connected or wait for one";
 adbState=`adb -s emulator-5580 get-state | grep device`
-if [ $adbState = "device" ]; then
+if [ "$adbState" = "device" ]; then
     echo "..."
 else
 	echo "Device emulator-5580 not found -- connect one to continue..."
@@ -132,7 +132,7 @@ sleep 1;
 
 #start realdevice
 adbState=`adb -s 015d18844854041c get-state | grep device`;
-if [ $adbState = "device" ]; then
+if [ "$adbState" = "device" ]; then
 	echo "Device 015d18844854041c connected."
 
 	echo "reinstall pkg";	

@@ -207,7 +207,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		startScreen_v3();
 	}
 	
-	public static String lockStatus(String statusFile) {
+	public static String lockStatus(String statusFile, String params) {
 		String lockDirPath = "/mnt/sdcard/Athrun/";
 		File d = new File(lockDirPath);
 		if (!d.exists()) {
@@ -224,12 +224,12 @@ public class BxBaseTestCase extends AthrunTestCase {
 		logConfigurator.setRootLevel(Level.INFO);
 		logConfigurator.configure();
 		Logger logger = Logger.getLogger(BaixingTestCase.class);
-		logger.info("lock");
+		logger.info("lock_params:" + params);
 		return lockFilePath;
 	}
 	
 	public static void waitScreenSave() {
-		String lockFilePath = lockStatus("bxtestcase_err.lock");
+		String lockFilePath = lockStatus("bxtestcase_err.lock", "");
 		/*try {
 			File lockFile = new File(lockFilePath);
     		if (!lockFile.exists()) {
