@@ -9,6 +9,7 @@
     <include layout="@layout/item_goodslist"/>
     
     <View     
+        android:id="@+id/vad_divider"
         android:layout_width="match_parent"
    		android:layout_height="1dp"
         android:background="@drawable/list_divider" >

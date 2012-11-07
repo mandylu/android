@@ -157,6 +157,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		View actionLine;
 		ImageView ivInfo;
 		View pbView;
+		View divider;
 	}
 	
 	private boolean isGroupPosition(int pos)
@@ -247,6 +248,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.ivInfo = (ImageView) v.findViewById(R.id.ivInfo);
 				holder.pbView = v.findViewById(R.id.pbLoadingProgress);
 				holder.tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
+				holder.divider = v.findViewById(R.id.vad_divider);
 				((AnimatingImageView)holder.ivInfo).setForefrontView(holder.pbView);
 				v.setTag(holder);
 			}
@@ -263,12 +265,14 @@ public class GoodsListAdapter extends BaseAdapter {
 				text.setText(g.filterHint);
 				TextView countTxt = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_result_count);
 				countTxt.setText(g.resultCount + "");
+				holder.divider.setVisibility(View.GONE);
 				v.setEnabled(false);	
 				return v;
 			}
 			else
 			{
 				v.setEnabled(true);
+				holder.divider.setVisibility(View.VISIBLE);
 				v.findViewById(R.id.filter_view_root).setVisibility(View.GONE);
 				v.findViewById(R.id.goods_item_view_root).setVisibility(View.VISIBLE);
 			}
