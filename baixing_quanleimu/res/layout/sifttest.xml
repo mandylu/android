@@ -58,8 +58,8 @@
 				        android:drawablePadding="6dp"
 				        android:singleLine="true"
 				        android:gravity="center_vertical|left"
-				        android:textSize="14sp"
-				        android:textColor="#848484"
+				        android:textSize="@dimen/font_input_text"
+				        android:textColor="@color/common_edit_text_color"
 				        android:background="@drawable/edit_bg"
 				        android:hint="请输入关键字"
 				        android:inputType="text" >

@@ -44,8 +44,13 @@
             android:layout_centerVertical="true"
             android:layout_marginLeft="6dp"
             android:layout_marginRight="6dp"
+	        android:drawablePadding="6dp"
+	        android:singleLine="true"
+	        android:gravity="center_vertical|left"
+	        android:textSize="@dimen/font_input_text"
+	        android:textColor="@color/common_edit_text_color"
+	        android:background="@drawable/edit_bg"
             android:layout_toLeftOf="@+id/im_send_btn"
-            android:background="@drawable/bg_input_box"
             android:hint="最多可输入140个字"
             android:maxLength="140" >
         </EditText>

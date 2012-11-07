@@ -26,4 +26,6 @@
     <!-- common color -->
     <color name="common_placeholder">#808080</color>
     <color name="common_background">#f3f1e8</color>
+    <color name="common_edit_text_color">#333333</color>
+    <color name="common_button_text_color">#333333</color>
 </resources>

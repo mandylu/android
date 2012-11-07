@@ -9,15 +9,22 @@
         android:id="@+id/etMark"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_margin="10dip"
+        android:layout_marginTop="14dp"
+        android:textSize="@dimen/font_input_text"
+        android:textColor="@color/common_edit_text_color"
+        android:background="@drawable/edit_bg"
         android:cursorVisible="true"
+        android:ems="10"
         android:focusableInTouchMode="true"
         android:gravity="top"
         android:marqueeRepeatLimit="marquee_forever"
         android:minLines="6"
-        android:text=""
-        android:typeface="monospace" 
-        android:layout_alignParentTop="true">
+        android:typeface="monospace" >
+
+        <requestFocus />
     </EditText>
 
 </RelativeLayout>

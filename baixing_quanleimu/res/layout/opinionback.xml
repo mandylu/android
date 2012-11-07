@@ -24,6 +24,9 @@
                 android:gravity="top"
                 android:hint="请输入反馈，我们将会为您做的更好"
                 android:marqueeRepeatLimit="marquee_forever"
+		        android:textSize="@dimen/font_input_text"
+		        android:textColor="@color/common_edit_text_color"
+		        android:background="@drawable/edit_bg"
                 android:minLines="6"
                 android:typeface="monospace" >
             </EditText>
@@ -36,6 +39,11 @@
                 android:layout_alignRight="@+id/etOpinion"
                 android:layout_below="@+id/etOpinion"
                 android:ems="10"
+		        android:drawablePadding="6dp"
+		        android:gravity="center_vertical|left"
+		        android:textSize="@dimen/font_input_text"
+		        android:textColor="@color/common_edit_text_color"
+		        android:background="@drawable/edit_bg"
                 android:hint="留下手机号，以便我们给您回复"
                 android:singleLine="true" />
         </RelativeLayout>

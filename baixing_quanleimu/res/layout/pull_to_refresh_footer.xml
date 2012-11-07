@@ -19,13 +19,15 @@
     android:layout_height="fill_parent"
     android:paddingTop="10dip"
     android:paddingBottom="15dip"
+    android:background="#fafafa"
     android:gravity="center"
     android:id="@+id/pulldown_to_getmore_footer">
     
 	<TextView xmlns:android="http://schemas.android.com/apk/res/android"
 	    android:id="@+id/pulldown_to_getmore"
 	    android:text="@string/scrolldown_to_getmore"
-	    android:textAppearance="?android:attr/textAppearanceMedium"
+	    android:textSize="@dimen/font_small"
+	    android:textColor="#707070"
 	    android:textStyle="bold"
 	    android:paddingTop="5dip"
 	    android:layout_width="fill_parent"

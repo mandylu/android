@@ -9,8 +9,6 @@
     <include layout="@layout/item_goodslist"/>
     
     <View     
-    	android:layout_marginLeft="@dimen/list_margin_LF"
-    	android:layout_marginRight="@dimen/list_margin_LF"
         android:layout_width="match_parent"
    		android:layout_height="1dp"
         android:background="@drawable/list_divider" >
