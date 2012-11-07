@@ -84,7 +84,7 @@ public class AdViewTest extends BaixingTestCase {
 			assertNull(findElementByText(TEST_DATA_CATEGORY_QICHE));
 			//检查页面title包含当前地区地点文字“金桥”
 			String area = tv.getText();
-			tv = findElementById(AD_DETAIL_MAP_TITLE_ID, TextViewElement.class);
+			tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 			assertNotNull(tv);
 			boolean found = false;
 			assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);

@@ -4,6 +4,7 @@ import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
 import org.athrun.android.framework.viewelement.AbsListViewElement;
 import org.athrun.android.framework.viewelement.ScrollViewElement;
+import org.athrun.android.framework.viewelement.TextViewElement;
 
 import android.util.Log;
 import android.widget.ScrollView;
@@ -164,9 +165,18 @@ public class KeepLiveTest extends BaixingTestCase {
 			int count = subCatListView.getChildCount();
 			subCatListView = null;
 			Log.i(LOG_TAG, "runPostAll:" + count);
+			String oldCateName = "";
 			for(int j = 0; j < count ; j++) {
 				openSecondCategoryByIndex(j);
 				Log.i(LOG_TAG, "runPostAll:" + j);
+				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+				if (!oldCateName.equals(v.getText())) {
+					oldCateName = v.getText();
+					postAutoEnterData();
+				} else {
+					goBack();
+					break;
+				}
 				goBack();
 			}
 			break;

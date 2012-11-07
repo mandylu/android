@@ -35,6 +35,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String GALLERY_LOCK_FILE = "baixing_waiting_sendkey.lock";
 	public static final String BACK_BUTTON_TEXT = "返回";
 	public static final String BACK_BUTTON_ID = "left_action";
+	public static final String VIEW_TITLE_ID = "tvTitle";
+	
 	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
 	public static final String CATEGROY_GRIDVIEW_NAME_ID = "itemtext";
 	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
@@ -88,8 +90,6 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String AD_DETAIL_META_LABEL_ID = "tvmetatxt";
 	public static final String AD_DETAIL_META_VALUE_ID = "tvmeta";
 	public static final String AD_DETAIL_META_AREA_TEXT = "地区";
-	
-	public static final String AD_DETAIL_MAP_TITLE_ID = "tvTitle";
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";

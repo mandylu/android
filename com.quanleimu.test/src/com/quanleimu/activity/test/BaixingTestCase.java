@@ -358,6 +358,62 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return title;
 	}
 	
+	public void postAutoEnterData() throws Exception {
+		int index = 0;
+		int loop = 0;
+		String displayName = "";
+		String value = "";
+		
+		while(index < 20) {
+			try {
+				ViewGroupElement dv = findElementById(POST_META_EDIT_ITEM_ID, index++, ViewGroupElement.class);
+				Log.i(LOG_TAG, "setOtherMetaByName:" + index);
+				if (dv != null) {
+					Log.i(LOG_TAG, "setOtherMetaByName:" + index + POST_META_EDIT_ITEM_ID);
+					String editDisplayId = POST_META_EDIT_DISPLAY_ID;
+					String editTextId = POST_META_EDITTEXT_ID;
+					TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
+					if (nv == null) {
+						editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
+						editTextId = POST_META_EDITTEXT_DESC_ID;
+						nv = dv.findElementById(editDisplayId, TextViewElement.class);
+					}
+					if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
+					if (nv != null) {
+						Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + displayName);
+						TextViewElement tv = null;
+						if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
+							tv = dv.findElementById(editTextId, TextViewElement.class);
+						} else {
+							for(int i = 1; i < dv.getChildCount(); i++) {
+								ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
+								tv = ddv.findElementById(editTextId, TextViewElement.class);
+								if (tv != null) break;
+							}
+						}
+						if (tv != null) {
+							if (tv.getText().length() > 0) continue;
+							if (nv.getText().equals("价格") || nv.getText().equals("工资")) {
+								value = "300";
+							} else {
+								value = "xxeedd ccd"; //rand string
+							}
+							tv.setText(value);
+							TimeUnit.SECONDS.sleep(1);
+							continue;
+						}
+					}
+				}
+			} catch (IndexOutOfBoundsException ex) {
+				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
+				if (loop++ >= 5) break;
+				index = 0;
+				ScrollViewElement lv = getPostScrollView();
+				lv.scrollToNextScreen();
+			}
+		}
+	}
+	
 	public void postSend() throws Exception {
 		ViewElement eld = findElementByText(POST_SEND);
 		assertNotNull(eld);
