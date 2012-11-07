@@ -86,13 +86,18 @@ public class Sender implements Runnable{
 			newQueue.addAll(queue);
 			queue.clear();
 		}
+		String queueData = "";
 		for (String data : newQueue) {
-			saveListToFile(data);
+			queueData += data + ",";
 		}
-		newQueue.clear();
+		if (!queueData.equals("")) {
+			queueData = queueData.substring(0, queueData.length()-1);
+			saveListToFile(queueData);
+			newQueue.clear();
+		}
 	}
 	
-	private void saveListToFile(String data)
+	private void saveListToFile(String data)//坑说明：必须注意如果queue中每个元素都存一个文件，按秒来区分文件名，很可能重名，文件覆盖导致数据丢失
 	{
 		if (context != null) {
 			String fileName = SENDER_FILE_PREFIX + System.currentTimeMillis()/1000 + SENDER_FILE_SUFFIX;
@@ -133,6 +138,7 @@ public class Sender implements Runnable{
 		try {
 			Log.d("sender", "try sending");
 			String result = Communication.getDataByGzipUrl(url, true);
+			Log.d("response",result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");
 			if (code == 0)
@@ -158,14 +164,6 @@ public class Sender implements Runnable{
 		return succed;
 	}
 	
-	private boolean isQueueTooFull() {//确保在断网的时候，queue里面的数据不会无限制堆积，多出的部分存成文件
-		int size = 0;
-		synchronized (queue) {
-			size = queue.size();
-		}
-		if (size > 10) return true;
-		return false;
-	}
 	@Override
 	public void run() {
 		Log.d("sender", "run");
@@ -173,9 +171,7 @@ public class Sender implements Runnable{
 				//First step : send memory data if there is any.
 				String list = null;
 				synchronized (queue) {
-					int size = 0;
-					size = queue.size();//TODO:is "size" neccessary?
-					if (size > 0)
+					if (queue.size() > 0)
 						list = queue.remove(0);
 				}
 				
@@ -196,9 +192,7 @@ public class Sender implements Runnable{
 						String singleRecordList = new String(Util.loadData(recordPath));
 						if (singleRecordList != null && sendList(singleRecordList))
 						{
-							try {
-								Util.clearFile(recordPath);
-							} catch (Exception e) {}
+							Util.clearFile(recordPath);
 						}
 					}
 				}
@@ -211,7 +205,12 @@ public class Sender implements Runnable{
 				//Check if we have more data to send.
 				boolean hasMoreData = hasDataToSend();
 				
-				while ((!isSendingReady() && !isQueueTooFull()) || !hasMoreData) {//断网或者无数据
+				boolean isQueueFull;
+				synchronized (queue) {
+					isQueueFull = queue.size()>10 ? true : false;
+				}
+				
+				while ((!isSendingReady() && !isQueueFull) || !hasMoreData) {//断网或者无数据
 					try {
 						Log.d("sender", "wait");
 						synchronized (sendMutex) {
