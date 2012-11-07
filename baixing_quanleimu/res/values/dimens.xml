@@ -21,6 +21,7 @@
     <dimen name="vad_img_width_height">106dp</dimen>
     <dimen name="vad_img_right_space">8dp</dimen>
     <dimen name="font_input_text">16sp</dimen>
+    <dimen name="filter_gap">10dp</dimen>
     
     <!--  -->
     <dimen name="font_large">20sp</dimen>

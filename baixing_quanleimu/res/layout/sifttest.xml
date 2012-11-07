@@ -31,7 +31,7 @@
                 android:paddingTop="20dp"
                 android:paddingLeft="16dp"
                 android:paddingRight="16dp"
-                android:paddingBottom="4dp"
+                android:paddingBottom="10dp"
                 android:orientation="horizontal" 
                >
  
@@ -83,7 +83,7 @@
                 android:textSize="@dimen/font_medium"
                 android:textColor="#ffffff"
                 android:background="@drawable/bg_call_btn_selector"
-                android:layout_marginTop="40dp"
+                android:layout_marginTop="10dp"
 				android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"/>
             
@@ -95,6 +95,7 @@
                 android:textSize="@dimen/font_medium"
                 android:background="@drawable/bg_message_btn_selector"
                 android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
 				android:layout_marginLeft="16dp"
                 android:layout_marginRight="16dp"/>
 

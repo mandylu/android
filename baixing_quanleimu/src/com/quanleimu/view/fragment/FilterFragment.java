@@ -430,11 +430,12 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 //								preValue);
 					}
 				}
-				TextView border = new TextView(
-						rootView.getContext());
+//				TextView border = new TextView(
+//						rootView.getContext());
+				View border = new View(rootView.getContext());
 				border.setLayoutParams(new LayoutParams(
-						LayoutParams.FILL_PARENT, 1, 1));
-				border.setBackgroundResource(R.drawable.list_divider);
+						LayoutParams.FILL_PARENT, getResources().getDimensionPixelSize(R.dimen.filter_gap), 1));
+//				border.setBackgroundResource(R.drawable.list_divider);
 
 				ll_meta.addView(v);
 				ll_meta.addView(border);
