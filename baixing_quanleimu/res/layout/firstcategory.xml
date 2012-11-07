@@ -4,14 +4,15 @@
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
     
-	<GridView
+	<ListView
         android:id="@+id/firstcategory"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:gravity="center"
         android:horizontalSpacing="10dp"
-        android:numColumns="1"
         android:stretchMode="columnWidth"
+        android:dividerHeight="0dp"
+        android:divider="@null"
    />
     
 </LinearLayout>

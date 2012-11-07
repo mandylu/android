@@ -13,19 +13,15 @@ import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
+import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.adapter.GridAdapter;
 import com.quanleimu.entity.FirstStepCate;
-import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
-import com.quanleimu.widget.CustomizeGridView;
-import com.quanleimu.widget.CustomizeGridView.GridInfo;
-import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 //import android.widget.AdapterView;
 //import android.widget.AdapterView.OnItemClickListener;
 //import com.quanleimu.adapter.GridAdapter;
@@ -61,7 +57,7 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 		
 		SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, R.layout.item_category, 
 				new String[]{"tvCategoryName", "ivCategoryImage"}, new int[]{R.id.tvCategoryName, R.id.ivCategoryImage});
-		GridView gridView = (GridView) v.findViewById(R.id.firstcategory);
+		ListView gridView = (ListView) v.findViewById(R.id.firstcategory);
 		gridView.setAdapter(adapter);
 		gridView.setOnItemClickListener(this);
 		return v;
