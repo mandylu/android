@@ -1,6 +1,7 @@
 package com.quanleimu.entity;
 
 import java.io.Serializable;
+import java.net.URLDecoder;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashMap;
@@ -163,10 +164,14 @@ public class GoodsDetail implements Serializable{
 	}
 	
 	public void setValueByKey(String key, String value){
-		if(key.equals("")) return;
+		if(key == null || key.equals("")) return;
 //		EDATAKEYS e =  getEnumByString(key);
 //		if(e == null) return;
-		data.put(key, value);
+		if(value != null && !value.equals("")){
+			String strDecoded = value.replaceAll("&amp;", "&");
+			data.put(key, strDecoded);
+		}
+			
 	}
 	
 	public String getMetaValueByKey(String key){
