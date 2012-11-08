@@ -789,7 +789,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
 
         if(json == null){
-            Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 0).show();
+            Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
         }
         try {
             JSONObject jb = new JSONObject(json);
@@ -797,8 +797,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             String message = js.getString("message");
             int code = js.getInt("code");
             if (code == 0) {
-                doRefresh(0, adId);
-                Toast.makeText(getActivity(), message, 0).show();
+                Toast.makeText(getActivity(), message, 1).show();
             }else if(2 == code){
                 hideProgress();
                 new AlertDialog.Builder(getActivity()).setTitle("提醒")
@@ -822,7 +821,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
             }else {
                 hideProgress();
-                Toast.makeText(getActivity(), message, 0).show();
+                Toast.makeText(getActivity(), message, 1).show();
             }
         } catch (JSONException e) {
             // TODO Auto-generated catch block
