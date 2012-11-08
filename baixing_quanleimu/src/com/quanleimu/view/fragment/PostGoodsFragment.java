@@ -318,7 +318,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onPause() {
 		QuanleimuApplication.getApplication().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
-		
+		this.postLayoutCreated = false;
 		super.onPause();
 	}
 	

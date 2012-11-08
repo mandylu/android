@@ -3,8 +3,7 @@
     android:id="@+id/postgoodslayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen"
-    android:padding="@dimen/post_padding" >
+    android:background="@color/bg_screen">
 
     <ScrollView
         android:id="@+id/goodscontent"
@@ -12,6 +11,7 @@
         android:layout_height="fill_parent"
         android:clickable="true"
         android:scrollbars="none"
+        android:padding="@dimen/post_padding" 
         android:focusableInTouchMode="true" >
 
         <LinearLayout
