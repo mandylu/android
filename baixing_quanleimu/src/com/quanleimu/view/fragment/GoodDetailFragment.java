@@ -474,8 +474,24 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 						HorizontalListView glDetail = (HorizontalListView) currentVG.findViewById(R.id.glDetail);
 						VadImageAdapter adapter = (VadImageAdapter)glDetail.getAdapter();
 						if(adapter != null){
-							adapter.setContent(listUrl);
-							adapter.notifyDataSetChanged();
+							List<String> curLists = adapter.getImages();
+							boolean sameList = true;
+							if(curLists != null && curLists.size() == listUrl.size()){
+								for(int i = 0; i < curLists.size(); ++ i){
+									String cstr = curLists.get(i);
+									String lstr = listUrl.get(i);
+									if(cstr != null && cstr.length() > 0 && lstr != null && lstr.length() > 0){
+										if(!cstr.equals(lstr)){
+											sameList = false;
+											break;
+										}
+									}
+								}
+							}
+							if(!sameList){
+								adapter.setContent(listUrl);
+								adapter.notifyDataSetChanged();
+							}
 						}else{
 							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
 						}
