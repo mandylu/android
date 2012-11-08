@@ -388,17 +388,39 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			
 
 			if(null == tvGPSCityName) return;
-			tvGPSCityName.setText(location.cityName);
+			
 
 			RelativeLayout linearGpsCity = (RelativeLayout)rootView.findViewById(R.id.linearGpsCityItem);
-			
+			String subCity = "";
+			String cityName = "";
+			CityDetail cityDetail = null;
 			for(CityDetail city : QuanleimuApplication.getApplication().getListCityDetails()){
 				if (location.cityName.equals(city.getName())) {
-					linearGpsCity.setTag(new Pair<CityDetail, String>(city, "gpscity"));
-					linearGpsCity.setOnClickListener(this);
+					cityName = location.cityName;
+					cityDetail = city;
+//					break;
+				}else if(location.subCityName != null && location.subCityName.contains(city.getName())){
+					subCity = city.getName();
+					cityDetail = city;
 					break;
 				}
 			}
+			if(cityDetail != null){
+				
+				linearGpsCity.setTag(new Pair<CityDetail, String>(cityDetail, "gpscity"));
+				linearGpsCity.setOnClickListener(this);
+				
+				if(!subCity.equals("")){
+					tvGPSCityName.setText(subCity);
+				}else{
+					if(!cityName.equals("")){
+						tvGPSCityName.setText(cityName);
+					}else{
+						tvGPSCityName.setText(cityDetail.name);
+					}
+				}
+			}
+			
 //
 //			linearGpsCity.setOnClickListener(new View.OnClickListener() {
 //				
