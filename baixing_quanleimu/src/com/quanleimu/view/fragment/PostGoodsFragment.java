@@ -1073,13 +1073,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						
 			hideProgress();
 			final String fmsg = errorMsg;
-			((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
-				@Override
-				public void run(){
-					Toast.makeText(getActivity(), fmsg, 0).show();
-				}
-			});
-			
+			if(getActivity() != null){
+				((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
+					@Override
+					public void run(){
+						Toast.makeText(getActivity(), fmsg, 0).show();
+					}
+				});
+			}
 		}
 	}
 
