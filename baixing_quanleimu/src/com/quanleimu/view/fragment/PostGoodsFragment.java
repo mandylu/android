@@ -52,6 +52,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -328,6 +329,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(isBack){
 			this.detailLocation = null;
+			final ScrollView scroll = (ScrollView) this.getView().findViewById(R.id.goodscontent);
+			scroll.post(new Runnable() {            
+			    @Override
+			    public void run() {
+			           scroll.fullScroll(View.FOCUS_DOWN);              
+			    }
+			});
 		}
 		if(!isBack && this.goodsDetail == null){
 			inLocating = true;
