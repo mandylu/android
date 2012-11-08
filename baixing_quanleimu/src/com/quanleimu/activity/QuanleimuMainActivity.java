@@ -311,6 +311,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		}
 		else
 		{
+			startTalking(getIntent());
 			responseOnResume();
 		}
 		
@@ -567,25 +568,25 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
 		setIntent(intent);
-		Runnable task = new Runnable() {
-			public void run()
-			{
-//				QuanleimuApplication.wxapi.handleIntent(getIntent(), QuanleimuMainActivity.this);
-//				showDetailViewFromWX();
-//				showDataFromAlbamOrPhoto();
-				
-				startTalking(getIntent());
-			}
-		};
-		
-		if (splashJob == null || splashJob.isJobDone()) //do not handle any intent before splash job done.
-		{
-			task.run();
-		}
-		else if (!splashJob.isJobDone())
-		{
-			pendingTask.add(task);
-		}
+//		Runnable task = new Runnable() {
+//			public void run()
+//			{
+////				QuanleimuApplication.wxapi.handleIntent(getIntent(), QuanleimuMainActivity.this);
+////				showDetailViewFromWX();
+////				showDataFromAlbamOrPhoto();
+//				
+//				startTalking(getIntent());
+//			}
+//		};
+//		
+//		if (splashJob == null || splashJob.isJobDone()) //do not handle any intent before splash job done.
+//		{
+//			task.run();
+//		}
+//		else if (!splashJob.isJobDone())
+//		{
+//			pendingTask.add(task);
+//		}
 	}
 	
 	private void startTalking(Intent intent)
