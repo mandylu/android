@@ -63,6 +63,7 @@ public class TrackConfig {
 			POSTCONTACTTEXTCOUNT("postContactTextCount","联系方式字数"),
 			POSTDETAILPOSITIONAUTO("postDetailPositionAuto","具体地点是否自动定位"),
 			POSTEDSECONDS("postedSeconds","已发布秒数"),
+            POSTENTRY("postEntry", "发布入口点"),
 			LOGIN_RESULT_STATUS("loginResultStatus","Login结果（成功、出错）"),
 			LOGIN_RESULT_FAIL_REASON("loginResultFailReason","login出错原因"),
             EDIT_PROFILE_STATUS("editProfileStatus", "修改用户信息成功失败状态"),

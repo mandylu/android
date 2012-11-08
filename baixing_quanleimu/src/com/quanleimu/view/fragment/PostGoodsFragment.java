@@ -1063,6 +1063,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
 				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
 				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+                .append(Key.POSTENTRY, QuanleimuApplication.postEntryFlag)
 				.end();
 			else
 				Tracker.getInstance().event(event)
@@ -1074,6 +1075,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
 				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
 				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+                .append(Key.POSTENTRY, QuanleimuApplication.postEntryFlag)
 				.end();
 						
 			hideProgress();
@@ -1112,6 +1114,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				.append(Key.POSTDESCRIPTIONTEXTCOUNT, descLength)
 				.append(Key.POSTCONTACTTEXTCOUNT, contactLength)
 				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
+                .append(Key.POSTENTRY, QuanleimuApplication.postEntryFlag)
 				.end();
 	}
 	

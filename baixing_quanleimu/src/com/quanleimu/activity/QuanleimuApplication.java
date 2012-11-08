@@ -53,6 +53,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
+
+    //为赌约而设
+    public static int postEntryFlag = -1;
 	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";

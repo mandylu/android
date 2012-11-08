@@ -781,6 +781,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			this.pushFragment(new HomeFragment(), bundle, true);
 			break;
 		case 1:
+            //发布赌约
+            QuanleimuApplication.postEntryFlag = 0;
+
 			Bundle args = new Bundle(bundle);
 			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
 			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);

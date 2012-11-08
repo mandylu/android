@@ -108,6 +108,9 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	public void handleRightAction(){
+        //发布赌约
+        QuanleimuApplication.postEntryFlag = 1;
+
 		String categoryName = getArguments().getString("categoryName");
 		categoryName = categoryEnglishName + "," + categoryName;
 		Bundle bundle = createArguments(null, null);
