@@ -13,6 +13,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.Toast;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserProfile;
 import com.quanleimu.util.Communication;
@@ -57,6 +58,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
         View v = inflater.inflate(R.layout.dialog_edit_username, null);
         EditText editUsernameEt = (EditText) v.findViewById(R.id.dialog_edit_username_et);
         editUsernameEt.setText(userProfile.nickName);
+        editUsernameEt.setSelection(editUsernameEt.getText().length());
         builder.setView(v)
                 .setTitle("修改用户名")
                 .setPositiveButton("修改", new Dialog.OnClickListener() {
@@ -90,6 +92,10 @@ public class EditUsernameDialogFragment extends DialogFragment {
 
     private void updateUsername() {
         EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
+        if (editUsernameEt.getText().toString().length() <= 0) {
+            Toast.makeText(getActivity(), "请输入用户名", 1).show();
+            return;
+        }
 
         ParameterHolder params = new ParameterHolder();
         params.addParameter("nickname", editUsernameEt.getText().toString());

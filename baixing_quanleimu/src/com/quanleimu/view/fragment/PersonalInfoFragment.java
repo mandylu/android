@@ -398,6 +398,13 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
 			}
 			break;
+        case MSG_SHOW_PROGRESS:
+            showSimpleProgress();
+            break;
+        case MSG_SHOW_TOAST:
+            hideProgress();
+            Toast.makeText(activity, msg.obj.toString(), 1).show();
+            break;
 		case MSG_GETPERSONALADS:
 //			hideProgress();
 //			
