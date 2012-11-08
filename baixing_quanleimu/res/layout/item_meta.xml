@@ -2,7 +2,6 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="80dp"
-    android:orientation="horizontal" 
     android:background="@drawable/list_selector">
 
     <TextView
@@ -24,7 +23,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:text="上海"
-        android:paddingLeft="0dip"
+        android:singleLine="true"
         android:textColor="@color/vad_meta_content"
         android:textSize="14sp" >
     </TextView>

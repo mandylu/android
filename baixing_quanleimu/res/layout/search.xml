@@ -23,7 +23,7 @@
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:orientation="vertical"
-        android:visibility="gone" >
+        android:visibility="visible" >
 
         <LinearLayout
             android:layout_width="fill_parent"
@@ -38,7 +38,7 @@
                 android:layout_marginLeft="10dip"
                 android:text="@string/search_result_title"
                 android:textColor="@color/base_green"
-                android:textSize="12sp" >
+                android:textSize="@dimen/font_small" >
             </TextView>
 
             <View

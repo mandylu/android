@@ -39,6 +39,9 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 		super.onCreate(savedInstanceState);
 	}
 	
+	public boolean hasGlobalTab() {
+		return true;
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -80,7 +83,7 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "选择类目";
-		title.m_leftActionHint = "返回";
+//		title.m_leftActionHint = "返回";
 	}
 	
 	@Override

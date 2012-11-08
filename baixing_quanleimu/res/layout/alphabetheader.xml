@@ -2,7 +2,7 @@
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/ttteeessttt"
     android:layout_width="fill_parent"
-    android:background="#DBE2C9"
+    android:background="#d6d6d6"
     android:layout_height="wrap_content" >
 	<TextView
 	    android:id="@+id/headertext"

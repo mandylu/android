@@ -762,13 +762,13 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		}
 	}
 
-	private int lastIndex;
+//	private int lastIndex;
 	@Override
 	public void beforeChange(int currentIndex, int nextIndex) {
-		if (nextIndex != 1)
-		{
-			lastIndex = nextIndex;
-		}
+//		if (nextIndex != 1)
+//		{
+//			lastIndex = nextIndex;
+//		}
 	}
 
 	/**
@@ -784,8 +784,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			Bundle args = new Bundle(bundle);
 			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
 			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
-			pushFragment(new GridCateFragment(), args, false);
-			globalTabCtrl.showTab(lastIndex);
+			pushFragment(new GridCateFragment(), args, true);
 			break;
 		case 2:
 			this.pushFragment(new PersonalInfoFragment(), bundle, true);
