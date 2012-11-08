@@ -508,6 +508,7 @@ public abstract class BaseFragment extends Fragment {
 	protected final void finishFragment(int resultCode, Object result)
 	{
 		BaseActivity activity = (BaseActivity) getActivity();
+		if(activity == null) return;
 		finishFragment();
 		BaseFragment current = activity.getCurrentFragment();
 		if (current != null)
