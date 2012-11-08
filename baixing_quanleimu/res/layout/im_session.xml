@@ -66,6 +66,7 @@
             android:scaleType="fitCenter"
             android:text="发送"
             android:textSize="16sp"
+            android:textColor="@color/white"
     	 />
 
     </RelativeLayout>
