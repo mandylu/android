@@ -134,10 +134,23 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	}
 	
 	protected void onStatckTop(BaseFragment f) {
-//		if (f.hasGlobalTab())
+		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+		
+		//FIXME: 中文注释：tab bar的临时方案，下个版本会全面替换tab展现方式， 因为现在的tab的切换是不太符合产品设计这边的期望的
+		if (f.hasGlobalTab() && f instanceof HomeFragment)
 		{
-			findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+			this.globalTabCtrl.showTab(0);
 		}
+		else if (f.hasGlobalTab() && f instanceof GridCateFragment)
+		{
+			this.globalTabCtrl.showTab(1);
+		}
+		else if (f.hasGlobalTab() && f instanceof PersonalInfoFragment)
+		{
+			this.globalTabCtrl.showTab(2);
+		}
+					
+		
 	}
 	
 	
