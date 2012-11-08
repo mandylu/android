@@ -2150,6 +2150,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(postBean.getNumeric() != 0){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}
+			
+			if (postBean.getName().equals("contact")) {
+				text.setInputType(InputType.TYPE_CLASS_PHONE);
+			}
+			
 			if (!postBean.getUnit().equals("")) {
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
