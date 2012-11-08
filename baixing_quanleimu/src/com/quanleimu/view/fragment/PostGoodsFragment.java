@@ -153,11 +153,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     
     private EditText etDescription = null;
     private EditText etContact = null;
+    
+    private boolean postLayoutCreated = false;
 	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		this.postLayoutCreated = false;
+		
 		String categoryNames = this.getArguments().getString("cateNames");
 		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
 		
@@ -539,6 +544,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void showPost()
 	{
+		if (postLayoutCreated)
+			return;
+		postLayoutCreated = true;
 		//获取发布模板
 		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
@@ -1205,6 +1213,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (resultCode == NONE) {
 			return;
 		}
+		
+		this.showPost();
+		
 		// 拍照 
 		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
 			// 设置文件保存路径这里放在跟目录下
@@ -1666,6 +1677,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private void buildPostLayout(){
 		this.getView().findViewById(R.id.goodscontent).setVisibility(View.VISIBLE);
 		this.getView().findViewById(R.id.networkErrorView).setVisibility(View.GONE);
+		this.reCreateTitle();
+		this.refreshHeader();
 		Log.d(TAG, "start to build layout");
 //		otherProperties.clear();
 		
