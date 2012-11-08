@@ -77,7 +77,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
     private int currentType = TYPE_MYPOST;
 
-	private Bundle bundle;
 	private GoodsListLoader glLoader = null;
 	
 	private String json = "";
@@ -984,6 +983,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			params.add("userId=" + user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
+			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
