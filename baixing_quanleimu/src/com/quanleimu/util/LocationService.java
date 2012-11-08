@@ -203,6 +203,9 @@ public class LocationService{
 //				location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
 //				location.setLatitude(27.900383);
 //				location.setLongitude(112.577883);
+				
+//				location.setLatitude(31.391158);
+//				location.setLongitude(120.983797);
 				lastKnownLocation = location;
 				
 				for(BXLocationServiceListener listener : userListeners){
