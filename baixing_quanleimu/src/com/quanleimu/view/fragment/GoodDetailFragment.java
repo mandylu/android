@@ -165,6 +165,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onPause() {
 		this.keepSilent = true;
 		super.onPause();
+		pages.clear();
 //		Gallery glDetail = (Gallery) getView().findViewById(R.id.glDetail);
 //		if(glDetail != null){
 ////			glDetail.getc
