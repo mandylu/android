@@ -53,6 +53,9 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LoginUtil;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.HomeFragment.GetPersonalProfileThread;
 import com.quanleimu.widget.CustomizeGridView;
@@ -250,8 +253,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	@Override
 	public void onResume() {
 		super.onResume();
-		
-		
+		this.pv = PV.MY;
+		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
+	
 		registerReceiver();
 	}
 	

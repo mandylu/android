@@ -254,10 +254,11 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		if (selectedIndex == 0) {
 			this.pv = PV.HOME;
 			Tracker.getInstance().pv(this.pv).end();
-		}else if (selectedIndex == 1){
-			this.pv = PV.MY;
-			Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
 		}
+//		else if (selectedIndex == 1){
+//			this.pv = PV.MY;
+//			Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
+//		}
 	}
 
 	@Override
