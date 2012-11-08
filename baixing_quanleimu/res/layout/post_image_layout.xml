@@ -4,7 +4,7 @@
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:orientation="horizontal"
-    android:paddingBottom="12dip" >
+    android:paddingBottom="@dimen/post_padding" >
 
     <ImageView
         android:id="@+id/iv_1"
@@ -19,7 +19,7 @@
         android:id="@+id/iv_2"
         android:layout_width="90dip"
         android:layout_height="90dip"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="13dip"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
         android:scaleType="centerCrop" >
@@ -29,7 +29,7 @@
         android:id="@+id/iv_3"
         android:layout_width="90dip"
         android:layout_height="90dip"
-        android:layout_marginLeft="10dip"
+        android:layout_marginLeft="13dip"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
         android:scaleType="centerCrop" >

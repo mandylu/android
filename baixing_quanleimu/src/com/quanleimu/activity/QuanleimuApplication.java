@@ -1,27 +1,21 @@
 package com.quanleimu.activity;
 
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.UUID;
 
-//import net.sourceforge.simcpux.Constants;
 import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.location.Location;
-import android.os.AsyncTask;
-import android.os.Bundle;
-import android.provider.Settings.Secure;
-import android.util.Log;
 import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
+import android.location.Location;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
@@ -34,12 +28,11 @@ import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
+import com.quanleimu.util.BXDatabaseHelper;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
-import com.quanleimu.util.BXDatabaseHelper;
-import android.util.Log;
-import android.telephony.TelephonyManager;
+//import net.sourceforge.simcpux.Constants;
 public class QuanleimuApplication implements LocationService.BXLocationServiceListener{
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";

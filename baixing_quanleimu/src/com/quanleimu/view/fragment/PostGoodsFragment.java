@@ -2276,7 +2276,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (layoutParams == null)
 			layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = 10;
+		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
 		layout.setLayoutParams(layoutParams);
 		
 		return layout;
