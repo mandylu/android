@@ -497,19 +497,22 @@ public abstract class BaseFragment extends Fragment {
 		return this.hashCode() + "";
 	}
 	
-	protected final void finishFragment()
+	protected final boolean finishFragment()
 	{
 		BaseActivity activity = (BaseActivity) getActivity();
 		if(activity != null){
-			activity.popFragment(this);
+			return activity.popFragment(this);
 		}
+		return false;
 	}
 	
 	protected final void finishFragment(int resultCode, Object result)
 	{
+		if(!finishFragment()) return;
+		
 		BaseActivity activity = (BaseActivity) getActivity();
 		if(activity == null) return;
-		finishFragment();
+		
 		BaseFragment current = activity.getCurrentFragment();
 		if (current != null)
 		{

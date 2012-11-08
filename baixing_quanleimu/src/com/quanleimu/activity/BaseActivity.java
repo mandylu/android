@@ -448,15 +448,16 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	}
 	
 	
-	public final void popFragment(BaseFragment f)
+	public final boolean popFragment(BaseFragment f)
 	{
-		if(savedInstance) return;
+		if(savedInstance) return false;
 		FragmentManager fm = getSupportFragmentManager();
 		FragmentTransaction ft = fm.beginTransaction();
 		//Pop current
-		fm.popBackStackImmediate();
+		boolean popSucceed = fm.popBackStackImmediate();
 		
 		ft.commit();
+		return popSucceed;
 	}
 	
 	
