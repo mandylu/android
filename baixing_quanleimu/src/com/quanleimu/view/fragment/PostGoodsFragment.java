@@ -18,6 +18,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.database.Cursor;
@@ -41,6 +42,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.widget.Button;
@@ -2174,6 +2176,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			v.setTag(HASH_CONTROL, descriptionEt);
 			layout = (ViewGroup)v;
 		}
+		
+		if (layout == null)
+			return null;
+		
 		if(postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")){
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
@@ -2248,16 +2254,28 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				}
 			});
+		} else {
+			layout.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					View ctrl = (View) v.getTag(HASH_CONTROL);
+					ctrl.requestFocus();
+					InputMethodManager inputMgr = 
+							(InputMethodManager) ctrl.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					inputMgr.showSoftInput(ctrl, InputMethodManager.SHOW_IMPLICIT);
+				}
+			});
+			
 		}
-		if (layout != null) {
-//			layout.setBackgroundResource(R.drawable.post_box);
-			LinearLayout.LayoutParams layoutParams = (LayoutParams) layout.getLayoutParams();
-			if (layoutParams == null)
-				layoutParams = new LinearLayout.LayoutParams(
-				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-			layoutParams.bottomMargin = 10;
-			layout.setLayoutParams(layoutParams);
-		}
+
+		LinearLayout.LayoutParams layoutParams = (LayoutParams) layout.getLayoutParams();
+		if (layoutParams == null)
+			layoutParams = new LinearLayout.LayoutParams(
+			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+		layoutParams.bottomMargin = 10;
+		layout.setLayoutParams(layoutParams);
+		
 		return layout;
 	}
 	
