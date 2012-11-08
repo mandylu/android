@@ -22,6 +22,8 @@
     <color name="vad_meta_content">#333333</color>
     <color name="vad_group_title">#86cf2a</color>
     <color name="title_gap_line">#d3d3d3</color>
+    <color name="vad_buzz">#fb9e24</color>
+    <color name="vad_sms">#4a4945</color>
     
     
     <!-- common color -->

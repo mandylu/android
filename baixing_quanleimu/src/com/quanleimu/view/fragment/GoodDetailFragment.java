@@ -822,8 +822,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 		final String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
 		final boolean isFromMobile = isCurrentAdFromMobile();
-		ImageButton btnBuzz = (ImageButton) rootView.findViewById(R.id.vad_buzz_btn);
-		btnBuzz.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
+		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
+		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
+		btnImg.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
+		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
+		btnTxt.setTextColor(getResources().getColor(isFromMobile ? R.color.vad_buzz : R.color.vad_sms));
 		btnBuzz.setEnabled(isFromMobile ? true : (TextUtil.isNumberSequence(mobileV) ? true : false));
 		
 //		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
