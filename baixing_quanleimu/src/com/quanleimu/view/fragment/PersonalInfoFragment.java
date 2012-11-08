@@ -125,18 +125,20 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 	@Override
 	public void initTitle(TitleDef title) {
-		LayoutInflater inflator = LayoutInflater.from(getActivity());
-		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
+//		LayoutInflater inflator = LayoutInflater.from(getActivity());
+//		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
 
-		title.hasGlobalSearch = true;
+		title.m_visible = true;
+		title.m_title = "用户中心";
+//		title.hasGlobalSearch = true;
 		
-		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
-		
-		logoRoot.setOnClickListener(new View.OnClickListener() {
-			public void onClick(View v) {
-				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
-			}
-		});
+//		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
+//		
+//		logoRoot.setOnClickListener(new View.OnClickListener() {
+//			public void onClick(View v) {
+//				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+//			}
+//		});
 	}
 	
 	public boolean hasGlobalTab()

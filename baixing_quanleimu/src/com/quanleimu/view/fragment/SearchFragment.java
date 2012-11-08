@@ -438,5 +438,15 @@ public class SearchFragment extends BaseFragment {
 			return convertView;
 		}
 	}
+	
+	public int getEnterAnimation()
+	{
+		return getArguments() == null ? R.anim.zoom_enter : getArguments().getInt(ARG_COMMON_ANIMATION_IN, R.anim.zoom_enter);
+	}
+	
+	public int getExitAnimation()
+	{
+		return getArguments() == null ? R.anim.zoom_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, R.anim.zoom_exit);
+	}
 
 }
