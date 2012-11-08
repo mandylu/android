@@ -5,16 +5,17 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewConfiguration;
 import android.view.ViewGroup;
 import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
+import android.widget.AbsListView.OnScrollListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -22,12 +23,11 @@ import android.widget.ListView;
 import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.AbsListView.OnScrollListener;
 
 import com.quanleimu.activity.R;
 import com.quanleimu.util.Communication;
 
-public class PullToRefreshListView extends ListView implements OnScrollListener {
+public class PullToRefreshListView extends ListView implements OnScrollListener, OnClickListener {
 
     private static final int TAP_TO_REFRESH = 1;
     private static final int PULL_TO_REFRESH = 2;
@@ -186,7 +186,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     	if(mAllowGetMore){
 	    	mHasMore = hasMore;
 	    	if(mHasMore){
-	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore);
+	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(!Communication.isWifiConnection() ? R.string.click_to_get_more : R.string.scrolldown_to_getmore);
 	    	}else{
 	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
 	    	}
@@ -614,21 +614,14 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
             		&&  mGetmoreView.getBottom() <= this.getBottom()) {
                 // Initiate the refresh
             	mGetMoreState = GETTING_MORE;
+            	updateFooter(mHasMore);
             	if(Communication.isWifiConnection()) {
-            		updateFooterTip(R.string.scrolldown_to_getmore);
             		mGetmoreView.setOnClickListener(null);
             		onGetMore();
             	}
             	else
             	{
-            		updateFooterTip(R.string.click_to_get_more);
-            		mGetmoreView.setOnClickListener(new View.OnClickListener() {
-						public void onClick(View v) {
-		            		updateFooterTip(R.string.scrolldown_to_getmore);
-		            		mGetmoreView.setOnClickListener(null);
-		            		onGetMore();
-						}
-					});
+            		mGetmoreView.setOnClickListener(this);
             	}
             }            
             else if (mEnableHeader && firstVisibleItem == 0) {
@@ -873,4 +866,13 @@ public class PullToRefreshListView extends ListView implements OnScrollListener 
     		text.setText(resId);
     	}
     }
+    
+    public void onClick(View v) {
+    	if (v == mGetmoreView)
+    	{
+    		updateFooterTip(R.string.scrolldown_to_getmore);
+    		mGetmoreView.setOnClickListener(null);
+    		onGetMore();
+    	}
+	}
 }
