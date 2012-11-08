@@ -487,6 +487,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 										}
 									}
 								}
+							}else{
+								sameList = false;
 							}
 							if(!sameList){
 								adapter.setContent(listUrl);
