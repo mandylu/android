@@ -2,6 +2,7 @@ package com.quanleimu.activity.test;
 
 import java.io.File;
 import java.util.ArrayList;
+import java.util.Random;
 import java.util.Timer;
 import java.util.TimerTask;
 import java.util.concurrent.TimeUnit;
@@ -28,6 +29,7 @@ import org.athrun.android.framework.viewelement.ViewUtils;
 
 import android.os.Environment;
 import android.os.IBinder;
+import android.text.InputType;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
@@ -37,7 +39,9 @@ import de.mindpipe.android.logging.log4j.LogConfigurator;
 
 public class BaixingTestCase extends BxBaseTestCase {
 	@SuppressWarnings("unchecked")
-	public BaixingTestCase() throws Exception {}
+	public BaixingTestCase() throws Exception {
+		super();
+	}
 	
 	public void logout() throws Exception {
 		openTabbar(TAB_ID_MY_V3);
@@ -107,30 +111,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewGroupElement dv = null;
 		int scrolled = 0;
 		boolean scrolledNull = true;
-		while(index < 50) {
+		while(index < 20) {
 			try {
-				dv = findElementById(POST_META_ITEM_ID, index++, ViewGroupElement.class);
-				Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index);
+				dv = findSelectMetaByIndex(index++, displayName);
 				
 				if (dv != null) {
-					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_ID);
-					TextViewElement nv = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
-					if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_DISPLAY_ID + displayName + ":" + nv.getText());
-					if (nv != null && nv.getText().equals(displayName)) {
-						Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
+					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
+					dv.doClick();
+					TimeUnit.SECONDS.sleep(2);
+					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) != null) {
+						Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":ScrollNext");
+						ScrollViewElement scrollView = getPostScrollView();
+						scrollView.scrollToNextScreen();
+						if (scrolled == 0) scrolled = index - 1;
+						TimeUnit.SECONDS.sleep(2);
 						dv.doClick();
 						TimeUnit.SECONDS.sleep(2);
-						if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) != null) {
-							Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":ScrollNext");
-							ScrollViewElement scrollView = getPostScrollView();
-							scrollView.scrollToNextScreen();
-							if (scrolled == 0) scrolled = index - 1;
-							TimeUnit.SECONDS.sleep(2);
-							dv.doClick();
-							TimeUnit.SECONDS.sleep(2);
-						}
-						return;
 					}
+					return;
 				}
 			} catch (IndexOutOfBoundsException ex) {
 				if (scrolledNull == false) break;
@@ -197,44 +195,78 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return setMetaValueByName(displayName, value, 0);
 	}
 	
+
+	public ViewGroupElement findSelectMetaByIndex(int index) throws Exception {
+		return findSelectMetaByIndex(index, null);
+	}
+	public ViewGroupElement findSelectMetaByIndex(int index, String displayName) throws Exception {
+		ViewGroupElement dv = findElementById(POST_META_ITEM_ID, index, ViewGroupElement.class);
+		Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index);
+		
+		if (dv != null) {
+			Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_ID);
+			TextViewElement nv = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
+			if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + POST_META_ITEM_DISPLAY_ID + displayName + ":" + nv.getText());
+			if (nv != null) {
+				if (displayName != null && !nv.getText().equals(displayName)) return null;
+				Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
+				return dv;
+			}
+		}
+		return null;
+	}
+	
+	public BXTextViewElement findTextMetaByIndex(String listViewId, int index) throws Exception {
+		return findTextMetaByIndex(listViewId, index, null);
+	}
+
+	public BXTextViewElement findTextMetaByIndex(String listViewId, int index, String displayName) throws Exception {
+		ViewGroupElement dv = findElementById(listViewId, index, ViewGroupElement.class);
+		Log.i(LOG_TAG, "setOtherMetaByName:" + index);
+		if (dv != null) {
+			Log.i(LOG_TAG, "setOtherMetaByName:" + index + POST_META_EDIT_ITEM_ID);
+			String editDisplayId = POST_META_EDIT_DISPLAY_ID;
+			String editTextId = POST_META_EDITTEXT_ID;
+			TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
+			if (nv == null) {
+				editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
+				editTextId = POST_META_EDITTEXT_DESC_ID;
+				nv = dv.findElementById(editDisplayId, TextViewElement.class);
+			}
+			if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
+			if (nv != null) {
+				if (displayName != null && !nv.getText().equals(displayName)) return null;
+				Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + (displayName != null ? displayName : ""));
+				BXTextViewElement tv = null;
+				if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
+					tv = dv.findElementById(editTextId, BXTextViewElement.class);
+				} else {
+					for(int i = 1; i < dv.getChildCount(); i++) {
+						ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
+						tv = ddv.findElementById(editTextId, BXTextViewElement.class);
+						if (tv != null) break;
+					}
+				}
+				if (tv != null) {
+					return tv;
+				}
+			}
+		}
+		return null;
+	}
+	
 	public ViewElement setMetaValueByName(String displayName, String value, int index) throws Exception {
 		//TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_PARENT_ID, displayName);
 		//assertNotNull(dtv);
 		while(index < 20) {
 			try {
-				ViewGroupElement dv = findElementById(POST_META_EDIT_ITEM_ID, index++, ViewGroupElement.class);
-				Log.i(LOG_TAG, "setOtherMetaByName:" + index);
-				if (dv != null) {
-					Log.i(LOG_TAG, "setOtherMetaByName:" + index + POST_META_EDIT_ITEM_ID);
-					String editDisplayId = POST_META_EDIT_DISPLAY_ID;
-					String editTextId = POST_META_EDITTEXT_ID;
-					TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
-					if (nv == null) {
-						editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
-						editTextId = POST_META_EDITTEXT_DESC_ID;
-						nv = dv.findElementById(editDisplayId, TextViewElement.class);
-					}
-					if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
-					if (nv != null && nv.getText().equals(displayName)) {
-						Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + displayName);
-						TextViewElement tv = null;
-						if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
-							tv = dv.findElementById(editTextId, TextViewElement.class);
-						} else {
-							for(int i = 1; i < dv.getChildCount(); i++) {
-								ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
-								tv = ddv.findElementById(editTextId, TextViewElement.class);
-								if (tv != null) break;
-							}
-						}
-						if (tv != null) {
-							tv.setText(value);
-							TimeUnit.SECONDS.sleep(1);
-							return tv;
-						}
-					}
+				TextViewElement tv = findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index++, displayName);
+				if (tv != null) {
+					tv.setText(value);
+					TimeUnit.SECONDS.sleep(1);
+					return tv;
 				}
-			} catch (IndexOutOfBoundsException ex) {
+			} catch (IndexOutOfBoundsException e) {
 				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
 				break;
 			}
@@ -296,18 +328,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void selectMetaByIndex(int index) throws Exception {
-		selectMetaByIndex(index, POST_META_LISTVIEW_ID);
+		selectMetaByIndex(index, true);
 	}
 	
-	public void selectMetaByIndex(int index, String listViewId) throws Exception {
+	public void selectMetaByIndex(int index, boolean asserted) throws Exception {
+		selectMetaByIndex(index, POST_META_LISTVIEW_ID, asserted);
+	}
+	
+	public void selectMetaByIndex(int index, String listViewId, boolean asserted) throws Exception {
 		AbsListViewElement listView = findElementById(listViewId,
 				AbsListViewElement.class);
-		assertNotNull(listView);
+		if (asserted) assertNotNull(listView);
+		if (listView == null) return;
 		ViewGroupElement v = listView.getChildByIndex(index,
 				ViewGroupElement.class);
-		assertNotNull(v);
+		if (asserted) assertNotNull(v);
+		if (v == null) return;
 		v.doClick();
-		TimeUnit.SECONDS.sleep(3);
+		TimeUnit.SECONDS.sleep(1);
 	}
 	
 	public void postOtherDone() throws Exception {
@@ -361,64 +399,103 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void postAutoEnterData() throws Exception {
 		int index = 0;
 		int loop = 0;
-		String displayName = "";
 		String value = "";
-		
+		class RandomHan {
+		    private Random ran = new Random();
+		    private final static int delta = 0x9fa5 - 0x4e00 + 1;
+		     
+		    public char getRandomHan() {
+		        return (char)(0x4e00 + ran.nextInt(delta)); 
+		    }
+		}
+		RandomHan han = new RandomHan();
 		while(index < 20) {
 			try {
-				ViewGroupElement dv = findElementById(POST_META_EDIT_ITEM_ID, index++, ViewGroupElement.class);
-				Log.i(LOG_TAG, "setOtherMetaByName:" + index);
-				if (dv != null) {
-					Log.i(LOG_TAG, "setOtherMetaByName:" + index + POST_META_EDIT_ITEM_ID);
-					String editDisplayId = POST_META_EDIT_DISPLAY_ID;
-					String editTextId = POST_META_EDITTEXT_ID;
-					TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
-					if (nv == null) {
-						editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
-						editTextId = POST_META_EDITTEXT_DESC_ID;
-						nv = dv.findElementById(editDisplayId, TextViewElement.class);
-					}
-					if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
-					if (nv != null) {
-						Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + displayName);
-						TextViewElement tv = null;
-						if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
-							tv = dv.findElementById(editTextId, TextViewElement.class);
-						} else {
-							for(int i = 1; i < dv.getChildCount(); i++) {
-								ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
-								tv = ddv.findElementById(editTextId, TextViewElement.class);
-								if (tv != null) break;
-							}
-						}
-						if (tv != null) {
-							if (tv.getText().length() > 0) continue;
-							if (nv.getText().equals("价格") || nv.getText().equals("工资")) {
-								value = "300";
-							} else {
-								value = "xxeedd ccd"; //rand string
-							}
-							tv.setText(value);
-							TimeUnit.SECONDS.sleep(1);
-							continue;
+				BXTextViewElement tv = findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index++);
+				if (tv != null) {
+					if (tv.getText().length() > 0) continue;
+					if(tv.getInputType() == (
+							InputType.TYPE_CLASS_NUMBER 
+							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
+							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
+						value = "300";
+					} else {
+						int randLen = 8 + (int)(Math.random() * 12);
+						value = "";
+						for(int l = 0; l < randLen; l++) {
+							value += han.getRandomHan();
 						}
 					}
+					tv.setText(value);
+					TimeUnit.SECONDS.sleep(1);
+					continue;
 				}
-			} catch (IndexOutOfBoundsException ex) {
+			} catch (IndexOutOfBoundsException e) {
 				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
-				if (loop++ >= 5) break;
+				/*if (loop++ >= 5) break;
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
-				lv.scrollToNextScreen();
+				lv.scrollToNextScreen();*/
+				break;
+			}
+		}
+		index = 0;
+		while(index < 20) {
+			try {
+				ViewGroupElement dv = findSelectMetaByIndex(index++);
+				
+				if (dv != null) {
+					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
+					dv.doClick();
+					TimeUnit.SECONDS.sleep(2);
+					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) == null
+						&& findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class) != null) {
+						selectMetaByIndex(0, false);
+						TimeUnit.SECONDS.sleep(2);
+						if (findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class) != null) {
+							postOtherDone();
+							TimeUnit.SECONDS.sleep(1);
+						}
+					}
+					continue;
+				}
+			} catch (IndexOutOfBoundsException ex) {
+				Log.i(LOG_TAG, "setOtherMetaByName:postAutoEnterData" + index + ":doClick");
+				break;
 			}
 		}
 	}
 	
-	public void postSend() throws Exception {
+	public boolean postSend() throws Exception {
+		return postSend(true);
+	}
+	
+	public boolean postSend(boolean asserted) throws Exception {
 		ViewElement eld = findElementByText(POST_SEND);
-		assertNotNull(eld);
+		if (asserted) assertNotNull(eld);
+		if (eld == null) return false;
 		eld.doClick();
-		waitForHideMsgbox(10 * 1000);
+		//waitForHideMsgbox(10 * 1000);
+		return waitForSubTexts("发布成功@重复", 3000);
+	}
+	
+	public boolean checkPostSuccess(boolean deleted) throws Exception {
+		if (checkPostSuccess(MY_LISTING_MYAD_TEXT, deleted)) return true;
+		return checkPostSuccess(MY_LISTING_MYAD_APPROVE_TEXT, deleted);
+	}
+	
+	public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
+		if (gridText != null) openMyGridByText(gridText);
+		ViewGroupElement gv = openAdByItemIndex(0);
+		if (gv != null) {
+			if (deleted) {
+				deleteAdOnView(false);
+			} else {
+				goBack();
+			}
+			return true;
+		}
+		return false;
 	}
 	
 	public boolean afterPostSend() throws Exception {
@@ -703,8 +780,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 	}
 	
-	public void deleteAllHistoryAds() throws Exception {
-		openMyGridByText(MY_LISTING_HISTORY_TEXT);
+	public void deleteAllAds() throws Exception {
+		deleteAllAds(null);
+	}
+	
+	public void deleteAllAds(String gridText) throws Exception {
+		if (gridText != null) openMyGridByText(gridText);
 		
 		/*TimeUnit.SECONDS.sleep(1);
 		ViewElement ele = findElementByText(MY_EDIT_BUTTON_ID);
@@ -740,6 +821,19 @@ public class BaixingTestCase extends BxBaseTestCase {
 		v.doClick();
 		TimeUnit.SECONDS.sleep(1);
 		deleteAdOnView(true);
+	}
+	
+	public void deleteAdByIndex(int index) throws Exception {
+		ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+		if (d != null) {
+			d.doClick();
+			TimeUnit.SECONDS.sleep(1);
+		}
+		ViewGroupElement gv = openAdByItemIndex(index);
+		if (gv != null) {
+			deleteAdOnView(false);
+			TimeUnit.SECONDS.sleep(1);
+		}
 	}
 	
 	public void deleteAdOnView(boolean force) throws Exception {

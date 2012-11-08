@@ -33,6 +33,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	//Common ID
 	public static final String CAMERA_LOCK_FILE = "baixing_waiting_click.lock";
 	public static final String GALLERY_LOCK_FILE = "baixing_waiting_sendkey.lock";
+	public static final String SCREEN_SAVE_LOCK_FILE = "bxtestcase_err.lock";
 	public static final String BACK_BUTTON_TEXT = "返回";
 	public static final String BACK_BUTTON_ID = "left_action";
 	public static final String VIEW_TITLE_ID = "tvTitle";
@@ -125,6 +126,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
 	public static final String MY_LISTING_MYAD_COUNTER_ID = "tv_sentcount";
 	public static final String MY_LISTING_MYAD_TEXT = "已发布";
+	public static final String MY_LISTING_MYAD_APPROVE_TEXT = "审核未通过";
 	public static final String MY_LISTING_TITLE_TEXT = "已发布的信息";
 	public static final String MY_MYAD_APPROVE_BUTTON_ID = "ivMyfav";
 	public static final String MY_MYAD_DELETE_BUTTON_ID = "ivMyhistory";
@@ -252,7 +254,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public static void waitScreenSave() {
-		lockStatus("bxtestcase_err.lock", "");
+		lockStatus(SCREEN_SAVE_LOCK_FILE, "");
 		/*try {
 			File lockFile = new File(lockFilePath);
     		if (!lockFile.exists()) {
@@ -636,5 +638,15 @@ public class BxBaseTestCase extends AthrunTestCase {
 		ViewFinder viewFinder = new ViewFinder();
 		ArrayList<TextView> textViews = viewFinder.findViewsByText(text, false, timeout);
 		return textViews.isEmpty() ? false : true;
+	}
+	
+	boolean waitForSubTexts(String texts, int timeout) {
+		ViewFinder viewFinder = new ViewFinder();
+		String[] tt = texts.split("@");
+		for(int i = 0; i < tt.length; i++) {
+			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
+			if (!textViews.isEmpty()) return true;
+		}
+		return false;
 	}
 }

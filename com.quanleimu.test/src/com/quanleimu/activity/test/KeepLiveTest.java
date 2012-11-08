@@ -112,7 +112,6 @@ public class KeepLiveTest extends BaixingTestCase {
 	
 	public KeepLiveTest() throws Exception {
 		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
 		final Timer timer = new Timer();
         TimerTask tt = new TimerTask() { 
             @Override
@@ -156,6 +155,11 @@ public class KeepLiveTest extends BaixingTestCase {
 	 */
 	@Test
 	public void runPostAll() throws Exception {
+		String postErrors = "";
+		logon();
+		openTabbar(TAB_ID_MY_V3);
+		deleteAllAds(MY_LISTING_MYAD_TEXT);
+		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
 		openTabbar(TAB_ID_POST);
 		for (int i = 0; i < 10; i++) {
 			openPostFirstCategory(i);
@@ -167,20 +171,31 @@ public class KeepLiveTest extends BaixingTestCase {
 			Log.i(LOG_TAG, "runPostAll:" + count);
 			String oldCateName = "";
 			for(int j = 0; j < count ; j++) {
+				openTabbar(TAB_ID_POST);
+				openPostFirstCategory(i);
 				openSecondCategoryByIndex(j);
 				Log.i(LOG_TAG, "runPostAll:" + j);
 				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 				if (!oldCateName.equals(v.getText())) {
 					oldCateName = v.getText();
 					postAutoEnterData();
+					TimeUnit.SECONDS.sleep(1);
+					postSend(false);
+					afterPostSend();
+					if (!checkPostSuccess(true)) {
+						lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+						postErrors += "POST Category:" + oldCateName + " ERROR\n";
+						Log.i(LOG_TAG, "POST Category:" + oldCateName + " ERROR");
+					}
 				} else {
-					goBack();
-					break;
+					afterPostSend();
 				}
-				goBack();
 			}
-			break;
 		}
+		assertTrue(postErrors, postErrors.length() == 0);
+
+		deleteAllAds(MY_LISTING_MYAD_TEXT);
+		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
 	}
 	
 	private void doFirstCategory(int index) throws Exception {

@@ -1,4 +1,4 @@
-echo $1_$2_$3
+echo "deviveName:$1_ x:$2_ y:$3"
 deviceinput="/dev/input/event0";
 if [ "$4" = "" ] ;then
 	echo "default";

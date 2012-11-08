@@ -162,7 +162,7 @@ public class MainActivityTest extends BaixingTestCase {
 	}
 
 	public void testHistory() throws Exception {
-		deleteAllHistoryAds();
+		deleteAllAds(MY_LISTING_HISTORY_TEXT);
 		BXViewGroupElement detailView = showAd(1, 0, 2);
 		int showCount = 1;
 		for (;showCount < 5; showCount++) {
