@@ -96,8 +96,9 @@ public class ImageManager
 	{
 		
 		//return imgCache.containsKey(url);
-		
-		return (null != imageLruCache.get(url));
+		synchronized(this){
+			return (null != imageLruCache.get(url));
+		}
 		
 	}
 	
@@ -198,7 +199,10 @@ public class ImageManager
 //		}
 //		
 		if(url == null || url.equals(""))return;
-		Bitmap bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+		Bitmap bitmap = null;
+		synchronized(this){
+			bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+		}
 		if(bitmap != null){
 			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", recycle right now ? " + rightNow);
 			if (rightNow)
