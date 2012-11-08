@@ -854,8 +854,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		
 		String postFrom = detail.getValueByKey("postMethod");
-		
-		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom);
+		Log.d("postMethod", postFrom);
+		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom) || "api_wap".equalsIgnoreCase(postFrom);
 	}
 	
 	
