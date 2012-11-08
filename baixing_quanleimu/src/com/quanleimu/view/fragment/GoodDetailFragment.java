@@ -308,20 +308,31 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		this.fromChat = this.getArguments().getBoolean("fromChat");
 	}
 	
-	private View getNewPage(){
+	private View getPage(int index){
+		for(int i = 0; i < pages.size(); ++ i){
+			if(pages.get(i).getTag() != null && (Integer)pages.get(i).getTag() == index){
+				return pages.get(i);
+			}
+		}
+		return null;
+	}
+	
+	private View getNewPage(int index){
 		for(int i = 0; i < pages.size(); ++ i){
 			if(pages.get(i).getTag() == null){
+				pages.get(i).setTag(index);
 				return pages.get(i);
 			}
 		}
 		View detail = LayoutInflater.from(this.getAppContext()).inflate(R.layout.gooddetailcontent, null);
+		detail.setTag(index);
 		pages.add(detail);
 		return detail;
 	}
 	
-	private void removePage(View page){
+	private void removePage(int index){
 		for(int i = 0; i < pages.size(); ++ i){
-			if(pages.get(i) != null && page.hashCode() == pages.get(i).hashCode()){
+			if(pages.get(i) != null && pages.get(i).getTag() != null && (Integer)pages.get(i).getTag() == index){
 				HorizontalListView glDetail = (HorizontalListView) pages.get(i).findViewById(R.id.glDetail);
 //				glDetail.setVisibility(View.GONE);
 				glDetail.setAdapter(null);
@@ -339,15 +350,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		WindowManager wm = 
 				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//		type = wm.getDefaultDisplay().getWidth();
-		
-		//different padding for meta value to avoid overlapping display
-//		if (type < 480) {
-//			this.paddingLeftMetaPixel = 0;
-//		}else{
-//			this.paddingLeftMetaPixel = 16;
-//		}
-		
 		
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
 		
@@ -363,8 +365,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			{
 				Log.d("instantiateItem", "instantiateItem:    " + position);
 				Integer posObj = Integer.valueOf(position);
-				View detail = getNewPage();//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
-				detail.setTag(posObj);
+				View detail = getNewPage(position);//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
+				
 				
 				detail.setTag(R.id.accountEt, detail);
 				((ViewPager) arg0).addView(detail, 0);
@@ -376,21 +378,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 				else
 				{
-					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0), true);
+					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0), false);
 				}
 				return detail;
 			}
 			
             public void destroyItem(View arg0, int index, Object arg2)
             {
-//            	Gallery glDetail = (Gallery) ((View)arg2).findViewById(R.id.glDetail);
-//            	if(glDetail != null){
-//            		glDetail.setAdapter(null);
-//            	}
                 ((ViewPager) arg0).removeView((View) arg2);
                 
                 final Integer pos = (Integer) ((View) arg2).getTag();
-//                arg2 = null;
                 if (pos < mListLoader.getGoodsList().getData().size())
                 {
 //                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
@@ -403,7 +400,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	            		}
                 	}
                 }
-                removePage((View)arg2);
+                removePage(pos);
                 
                 
             }
@@ -419,7 +416,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
 			}
 		});
-//        if(mCurIndex == 0) return v; //removed by chong, why not continue? 
+//        if(mCurIndex == 0) return v;
         vp.setCurrentItem(mCurIndex);
         vp.setOnPageChangeListener(new OnPageChangeListener() {
 			private int currentPage = 0;
@@ -460,27 +457,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), true);
 				}
-				
-//				List<String>listUrl = getImageUrls(detail);
-//				if(listUrl != null && listUrl.size() > 0){
-//					HorizontalListView glDetail = (HorizontalListView) v.findViewById(R.id.glDetail);
-//					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
-//					glDetail.setOnTouchListener(GoodDetailFragment.this);
-//					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-//	
-//						@Override
-//						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-//							if(galleryReturned){
-//								Bundle bundle = createArguments(null, null);
-//								bundle.putInt("postIndex", arg2);
-//								bundle.putSerializable("goodsDetail", detail);
-//								galleryReturned = false;
-//								pushFragment(new BigGalleryFragment(), bundle);		
-//							}
-//						}
-//					});
-//				}
-
 			}
 			
 			public void onPageScrolled(int arg0, float arg1, int arg2) {
@@ -492,22 +468,33 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				
 				List<String>listUrl = getImageUrls(detail);
 				if(listUrl != null && listUrl.size() > 0){
-					HorizontalListView glDetail = (HorizontalListView) v.findViewById(R.id.glDetail);
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
-					glDetail.setOnTouchListener(GoodDetailFragment.this);
-					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	
-						@Override
-						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-							if(galleryReturned){
-								Bundle bundle = createArguments(null, null);
-								bundle.putInt("postIndex", arg2);
-								bundle.putSerializable("goodsDetail", detail);
-								galleryReturned = false;
-								pushFragment(new BigGalleryFragment(), bundle);		
-							}
+					ViewGroup currentVG = (ViewGroup)getPage(currentPage);
+					if(currentVG != null){
+						HorizontalListView glDetail = (HorizontalListView) currentVG.findViewById(R.id.glDetail);
+						VadImageAdapter adapter = (VadImageAdapter)glDetail.getAdapter();
+						if(adapter != null){
+							adapter.setContent(listUrl);
+							adapter.notifyDataSetChanged();
+						}else{
+							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
 						}
-					});
+	//					
+						glDetail.setOnTouchListener(GoodDetailFragment.this);
+						
+						glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+		
+							@Override
+							public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
+								if(galleryReturned){
+									Bundle bundle = createArguments(null, null);
+									bundle.putInt("postIndex", arg2);
+									bundle.putSerializable("goodsDetail", detail);
+									galleryReturned = false;
+									pushFragment(new BigGalleryFragment(), bundle);		
+								}
+							}
+						});
+					}
 				}				
 			}
 		});
@@ -686,6 +673,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
+		
 		if(this.getView() == null) return;
 		if(useRoot)
 			contentView = contentView.getRootView();
@@ -765,14 +753,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 							}
 						}
 					});
-				}else{
-					for(int i = 0; i < listUrl.size(); ++ i){
-						listUrl.set(i, "");
-					}
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
 				}
-//				glDetail.setSelection(adapter.getCount() > 1 ? 1 : 0);
-				
 			}
 
 		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
