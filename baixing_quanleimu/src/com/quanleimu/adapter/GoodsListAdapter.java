@@ -277,12 +277,13 @@ public class GoodsListAdapter extends BaseAdapter {
 			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				
-			if(QuanleimuApplication.isTextMode()){
+			boolean showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
+			if(!showImage){
 				holder.ivInfo.setVisibility(View.GONE);
 			}
 			
 //			lp.addRule(RelativeLayout.ALIGN_PARENT_LEFT);
-			if(!QuanleimuApplication.isTextMode()){
+			if(showImage){
 				
 				List<String> listUrlsToCancel = new ArrayList<String>();
 				
