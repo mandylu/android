@@ -180,12 +180,15 @@ public class KeepLiveTest extends BaixingTestCase {
 					oldCateName = v.getText();
 					postAutoEnterData();
 					TimeUnit.SECONDS.sleep(1);
-					postSend(false);
+					if (!postSend(false)) {
+						lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+						Log.i(LOG_TAG, "POST Category1:" + oldCateName + " ERROR");
+					}
 					afterPostSend();
 					if (!checkPostSuccess(true)) {
 						lockStatus(SCREEN_SAVE_LOCK_FILE, "");
 						postErrors += "POST Category:" + oldCateName + " ERROR\n";
-						Log.i(LOG_TAG, "POST Category:" + oldCateName + " ERROR");
+						Log.i(LOG_TAG, "POST Category2:" + oldCateName + " ERROR");
 					}
 				} else {
 					afterPostSend();
@@ -214,7 +217,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		scrollTop(4, AD_VIEWLIST_ID);
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
-			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0));
+			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;
 			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
 			assertNotNull(openAdByIndex(rndIndex));
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
@@ -228,7 +231,7 @@ public class KeepLiveTest extends BaixingTestCase {
 			adViewPicTouch();
 			showNextView(AD_DETAILVIEW_ID);
 			goBack(true);
-			scrollTop((int) (index / 6), AD_VIEWLIST_ID);
+			scrollTop((int) (lastAdNum / 6), AD_VIEWLIST_ID);
 		}
 		goBack(true);
 	}

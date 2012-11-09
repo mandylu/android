@@ -216,12 +216,20 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return null;
 	}
 	
-	public BXTextViewElement findTextMetaByIndex(String listViewId, int index) throws Exception {
-		return findTextMetaByIndex(listViewId, index, null);
+	public BXTextViewElement findTextMetaByIndex(int index) throws Exception {
+		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, null);
+	}
+	
+	public BXTextViewElement findTextMetaByIndex(int index, String displayName) throws Exception {
+		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, displayName);
+	}
+	
+	public BXTextViewElement findTextMetaByIndex(String listItemId, int index) throws Exception {
+		return findTextMetaByIndex(listItemId, index, null);
 	}
 
-	public BXTextViewElement findTextMetaByIndex(String listViewId, int index, String displayName) throws Exception {
-		ViewGroupElement dv = findElementById(listViewId, index, ViewGroupElement.class);
+	public BXTextViewElement findTextMetaByIndex(String listItemId, int index, String displayName) throws Exception {
+		ViewGroupElement dv = findElementById(listItemId, index, ViewGroupElement.class);
 		Log.i(LOG_TAG, "setOtherMetaByName:" + index);
 		if (dv != null) {
 			Log.i(LOG_TAG, "setOtherMetaByName:" + index + POST_META_EDIT_ITEM_ID);
@@ -260,7 +268,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//assertNotNull(dtv);
 		while(index < 20) {
 			try {
-				TextViewElement tv = findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index++, displayName);
+				TextViewElement tv = findTextMetaByIndex(index++, displayName);
 				if (tv != null) {
 					tv.setText(value);
 					TimeUnit.SECONDS.sleep(1);
@@ -398,7 +406,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 	
 	public void postAutoEnterData() throws Exception {
 		int index = 0;
-		int loop = 0;
 		String value = "";
 		class RandomHan {
 		    private Random ran = new Random();
@@ -411,7 +418,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		RandomHan han = new RandomHan();
 		while(index < 20) {
 			try {
-				BXTextViewElement tv = findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index++);
+				BXTextViewElement tv = findTextMetaByIndex(index++);
 				if (tv != null) {
 					if (tv.getText().length() > 0) continue;
 					if(tv.getInputType() == (
@@ -428,10 +435,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 					tv.setText(value);
 					TimeUnit.SECONDS.sleep(1);
-					continue;
 				}
 			} catch (IndexOutOfBoundsException e) {
-				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
+				Log.i(LOG_TAG, "findTextMetaByIndex:IndexOutOfBoundsException" + index);
 				/*if (loop++ >= 5) break;
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
@@ -440,7 +446,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}
 		index = 0;
-		while(index < 20) {
+		while(index < 10) {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
 				
@@ -448,19 +454,28 @@ public class BaixingTestCase extends BxBaseTestCase {
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 					dv.doClick();
 					TimeUnit.SECONDS.sleep(2);
-					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) == null
-						&& findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class) != null) {
+					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) == null) {
+						ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 						selectMetaByIndex(0, false);
 						TimeUnit.SECONDS.sleep(2);
-						if (findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class) != null) {
-							postOtherDone();
-							TimeUnit.SECONDS.sleep(1);
+						ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+						if (lv2 != null) {
+							if (lv.equals(lv2)) {
+								postOtherDone();
+								TimeUnit.SECONDS.sleep(1);
+							} else {
+								selectMetaByIndex(0, false);
+								TimeUnit.SECONDS.sleep(2);
+							}
 						}
 					}
-					continue;
 				}
-			} catch (IndexOutOfBoundsException ex) {
-				Log.i(LOG_TAG, "setOtherMetaByName:postAutoEnterData" + index + ":doClick");
+			} catch (IndexOutOfBoundsException e) {
+				Log.i(LOG_TAG, "findSelectMetaByIndex:IndexOutOfBoundsException" + index);
+				/*if (loop++ >= 5) break;
+				index = 0;
+				ScrollViewElement lv = getPostScrollView();
+				lv.scrollToNextScreen();*/
 				break;
 			}
 		}
@@ -476,7 +491,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (eld == null) return false;
 		eld.doClick();
 		//waitForHideMsgbox(10 * 1000);
-		return waitForSubTexts("发布成功@重复", 3000);
+		return waitForSubTexts("发布成功@重复", 5000);
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
@@ -490,6 +505,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (gv != null) {
 			if (deleted) {
 				deleteAdOnView(false);
+				deleteAllAds();
 			} else {
 				goBack();
 			}
@@ -606,9 +622,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 			TimeUnit.SECONDS.sleep(1);
 		}
 		ViewGroupElement avi = null;
-		while(indexSize > 0) {
+		int loop = index % indexSize;
+		while(loop >= 0) {
 			try {
-				avi = findElementById(AD_VIEWLIST_MARK_ID, index % (indexSize--), ViewGroupElement.class);
+				avi = findElementById(AD_VIEWLIST_MARK_ID, loop--, ViewGroupElement.class);
 				if (avi != null) {
 					ViewElement v = avi.findElementById(AD_VIEWLIST_ITEM_TITLE_ID);
 					if (v == null) {
@@ -624,6 +641,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 					avi.doClick();
 					TimeUnit.SECONDS.sleep(1);
+					Log.i(LOG_TAG, "Start do Rand Ad.index openAdByIndex:" + loop + "pageSize:" + pageSize);
+					//avl = findElementById(viewListId, AbsListViewElement.class);
+					//if (avl == null) goBack();
 					break;
 				}
 			} catch (IndexOutOfBoundsException ex) {}

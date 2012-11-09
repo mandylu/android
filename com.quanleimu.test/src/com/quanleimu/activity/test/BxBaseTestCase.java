@@ -645,7 +645,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		String[] tt = texts.split("@");
 		for(int i = 0; i < tt.length; i++) {
 			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
-			if (!textViews.isEmpty()) return true;
+			if (textViews != null && !textViews.isEmpty()) return true;
 		}
 		return false;
 	}
