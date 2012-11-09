@@ -50,7 +50,7 @@ public class MobileConfig {
 		try {
 			return json.getBoolean("trackFlag");
 		} catch (JSONException e) {
-			return false;
+			return true;//默认记录
 		}
 	}
 	
