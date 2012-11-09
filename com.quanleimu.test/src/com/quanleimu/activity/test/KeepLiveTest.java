@@ -214,6 +214,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	private void doSecondCategory(int index) throws Exception {
 		openSecondCategoryByIndex(index);
 		int lastAdNum = doScrollView(AD_VIEWLIST_ID, 4);
+		
 		scrollTop(4, AD_VIEWLIST_ID);
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {

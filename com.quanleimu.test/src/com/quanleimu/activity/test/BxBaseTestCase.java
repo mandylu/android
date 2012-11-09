@@ -166,6 +166,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_SETTING_VIETTYPE_TEXT = "流量优化设置";
 	public static final String MY_SETTING_VIETTYPE_PIC_TEXT = "图片模式";
 	public static final String MY_SETTING_VIETTYPE_NO_PIC_TEXT = "省流量模式";
+	public static final String MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT = "是否切换到无图模式";
+	public static final String MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID = "否";
 	
 	//Msgbox Texts
 	public static final String MSGBOX_TITLE_TEXT = "提示";
@@ -646,6 +648,18 @@ public class BxBaseTestCase extends AthrunTestCase {
 		for(int i = 0; i < tt.length; i++) {
 			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
 			if (textViews != null && !textViews.isEmpty()) return true;
+		}
+		return false;
+	}
+	
+	boolean waitForMsgBox(String msg, String btnText, int timeout) throws Exception {
+		if (waitForSubText(msg, timeout)) {
+			ViewElement v = findElementByText(btnText, 0, true);
+			if (v != null) {
+				v.doClick();
+				SleepUtils.sleep(300);
+			}
+			return true;
 		}
 		return false;
 	}
