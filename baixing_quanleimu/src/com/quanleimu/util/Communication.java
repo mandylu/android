@@ -81,12 +81,12 @@ public class Communication implements Comparator<String> {
 
 	// 业务逻辑API URL
 	private static String getPostParameters(List<String> list) {
-		/*
+		/* 
 		 * if(MyApplication.udid.equals("") ||
 		 * MyApplication.version.equals("")){ getudid(); getversion(); }
 		 */
 		list.add("udid=" + Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext()));
-		list.add("version=" + QuanleimuApplication.version);
+		list.add("version=" + Util.getVersion(QuanleimuApplication.getApplication().getApplicationContext()));
 		list.add("api_key=" + apiKey);
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
