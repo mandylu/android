@@ -34,6 +34,7 @@ import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
@@ -46,6 +47,7 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.RelativeLayout;
+import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -322,6 +324,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		for(int i = 0; i < pages.size(); ++ i){
 			if(pages.get(i).getTag() == null){
 				pages.get(i).setTag(index);
+				ViewParent parent = pages.get(i).getParent();
+				if(parent != null){
+					if(parent instanceof ViewGroup){
+						((ViewGroup)parent).removeView(pages.get(i));
+					}else{
+						break;
+					}
+					Log.d("has a parent", "has parent************************************************************************");
+				}
 				return pages.get(i);
 			}
 		}
@@ -338,6 +349,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //				glDetail.setVisibility(View.GONE);
 				glDetail.setAdapter(null);
 				pages.get(i).setTag(null);
+				if(pages.get(i) instanceof ScrollView){
+					((ScrollView)pages.get(i)).scrollTo(0, 0);
+				}
 			}
 		}
 	}
@@ -1654,8 +1668,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
-		title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
-				this.mListLoader.getGoodsList().getData().size();
+		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
+			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
+					this.mListLoader.getGoodsList().getData().size();			
+		}
 		title.m_visible = true;
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
@@ -1683,21 +1699,23 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		
 		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);
-		String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
-		if (dateV != null)
-		{
-			try {
-				long timeL = Long.parseLong(dateV) * 1000;
-				createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
-			}
-			catch(Throwable t)
+		if(detail != null){
+			String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
+			if (dateV != null)
 			{
-				createTimeView.setText("");
+				try {
+					long timeL = Long.parseLong(dateV) * 1000;
+					createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
+				}
+				catch(Throwable t)
+				{
+					createTimeView.setText("");
+				}
 			}
+			
+			TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
+			viewTimes.setText(detail.getValueByKey("count") + "次查看");
 		}
-		
-		TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
-		viewTimes.setText(detail.getValueByKey("count") + "次查看");
 	}
 	
 	@Override
