@@ -77,7 +77,7 @@
 
     <string-array name="item_flow_optimize">
         <item>图片模式</item>
-        <item>省流量模式</item>
+        <item>2G/3G网络下列表无图</item>
     </string-array>
 
     <string-array name="item_operate_favorite_history">

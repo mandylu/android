@@ -119,7 +119,8 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         }
 
         TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
-        flowOptimizeTw.setText(QuanleimuApplication.isTextMode() ? "省流量模式" : "图片模式");
+        String res = getResources().getStringArray(R.array.item_flow_optimize)[QuanleimuApplication.isTextMode() ? 1 : 0];;
+        flowOptimizeTw.setText(res);
 
     }
 
@@ -344,7 +345,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                         QuanleimuApplication.setTextMode(i == 1);
                         refreshUI(getView());
                         dialog.dismiss();
-                        String tip = (i == 1) ? "省流量模式" : "图片模式";
+                        String tip =getResources().getStringArray(R.array.item_flow_optimize)[i];
                         Toast.makeText(getActivity(), "已切换至" + tip, 1).show();
                     }
                 })
