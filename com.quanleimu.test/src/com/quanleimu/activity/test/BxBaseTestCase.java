@@ -571,7 +571,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void goBack(boolean force) throws Exception {
-		ViewElement iv = findElementById(BACK_BUTTON_ID);
+		ViewElement iv = null;
+		try {
+			iv = findElementById(BACK_BUTTON_ID);
+		} catch (Exception ex) {
+		}
 		if (!force) assertNotNull(iv);
 		if (iv != null) {
 			iv.doClick();

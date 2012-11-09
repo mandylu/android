@@ -9,7 +9,7 @@ DIR="$(cd "$(dirname "$0")" && pwd)";
 usage(){
 	echo "Usage: $0 (port|realDeviceName) \".class$function\" run_log [rebuild_baixing_pkg]"
 	echo "	sample1: testOne.sh 5580 \".KeepLiveTest#runPost\" run_post"
-	echo "	sample2: testOne.sh 5580 \"MainActivityTest\" run_main"
+	echo "	sample2: testOne.sh 5580 \".MainActivityTest\" run_main"
 	echo "	sample3: testOne.sh 5580 \"\" run_all"
 	echo "	sample4: testOne.sh 5580 \".KeepLiveTest#runPost\" run_post no"
 	echo "	sample5: testOne.sh 015d18844854041c \".KeepLiveTest#runPost\" run_post"

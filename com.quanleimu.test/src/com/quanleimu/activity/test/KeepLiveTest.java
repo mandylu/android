@@ -48,9 +48,9 @@ public class KeepLiveTest extends BaixingTestCase {
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		//{"SELECT", "供求", "招聘"},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "招聘职位", "招聘职位测试标题"},
+		{"TITLE", "补充说明", "招聘职位测试标题"},
 		{"TEXT", "工资", "500"},
-		{"SELECT", "工作地点", "奉贤,全部"},
+		//{"SELECT", "工作地点", "奉贤,全部"},
 		//{"SELECT", "发布人", "公司直招"},
 		//{"MULTISELECT", "入职前交费项", "体检费,押金,伙食费"},
 		//{"SELECT", "入职前需交费", "无需缴纳"},
@@ -61,9 +61,9 @@ public class KeepLiveTest extends BaixingTestCase {
 		{"CATEGORY", "4", "演员"}, //兼职招聘
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "标题", "兼职测试演员"},
+		{"TITLE", "补充说明", "兼职测试演员"},
 		{"TEXT", "工资", "50"},
-		{"SELECT", "工作地点", "宝山,全部"}
+		//{"SELECT", "工作地点", "宝山,全部"}
 		//{"SELECT", "发布人", "职业介绍"}
 	};
 	private static String postDataJianzhiJianli[][] = {
