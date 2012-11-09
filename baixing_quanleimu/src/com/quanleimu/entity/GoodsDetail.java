@@ -168,7 +168,7 @@ public class GoodsDetail implements Serializable{
 //		EDATAKEYS e =  getEnumByString(key);
 //		if(e == null) return;
 		if(value != null && !value.equals("")){
-			String strDecoded = value.replaceAll("&amp;", "&");
+			String strDecoded = value.replaceAll("&amp;", "&").replace("&#039;", "'");
 			data.put(key, strDecoded);
 		}
 			
