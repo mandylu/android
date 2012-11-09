@@ -70,8 +70,8 @@ public class Communication implements Comparator<String> {
 	}
 	
 	public static String getApiUrl(String apiName, List<String> parameters) {
-
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
+		Log.d("Communication", url);
 		return url;
 	}
 
@@ -90,7 +90,7 @@ public class Communication implements Comparator<String> {
 		list.add("api_key=" + apiKey);
 		list.add("channel=" + QuanleimuApplication.channelId);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("uid=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
+		list.add("userId=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
 		if(QuanleimuApplication.getApplication() != null){
 			list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
 		}
