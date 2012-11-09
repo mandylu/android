@@ -70,6 +70,15 @@ public class MobileConfig {
 			return 0l;
 		}
 	}
+
+    public boolean hasNewVersion() {
+        try {
+            String serverVersion = json.getString("serverVersion");
+            return (Version.compare(serverVersion, QuanleimuApplication.version) == 1);
+        } catch (JSONException e) {
+            return false;
+        }
+    }
 	
 	public void syncMobileConfig() {
 		new Thread(new UpdateMobileConfigThread()).start();				

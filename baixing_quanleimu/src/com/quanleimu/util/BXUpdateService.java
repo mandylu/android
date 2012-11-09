@@ -57,10 +57,10 @@ public class BXUpdateService extends Service {
         titleId = intent.getIntExtra("titleId", 0);
         apkUrl = intent.getStringExtra("apkUrl");
         //创建文件
-        if (android.os.Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState())) {
-            updateDir = new File(Environment.getExternalStorageDirectory(), apkUrl);
-            updateFile = new File(updateDir.getPath(), getResources().getString(titleId) + ".apk");
-        }
+//        if (android.os.Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState())) {
+            updateDir = new File(Environment.getExternalStorageDirectory(), "/tmp/baixing_tmp/");
+            updateFile = new File(updateDir.getPath(),  "bababa.apk");
+//        }
 
         this.updateNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         this.updateNotification = new Notification();
@@ -92,7 +92,7 @@ public class BXUpdateService extends Service {
                     updateDir.mkdirs();
                 }
                 if (!updateFile.exists()) {
-                    updateFile.createNewFile();
+//                    updateFile.createNewFile();
                 }
                 //下载函数，以QQ为例子
                 //增加权限<uses-permission android:name="android.permission.INTERNET">;

@@ -13,6 +13,7 @@ import android.content.pm.PackageManager.NameNotFoundException;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 
@@ -24,12 +25,8 @@ import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
+import com.quanleimu.util.*;
 import com.quanleimu.util.Communication.BXHttpException;
-import com.quanleimu.util.Helper;
-import com.quanleimu.util.LocationService;
-import com.quanleimu.util.MobileConfig;
-import com.quanleimu.util.Util;
 
 public class SplashJob {
 
@@ -78,6 +75,10 @@ public class SplashJob {
 		new Thread(new ReadCityListThread()).start();
 		new Thread(new ReadInfoThread()).start();
 		new Thread(new ReadCateListThread()).start();
+
+        if (MobileConfig.getInstance().hasNewVersion()) {
+            UpdateHelper.getInstance().checkNewVersion(parentActivity);
+        }
 	}
 	
 	

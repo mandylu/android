@@ -40,10 +40,7 @@ import org.json.JSONObject;
 
 public class SetMainFragment extends BaseFragment implements View.OnClickListener {
 
-    private final int MSG_NETWORK_ERROR = 0;
-    private final int MSG_DOWNLOAD_APP = 1;
-    private final int MSG_INSTALL_APP = 3;
-    private final int MSG_HAS_NEW_VERSION = 4;
+
 
     private ProgressDialog pd;
 
@@ -191,7 +188,11 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 
                 break;
             case R.id.setCheckUpdate:
-                checkNewVersion();
+//                Intent updateIntent =new Intent(getAppContext(), BXUpdateService.class);
+//                updateIntent.putExtra("titleId",R.string.app_name);
+//                updateIntent.putExtra("apkUrl", "3");
+//                getAppContext().startService(updateIntent);
+                UpdateHelper.getInstance().checkNewVersion(getActivity());
                 Tracker.getInstance().event(BxEvent.SETTINGS_CHECKUPDATE).end();
                 break;
             case R.id.setAbout:
@@ -289,49 +290,6 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
  */
     }
 
-    @Override
-    protected void handleMessage(Message msg, Activity activity, View rootView) {
-        super.handleMessage(msg, activity, rootView);
-
-        switch (msg.what) {
-            case MSG_NETWORK_ERROR:
-                Toast.makeText(getActivity(), msg.obj.toString(), 1).show();
-                break;
-            case MSG_DOWNLOAD_APP:
-                updateAppDownload(msg.obj.toString());
-                break;
-            case MSG_INSTALL_APP:
-                updateAppInstall();
-                break;
-            case MSG_HAS_NEW_VERSION:
-                final String apkUrl = msg.obj.toString();
-
-                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-                builder.setTitle("检查更新")
-                        .setMessage("当前版本: " + QuanleimuApplication.version
-                                + "\n发现新版本: " + serverVersion
-                                + "\n是否更新？")
-                        .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialogInterface, int i) {
-                                sendMessage(MSG_DOWNLOAD_APP, apkUrl);
-                            }
-                        })
-                        .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int id) {
-                                dialog.dismiss();
-                            }
-                        }).create().show();
-                break;
-        }
-
-        if (pd != null) {
-            pd.hide();
-        }
-
-    }
-
     /**
      * 省流量设置
      */
@@ -357,59 +315,6 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 }).create().show();
     }
 
-    /**
-     * 检查版本更新
-     */
-    private void checkNewVersion() {
-        ParameterHolder params = new ParameterHolder();
-        params.addParameter("clientVersion", QuanleimuApplication.version);
 
-        pd = ProgressDialog.show(SetMainFragment.this.getActivity(), "提示", "请稍候...");
-        pd.show();
-        Communication.executeAsyncGetTask("check_version", params, new Communication.CommandListener() {
-
-            @Override
-            public void onServerResponse(String serverMessage) {
-                try {
-                    JSONObject respond = new JSONObject(serverMessage);
-                    JSONObject error = respond.getJSONObject("error");
-
-                    serverVersion = respond.getString("serverVersion");
-
-                    if (!"0".equals(error.getString("code"))) {
-                        sendMessage(MSG_NETWORK_ERROR, error.getString("message"));
-                    } else {
-                        if (respond.getBoolean("hasNew")) {
-                            sendMessage(MSG_HAS_NEW_VERSION, respond.getString("apkUrl"));
-                        } else {
-                            sendMessage(MSG_NETWORK_ERROR, "已经安装最新版本");
-                        }
-                    }
-                } catch (JSONException e) {
-                    sendMessage(MSG_NETWORK_ERROR, "网络异常");
-                }
-
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                sendMessage(MSG_NETWORK_ERROR, "网络异常");
-            }
-        });
-    }
-
-    private void updateAppDownload(String apkUrl) {
-        //开启更新服务UpdateService
-        //这里为了把update更好模块化，可以传一些updateService依赖的值
-        //如布局ID，资源ID，动态获取的标题,这里以app_name为例
-        Intent updateIntent =new Intent(getAppContext(), BXUpdateService.class);
-        updateIntent.putExtra("titleId",R.string.app_name);
-        updateIntent.putExtra("apkUrl", apkUrl);
-        getAppContext().startService(updateIntent);
-    }
-
-    private void updateAppInstall() {
-
-    }
 
 }
