@@ -38,6 +38,7 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.ViewUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
@@ -222,6 +223,7 @@ public class SearchFragment extends BaseFragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							QuanleimuApplication.setTextMode(true);
+							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
 						

@@ -62,6 +62,7 @@
 
     <string name="label_flow_optimize">流量优化设置</string>
     <string name="label_warning_flow_optimize">是否切换到无图模式以节省流量？</string>
+    <string name="label_warning_switch_succed">切换成功！</string>
 
 
 

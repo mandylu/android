@@ -27,6 +27,7 @@ import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Tracker;
+import com.quanleimu.util.ViewUtil;
 
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
 	
@@ -126,6 +127,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							QuanleimuApplication.setTextMode(true);
+							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
 						
