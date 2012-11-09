@@ -9,6 +9,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Pair;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.util.Communication.BXHttpException;
@@ -79,6 +80,13 @@ public class MobileConfig {
 		@Override
 		public void run() {
 			String apiName = "mobile_config";
+			Pair<Long, Object> p = 
+					Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
+			if(p != null){
+				if(System.currentTimeMillis() / 1000 - p.first <= 7 * 24 * 3600){
+					return;
+				}
+			}
 			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
 				String content = Communication.getDataByUrl(url, true);
