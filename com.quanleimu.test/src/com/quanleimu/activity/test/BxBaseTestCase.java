@@ -639,6 +639,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	boolean waitForSubText(String text, int timeout) {
 		ViewFinder viewFinder = new ViewFinder();
 		ArrayList<TextView> textViews = viewFinder.findViewsByText(text, false, timeout);
+		if (textViews == null) return false;
 		return textViews.isEmpty() ? false : true;
 	}
 	

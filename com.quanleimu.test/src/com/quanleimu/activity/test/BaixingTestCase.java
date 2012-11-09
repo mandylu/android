@@ -548,12 +548,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openSecondCategoryByIndex(int index) throws Exception {
-		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 		AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(index,
 				ViewGroupElement.class);
 		subCatView.doClick();
+		TimeUnit.SECONDS.sleep(1);
+		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 		waitForHideMsgbox(10000);
 	}
 	
