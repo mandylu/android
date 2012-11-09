@@ -196,7 +196,7 @@ public class ForgetPassFragment extends BaseFragment {
                     if (!"0".equals(obj.getString("code"))) {
                         sendMessage(MSG_POST_ERROR, obj.getString("message"));
                     } else  {
-                        sendMessage(MSG_POST_FINISH, null);
+                        sendMessage(MSG_POST_FINISH, obj.getString("message"));
                     }
                 } catch (JSONException e) {
                     sendMessage(MSG_POST_ERROR, "网络异常");
@@ -251,6 +251,7 @@ public class ForgetPassFragment extends BaseFragment {
                 break;
             case MSG_POST_FINISH:
                 Toast.makeText(getActivity(), showMsg, 1).show();
+                finishFragment();
               //tracker
                 Tracker.getInstance()
                 .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
