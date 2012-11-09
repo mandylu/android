@@ -435,20 +435,28 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		if(null == listener || locationFetchListeners.contains(listener))
 			return false;
 		
+		locationFetchListeners.add(listener);		
+		LocationService.getInstance().addLocationListener(context.get(), this);
+		
 		final BXLocation curLocation = getCurrentPosition(true);
 		if(null == curLocation){
 			//listener.onLocationFetched(null);
-			locationFetchListeners.add(listener);
-			
-			LocationService.getInstance().addLocationListener(context.get(), this);
+//			Log.d("currentlocation", "xixi,  curLocation is null");
+//			locationFetchListeners.add(listener);
+//			
+//			LocationService.getInstance().addLocationListener(context.get(), this);
 			
 			return false;
 		}		
 
 		listener.onLocationFetched(curLocation);
-		
-		if (curLocation.geocoded)
+
+		if (curLocation.geocoded){
+//			Log.d("currentlocation", "xixi, curLocation.geocoded");
 			listener.onGeocodedLocationFetched(curLocation);
+		}else{
+//			Log.d("currentlocation", "xixi, curLocation not geocoded");
+		}
 		
 		return true;
 	}
@@ -683,6 +691,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			
 			@Override
 			public void onRgcUpdated(BXLocation location) {
+//				Log.d("currentlocation", "xixi, onRgcUpdated");
 				if (null != location) {
 					setLocation(location);
 				}
@@ -698,6 +707,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			listener.onLocationFetched(newLocation);
 		}
 		
-		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
+//		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
 	}
 }
