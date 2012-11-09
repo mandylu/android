@@ -335,25 +335,41 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 	}
 	
-	public void selectMetaByIndex(int index) throws Exception {
-		selectMetaByIndex(index, true);
+	public ViewElement selectMetaByIndex(int index) throws Exception {
+		return selectMetaByIndex(index, true);
 	}
 	
-	public void selectMetaByIndex(int index, boolean asserted) throws Exception {
-		selectMetaByIndex(index, POST_META_LISTVIEW_ID, asserted);
+	public ViewElement selectMetaByIndex(int index, boolean asserted) throws Exception {
+		return selectMetaByIndex(index, POST_META_LISTVIEW_ID, asserted);
 	}
 	
-	public void selectMetaByIndex(int index, String listViewId, boolean asserted) throws Exception {
+	public ViewElement selectMetaByIndex(int index, String listViewId, boolean asserted) throws Exception {
 		AbsListViewElement listView = findElementById(listViewId,
 				AbsListViewElement.class);
 		if (asserted) assertNotNull(listView);
-		if (listView == null) return;
-		ViewGroupElement v = listView.getChildByIndex(index,
-				ViewGroupElement.class);
+		if (listView == null) return null;
+		ViewGroupElement v = null;
+		try {
+			v = listView.getChildByIndex(index, ViewGroupElement.class);
+		} catch (IndexOutOfBoundsException e) {}
 		if (asserted) assertNotNull(v);
-		if (v == null) return;
+		if (v == null) return null;
 		v.doClick();
 		TimeUnit.SECONDS.sleep(1);
+		return v;
+	}
+	
+	public void selectAutoMeta() throws Exception {
+		int i = 2;
+		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+		while(i >= 0) {
+			ViewElement v = selectMetaByIndex(i--, false);
+			ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+			if (v == null || lv.equals(lv2)) {
+				continue;
+			}
+			break;
+		}
 	}
 	
 	public void postOtherDone() throws Exception {
@@ -456,7 +472,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 					TimeUnit.SECONDS.sleep(2);
 					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) == null) {
 						ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
-						selectMetaByIndex(0, false);
+						selectAutoMeta();
 						TimeUnit.SECONDS.sleep(2);
 						ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 						if (lv2 != null) {
@@ -464,7 +480,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 								postOtherDone();
 								TimeUnit.SECONDS.sleep(1);
 							} else {
-								selectMetaByIndex(0, false);
+								ViewGroupElement lv3 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+								selectAutoMeta();
+								if (lv3 != null && lv2.equals(lv3)) {
+									selectAutoMeta();
+								}
 								TimeUnit.SECONDS.sleep(2);
 							}
 						}
