@@ -70,18 +70,18 @@ public class KeepLiveTest extends BaixingTestCase {
 		{"CATEGORY", "5", "兼职求职简历"}, //求职简历
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"SELECT", "现居住地", "宝山,全部"},
+		//{"SELECT", "现居住地", "宝山,全部"},
 		{"MULTISELECT", "求职意向", "模特,网站,摄影"},
 		{"TEXT", "姓名", "测试员R"},
 		//{"SELECT", "发布人", "个人"},
-		{"TITLE", "简历标题", "兼职求职测试"}
+		{"TITLE", "工作经历", "兼职求职测试"}
 	};
 	private static String postDataXunren[][] = {
 		{"CATEGORY", "6", "寻人/寻物"}, //交友活动
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "标题", "这时一个寻物的测试"},
-		{"SELECT", "地点", "宝山,全部"}
+		{"TITLE", "描述", "这时一个寻物的测试"},
+		//{"SELECT", "地点", "宝山,全部"}
 	};
 	private static String postDataChongwuyongpin[][] = {
 		{"CATEGORY", "7", "宠物用品/食品"}, //宠物
