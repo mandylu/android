@@ -83,7 +83,7 @@ public class MobileConfig {
 			Pair<Long, Object> p = 
 					Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
 			if(p != null){
-				if(System.currentTimeMillis() / 1000 - p.first <= 7 * 24 * 3600){
+				if(System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
 					return;
 				}
 			}
