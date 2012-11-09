@@ -422,7 +422,7 @@ public class SearchFragment extends BaseFragment {
 		    parameters.add("cityEnglishName=" + URLEncoder.encode(QuanleimuApplication.getApplication().getCityEnglishName()));
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
-				String json = Communication.getDataByUrl(apiUrl, false);
+				String json = Communication.getDataByUrl(apiUrl, true);
 				categoryResultCountList = JsonUtil
 						.parseAdSearchCategoryCountResult(json);
 			} catch (Exception e) {
