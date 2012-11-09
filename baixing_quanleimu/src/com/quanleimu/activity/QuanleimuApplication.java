@@ -29,6 +29,7 @@ import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.imageCache.LazyImageLoader;
 import com.quanleimu.util.BXDatabaseHelper;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
@@ -42,7 +43,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public static WeakReference<Context> context;	
 	private static LazyImageLoader lazyImageLoader;
 	public static boolean update = false;
-	public static boolean textMode = false;
+	private static boolean textMode = false;
+	private static boolean needNotifiySwitchMode = true;
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
@@ -128,6 +130,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	
 	public static void setTextMode(boolean tMode){
 		QuanleimuApplication.textMode = tMode;
+		QuanleimuApplication.needNotifiySwitchMode = false;
 		
 		if(null == preferences){
 			preferences = context.get() != null ? 
@@ -137,11 +140,17 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		
 		SharedPreferences.Editor editor = preferences.edit();
 		editor.putBoolean("isTextMode", tMode);
+		editor.putBoolean("needNotifyUser", false);
 		editor.commit();
 	}
 	
 	public static boolean isTextMode(){
 		return QuanleimuApplication.textMode;
+	}
+	
+	public static boolean needNotifySwitchMode()
+	{
+		return QuanleimuApplication.needNotifiySwitchMode;
 	}
 	
 	public static List<SecondStepCate> listUsualCates;
@@ -519,7 +528,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		if(null == preferences){
 			preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
 			textMode = preferences.getBoolean("isTextMode", false);
+			needNotifiySwitchMode = preferences.getBoolean("needNotifyUser", true);
 		}
+		
 		if(mDemoApp == null){
 			mDemoApp = new QuanleimuApplication();
 			if(context != null && context.get() != null){
