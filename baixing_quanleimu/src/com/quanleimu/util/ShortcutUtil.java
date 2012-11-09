@@ -83,6 +83,8 @@ public class ShortcutUtil
         Parcelable iconResource = Intent.ShortcutIconResource.fromContext(cx, R.drawable.app_icon);
         shortcut.putExtra(Intent.EXTRA_SHORTCUT_ICON_RESOURCE, iconResource);
 
+        delShortcut(cx);
+
         cx.sendBroadcast(shortcut);
     }
 
