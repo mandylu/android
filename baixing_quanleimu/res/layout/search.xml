@@ -71,8 +71,8 @@
 
         <ImageView
             android:id="@+id/imageView1"
-            android:layout_width="80dp"
-            android:layout_height="80dp"
+            android:layout_width="66dp"
+            android:layout_height="66dp"
             android:src="@drawable/icon_no_info" />
 		
         <TextView

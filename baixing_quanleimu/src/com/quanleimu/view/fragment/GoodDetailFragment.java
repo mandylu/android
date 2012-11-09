@@ -370,7 +370,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
-        mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_post_loading, o);
+        mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o);
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
         final int current = vp.getCurrentItem();
