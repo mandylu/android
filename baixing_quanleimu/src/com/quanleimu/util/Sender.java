@@ -196,7 +196,7 @@ public class Sender implements Runnable{
 				
 				boolean isQueueFull;
 				synchronized (queue) {
-					isQueueFull = queue.size()>10 ? true : false;
+					isQueueFull = queue.size()>10;
 				}
 				
 				while ((!isSendingReady() && !isQueueFull) || !hasMoreData) {//断网或者无数据
