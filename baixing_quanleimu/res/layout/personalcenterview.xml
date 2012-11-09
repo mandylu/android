@@ -57,7 +57,7 @@
 		         android:scrollbars="vertical"
 		         android:focusable="true" 
 				 android:divider="@drawable/list_divider"
-				 android:dividerHeight="1dp"
+				 android:dividerHeight="0dp"
 				 android:background="@color/bg_screen"
 		         android:layout_height="fill_parent"
 		         android:headerDividersEnabled="false"

@@ -1188,26 +1188,6 @@ public class Util {
 		return addr;  
 	}
 	
-	static public boolean JadgeConnection (Context context)throws Exception
-	{
-		
-		boolean a = false;
-		ConnectivityManager connManager = (ConnectivityManager)context.getSystemService(Context.CONNECTIVITY_SERVICE);
-		State mobile = connManager.getNetworkInfo(ConnectivityManager.TYPE_MOBILE).getState();
-		
-		State wifi = connManager.getNetworkInfo(ConnectivityManager.TYPE_WIFI).getState();
-		
-		if(mobile.toString().equals("CONNECTED") || wifi.toString().equals("CONNECTED"))
-		{
-			a = true;
-		}
-		else 
-		{
-			a = false;
-		}
-		return a;
-	}
-	
 	//GSM和CDMA手机定位
 //	private boolean goGsm = true;
 //	private boolean running = true;

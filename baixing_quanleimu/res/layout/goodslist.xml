@@ -23,7 +23,7 @@
             android:layout_height="fill_parent"
             android:divider="@drawable/list_divider"
             android:dividerHeight="0dp"
-            android:fastScrollEnabled="false"
+            android:fastScrollEnabled="true"
             android:focusable="true"
             android:footerDividersEnabled="true"
             android:headerDividersEnabled="false"

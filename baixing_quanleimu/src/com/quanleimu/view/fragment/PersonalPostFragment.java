@@ -113,7 +113,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         v.findViewById(R.id.linearType).setVisibility(View.GONE);  // 禁用掉 已发布、审核中、已删除 tabView，后续删除
 		
 		try {
-			if (Util.JadgeConnection(this.getActivity()) == false) {
+			if (!Communication.isNetworkActive()) {
 				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			}
 		} catch (Exception e) {
