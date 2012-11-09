@@ -18,7 +18,6 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
-import android.widget.TabHost;
 
 import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
@@ -28,7 +27,6 @@ import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
 import com.quanleimu.util.LocationService;
-import com.quanleimu.util.MobileConfig;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
@@ -37,11 +35,9 @@ import com.quanleimu.util.Util;
 import com.quanleimu.view.CustomizeTabHost;
 import com.quanleimu.view.CustomizeTabHost.TabIconRes;
 import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
-import com.quanleimu.view.fragment.CatMainFragment;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
-import com.quanleimu.view.fragment.SetMainFragment;
 import com.quanleimu.view.fragment.TalkFragment;
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
@@ -78,9 +74,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //			
 //			needClearViewStack = true;
 //			onNewView(new HomePageView(this, bundle));
-			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_MAINPAGE) break;
-			
-			pushFragment(new HomeFragment(), bundle, true);
+//			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_MAINPAGE) break;
+//			
+//			pushFragment(new HomeFragment(), bundle, true);
 			
 			break;
 		case ETAB_TYPE_CATEGORY:				
@@ -88,9 +84,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //			
 //			needClearViewStack = true;
 //			onNewView(new CateMainView(this));
-			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_CATEGORY) break;
-			
-			pushFragment(new CatMainFragment(), bundle, true);
+//			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_CATEGORY) break;
+//			
+//			pushFragment(new CatMainFragment(), bundle, true);
 			break;
 		case ETAB_TYPE_PUBLISH:
 //			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_PUBLISH)break;
@@ -101,9 +97,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //			onNewView(new GridCategoryView(this, bundle));
 //			
 			
-			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_PUBLISH) break;
-
-			this.pushFragment(new GridCateFragment(), bundle, false);
+//			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_PUBLISH) break;
+//
+//			this.pushFragment(new GridCateFragment(), bundle, false);
 			
 			
 			break;
@@ -114,9 +110,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 ////			onNewView(new PersonalCenterView(this, bundle));
 //			onNewView(new PersonalCenterEntryView(this, bundle));
 			
-			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_MINE) break;
-			
-			pushFragment(new PersonalInfoFragment(), bundle, true);
+//			if (fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_MINE) break;
+//			
+//			pushFragment(new PersonalInfoFragment(), bundle, true);
 			break;
 		case ETAB_TYPE_SETTING:
 //			if(currentView.getTabDef().m_tabSelected == BaseView.ETAB_TYPE.ETAB_TYPE_SETTING)break;
@@ -124,9 +120,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //			needClearViewStack = true;
 //			onNewView(new SetMainView(this));
 			
-			if(fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_SETTING)break;
-			
-			pushFragment(new SetMainFragment(), bundle, true);
+//			if(fm.getTabDef() != null && fm.getTabDef().m_tabSelected == BaseFragment.ETAB_TYPE.ETAB_TYPE_SETTING)break;
+//			
+//			pushFragment(new SetMainFragment(), bundle, true);
 			
 			break;			
 		}

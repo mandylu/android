@@ -5,6 +5,8 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -17,11 +19,13 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
 import com.quanleimu.activity.BaseFragment;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.Tracker;
 
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
@@ -96,7 +100,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 			return;
 		SecondStepCate secCate = cate.getChildren().get(arg2);
 		if (!isPost) {
-			Bundle bundle = createArguments(secCate.getName(), "返回");
+			final Bundle bundle = createArguments(secCate.getName(), "返回");
 			bundle.putString("categoryEnglishName", secCate.getEnglishName());
 			bundle.putString("siftresult", "");
 			if (requestCode != INVALID_REQUEST_CODE) {
@@ -104,7 +108,33 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 				finishFragment(requestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
-				pushFragment(new GetGoodFragment(), bundle);
+				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(R.string.dialog_title_info)
+					.setMessage(R.string.label_warning_flow_optimize)
+					.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							QuanleimuApplication.setTextMode(false);
+							pushFragment(new GetGoodFragment(), bundle);
+						}
+					})
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							QuanleimuApplication.setTextMode(true);
+							pushFragment(new GetGoodFragment(), bundle);
+						}
+						
+					}).create().show();
+				}
+				else
+				{
+					pushFragment(new GetGoodFragment(), bundle);
+				}
 			}
 		} else {
 			String names = secCate.englishName + "," + secCate.name;

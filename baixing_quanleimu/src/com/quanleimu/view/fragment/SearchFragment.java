@@ -5,7 +5,9 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -195,12 +197,41 @@ public class SearchFragment extends BaseFragment {
 					long arg3) {
 				SecondStepCate cate = (SecondStepCate) arg1.getTag();
 
-				Bundle bundle = new Bundle();
+				final Bundle bundle = new Bundle();
 				bundle.putString("searchContent", searchContent);
 				bundle.putString("actType", "search");
 				bundle.putString("name", "");
 				bundle.putString("categoryEnglishName", cate.getEnglishName());
-				pushFragment(new GetGoodFragment(), bundle);
+				
+				
+				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				{
+					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+					builder.setTitle(R.string.dialog_title_info)
+					.setMessage(R.string.label_warning_flow_optimize)
+					.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+						
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							QuanleimuApplication.setTextMode(false);
+							pushFragment(new GetGoodFragment(), bundle);
+						}
+					})
+					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							QuanleimuApplication.setTextMode(true);
+							pushFragment(new GetGoodFragment(), bundle);
+						}
+						
+					}).create().show();
+				}
+				else
+				{
+					pushFragment(new GetGoodFragment(), bundle);
+				}
+				
 			}
 		});
 		

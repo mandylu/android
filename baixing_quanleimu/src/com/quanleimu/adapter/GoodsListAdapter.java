@@ -54,6 +54,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	private Handler handler = null;
 	private int messageWhat = -1;
 	private boolean uiHold = false; 
+	private boolean showImage = true;
 	
 //	private RelativeLayout.LayoutParams lp = null;
 	
@@ -103,7 +104,12 @@ public class GoodsListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
-		
+		showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
+	}
+	
+	public void setImageVisible(boolean showImage)
+	{
+		this.showImage = showImage;
 	}
 
 	@Override
@@ -277,7 +283,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				
-			boolean showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
+//			boolean showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
 			if(!showImage){
 				holder.ivInfo.setVisibility(View.GONE);
 			}
