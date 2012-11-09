@@ -22,9 +22,9 @@ public class KeepLiveTest extends BaixingTestCase {
 		{"TEXT", "价格", "10020"}, //价格 （todo：价格不能超过N位）
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "标题", "物品交易标题家具"},
+		{"TITLE", "描述", "物品交易标题家具"},
 		//{"SELECT", "发布人", "个人"},
-		{"SELECT", "地点", "宝山,全部"}
+		//{"SELECT", "地点", "宝山,全部"}
 	};
 	private static String postDataQiecheyongpin[][] = {
 		{"CATEGORY", "1", "汽车用品"}, //车辆买卖， 汽车用品
@@ -40,8 +40,8 @@ public class KeepLiveTest extends BaixingTestCase {
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		//{"SELECT", "供求", "出租"},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "标题", "测试写字楼出租"},
-		{"SELECT", "地区", "宝山,全部"}
+		{"TITLE", "描述", "测试写字楼出租"},
+		//{"SELECT", "地区", "宝山,全部"}
 	};
 	private static String postDataQitazhaopin[][] = {
 		{"CATEGORY", "3", "其它招聘"}, //全职招聘
@@ -88,9 +88,9 @@ public class KeepLiveTest extends BaixingTestCase {
 		//{"SELECT", "供求", "出售"},
 		{"TEXT", "联系方式", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "标题", "食品用品测试标题宠物"},
+		{"TITLE", "补充说明", "食品用品测试标题宠物"},
 		//{"SELECT", "发布人", "个人"},
-		{"SELECT", "地点", "宝山,全部"}
+		//{"SELECT", "地点", "宝山,全部"}
 	};
 	private static String postDataLipindingzhi[][] = {
 		{"CATEGORY", "8", "礼品定制"}, //生活服务

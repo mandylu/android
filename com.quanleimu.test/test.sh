@@ -155,10 +155,10 @@ echo "START test"
 adb kill-server;
 adb start-server;
 
-create_emulator testemulator1 2;
+create_emulator testemulator1 2;  #cmd "android list" get 2.2 id = 2
 create_emulator testemulator2 2;
 #create_emulator testemulator3 2;
-#create_emulator testemulator4 2;
+#create_emulator testemulator4 8; #cmd "android list" get 4.1.2 id = 8
 
 build_pkg;
 
