@@ -25,6 +25,7 @@ public class Tracker {
 	private static final String TRACKER_DIR = "tracker_dir";
 
 	private int size;
+	private int threshold;
 	private String dataString = null;
 	private static Tracker instance = null;
 	public static Tracker getInstance()
@@ -41,6 +42,7 @@ public class Tracker {
 		context = QuanleimuApplication.getApplication().getApplicationContext();
 		dataString = "";
 		size = 0;
+		threshold = 100;
 		load();
 	}
 	
@@ -66,7 +68,7 @@ public class Tracker {
 	{
 		dataString += log.toJsonObj().toString() + ",";
 		size++;
-		if (size > 10) {//100 items,10 for testing
+		if (size > threshold) {//100 items,10 for testing
 			try {
 				Log.d("sender", "try to addLog");
 				Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
