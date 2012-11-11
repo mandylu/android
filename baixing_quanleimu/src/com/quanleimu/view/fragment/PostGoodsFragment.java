@@ -508,8 +508,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //	}
 
 	private boolean usercheck() {
-		if (user == null || user.getPhone() == null || user.getPhone().equals(""))
-			postResultFail("user does not exist!");
 		return (user != null && user.getPhone() != null && !user.getPhone().equals(""));
 //			doPost(true);
 //		}
