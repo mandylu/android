@@ -90,7 +90,7 @@ public class Tracker {
 				String absolutePath = Util.listFiles(context, TRACKER_DIR).get(0);
 				String oldString = new String(Util.loadData(absolutePath));
 				if (oldString != null) {
-					if (dataString.equals(""))
+					if (dataString.length() == 0)
 						dataString = oldString;
 					else
 						dataString += "," + oldString;
