@@ -32,7 +32,10 @@ import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 
 public class MultiLevelSelectionFragment extends BaseFragment {
+	private final static String[] munisipalities = {"北京", "上海", "重庆", "天津"};
+	
 	public static class MultiLevelItem extends Object implements Serializable {
+		
 		/**
 		 * 
 		 */
@@ -190,6 +193,14 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		}
 	
 	}
+	
+	private boolean isMunisipality(String name) {
+		for (String m : munisipalities) {
+			if (m.equals(name))
+				return true;
+		}
+		return false;
+	}
 
 	private void initContent(final boolean hasNextLevel){
 		final ListView lv = (ListView) getView().findViewById(R.id.post_other_list);
@@ -225,7 +236,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 					pushFragment(new SelectionSearchFragment(), bundle);
 					return;
 				}
-				if((position == 1 || position == 0 || position == 2) && adapter.getItem(position).toString().equals("全部")){
+				if ((position == 1 || position == 0 || position == 2) && adapter.getItem(position).toString().equals("全部")){
 					MultiLevelItem nItem = new MultiLevelItem();
 					nItem.id = MultiLevelSelectionFragment.this.id;
 					nItem.txt = nItem.id == null || nItem.id.equals("") ? 
@@ -240,12 +251,17 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 						MultiLevelItem item = adapter.getItem(position) instanceof BXPinyinSortItem ? 
 								(MultiLevelItem)((BXPinyinSortItem)adapter.getItem(position)).obj
 								: (MultiLevelItem)adapter.getItem(position);
-						Bundle bundle = createArguments(item.txt, null);
-						bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
-						bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
-						bundle.putString("metaId", item.id);
-						bundle.putString("selectedValue", selectedValue);
-						pushFragment(new MultiLevelSelectionFragment(), bundle);
+								
+						if (isMunisipality(item.txt)) { // TODO: levels:"sheng,city"时，直辖市没有下一级了。 @zhongjiawu
+							finishFragment(requestCode, item);
+						} else {
+							Bundle bundle = createArguments(item.txt, null);
+							bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+							bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
+							bundle.putString("metaId", item.id);
+							bundle.putString("selectedValue", selectedValue);
+							pushFragment(new MultiLevelSelectionFragment(), bundle);
+						}
 //					}
 				}
 				else{
