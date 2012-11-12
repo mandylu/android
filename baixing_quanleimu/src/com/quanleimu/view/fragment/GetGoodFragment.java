@@ -7,6 +7,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Log;
@@ -200,13 +201,20 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
 			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
-			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setAdapter(adapter);
+			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
 		}
 		else
 		{
-			showSimpleProgress();
+			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
+				
+				@Override
+				public void onCancel(DialogInterface dialog) {
+					goodsListLoader.cancelFetching();
+					finishFragment();
+				}
+			});
 			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 		}
 		

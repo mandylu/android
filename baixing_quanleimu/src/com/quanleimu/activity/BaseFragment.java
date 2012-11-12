@@ -8,16 +8,15 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentActivity;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.Menu;
-import android.view.MenuInflater;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
@@ -29,6 +28,7 @@ import android.widget.Toast;
 
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.view.fragment.CityChangeFragment;
@@ -36,7 +36,6 @@ import com.quanleimu.view.fragment.FeedbackFragment;
 import com.quanleimu.view.fragment.LoginFragment;
 import com.quanleimu.view.fragment.SetMainFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
-import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 /**
  * 
  * @author liuchong
@@ -670,6 +669,20 @@ public abstract class BaseFragment extends Fragment {
 			pd = ProgressDialog.show(getActivity(), title, message);
 			pd.setCancelable(cancelable);
             pd.setCanceledOnTouchOutside(cancelable);
+		}
+	}
+	
+	protected final void showProgress(String title, String message, DialogInterface.OnCancelListener cancelListener) {
+		hideProgress();
+
+        if (getActivity() != null)
+		{
+			pd = ProgressDialog.show(getActivity(), title, message);
+			pd.setCancelable(cancelListener != null);
+			if (cancelListener != null) {
+				pd.setOnCancelListener(cancelListener);
+				pd.setCanceledOnTouchOutside(false);
+			}
 		}
 	}
 	
