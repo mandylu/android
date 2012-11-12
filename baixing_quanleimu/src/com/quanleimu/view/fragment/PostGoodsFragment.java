@@ -37,6 +37,7 @@ import android.text.InputType;
 import android.text.TextWatcher;
 import android.util.Base64;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -868,6 +869,23 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		photocancle = (Button) view.findViewById(R.id.photo_cancle);
 //		photocancle.setOnClickListener(this);
 	}
+	
+	private String getFilledLocation(){
+		String toRet = "";
+		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+			View v = layout_txt.getChildAt(m);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			if(bean == null) continue;
+			if(bean.getName().equals(STRING_DETAIL_POSITION)){
+				TextView tv = (TextView)v.getTag(HASH_CONTROL);
+				if(tv != null && !tv.getText().toString().equals("")){
+					toRet = tv.getText().toString();
+				}
+				break;
+			}
+		}
+		return toRet;
+	}
 
 	private boolean retreiveLocation(){
 		Log.d("location", "location   retreive location");
@@ -892,19 +910,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //					}
 //				}
 //			}
-		String addr = "";
-		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-			View v = layout_txt.getChildAt(m);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-			if(bean == null) continue;
-			if(bean.getName().equals(STRING_DETAIL_POSITION)){
-				TextView tv = (TextView)v.getTag(HASH_CONTROL);
-				if(tv != null && !tv.getText().toString().equals("")){
-					addr = tv.getText().toString();
-				}
-				break;
-			}
-		}
+		String addr = getFilledLocation();
+
 		this.showSimpleProgress();
 		this.gettingLocationFromBaidu = true;
 		return LocationService.getInstance().geocode(addr, city, this);
@@ -925,6 +932,26 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				e.printStackTrace();
 //			}
 //		}
+	}
+	
+	private Pair<Double, Double> retreiveCoorFromGoogle(){
+		String city = getFilledLocation();
+		if(city == null || city.equals("")){
+			return new Pair<Double, Double>((double)0, (double)0);
+		}
+		String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+		try{
+			String googleJsn = Communication.getDataByUrlGet(googleUrl);
+			String[] info = googleJsn.split(",");
+			if(info != null && info.length == 4){
+				return new Pair<Double, Double>(Double.parseDouble(info[2]), Double.parseDouble(info[3]));
+			}
+		}catch(UnsupportedEncodingException e){
+			e.printStackTrace();
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return new Pair<Double, Double>((double)0, (double)0);
 	}
 
 	class UpdateThread implements Runnable {
@@ -956,41 +983,44 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				apiName = "ad_update";
 			}
 						
-			if(this.location != null){
+//			if(this.location != null){
 				Log.d("location", "location, setDistrictByLocation");
 				setDistrictByLocation(location);
 				
-				String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
-						String.valueOf(location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat),
-						String.valueOf(location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon));
-				try{
-					Log.d("location", "location, call baiduurl get data");
-					String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
-					Log.d("location", "location, baiduurl returns");
-					JSONObject js = new JSONObject(baiduJsn);
-					Object errorCode = js.get("error");
-					if(errorCode instanceof Integer && (Integer)errorCode == 0){
-						String x = (String)js.get("x");
-						String y = (String)js.get("y");
-						byte[] bytes = Base64.decode(x, Base64.DEFAULT);
-						x = new String(bytes, "UTF-8");
-						
-						bytes = Base64.decode(y, Base64.DEFAULT);
-						y = new String(bytes, "UTF-8");
-						
-						Double dx = Double.valueOf(x);
-						Double dy = Double.valueOf(y);
-						list.add("lat=" + dx);
-						list.add("lng=" + dy);
-						Log.d("location", "location, baiduurl parse succeed");
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-					Log.d("location", "location, baiduurl parse error");
-					list.add("lat=" + (location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat));
-					list.add("lng=" + (location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon));
-				}							
-			}
+				Pair<Double, Double> coorGoogle = retreiveCoorFromGoogle();
+				list.add("lat=" + coorGoogle.first);
+				list.add("lng=" + coorGoogle.second);
+//				String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=4&to=2&x=%s&y=%s", 
+//						String.valueOf(location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon),
+//						String.valueOf(location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat));
+//				try{
+//					Log.d("location", "location, call baiduurl get data");
+//					String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+//					Log.d("location", "location, baiduurl returns");
+//					JSONObject js = new JSONObject(baiduJsn);
+//					Object errorCode = js.get("error");
+//					if(errorCode instanceof Integer && (Integer)errorCode == 0){
+//						String x = (String)js.get("x");
+//						String y = (String)js.get("y");
+//						byte[] bytes = Base64.decode(x, Base64.DEFAULT);
+//						x = new String(bytes, "UTF-8");
+//						
+//						bytes = Base64.decode(y, Base64.DEFAULT);
+//						y = new String(bytes, "UTF-8");
+//						
+//						Double dx = Double.valueOf(x);
+//						Double dy = Double.valueOf(y);
+//						list.add("lat=" + dx);
+//						list.add("lng=" + dy);
+//						Log.d("location", "location, baiduurl parse succeed");
+//					}
+//				}catch(Exception e){
+//					e.printStackTrace();
+//					Log.d("location", "location, baiduurl parse error");
+//					list.add("lat=" + (location.fGeoCodedLat == 0 ? location.fLat : location.fGeoCodedLat));
+//					list.add("lng=" + (location.fGeoCodedLon == 0 ? location.fLon : location.fGeoCodedLon));
+//				}							
+//			}
 			
 			LinkedHashMap<String, String> postMap = params.getData();
 			//发布发布集合
