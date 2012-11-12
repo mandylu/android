@@ -2,12 +2,14 @@ package com.quanleimu.util;
 
 import android.app.*;
 import android.app.Service;
+import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 
@@ -40,6 +42,8 @@ public class BXUpdateService extends Service {
     private File updateDir = null;
     private File updateFile = null;
 
+    private boolean hasSdCard = false;
+
     //通知栏
     private NotificationManager updateNotificationManager = null;
     private Notification updateNotification = null;
@@ -56,11 +60,17 @@ public class BXUpdateService extends Service {
         //获取传值
         titleId = intent.getIntExtra("titleId", 0);
         apkUrl = intent.getStringExtra("apkUrl");
+
+        hasSdCard = Environment.MEDIA_MOUNTED.equals(Environment.getExternalStorageState());
         //创建文件
-//        if (android.os.Environment.MEDIA_MOUNTED.equals(android.os.Environment.getExternalStorageState())) {
+        if (hasSdCard) {
             updateDir = new File(Environment.getExternalStorageDirectory(), "/tmp/baixing_tmp/");
-            updateFile = new File(updateDir.getPath(),  "bababa.apk");
-//        }
+        } else {
+            String dirPath = getCacheDir().getPath();
+            updateDir = new File(dirPath, "/tmp/baixing_tmp/");
+        }
+
+        updateFile = new File(updateDir.getPath(),  "baixing_app_tmp.apk");
 
         this.updateNotificationManager = (NotificationManager) getSystemService(NOTIFICATION_SERVICE);
         this.updateNotification = new Notification();
@@ -91,14 +101,15 @@ public class BXUpdateService extends Service {
                 if (!updateDir.exists()) {
                     updateDir.mkdirs();
                 }
-                if (!updateFile.exists()) {
+//                if (!updateFile.exists()) {
 //                    updateFile.createNewFile();
-                }
+//                }
                 //下载函数，以QQ为例子
                 //增加权限<uses-permission android:name="android.permission.INTERNET">;
                 //todo ming url 以 apk 结尾
                 //todo ming 下载失败的处理
-                long downloadSize = downloadUpdateFile("http://pages.baixing.com/mobile/android_baixing_wap_V2.7.1.apk", updateFile);
+//                apkUrl = "http://pages.baixing.com/mobile/android_baixing_wap_V2.7.1.apk";
+                long downloadSize = downloadUpdateFile(apkUrl, updateFile);
                 if (downloadSize > 0) {
                     //下载成功
                     updateHandler.sendMessage(message);
@@ -137,7 +148,15 @@ public class BXUpdateService extends Service {
                 throw new Exception("fail!");
             }
             is = httpConnection.getInputStream();
-            fos = new FileOutputStream(saveFile, false);
+
+            if (hasSdCard) {
+                fos = new FileOutputStream(saveFile, false);
+            } else {
+                fos = this.openFileOutput("baixing_in_tmp.apk", Context.MODE_WORLD_READABLE);
+            }
+//
+
+
             byte buffer[] = new byte[4096];
             int readsize = 0;
             while ((readsize = is.read(buffer)) > 0) {
@@ -158,6 +177,7 @@ public class BXUpdateService extends Service {
                 is.close();
             }
             if (fos != null) {
+                fos.flush();
                 fos.close();
             }
         }
@@ -170,15 +190,28 @@ public class BXUpdateService extends Service {
             switch (msg.what) {
                 case DOWNLOAD_COMPLETE:
                     //点击安装PendingIntent
-                    Uri uri = Uri.fromFile(updateFile);
-                    Intent installIntent = new Intent(Intent.ACTION_VIEW);
+                    String apkStr = "";
+                    if (hasSdCard) {
+                        apkStr = updateFile.getPath();
+                    } else {
+                        apkStr = "/data/data/com.quanleimu.activity/files/baixing_in_tmp.apk";
+                    }
+                    Uri uri = Uri.fromFile(new File(apkStr));
+                    Intent installIntent = new Intent(Intent.ACTION_VIEW, uri);
+//                    installIntent.setData(uri);
+                    installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
+                    installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
-                    updatePendingIntent = PendingIntent.getActivity(BXUpdateService.this, 0, installIntent, 0);
-
-                    updateNotification.defaults = Notification.DEFAULT_SOUND;//铃声提醒
-                    updateNotification.setLatestEventInfo(BXUpdateService.this, "新版百姓网客户端", "下载完成,立刻点击安装", updatePendingIntent);
-                    updateNotificationManager.notify(0, updateNotification);
-
+//                    installIntent.setClassName("com.android.packageinstaller",
+//                                    "com.android.packageinstaller.PackageInstallerActivity");
+                    startActivity(installIntent);
+//
+//                    updatePendingIntent = PendingIntent.getActivity(BXUpdateService.this, 0, installIntent, 0);
+//
+//                    updateNotification.defaults = Notification.DEFAULT_SOUND;//铃声提醒
+//                    updateNotification.setLatestEventInfo(BXUpdateService.this, "新版百姓网客户端", "下载完成,立刻点击安装", updatePendingIntent);
+//                    updateNotificationManager.notify(0, updateNotification);
+                    updateNotificationManager.cancel(0);
                     //停止服务
                     stopService(updateIntent);
                     break;
@@ -186,6 +219,7 @@ public class BXUpdateService extends Service {
                     //下载失败
                     updateNotification.setLatestEventInfo(BXUpdateService.this, "下载失败，请重试", "请检查您的网络连接", updatePendingIntent);
                     updateNotificationManager.notify(0, updateNotification);
+
                     break;
                 default:
                     break;

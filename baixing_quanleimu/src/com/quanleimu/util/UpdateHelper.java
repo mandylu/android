@@ -64,7 +64,7 @@ public class UpdateHelper {
                 Toast.makeText(activity, msg.obj.toString(), 1).show();
                 break;
             case MSG_DOWNLOAD_APP:
-//                updateAppDownload();
+                updateAppDownload();
                 break;
             case MSG_INSTALL_APP:
                 updateAppInstall();
@@ -141,7 +141,7 @@ public class UpdateHelper {
         });
     }
 
-    private void updateAppDownload(String _apkUrl) {
+    private void updateAppDownload() {
         //开启更新服务UpdateService
         //这里为了把update更好模块化，可以传一些updateService依赖的值
         //如布局ID，资源ID，动态获取的标题,这里以app_name为例
