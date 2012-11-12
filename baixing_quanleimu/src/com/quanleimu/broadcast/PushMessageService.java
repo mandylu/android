@@ -2,6 +2,8 @@ package com.quanleimu.broadcast;
 
 
 import java.lang.ref.WeakReference;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Service;
 import android.content.BroadcastReceiver;
@@ -18,6 +20,9 @@ import android.os.Message;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.broadcast.push.PushDispatcher;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.BxMessageCenter.IBxNotification;
+import com.quanleimu.message.IBxNotificationNames;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ParameterHolder;
 import com.quanleimu.util.TraceUtil;
@@ -29,7 +34,7 @@ import android.util.Log;
  * @author liuchong
  *
  */
-public class PushMessageService extends Service
+public class PushMessageService extends Service implements Observer
 {
 	public static final String SERVICE_THREAD_NAME = "quanleimu.app.push.service";
 	
@@ -75,6 +80,9 @@ public class PushMessageService extends Service
 	{
 		TraceUtil.trace(TAG, "service create start");
 		super.onCreate();
+		
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+		
 		if(QuanleimuApplication.context == null){
 			QuanleimuApplication.context = new WeakReference<Context>(this);
 		}
@@ -92,6 +100,9 @@ public class PushMessageService extends Service
 	
     public void onDestroy() {
     	TraceUtil.trace(TAG, "destory the service--begin");
+    	
+    	BxMessageCenter.defaultMessageCenter().removeObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+    	
         IsRunning = false;
         
 //        // If the _xmppManager is non-null, then our service was "started" (as
@@ -302,6 +313,16 @@ public class PushMessageService extends Service
 		}
     	
     }
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_USER_CREATE.equals(note.getName())) {
+				registeDevice(null);
+			}
+		}
+	}
     
 }
 

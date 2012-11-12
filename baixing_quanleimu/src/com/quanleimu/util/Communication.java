@@ -30,6 +30,8 @@ import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.IBxNotificationNames;
 
 public class Communication implements Comparator<String> {
 
@@ -314,6 +316,7 @@ public class Communication implements Comparator<String> {
 			UserBean anonymousUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser");
 			if(anonymousUser != null){
 				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, anonymousUser);
 				return;
 			}
 		}else{
@@ -350,6 +353,7 @@ public class Communication implements Comparator<String> {
 					
 					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
 					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymouUser", user);
+					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, user);
 				} 
 				return;
 			}
