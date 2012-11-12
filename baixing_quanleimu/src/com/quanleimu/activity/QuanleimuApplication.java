@@ -193,7 +193,11 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	public void setListMyStore(List<GoodsDetail> listMyStore) {
-		this.listMyStore = listMyStore;
+		if(listMyStore != null && listMyStore.size() > 50){
+			this.listMyStore = new ArrayList<GoodsDetail>(listMyStore.subList(0, 50));
+		}else{
+			this.listMyStore = listMyStore;
+		}
 	}
 
 	//我的发布信息
