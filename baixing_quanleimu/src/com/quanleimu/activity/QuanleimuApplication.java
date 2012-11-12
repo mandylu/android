@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Application;
 import android.content.Context;
@@ -27,14 +29,18 @@ import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.HotList;
 import com.quanleimu.entity.SecondStepCate;
+import com.quanleimu.entity.UserBean;
 import com.quanleimu.imageCache.LazyImageLoader;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.IBxNotificationNames;
+import com.quanleimu.message.BxMessageCenter.IBxNotification;
 import com.quanleimu.util.BXDatabaseHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 //import net.sourceforge.simcpux.Constants;
-public class QuanleimuApplication implements LocationService.BXLocationServiceListener{
+public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer {
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String udid="";
@@ -560,7 +566,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 	
 	public QuanleimuApplication(){
-		
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
 	static QuanleimuApplication mDemoApp = null;
 
@@ -712,5 +719,24 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		}
 		
 //		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
+	}
+
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_USER_CREATE.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
+				
+				Context cxt = context.get();
+				if (cxt != null)
+				{
+					Util.refreshAndGetMyId(cxt);
+				}
+			}
+		}
 	}
 }

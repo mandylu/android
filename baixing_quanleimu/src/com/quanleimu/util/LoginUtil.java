@@ -19,6 +19,9 @@ import android.widget.Toast;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.IBxNotificationNames;
+import com.quanleimu.message.BxMessageCenter.IBxNotification;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
@@ -133,7 +136,9 @@ public class LoginUtil implements View.OnClickListener{
 				QuanleimuApplication.getApplication()
 						.setMobile(user.getPhone());
 				Util.saveDataToLocate(view.getContext(), "user", user);
-
+				
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
+				
 				if(listener != null){
 					listener.onLoginSucceed(message == null ? "登陆成功" : message);
 				}

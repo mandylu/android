@@ -57,6 +57,8 @@ import android.view.Display;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.IBxNotificationNames;
 public class Util {
 	private static String[] keys;
 	private static String[] values;
@@ -1337,6 +1339,8 @@ public class Util {
 		if(anonymousUser != null){
 			Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
 		}
+		
+		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
 
     /**
@@ -1365,6 +1369,20 @@ public class Util {
 		if (user != null)
 		{
 			currentUserId = user.getId();
+		}
+		
+		return currentUserId;
+	}
+	
+	public static String refreshAndGetMyId(Context context) {
+		UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
+		if (user != null)
+		{
+			currentUserId = user.getId();
+		}
+		else
+		{
+			currentUserId = null;
 		}
 		
 		return currentUserId;

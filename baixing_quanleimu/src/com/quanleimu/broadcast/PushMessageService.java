@@ -82,6 +82,8 @@ public class PushMessageService extends Service implements Observer
 		super.onCreate();
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		
 		if(QuanleimuApplication.context == null){
 			QuanleimuApplication.context = new WeakReference<Context>(this);
@@ -101,7 +103,7 @@ public class PushMessageService extends Service implements Observer
     public void onDestroy() {
     	TraceUtil.trace(TAG, "destory the service--begin");
     	
-    	BxMessageCenter.defaultMessageCenter().removeObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+    	BxMessageCenter.defaultMessageCenter().removeObserver(this);//.removeObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
     	
         IsRunning = false;
         
@@ -139,7 +141,7 @@ public class PushMessageService extends Service implements Observer
 ////                Log.w("onStartCommand() null intent with Gingerbread or higher");
 //            }
             
-            registeDevice(null);
+            registeDevice(null, null);
             return START_STICKY;
         }
 //        Log.i("onStartCommand(): Intent " + intent.getAction());
@@ -157,7 +159,7 @@ public class PushMessageService extends Service implements Observer
         
         if (intent.getBooleanExtra("updateToken", false))
         {
-        	registeDevice(null); //
+        	registeDevice(null, null); //
         }
         TraceUtil.trace(TAG, "onStartCommand finish.");
         return START_STICKY;
@@ -277,11 +279,11 @@ public class PushMessageService extends Service implements Observer
     }
 	
     
-    private void registeDevice(BroadcastReceiver receiver)
+    private void registeDevice(BroadcastReceiver receiver, UserBean userBean)
     {
 		RegisterCommandListener cmdListener = new RegisterCommandListener();
 		ParameterHolder parameters = new ParameterHolder();
-		String userId = Util.getMyId(this);
+		String userId = userBean == null ? Util.getMyId(this) : userBean.getId();
 		if (userId != null) {
 			parameters.addParameter("userId", userId);
 		}
@@ -306,7 +308,7 @@ public class PushMessageService extends Service implements Observer
 		public void onException(Exception ex) {
 			final BroadcastReceiver receiver = new BroadcastReceiver() {
 				public void onReceive(Context arg0, Intent arg1) {
-					registeDevice(this);
+					registeDevice(this, null);
 				}
 			};
 			PushMessageService.this.registerReceiver(receiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_XMPP_CONNECTED));
@@ -318,8 +320,10 @@ public class PushMessageService extends Service implements Observer
 		if (data instanceof IBxNotification)
 		{
 			IBxNotification note = (IBxNotification) data;
-			if (IBxNotificationNames.NOTIFICATION_USER_CREATE.equals(note.getName())) {
-				registeDevice(null);
+			if (IBxNotificationNames.NOTIFICATION_USER_CREATE.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
+				registeDevice(null, (UserBean) note.getObejct());
 			}
 		}
 	}
