@@ -160,7 +160,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
 		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 1; i < 10; i++) {
 			openTabbar(TAB_ID_POST);
 			openPostFirstCategory(i);
 			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
@@ -179,20 +179,25 @@ public class KeepLiveTest extends BaixingTestCase {
 				if (v == null) {
 					Log.i(LOG_TAG, "runPostAll:Category v==null prev" + oldCateName);
 				}
-				if (v != null && !oldCateName.equals(v.getText())) {
-					oldCateName = v.getText();
-					Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);
-					postAutoEnterData();
-					TimeUnit.SECONDS.sleep(1);
-					if (!postSend(false)) {
-						lockStatus(SCREEN_SAVE_LOCK_FILE, "");
-						Log.i(LOG_TAG, "POST Category1:" + oldCateName + " ERROR");
-					}
-					afterPostSend();
-					if (!checkPostSuccess(true)) {
-						lockStatus(SCREEN_SAVE_LOCK_FILE, "");
-						postErrors += "POST Category:" + oldCateName + " ERROR\n";
-						Log.i(LOG_TAG, "POST Category2:" + oldCateName + " ERROR");
+				if (v != null) {
+					if(!oldCateName.equals(v.getText())) {
+						oldCateName = v.getText();
+						Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);
+						postAutoEnterData();
+						TimeUnit.SECONDS.sleep(1);
+						if (!postSend(false)) {
+							lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+							Log.i(LOG_TAG, "POST Category1:" + oldCateName + " ERROR");
+						}
+						afterPostSend();
+						if (!checkPostSuccess(true)) {
+							lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+							postErrors += "POST Category:" + oldCateName + " ERROR\n";
+							Log.i(LOG_TAG, "POST Category2:" + oldCateName + " ERROR");
+						}
+					} else {
+						afterPostSend();
+						break;
 					}
 				} else {
 					afterPostSend();
