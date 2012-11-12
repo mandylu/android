@@ -851,7 +851,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
-	
+
 		final String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
 		final boolean isFromMobile = isCurrentAdFromMobile();
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
@@ -859,7 +859,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		btnImg.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
 		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
 		btnTxt.setTextColor(getResources().getColor(isFromMobile ? R.color.vad_buzz : R.color.vad_sms));
-		btnBuzz.setEnabled(isFromMobile ? true : (TextUtil.isNumberSequence(mobileV) ? true : false));
+		
+		final boolean buzzEnable = isFromMobile ? true : (TextUtil.isNumberSequence(mobileV) ? true : false);
+		btnBuzz.setEnabled(buzzEnable);
+		if (!buzzEnable)
+		{
+			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
+			btnImg.setImageResource(R.drawable.icon_sms_disable);
+		}
+		
+		
 		
 //		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
 		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
@@ -869,16 +878,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		//FIXME: prepare context menu for currnet vad.
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
 		rl_phone.setVisibility(View.VISIBLE);
+
+		//Enable or disable call button
+		final boolean callEnable = TextUtil.isNumberSequence(mobileV);
+		rootView.findViewById(R.id.vad_call_btn).setEnabled(callEnable);
+		rootView.findViewById(R.id.vad_call_btn).setOnClickListener(callEnable ? this : null);
+		View callImg = rootView.findViewById(R.id.icon_call);
+		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
+		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
+		txtCall.setTextColor(getResources().getColor(callEnable ? R.color.vad_call_btn_text : R.color.common_button_disable));
 		
-		if (TextUtil.isNumberSequence(mobileV)) {
-			rootView.findViewById(R.id.vad_call_btn).setEnabled(true);
-			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(this);
-	
-			
-		} else {
-			rootView.findViewById(R.id.vad_call_btn).setEnabled(false);
-			rootView.findViewById(R.id.vad_call_btn).setOnClickListener(null);
-		}
 	}
 	
 	private boolean isCurrentAdFromMobile()

@@ -24,6 +24,7 @@
     <color name="title_gap_line">#d3d3d3</color>
     <color name="vad_buzz">#fb9e24</color>
     <color name="vad_sms">#4a4945</color>
+    <color name="vad_call_btn_text">#ffffff</color>
     
     <!-- common color -->
     <color name="common_placeholder">#808080</color>
@@ -31,4 +32,5 @@
     <color name="common_edit_text_color">#333333</color>
     <color name="common_button_text_color">#333333</color>
     <color name="common_info">#d6d6d6</color>
+    <color name="common_button_disable">#adadad</color>
 </resources>
