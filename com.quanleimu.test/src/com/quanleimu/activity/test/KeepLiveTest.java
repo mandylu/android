@@ -176,8 +176,12 @@ public class KeepLiveTest extends BaixingTestCase {
 				openSecondCategoryByIndex(j);
 				Log.i(LOG_TAG, "runPostAll:" + j);
 				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
-				if (!oldCateName.equals(v.getText())) {
+				if (v == null) {
+					Log.i(LOG_TAG, "runPostAll:Category v==null prev" + oldCateName);
+				}
+				if (v != null && !oldCateName.equals(v.getText())) {
 					oldCateName = v.getText();
+					Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);
 					postAutoEnterData();
 					TimeUnit.SECONDS.sleep(1);
 					if (!postSend(false)) {

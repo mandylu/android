@@ -30,7 +30,7 @@ install_pkg() {
 	adb -s emulator-$port install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
 	adb -s emulator-$port install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 	
-	adb -s emulator-$port shell logcat -d >> $LOGPATH/logcat_adlisting_$LOGNOW.log;
+	adb -s emulator-$port shell logcat -d >> $LOGPATH/logcat_emulator-"$port"_$LOGNOW.log;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port shell logcat -c
@@ -43,7 +43,7 @@ run_test() {
 	local emulator="$1"
 	local func="$2"
 	local prefix="$3"
-	echo "START test $func $NOW" >> $LOGPATH/$prefix_$LOGNOW.log
+	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
 	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
 
 }
@@ -64,9 +64,6 @@ build_pkg() {
 		
 		if [ ! -f bin/Baixing_QuanLeiMu-release.apk ]; then
 			echo "ANT build baixing app error";
-			echo "ANT build baixing app error" >> $LOGPATH/runadlisting_$LOGNOW.log
-			echo "ANT build baixing app error" >> $LOGPATH/runpost_$LOGNOW.log
-			echo "ANT build baixing app error" >> $LOGPATH/runpost2_$LOGNOW.log
 			exit;
 		fi;
 		
@@ -81,9 +78,6 @@ build_pkg() {
 	
 	if [ ! -f bin/com.quanleimu.test-release.apk ]; then
 		echo "ANT build baixing test app error";
-		echo "ANT build baixing test app error" >> $LOGPATH/runadlisting_$LOGNOW.log
-		echo "ANT build baixing test app error" >> $LOGPATH/runpost_$LOGNOW.log
-		echo "ANT build baixing test app error" >> $LOGPATH/runpost2_$LOGNOW.log
 		exit;
 	fi;
 	cd ../
@@ -110,7 +104,7 @@ start_real_device() {
 		adb -s $emulator shell input keyevent 82
 		adb -s $emulator shell input keyevent 4
 		
-		adb -s $emulator shell logcat -d >> $LOGPATH/logcat_post2_$LOGNOW.log;
+		adb -s $emulator shell logcat -d >> $LOGPATH/logcat_"$emulator"_$LOGNOW.log;
 		adb -s $emulator shell logcat -c
 		sleep 1;
 		

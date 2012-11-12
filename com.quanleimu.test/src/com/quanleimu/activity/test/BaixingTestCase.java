@@ -360,10 +360,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void selectAutoMeta() throws Exception {
-		int i = 0;
+		int i = 2;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
-		while(i <= 2) {
-			ViewElement v = selectMetaByIndex(i++, false);
+		while(i >= 0) {
+			ViewElement v = selectMetaByIndex(i--, false);
 			ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 			if (v == null || lv.equals(lv2)) {
 				continue;
@@ -432,7 +432,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		    }
 		}
 		RandomHan han = new RandomHan();
-		while(index < 20) {
+		while(index < 10) {
 			try {
 				BXTextViewElement tv = findTextMetaByIndex(index++);
 				if (tv != null) {
@@ -462,7 +462,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}
 		index = 0;
-		while(index < 10) {
+		while(index < 5) {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
 				
@@ -538,9 +538,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement eld = findElementByText(POST_SEND);
 		if (eld != null) {
 			goBack();
-			ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
-			if (d != null) {
-				d.doClick();
+			ViewElement dt = findElementByText("提示", 0, true);
+			if (dt != null) {
+				ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
+				if (d != null) {
+					d.doClick();
+				}
 			}
 			goBack();
 			goBack();

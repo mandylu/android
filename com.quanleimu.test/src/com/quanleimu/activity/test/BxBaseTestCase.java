@@ -487,6 +487,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 		if (v != null) {
 			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			if (tv == null) return;
 			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
 				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
 				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
