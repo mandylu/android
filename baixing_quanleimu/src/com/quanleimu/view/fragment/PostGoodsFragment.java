@@ -154,14 +154,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     private EditText etDescription = null;
     private EditText etContact = null;
     
-    private boolean postLayoutCreated = false;
+//    private boolean postLayoutCreated = false;
 	
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
-		this.postLayoutCreated = false;
+//		this.postLayoutCreated = false;
 		
 		String categoryNames = this.getArguments().getString("cateNames");
 		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
@@ -197,11 +197,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			postList.putAll( (HashMap)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
 			listUrl.addAll((List) savedInstanceState.getSerializable("listUrl"));
+			bitmap_url.clear();
 			bitmap_url.addAll((List) savedInstanceState.getSerializable("bitmapUrl"));
-			Util.filterArrayList(bitmap_url, 3);
+//			Util.filterArrayList(bitmap_url, 3);
 			currentImgView = savedInstanceState.getInt("imgIndex", -1);
 			uploadCount = savedInstanceState.getInt("uploadCount", 0);
-			
+			imgHeight = savedInstanceState.getInt("imgHeight");
 			Parcelable[] ps = savedInstanceState.getParcelableArray("imgs");
 			cachedBps = new Bitmap[ps.length];
 			int i = 0;
@@ -230,7 +231,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		outState.putSerializable("bitmapUrl", bitmap_url);
 		outState.putInt("imgIndex", currentImgView);
 		outState.putInt("uploadCount", uploadCount);
-		
+		outState.putInt("imgHeight", imgHeight);
 		outState.putParcelableArray("imgs", cachedBps);
 		
 	}
@@ -318,7 +319,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onPause() {
 		QuanleimuApplication.getApplication().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
-		this.postLayoutCreated = false;
+//		this.postLayoutCreated = false;
 		super.onPause();
 	}
 	
@@ -330,7 +331,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 //		else
 		{
-			this.showPost();
+//			this.showPost();
 		}
 		if(isBack){
 			this.detailLocation = null;
@@ -357,7 +358,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		super.onDestroyView();
 	}
 
-
+	@Override
+	public void onViewCreated (View view, Bundle savedInstanceState){
+		super.onViewCreated(view, savedInstanceState);
+		showPost();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
@@ -542,9 +547,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void showPost()
 	{
-		if (postLayoutCreated)
-			return;
-		postLayoutCreated = true;
+//		if (postLayoutCreated)
+//			return;
+//		postLayoutCreated = true;
 		//获取发布模板
 		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
@@ -1075,7 +1080,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				((BaseActivity)getActivity()).runOnUiThread(new Runnable(){
 					@Override
 					public void run(){
-						Toast.makeText(getActivity(), fmsg, 0).show();
+						if(getActivity() != null && fmsg != null){
+							Toast.makeText(getActivity(), fmsg, 0).show();
+						}
 					}
 				});
 			}
@@ -1213,7 +1220,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			return;
 		}
 		
-		this.showPost();
+//		this.showPost();
 		
 		// 拍照 
 		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
@@ -1898,7 +1905,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 
-
+	private int imgHeight = 0;
+	
+	@Override
+	public void onStart(){
+		super.onStart();
+//		imgHeight = imgs[0].getMeasuredHeight()
+	}
 
 
 	/**
@@ -1931,6 +1944,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					sendMessage(MSG_START_UPLOAD, currentIndex);
 				}
 			});	
+			
 			synchronized(PostGoodsFragment.this){
 //			try{
 			//	uploadMutex.wait();
@@ -1975,7 +1989,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 			String result = Communication.uploadPicture(currentBmp);	
 			-- uploadCount;
-			thumbnailBmp = PostGoodsFragment.createThumbnail(currentBmp, imgs[currentIndex].getHeight());
+			if(imgs != null && imgs[currentIndex] != null && imgs[currentIndex].getHeight() != 0){
+				imgHeight = imgs[currentIndex].getHeight();
+			}
+			thumbnailBmp = PostGoodsFragment.createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
 			cachedBps[currentIndex] = thumbnailBmp;
 			currentBmp.recycle();
 			currentBmp = null;
