@@ -43,9 +43,8 @@ run_test() {
 	local emulator="$1"
 	local func="$2"
 	local prefix="$3"
-	
 	echo "START test $func $NOW" >> $LOGPATH/$prefix_$LOGNOW.log
-	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/$prefix_$LOGNOW.log &
+	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
 
 }
 
@@ -127,6 +126,7 @@ start_real_device() {
 
 build_pkg "$REBUILD"
 
+echo $LOGNAME;
 if [ "$PORTDEVICE" = "015d18844854041c" ]; then
 	start_real_device "$PORTDEVICE"
 	if [ "$REALDEVICE" = "1" ]; then

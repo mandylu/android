@@ -360,10 +360,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void selectAutoMeta() throws Exception {
-		int i = 2;
+		int i = 0;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
-		while(i >= 0) {
-			ViewElement v = selectMetaByIndex(i--, false);
+		while(i <= 2) {
+			ViewElement v = selectMetaByIndex(i++, false);
 			ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 			if (v == null || lv.equals(lv2)) {
 				continue;
