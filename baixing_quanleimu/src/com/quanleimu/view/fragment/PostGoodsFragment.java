@@ -1069,7 +1069,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					JSONObject jsonObject = new JSONObject(json);
 					JSONObject json = jsonObject.getJSONObject("error");
 					code = json.getInt("code");
-					message = json.getString("message");
+					message = replaceTitleToDescription(json.getString("message"));
 //					myHandler.sendEmptyMessage(3);
 //					Log.d("person","case 3");
 					sendMessage(3, null);
@@ -1089,7 +1089,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					errorMsg = "内容超出规定长度，请修改后重试";
 				}
 				else{
-					errorMsg = e.msg;
+					errorMsg = replaceTitleToDescription(e.msg);
 				}
 				
 			} catch(Exception e){
@@ -1883,7 +1883,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					e.printStackTrace();
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
-				String message = json.getString("message");
+				String message = replaceTitleToDescription(json.getString("message"));
 				Toast.makeText(activity, message, 0).show();
 				if (!id.equals("")) {
 					final Bundle args = createArguments(null, null);
@@ -1941,6 +1941,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 
+	private String replaceTitleToDescription(String msg) {
+		// replace title to description in message
+		PostGoodsBean titleBean = null, descriptionBean = null;
+		for (String key : postList.keySet()) {
+			PostGoodsBean bean = postList.get(key);
+			if (bean.getName().equals("title")) 
+				titleBean = bean;
+			if (bean.getName().equals("description"))
+				descriptionBean = bean;
+		}
+		if (titleBean != null && descriptionBean != null)
+			msg = msg.replaceAll(titleBean.getDisplayName(), descriptionBean.getDisplayName());
+		return msg;
+	}
+	
+	
 	private int imgHeight = 0;
 	
 	////to fix stupid system error. all text area will be the same content after app is brought to front when activity not remain is checked
