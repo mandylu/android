@@ -19,7 +19,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.text.format.DateFormat;
-import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -37,7 +36,6 @@ import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.adapter.ChatMessageAdapter;
 import com.quanleimu.broadcast.CommonIntentAction;
@@ -52,12 +50,10 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.GoodsListLoader;
-import com.quanleimu.util.TrackConfig;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
-import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.Util;
 
 public class TalkFragment extends BaseFragment {
 	//This is only a temp solution for checking current IM session, will remove within next release. add on version 2.6
@@ -691,7 +687,9 @@ public class TalkFragment extends BaseFragment {
 		private void scrollToBottom(View rootView)
 		{
 			ListView scroll = (ListView) rootView.findViewById(R.id.char_history_p);
-			scroll.setSelection(getAdapter(rootView).getCount()-1);
+			//TODO: dirty fix. @zhongjiawu
+			scroll.setSelection(Integer.MAX_VALUE);
+			
 		}
 		
 		protected final void handleMessage(Message msg, Activity activity, View rootView)
