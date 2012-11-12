@@ -4,6 +4,7 @@ import java.io.Serializable;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Set;
 
 public class PostGoodsBean implements Serializable{
 
@@ -22,6 +23,7 @@ public class PostGoodsBean implements Serializable{
 	private HashMap<String, String> lvmap;
 	private String subMeta;
 	private int levelCount;
+	private String defaultValue;
 	
 	public void setLevelCount(int count){
 		levelCount = count;		
@@ -86,6 +88,14 @@ public class PostGoodsBean implements Serializable{
 	}
 	public void setValues(List<String> values) {
 		this.values = values;
+	}
+	
+	public String getDefaultValue() {
+		return defaultValue;
+	}
+	
+	public void setDefaultValue(String defaultValue) {
+		this.defaultValue = defaultValue;
 	}
 	
 	public HashMap<String, String> getLvmap() {

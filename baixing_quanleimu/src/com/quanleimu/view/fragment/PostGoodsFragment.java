@@ -1611,8 +1611,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //	}
 	
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
-	private String[] hiddenItemNames = {"wanted", "faburen"};//must be selected type
-	private int [] hiddenItemValuesIndexes = {1, 0};
+	private String[] hiddenItemNames = {"wanted", "faburen"};
 	private boolean autoLocated;
 
 	
@@ -1657,9 +1656,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			{
 				if (bean.getName().equals(hiddenItemNames[i]))
 				{
-					this.params.put(bean.getDisplayName(), 
-							bean.getLabels().get(this.hiddenItemValuesIndexes[i]), 
-							bean.getValues().get(this.hiddenItemValuesIndexes[i]));
+					String defaultValue = bean.getDefaultValue();
+					if (defaultValue != null && defaultValue.length() > 0) {
+						this.params.put(bean.getDisplayName(), 
+								defaultValue,
+								defaultValue);
+					} else {
+						this.params.put(bean.getDisplayName(), 
+								bean.getLabels().get(0), 
+								bean.getValues().get(0));
+					}
 					break;
 				}
 			}

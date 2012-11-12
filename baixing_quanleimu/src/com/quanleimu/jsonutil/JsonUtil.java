@@ -846,6 +846,13 @@ public class JsonUtil {
 					postGoods.setLevelCount(0);
 				}
 				
+				try {
+					postGoods.setDefaultValue(jsonObject.getString("default"));
+				} catch (Exception e1) {
+					postGoods.setDefaultValue("");
+				}
+				
+				
 
 				// values数组
 				JSONArray valueArray;
