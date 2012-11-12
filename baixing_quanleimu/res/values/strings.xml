@@ -47,10 +47,10 @@
     <string name="dialog_message_discard_input">现在退出内容将会丢失,确认退出吗？</string>
 
     <!-- dialog text waiting -->
-    <string name="dialog_message_waiting">请稍后…</string>
+    <string name="dialog_message_waiting">请稍候…</string>
     <string name="dialog_message_updating">更新中，请稍等…</string>
     <string name="dialog_message_uploading">上传中，请稍等…</string>
-    <string name="dialog_message_data_loading">数据下载中，请稍后…</string>
+    <string name="dialog_message_data_loading">数据下载中，请稍候…</string>
 
     <string name="dialog_message_image_load_error">图片未加载成功，请稍后重试</string>
 
