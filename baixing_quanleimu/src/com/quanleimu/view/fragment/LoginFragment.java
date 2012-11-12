@@ -154,7 +154,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
 		
 		loginHelper = new LoginUtil(llLoginRoot, this);
-		
+		Util.logout();
 		return llLoginRoot;
 	}
 	
