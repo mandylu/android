@@ -374,24 +374,34 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 
 	        public View getView(int position, View convertView, ViewGroup parent)
 	        {
-	        		ImageView imageView = null;
-				if (convertView != null) {
-					imageView = (ImageView) convertView;
-				} else {
-					imageView = new ImageView(context);	            
-		            imageView.setScaleType(ScaleType.FIT_CENTER);
-		            imageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.WRAP_CONTENT, Gallery.LayoutParams.FILL_PARENT));
-				}
+	        	
+	        	ViewGroup itemRoot = (ViewGroup) convertView;
+	        	if (itemRoot == null)
+	        	{
+	        		itemRoot = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.item_big_gallery, null);
+	        	}
+	        	
+	        		ImageView imageView = (ImageView) (itemRoot == null ? null : itemRoot.findViewById(R.id.real_img));
+//				if (convertView != null) {
+//					imageView = (ImageView) convertView;
+//				} else {
+//					imageView = new ImageView(context);	            
+//		            imageView.setScaleType(ScaleType.FIT_CENTER);
+//		            imageView.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.WRAP_CONTENT, Gallery.LayoutParams.FILL_PARENT));
+//				}
+	        		itemRoot.setLayoutParams(new Gallery.LayoutParams(Gallery.LayoutParams.WRAP_CONTENT, Gallery.LayoutParams.FILL_PARENT));
 
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
-					imageView.setImageBitmap(mb);
+//					imageView.setImageBitmap(mb);
+					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
 					
 				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));
 				}
 
-	            return imageView;
+//	            return imageView;
+				return itemRoot;
 
 	        }
 	        

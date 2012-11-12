@@ -6,28 +6,8 @@
     android:descendantFocusability="blocksDescendants"
     android:gravity="center_vertical"
     android:orientation="horizontal"
-    android:paddingLeft="@dimen/list_margin_LF"
     >
 
-<!-- 	<View
-	    android:id="@+id/session_spliter"
-	    android:layout_width="1dp"
-	    android:layout_height="20dp"
-	    android:layout_alignParentRight="true"
-	    android:layout_centerVertical="true"
-	    android:layout_marginRight="54dp"
-	    android:background="#c1c1b9" />
-	
-	<ImageButton
-	    android:id="@+id/sessionArrow"
-	    android:layout_width="24dp"
-	    android:layout_height="24dp"
-	    android:layout_alignParentRight="true"
-	    android:layout_centerVertical="true"
-	    android:background="@null"
-	    android:layout_marginRight="15dp"
-	    android:src="@drawable/icon_arrow" />     -->  
-        
 	<LinearLayout
 	    android:layout_width="fill_parent"
 	    android:layout_height="fill_parent"
@@ -38,6 +18,7 @@
 	    android:gravity="center_vertical"
 	    android:orientation="vertical" 
 	    android:layout_toLeftOf="@id/rlListOperate"
+	    android:layout_marginLeft="@dimen/list_margin_LF"
 	    >
 	
 	    <TextView
@@ -101,5 +82,13 @@
             android:layout_marginRight="@dimen/list_margin_LF"
             android:layout_toLeftOf="@+id/btnListOperate" />
     </RelativeLayout>
+    
+    <View     
+        android:id="@+id/vad_divider"
+        android:layout_width="match_parent"
+   		android:layout_height="1dp"
+   		android:layout_alignParentBottom="true"
+        android:background="@drawable/list_divider" >
+    </View>
 
 </RelativeLayout>
