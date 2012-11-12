@@ -119,8 +119,9 @@ public class TalkFragment extends BaseFragment {
 				if(bundle.containsKey("receiverNick")){
 					adTitle = bundle.getString("receiverNick");
 				}
-				(new Thread(new GetPersonalProfileThread(targetUserId))).start();
-				(new Thread(new GetPersonalProfileThread(myUserId))).start();
+				//commented below two lines by liuweili@baixing.com
+				//(new Thread(new GetPersonalProfileThread(targetUserId))).start();
+				//(new Thread(new GetPersonalProfileThread(myUserId))).start();
 				if (bundle.containsKey("message"))
 				{
 					msg = (ChatMessage) bundle.getSerializable("message");
