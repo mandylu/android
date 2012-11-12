@@ -1297,19 +1297,6 @@ public class Util {
 //        thread.start();
 //	}
 	
-	public static void filterArrayList(List list, int size)
-	{
-		while (list.size() > 0 && list.get(0) == null)
-		{
-			list.remove(0);
-		}
-		
-		for (int i=list.size()-1; i<size; i++)
-		{
-			list.add(null);
-		}
-	}
-	
 	public static String extractUrlWithoutSecret(String url){
 		if(url == null || url.equals("")) return null;
 		int index1 = url.indexOf("access_token=");
