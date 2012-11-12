@@ -12,6 +12,8 @@
     <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
     <string name="nickname_empty">请输入昵称</string>
     <string name="tip_loading_im_history">正在加载历史对话，请耐心等待</string>
+    <string name="warning_no_phone_app_install">您的设备尚未安装拨打电话的应用，请先安装</string>
+    <string name="warning_no_sms_app_install">您的设备尚未安装发送短信的应用，请先安装</string>
 
     <!-- time related -->
     <string name="common_time_ago">前</string>
