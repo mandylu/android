@@ -1897,130 +1897,116 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		{
 			return;
 		}
-		final GoodsDetail requestDetail = this.detail;
 		
-		String latV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		String lonV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
-		{
-			final double lat = Double.valueOf(latV);
-			final double lon = Double.valueOf(lonV);
-			Thread convertThread = new Thread(new Runnable(){
-				@Override
-				public void run(){
-					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
-							String.valueOf(lat), String.valueOf(lon));
-					try{
-						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
-						JSONObject js = new JSONObject(baiduJsn);
-						Object errorCode = js.get("error");
-						if(errorCode instanceof Integer && (Integer)errorCode == 0){
-							String x = (String)js.get("x");
-							String y = (String)js.get("y");
-							byte[] bytes = Base64.decode(x);
-							x = new String(bytes, "UTF-8");
-							
-							bytes = Base64.decode(y);
-							y = new String(bytes, "UTF-8");
-							
-							Double dx = Double.valueOf(x);
-							Double dy = Double.valueOf(y);
-							
-							int ix = (int)(dx * 1E6);
-							int iy = (int)(dy * 1E6);
-							
-							x = String.valueOf(ix);
-							y = String.valueOf(iy);
-							
-							Bundle bundle = new Bundle();
-							bundle.putString("detailPosition", x +"," + y);
-							String areaname = requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-							if(areaname != null){
-								String[] aryArea = areaname.split(",");
-								if(aryArea != null && aryArea.length > 0){
-									bundle.putString("title", aryArea[aryArea.length - 1]);
-								}
-							}
-							
-							startBaiduMap(bundle, requestDetail);
-//							final BaseActivity baseActivity = (BaseActivity)getActivity();
-//							if (baseActivity != null && requestDetail == detail)
-//							{
-//								baseActivity.getIntent().putExtras(bundle);
-//								
-//								baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-//								baseActivity.startActivity(baseActivity.getIntent());
-//								Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-//							}
-							return;
-						}
-
-					}catch(UnsupportedEncodingException e){
-						e.printStackTrace();
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-					String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
-					Bundle bundle = new Bundle();
-					bundle.putString("detailPosition", positions);
-					bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-					
-					startBaiduMap(bundle,requestDetail);
-//					final BaseActivity baseActivity = (BaseActivity)getActivity();
-//					if (baseActivity != null && requestDetail == detail)
-//					{
-//						baseActivity.getIntent().putExtras(bundle);
-//						
-//						baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-//						baseActivity.startActivity(baseActivity.getIntent());
-//						Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-//					}
-				}
-			});
-			convertThread.start();
-		}
-		else{
-			Thread getCoordinate = new Thread(new Runnable(){
-	            @Override
-	            public void run() {
-	            	if(getActivity() == null) return;
-					String city = QuanleimuApplication.getApplication().cityName;
-					if(!city.equals("")){
-						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-						try{
-							String googleJsn = Communication.getDataByUrlGet(googleUrl);
-							String[] info = googleJsn.split(",");
-							if(info != null && info.length == 4){
-								String positions = 
-										Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
-										+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-								Bundle bundle = new Bundle();
-								bundle.putString("detailPosition", positions);
-								bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-
-								startBaiduMap(bundle, requestDetail);
-//								final BaseActivity baseActivity = (BaseActivity)getActivity();
-//								if (baseActivity != null && requestDetail == detail)
-//								{
-//									baseActivity.getIntent().putExtras(bundle);
-//									
-//									baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-//									baseActivity.startActivity(baseActivity.getIntent());
-//									Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-//
-//								}
-							}
-						}catch(UnsupportedEncodingException e){
-							e.printStackTrace();
-						}catch(Exception e){
-							e.printStackTrace();
-						}
-					}	
-	            }
-			});
-			getCoordinate.start();
-
-		}
+		if(keepSilent) return;
+		final BaseActivity baseActivity = (BaseActivity)getActivity();
+		if (baseActivity != null){
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("detail", detail);
+			baseActivity.getIntent().putExtras(bundle);
+			
+			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+			baseActivity.startActivity(baseActivity.getIntent());
+			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
+		}	
+		
+		
+////		final GoodsDetail requestDetail = this.detail;
+//		
+////		String latV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+////		String lonV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+////		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+////		{
+////			final double lat = Double.valueOf(latV);
+////			final double lon = Double.valueOf(lonV);
+////			Thread convertThread = new Thread(new Runnable(){
+////				@Override
+////				public void run(){
+////					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+////							String.valueOf(lat), String.valueOf(lon));
+////					try{
+////						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+////						JSONObject js = new JSONObject(baiduJsn);
+////						Object errorCode = js.get("error");
+////						if(errorCode instanceof Integer && (Integer)errorCode == 0){
+////							String x = (String)js.get("x");
+////							String y = (String)js.get("y");
+////							byte[] bytes = Base64.decode(x);
+////							x = new String(bytes, "UTF-8");
+////							
+////							bytes = Base64.decode(y);
+////							y = new String(bytes, "UTF-8");
+////							
+////							Double dx = Double.valueOf(x);
+////							Double dy = Double.valueOf(y);
+////							
+////							int ix = (int)(dx * 1E6);
+////							int iy = (int)(dy * 1E6);
+////							
+////							x = String.valueOf(ix);
+////							y = String.valueOf(iy);
+////							
+////							Bundle bundle = new Bundle();
+////							bundle.putString("detailPosition", x +"," + y);
+////							String areaname = requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+////							if(areaname != null){
+////								String[] aryArea = areaname.split(",");
+////								if(aryArea != null && aryArea.length > 0){
+////									bundle.putString("title", aryArea[aryArea.length - 1]);
+////								}
+////							}
+////							
+////							startBaiduMap(bundle, requestDetail);
+////							return;
+////						}
+////
+////					}catch(UnsupportedEncodingException e){
+////						e.printStackTrace();
+////					}catch(Exception e){
+////						e.printStackTrace();
+////					}
+////					String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
+////					Bundle bundle = new Bundle();
+////					bundle.putString("detailPosition", positions);
+////					bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+////					
+////					startBaiduMap(bundle,requestDetail);
+////				}
+////			});
+////			convertThread.start();
+////		}
+////		else{
+////			Thread getCoordinate = new Thread(new Runnable(){
+////	            @Override
+////	            public void run() {
+////	            	if(getActivity() == null) return;
+////					String city = QuanleimuApplication.getApplication().cityName;
+////					if(!city.equals("")){
+////						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+////						try{
+////							String googleJsn = Communication.getDataByUrlGet(googleUrl);
+////							String[] info = googleJsn.split(",");
+////							if(info != null && info.length == 4){
+////								String positions = 
+////										Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
+////										+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+////								Bundle bundle = new Bundle();
+////								bundle.putString("detailPosition", positions);
+////								bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+////
+////								startBaiduMap(bundle, requestDetail);
+////							}
+////						}catch(UnsupportedEncodingException e){
+////							e.printStackTrace();
+////						}catch(Exception e){
+////							e.printStackTrace();
+////						}
+////					}	
+////	            }
+////			});
+////			getCoordinate.start();
+////
+////		}
 	}
 	
 	

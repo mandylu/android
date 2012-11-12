@@ -8,6 +8,7 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
+import org.jivesoftware.smack.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
@@ -23,12 +24,19 @@ import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
+import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
+import com.quanleimu.util.Communication;
+import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 
+import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.List;
+
+import org.json.JSONObject;
 
 public class BaiduMapActivity extends MapActivity implements LocationListener{
 	
@@ -51,23 +59,95 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	    }
 	    super.onPause();
 	}
-	@Override
-	protected void onResume() {
-	    if (mBMapMan != null) {
-	        mBMapMan.start();
-	    }
-	    
-        final MapView mapView = (MapView) findViewById(R.id.bmapsView);
-         
-        MapController mapController = mapView.getController();
-        mapView.setBuiltInZoomControls(true);
+	
+	private void setTargetCoordinate(final GoodsDetail detail){
+		final String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+		final String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+		{
+//			final double lat = Double.valueOf(latV);
+//			final double lon = Double.valueOf(lonV);
+			Thread convertThread = new Thread(new Runnable(){
+				@Override
+				public void run(){
+//					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+//							String.valueOf(lat), String.valueOf(lon));
+					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
+							latV, lonV);
+					
+					try{
+						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+						JSONObject js = new JSONObject(baiduJsn);
+						Object errorCode = js.get("error");
+						if(errorCode instanceof Integer && (Integer)errorCode == 0){
+							String x = (String)js.get("x");
+							String y = (String)js.get("y");
+							byte[] bytes = Base64.decode(x);
+							x = new String(bytes, "UTF-8");
+							
+							bytes = Base64.decode(y);
+							y = new String(bytes, "UTF-8");
+							
+							Double dx = Double.valueOf(x);
+							Double dy = Double.valueOf(y);
+							
+							int ix = (int)(dx * 1E6);
+							int iy = (int)(dy * 1E6);
+							
+							x = String.valueOf(ix);
+							y = String.valueOf(iy);
+							
+							applyToMap(x, y);
+							return;
+						}
 
-        Bundle bundle = this.getIntent().getExtras();
-        if(bundle != null){
-	        String position = bundle.getString("detailPosition");
-	        String[] positions = position.split(",");
-	        if(positions.length == 2){
-	        	endGeoPoint = new GeoPoint(Integer.parseInt(positions[0]), Integer.parseInt(positions[1]));
+					}catch(UnsupportedEncodingException e){
+						e.printStackTrace();
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+					applyToMap(String.valueOf((int)((Double.valueOf(latV))*1E6)), String.valueOf((int)((Double.valueOf(latV)*1E6))));
+				}
+			});
+			convertThread.start();
+		}
+		else{
+			Thread getCoordinate = new Thread(new Runnable(){
+	            @Override
+	            public void run() {
+	            	if(QuanleimuApplication.getApplication().getApplicationContext() == null) return;
+					String city = QuanleimuApplication.getApplication().cityName;
+					if(!city.equals("")){
+						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+						try{
+							String googleJsn = Communication.getDataByUrlGet(googleUrl);
+							String[] info = googleJsn.split(",");
+							if(info != null && info.length == 4){
+								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
+								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+								applyToMap(x, y);
+							}
+						}catch(UnsupportedEncodingException e){
+							e.printStackTrace();
+						}catch(Exception e){
+							e.printStackTrace();
+						}
+					}	
+	            }
+			});
+			getCoordinate.start();
+
+		}
+	}
+	
+	private void applyToMap(final String x, final String y){
+		this.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+		    	endGeoPoint = new GeoPoint(Integer.parseInt(x), Integer.parseInt(y));
+		    	
+		    	MapView mapView = (MapView) findViewById(R.id.bmapsView);
+		    	MapController mapController = mapView.getController();
 				mapController.animateTo(endGeoPoint);
 				mapController.setZoom(15);
 				
@@ -76,18 +156,50 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		        
 		        MKLocationManager locationManager = mBMapMan.getLocationManager();	        
 		        Location location = locationManager.getLocationInfo();
-		        if (location != null)
-		        {
-		        	this.updateMyLocationOverlay(location);
-		        }else
-		        {
-			        locationManager.requestLocationUpdates(this);
+		        if (location != null){
+		        	updateMyLocationOverlay(location);
+		        } else{
+			        locationManager.requestLocationUpdates(BaiduMapActivity.this);
 		        }
-	        }
-	        
+		        mBMapMan.start();
+			}
+		});
 
+	}
+    
+
+	
+	@Override
+	protected void onResume() {
+		super.onResume();
+	    if (mBMapMan != null) {
+	        mBMapMan.start();
+	    }
+	    
+        MapView mapView = (MapView) findViewById(R.id.bmapsView);
+         
+        MapController mapController = mapView.getController();
+        Location location = LocationService.getInstance().getLastKnownLocation();
+        if(location != null){
+	        GeoPoint gp = new GeoPoint((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));
+	        mapController.setCenter(gp);
+        }
+        mapView.setBuiltInZoomControls(true);
+
+        Bundle bundle = this.getIntent().getExtras();
+        if(bundle != null){
+	        GoodsDetail position = (GoodsDetail)bundle.getSerializable("detail");
+	        if(position == null) return;
+			String areaname = position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+			if(areaname != null){
+				String[] aryArea = areaname.split(",");
+				if(aryArea != null && aryArea.length > 0){
+					((TextView)findViewById(R.id.tvTitle)).setText(aryArea[aryArea.length - 1]);
+				}
+			}
+	        setTargetCoordinate(position);
         }	    
-	    super.onResume();
+	    
 	} 
 	@Override
 	protected boolean isRouteDisplayed() {
@@ -96,6 +208,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		this.setTheme(R.style.lightTheme);
 		super.onCreate(savedInstanceState);
 		if(QuanleimuApplication.context == null){
 			QuanleimuApplication.context = new WeakReference<Context>(this);
@@ -114,15 +227,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 				BaiduMapActivity.this.finish();
 			}
 		});
-		this.findViewById(R.id.left_action).setPadding(0, 0, 0, 0);
-		Bundle bundle = this.getIntent().getExtras();
-		if(bundle != null){
-			String title = bundle.getString("title");
-			if(title != null && !title.equals("")){
-				((TextView)findViewById(R.id.tvTitle)).setText(title);
-			}
-		}
-		
+		this.findViewById(R.id.left_action).setPadding(0, 0, 0, 0);		
         super.initMapActivity(mBMapMan);
         
 	}
