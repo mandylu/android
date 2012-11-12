@@ -466,7 +466,11 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 //				updateMessageCountInfo(rootView);
 //			}
 			break;
+        case MSG_USER_LOGOUT:
+        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
+			break;			
 		}
+		
 	
 	}
 

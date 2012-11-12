@@ -201,9 +201,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	                }
 	            }
 	            break;
-	        case MSG_USER_LOGOUT:
-	        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
-				break;
 	        case MSG_USER_LOGIN:
 	        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
 	            break;
