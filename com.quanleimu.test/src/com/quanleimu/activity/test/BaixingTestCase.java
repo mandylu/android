@@ -77,7 +77,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 			etPwd.setText(TEST_DATA_PASSWORD);
 			
 			loginBtn.doClick();
-			assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 5000));
+			try {
+				assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 5000));
+			} catch (Exception ex) {
+				assertTrue("登录出现错误", false);
+			}
 		}
 	}
 	
