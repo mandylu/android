@@ -172,29 +172,29 @@ public class SplashJob {
 				}
 			}
 
-			if(postMu != null){
-				long time = postMu.getTime();
-				if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
-					String apiName = "category_list";
-					ArrayList<String> list = new ArrayList<String>();
-					String url = Communication.getApiUrl(apiName, list);
-					try {
-						String json = Communication.getDataByUrl(url, false);
-						if (json != null) {
-							postMu.setJson(json);
-							postMu.setTime(System.currentTimeMillis());
-							Util.saveDataToLocate(parentActivity, "saveFirstStepCate", postMu);
-							
-//							String tmpPath = "/quanleimu/favorites/百姓网收藏图片/";
-//							Util.saveDataToSdCard(tmpPath, "catetemp", postMu);
-							
-							valid = true;
-						}
-					} catch(Exception e){
-						
-					}
-				}
-			}
+//			if(postMu != null){
+//				long time = postMu.getTime();
+//				if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
+//					String apiName = "category_list";
+//					ArrayList<String> list = new ArrayList<String>();
+//					String url = Communication.getApiUrl(apiName, list);
+//					try {
+//						String json = Communication.getDataByUrl(url, false);
+//						if (json != null) {
+//							postMu.setJson(json);
+//							postMu.setTime(System.currentTimeMillis());
+//							Util.saveDataToLocate(parentActivity, "saveFirstStepCate", postMu);
+//							
+////							String tmpPath = "/quanleimu/favorites/百姓网收藏图片/";
+////							Util.saveDataToSdCard(tmpPath, "catetemp", postMu);
+//							
+//							valid = true;
+//						}
+//					} catch(Exception e){
+//						
+//					}
+//				}
+//			}
 			if(valid){
 				String json = postMu.getJson();
 				
@@ -252,30 +252,30 @@ public class SplashJob {
 			CityList cityList = new CityList();
 			String content = null;
 			// load content
-			try {
-				// 1. load from locate.
-				Pair<Long, Object> pair = Util.loadDataAndTimestampFromLocate(parentActivity, "cityjson");
-				
-				long timestamp = pair.first;
-				content = (String) pair.second;
-				
-				// 2. load from server.
-				long updateTimestamp = MobileConfig.getInstance().getCityTimestamp();
-				if (timestamp < updateTimestamp || content == null || content.length() == 0) {
-					String apiName = "city_list";
-					String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-					content = Communication.getDataByUrl(url, true);
-					if (content != null && content.length() > 0) 
-					{
-						Util.saveDataToLocate(parentActivity, "cityjson", content);
-					}
-				}
-	
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (BXHttpException e) {
-				e.printStackTrace();
-			}
+//			try {
+//				// 1. load from locate.
+//				Pair<Long, Object> pair = Util.loadDataAndTimestampFromLocate(parentActivity, "cityjson");
+//				
+//				long timestamp = pair.first;
+//				content = (String) pair.second;
+//				
+//				// 2. load from server.
+//				long updateTimestamp = MobileConfig.getInstance().getCityTimestamp();
+//				if (timestamp < updateTimestamp || content == null || content.length() == 0) {
+//					String apiName = "city_list";
+//					String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+//					content = Communication.getDataByUrl(url, true);
+//					if (content != null && content.length() > 0) 
+//					{
+//						Util.saveDataToLocate(parentActivity, "cityjson", content);
+//					}
+//				}
+//	
+//			} catch (IOException e) {
+//				e.printStackTrace();
+//			} catch (BXHttpException e) {
+//				e.printStackTrace();
+//			}
 			
 			// 3. load from asset (if citylist not cached & network failed)
 			if (content == null || content.length() == 0)

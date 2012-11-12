@@ -1,5 +1,6 @@
 package com.quanleimu.activity;
 
+import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -13,6 +14,7 @@ import android.content.IntentFilter;
 import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
+import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,9 +28,13 @@ import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
+import com.quanleimu.entity.PostMu;
+import com.quanleimu.util.Communication;
 import com.quanleimu.util.LocationService;
+import com.quanleimu.util.MobileConfig;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
+import com.quanleimu.util.Communication.BXHttpException;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
@@ -495,7 +501,55 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				task.run();
 			}
 		}
+		((new Thread(new Runnable(){
+			@Override
+			public void run(){
+				PostMu postMu = (PostMu)Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "saveFirstStepCate");
+				if(postMu != null){
+					long time = postMu.getTime();
+					if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
+						String apiName = "category_list";
+						ArrayList<String> list = new ArrayList<String>();
+						String url = Communication.getApiUrl(apiName, list);
+						try {
+							String json = Communication.getDataByUrl(url, false);
+							if (json != null) {
+								postMu.setJson(json);
+								postMu.setTime(System.currentTimeMillis());
+								Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "saveFirstStepCate", postMu);
+							}
+						} catch(Exception e){
+							
+						}
+					}
+				}
+				
+				try {
+					// 1. load from locate.
+					Pair<Long, Object> pair = Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "cityjson");
+					
+					long timestamp = pair.first;
+					String content = (String) pair.second;
+					
+					// 2. load from server.
+					long updateTimestamp = MobileConfig.getInstance().getCityTimestamp();
+					if (timestamp < updateTimestamp || content == null || content.length() == 0) {
+						String apiName = "city_list";
+						String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+						content = Communication.getDataByUrl(url, true);
+						if (content != null && content.length() > 0) 
+						{
+							Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "cityjson", content);
+						}
+					}
 		
+				} catch (IOException e) {
+					e.printStackTrace();
+				} catch (BXHttpException e) {
+					e.printStackTrace();
+				}
+			}
+		}))).start();
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
 //		Profiler.clear();
 	}
