@@ -1907,9 +1907,26 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	private int imgHeight = 0;
 	
+	////to fix stupid system error. all text area will be the same content after app is brought to front when activity not remain is checked
+	private void setInputContent(){		
+		if(layout_txt == null) return;
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			View v = layout_txt.getChildAt(i);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			if(bean == null) continue;
+			View control = (View)v.getTag(HASH_CONTROL);
+			if(control != null && control instanceof TextView){
+				if(params != null && params.containsKey(bean.getDisplayName())){
+					((TextView)control).setText(params.getUiData(bean.getDisplayName()));
+				}
+			}
+		}
+	}
+	
 	@Override
 	public void onStart(){
 		super.onStart();
+		setInputContent();
 //		imgHeight = imgs[0].getMeasuredHeight()
 	}
 
