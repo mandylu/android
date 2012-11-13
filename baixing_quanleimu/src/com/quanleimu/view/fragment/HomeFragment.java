@@ -349,7 +349,7 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 		{
 			List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 					.getListFirst();
-			if (allCates == null)
+			if (allCates == null || allCates.size() == 0)
 				return;
 			if (info == null)
 				return;
