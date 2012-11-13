@@ -522,7 +522,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 						content = Communication.getDataByUrl(url, true);
 						if (content != null && content.length() > 0) 
 						{
-							CityList cityList = JsonUtil.parseCityListFromJson((pair.second));
+							CityList cityList = JsonUtil.parseCityListFromJson(content);
 							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "cityjson", content, updateTimestamp);							
 							QuanleimuApplication.getApplication().updateCityList(cityList);
 						}
@@ -538,25 +538,22 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				Pair<Long, String> firstCatePair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "saveFirstStepCate");
 				
 				String categoryContent = firstCatePair.second;
-				if(categoryContent != null && categoryContent.length() > 0){
-					long timestamp = firstCatePair.first;
-					long updateTimestamp = MobileConfig.getInstance().getCategoryTimestamp();
-					if (timestamp < updateTimestamp) {
-						String apiName = "category_list";
-						ArrayList<String> list = new ArrayList<String>();
-						list.add("cityEnglishName="+QuanleimuApplication.getApplication().cityEnglishName);
-						String url = Communication.getApiUrl(apiName, list);
-						try {
-							String json = Communication.getDataByUrl(url, true);
-							if (json != null) {
-								Util.saveJsonAndTimestampToLocate(getApplicationContext(), "saveFirstStepCate", json, updateTimestamp);
-							}
-						} catch(Exception e){
-							
+				long timestamp = firstCatePair.first;
+				long updateTimestamp = MobileConfig.getInstance().getCategoryTimestamp();
+				if (timestamp < updateTimestamp || categoryContent == null || categoryContent.length() == 0) {
+					String apiName = "category_list";
+					ArrayList<String> list = new ArrayList<String>();
+					list.add("cityEnglishName="+QuanleimuApplication.getApplication().cityEnglishName);
+					String url = Communication.getApiUrl(apiName, list);
+					try {
+						String json = Communication.getDataByUrl(url, true);
+						if (json != null) {
+							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "saveFirstStepCate", json, updateTimestamp);
 						}
+					} catch(Exception e){
+						
 					}
 				}
-				
 			}
 		}))).start();
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();

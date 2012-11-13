@@ -37,6 +37,9 @@ import com.quanleimu.entity.values;
 public class JsonUtil {
 	
 	public static CityList parseCityListFromJackson(String jsonData){
+		if (jsonData == null || jsonData.length() == 0)
+			return null;
+		
 		CityList cityList = new CityList();
 		List<CityDetail> lists = new ArrayList<CityDetail>();
 		JsonFactory factory = new JsonFactory();
