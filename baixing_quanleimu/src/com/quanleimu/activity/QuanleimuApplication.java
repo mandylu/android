@@ -187,7 +187,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	public void setListLookHistory(List<GoodsDetail> listLookHistory) {
-		if(listLookHistory != null && listLookHistory.size() > 50){
+        if (listLookHistory == null) {
+            return;
+        } else if(listLookHistory.size() > 50){
 			this.listLookHistory = new ArrayList<GoodsDetail>(listLookHistory.subList(0, 50));
 		}else{
 			this.listLookHistory = listLookHistory;
@@ -199,7 +201,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	public void setListMyStore(List<GoodsDetail> listMyStore) {
-		if(listMyStore != null && listMyStore.size() > 50){
+        if (listMyStore == null) {
+            return;
+        } else if(listMyStore.size() > 50){
 			this.listMyStore = new ArrayList<GoodsDetail>(listMyStore.subList(0, 50));
 		}else{
 			this.listMyStore = listMyStore;

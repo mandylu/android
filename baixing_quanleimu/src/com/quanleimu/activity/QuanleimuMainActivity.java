@@ -565,10 +565,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
 
-//        if (MobileConfig.getInstance().isUseUmengUpdate()) {
-//            UmengUpdateAgent.update(this);
-//        }
-
 		if (savedInstanceState != null)
 		{
 			globalTabCtrl = (CustomizeTabHost)savedInstanceState.get("tabCtrl");
@@ -612,6 +608,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			}
 		}
 //		Profiler.markEnd("maincreate");
+
+        if (MobileConfig.getInstance().isUseUmengUpdate()) {
+            UmengUpdateAgent.update(this);
+        }
 	}
 	
 	@Override
