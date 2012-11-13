@@ -161,13 +161,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		MobclickAgent.onResume(this);
 		this.savedInstance = false;
 		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
-
-//		HashMap<String,String> map = new HashMap<String,String>();
-//		map.put("tracktype", "pageview");
-//		map.put("city", "shanghai");
-//		map.put("timestamp", "1234567");
-//		BxTrackData data = new BxTrackData(map);
-//		BxTracker.getInstance().addTrackData(this, data);
 	}
 
 

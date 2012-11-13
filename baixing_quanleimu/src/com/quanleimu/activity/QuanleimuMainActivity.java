@@ -477,6 +477,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		{
 			this.notifyStackTop();
 		}
+		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 		
 //		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 //		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
@@ -588,7 +589,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		pendingTask = new ArrayList<Runnable>();
 		
 		setContentView(R.layout.main_activity);
-		findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
+		if (savedInstanceState == null)
+		{
+			findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
+		}
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		
 		splashJob = new SplashJob(this, this);
