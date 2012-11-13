@@ -35,8 +35,8 @@
     <string name="back">返回</string>
     <string name="delete">删除</string>
 
-    <string name="tab_browse">浏览信息</string>
-    <string name="tab_user_center">用户中心</string>
+    <string name="tab_browse">分类查找</string>
+    <string name="tab_user_center">个人中心</string>
     <string name="tab_post">免费发布</string>
 
     <!-- dialog text -->

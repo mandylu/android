@@ -129,7 +129,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 //		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
 
 		title.m_visible = true;
-		title.m_title = "用户中心";
+		title.m_title = "个人中心";
 //		title.hasGlobalSearch = true;
 		
 //		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
