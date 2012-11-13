@@ -165,6 +165,13 @@ public class KeepLiveTest extends BaixingTestCase {
 			openPostFirstCategory(i);
 			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 					AbsListViewElement.class);
+			if (subCatListView == null) {
+				goBack();
+				openTabbar(TAB_ID_POST);
+				openPostFirstCategory(i);
+				subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
+						AbsListViewElement.class);
+			}
 			assertNotNull(subCatListView);
 			int count = subCatListView.getChildCount();
 			subCatListView = null;
