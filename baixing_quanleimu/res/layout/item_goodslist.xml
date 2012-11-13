@@ -58,7 +58,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:textColor="@drawable/list_titleselector"
+            android:textColor="@color/common_black"
             android:textSize="16dip"
             android:textStyle="bold"
             android:layout_marginRight="5dp">

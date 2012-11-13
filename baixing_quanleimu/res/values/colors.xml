@@ -27,6 +27,7 @@
     <color name="vad_call_btn_text">#ffffff</color>
     
     <!-- common color -->
+    <color name="common_black">#000000</color>
     <color name="common_placeholder">#808080</color>
     <color name="common_background">#f3f1e8</color>
     <color name="common_edit_text_color">#333333</color>

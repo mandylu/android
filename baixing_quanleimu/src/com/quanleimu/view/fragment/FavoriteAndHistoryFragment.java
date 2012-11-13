@@ -97,7 +97,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         glLoader.setGoodsList(list);
         glLoader.setHasMore(false);
 
-        adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData());
+        adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData(), null);
         adapter.setHasDelBtn(true);
         adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 //		adapter.setList(tempGoodsList.getData());		

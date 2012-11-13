@@ -40,6 +40,7 @@ import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.*;
+import com.quanleimu.view.AdViewHistory;
 import com.quanleimu.view.FilterUtil;
 import com.quanleimu.view.FilterUtil.CustomizeItem;
 import com.quanleimu.view.FilterUtil.FilterSelectListener;
@@ -200,7 +201,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		super.onStackTop(isBack);
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
-			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
+			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
@@ -536,7 +537,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				}
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
-				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData());
+				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 				updateData(adapter, goodsListLoader.getGoodsList().getData());
 				lvGoodsList.setAdapter(adapter);
 				goodsListLoader.setHasMore(true);

@@ -71,6 +71,7 @@ import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
+import com.quanleimu.view.AdViewHistory;
 import com.quanleimu.view.AuthController;
 import com.quanleimu.widget.ContextMenuItem;
 import com.quanleimu.widget.HorizontalListView;
@@ -219,6 +220,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	private void saveToHistory(){
+		AdViewHistory.getInstance().markRead(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+
         if (detail.getValueByKey("status").equals("0") == false) { //非 active 信息不存到历史纪录
             return;
         }
@@ -394,7 +397,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 				else
 				{
-					initContent(detail, mListLoader.getGoodsList().getData().get(position), position, ((ViewPager) arg0), false);
+					GoodsDetail detaiObj = mListLoader.getGoodsList().getData().get(position);
+					initContent(detail, detaiObj, position, ((ViewPager) arg0), false);
 				}
 				return detail;
 			}

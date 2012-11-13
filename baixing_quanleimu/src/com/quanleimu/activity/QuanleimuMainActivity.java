@@ -38,6 +38,7 @@ import com.quanleimu.util.Communication.BXHttpException;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.AdViewHistory;
 import com.quanleimu.view.CustomizeTabHost;
 import com.quanleimu.view.CustomizeTabHost.TabIconRes;
 import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
@@ -250,6 +251,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				} catch (Exception e) {}
 		    	Log.d("quanleimu", "exit");
 		    	dialog.dismiss();
+		    	AdViewHistory.getInstance().clearHistory();
 		    	QuanleimuMainActivity.this.finish();
 //		        System.exit(0);
 //		            		QuanleimuMainActivity.this.finish();

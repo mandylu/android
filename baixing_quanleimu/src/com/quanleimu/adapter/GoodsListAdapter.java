@@ -16,6 +16,8 @@ import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.AbsListView;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -33,6 +35,7 @@ import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.TextUtil;
 import com.quanleimu.util.Util;
+import com.quanleimu.view.AdViewHistory;
 import com.quanleimu.widget.AnimatingImageView;
 import com.quanleimu.widget.ContextMenuItem;
 
@@ -55,6 +58,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	private int messageWhat = -1;
 	private boolean uiHold = false; 
 	private boolean showImage = true;
+	private AdViewHistory vadHistory;
 	
 //	private RelativeLayout.LayoutParams lp = null;
 	
@@ -100,11 +104,12 @@ public class GoodsListAdapter extends BaseAdapter {
 		updateGroups(outerGroup);
 	}
 
-	public GoodsListAdapter(Context context, List<GoodsDetail> list) {
+	public GoodsListAdapter(Context context, List<GoodsDetail> list, AdViewHistory adViewHistory) {
 		super();
 		this.context = context;
 		this.list = list;
 		showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
+		vadHistory = adViewHistory;
 	}
 	
 	public void setImageVisible(boolean showImage)
@@ -378,8 +383,11 @@ public class GoodsListAdapter extends BaseAdapter {
 					}
 				}
 			}
+			
+			final GoodsDetail detailObj = list.get(position);
+			
 //			String price = list.get(position).getMetaValueByKey("价格");
-			String price = list.get(position).getValueByKey("价格");
+			String price = detailObj.getValueByKey("价格");
 			if (price == null || price.equals("")) {
 				holder.tvPrice.setVisibility(View.GONE);
 			} else {
@@ -392,11 +400,19 @@ public class GoodsListAdapter extends BaseAdapter {
 //			if(chars < title.length()){
 //				title = title.substring(0, chars);
 //			}
-			holder.tvDes.setText(list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+			holder.tvDes.setText(detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
 //			holder.tvDes.setText(title);
 			holder.tvDes.setTypeface(null, Typeface.BOLD);
-	
-			String dateV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
+			if (vadHistory != null && vadHistory.isReaded(detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)))
+			{
+				holder.tvDes.setTextColor(context.getResources().getColor(R.color.vad_meta_label));
+			}	
+			else
+			{
+				holder.tvDes.setTextColor(context.getResources().getColor(R.color.common_black));
+			}
+			
+			String dateV = detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
 			if(dateV != null && !dateV.equals(""))
 			{
 				Date date = new Date(Long.parseLong(dateV) * 1000);

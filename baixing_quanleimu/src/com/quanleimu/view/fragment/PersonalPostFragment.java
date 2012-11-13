@@ -133,7 +133,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if (currentType == TYPE_MYPOST)
 			listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		
-		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost);
+		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost, null);
         adapter.setHasDelBtn(true);
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
