@@ -101,14 +101,9 @@ public class BXUpdateService extends Service {
                 if (!updateDir.exists()) {
                     updateDir.mkdirs();
                 }
-//                if (!updateFile.exists()) {
-//                    updateFile.createNewFile();
-//                }
-                //下载函数，以QQ为例子
-                //增加权限<uses-permission android:name="android.permission.INTERNET">;
-                //todo ming url 以 apk 结尾
+
                 //todo ming 下载失败的处理
-//                apkUrl = "http://pages.baixing.com/mobile/android_baixing_wap_V2.7.1.apk";
+//                apkUrl = "http://pages.baixing.com/mobile/android_baixing_wap_V2.7.2.apk";
                 long downloadSize = downloadUpdateFile(apkUrl, updateFile);
                 if (downloadSize > 0) {
                     //下载成功
@@ -138,11 +133,10 @@ public class BXUpdateService extends Service {
             URL url = new URL(downloadUrl);
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestProperty("User-Agent", "PacificHttpClient");
-            if (currentSize > 0) {
-                httpConnection.setRequestProperty("RANGE", "bytes=" + currentSize + "-");
-            }
+            httpConnection.setRequestProperty("Accept-Encoding", "identity");
             httpConnection.setConnectTimeout(10000);
             httpConnection.setReadTimeout(20000);
+
             updateTotalSize = httpConnection.getContentLength();
             if (httpConnection.getResponseCode() == 404) {
                 throw new Exception("fail!");
@@ -154,8 +148,6 @@ public class BXUpdateService extends Service {
             } else {
                 fos = this.openFileOutput("baixing_in_tmp.apk", Context.MODE_WORLD_READABLE);
             }
-//
-
 
             byte buffer[] = new byte[4096];
             int readsize = 0;
@@ -198,19 +190,10 @@ public class BXUpdateService extends Service {
                     }
                     Uri uri = Uri.fromFile(new File(apkStr));
                     Intent installIntent = new Intent(Intent.ACTION_VIEW, uri);
-//                    installIntent.setData(uri);
                     installIntent.addFlags(Intent.FLAG_GRANT_READ_URI_PERMISSION);
                     installIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
                     installIntent.setDataAndType(uri, "application/vnd.android.package-archive");
-//                    installIntent.setClassName("com.android.packageinstaller",
-//                                    "com.android.packageinstaller.PackageInstallerActivity");
                     startActivity(installIntent);
-//
-//                    updatePendingIntent = PendingIntent.getActivity(BXUpdateService.this, 0, installIntent, 0);
-//
-//                    updateNotification.defaults = Notification.DEFAULT_SOUND;//铃声提醒
-//                    updateNotification.setLatestEventInfo(BXUpdateService.this, "新版百姓网客户端", "下载完成,立刻点击安装", updatePendingIntent);
-//                    updateNotificationManager.notify(0, updateNotification);
                     updateNotificationManager.cancel(0);
                     //停止服务
                     stopService(updateIntent);
