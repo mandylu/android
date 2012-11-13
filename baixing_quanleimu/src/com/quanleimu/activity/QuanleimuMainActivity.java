@@ -565,9 +565,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
 
-        if (MobileConfig.getInstance().isUseUmengUpdate()) {
-            UmengUpdateAgent.update(this);
-        }
+//        if (MobileConfig.getInstance().isUseUmengUpdate()) {
+//            UmengUpdateAgent.update(this);
+//        }
 
 		if (savedInstanceState != null)
 		{

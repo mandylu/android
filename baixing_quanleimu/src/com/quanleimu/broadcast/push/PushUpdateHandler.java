@@ -38,14 +38,16 @@ public class PushUpdateHandler extends PushHandler {
     @Override
     public void processMessage(String message) {
         try
-        {
+        {   // { type:"bxupdate", data:{serverVersion:"3.1", apkUrl:"xxx", versionInfo:"yyy"} }
             JSONObject json = new JSONObject(message);
 
             JSONObject data = json.getJSONObject("data");
-//            JSONObject updateInfo = data.getJSONObject("content");
+            JSONObject updateInfo = data.getJSONObject("content");
 
 //            String serverVersion = updateInfo.getString("serverVersion");
-            String serverVersion = "3.8";
+            String serverVersion = data.getString("serverVersion");
+            String apkUrl = data.getString("apkUrl");
+            String versionInfo = data.getString("versionInfo");
 
             if (Version.compare(serverVersion, QuanleimuApplication.version) == 1) {
                 NotificationCompat.Builder mBuilder =
@@ -56,7 +58,7 @@ public class PushUpdateHandler extends PushHandler {
 
                 Intent resultIntent = new Intent(cxt, BXStartupIntentReceiver.class);
                 resultIntent.setAction("bxupdate");
-                resultIntent.putExtra("apkUrl", "http://pages.baixing.com/mobile/?f=android_wap");
+                resultIntent.putExtra("apkUrl", apkUrl);
 
                 PendingIntent resultPendingIntent = PendingIntent.getBroadcast(cxt, 200, resultIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
                 mBuilder.setContentIntent(resultPendingIntent);
