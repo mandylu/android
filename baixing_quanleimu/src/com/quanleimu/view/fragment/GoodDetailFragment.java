@@ -219,6 +219,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	private void saveToHistory(){
+        if (detail.getValueByKey("status").equals("0") == false) { //非 active 信息不存到历史纪录
+            return;
+        }
 		List<GoodsDetail> listLookHistory = QuanleimuApplication.getApplication().getListLookHistory();
 		if(listLookHistory != null){
 			for(int i=0;i<listLookHistory.size();i++)
