@@ -170,6 +170,7 @@ public class KeepLiveTest extends BaixingTestCase {
 			subCatListView = null;
 			Log.i(LOG_TAG, "runPostAll:" + count);
 			String oldCateName = "";
+			int retry = 0;
 			for(int j = 0; j < count ; j++) {
 				openTabbar(TAB_ID_POST);
 				openPostFirstCategory(i);
@@ -178,8 +179,14 @@ public class KeepLiveTest extends BaixingTestCase {
 				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 				if (v == null) {
 					Log.i(LOG_TAG, "runPostAll:Category v==null prev" + oldCateName);
+					if (retry++ == 0) {
+						j--;
+						Log.i(LOG_TAG, "runPostAll:Category v==null retry" + oldCateName);
+						continue;
+					}
 				}
 				if (v != null) {
+					retry = 0;
 					if(!oldCateName.equals(v.getText())) {
 						oldCateName = v.getText();
 						Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);

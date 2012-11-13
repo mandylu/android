@@ -450,7 +450,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 							InputType.TYPE_CLASS_NUMBER 
 							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
 							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
-						value = "300";
+						value = "30";
 					} else {
 						int randLen = 8 + (int)(Math.random() * 12);
 						value = "";
@@ -500,7 +500,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 						TimeUnit.SECONDS.sleep(2);
 						ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 						if (lv2 != null) {
-							if (lv.equals(lv2)) {
+							boolean done = false;
+							if (lv.getId() == lv2.getId()) {
+								ViewElement el = findElementByText(POST_DONE);
+								if (el != null) done = true;
+							}
+							if (done) {
 								postOtherDone();
 								TimeUnit.SECONDS.sleep(1);
 							} else {
