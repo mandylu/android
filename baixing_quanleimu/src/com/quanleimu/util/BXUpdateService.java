@@ -132,10 +132,10 @@ public class BXUpdateService extends Service {
         try {
             URL url = new URL(downloadUrl);
             httpConnection = (HttpURLConnection) url.openConnection();
-            httpConnection.setRequestProperty("User-Agent", "PacificHttpClient");
+            httpConnection.setRequestProperty("User-Agent", "baixing java HttpClient");
             httpConnection.setRequestProperty("Accept-Encoding", "identity");
-            httpConnection.setConnectTimeout(10000);
-            httpConnection.setReadTimeout(20000);
+            httpConnection.setConnectTimeout(30000);
+            httpConnection.setReadTimeout(60000);
 
             updateTotalSize = httpConnection.getContentLength();
             if (httpConnection.getResponseCode() == 404) {
@@ -151,13 +151,17 @@ public class BXUpdateService extends Service {
 
             byte buffer[] = new byte[4096];
             int readsize = 0;
+            String updateInfo = null;
+
             while ((readsize = is.read(buffer)) > 0) {
                 fos.write(buffer, 0, readsize);
                 totalSize += readsize;
                 //为了防止频繁的通知导致应用吃紧，百分比增加10才通知一次
-                if ((downloadCount == 0) || (int) (totalSize * 100 / updateTotalSize) - 10 > downloadCount) {
-                    downloadCount += 10;
-                    updateNotification.setLatestEventInfo(BXUpdateService.this, "正在下载", (int) totalSize * 100 / updateTotalSize + "%", updatePendingIntent);
+                if ((downloadCount == 0) || (totalSize / (updateTotalSize*1.0)) * 100 - 1 > downloadCount) {
+                    downloadCount += 1;
+                    updateInfo = (int) totalSize * 100 / updateTotalSize + "% "
+                            + (int)(totalSize/1000) + "KB/" + (int)(updateTotalSize/1000) + "KB";
+                    updateNotification.setLatestEventInfo(BXUpdateService.this, "正在下载新版客户端", updateInfo, updatePendingIntent);
                     updateNotificationManager.notify(0, updateNotification);
                 }
             }

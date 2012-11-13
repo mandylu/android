@@ -83,6 +83,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
                         updateUsername();
                     }
                 });
+                //todo ming 7 旧版兼容
 
             }
         });

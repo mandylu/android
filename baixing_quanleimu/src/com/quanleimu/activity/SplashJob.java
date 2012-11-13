@@ -76,7 +76,7 @@ public class SplashJob {
 		new Thread(new ReadInfoThread()).start();
 		new Thread(new ReadCateListThread()).start();
 
-        if (MobileConfig.getInstance().hasNewVersion()) {
+        if (MobileConfig.getInstance().hasNewVersion() && MobileConfig.getInstance().isUseUmengUpdate() == false) {
             UpdateHelper.getInstance().checkNewVersion(parentActivity);
         }
 	}

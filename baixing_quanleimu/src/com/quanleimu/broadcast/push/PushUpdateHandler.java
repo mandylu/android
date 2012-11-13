@@ -32,7 +32,7 @@ public class PushUpdateHandler extends PushHandler {
 
     @Override
     public boolean acceptMessage(String type) {
-        return "bxinfo".equals(type);
+        return "bxupdate".equals(type);
     }
 
     @Override

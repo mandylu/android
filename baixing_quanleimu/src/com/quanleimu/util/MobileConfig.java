@@ -54,6 +54,14 @@ public class MobileConfig {
 			return true;//默认记录
 		}
 	}
+
+    public boolean isUseUmengUpdate() {
+        try {
+            return json.getBoolean("umengUpdateFlag");
+        } catch (JSONException e) {
+            return false;//默认记录
+        }
+    }
 	
 	public long getCityTimestamp() {
 		try {

@@ -28,13 +28,13 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.mobclick.android.MobclickAgent;
 import com.quanleimu.entity.CityDetail;
 import com.quanleimu.util.TrackConfig;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.view.fragment.FirstRunFragment;
+import com.umeng.analytics.MobclickAgent;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
  * change author cause logic changed a lot.

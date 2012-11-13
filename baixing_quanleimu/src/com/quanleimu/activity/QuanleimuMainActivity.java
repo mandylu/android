@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
-import com.mobclick.android.MobclickAgent;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
 import com.quanleimu.broadcast.CommonIntentAction;
@@ -46,6 +45,8 @@ import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
 import com.quanleimu.view.fragment.TalkFragment;
+import com.umeng.update.UmengUpdateAgent;
+
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
@@ -460,8 +461,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		
 		if(!QuanleimuApplication.update){
 			QuanleimuApplication.update = true;
-			MobclickAgent.setUpdateOnlyWifi(false);
-			MobclickAgent.update(this);
+            //去掉幽梦旧sdk 更新调用
 		}
 		
 		/*//TODO: refactor
@@ -564,6 +564,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
+
+        if (MobileConfig.getInstance().isUseUmengUpdate()) {
+            UmengUpdateAgent.update(this);
+        }
 
 		if (savedInstanceState != null)
 		{
