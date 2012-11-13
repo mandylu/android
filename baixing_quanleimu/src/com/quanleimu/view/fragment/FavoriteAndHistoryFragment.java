@@ -59,6 +59,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         if (getArguments() != null) {
             isFav = getArguments().getBoolean("isFav", false);
         }
+
+        glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
     }
 
     @Override
@@ -87,8 +89,6 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             }
 
         });
-
-        glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
 
         tempGoodsList = new GoodsList(isFav ? QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
         glLoader.setGoodsList(tempGoodsList);
