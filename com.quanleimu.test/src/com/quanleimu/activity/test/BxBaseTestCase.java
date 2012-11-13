@@ -43,7 +43,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
 	public static final String TAB_ID_HOME = "ivHomePage";
 	public static final String TAB_ID_HOME_V3 = "tab_button_1";
-	public static final String TAB_ID_HOME_TEXT = "浏览信息";
+	public static final String TAB_ID_HOME_TEXT = "分类查找";
 	public static final String TAB_ID_POST = "tab_button_2";
 	public static final String TAB_ID_POST_TEXT = "免费发布";
 	public static final String TAB_ID_MY = "ivMyCenter";

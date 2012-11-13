@@ -264,7 +264,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 				}
 				if (tv != null) {
-					if (tv.getText().length() > 0) return tv;
+					if (!enterRandVal || tv.getText().length() > 0) return tv;
 					String value = "";
 					if(tv.getInputType() == (
 							InputType.TYPE_CLASS_NUMBER 
