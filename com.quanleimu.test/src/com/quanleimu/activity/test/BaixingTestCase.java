@@ -698,7 +698,8 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		ViewGroupElement avi = null;
 		int loop = index % indexSize;
-		while(loop >= 0) {
+		if (loop <= 0) loop = 1;
+		while(loop > 0) {
 			try {
 				avi = findElementById(AD_VIEWLIST_MARK_ID, loop--, ViewGroupElement.class);
 				if (avi != null) {

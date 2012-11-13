@@ -60,7 +60,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String HOME_BACK_MSG = "创建快捷方式";
 	public static final String HOME_BACK_BUTTON_TEXT = "否";
 
-	public static final String HOME_MARK_TEXTS = "浏览信息,物品交易,全职招聘,求职简历";
+	public static final String HOME_MARK_TEXTS = TAB_ID_HOME_TEXT + ",物品交易,全职招聘,求职简历";
 	
 	public static final String SEARCH_MARK_BUTTON_ID = "globalSearch";
 	public static final String SEARCH_TEXTVIEW_ID = "etSearch";
