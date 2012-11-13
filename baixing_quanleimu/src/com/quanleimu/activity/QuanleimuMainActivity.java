@@ -27,13 +27,14 @@ import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.entity.ChatMessage;
-import com.quanleimu.entity.PostMu;
+import com.quanleimu.entity.CityList;
+import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
+import com.quanleimu.util.Communication.BXHttpException;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.MobileConfig;
 import com.quanleimu.util.Sender;
 import com.quanleimu.util.ShortcutUtil;
-import com.quanleimu.util.Communication.BXHttpException;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
@@ -64,8 +65,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	
 	public QuanleimuMainActivity(){
 		super();
-		
-		
 	}
 	
 	public void onSwitchToTab(ETAB_TYPE tabType){
@@ -507,34 +506,15 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		((new Thread(new Runnable(){
 			@Override
 			public void run(){
-				PostMu postMu = (PostMu)Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "saveFirstStepCate");
-				if(postMu != null){
-					long time = postMu.getTime();
-					if (time + (7 * 24 * 3600 * 1000) < System.currentTimeMillis()) {
-						String apiName = "category_list";
-						ArrayList<String> list = new ArrayList<String>();
-						String url = Communication.getApiUrl(apiName, list);
-						try {
-							String json = Communication.getDataByUrl(url, false);
-							if (json != null) {
-								postMu.setJson(json);
-								postMu.setTime(System.currentTimeMillis());
-								Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "saveFirstStepCate", postMu);
-							}
-						} catch(Exception e){
-							
-						}
-					}
-				}
-				
+				// update city list first
 				try {
 					// 1. load from locate.
-					Pair<Long, Object> pair = Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "cityjson");
+					Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "cityjson");
 					
 					long timestamp = pair.first;
-					String content = (String) pair.second;
+					String content = pair.second;
 					
-					// 2. load from server.
+					// 2. check the timestamp && update from server.
 					long updateTimestamp = MobileConfig.getInstance().getCityTimestamp();
 					if (timestamp < updateTimestamp || content == null || content.length() == 0) {
 						String apiName = "city_list";
@@ -542,7 +522,9 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 						content = Communication.getDataByUrl(url, true);
 						if (content != null && content.length() > 0) 
 						{
-							Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "cityjson", content);
+							CityList cityList = JsonUtil.parseCityListFromJson((pair.second));
+							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "cityjson", content, updateTimestamp);							
+							QuanleimuApplication.getApplication().updateCityList(cityList);
 						}
 					}
 		
@@ -551,6 +533,30 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				} catch (BXHttpException e) {
 					e.printStackTrace();
 				}
+			
+				// update category list
+				Pair<Long, String> firstCatePair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "saveFirstStepCate");
+				
+				String categoryContent = firstCatePair.second;
+				if(categoryContent != null && categoryContent.length() > 0){
+					long timestamp = firstCatePair.first;
+					long updateTimestamp = MobileConfig.getInstance().getCategoryTimestamp();
+					if (timestamp < updateTimestamp) {
+						String apiName = "category_list";
+						ArrayList<String> list = new ArrayList<String>();
+						list.add("cityEnglishName="+QuanleimuApplication.getApplication().cityEnglishName);
+						String url = Communication.getApiUrl(apiName, list);
+						try {
+							String json = Communication.getDataByUrl(url, true);
+							if (json != null) {
+								Util.saveJsonAndTimestampToLocate(getApplicationContext(), "saveFirstStepCate", json, updateTimestamp);
+							}
+						} catch(Exception e){
+							
+						}
+					}
+				}
+				
 			}
 		}))).start();
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();

@@ -35,7 +35,6 @@ import android.provider.MediaStore;
 import android.text.Editable;
 import android.text.InputType;
 import android.text.TextWatcher;
-import android.util.Base64;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -43,9 +42,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.view.WindowManager;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -67,11 +66,9 @@ import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
-import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
-import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.LocationService.BXRgcListener;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
@@ -556,11 +553,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 			cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 		}
-		PostMu postMu =  (PostMu) Util.loadDataFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
-		if (postMu != null && !postMu.getJson().equals("")) {
-			json = postMu.getJson();
-			Long time = postMu.getTime();
-			if (time + (24 * 3600 * 1000) < System.currentTimeMillis()) {
+		
+		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
+		json = pair.second;
+		if (json != null && json.length() > 0) {
+			long time = pair.first;
+			if (time + (24 * 3600) < System.currentTimeMillis()/1000) {
 //				myHandler.sendEmptyMessage(1);
 //				sendMessage(1, null);
 //				addCategoryItem();
@@ -1210,15 +1208,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						return;
 					}
 					// 获取数据成功
-					PostMu postMu = new PostMu();
-					postMu.setJson(json);
-					postMu.setTime(System.currentTimeMillis());
 					Activity activity = getActivity();
 					if (activity != null)
 					{
 						//保存模板
-						Helper.saveDataToLocate(activity, categoryEnglishName
-								+ this.cityEnglishName, postMu);
+						Util.saveJsonAndTimestampToLocate(activity, categoryEnglishName
+								+ this.cityEnglishName, json, System.currentTimeMillis()/1000);
 //						if (isUpdate) {
 							sendMessage(1, null);
 //						}

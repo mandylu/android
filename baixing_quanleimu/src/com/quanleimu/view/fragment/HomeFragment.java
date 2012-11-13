@@ -28,7 +28,6 @@ import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
-import com.quanleimu.view.CategorySelectionView;
 import com.quanleimu.view.CustomizePagerManager.PageProvider;
 import com.quanleimu.view.CustomizePagerManager.PageSelectListener;
 import com.quanleimu.widget.CustomizeGridView;
@@ -156,15 +155,6 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
 	}
 	@Override
 	public void onStackTop(boolean isBack) {
-		View v = getView();
-		if (v != null)
-		{
-			CategorySelectionView catesView = (CategorySelectionView)v.findViewById(R.id.cateSelection);
-			if (catesView != null)
-			{
-				catesView.setRootCateList(QuanleimuApplication.getApplication().getListFirst());
-			}
-		}
 //		//Mobile Track Config入口
 //		TrackConfig.getInstance().getConfig();//获取config
 		

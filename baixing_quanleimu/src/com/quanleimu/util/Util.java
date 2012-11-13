@@ -8,6 +8,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
@@ -29,6 +30,8 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -453,23 +456,82 @@ public class Util {
 	}
 	
 	/**
-	 * 将数据Object从手机内存中读出来, 同时将修改时间返回(单位秒)。
+	 * 保存json数据和timstamp(秒数)至手机内存。会检查json的完整性。
+	 * @param context
+	 * @param file     
+	 * @param json      json String
+	 * @param timestamp 秒数
+	 * @return
+	 */
+	public static String saveJsonAndTimestampToLocate(Context context, String file, String json, long timestamp) {
+		try { // check the data validate.
+			new JSONObject(json);
+		} catch (JSONException e) {
+			return "data invalid";
+		}
+		String s = String.format("%d,%s", timestamp, json);
+		return saveDataToLocate(context, file, s);
+	}
+	
+	/**
+	 * 将Json数据(String)从手机内存中读出来, 同时将timstamp返回(单位秒)。
 	 * @param context
 	 * @param filename
-	 * @return Pair(LastModifiedTimeStamp, Object): if file not exist, LastModifiedTimeStamp = 0;  
+	 * @return Pair(LastModifiedTimeStamp, String): if file not exist, LastModifiedTimeStamp = 0;  
 	 */
-	public static Pair<Long, Object> loadDataAndTimestampFromLocate(Context context, String filename) {
+	public static Pair<Long, String> loadJsonAndTimestampFromLocate(Context context, String filename) {
 		if(filename != null && !filename.equals("") && filename.charAt(0) != '_'){
 			filename = "_" + filename;
 		}
 		
-		File file = context.getFileStreamPath(filename);
-		long timestamp = file.lastModified()/1000;
+//		File file = context.getFileStreamPath(filename);
+//		long timestamp = file.lastModified()/1000;
 		
-		Object obj = Util.loadDataFromLocate(context, filename);
-
-		Pair<Long, Object> pair = new Pair<Long, Object>(timestamp, obj);
-		return pair;
+		String s = (String) Util.loadDataFromLocate(context, filename);
+		
+		if (s != null && s.length() > 0) {
+			int index = s.indexOf(',');
+			if (index != -1) {
+				long timestamp = Long.parseLong(s.substring(0, index));
+				String data = s.substring(index+1);
+				return new Pair<Long, String>(timestamp, data);
+			}
+		}
+		return new Pair<Long, String>(0l, "");
+	}
+	
+	/**
+	 * 
+	 * @param context
+	 * @param filename
+	 * @return
+	 */
+	public static Pair<Long, String> loadDataAndTimestampFromAssets(Context context, String filename) {
+		InputStream is = null;
+		Pair<Long, String> pair = new Pair<Long, String>(0l, "");
+		try {
+			is = context.getAssets().open(filename);
+			byte[] b = new byte[is.available()];
+			is.read(b);
+			String s = new String(b);
+			if (s != null && s.length() > 0) {
+				int index = s.indexOf(',');
+				if (index != -1) {
+					long timestamp = Long.parseLong(s.substring(0, index));
+					String data = s.substring(index+1);
+					pair = new Pair<Long, String>(timestamp, data);
+				}
+			}
+		}catch (IOException e) {
+			e.printStackTrace();
+		} finally {
+			try {
+				if (is != null)
+					is.close();
+			} catch (IOException e) {
+			}
+		}
+		return pair;		
 	}
 
 	//将数据从手机内存中读出来
@@ -1365,7 +1427,7 @@ public class Util {
 			return currentUserId;
 		}
 		
-		UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
+		UserBean user = Util.getCurrentUser();
 		if (user != null)
 		{
 			currentUserId = user.getId();
@@ -1375,7 +1437,7 @@ public class Util {
 	}
 	
 	public static String refreshAndGetMyId(Context context) {
-		UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
+		UserBean user = Util.getCurrentUser();
 		if (user != null)
 		{
 			currentUserId = user.getId();

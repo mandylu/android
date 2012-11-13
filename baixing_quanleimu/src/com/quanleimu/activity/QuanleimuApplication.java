@@ -24,6 +24,7 @@ import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
 import com.quanleimu.entity.BXLocation;
 import com.quanleimu.entity.CityDetail;
+import com.quanleimu.entity.CityList;
 import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.GoodsDetail;
@@ -37,6 +38,7 @@ import com.quanleimu.message.BxMessageCenter.IBxNotification;
 import com.quanleimu.util.BXDatabaseHelper;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.Helper;
 import com.quanleimu.util.LocationService;
 import com.quanleimu.util.Util;
 //import net.sourceforge.simcpux.Constants;
@@ -290,7 +292,40 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public void setPersonMark(String personMark) {
 		this.personMark = personMark;
 	}
-
+	
+	public void updateCityList(CityList cityList)
+	{
+		if (cityList == null || cityList.getListDetails() == null
+				|| cityList.getListDetails().size() == 0) {
+		} else {
+			QuanleimuApplication.getApplication().setListCityDetails(cityList.getListDetails());
+			
+			//update current city name
+			String cityName =  (String) Util.loadDataFromLocate(getApplicationContext(), "cityName");
+			if (cityName == null || cityName.equals("")) {
+			} else {
+				List<CityDetail> cityDetails = QuanleimuApplication.getApplication().getListCityDetails();
+				boolean exist = false;
+				for(int i = 0;i< cityDetails.size();i++)
+				{
+					if(cityName.equals(cityDetails.get(i).getName()))
+					{
+						String englishCityName = cityDetails.get(i).getEnglishName();
+						QuanleimuApplication.getApplication().setCityEnglishName(englishCityName);
+						QuanleimuApplication.getApplication().setCityName(cityName);
+						exist = true;
+						break;
+					}
+				}
+				if (!exist) { // FIXME: @zhongjiawu
+					QuanleimuApplication.getApplication().setCityEnglishName("shanghai");
+					QuanleimuApplication.getApplication().setCityName("上海");
+				}
+			}
+		}
+	}
+	
+	
 	//热门城市列表
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
 	

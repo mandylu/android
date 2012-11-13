@@ -3,6 +3,7 @@ package com.quanleimu.util;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
@@ -25,7 +26,7 @@ import org.json.JSONObject;
  */
 public class UpdateHelper {
     private static UpdateHelper ourInstance = new UpdateHelper();
-    Activity activity = null;
+    Context activity = null;
     ProgressDialog pd = null;
 
     private final int MSG_NETWORK_ERROR = 0;
@@ -100,7 +101,7 @@ public class UpdateHelper {
     /**
      * 检查版本更新
      */
-    public void checkNewVersion(Activity currentActivity) {
+    public void checkNewVersion(Context currentActivity) {
         this.activity = currentActivity;
 
         ParameterHolder params = new ParameterHolder();

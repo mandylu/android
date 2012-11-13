@@ -9,9 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
 import com.quanleimu.activity.QuanleimuApplication;
+import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.util.Communication.BXHttpException;
 
 public class MobileConfig {
@@ -27,7 +29,8 @@ public class MobileConfig {
 	
 	private MobileConfig() {
 		Context context = QuanleimuApplication.getApplication().getApplicationContext();
-		String jsonString = (String) Util.loadDataFromLocate(context, "mobile_config");
+		Pair<Long, String> p = Util.loadJsonAndTimestampFromLocate(context, "mobile_config");
+		String jsonString = p.second;
 		if (jsonString == null || jsonString.length() == 0) {
 			try {
 				InputStream input = context.getAssets().open("mobile_config.txt");
@@ -97,19 +100,23 @@ public class MobileConfig {
 		@Override
 		public void run() {
 			String apiName = "mobile_config";
-			Pair<Long, Object> p = 
-					Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
-//			if(p != null){
-//				if(System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
-//					return;
-//				}
-//			}
+
+			Pair<Long, String> p = 
+					Util.loadJsonAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
+			if (System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
+				return;
+			}
+			
 			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
 				String content = Communication.getDataByUrl(url, true);
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config", content);
+					Util.saveJsonAndTimestampToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
+					
+//			        if (MobileConfig.this.hasNewVersion()) {			        	
+//			            UpdateHelper.getInstance().checkNewVersion(QuanleimuApplication.getApplication().getApplicationContext());
+//			        }
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();

@@ -10,6 +10,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -25,7 +26,6 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.Filterss;
-import com.quanleimu.entity.PostMu;
 import com.quanleimu.entity.values;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
@@ -117,20 +117,19 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		
 		// AND 地区_s:m7259
-		PostMu postMu = (PostMu) Util
-				.loadDataFromLocate(
+		Pair<Long, String> pair = Util
+				.loadJsonAndTimestampFromLocate(
 						getActivity(),
 						"saveFilterss"
 								+ categoryEnglishName
 								+ QuanleimuApplication.getApplication().cityEnglishName);
-		if (postMu == null || postMu.getJson().equals("")) {
+		String json = pair.second;
+		long time = pair.first;
+		if (json == null || json.length() == 0) {
 			showSimpleProgress();
-			
 			new Thread(new GetGoodsListThread(true)).start();
 		} else {
-			json = postMu.getJson();
-			long time = postMu.getTime();
-			if (time + 24 * 3600 * 1000 < System.currentTimeMillis()) {
+			if (time + 24 * 3600 < System.currentTimeMillis()/1000) {
 				sendMessage(1, null);
 				showSimpleProgress();
 				
@@ -269,10 +268,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			try {
 				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
-					PostMu postMu = new PostMu();
-					postMu.setJson(json);
-					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, json, System.currentTimeMillis()/1000);
 					if(isUpdate){
 						sendMessage(1, null);
 					}

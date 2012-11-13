@@ -10,7 +10,7 @@ import android.app.Activity;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
+import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,7 +24,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.TextView;
 import android.widget.Toast;
 
 import com.quanleimu.activity.BaseFragment;
@@ -36,10 +35,16 @@ import com.quanleimu.entity.Filterss;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.GoodsList;
 import com.quanleimu.entity.ImageList;
-import com.quanleimu.entity.PostMu;
 import com.quanleimu.imageCache.SimpleImageLoader;
 import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.*;
+import com.quanleimu.util.Communication;
+import com.quanleimu.util.ErrorHandler;
+import com.quanleimu.util.GoodsListLoader;
+import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
+import com.quanleimu.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Tracker;
+import com.quanleimu.util.Util;
 import com.quanleimu.view.AdViewHistory;
 import com.quanleimu.view.FilterUtil;
 import com.quanleimu.view.FilterUtil.CustomizeItem;
@@ -47,9 +52,6 @@ import com.quanleimu.view.FilterUtil.FilterSelectListener;
 import com.quanleimu.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.widget.PullToRefreshListView;
 import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
-import com.quanleimu.util.TrackConfig.TrackMobile.Key;
-import com.quanleimu.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
@@ -222,15 +224,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		if (listFilterss == null)
 		{
-			PostMu postMu = (PostMu) Util
-					.loadDataFromLocate(
-							getActivity(),
-							"saveFilterss"
+			Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(
+									getActivity(),
+									"saveFilterss"
 									+ categoryEnglishName
 									+ QuanleimuApplication.getApplication().cityEnglishName);
-			if (postMu != null && !"".equals(postMu.getJson()))
+			String json = pair.second;
+			if (json != null && json.length() > 0)
 			{
-				listFilterss = JsonUtil.getFilters(postMu.getJson()).getFilterssList();
+				listFilterss = JsonUtil.getFilters(json).getFilterssList();
 			}
 		}
 		//Update filter bar.
@@ -263,10 +265,9 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
-					PostMu postMu = new PostMu();
-					postMu.setJson(json);
-					postMu.setTime(System.currentTimeMillis());
-					Util.saveDataToLocate(getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, postMu);
+					Util.saveJsonAndTimestampToLocate(getAppContext(), 
+							"saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, 
+							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();
 					if(isUpdate){
