@@ -152,7 +152,10 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 				mapController.setZoom(15);
 				
 		        List<Overlay> overlays = mapView.getOverlays();
-		        overlays.add(new MyLocationOverlays(endGeoPoint));
+		        if (overlays != null)
+		        {
+		        	overlays.add(new MyLocationOverlays(endGeoPoint));
+		        }
 		        
 		        MKLocationManager locationManager = mBMapMan.getLocationManager();	        
 		        Location location = locationManager.getLocationInfo();
