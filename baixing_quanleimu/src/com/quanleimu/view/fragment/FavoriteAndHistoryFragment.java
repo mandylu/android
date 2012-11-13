@@ -90,8 +90,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
         });
 
+        
         tempGoodsList = new GoodsList(isFav ? QuanleimuApplication.getApplication().getListMyStore() : QuanleimuApplication.getApplication().getListLookHistory());
-        glLoader.setGoodsList(tempGoodsList);
+        
+        GoodsList list = (GoodsList)(tempGoodsList.clone()); 
+        glLoader.setGoodsList(list);
         glLoader.setHasMore(false);
 
         adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData());
