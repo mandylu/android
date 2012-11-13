@@ -1101,9 +1101,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
             trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
 			break;
 		case R.id.vad_buzz_btn:
-			if (isCurrentAdFromMobile())
-			{
-				getView().findViewById(R.id.vad_send_message).performLongClick();
+			if (isCurrentAdFromMobile()){
+				if(getView() != null){
+					View btn = getView().findViewById(R.id.vad_send_message);
+					if(btn != null){
+						btn.performLongClick();
+					}
+				}
+//				getView().findViewById(R.id.vad_send_message).performLongClick();
 			}
 			else
 			{
