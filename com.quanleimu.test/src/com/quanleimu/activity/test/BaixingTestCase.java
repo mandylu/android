@@ -437,14 +437,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		RandomHan han = new RandomHan();
 		int loop = 0;
-		String firstVal = null;
+		//String firstVal = null;
 		while(index < 15) {
 			try {
 				BXTextViewElement tv = findTextMetaByIndex(index++);
 				if (tv != null) {
-					if (index == 1) {
-						if (firstVal != null && firstVal.equals(tv.getText())) break;
-					}
+					//if (index == 1) {
+					//	if (firstVal != null && firstVal.equals(tv.getText())) break;
+					//}
 					if (tv.getText().length() > 0) continue;
 					if(tv.getInputType() == (
 							InputType.TYPE_CLASS_NUMBER 
@@ -459,7 +459,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 						}
 					}
 					tv.setText(value);
-					if (index == 1) firstVal = value;
+					//if (index == 1) firstVal = value;
 					TimeUnit.SECONDS.sleep(1);
 				} else {
 					throw new IndexOutOfBoundsException("" + index);
@@ -471,9 +471,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
 				lv.scrollToNextScreen();
+				TimeUnit.SECONDS.sleep(1);
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
+		
 		scrollTop(1, POST_SCROLLVIEW_PARENT_ID);
 		index = 0;
 		loop = 0;
@@ -520,6 +522,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
 				lv.scrollToNextScreen();
+				TimeUnit.SECONDS.sleep(1);
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
