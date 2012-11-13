@@ -1913,10 +1913,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	{
 		if (detail == null)
 		{
+            Toast.makeText(getActivity(), "无信息无法显示地图", 1).show();
 			return;
 		}
 		
-		if(keepSilent) return;
+		if(keepSilent) {
+            Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
+            return;
+        }
 		final BaseActivity baseActivity = (BaseActivity)getActivity();
 		if (baseActivity != null){
 			Bundle bundle = new Bundle();
@@ -1926,7 +1930,9 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
 			baseActivity.startActivity(baseActivity.getIntent());
 			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
-		}	
+		} else {
+            Toast.makeText(getActivity(), "显示地图失败", 1).show();
+        }
 		
 		
 ////		final GoodsDetail requestDetail = this.detail;

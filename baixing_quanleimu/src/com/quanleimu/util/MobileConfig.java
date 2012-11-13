@@ -99,11 +99,11 @@ public class MobileConfig {
 			String apiName = "mobile_config";
 			Pair<Long, Object> p = 
 					Util.loadDataAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
-			if(p != null){
-				if(System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
-					return;
-				}
-			}
+//			if(p != null){
+//				if(System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
+//					return;
+//				}
+//			}
 			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
 				String content = Communication.getDataByUrl(url, true);
