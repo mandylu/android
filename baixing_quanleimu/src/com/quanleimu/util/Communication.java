@@ -20,6 +20,7 @@ import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -310,6 +311,21 @@ public class Communication implements Comparator<String> {
 		E_DATA_POLICY_NETWORK_CACHEABLE, E_DATA_POLICY_NETWORK_UNCACHEABLE
 	};
 	
+	public static void registerDevice(boolean async) {
+		if (async) {
+			new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					Communication.registerDevice(NetworkProtocols.getInstance().getHttpClient());
+				}
+			}).start();
+		}else {
+			Communication.registerDevice(NetworkProtocols.getInstance().getHttpClient());
+		}
+		
+	}
+	
 	private static void registerDevice(HttpClient httpClient){
 		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
 		if(currentUser == null){
@@ -352,7 +368,7 @@ public class Communication implements Comparator<String> {
 //					user.setPhone(userObj.getString("mobile"));
 					
 					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymouUser", user);
+					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", user);
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, user);
 				} 
 				return;

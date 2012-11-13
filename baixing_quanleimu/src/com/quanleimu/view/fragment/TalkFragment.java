@@ -97,19 +97,29 @@ public class TalkFragment extends BaseFragment {
 		
 		private boolean fromAd = false;
 		
+		public String getMyUserId() {
+			if (myUserId == null)
+			{
+				myUserId = Util.getMyId(getActivity());
+				if (myUserId == null)
+					Communication.registerDevice(true);
+			}
+			return myUserId;
+		}
+		
+		
 		@Override
 		public void onCreate(Bundle savedInstanceState) {
 			// TODO Auto-generated method stub
 			super.onCreate(savedInstanceState);
 			
 			Bundle bundle = getArguments();
+			getMyUserId();
 			
 			ChatMessage msg = null;
 			if (bundle != null)
 			{
 				targetUserId = bundle.getString("receiverId");
-				//FIXME: this is load from file, may cost times to load it on main thread.				
-				myUserId = Util.getMyId(getActivity()); 
 				
 				adId = bundle.getString("adId");
 				if(bundle.containsKey("receiverNick")){
@@ -137,7 +147,7 @@ public class TalkFragment extends BaseFragment {
 				else
 				{
 					ChatMessageDatabase.prepareDB(getActivity());
-					String cachedSession = ChatMessageDatabase.getSessionId(myUserId, targetUserId, adId);
+					String cachedSession = ChatMessageDatabase.getSessionId(getMyUserId(), targetUserId, adId);
 					sessionId = cachedSession == null ? sessionId : cachedSession;
 				}
 				
@@ -284,7 +294,7 @@ public class TalkFragment extends BaseFragment {
 						if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 						{
 							ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-							if (msg.getTo().equals(myUserId))
+							if (msg.getTo().equals(getMyUserId()))
 							{
 								receiveAndUpdateUI(msg);
 							}
@@ -405,7 +415,7 @@ public class TalkFragment extends BaseFragment {
 			msg.setMessage(message);
 			msg.setSession(this.sessionId);
 			msg.setAdId(this.adId);
-			msg.setFrom(this.myUserId);
+			msg.setFrom(this.getMyUserId());
 			msg.setTo(this.targetUserId);
 			msg.setId(System.currentTimeMillis() + "");
 			msg.setTimestamp(System.currentTimeMillis()/1000);
@@ -529,7 +539,7 @@ public class TalkFragment extends BaseFragment {
 			
 			public void run() 
 			{
-				if (myUserId == null)
+				if (getMyUserId() == null)
 					return;
 				
 				ArrayList<String> cmdOpts = new ArrayList<String>();
@@ -589,7 +599,7 @@ public class TalkFragment extends BaseFragment {
 
 			@Override
 			public void run() {
-				if (myUserId == null) 
+				if (getMyUserId() == null) 
 					return;
 				
 				ArrayList<String> cmdOpts = new ArrayList<String>();
@@ -659,7 +669,7 @@ public class TalkFragment extends BaseFragment {
 					sendMessage(MSG_SCROLL_BOTTOM, null);
 					break;
 				case R.id.im_send_btn:
-					if (myUserId == null)
+					if (getMyUserId() == null)
 						return;
 					
 					EditText text = (EditText) getView().findViewById(R.id.im_input_box);
