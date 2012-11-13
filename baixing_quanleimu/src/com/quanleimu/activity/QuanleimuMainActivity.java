@@ -611,10 +611,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			}
 		}
 //		Profiler.markEnd("maincreate");
-
-        if (MobileConfig.getInstance().isUseUmengUpdate()) {
-            UmengUpdateAgent.update(this);
-        }
+        UmengUpdateAgent.update(this);
+//        if (MobileConfig.getInstance().isUseUmengUpdate()) {
+//            UmengUpdateAgent.update(this);
+//        }
 	}
 	
 	@Override

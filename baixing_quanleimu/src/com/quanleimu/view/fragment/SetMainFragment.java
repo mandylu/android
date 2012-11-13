@@ -25,6 +25,9 @@ import com.quanleimu.util.*;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 
+import com.umeng.update.UmengUpdateAgent;
+import com.umeng.update.UmengUpdateListener;
+import com.umeng.update.UpdateResponse;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -192,7 +195,31 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
 //                updateIntent.putExtra("titleId",R.string.app_name);
 //                updateIntent.putExtra("apkUrl", "3");
 //                getAppContext().startService(updateIntent);
-                UpdateHelper.getInstance().checkNewVersion(getActivity());
+//                UpdateHelper.getInstance().checkNewVersion(getActivity());
+                UmengUpdateAgent.update(QuanleimuApplication.getApplication().getApplicationContext());
+                UmengUpdateAgent.setUpdateAutoPopup(false);
+                UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
+                    @Override
+                    public void onUpdateReturned(int updateStatus,UpdateResponse updateInfo) {
+                        switch (updateStatus) {
+                            case 0: // has update
+                                UmengUpdateAgent.showUpdateDialog(getActivity(), updateInfo);
+                                break;
+                            case 1: // has no update
+                                Toast.makeText(getActivity(), "你所使用的就是最新版本", Toast.LENGTH_SHORT)
+                                        .show();
+                                break;
+                            case 2: // none wifi
+                                Toast.makeText(getActivity(), "为了节省您的流量，请在wifi下更新", Toast.LENGTH_SHORT)
+                                        .show();
+                                break;
+                            case 3: // time out
+                                Toast.makeText(getActivity(), "网络超时，请检查网络", Toast.LENGTH_SHORT)
+                                        .show();
+                                break;
+                        }
+                    }
+                });
                 Tracker.getInstance().event(BxEvent.SETTINGS_CHECKUPDATE).end();
                 break;
             case R.id.setAbout:

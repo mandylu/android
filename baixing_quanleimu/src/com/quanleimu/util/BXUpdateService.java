@@ -134,8 +134,8 @@ public class BXUpdateService extends Service {
             httpConnection = (HttpURLConnection) url.openConnection();
             httpConnection.setRequestProperty("User-Agent", "baixing java HttpClient");
             httpConnection.setRequestProperty("Accept-Encoding", "identity");
-            httpConnection.setConnectTimeout(30000);
-            httpConnection.setReadTimeout(60000);
+            httpConnection.setConnectTimeout(60 * 1000);
+            httpConnection.setReadTimeout(600 * 1000);
 
             updateTotalSize = httpConnection.getContentLength();
             if (httpConnection.getResponseCode() == 404) {
