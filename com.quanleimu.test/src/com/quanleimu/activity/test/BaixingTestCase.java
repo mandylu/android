@@ -92,10 +92,20 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openPostFirstCategory(int firstCatIndex) throws Exception {
-		ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
-		if (catTextView != null) {
-			catTextView.doClick();
-			waitForHideMsgbox(3000);
+		ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
+		if (v != null) {
+			AbsListViewElement lv = findElementById(POST_CATEGORY_GRIDVIEW_ID, AbsListViewElement.class);
+			ViewElement iv = lv.getChildByIndex(firstCatIndex);
+			if (iv != null) {
+				iv.doClick();
+				waitForHideMsgbox(3000);
+			}
+		} else {
+			ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
+			if (catTextView != null) {
+				catTextView.doClick();
+				waitForHideMsgbox(3000);
+			}
 		}
 	}
 	
@@ -612,6 +622,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void openSecondCategoryByIndex(int index) throws Exception {
 		AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);
+		assertNotNull(subCatListView);
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(index,
 				ViewGroupElement.class);
 		subCatView.doClick();

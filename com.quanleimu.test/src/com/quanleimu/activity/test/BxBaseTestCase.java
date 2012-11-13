@@ -104,6 +104,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_SCROLLVIEW_ID = "scrollView1";
 	public static final String POST_SCROLLVIEW_PARENT_ID = "postgoodslayout";
 	public static final String POST_CATEGORY_GRIDVIEW_ID = "firstcategory";
+	public static final String POST_CATEGORY_LIST_ITEM_ID = "tvCategoryName";
 	public static final String POST_SECOND_CATEGORY_LISTVIEW_ID = "post_other_list";
 	public static final int POST_CATEGORY_SELEC_INDEX = 0;
 	public static final String POST_META_LISTVIEW_ID = "post_other_list";
