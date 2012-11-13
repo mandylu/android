@@ -48,7 +48,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String TAB_ID_POST_TEXT = "免费发布";
 	public static final String TAB_ID_MY = "ivMyCenter";
 	public static final String TAB_ID_MY_V3 = "tab_button_3";
-	public static final String TAB_ID_MY_TEXT = "用户中心";
+	public static final String TAB_ID_MY_TEXT = "个人中心";
 	public static final String TAB_TEXT_ID = "tab_text";
 	//Home ID
 	public static final String HOME_APP_NAME_ID = "title_label_app_name";
@@ -487,6 +487,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 		if (v != null) {
 			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			assertNotNull(tv);
 			if (tv == null) return;
 			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
 				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))

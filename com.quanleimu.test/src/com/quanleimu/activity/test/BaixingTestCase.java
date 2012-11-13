@@ -436,9 +436,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 		    }
 		}
 		RandomHan han = new RandomHan();
-		while(index < 10) {
+		int loop = 0;
+		BXTextViewElement ftv = null;
+		while(index < 15) {
 			try {
 				BXTextViewElement tv = findTextMetaByIndex(index++);
+				if (index == 1) {
+					if (ftv != null && ftv.equals(tv)) break;
+					ftv = tv;
+				}
 				if (tv != null) {
 					if (tv.getText().length() > 0) continue;
 					if(tv.getInputType() == (
@@ -455,20 +461,30 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 					tv.setText(value);
 					TimeUnit.SECONDS.sleep(1);
+				} else {
+					throw new IndexOutOfBoundsException("" + index);
 				}
 			} catch (IndexOutOfBoundsException e) {
+				
 				Log.i(LOG_TAG, "findTextMetaByIndex:IndexOutOfBoundsException" + index);
-				/*if (loop++ >= 5) break;
+				if (loop++ > 1) break;
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
-				lv.scrollToNextScreen();*/
-				break;
+				lv.scrollToNextScreen();
+				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
+		scrollTop(1, POST_SCROLLVIEW_PARENT_ID);
 		index = 0;
-		while(index < 5) {
+		loop = 0;
+		ViewGroupElement fv = null;
+		while(index < 10) {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
+				if (index == 1) {
+					if (fv != null && fv.equals(dv)) break;
+					fv = dv;
+				}
 				
 				if (dv != null) {
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
@@ -493,14 +509,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 							}
 						}
 					}
+				} else {
+					throw new IndexOutOfBoundsException("" + index);
 				}
 			} catch (IndexOutOfBoundsException e) {
 				Log.i(LOG_TAG, "findSelectMetaByIndex:IndexOutOfBoundsException" + index);
-				/*if (loop++ >= 5) break;
+				if (loop++ > 1) break;
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
-				lv.scrollToNextScreen();*/
-				break;
+				lv.scrollToNextScreen();
+				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
 	}
