@@ -374,10 +374,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 
 	        public View getView(int position, View convertView, ViewGroup parent)
 	        {
-	        	
 	        	ViewGroup itemRoot = (ViewGroup) convertView;
 	        	if (itemRoot == null)
 	        	{
+	        		if(getActivity() == null) return null;
 	        		itemRoot = (ViewGroup) LayoutInflater.from(getActivity()).inflate(R.layout.item_big_gallery, null);
 	        	}
 	        	
