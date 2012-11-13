@@ -67,6 +67,7 @@ public class Tracker {
 	public void addLog(LogData log)
 	{
 		dataString += log.toJsonObj().toString() + ",";
+		Util.saveDataToSdCard("baixing", "log", log.toJsonObj().toString()+"\n");
 		size++;
 		if (size > threshold) {//100 items,10 for testing
 			try {
