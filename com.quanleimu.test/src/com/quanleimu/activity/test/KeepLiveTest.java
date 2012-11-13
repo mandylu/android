@@ -160,7 +160,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
 		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
-		for (int i = 0; i < 10; i++) {
+		for (int i = 5; i < 10; i++) {
 			openTabbar(TAB_ID_POST);
 			openPostFirstCategory(i);
 			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,

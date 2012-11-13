@@ -220,19 +220,23 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return null;
 	}
 	
+	public BXTextViewElement findTextMetaByIndex(int index, boolean enterRandVal) throws Exception {
+		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, null, enterRandVal);
+	}
+	
 	public BXTextViewElement findTextMetaByIndex(int index) throws Exception {
-		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, null);
+		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, null, false);
 	}
 	
 	public BXTextViewElement findTextMetaByIndex(int index, String displayName) throws Exception {
-		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, displayName);
+		return findTextMetaByIndex(POST_META_EDIT_ITEM_ID, index, displayName, false);
 	}
 	
 	public BXTextViewElement findTextMetaByIndex(String listItemId, int index) throws Exception {
-		return findTextMetaByIndex(listItemId, index, null);
+		return findTextMetaByIndex(listItemId, index, null, false);
 	}
 
-	public BXTextViewElement findTextMetaByIndex(String listItemId, int index, String displayName) throws Exception {
+	public BXTextViewElement findTextMetaByIndex(String listItemId, int index, String displayName, boolean enterRandVal) throws Exception {
 		ViewGroupElement dv = findElementById(listItemId, index, ViewGroupElement.class);
 		Log.i(LOG_TAG, "setOtherMetaByName:" + index);
 		if (dv != null) {
@@ -260,6 +264,31 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 				}
 				if (tv != null) {
+					if (tv.getText().length() > 0) return tv;
+					String value = "";
+					if(tv.getInputType() == (
+							InputType.TYPE_CLASS_NUMBER 
+							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
+							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
+						value = "30";
+					} else {
+						int randLen = 8 + (int)(Math.random() * 12);
+						if (nv.getText().equals("姓名")) randLen = 3;
+						value = "";
+						for(int l = 0; l < randLen; l++) {
+							class RandomHan {
+							    private Random ran = new Random();
+							    private final static int delta = 0x9fa5 - 0x4e00 + 1;
+							     
+							    public char getRandomHan() {
+							        return (char)(0x4e00 + ran.nextInt(delta)); 
+							    }
+							}
+							RandomHan han = new RandomHan();
+							value += han.getRandomHan();
+						}
+					}
+					tv.setText(value);
 					return tv;
 				}
 			}
@@ -427,38 +456,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void postAutoEnterData() throws Exception {
 		int index = 0;
 		String value = "";
-		class RandomHan {
-		    private Random ran = new Random();
-		    private final static int delta = 0x9fa5 - 0x4e00 + 1;
-		     
-		    public char getRandomHan() {
-		        return (char)(0x4e00 + ran.nextInt(delta)); 
-		    }
-		}
-		RandomHan han = new RandomHan();
 		int loop = 0;
 		//String firstVal = null;
 		while(index < 15) {
 			try {
-				BXTextViewElement tv = findTextMetaByIndex(index++);
+				BXTextViewElement tv = findTextMetaByIndex(index++, true);
 				if (tv != null) {
 					//if (index == 1) {
 					//	if (firstVal != null && firstVal.equals(tv.getText())) break;
 					//}
-					if (tv.getText().length() > 0) continue;
-					if(tv.getInputType() == (
-							InputType.TYPE_CLASS_NUMBER 
-							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
-							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
-						value = "30";
-					} else {
-						int randLen = 8 + (int)(Math.random() * 12);
-						value = "";
-						for(int l = 0; l < randLen; l++) {
-							value += han.getRandomHan();
-						}
-					}
-					tv.setText(value);
+					
 					//if (index == 1) firstVal = value;
 					TimeUnit.SECONDS.sleep(1);
 				} else {
