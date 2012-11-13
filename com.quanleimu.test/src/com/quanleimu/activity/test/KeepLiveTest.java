@@ -172,9 +172,7 @@ public class KeepLiveTest extends BaixingTestCase {
 				subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 						AbsListViewElement.class);
 			}
-			assertNotNull(subCatListView);
-			int count = subCatListView.getChildCount();
-			subCatListView = null;
+			int count = (subCatListView != null) ? subCatListView.getChildCount() : 50;
 			Log.i(LOG_TAG, "runPostAll:" + count);
 			String oldCateName = "";
 			int retry = 0;
