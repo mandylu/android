@@ -823,9 +823,12 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	
 	protected void unregisterMsgListener()
 	{
-		if (msgListener != null)
-		{
-			unregisterReceiver(msgListener);
+		if (msgListener != null){
+			try{
+				unregisterReceiver(msgListener);
+			}catch(IllegalArgumentException e){
+				e.printStackTrace();
+			}
 		}
 	}
 
