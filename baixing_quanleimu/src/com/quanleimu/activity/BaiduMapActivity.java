@@ -144,27 +144,40 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		this.runOnUiThread(new Runnable(){
 			@Override
 			public void run(){
-		    	endGeoPoint = new GeoPoint(Integer.parseInt(x), Integer.parseInt(y));
-		    	
-		    	MapView mapView = (MapView) findViewById(R.id.bmapsView);
-		    	MapController mapController = mapView.getController();
-				mapController.animateTo(endGeoPoint);
-				mapController.setZoom(15);
-				
-		        List<Overlay> overlays = mapView.getOverlays();
-		        if (overlays != null)
-		        {
-		        	overlays.add(new MyLocationOverlays(endGeoPoint));
-		        }
-		        
-		        MKLocationManager locationManager = mBMapMan.getLocationManager();	        
-		        Location location = locationManager.getLocationInfo();
-		        if (location != null){
-		        	updateMyLocationOverlay(location);
-		        } else{
-			        locationManager.requestLocationUpdates(BaiduMapActivity.this);
-		        }
-		        mBMapMan.start();
+				try//Add try catch block to make sure to avoid uncaught exception.
+				{
+					endGeoPoint = new GeoPoint(Integer.parseInt(x), Integer.parseInt(y));
+					
+					MapView mapView = (MapView) findViewById(R.id.bmapsView);
+					BMapManager manager = mBMapMan;
+					if (mapView == null || manager == null) //This runnable may execute after activity is destroyed.
+					{
+						return;
+					}
+					
+					MapController mapController = mapView.getController();
+					mapController.animateTo(endGeoPoint);
+					mapController.setZoom(15);
+					
+					List<Overlay> overlays = mapView.getOverlays();
+					if (overlays != null)
+					{
+						overlays.add(new MyLocationOverlays(endGeoPoint));
+					}
+					
+					MKLocationManager locationManager = manager.getLocationManager();	        
+					Location location = locationManager.getLocationInfo();
+					if (location != null){
+						updateMyLocationOverlay(location);
+					} else{
+						locationManager.requestLocationUpdates(BaiduMapActivity.this);
+					}
+					manager.start();
+				}
+				catch(Throwable t)
+				{
+					//Ignore any exception
+				}
 			}
 		});
 
@@ -237,21 +250,32 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	
 	private void updateMyLocationOverlay(Location location)
 	{
-		if (location == null || this.endGeoPoint == null)
-			return;
-		
-		GeoPoint geoPoint = new GeoPoint((int)(location.getLatitude()*1E6), (int)(location.getLongitude()*1E6));
-		GeoPoint midPoint = new GeoPoint((endGeoPoint.getLatitudeE6()+geoPoint.getLatitudeE6())/2, (endGeoPoint.getLongitudeE6()+geoPoint.getLongitudeE6())/2);
-		int latSpan = Math.abs(endGeoPoint.getLatitudeE6()-geoPoint.getLatitudeE6());
-		int longSpan = Math.abs(endGeoPoint.getLongitudeE6()-geoPoint.getLongitudeE6());
-		
-		MapView mapView = (MapView) findViewById(R.id.bmapsView);
-		
-        MyLocationOverlay mylocationOverlay = new MyLocationOverlay(this, mapView);
-        mylocationOverlay.enableMyLocation();
-        mapView.getOverlays().add(mylocationOverlay);	
-		mapView.getController().animateTo(midPoint);
-		mapView.getController().zoomToSpan(latSpan*2, longSpan*2);
+		try //Add try catch block to make sure to avoid uncaught exception.
+		{
+			if (location == null || this.endGeoPoint == null)
+				return;
+			
+			GeoPoint geoPoint = new GeoPoint((int)(location.getLatitude()*1E6), (int)(location.getLongitude()*1E6));
+			GeoPoint midPoint = new GeoPoint((endGeoPoint.getLatitudeE6()+geoPoint.getLatitudeE6())/2, (endGeoPoint.getLongitudeE6()+geoPoint.getLongitudeE6())/2);
+			int latSpan = Math.abs(endGeoPoint.getLatitudeE6()-geoPoint.getLatitudeE6());
+			int longSpan = Math.abs(endGeoPoint.getLongitudeE6()-geoPoint.getLongitudeE6());
+			
+			MapView mapView = (MapView) findViewById(R.id.bmapsView);
+			if (mapView == null)
+			{
+				return;
+			}
+			
+			MyLocationOverlay mylocationOverlay = new MyLocationOverlay(this, mapView);
+			mylocationOverlay.enableMyLocation();
+			mapView.getOverlays().add(mylocationOverlay);	
+			mapView.getController().animateTo(midPoint);
+			mapView.getController().zoomToSpan(latSpan*2, longSpan*2);
+		}
+		catch(Throwable t)
+		{
+			//Ignore any exception.
+		}
 	}
 	
 	class MyLocationOverlays extends Overlay {
