@@ -284,6 +284,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 					} else {
 						int randLen = 8 + (int)(Math.random() * 12);
 						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
+						if (nv.getText().equals("目的地")) randLen = 9;
 						value = "";
 						for(int l = 0; l < randLen; l++) {
 							class RandomHan {
@@ -730,6 +731,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public BXViewGroupElement showAd(int firstCatIndex, int secondCatIndex, int index) throws Exception {
 		openTabbar(TAB_ID_MY_V3);
 		logon();
+		openTabbar(TAB_ID_HOME_V3);
 		openCategoryByIndex(firstCatIndex, secondCatIndex);
 		TimeUnit.SECONDS.sleep(1);
 		assertNotNull(openAdByIndex(index));

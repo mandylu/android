@@ -262,7 +262,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	
 	public void runOnePost() throws Exception {
 		logon();
-		runOnePost(3, "司机");
+		runOnePost(8, "设计策划");
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
@@ -286,6 +286,7 @@ public class KeepLiveTest extends BaixingTestCase {
 			lockStatus(SCREEN_SAVE_LOCK_FILE, "");
 			Log.i(LOG_TAG, "OnePost Category2:" + cateName + " ERROR");
 			BXLog.x("ERROR,Category,OnePost," + firstIndex + "," + cateName);
+			assertTrue("checkPostSuccess", false);
 		}
 	}
 	
