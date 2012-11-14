@@ -219,6 +219,7 @@ public class KeepLiveTest extends BaixingTestCase {
 				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 				if (v == null) {
 					Log.i(LOG_TAG, "runPostAll:Category v==null prev" + oldCateName);
+					BXLog.x("ERRORRETRY,Category,Post," + i + "," + j + "," + oldCateName);
 					if (retry++ == 0) {
 						j--;
 						Log.i(LOG_TAG, "runPostAll:Category v==null retry" + oldCateName);
@@ -257,6 +258,35 @@ public class KeepLiveTest extends BaixingTestCase {
 
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
 		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
+	}
+	
+	public void runOnePost() throws Exception {
+		logon();
+		runOnePost(3, "司机");
+	}
+	
+	private void runOnePost(int firstIndex, String cateName) throws Exception {
+		openTabbar(TAB_ID_POST);
+		openPostFirstCategory(firstIndex);
+		openSecondCategoryByName(cateName);
+		Log.i(LOG_TAG, "runOnePost:" + cateName);
+		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+		assertNotNull("runOnePost:Category v==null prev", v);
+		assertEquals(cateName, v.getText());
+		BXLog.x("Category,OnePost," + firstIndex + "," + cateName);
+		Log.i(LOG_TAG, "runOnePost:Category " + cateName);
+		postAutoEnterData();
+		TimeUnit.SECONDS.sleep(1);
+		if (!postSend(false)) {
+			lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+			Log.i(LOG_TAG, "OnePost Category1:" + cateName + " ERROR");
+		}
+		afterPostSend();
+		if (!checkPostSuccess(true)) {
+			lockStatus(SCREEN_SAVE_LOCK_FILE, "");
+			Log.i(LOG_TAG, "OnePost Category2:" + cateName + " ERROR");
+			BXLog.x("ERROR,Category,OnePost," + firstIndex + "," + cateName);
+		}
 	}
 	
 	private void doFirstCategory(int index) throws Exception {
