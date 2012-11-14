@@ -242,6 +242,7 @@ public class KeepLiveTest extends BaixingTestCase {
 							lockStatus(SCREEN_SAVE_LOCK_FILE, "");
 							postErrors += "POST Category:" + oldCateName + " ERROR\n";
 							Log.i(LOG_TAG, "POST Category2:" + oldCateName + " ERROR");
+							BXLog.x("ERROR,Category,Post," + i + "," + j + "," + oldCateName);
 						}
 					} else {
 						afterPostSend();

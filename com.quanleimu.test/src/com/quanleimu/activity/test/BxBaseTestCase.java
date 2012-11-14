@@ -320,6 +320,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		TextViewElement vm = findElementByText("以后再说");
+		if (vm != null) {
+			vm.doClick();
+			TimeUnit.SECONDS.sleep(1);
+		}
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
 		if (v != null) {
 			v.doClick();
