@@ -149,18 +149,51 @@ public class KeepLiveTest extends BaixingTestCase {
         	Runtime.getRuntime().gc();
         }
 	}
-	
+
 	/*
 	 * Start run post all category Test
 	 */
 	@Test
 	public void runPostAll() throws Exception {
+		runPostAllByIndex(0, 0);
+	}
+	
+	/*
+	 * Start run post all category Test from crash/break
+	 */
+	@Test
+	public void runPostAllFB() throws Exception {
+		String xr = BXLog.xr();
+		if (xr.length() == 0) return;
+		String[] lines = xr.split("\n");
+		int l = lines.length;
+		int firstIndex = -1;
+		int secondIndex = -1;
+		for(int i = l - 1; i > 0; i--) {
+			String line = lines[i];
+			String[] ps = line.split(",");
+			if (ps.length >= 4) {
+				if (ps[0].equals("Category") && ps[1].equals("Post") && ps[2].length() > 0 && ps[3].length() > 0) {
+					try {
+						firstIndex = Integer.valueOf(ps[2]);
+						secondIndex = Integer.valueOf(ps[3]);
+						BXLog.x("FB,Category,Post," + firstIndex + "," + secondIndex);
+						break;
+					} catch (Exception e) {}
+				}
+			}
+		}
+		if (firstIndex > -1 && secondIndex > -1)
+		runPostAllByIndex(firstIndex, secondIndex);
+	}
+
+	private void runPostAllByIndex(int firstIndex, int secondIndex) throws Exception {
 		String postErrors = "";
 		logon();
 		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
 		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
-		for (int i = 0; i < 10; i++) {
+		for (int i = firstIndex; i < 10; i++) {
 			openTabbar(TAB_ID_POST);
 			openPostFirstCategory(i);
 			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
@@ -176,7 +209,8 @@ public class KeepLiveTest extends BaixingTestCase {
 			Log.i(LOG_TAG, "runPostAll:" + count);
 			String oldCateName = "";
 			int retry = 0;
-			for(int j = 0; j < count ; j++) {
+			for(int j = (i == firstIndex ? secondIndex : 0); j < count ; j++) {
+				BXLog.x("Category,Post," + i + "," + j);
 				openTabbar(TAB_ID_POST);
 				openPostFirstCategory(i);
 				openSecondCategoryByIndex(j);
@@ -194,6 +228,7 @@ public class KeepLiveTest extends BaixingTestCase {
 					retry = 0;
 					if(!oldCateName.equals(v.getText())) {
 						oldCateName = v.getText();
+						BXLog.x("Category,Post," + i + "," + j + "," + oldCateName);
 						Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);
 						postAutoEnterData();
 						TimeUnit.SECONDS.sleep(1);

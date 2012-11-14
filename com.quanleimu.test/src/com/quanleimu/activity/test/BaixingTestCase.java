@@ -283,7 +283,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 						value = "30";
 					} else {
 						int randLen = 8 + (int)(Math.random() * 12);
-						if (nv.getText().equals("姓名")) randLen = 3;
+						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
 						value = "";
 						for(int l = 0; l < randLen; l++) {
 							class RandomHan {
