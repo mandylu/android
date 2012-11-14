@@ -155,6 +155,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	 */
 	@Test
 	public void runPostAll() throws Exception {
+		BXLog.xr();
 		runPostAllByIndex(0, 0);
 	}
 	
@@ -188,7 +189,6 @@ public class KeepLiveTest extends BaixingTestCase {
 	}
 
 	private void runPostAllByIndex(int firstIndex, int secondIndex) throws Exception {
-		BXLog.xr();
 		String postErrors = "";
 		logon();
 		openTabbar(TAB_ID_MY_V3);
