@@ -254,11 +254,17 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    
 	    @Override
 	    public void handleRightAction(){
-	    	ViewFlow vfCoupon = (ViewFlow)getView().findViewById(R.id.vfCoupon);
-	    	if(vfCoupon == null || vfCoupon.getSelectedView() == null || vfCoupon.getSelectedView().getTag() == null){
-	    		return;
+	    	String path = null;
+	    	if(listUrl != null && postIndex >= 0 && listUrl.size() > postIndex){
+	    		path = listUrl.get(postIndex);
 	    	}
-	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
+	    	if(path == null) return;
+//	    	ViewFlow vfCoupon = (ViewFlow)getView().findViewById(R.id.vfCoupon);
+//	    	if(vfCoupon == null || vfCoupon.getSelectedView() == null || vfCoupon.getSelectedView().getTag() == null){
+//	    		return;
+//	    	}
+//	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
+	    	String filePath = SimpleImageLoader.getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
 	    	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
