@@ -487,7 +487,21 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				if(arg0 != ViewPager.SCROLL_STATE_IDLE) return;
 				
 				List<String>listUrl = getImageUrls(detail);
-				if(listUrl != null && listUrl.size() > 0){
+				if(listUrl == null || listUrl.size() == 0){
+					ViewGroup currentVG = (ViewGroup)getPage(currentPage);
+					if(currentVG != null){
+						View noimage = currentVG.findViewById(R.id.vad_no_img_tip);
+						if(noimage != null){
+							noimage.setVisibility(View.VISIBLE);
+						}
+						View detail = currentVG.findViewById(R.id.glDetail);
+						if(detail != null){
+							detail.setVisibility(View.GONE);
+						}
+					}
+				}
+//				if(listUrl != null && listUrl.size() > 0){
+				else{
 					ViewGroup currentVG = (ViewGroup)getPage(currentPage);
 					if(currentVG != null){
 						HorizontalListView glDetail = (HorizontalListView) currentVG.findViewById(R.id.glDetail);
@@ -752,29 +766,25 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			List<String>listUrl = getImageUrls(detail);
 			
 			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
+			int cur = pager != null ? pager.getCurrentItem() : -1;
 			if(listUrl == null || listUrl.size() == 0){
 //				llgl.setVisibility(View.GONE);
-				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.VISIBLE);
+				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
+					llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.VISIBLE);
+				}else{
+					llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
+				}
 				llgl.findViewById(R.id.glDetail).setVisibility(View.GONE);
 				
 			}else{
 				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
 				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
-				int cur = pager != null ? pager.getCurrentItem() : -1;
+//				int cur = pager != null ? pager.getCurrentItem() : -1;
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
 				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
 					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
 					glDetail.setOnTouchListener(this);
-	//				Gallery glDetail = (Gallery) contentView.findViewById(R.id.glDetail);
-	//				glDetail.setOnItemSelectedListener(this);
-	//				glDetail.setFadingEdgeLength(10);
-	//				glDetail.setSpacing(40);
-	//				
-	//				MainAdapter adapter = new MainAdapter(contentView.getContext(), listUrl, pageIndex);
-	//				glDetail.setAdapter(adapter);
-	//				glDetail.setOnTouchListener(this);
-	//				glDetail.setSpacing(0);
 					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	
 						@Override
