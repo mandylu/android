@@ -3,7 +3,6 @@ package com.quanleimu.util;
 import java.io.File;
 
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.ThirdpartyTransitActivity;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.NotificationIds;
 import com.quanleimu.view.fragment.LoginFragment;

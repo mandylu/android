@@ -623,23 +623,6 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		super.onStart();
 	}
 	
-	private void showDataFromAlbamOrPhoto(){
-		Intent intent = this.getIntent();
-		Bundle bd = intent.getExtras();
-		Log.w(TAG, bundle.toString());
-		if(bd != null && bd.containsKey(ThirdpartyTransitActivity.isFromPhotoOrAlbam) && bd.getBoolean(ThirdpartyTransitActivity.isFromPhotoOrAlbam)){
-//			if(this.currentView instanceof PostGoodsView)
-			{
-				getCurrentFragment().onActivityResult(bd.getInt(ThirdpartyTransitActivity.Key_RequestCode),
-						bd.getInt(ThirdpartyTransitActivity.Key_RequestResult),
-						(Intent)bd.getParcelable(ThirdpartyTransitActivity.Key_Data));
-//				currentView.onActivityResult(bd.getInt(ThirdpartyTransitActivity.Key_RequestCode),
-//						bd.getInt(ThirdpartyTransitActivity.Key_RequestResult),
-//						(Intent)bd.getParcelable(ThirdpartyTransitActivity.Key_Data));
-			}
-		}
-	}
-	
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
