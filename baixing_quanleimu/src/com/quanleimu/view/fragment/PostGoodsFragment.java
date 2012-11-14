@@ -702,13 +702,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void handleRightAction(){
 		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNHEADERCLICKED":"EDITPOST_POSTBTNHEADERCLICKED");
-		//tracker
-		Tracker.getInstance()
-		.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
-		.append(Key.SECONDCATENAME, categoryEnglishName)
-		.end();
-		
-		this.postAction();
+		if (this.getView().findViewById(R.id.goodscontent).isShown())
+		{
+			//tracker
+			Tracker.getInstance()
+			.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
+			.append(Key.SECONDCATENAME, categoryEnglishName)
+			.end();
+			
+			this.postAction();
+		}
 	}
 	
 	private void postAction() {
@@ -2183,9 +2186,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		title.m_visible = true;
 		title.m_title = (categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 		title.m_leftActionHint = "返回";
-		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
+//		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
 			title.m_rightActionHint = "完成";
-		}
+//		}
 	}
 	
 	@Override
