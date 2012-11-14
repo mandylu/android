@@ -3,6 +3,7 @@ package com.quanleimu.activity;
 import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
+import java.util.Date;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -611,7 +612,15 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			}
 		}
 //		Profiler.markEnd("maincreate");
-        UmengUpdateAgent.update(this);
+
+        String checkFlg = (String)Util.loadDataFromLocate(this, "umeng_update_check_flg");
+        String todayFlg = String.valueOf(new Date().getDate());
+        if (checkFlg == null || checkFlg.equals( todayFlg ) == false) {
+            UmengUpdateAgent.update(this);
+            Util.saveDataToLocate(this,"umeng_update_check_flg", todayFlg);
+        }
+
+
 //        if (MobileConfig.getInstance().isUseUmengUpdate()) {
 //            UmengUpdateAgent.update(this);
 //        }
