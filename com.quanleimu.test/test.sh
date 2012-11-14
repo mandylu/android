@@ -176,8 +176,8 @@ install_pkg "5580"
 
 start_screen
 
-run_test "emulator-5556" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
-run_test "emulator-5580" "com.quanleimu.activity.test.KeepLiveTest#runPost" "run_post"
+#run_test "emulator-5556" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
+#run_test "emulator-5580" "com.quanleimu.activity.test.KeepLiveTest#runPost" "run_post"
 #run_test "emulator-5558" "com.quanleimu.activity.test.MainActivityTest" "run_main_test"
 #run_test "emulator-5560" "com.quanleimu.activity.test" "run_test"
 
