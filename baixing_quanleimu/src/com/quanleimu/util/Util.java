@@ -492,9 +492,13 @@ public class Util {
 		if (s != null && s.length() > 0) {
 			int index = s.indexOf(',');
 			if (index != -1) {
-				long timestamp = Long.parseLong(s.substring(0, index));
-				String data = s.substring(index+1);
-				return new Pair<Long, String>(timestamp, data);
+				try {
+					long timestamp = Long.parseLong(s.substring(0, index));
+					String data = s.substring(index+1);
+					return new Pair<Long, String>(timestamp, data);
+				}catch (NumberFormatException e) { // old data format.
+					e.printStackTrace();
+				}
 			}
 		}
 		return new Pair<Long, String>(0l, "");
