@@ -30,22 +30,8 @@ public class AdViewTest extends BaixingTestCase {
 		//检查列表的title view文字部分包含“女找男”
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_NZN);
 		//assertNotNull(v);
-
-		TimeUnit.SECONDS.sleep(3);
-		//选择一个带图信息进入
-		openAdWithPic(true);
-		//点击图片
-		showAdPic(0);
-		//检查title右侧包含button“保存”
-		v = findElementByText(AD_BIG_IMAGE_SAVE_TEXT);
-		assertNotNull(v);
-		//点击左上方button返回
-		goBack(true);
-		
-		//点击图片再次进入
-		showAdPic(0);
-		//点击右上方按钮保存
-		v.doClick(); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
+		v = savePhoto(6, 1);
+		assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
 		//检查弹出式提示信息，包含“成功”
 		assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 1000));
 	}

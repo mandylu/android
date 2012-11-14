@@ -122,6 +122,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
+	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
 	
 	//My ID
 	public static final String MY_LISTITEM_MYAD_ID = "rl_wosent";
@@ -676,4 +677,5 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 		return false;
 	}
+	
 }

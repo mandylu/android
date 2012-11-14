@@ -28,7 +28,7 @@ public class AdListingViewTest extends BaixingTestCase {
 	}
 	
 	private void viewListing(int first, int second) throws Exception {
-		BXViewGroupElement detailView = showAd(first, second, 0);
+		BXViewGroupElement detailView = showAd(first, second, 1);
 		//检查listing信息不为空
 		assertNotNull(detailView);
 		//向下浏览30个信息
@@ -63,8 +63,10 @@ public class AdListingViewTest extends BaixingTestCase {
 		goBack(true);
 		goBack(true);
 	    //检查当前页的tab bar上的文字是“浏览信息”
-		TextViewElement t = findElementById(TAB_ID_HOME_V3, TextViewElement.class);
-		assertNotNull(t);
+		ViewGroupElement gv = findElementById(TAB_ID_HOME_V3, ViewGroupElement.class);
+		assertNotNull(gv);
+		TextViewElement t = findElementById(TAB_TEXT_ID, 0, TextViewElement.class);
+		assertNotNull("f " + first + " s" + second, t);
 		assertEquals(t.getText(), TAB_ID_HOME_TEXT);
 	}
 	

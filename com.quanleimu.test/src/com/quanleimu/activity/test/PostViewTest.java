@@ -28,8 +28,6 @@ public class PostViewTest extends BaixingTestCase {
 		{"TEXT", "公司名称", "测试公司"}
 	};
 	
-	private static final String POST_GALLERY_PHOTO_TEXT = "相册";
-	
 	public PostViewTest() throws Exception {
 	}
 	

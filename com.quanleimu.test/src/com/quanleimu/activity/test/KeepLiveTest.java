@@ -190,6 +190,7 @@ public class KeepLiveTest extends BaixingTestCase {
 
 	private void runPostAllByIndex(int firstIndex, int secondIndex) throws Exception {
 		String postErrors = "";
+		savePhoto(6, 1);
 		logon();
 		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
@@ -232,7 +233,7 @@ public class KeepLiveTest extends BaixingTestCase {
 						oldCateName = v.getText();
 						BXLog.x("Category,Post," + i + "," + j + "," + oldCateName);
 						Log.i(LOG_TAG, "runPostAll:Category " + oldCateName);
-						postAutoEnterData();
+						postAutoEnterData(oldCateName.equals("女找男"));
 						TimeUnit.SECONDS.sleep(1);
 						if (!postSend(false)) {
 							lockStatus(SCREEN_SAVE_LOCK_FILE, "");
@@ -261,8 +262,9 @@ public class KeepLiveTest extends BaixingTestCase {
 	}
 	
 	public void runOnePost() throws Exception {
+		savePhoto(6, 1);
 		logon();
-		runOnePost(8, "设计策划");
+		runOnePost(6, "女找男");
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
@@ -275,7 +277,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		assertEquals(cateName, v.getText());
 		BXLog.x("Category,OnePost," + firstIndex + "," + cateName);
 		Log.i(LOG_TAG, "runOnePost:Category " + cateName);
-		postAutoEnterData();
+		postAutoEnterData(cateName.equals("女找男"));
 		TimeUnit.SECONDS.sleep(1);
 		if (!postSend(false)) {
 			lockStatus(SCREEN_SAVE_LOCK_FILE, "");

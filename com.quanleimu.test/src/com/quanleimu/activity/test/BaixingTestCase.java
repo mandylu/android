@@ -27,6 +27,7 @@ import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 import org.athrun.android.framework.viewelement.ViewUtils;
 
+import android.os.Build;
 import android.os.Environment;
 import android.os.IBinder;
 import android.text.InputType;
@@ -464,7 +465,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return title;
 	}
 	
-	public void postAutoEnterData() throws Exception {
+	public void postAutoEnterData(boolean photo) throws Exception {
 		int index = 0;
 		String value = "";
 		int loop = 0;
@@ -549,6 +550,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
+		if (photo) {
+			waitPhoto();
+		}
+		
 	}
 	
 	public boolean postSend() throws Exception {
@@ -1018,6 +1023,86 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement v = findElementByText(viewType, 0, true);
 		assertNotNull(v);
 		v.doClick();
+	}
+	
+
+	private void waitPhoto() throws Exception {
+		if (Build.VERSION.SDK_INT < 11) {
+			waitGallery();
+			return;
+		}
+		//点击拍照按钮
+		doClickPostPhoto();
+		//检查弹出页，包含“相册”“拍照”“取消”
+		//选择拍照button
+		clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
+		//检查拍照页面弹出
+		//点击手机自带的返回键
+		TimeUnit.SECONDS.sleep(1);
+		//waitClickCamera();
+		int x = 400, y = 710;
+		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
+			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
+			x= 250; y = 710;
+			if (Build.MODEL.equals("Nexus 7")) {
+				x = 550; y = 1810;
+			}
+		}
+		waitClickXY(x, y);
+		x = 400; y = 710;
+		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
+			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
+			x= 400; y = 710;
+			if (Build.MODEL.equals("Nexus 7")) {
+				x = 1200; y = 1810;
+			}
+		}
+		waitClickXY(x, y);
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	private void waitGallery() throws Exception {
+		//点击拍照按钮
+		doClickPostPhoto();
+		//检查弹出页，包含“相册”“拍照”“取消”
+		//选择拍照button
+		clickByText(POST_GALLERY_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
+		//检查拍照页面弹出
+		//点击手机自带的返回键
+		TimeUnit.SECONDS.sleep(1);
+		//waitSendKey(KeyEvent.KEYCODE_BACK);
+		int x = 100, y = 110;
+		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
+			if (Build.MODEL.equals("Nexus 7")) {
+				waitSendKey(KeyEvent.KEYCODE_BACK);
+				return;
+			}
+		}
+		waitClickXY(x, y);
+		TimeUnit.SECONDS.sleep(5);
+	}
+	
+	public TextViewElement savePhoto(int first, int second) throws Exception {
+		openTabbar(TAB_ID_HOME_V3);
+		openCategoryByIndex(first, second);
+
+		TimeUnit.SECONDS.sleep(3);
+		//选择一个带图信息进入
+		openAdWithPic(true);
+		//点击图片
+		showAdPic(0);
+		//检查title右侧包含button“保存”
+		TextViewElement v = findElementByText(AD_BIG_IMAGE_SAVE_TEXT);
+		//点击左上方button返回
+		goBack(true);
+		
+		//点击图片再次进入
+		showAdPic(0);
+		//点击右上方按钮保存
+		if (v != null) v.doClick();
+		goBack();
+		goBack();
+		return v;
 	}
 
 }
