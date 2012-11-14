@@ -21,6 +21,11 @@ CLASS=$2;
 LOGNAME=$3;
 REBUILD=$4;
 
+
+if [ "$CLASS" = "" ]; then
+	CLASS=".BXTestSuite";
+fi
+
 # define install_pkg function
 install_pkg() {
 	local port="$1"
