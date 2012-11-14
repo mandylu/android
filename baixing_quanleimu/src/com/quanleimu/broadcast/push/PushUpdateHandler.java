@@ -17,6 +17,9 @@ import com.quanleimu.util.Version;
 import com.quanleimu.util.ViewUtil;
 import org.json.JSONObject;
 
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
 /**
  * Created with IntelliJ IDEA.
  * User: zengming
@@ -47,6 +50,12 @@ public class PushUpdateHandler extends PushHandler {
             String serverVersion = data.getString("serverVersion");
             String apkUrl = data.getString("apkUrl");
             String versionInfo = data.getString("versionInfo");
+
+            Pattern p = Pattern.compile("http(s)?://\\w+");
+            Matcher matcher = p.matcher(apkUrl);
+            if (matcher.find() == false) {
+                return;
+            }
 
             if (Version.compare(serverVersion, QuanleimuApplication.version) == 1) {
                 NotificationCompat.Builder mBuilder =
