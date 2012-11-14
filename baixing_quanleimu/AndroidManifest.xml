@@ -94,6 +94,7 @@
         <receiver android:name="com.quanleimu.broadcast.BXStartupIntentReceiver" >
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
+                <action android:name="com.baixing.action.notify.upgrade" />
             </intent-filter>
         </receiver>
     </application>

@@ -4,6 +4,7 @@ import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.content.Context;
 import android.content.Intent;
+import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -58,22 +59,27 @@ public class PushUpdateHandler extends PushHandler {
             }
 
             if (Version.compare(serverVersion, QuanleimuApplication.version) == 1) {
-                NotificationCompat.Builder mBuilder =
-                        new NotificationCompat.Builder(cxt)
-                                .setSmallIcon(R.drawable.app_icon)
-                                .setContentTitle("百姓网客户端新版本啦~")
-                                .setContentText("去看看");
-
-                Intent resultIntent = new Intent(cxt, BXStartupIntentReceiver.class);
-                resultIntent.setAction("bxupdate");
-                resultIntent.putExtra("apkUrl", apkUrl);
-
-                PendingIntent resultPendingIntent = PendingIntent.getBroadcast(cxt, 200, resultIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
-                mBuilder.setContentIntent(resultPendingIntent);
-                NotificationManager mNotificationManager =
-                        (NotificationManager) cxt.getSystemService(Context.NOTIFICATION_SERVICE);
-// mId allows you to update the notification later on.
-                mNotificationManager.notify(0, mBuilder.getNotification());
+//                NotificationCompat.Builder mBuilder =
+//                        new NotificationCompat.Builder(cxt)
+//                                .setSmallIcon(R.drawable.app_icon)
+//                                .setContentTitle("百姓网客户端新版本啦~")
+//                                .setContentText("去看看");
+//
+//                Intent resultIntent = new Intent(cxt, BXStartupIntentReceiver.class);
+//                resultIntent.setAction("bxupdate");
+//                resultIntent.putExtra("apkUrl", apkUrl);
+//
+//                PendingIntent resultPendingIntent = PendingIntent.getBroadcast(cxt, 200, resultIntent, Intent.FLAG_ACTIVITY_NEW_TASK);
+//                mBuilder.setContentIntent(resultPendingIntent);
+//                NotificationManager mNotificationManager =
+//                        (NotificationManager) cxt.getSystemService(Context.NOTIFICATION_SERVICE);
+//// mId allows you to update the notification later on.
+//                mNotificationManager.notify(0, mBuilder.getNotification());
+                
+                Bundle extral = new Bundle();
+                extral.putString("apkUrl", apkUrl);
+                ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_UPGRADE, CommonIntentAction.ACTION_NOTIFICATION_UPGRADE, 
+                		"百姓网客户端新版本啦~", "去看看", extral, false);
             }
         }
         catch(Exception ex)
