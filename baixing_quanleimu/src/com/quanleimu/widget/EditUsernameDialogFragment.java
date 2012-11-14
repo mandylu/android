@@ -73,6 +73,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
                     }
                 });
         final AlertDialog dialog = builder.create();
+        // setOnShowListener 需要 2.2 之上版本，不过测试 2.1 也没有问题
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface di) {
@@ -83,8 +84,6 @@ public class EditUsernameDialogFragment extends DialogFragment {
                         updateUsername();
                     }
                 });
-                //todo ming 7 旧版兼容
-
             }
         });
         return dialog;
