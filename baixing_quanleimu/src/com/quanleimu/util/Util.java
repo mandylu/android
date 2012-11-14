@@ -110,7 +110,7 @@ public class Util {
 				if (!f.exists()) {
 					f.createNewFile();
 				}
-				fos = new FileOutputStream(f, true);
+				fos = new FileOutputStream(f);
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(object);
 			} catch (FileNotFoundException e) {
