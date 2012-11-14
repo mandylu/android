@@ -123,7 +123,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 						"saveFilterss"
 								+ categoryEnglishName
 								+ QuanleimuApplication.getApplication().cityEnglishName);
-		String json = pair.second;
+		json = pair.second;
 		long time = pair.first;
 		if (json == null || json.length() == 0) {
 			showSimpleProgress();
