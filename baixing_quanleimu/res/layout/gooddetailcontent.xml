@@ -158,15 +158,13 @@
 		                        android:paddingTop="8dp"
 		                        android:paddingBottom="8dp"
 		                        android:background="#ebebeb" >
-								<TextView android:id="@+id/vad_no_img_tip"
-								    android:layout_width="fill_parent"
-								    android:layout_height="wrap_content"
+								<View android:id="@+id/vad_no_img_tip"
+								    android:layout_width="@dimen/vad_img_width_height"
+								    android:layout_height="@dimen/vad_img_width_height"
 								    android:layout_centerInParent="true"
-								    android:gravity="center"
-								    android:text="暂无图片"
-								    android:textSize="@dimen/font_small"
 								    android:visibility="gone"
-								    android:textColor="@color/common_placeholder"/>
+								    android:background="@drawable/icon_listing_nopic"
+								    />
 								
 								   <com.quanleimu.widget.HorizontalListView
 		                            android:id="@+id/glDetail"
@@ -175,15 +173,6 @@
 		                            android:layout_width="fill_parent"
 		                            android:layout_height="fill_parent"
 		                            />
-		                        
-		                        <!--Gallery
-		                            android:id="@+id/glDetail"
-		                            android:layout_width="fill_parent"
-		                            android:layout_height="wrap_content"
-		                            android:animationCache="false"
-		                            android:animationDuration="0"
-		                            >
-		                        </Gallery-->
 		                    </RelativeLayout>
 
 		                    <LinearLayout
