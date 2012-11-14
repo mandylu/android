@@ -1880,7 +1880,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				JSONObject json = jsonObject.getJSONObject("error");
 				String message = replaceTitleToDescription(json.getString("message"));
 				Toast.makeText(activity, message, 0).show();
-				if (!id.equals("")) {
+				if (!id.equals("") && code == 0) {
 					final Bundle args = createArguments(null, null);
 					args.putInt("forceUpdate", 1);
 					// 发布成功
@@ -1906,6 +1906,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						}						
 					}else{
 						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+					}
+				}else{
+					if(code == 505){
+						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+						if(activity != null){
+							Bundle args = createArguments(null, null);
+							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_INVERIFY);
+							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+						}						
 					}
 				}
 			} catch (JSONException e) {
