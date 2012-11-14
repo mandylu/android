@@ -2461,6 +2461,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						originParams.put(bean.getDisplayName(), autoAddress, autoAddress);
 					}
 				}
+				
+				Toast.makeText(getActivity(), "已获得当前位置", Toast.LENGTH_SHORT).show();
 			}
 		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
