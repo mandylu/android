@@ -18,6 +18,7 @@ public class BXStartupIntentReceiver extends BroadcastReceiver {
             //收到 push 后，通知栏显示，点击打开 url 去更新
             String apkUrl = intent.getStringExtra("apkUrl");
             Intent updateIntent = new Intent(Intent.ACTION_VIEW);
+            updateIntent.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
             updateIntent.setData(Uri.parse(apkUrl));
             context.startActivity(updateIntent);
         }

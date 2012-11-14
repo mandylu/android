@@ -42,7 +42,6 @@ public class PushUpdateHandler extends PushHandler {
             JSONObject json = new JSONObject(message);
 
             JSONObject data = json.getJSONObject("data");
-            JSONObject updateInfo = data.getJSONObject("content");
 
 //            String serverVersion = updateInfo.getString("serverVersion");
             String serverVersion = data.getString("serverVersion");
@@ -53,8 +52,8 @@ public class PushUpdateHandler extends PushHandler {
                 NotificationCompat.Builder mBuilder =
                         new NotificationCompat.Builder(cxt)
                                 .setSmallIcon(R.drawable.app_icon)
-                                .setContentTitle("百姓网客户端新版本啦")
-                                .setContentText("快去更新");
+                                .setContentTitle("百姓网客户端新版本啦~")
+                                .setContentText("去看看");
 
                 Intent resultIntent = new Intent(cxt, BXStartupIntentReceiver.class);
                 resultIntent.setAction("bxupdate");
@@ -68,7 +67,7 @@ public class PushUpdateHandler extends PushHandler {
                 mNotificationManager.notify(0, mBuilder.getNotification());
             }
         }
-        catch(Throwable t)
+        catch(Exception ex)
         {
 
         }
