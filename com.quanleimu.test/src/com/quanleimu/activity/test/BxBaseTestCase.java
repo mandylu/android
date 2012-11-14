@@ -166,7 +166,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String MY_SETTING_VIETTYPE_TEXT = "流量优化设置";
 	public static final String MY_SETTING_VIETTYPE_PIC_TEXT = "图片模式";
-	public static final String MY_SETTING_VIETTYPE_NO_PIC_TEXT = "省流量模式";
+	public static final String MY_SETTING_VIETTYPE_NO_PIC_TEXT = "2G/3G网络下列表无图";
 	public static final String MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT = "是否切换到无图模式";
 	public static final String MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID = "否";
 	

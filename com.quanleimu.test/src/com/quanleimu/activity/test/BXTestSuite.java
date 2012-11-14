@@ -14,9 +14,10 @@ public class BXTestSuite extends TestSuite {
 		addTestSuite(PostProcessTest.class);
 		addTestSuite(PostViewTest.class);
 		addTestSuite(MainActivityTest.class);
+		//addTest(createTest(KeepLiveTest.class, "runPost"));
 	}
 	
 	public static Test suite() {
-        return new TestSuiteBuilder(BXTestSuite.class).includeAllPackagesUnderHere().build();
+        return new BXTestSuite();
     }
 }
