@@ -49,6 +49,11 @@ public class Profiler {
 		eventMapper.clear();
 	}
 	
+	public static void remove(String event)
+	{
+		eventMapper.remove(event);
+	}
+	
 	public static String dump()
 	{
 		StringBuffer buf = new StringBuffer();

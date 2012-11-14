@@ -32,7 +32,7 @@ public class NotificationHandler extends BroadcastReceiver {
     {
 		Intent goMain = new Intent(context, QuanleimuMainActivity.class);
 		goMain.putExtras(outerIntent);
-		goMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK);
+		goMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_HISTORY);
 		goMain.putExtras(outerIntent);
 		context.startActivity(goMain);
     }

@@ -626,7 +626,11 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 	@Override
 	protected void onNewIntent(Intent intent) {
 		super.onNewIntent(intent);
-		setIntent(intent);
+		//Do not update intent if launch from history.
+		if ((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0)
+		{
+			setIntent(intent);
+		}
 //		Runnable task = new Runnable() {
 //			public void run()
 //			{
@@ -658,11 +662,13 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 			bundle.putString("adId", msg.getAdId());
 			bundle.putString("sessionId", msg.getSession());
 			bundle.putSerializable("message", msg);
-//			onNewView(new Talk(this,bundle));
 			pushFragment(new TalkFragment(), bundle, false);
 		}
-		
-		intent.removeExtra("isTalking"); //Only use this flag once.
+
+		if (intent.hasExtra("isTalking"))
+		{
+			intent.putExtra("isTalking", false);
+		}
 	}
 
 //	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
