@@ -30,6 +30,7 @@ import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
 import org.apache.http.entity.StringEntity;
+import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -60,6 +61,7 @@ import android.view.Display;
 
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.message.BxMessageCenter;
 import com.quanleimu.message.IBxNotificationNames;
 public class Util {
@@ -464,13 +466,17 @@ public class Util {
 	 * @return
 	 */
 	public static String saveJsonAndTimestampToLocate(Context context, String file, String json, long timestamp) {
-		try { // check the data validate.
-			new JSONObject(json);
-		} catch (JSONException e) {
+		if (json == null)
+			return "data invalid";
+		
+		json = json.trim();
+		if ((json.startsWith("[") && json.endsWith("]")) ||
+			(json.startsWith("{") && json.endsWith("}")) ) {
+			String s = String.format("%d,%s", timestamp, json);
+			return saveDataToLocate(context, file, s);
+		}else{
 			return "data invalid";
 		}
-		String s = String.format("%d,%s", timestamp, json);
-		return saveDataToLocate(context, file, s);
 	}
 	
 	/**
