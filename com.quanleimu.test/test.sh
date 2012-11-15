@@ -144,7 +144,13 @@ build_pkg() {
 		exit;
 	fi;
 	
-	cd ../com.quanleimu.test/;
+	cd ../
+	
+	if [ -f "../../buildconfig/local.properties" ];then
+		cp "../../buildconfig/local.properties" baixing_quanleimu/local.properties;
+	fi
+	
+	cd com.quanleimu.test/;
 	ant clean;
 	ant release;
 	sleep 1;
