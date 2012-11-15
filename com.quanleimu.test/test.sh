@@ -21,7 +21,7 @@ create_emulator() {
 	if [ type = "" ]; then
 		type="2"
 	fi
-	(echo "")|android create avd -n $emulator -t $type ;
+	(echo "")|android create avd -n $emulator -t $type -s WVGA800;
 	if [ ! -f "logs/emulator/$emulator.img" ];
 	then
 		mksdcard 256M "logs/emulator/$emulator.img"
@@ -182,11 +182,11 @@ create_emulator testemulator3 11; #cmd "android list" get 4.1.2 id = 8
 
 build_pkg;
 
-start_emulator "testemulator1" "5556"
-install_pkg "5556"
+#start_emulator "testemulator1" "5556"
+#install_pkg "5556"
 
-start_emulator "testemulator2" "5580"
-install_pkg "5580"
+#start_emulator "testemulator2" "5580"
+#install_pkg "5580"
 
 start_emulator "testemulator3" "5558"
 install_pkg "5558"
