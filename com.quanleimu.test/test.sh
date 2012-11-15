@@ -6,6 +6,7 @@ LOGPATH="logs/test";
 DIR="$(cd "$(dirname "$0")" && pwd)";
 
 cd $DIR;
+cd ../
 mkdir -p "logs";
 mkdir -p $LOGPATH;
 mkdir -p "logs/screen";
@@ -123,7 +124,11 @@ build_pkg() {
 	cd ../;
 	svn up;
 	
-	cp -f com.quanleimu.test/local.properties baixing_quanleimu/local.properties;
+	if [ ! -f "../../buildconfig/local.properties" ];then
+		cp -f com.quanleimu.test/local.properties baixing_quanleimu/local.properties;
+	else
+		cp "../../buildconfig/local.properties" baixing_quanleimu/local.properties;
+	fi
 	
 	cd baixing_quanleimu/;
 	ant clean;
