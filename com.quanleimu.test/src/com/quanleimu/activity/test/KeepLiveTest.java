@@ -306,7 +306,9 @@ public class KeepLiveTest extends BaixingTestCase {
 		openSecondCategoryByIndex(index);
 		int lastAdNum = doScrollView(AD_VIEWLIST_ID, 4);
 		
-		scrollTop(4, AD_VIEWLIST_ID);
+		//scrollTop(4, AD_VIEWLIST_ID);
+		goBack();
+		openSecondCategoryByIndex(index);
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;

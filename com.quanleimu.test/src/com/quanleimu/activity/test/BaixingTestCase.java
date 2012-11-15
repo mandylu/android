@@ -821,6 +821,8 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//向下浏览30个信息
 		int from = lv.getHeight() / 2 + lv.getHeight() /3;
 		for(int i = 0; i < 50; i++) {
+			lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+			assertNotNull(lv);
 			lv.scrollByY(from, from - ((i < 12) ? 200 : 100));
 			if (i < 12) continue;
 			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
