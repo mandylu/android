@@ -775,20 +775,22 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             requests.add("pay=1");
         }
         String url = Communication.getApiUrl("ad_refresh", requests);
+        json = null;
         try {
             json = Communication.getDataByUrl(url, true);
         } catch (UnsupportedEncodingException e) {
             QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-            hideProgress();
         } catch (IOException e) {
             QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-            hideProgress();
         } catch (Communication.BXHttpException e){
 
+        }finally {
+        	hideProgress();
         }
 
         if(json == null){
             Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
+            return;
         }
         try {
             JSONObject jb = new JSONObject(json);
@@ -798,7 +800,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             if (code == 0) {
                 Toast.makeText(getActivity(), message, 1).show();
             }else if(2 == code){
-                hideProgress();
                 new AlertDialog.Builder(getActivity()).setTitle("提醒")
                         .setMessage(message)
                         .setPositiveButton("确定", new DialogInterface.OnClickListener() {
@@ -819,7 +820,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         .show();
 
             }else {
-                hideProgress();
                 Toast.makeText(getActivity(), message, 1).show();
             }
         } catch (JSONException e) {
