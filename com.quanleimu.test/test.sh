@@ -177,8 +177,8 @@ adb start-server;
 
 create_emulator testemulator1 2;  #cmd "android list" get 2.2 id = 2
 create_emulator testemulator2 2;
-#create_emulator testemulator3 2;
-#create_emulator testemulator4 8; #cmd "android list" get 4.1.2 id = 8
+create_emulator testemulator3 8; #cmd "android list" get 4.1.2 id = 8
+#create_emulator testemulator4 8;
 
 build_pkg;
 
@@ -188,8 +188,8 @@ install_pkg "5556"
 start_emulator "testemulator2" "5580"
 install_pkg "5580"
 
-#start_emulator "testemulator3" "5558"
-#install_pkg "5558"
+start_emulator "testemulator3" "5558"
+install_pkg "5558"
 
 #start_emulator "testemulator4" "5560"
 #install_pkg "5560"
@@ -198,7 +198,7 @@ start_screen
 
 #run_test "emulator-5556" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
 #run_test "emulator-5580" "com.quanleimu.activity.test.KeepLiveTest#runPost" "run_post"
-#run_test "emulator-5558" "com.quanleimu.activity.test.MainActivityTest" "run_main_test"
+run_test "emulator-5558" "com.quanleimu.activity.test.BXTestSuite" "run_test"
 #run_test "emulator-5560" "com.quanleimu.activity.test" "run_test"
 
 
@@ -210,7 +210,7 @@ fi
 start_real_device "015d1458a51c0c0e"
 if [ "$REALDEVICE" = "1" ]; then
 	echo "015d1458a51c0c0e test if connected";
-	#run_test "015d1458a51c0c0e" "com.quanleimu.activity.test.KeepLiveTest#runPostAll" "run_post_all"
+	run_test "015d1458a51c0c0e" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adListing"
 fi
 
 echo "END"
