@@ -1,12 +1,15 @@
 package com.quanleimu.util;
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
 
 import org.json.JSONArray;
+import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.quanleimu.activity.QuanleimuApplication;
@@ -150,6 +153,23 @@ public class Sender implements Runnable{
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
+		
+		if (new File(Environment.getExternalStorageDirectory()
+				+ "/baixing_debug_log_crl.dat").exists()) {
+			try {
+				JSONArray array = new JSONArray(jsonStr);
+				for (int i = 0; i < array.length(); i++) {
+					JSONObject log = null;
+					log = array.getJSONObject(i);
+					if (log != null) {
+						Util.saveDataToSdCard("baixing", "log", log.toString()
+								+ "\n", true);
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
 		return succed;
 	}
 	

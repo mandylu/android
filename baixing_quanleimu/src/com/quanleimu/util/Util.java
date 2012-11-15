@@ -96,7 +96,7 @@ public class Util {
 	
 	//数据保存SD卡
 	public static String saveDataToSdCard(String path, String file,
-			Object object) {
+			Object object, boolean append) {
 		String res = null;
 		FileOutputStream fos = null;
 		ObjectOutputStream oos = null;
@@ -110,7 +110,7 @@ public class Util {
 				if (!f.exists()) {
 					f.createNewFile();
 				}
-				fos = new FileOutputStream(f);
+				fos = new FileOutputStream(f, append);
 				oos = new ObjectOutputStream(fos);
 				oos.writeObject(object);
 			} catch (FileNotFoundException e) {
