@@ -670,8 +670,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public ViewGroupElement openAdByIndex(int index, String viewListId) throws Exception {
-		AbsListViewElement avl = findElementById(viewListId, AbsListViewElement.class);
-		assertNotNull(avl);
+		return openAdByIndex(index, viewListId, null);
+	}
+	
+	public ViewGroupElement openAdByIndex(int index, String viewListId, AbsListViewElement avl) throws Exception {
 		/*ViewGroupElement avi = avl.getChildByIndex(0, ViewGroupElement.class);
 		int i = 0;
 		int j = 0;
@@ -698,8 +700,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 		int indexSize = 6;
 		int pageSize = (int) (index / indexSize); //每页6个
 		int i = 1;
+		if (avl == null && viewListId != null) avl = findElementById(viewListId, AbsListViewElement.class);
 		while (i++ < pageSize) {
-			avl.scrollToNextScreen();
+			if (avl != null) avl.scrollToNextScreen();
 			TimeUnit.SECONDS.sleep(1);
 		}
 		ViewGroupElement avi = null;
@@ -711,13 +714,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 				if (avi != null) {
 					ViewElement v = avi.findElementById(AD_VIEWLIST_ITEM_TITLE_ID);
 					if (v == null) {
-						avl.scrollToNextScreen();
+						if (avl != null) avl.scrollToNextScreen();
 						TimeUnit.SECONDS.sleep(1);
 						continue;
 					}
 					v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
 					if (v == null) {
-						avl.scrollToNextScreen();
+						if (avl != null) avl.scrollToNextScreen();
 						TimeUnit.SECONDS.sleep(1);
 						continue;
 					}
@@ -843,16 +846,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//Log.i(LOG_TAG, "pic:0");
 			goBack(false);
 			//滚动图片
+			TextViewElement titleView = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class);
 			BXViewGroupElement ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
 			ilv.doTouch(-200);
+			if (titleView != null && !titleView.getText().equals(findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText())) {
+				ilv.doTouch(200);
+			}
 			TimeUnit.SECONDS.sleep(1);
 			//查看第二个图片
 			if (showAdPic(1)) {
 				//Log.i(LOG_TAG, "pic:1");
 				goBack(false);
 				//滚回图片
+				titleView = findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class);
 				ilv = findElementById(AD_IMAGES_VIEWLIST_ID, BXViewGroupElement.class);
 				ilv.doTouch(200);
+				if (titleView != null && !titleView.getText().equals(findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText())) {
+					ilv.doTouch(-200);
+				}
 				TimeUnit.SECONDS.sleep(1);
 				//Log.i(LOG_TAG, "pic:touch0");
 				

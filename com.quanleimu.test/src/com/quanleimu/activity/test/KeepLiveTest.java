@@ -309,13 +309,21 @@ public class KeepLiveTest extends BaixingTestCase {
 		//scrollTop(4, AD_VIEWLIST_ID);
 		goBack();
 		openSecondCategoryByIndex(index);
+		waitForHideMsgbox(20000);
+		TimeUnit.SECONDS.sleep(1);
+		AbsListViewElement avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
+		assertNotNull(avl);
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;
 			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
-			assertNotNull(openAdByIndex(rndIndex));
+			assertNotNull(openAdByIndex(rndIndex, null, avl));
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 					BXViewGroupElement.class);
+			if (detailView == null) {
+				assertNotNull(openAdByIndex(1));
+				detailView = findElementById(AD_DETAILVIEW_ID, BXViewGroupElement.class);
+			}
 			assertNotNull(detailView);
 			adViewPicTouch();
 			showNextView(AD_DETAILVIEW_ID);
