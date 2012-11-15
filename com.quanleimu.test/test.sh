@@ -18,10 +18,15 @@ chmod -R 777 "logs";
 create_emulator() {
 	local emulator="$1"
 	local type="$2"
-	if [ type = "" ]; then
-		type="2"
+	if [ $type = "" ]; then
+		type="android-8"
 	fi
-	(echo "")|android create avd -n $emulator -t $type -s WVGA800;
+	$typeid = `android list |grep "android-16"|awk '{print $2}'`;
+	if [ "$typeid" = "" ];then
+		echo "create emulator error by $type";
+		exit 1;
+	fi
+	(echo "")|android create avd -n $emulator -t $typeid -s WVGA800;
 	if [ ! -f "logs/emulator/$emulator.img" ];
 	then
 		mksdcard 256M "logs/emulator/$emulator.img"
@@ -175,10 +180,10 @@ echo "START test"
 adb kill-server;
 adb start-server;
 
-create_emulator testemulator1 2;  #cmd "android list" get 2.2 id = 2
-create_emulator testemulator2 2;
-create_emulator testemulator3 12; #cmd "android list" get 4.1.2 id = 8
-#create_emulator testemulator4 8;
+create_emulator testemulator1 "android-8";  #cmd "android list" get 2.2 id = android-8
+create_emulator testemulator2 "android-8";
+create_emulator testemulator3 "android-16"; #cmd "android list" get 4.1.2 id = android-16
+#create_emulator testemulator4 "android-16";
 
 build_pkg;
 
