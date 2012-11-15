@@ -21,7 +21,7 @@ create_emulator() {
 	if [ $type = "" ]; then
 		type="android-8"
 	fi
-	$typeid = `android list |grep "android-16"|awk '{print $2}'`;
+	typeid=`android list |grep "android-16"|awk '{print $2}'`;
 	if [ "$typeid" = "" ];then
 		echo "create emulator error by $type";
 		exit 1;
