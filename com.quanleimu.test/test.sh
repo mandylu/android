@@ -207,10 +207,12 @@ start_screen
 
 start_real_device "015d18844854041c"
 if [ "$REALDEVICE" = "1" ]; then
+	echo "015d18844854041c test if connected";
 	#run_test "015d18844854041c" "com.quanleimu.activity.test.KeepLiveTest#runPostAll" "run_post_all"
 fi
 start_real_device "015d1458a51c0c0e"
 if [ "$REALDEVICE" = "1" ]; then
+	echo "015d1458a51c0c0e test if connected";
 	#run_test "015d1458a51c0c0e" "com.quanleimu.activity.test.KeepLiveTest#runPostAll" "run_post_all"
 fi
 
