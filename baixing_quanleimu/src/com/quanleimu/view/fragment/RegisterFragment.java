@@ -21,6 +21,8 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.quanleimu.entity.UserBean;
+import com.quanleimu.message.BxMessageCenter;
+import com.quanleimu.message.IBxNotificationNames;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
@@ -177,6 +179,8 @@ public class RegisterFragment extends BaseFragment {
 					user.setPassword(passwordEt.getText().toString());
 					QuanleimuApplication.getApplication().setMobile(user.getPhone());
 					Util.saveDataToLocate(activity, "user", user);
+					
+					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
 
                     finishFragment(MSG_REGISTER_SUCCESS, null);
 				} else {
