@@ -820,7 +820,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//向下拖动
 		//向下浏览30个信息
 		int from = lv.getHeight() / 2 + lv.getHeight() /3;
-		for(int i = 0; i < 30; i++) {
+		for(int i = 0; i < 50; i++) {
 			lv.scrollByY(from, from - ((i < 12) ? 200 : 100));
 			if (i < 12) continue;
 			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
@@ -1002,6 +1002,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			iv.doClick();
 			TimeUnit.SECONDS.sleep(2);
 			clickSearchCategoryList();
+
 		}
 	}
 	public void clickSearchCategoryList() throws Exception {
@@ -1011,6 +1012,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			if (v != null) {
 				v.doClick();
 				TimeUnit.SECONDS.sleep(1);
+				waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 			}
 		}
 	}

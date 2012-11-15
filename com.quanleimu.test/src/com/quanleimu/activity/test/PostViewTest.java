@@ -14,17 +14,17 @@ public class PostViewTest extends BaixingTestCase {
 
 	private static String postDataXuesheng[][] = {
 		{"CATEGORY", "4", "学生兼职/实习"}, //兼职招聘
-		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "联系电话", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "补充说明", "兼职测试演员"},
+		{"TITLE", "描述", "兼职测试演员"},
 		{"TEXT", "工资", "50"},
 	};
 	private static final String TEST_DATA_SHEYING = "摄影";
 	private static String postDataSheying[][] = {
 		{"CATEGORY", "8", TEST_DATA_SHEYING}, //生活服务
-		{"TEXT", "联系方式", TEST_DATA_MOBILE},
+		{"TEXT", "联系电话", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
-		{"TITLE", "补充说明", "礼品定制测试标题"},
+		{"TITLE", "描述", "礼品定制测试标题"},
 		{"TEXT", "公司名称", "测试公司"}
 	};
 	
@@ -33,7 +33,7 @@ public class PostViewTest extends BaixingTestCase {
 	
 	@Test
 	public void testPostChecking() throws Exception {
-		
+		openTabbar(TAB_ID_POST);
 		//android3.0
 		//home页点击右上方“发布”按钮
 		//选择类目“兼职招聘”>"学生兼职／实习"

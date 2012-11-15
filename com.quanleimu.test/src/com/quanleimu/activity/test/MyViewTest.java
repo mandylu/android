@@ -1,5 +1,7 @@
 package com.quanleimu.activity.test;
 
+import java.util.concurrent.TimeUnit;
+
 import org.athrun.android.framework.AthrunTestCase;
 import org.athrun.android.framework.Test;
 import org.athrun.android.framework.viewelement.TextViewElement;
@@ -23,6 +25,7 @@ public class MyViewTest extends BaixingTestCase {
 		//点击登录
 		//等待3s
 		logon();
+		TimeUnit.SECONDS.sleep(2);
 		//检查是否包含登录按钮，确保登录成功
 		assertNotNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
 		//点击编辑按钮进入个人资料
@@ -39,6 +42,7 @@ public class MyViewTest extends BaixingTestCase {
 		tv.inputText(tmpName);
 		//点击完成
 		clickByText(MY_PROFILE_EDIT_UPDATE_TEXT, true);
+		TimeUnit.SECONDS.sleep(1);
 		//检查结果：用户名＝“tester”
 		assertEquals(findElementById(MY_PROFILE_USERNAME_ID, TextViewElement.class).getText(), tmpName);
 		

@@ -51,7 +51,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		TimeUnit.SECONDS.sleep(1);
 		//页面展开后，点击最后一个信息进入
 		ViewGroupElement av = null;
-		for(int i = 8; i > 0; i--) {
+		for(int i = 8; i > 1; i--) {
 			av = openAdByIndex(i);
 			if (av != null) break;
 		}

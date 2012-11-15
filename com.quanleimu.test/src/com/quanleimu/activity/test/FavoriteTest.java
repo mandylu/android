@@ -26,31 +26,39 @@ public class FavoriteTest extends BaixingTestCase {
 		int rand = (int)Math.random() * 6; //任一
 		assertNotNull(openAdByIndex(rand));
 	   //检查右上方按钮为收藏前图片（空心五角星）
-		BXImageViewElement iv = findElementById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
-		assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));
+		//BXImageViewElement iv = findElementById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));
+		TextViewElement iv = findElementByText(AD_FAVORITE_BUTTON_TEXT);
+		assertNotNull(iv);
 	   //点击右上方icon收藏
 		clickView(iv);
 	   //检查右上方button文字为收藏后图片（实心五角星）
-		assertTrue(iv.checkImageByName(AD_FAVORITE_REMOVE_IMG));
+		//assertTrue(iv.checkImageByName(AD_FAVORITE_REMOVE_IMG));
+		assertNotNull(findElementByText(AD_FAVORITE_CANCEL_TEXT));
 	   //记录当前信息的标题，如”标题1“
 		String title1 = getTextByElementId(AD_DETAILVIEW_TITLE_ID);
 	   //当前翻页至下一页
 		showNextView(AD_DETAILVIEW_ID);
 	   //点击右上方收藏
-		clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		clickByText(AD_FAVORITE_BUTTON_TEXT);
 	   //翻页至下一页
 		showNextView(AD_DETAILVIEW_ID);
 	   //点击右上方收藏
-		clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		clickByText(AD_FAVORITE_BUTTON_TEXT);
 	   //检查右上方button文字为收藏后图片（实心五角星）
-		assertTrue(iv.checkImageByName(AD_FAVORITE_REMOVE_IMG));
+		//assertTrue(iv.checkImageByName(AD_FAVORITE_REMOVE_IMG));
+		assertNotNull(findElementByText(AD_FAVORITE_CANCEL_TEXT));
 	   //记录当前信息的标题，如”标题2“
 		String title2 = getTextByElementId(AD_DETAILVIEW_TITLE_ID);
 	   //翻至前一页，点击右上方icon取消收藏
 		showPrevView(AD_DETAILVIEW_ID);
-		iv = clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//iv = clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		clickByText(AD_FAVORITE_CANCEL_TEXT);
 	   //检查右上方按钮为收藏前图片（空心五角星）
-		assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));
+		//assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));
+		assertNotNull(findElementByText(AD_FAVORITE_BUTTON_TEXT));
 	   //点击返回
 		goBack();
 	   //点击返回
@@ -65,9 +73,11 @@ public class FavoriteTest extends BaixingTestCase {
 		assertEquals(title2, getTextByElementId(AD_DETAILVIEW_TITLE_ID));
 		
 		//恢复数据
-		clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		clickByText(AD_FAVORITE_CANCEL_TEXT);
 		goBack();
 		assertNotNull(openAdByItemIndex(0));
-		clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		//clickById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
+		clickByText(AD_FAVORITE_CANCEL_TEXT);
 	}
 }

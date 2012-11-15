@@ -55,8 +55,8 @@ public class MainActivityTest extends BaixingTestCase {
 		assertNotNull(findElementById(SEARCH_TEXTVIEW_ID));
 		//assertNotNull(findElementById(SEARCH_BUTTON_ID));
 		try {
-			findElementById("ipad");//稍微复杂了点，因为上面那种会出错
-			assertTrue(false);
+			ViewElement v = findElementById("ipad");//稍微复杂了点，因为上面那种会出错
+			assertNull(v);
 		} catch (NoSuchFieldException ex) {
 		}
 		
@@ -74,11 +74,13 @@ public class MainActivityTest extends BaixingTestCase {
 	
 	@Test
 	public void testPost() throws Exception {
+		openTabbar(TAB_ID_POST);
 		openPostCategory(0, 0);
 	}
 	
 	@Test 
 	public void testPostData() throws Exception {
+		openTabbar(TAB_ID_POST);
 		openPostCategory(1, 6);//车辆买卖， 汽车用品
 		//openPostItemByIndex(0);
 		//selectMetaByName("宝山");
@@ -86,9 +88,9 @@ public class MainActivityTest extends BaixingTestCase {
 		//openPostItemByIndex(1);
 		//selectMetaByName("个人");
 		//setMetaByName("价格", "500");
-		setMetaByName("联系方式", TEST_DATA_MOBILE);
+		setMetaByName("联系电话", TEST_DATA_MOBILE);
 		setMetaByName("具体地点", "测试具体地点测试");
-		setMetaByName("补充说明", "时代单位的得到搜索俄文存储得到力量存储的");
+		setMetaByName("描述", "时代单位的得到搜索俄文存储得到力量存储的");
 
 		assertNotNull(findElementByText("时代单位的得到搜索俄文存储得到力量存储的"));
 		assertNotNull(findElementByText(TEST_DATA_MOBILE));
@@ -194,14 +196,14 @@ public class MainActivityTest extends BaixingTestCase {
 		openPostFirstCategory(0);
 		AbsListViewElement catListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);
-		assertEquals(30,  catListView.getLastVisiblePosition());
+		assertEquals(23,  catListView.getLastVisiblePosition());
 		catListView.scrollToNextScreen();
 		TimeUnit.SECONDS.sleep(3);
-		assertEquals(0, catListView.getFirstVisiblePosition());
+		assertEquals(8, catListView.getFirstVisiblePosition());
 		catListView.scrollToNextScreen();
 		assertEquals(30, catListView.getLastVisiblePosition());
 		TimeUnit.SECONDS.sleep(3);
-		assertEquals(0, catListView.getFirstVisiblePosition());
+		assertEquals(8, catListView.getFirstVisiblePosition());
 	}
 	
 }
