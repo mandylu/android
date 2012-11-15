@@ -164,6 +164,11 @@ build_pkg() {
 		exit;
 	fi;
 	cd ../
+	
+	cd com.quanleimu.screen/;
+	ant
+	sleep 1;
+	cd ../
 }
 
 echo "START test"
