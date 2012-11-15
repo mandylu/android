@@ -177,7 +177,7 @@ adb start-server;
 
 create_emulator testemulator1 2;  #cmd "android list" get 2.2 id = 2
 create_emulator testemulator2 2;
-create_emulator testemulator3 11; #cmd "android list" get 4.1.2 id = 8
+create_emulator testemulator3 12; #cmd "android list" get 4.1.2 id = 8
 #create_emulator testemulator4 8;
 
 build_pkg;
