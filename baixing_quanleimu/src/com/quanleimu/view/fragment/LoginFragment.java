@@ -144,7 +144,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		Util.logout(); //For bug : 40383, clear cached login data when login fragment is created.
+		
 		this.backPageName = this.getArguments().getString("backPageName");
+		
 	}
 
 	@Override
@@ -154,7 +157,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
 		
 		loginHelper = new LoginUtil(llLoginRoot, this);
-		Util.logout();
+		
 		return llLoginRoot;
 	}
 	
