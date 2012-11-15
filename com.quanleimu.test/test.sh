@@ -12,6 +12,7 @@ mkdir -p $LOGPATH;
 mkdir -p "logs/screen";
 mkdir -p "logs/logcat";
 mkdir -p "logs/emulator/";
+chmod -R 777 "logs";
 
 # define create_emulator function
 create_emulator() {
@@ -53,7 +54,7 @@ install_pkg() {
 	adb -s emulator-$port install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
 	adb -s emulator-$port install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 	
-	adb -s emulator-$port shell logcat -d >> $LOGPATH/logcat_adlisting_$LOGNOW.log;
+	adb -s emulator-$port shell logcat -d >> $LOGPATH/build_$LOGNOW.log;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port shell logcat -c
@@ -106,7 +107,7 @@ start_real_device() {
 		adb -s $emulator shell input keyevent 82
 		adb -s $emulator shell input keyevent 4
 		
-		adb -s $emulator shell logcat -d >> $LOGPATH/logcat_post2_$LOGNOW.log;
+		adb -s $emulator shell logcat -d >> $LOGPATH/build_$LOGNOW.log;
 		adb -s $emulator shell logcat -c
 		sleep 1;
 		
@@ -138,9 +139,7 @@ build_pkg() {
 	if [ ! -f bin/Baixing_QuanLeiMu-release.apk ];
 	then
 		echo "ANT build baixing app error";
-		echo "ANT build baixing app error" >> $LOGPATH/runadlisting_$LOGNOW.log
-		echo "ANT build baixing app error" >> $LOGPATH/runpost_$LOGNOW.log
-		echo "ANT build baixing app error" >> $LOGPATH/runpost2_$LOGNOW.log
+		echo "ANT build baixing app error" >> $LOGPATH/build_$LOGNOW.log
 		exit;
 	fi;
 	
@@ -158,14 +157,12 @@ build_pkg() {
 	if [ ! -f bin/com.quanleimu.test-release.apk ];
 	then
 		echo "ANT build baixing test app error";
-		echo "ANT build baixing test app error" >> $LOGPATH/runadlisting_$LOGNOW.log
-		echo "ANT build baixing test app error" >> $LOGPATH/runpost_$LOGNOW.log
-		echo "ANT build baixing test app error" >> $LOGPATH/runpost2_$LOGNOW.log
+		echo "ANT build baixing test app error" >> $LOGPATH/build_$LOGNOW.log
 		exit;
 	fi;
 	cd ../
 	
-	cd com.quanleimu.screen/;
+	cd com.quanleimu.screenshot/;
 	ant
 	sleep 1;
 	cd ../
