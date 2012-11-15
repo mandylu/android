@@ -41,7 +41,7 @@ start_emulator() {
 		emulator -avd $emulator -port $port -sdcard logs/emulator/$emulator.img &
 		adb -s emulator-$port wait-for-device
 		echo "Device emulator-$port connected."
-		sleep 10;
+		sleep 30;
 	fi
 }
 
@@ -177,7 +177,7 @@ adb start-server;
 
 create_emulator testemulator1 2;  #cmd "android list" get 2.2 id = 2
 create_emulator testemulator2 2;
-create_emulator testemulator3 8; #cmd "android list" get 4.1.2 id = 8
+create_emulator testemulator3 11; #cmd "android list" get 4.1.2 id = 8
 #create_emulator testemulator4 8;
 
 build_pkg;
