@@ -12,7 +12,7 @@ import android.view.KeyEvent;
 
 public class PostViewTest extends BaixingTestCase {
 
-	private static String postDataXuesheng[][] = {
+	public static String postDataXuesheng[][] = {
 		{"CATEGORY", "4", "学生兼职/实习"}, //兼职招聘
 		{"TEXT", "联系电话", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
@@ -20,7 +20,7 @@ public class PostViewTest extends BaixingTestCase {
 		{"TEXT", "工资", "50"},
 	};
 	private static final String TEST_DATA_SHEYING = "摄影";
-	private static String postDataSheying[][] = {
+	public static String postDataSheying[][] = {
 		{"CATEGORY", "8", TEST_DATA_SHEYING}, //生活服务
 		{"TEXT", "联系电话", TEST_DATA_MOBILE},
 		{"TEXT", "具体地点", "测试具体地点测试"},
