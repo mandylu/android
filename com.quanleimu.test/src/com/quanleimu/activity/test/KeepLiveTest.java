@@ -309,7 +309,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		//scrollTop(4, AD_VIEWLIST_ID);
 		goBack();
 		openSecondCategoryByIndex(index);
-		waitForHideMsgbox(20000);
+		waitForHideMsgbox(30000);
 		TimeUnit.SECONDS.sleep(1);
 		AbsListViewElement avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
 		assertNotNull(avl);
