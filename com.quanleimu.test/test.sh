@@ -5,6 +5,13 @@ LOGNOW=$(date +"S%Y%m%d");
 LOGPATH="logs/test";
 DIR="$(cd "$(dirname "$0")" && pwd)";
 
+cd $DIR;
+mkdir -p "logs";
+mkdir -p $LOGPATH;
+mkdir -p "logs/screen";
+mkdir -p "logs/logcat";
+mkdir -p "logs/emulator/";
+
 # define create_emulator function
 create_emulator() {
 	local emulator="$1"
@@ -13,9 +20,9 @@ create_emulator() {
 		type="2"
 	fi
 	(echo "")|android create avd -n $emulator -t $type ;
-	if [ ! -f "com.quanleimu.test/$emulator.img" ];
+	if [ ! -f "logs/emulator/$emulator.img" ];
 	then
-		mksdcard 256M "com.quanleimu.test/$emulator.img"
+		mksdcard 256M "logs/emulator/$emulator.img"
 	fi
 }
 
@@ -29,7 +36,7 @@ start_emulator() {
 	    echo "started"
 	else
 		echo "Device emulator-$port not found -- connect one to continue..."
-		emulator -avd $emulator -port $port -sdcard com.quanleimu.test/$emulator.img &
+		emulator -avd $emulator -port $port -sdcard logs/emulator/$emulator.img &
 		adb -s emulator-$port wait-for-device
 		echo "Device emulator-$port connected."
 		sleep 10;
