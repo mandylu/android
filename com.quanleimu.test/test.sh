@@ -147,7 +147,7 @@ build_pkg() {
 	cd ../
 	
 	if [ -f "../../buildconfig/local.properties" ];then
-		cp "../../buildconfig/local.properties" baixing_quanleimu/local.properties;
+		cp "../../buildconfig/local.properties" com.quanleimu.test/local.properties;
 	fi
 	
 	cd com.quanleimu.test/;
