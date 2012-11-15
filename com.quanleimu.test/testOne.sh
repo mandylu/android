@@ -13,6 +13,7 @@ usage(){
 	echo "	sample3: testOne.sh 5580 \"\" run_all"
 	echo "	sample4: testOne.sh 5580 \".KeepLiveTest#runPost\" run_post no"
 	echo "	sample5: testOne.sh 015d18844854041c \".KeepLiveTest#runPost\" run_post"
+	echo "  sample6: testOne.sh 015d1458a51c0c0e \".KeepLiveTest#runOnePost\" run_post"
 	exit 1
 }
 
