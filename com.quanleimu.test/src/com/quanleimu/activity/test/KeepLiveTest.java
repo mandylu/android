@@ -264,7 +264,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	public void runOnePost() throws Exception {
 		savePhoto(6, 1);
 		logon();
-		runOnePost(6, "女找男");
+		runOnePost(4, "传单派发");
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
