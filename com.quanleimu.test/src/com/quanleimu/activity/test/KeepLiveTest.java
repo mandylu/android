@@ -5,6 +5,7 @@ import org.athrun.android.framework.Test;
 import org.athrun.android.framework.viewelement.AbsListViewElement;
 import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
+import org.athrun.android.framework.viewelement.ViewGroupElement;
 
 import android.util.Log;
 import android.widget.ScrollView;
@@ -264,7 +265,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	public void runOnePost() throws Exception {
 		savePhoto(6, 1);
 		logon();
-		runOnePost(6, "女找男");
+		runOnePost(4, "传单派发");
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
@@ -309,15 +310,25 @@ public class KeepLiveTest extends BaixingTestCase {
 		//scrollTop(4, AD_VIEWLIST_ID);
 		goBack();
 		openSecondCategoryByIndex(index);
-		waitForHideMsgbox(30000);
-		TimeUnit.SECONDS.sleep(1);
+		waitForHideMsgbox(10000);
+		//TimeUnit.SECONDS.sleep(1);
 		AbsListViewElement avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
+		/*if (avl == null) {
+			goBack();
+			openSecondCategoryByIndex(index);
+			waitForHideMsgbox(10000);
+			avl = findElementById(AD_VIEWLIST_ID, AbsListViewElement.class);
+		}*/
 		assertNotNull(avl);
 		Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum);
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = (int)(Math.random() * (lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;
 			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
-			assertNotNull(openAdByIndex(rndIndex, null, avl));
+			ViewGroupElement vg = openAdByIndex(rndIndex, null, avl);
+			if (vg == null && findElementById(AD_VIEWLIST_ID, AbsListViewElement.class) != null) {
+				vg = openAdByIndex(1, null, avl);
+			}
+			assertNotNull(vg);
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 					BXViewGroupElement.class);
 			if (detailView == null) {

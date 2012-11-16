@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.os.Bundle;
+import android.os.CountDownTimer;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -38,17 +39,13 @@ public class ForgetPassFragment extends BaseFragment {
     private EditText rePwdEt;
     private Button postBtn;
 
-    private Timer countTimer;
+    private CountDownTimer countTimer;
 
     final private int MSG_NETWORK_ERROR = 0;
     final private int MSG_SENT_CODE_FINISH = 2;
     final private int MSG_POST_FINISH = 3;
     final private int MSG_POST_ERROR = 1;
     final private int MSG_SENT_CODE_ERROR = 4;
-    final private int MSG_TIMER_1SECOND = 5;
-
-    private int lessTime = 60;
-
 
 	@Override
 	public void onResume() {
@@ -56,6 +53,13 @@ public class ForgetPassFragment extends BaseFragment {
 		Tracker.getInstance().pv(this.pv).end();
 		super.onResume();
 	}
+	
+	public void onDestory()
+	{
+		super.onDestroy();
+		countTimer.cancel();
+	}
+	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "找回密码";
@@ -142,6 +146,17 @@ public class ForgetPassFragment extends BaseFragment {
 
         return true;
     }
+    private void postEnableGetCodeBtn()
+    {
+    	postBtn.post(new Runnable() {
+			
+			@Override
+			public void run() {
+				getCodeBtn.setEnabled(true);
+		        lessTimeTv.setVisibility(View.GONE);
+			}
+		});
+    }
 
     private void doGetCodeAction() {
         if (checkMobile() == false) {
@@ -160,11 +175,13 @@ public class ForgetPassFragment extends BaseFragment {
                 try {
                     JSONObject obj = new JSONObject(serverMessage).getJSONObject("error");
                     if (!"0".equals(obj.getString("code"))) {
+                    	postEnableGetCodeBtn();
                         sendMessage(MSG_SENT_CODE_ERROR, obj.getString("message"));
                     } else  {
                         sendMessage(MSG_SENT_CODE_FINISH, null);
                     }
                 } catch (JSONException e) {
+                	postEnableGetCodeBtn();
                     sendMessage(MSG_SENT_CODE_ERROR, "网络异常");
                 }
 
@@ -267,34 +284,35 @@ public class ForgetPassFragment extends BaseFragment {
                 .append(Key.FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON, (String)msg.obj)
                 .end();
                 break;
-            case MSG_TIMER_1SECOND:
-                lessTime--;
-                if (lessTime < 0) {
-                    countTimer.cancel();
-                    lessTime = 60;
-                    getCodeBtn.setEnabled(true);
-                    lessTimeTv.setVisibility(View.GONE);
-                    getCodeBtn.setText("获取验证码");
-                } else {
-                    lessTimeTv.setText(Integer.toString(lessTime));
-                }
-                break;
         }
     }
 
     private void disableGetCodeBtn() {
         getCodeBtn.setEnabled(false);
         getCodeBtn.setText("验证码发送成功");
-        TimerTask timerTask = new CountTimeTask();
-        countTimer = new Timer(true);
-        countTimer.schedule(timerTask, 0, 1000);
+        countTimer = new CountDownTimer(60000,1000) {
+			
+			@Override
+			public void onTick(final long millisUntilFinished) {
+				lessTimeTv.post(new Runnable() {
+					public void run()
+					{
+						lessTimeTv.setText(Integer.toString((int) (millisUntilFinished/1000)));
+					}
+				});
+			}
+			
+			@Override
+			public void onFinish() {
+				getCodeBtn.post(new Runnable() {
+					public void run() {
+						getCodeBtn.setEnabled(true);
+						lessTimeTv.setText("");
+						lessTimeTv.setVisibility(View.GONE);
+						getCodeBtn.setText("获取验证码");
+					}
+				});
+			}
+		}.start();
     }
-
-    private class CountTimeTask extends TimerTask {
-        @Override
-        public void run() {
-            sendMessage(MSG_TIMER_1SECOND, null);
-        }
-    }
-
 }
