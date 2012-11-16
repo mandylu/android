@@ -5,6 +5,8 @@ import java.io.File;
 import com.quanleimu.activity.R;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.NotificationIds;
+import com.quanleimu.entity.GoodsDetail;
+import com.quanleimu.entity.GoodsDetail.EDATAKEYS;
 import com.quanleimu.view.fragment.LoginFragment;
 
 import android.app.Activity;
@@ -158,6 +160,36 @@ public class ViewUtil {
 				dialog.dismiss();
 			}
 		}).show();			
+	}
+	
+	public static void startMapForAds(Context context, GoodsDetail ad) {
+		final String latV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
+		final String lonV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+		String query = null;
+		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+		{
+			query = latV + "," + lonV;
+		}
+		else
+		{
+			String area = ad.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+			String address = ad.getMetaValueByKey("具体地点");
+			if (address != null && address.trim().length() > 0)
+			{
+				query = address.trim();
+			}
+			else if (area != null && area.trim().length() > 0)
+			{
+				query = area.trim();
+			}
+		}
+		
+		if (query != null)
+		{
+			Intent intent = new Intent(Intent.ACTION_VIEW);
+			intent.setData(Uri.parse("http://maps.google.com/?q=" + query));
+			context.startActivity(intent);
+		}
 	}
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)

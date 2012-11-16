@@ -21,7 +21,9 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
+import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -1933,12 +1935,19 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         }
 		final BaseActivity baseActivity = (BaseActivity)getActivity();
 		if (baseActivity != null){
-			Bundle bundle = new Bundle();
-			bundle.putSerializable("detail", detail);
-			baseActivity.getIntent().putExtras(bundle);
-			
-			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-			baseActivity.startActivity(baseActivity.getIntent());
+			if (Build.VERSION.SDK_INT >  16)//Fix baidu map SDK crash on android4.2 device.
+			{
+				ViewUtil.startMapForAds(baseActivity, detail);
+			}
+			else
+			{
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("detail", detail);
+				baseActivity.getIntent().putExtras(bundle);
+				
+				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+				baseActivity.startActivity(baseActivity.getIntent());
+			}
 			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
 		} else {
             Toast.makeText(getActivity(), "显示地图失败", 1).show();
