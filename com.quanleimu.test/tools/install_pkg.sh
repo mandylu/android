@@ -8,7 +8,7 @@ port="$1"
 adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 adb -s emulator-$port uninstall com.quanleimu.activity;
-adb -s emulator-$port install -r ./dist/android_baixing_baixing_V3.0.apk;
+adb -s emulator-$port install -r ./bin/android_baixing_baixing.apk;
 adb -s emulator-$port install -r ../com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 
 adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
