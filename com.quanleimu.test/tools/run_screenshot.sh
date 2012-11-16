@@ -5,6 +5,6 @@ if [ -n "$javaps" ]; then
 	kill -9 $psid;
 fi
 echo "Start java screenshot jar"; 
-java -jar ../com.quanleimu.screenshot/screenshot.jar &
+java -jar ../com.quanleimu.screenshot/screenshot.jar & 
 echo "Started java screenshot jar";
 sleep 1;
