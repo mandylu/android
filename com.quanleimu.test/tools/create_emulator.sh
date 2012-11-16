@@ -1,12 +1,13 @@
 #! /bin/sh
 usage(){
-	echo "Usage: $0 emulatorname type"
+	echo "Usage: $0 emulatorname type imgpath"
 	exit 1
 }
-[[ $# -lt 2 ]] && usage
+[[ $# -lt 3 ]] && usage
 
 emulator="$1"
 type="$2"
+imgpath="$3"
 if [ $type = "" ]; then
 	type="android-8"
 fi
@@ -16,7 +17,7 @@ if [ "$typeid" = "" ];then
 	exit 1;
 fi
 (echo "")|android create avd -n $emulator -t $typeid -s WVGA800;
-if [ ! -f "logs/emulator/$emulator.img" ];
+if [ ! -f "$imgpath/$emulator.img" ];
 then
-	mksdcard 256M "logs/emulator/$emulator.img"
+	mksdcard 256M "$imgpath/$emulator.img"
 fi
