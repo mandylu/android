@@ -11,7 +11,12 @@ imgpath="$3"
 if [ "$type" = "" ]; then
 	type="android-8"
 fi
-android delete avd -n $emulator;  #TODO...run exists avd will crash
+adbState=`adb -s $emulator get-state | grep device`;
+if [ "$adbState" = "device" ]; then
+    echo "$emulator started"
+else
+	android delete avd -n $emulator;  #TODO...run exists avd will crash
+fi
 typeid=`android list |grep "$type"|awk '{print $2}'`;
 if [ "$typeid" = "" ];then
 	echo "create emulator error by $type";
