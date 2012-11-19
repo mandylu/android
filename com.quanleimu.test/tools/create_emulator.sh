@@ -17,7 +17,7 @@ if [ "$typeid" = "" ];then
 	exit 1;
 fi
 abi=""
-if [ "$type = "" ];then
+if [ "$type" = "" ];then
 	abi=" --abi armeabi-v7a"
 fi
 (echo "")|android create avd -n $emulator -t $typeid $abi -s WVGA800;
