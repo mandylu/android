@@ -222,16 +222,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		synchronized(this){
-			outState.putSerializable("params", params);
-			outState.putSerializable("postList", postList);
-			outState.putSerializable("listUrl", listUrl);
-			outState.putSerializable("bitmapUrl", bitmap_url);
-			outState.putInt("imgIndex", currentImgView);
-			outState.putInt("uploadCount", uploadCount);
-			outState.putInt("imgHeight", imgHeight);
-			outState.putParcelableArray("imgs", cachedBps);
-		}
+		
+		outState.putSerializable("params", params);
+		outState.putSerializable("postList", postList);
+		outState.putSerializable("listUrl", listUrl);
+		outState.putSerializable("bitmapUrl", bitmap_url);
+		outState.putInt("imgIndex", currentImgView);
+		outState.putInt("uploadCount", uploadCount);
+		outState.putInt("imgHeight", imgHeight);
+		outState.putParcelableArray("imgs", cachedBps);
+		
 	}
 	
 	
