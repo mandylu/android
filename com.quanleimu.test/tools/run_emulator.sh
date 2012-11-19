@@ -50,5 +50,5 @@ else
 	adb -s emulator-$port wait-for-device
 	wait_for_boot_complete
 	echo "Device emulator-$port connected."
-	sleep 5;
+	sleep 60;
 fi
