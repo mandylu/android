@@ -32,7 +32,7 @@ wait_for_boot_complete()
     result=$(adb -s emulator-$port shell getprop dev.bootcomplete)
     result_test=${result:0:1}
   done
-  log_print "finished booting"
+  echo "finished booting"
 }
 
 echo "Check emulator-$port device is connected or wait for one";
@@ -41,9 +41,14 @@ if [ "$adbState" = "device" ]; then
     echo "started"
 else
 	echo "Device emulator-$port not found -- connect one to continue..."
-	emulator -avd $emulator -port $port -sdcard imgpath/$emulator.img &
+	echo "emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img"
+	if [ -f "$imgpath/$emulator.img.lock" ];
+	then
+		rm "$imgpath/$emulator.img.lock";
+	fi
+	emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img &
 	adb -s emulator-$port wait-for-device
 	wait_for_boot_complete
 	echo "Device emulator-$port connected."
-	sleep 5;
+	sleep 60;
 fi
