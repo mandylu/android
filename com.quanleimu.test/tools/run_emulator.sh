@@ -41,6 +41,11 @@ if [ "$adbState" = "device" ]; then
     echo "started"
 else
 	echo "Device emulator-$port not found -- connect one to continue..."
+	echo "emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img"
+	if [ -f "$imgpath/$emulator.img.lock" ];
+	then
+		rm "$imgpath/$emulator.img.lock";
+	fi
 	emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img &
 	adb -s emulator-$port wait-for-device
 	wait_for_boot_complete
