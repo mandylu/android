@@ -96,6 +96,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         if(isFav){
         		GoodsList list = (GoodsList)(tempGoodsList.clone()); 
         		glLoader.setGoodsList(list);
+        		tempGoodsList = list;//dirty fix
         }else{
         		glLoader.setGoodsList(tempGoodsList);
         }
