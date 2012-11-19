@@ -32,7 +32,7 @@ wait_for_boot_complete()
     result=$(adb -s emulator-$port shell getprop dev.bootcomplete)
     result_test=${result:0:1}
   done
-  log_print "finished booting"
+  echo "finished booting"
 }
 
 echo "Check emulator-$port device is connected or wait for one";
