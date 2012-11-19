@@ -28,6 +28,12 @@
          -->
     <property file="ant.properties" />
 
+    <path id="compile.classpath" >
+        <fileset
+            file="libs"
+            includes="**/*.jar" />
+    </path>
+
     <!-- The project.properties file is created and updated by the 'android'
          tool, as well as ADT.
 
