@@ -20,6 +20,7 @@ abi=""
 if [ "$type" = "" ];then
 	abi=" --abi armeabi-v7a"
 fi
+echo "android create avd -n $emulator -t $typeid $abi -s WVGA800";
 (echo "")|android create avd -n $emulator -t $typeid $abi -s WVGA800;
 if [ ! -f "$imgpath/$emulator.img" ];
 then
