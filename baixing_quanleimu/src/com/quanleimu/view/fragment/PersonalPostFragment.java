@@ -897,7 +897,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			try {
 				json = Communication.getDataByUrl(url, true);
 				if (json != null) {
-					Message msg = handler.obtainMessage();
+					Message msg = Message.obtain();//handler.obtainMessage();
 					msg.obj = id;
 					msg.arg1 = currentType;
 					msg.what = MSG_DELETE_POST_SUCCESS;

@@ -201,6 +201,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
                     @Override
                     public void onUpdateReturned(int updateStatus,UpdateResponse updateInfo) {
+                    	if(getActivity() == null) return;
                         switch (updateStatus) {
                             case 0: // has update
                                 UmengUpdateAgent.showUpdateDialog(getActivity(), updateInfo);
