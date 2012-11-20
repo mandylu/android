@@ -3,10 +3,14 @@ package com.quanleimu.screenshot;
 import java.awt.Image;
 import java.awt.image.BufferedImage;
 import java.awt.image.RenderedImage;
+import java.io.BufferedInputStream;
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.IOException;
+import java.io.InputStream;
 import java.util.HashMap;
 import java.util.Map;
+import java.util.Properties;
 
 import javax.imageio.ImageIO;
 import javax.swing.SwingUtilities;
@@ -149,7 +153,14 @@ public class AndroidScreen {
     }
     
 	private void initBridge() {
-		sdkPath = System.getProperty("user.home") + "/android-sdk-macosx";
+		InputStream in = new BufferedInputStream(new FileInputStream("local.properties"));
+		Properties p = new Properties();
+		p.load(in);
+		sdkPath = p.getProperty("sdk.dir");
+		in.close();
+		if (sdkPath == null || sdkPath.length() == 0) {
+			sdkPath = System.getProperty("user.home") + "/android-sdk-macosx";
+		}
 		
 		if (!AndroidSdkHelper.validatePath(sdkPath)) {
             logger.error("Android SDK is not properly configured.");
