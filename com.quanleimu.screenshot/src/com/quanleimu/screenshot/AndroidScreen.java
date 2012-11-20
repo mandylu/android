@@ -21,11 +21,12 @@ import java.text.SimpleDateFormat;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
-import com.quanleimu.activity.test.Throwable;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.lang.Throwable;
 
 public class AndroidScreen {
     private final Logger logger = LoggerFactory.getLogger(AndroDemon.class);
