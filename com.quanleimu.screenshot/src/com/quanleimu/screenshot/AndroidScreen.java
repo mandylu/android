@@ -158,12 +158,14 @@ public class AndroidScreen {
 		Properties p = new Properties();
 		InputStream in = null;
 		FileInputStream fi = null;
+		//System.out.println(getJarFolder() + "local.properties");
 		try {
-			fi = new FileInputStream("local.properties");
+			fi = new FileInputStream(getJarFolder() + "local.properties");
 			in = new BufferedInputStream(fi);
 			p.load(in);
 			sdkPath = p.getProperty("sdk.dir");
-		} catch (Throwable tr) {  
+		} catch (Throwable tr) { 
+			logger.error("local.properties not found, use {user.home}/android-sdk-macosx");
         } finally {
         	if (fi != null) {
         		try {
@@ -325,4 +327,23 @@ public class AndroidScreen {
         } catch (InterruptedException ignore) {
         }
     }
+    
+    private String getJarFolder() {
+        // get name and path
+        String name = getClass().getName().replace('.', '/');
+        name = getClass().getResource("/" + name + ".class").toString();
+        //System.out.println(name);
+        // remove junk
+        name = name.substring(0, name.indexOf(".jar"));
+        int offset  = 1;//TODO in windows -1;
+        name = name.substring(name.lastIndexOf(':') + offset, name.lastIndexOf('/')+1).replace('%', ' ');
+        // remove escape characters
+        String s = "";
+        for (int k=0; k<name.length(); k++) {
+          s += name.charAt(k);
+          if (name.charAt(k) == ' ') k += 2;
+        }
+        // replace '/' with system separator char
+        return s.replace('/', File.separatorChar);
+      }
 }
