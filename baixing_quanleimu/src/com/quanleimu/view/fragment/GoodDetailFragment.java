@@ -361,6 +361,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			}
 		}
 	}
+	
+	@Override
+	public void onDestroyView(){
+		if(mb_loading != null){
+			mb_loading.recycle();
+			mb_loading = null;
+		}
+		super.onDestroyView();
+	}
 
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
