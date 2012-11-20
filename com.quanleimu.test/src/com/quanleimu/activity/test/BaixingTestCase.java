@@ -203,7 +203,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			v = setMetaValueByName(displayName, value, 0);
 			if (loop++ > 5) break;
 		}
-		assertNotNull(v);
+		assertNotNull("displayName " + displayName + " value" + value, v);
 	}
 	
 	public ViewElement setMetaValueByName(String displayName, String value) throws Exception {
@@ -895,6 +895,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 			TimeUnit.SECONDS.sleep(2);
 		}
 	}
+	
+	public void openGridByText(String text) throws Exception {
+		TextViewElement textView = getGridItemByText(text, POST_CATEGORY_GRIDVIEW_ID);
+		if (textView != null) {
+			textView.doClick();
+			TimeUnit.SECONDS.sleep(2);
+		}
+	}
+	
 	
 	public void deleteAllAds() throws Exception {
 		deleteAllAds(null);
