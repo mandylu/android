@@ -21,6 +21,7 @@ import java.text.SimpleDateFormat;
 import com.android.ddmlib.AndroidDebugBridge;
 import com.android.ddmlib.IDevice;
 import com.android.ddmlib.RawImage;
+import com.quanleimu.activity.test.Throwable;
 
 import org.apache.commons.lang.StringUtils;
 import org.slf4j.Logger;
@@ -153,11 +154,29 @@ public class AndroidScreen {
     }
     
 	private void initBridge() {
-		InputStream in = new BufferedInputStream(new FileInputStream("local.properties"));
 		Properties p = new Properties();
-		p.load(in);
-		sdkPath = p.getProperty("sdk.dir");
-		in.close();
+		InputStream in = null;
+		FileInputStream fi = null;
+		try {
+			fi = new FileInputStream("local.properties");
+			in = new BufferedInputStream(fi);
+			p.load(in);
+			sdkPath = p.getProperty("sdk.dir");
+		} catch (Throwable tr) {  
+        } finally {
+        	if (fi != null) {
+        		try {
+        			fi.close();
+        		} catch (Throwable tr) {  
+                }
+        	}
+        	if (in != null) {
+        		try {  
+        			in.close(); 
+                } catch (Throwable tr) {  
+                } 
+        	}
+        }
 		if (sdkPath == null || sdkPath.length() == 0) {
 			sdkPath = System.getProperty("user.home") + "/android-sdk-macosx";
 		}
