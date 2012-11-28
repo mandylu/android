@@ -154,7 +154,7 @@ public class SplashJob {
 		}
 	}
 
-	public List<String> listRemark = new ArrayList<String>();
+	public String[] listRemark = new String[]{};//new ArrayList<String>();
 
 	class ReadInfoThread implements Runnable {
 
@@ -162,45 +162,15 @@ public class SplashJob {
 		@Override
 		public void run() { 
 			// 获取搜索记录
-			Object objRemark = Helper.loadDataFromLocate(parentActivity, "listRemark");
-			if(objRemark != null)
-			{
-				listRemark = (List<String>)objRemark;
-			}
-			else
-			{
-				listRemark = null;
-			}
-			QuanleimuApplication.getApplication().setListRemark(listRemark);
+			String[] objRemark = (String[]) Util.loadDataFromLocate(parentActivity, "listRemark", String[].class);
+			QuanleimuApplication.getApplication().updateRemark(objRemark);
 
-			// 获取我的浏览历史以及我的收藏
-			Object objLookHistory = Helper.loadDataFromLocate(parentActivity, "listLookHistory");
-			List<GoodsDetail> listLookHistory;
-			if(objLookHistory != null)
-			{
-				listLookHistory = (List<GoodsDetail>)objLookHistory;
-			}
-			else
-			{
-				listLookHistory = null;
-			}
-			QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
-
-			Object objStore = Helper.loadDataFromLocate(parentActivity, "listMyStore");
-			List<GoodsDetail> listMyStore;
-			if(objStore != null)
-			{
-				listMyStore = (List<GoodsDetail>)objStore;
-			}
-			else
-			{
-				listMyStore = null;
-			}
-			QuanleimuApplication.getApplication().setListMyStore(listMyStore);
+			GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(parentActivity, "listMyStore", GoodsDetail[].class);
+			QuanleimuApplication.getApplication().updateFav(objStore);
 			
-			Object personalMark = Helper.loadDataFromLocate(parentActivity, "personMark");
+			byte[] personalMark = Util.loadData(parentActivity, "personMark");//.loadDataFromLocate(parentActivity, "personMark");
 			if(personalMark != null){
-				QuanleimuApplication.getApplication().setPersonMark((String)personalMark);
+				QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
 			}
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}

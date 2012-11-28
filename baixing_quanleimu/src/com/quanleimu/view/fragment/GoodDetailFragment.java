@@ -145,12 +145,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //			SimpleImageLoader.Cancel(listUrl);
 //		this.mListLoader = null;
 		
-		Thread t = new Thread(new Runnable(){
-			public void run(){
-				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
-			}
-		});
-		t.start();
+		//View history is disabled from version 3.1
+//		Thread t = new Thread(new Runnable(){
+//			public void run(){
+//				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
+//			}
+//		});
+//		t.start();
 	
 		super.onDestroy();
 	}
@@ -1052,48 +1053,25 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		if(/*-1 == btnStatus*/!isInMyStore()){			
 //			btnStatus = 0;
-			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
+			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().addFav(detail); 
 			
-//			TitleDef title = getTitleDef();
-//			title.m_rightActionHint = strCancelCollect;
-//			m_viewInfoListener.onTitleChanged(title);
-//			refreshHeader();
-			
-			if (myStore == null){
-				myStore = new ArrayList<GoodsDetail>();
-				myStore.add(0, detail);
-			} else {
-				if (myStore.size() >= 100) {
-					myStore.remove(0);
-				}
-				myStore.add(0, detail);
-			}		
-			QuanleimuApplication.getApplication().setListMyStore(myStore);
-			Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", myStore);
+			if (myStore != null)
+			{
+				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", myStore);
+			}
+						
 			updateTitleBar(getTitleDef());
 			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else /*if (0 == btnStatus)*/ {
 //			btnStatus = -1;
-			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
-			for (int i = 0; i < myStore.size(); i++) {
-				if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-						.equals(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
-					myStore.remove(i);
-					break;
-				}
-			}
-			QuanleimuApplication.getApplication().setListMyStore(myStore);
-			Helper.saveDataToLocate(this.getAppContext(), "listMyStore", myStore);
+			
+			List<GoodsDetail> favList = QuanleimuApplication.getApplication().removeFav(detail);
+			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
 		}
 	}
-	
-//	@Override
-//	public void handleRightAction(){
-//		handleStoreBtnClicked();
-//	}
 	
 	class ManagerAlertDialog extends AlertDialog{
 		public ManagerAlertDialog(Context context, int theme){

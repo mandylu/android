@@ -248,15 +248,75 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public List<GoodsDetail> getListMyStore() {
 		return listMyStore;
 	}
-
-	public void setListMyStore(List<GoodsDetail> listMyStore) {
-        if (listMyStore == null) {
-            return;
-        } else if(listMyStore.size() > 50){
-			this.listMyStore = new ArrayList<GoodsDetail>(listMyStore.subList(0, 50));
-		}else{
-			this.listMyStore = listMyStore;
+	
+	public void clearMyStore()
+	{
+		if (this.listMyStore != null)
+		{
+			this.listMyStore.clear();
 		}
+	}
+	
+	public List<GoodsDetail> addFav(GoodsDetail detail)
+	{
+		if (this.listMyStore == null)
+		{
+			this.listMyStore = new ArrayList<GoodsDetail>();
+		}
+		
+		this.listMyStore.add(detail);
+		
+		return this.listMyStore;
+	}
+	
+	public List<GoodsDetail> removeFav(GoodsDetail detail)
+	{
+		if (this.listMyStore == null || detail == null)
+		{
+			return this.listMyStore;
+		}
+		
+		for (int i = 0; i < listMyStore.size(); i++) {
+			if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+					.equals(listMyStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
+				listMyStore.remove(i);
+				break;
+			}
+		}
+		
+		return this.listMyStore;
+	}
+	
+	public void updateFav(List<GoodsDetail> favs)
+	{
+		this.listMyStore = new ArrayList<GoodsDetail>();
+		
+		if (favs != null)
+		{
+			for (int i=0; i<favs.size() && i<=50; i++)
+			{
+				this.listMyStore.add(favs.get(i));
+			}
+		}
+	}
+
+	public void updateFav(GoodsDetail[] list) {
+		this.listMyStore = new ArrayList<GoodsDetail>();
+
+		if (list != null)
+		{
+			int i=0;
+			for (GoodsDetail item : list)
+			{
+				this.listMyStore.add(item);
+				i++;
+				if (i == 50)
+				{
+					break;
+				}
+			}
+		}
+					
 	}
 
 	//我的发布信息
@@ -314,8 +374,27 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		return listRemark;
 	}
 
-	public void setListRemark(List<String> listRemark) {
-		this.listRemark = listRemark;
+	public void updateRemark(String[] list) {
+		
+		this.listRemark = new ArrayList<String>();
+		
+		if (list != null)
+		{
+			for (String s : list)
+			{
+				this.listRemark.add(s);
+			}
+		}
+	}
+	
+	public void updateRemark(List<String> list) {
+		
+		this.listRemark = new ArrayList<String>();
+		
+		if (list != null)
+		{
+			this.listRemark.addAll(list);
+		}
 	}
 
 	//登录以后的手机号码保存
@@ -348,7 +427,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			QuanleimuApplication.getApplication().setListCityDetails(cityList.getListDetails());
 			
 			//update current city name
-			String cityName =  (String) Util.loadDataFromLocate(getApplicationContext(), "cityName", String.class);
+			byte[] cityData = Util.loadData(getApplicationContext(), "cityName");
+			String cityName = cityData == null ? null : new String(cityData); //(String) Util.loadDataFromLocate(getApplicationContext(), "cityName", String.class);
 			if (cityName == null || cityName.equals("")) {
 			} else {
 				List<CityDetail> cityDetails = QuanleimuApplication.getApplication().getListCityDetails();

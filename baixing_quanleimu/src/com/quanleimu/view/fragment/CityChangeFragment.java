@@ -35,6 +35,7 @@ import com.quanleimu.util.Tracker;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.TrackConfig.TrackMobile.Key;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Util;
 
 public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {
 	// 定义控件名
@@ -534,7 +535,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		{
 			QuanleimuApplication.getApplication().setCityEnglishName(city.getEnglishName());
 			QuanleimuApplication.getApplication().setCityName(city.getName());		
-			Helper.saveDataToLocate(getActivity(), "cityName", city.getName());		
+//			Helper.saveDataToLocate(getActivity(), "cityName", city.getName());
+			Util.saveDataToFile(getActivity(),null, "cityName", city.getName().getBytes());
 
 			this.finishFragment();
 			

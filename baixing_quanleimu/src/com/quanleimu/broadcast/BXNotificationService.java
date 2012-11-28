@@ -107,9 +107,9 @@ public class BXNotificationService extends Service {
 			UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user", UserBean.class);
 			list.add("userid=" + (user == null ? "" : URLEncoder.encode(user.getId())));
 			
-			Object timeObj = Util.loadDataFromLocate(BXNotificationService.this, "pushCode", String.class);
+			byte[] timeObj = Util.loadData(BXNotificationService.this, "pushCode");//Util.loadDataFromLocate(BXNotificationService.this, "pushCode", String.class);
 			if(timeObj != null){
-				list.add("pushCode=" + URLEncoder.encode((String)timeObj));
+				list.add("pushCode=" + URLEncoder.encode(new String(timeObj)));
 			}
 			String url = Communication.getApiUrl(apiName, list);
 			if(url.contains("version=")){
@@ -201,7 +201,8 @@ public class BXNotificationService extends Service {
 							QuanleimuApplication.version = Util.getVersion(BXNotificationService.this);
 							QuanleimuApplication.udid = Util.getDeviceUdid(BXNotificationService.this);
 							BXNotificationService.this.showNotification(ticket, title, content);
-							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
+//							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
+							Util.saveDataToFile(BXNotificationService.this, null, "pushCode", time.getBytes());
 						}
 						
 					} catch (Exception e) {

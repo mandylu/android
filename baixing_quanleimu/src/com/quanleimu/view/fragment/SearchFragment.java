@@ -38,6 +38,7 @@ import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
 import com.quanleimu.util.Helper;
+import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.util.Tracker;
@@ -168,8 +169,7 @@ public class SearchFragment extends BaseFragment {
 					showSearchResult(true);
 				} else {
 					listRemark.clear();
-					QuanleimuApplication.getApplication().setListRemark(
-							listRemark);
+					QuanleimuApplication.getApplication().updateRemark((String[])null);
 					lvSearchHistory.setVisibility(View.GONE);
 					tvClear.setVisibility(View.GONE);
 				}
@@ -181,12 +181,12 @@ public class SearchFragment extends BaseFragment {
 			@Override
 			public void onClick(View v) {
 				listRemark.clear();
-				QuanleimuApplication.getApplication().setListRemark(listRemark);
+				QuanleimuApplication.getApplication().updateRemark(listRemark.toArray(new String[listRemark.size()]));
 				lvSearchHistory.setVisibility(View.GONE);
 				v.setVisibility(View.GONE);
 
 				// 将搜索记录保存本地
-				Helper.saveDataToLocate(getActivity(), "listRemark", listRemark);
+				Util.saveDataToLocate(getActivity(), "listRemark", listRemark);
 			}
 		});
 
@@ -357,9 +357,9 @@ public class SearchFragment extends BaseFragment {
 		} else if (!listRemark.contains(searchContent)) {
 			listRemark.add(searchContent);
 		}
-		QuanleimuApplication.getApplication().setListRemark(listRemark);
+		QuanleimuApplication.getApplication().updateRemark(listRemark);
 		// 将搜索记录保存本地
-		Helper.saveDataToLocate(getActivity(), "listRemark", listRemark);
+		Util.saveDataToLocate(getActivity(), "listRemark", listRemark);
 	}
 
 	@Override
