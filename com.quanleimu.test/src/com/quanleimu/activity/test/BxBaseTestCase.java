@@ -197,7 +197,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	//Test DATA
-	public static final String TEST_DATA_MOBILE = "13585617034";
+	public static final String TEST_DATA_MOBILE = "13524495634";
 	public static final String TEST_DATA_PASSWORD = "123456";
 	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";

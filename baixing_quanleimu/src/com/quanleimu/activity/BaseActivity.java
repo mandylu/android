@@ -127,31 +127,19 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	protected TextView tvAddMore ;
 	protected LinearLayout loadingLayout;
-	 /** 
-     * 设置布局显示为目标有多大就多大 
-     */  
-	protected LayoutParams WClayoutParams =new LinearLayout.LayoutParams(LinearLayout.LayoutParams.WRAP_CONTENT,LinearLayout.LayoutParams.WRAP_CONTENT);  
-    /** 
-     * 设置布局显示目标最大化 
-     */  
-	protected LayoutParams FFlayoutParams =new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT,LinearLayout.LayoutParams.FILL_PARENT);  
 	
 	protected ProgressBar progressBar;  
 	
 	//防止滑盖手机滑盖刷新
 	@Override
 	public void onConfigurationChanged(Configuration newConfig) {
-		// TODO Auto-generated method stub
 		super.onConfigurationChanged(newConfig);
 	} 
 	 
 	@Override
 	protected void onPause() {
-		// TODO Auto-generated method stub
 		super.onPause();
 		MobclickAgent.onPause(this);
-		
-		//Log.d("Umeng SDK API call", "onPause() called from BaseActivity:onPause()!!");
 	}
 
 	@Override
@@ -160,14 +148,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		super.onResume();
 		MobclickAgent.onResume(this);
 		this.savedInstance = false;
-		//Log.d("Umeng SDK API call", "onResume() called from BaseActivity:onResume()!!");
 	}
 
 
 
 	@Override
 	public void onAttachFragment(Fragment fragment) {
-		// TODO Auto-generated method stub
 		super.onAttachFragment(fragment);
 	}
 	
@@ -273,27 +259,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			bundle = new Bundle();
 		}
 		
-//		//通过ID获取控件
-//		
-//		ivHomePage = (ImageView)v.findViewById(R.id.ivHomePage);
-//		ivCateMain = (ImageView)v.findViewById(R.id.ivCateMain);
-//		ivPostGoods = (ImageView)v.findViewById(R.id.ivPostGoods);
-//		ivMyCenter = (ImageView)v.findViewById(R.id.ivMyCenter);
-//		ivSetMain = (ImageView)v.findViewById(R.id.ivSetMain);
-//		
-//		//设置监听器
-//		ivHomePage.setOnClickListener(this);
-//		ivCateMain.setOnClickListener(this);
-//		ivPostGoods.setOnClickListener(this);
-//		ivMyCenter.setOnClickListener(this);
-//		ivSetMain.setOnClickListener(this);
-		//生成BxTracker和BxSender
-//		BxSender sender = new BxSender(QuanleimuApplication.context);
-//		Thread senderThread = new Thread(sender);
-//		senderThread.start();
-//		BxTracker tracker = BxTracker.getInstance();
-//		tracker.initialize(QuanleimuApplication.context, sender);
-	
 		
 	}
 
@@ -301,71 +266,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	public void onClick(View v) {
 		switch(v.getId())
 		{
-//			case R.id.ivHomePage:
-//				if(!myApp.getActivity_type().equals("homepage"))
-//				{
-//					intent.setClass(this, HomePage.class);
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					ivHomePage.setImageResource(R.drawable.iv_homepage_press);
-//					ivCateMain.setImageResource(R.drawable.iv_cate);
-//					ivPostGoods.setImageResource(R.drawable.iv_postgoods);
-//					ivMyCenter.setImageResource(R.drawable.iv_mycenter);
-//					ivSetMain.setImageResource(R.drawable.iv_setmain);
-//				}
-//				break;
-//			case R.id.ivCateMain:
-//				if(!myApp.getActivity_type().equals("catemain"))
-//				{
-//					intent.setClass(this, CateMain.class);
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					ivHomePage.setImageResource(R.drawable.iv_homepage);
-//					ivCateMain.setImageResource(R.drawable.iv_cate_press);
-//					ivPostGoods.setImageResource(R.drawable.iv_postgoods);
-//					ivMyCenter.setImageResource(R.drawable.iv_mycenter);
-//					ivSetMain.setImageResource(R.drawable.iv_setmain);
-//				}
-//				break;
-//			case R.id.ivPostGoods:
-//				if(!myApp.getActivity_type().equals("postgoods"))
-//				{
-//					intent.setClass(this, PostGoods.class);
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					ivHomePage.setImageResource(R.drawable.iv_homepage);
-//					ivCateMain.setImageResource(R.drawable.iv_cate);
-//					ivPostGoods.setImageResource(R.drawable.iv_postgoods_press);
-//					ivMyCenter.setImageResource(R.drawable.iv_mycenter);
-//					ivSetMain.setImageResource(R.drawable.iv_setmain);
-//				}
-//				break;
-//			case R.id.ivMyCenter:
-//				if(!myApp.getActivity_type().equals("mycenter"))
-//				{
-//					intent.setClass(this, MyCenter.class);
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					ivHomePage.setImageResource(R.drawable.iv_homepage);
-//					ivCateMain.setImageResource(R.drawable.iv_cate);
-//					ivPostGoods.setImageResource(R.drawable.iv_postgoods);
-//					ivMyCenter.setImageResource(R.drawable.iv_mycenter_press);
-//					ivSetMain.setImageResource(R.drawable.iv_setmain);
-//				}
-//				break;
-//			case R.id.ivSetMain:
-//				if(!myApp.getActivity_type().equals("setmain"))
-//				{
-//					intent.setClass(this, SetMain.class);
-//					intent.putExtras(bundle);
-//					startActivity(intent);
-//					ivHomePage.setImageResource(R.drawable.iv_homepage);
-//					ivCateMain.setImageResource(R.drawable.iv_cate);
-//					ivPostGoods.setImageResource(R.drawable.iv_postgoods);
-//					ivMyCenter.setImageResource(R.drawable.iv_mycenter);
-//					ivSetMain.setImageResource(R.drawable.iv_setmain_press);
-//				}
-//				break;
 		}
 	}
 	

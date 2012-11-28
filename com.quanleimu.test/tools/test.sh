@@ -6,7 +6,7 @@ LOGPATH="logs/test";
 DIR="$(cd "$(dirname "$0")" && pwd)";
 
 cd $DIR;
-cd ../
+cd ../../
 mkdir -p "logs";
 mkdir -p $LOGPATH;
 mkdir -p "logs/screen";
@@ -21,7 +21,7 @@ create_emulator() {
 	if [ $type = "" ]; then
 		type="android-8"
 	fi
-	typeid=`android list |grep "android-16"|awk '{print $2}'`;
+	typeid=`android list |grep "$type"|awk '{print $2}'`;
 	if [ "$typeid" = "" ];then
 		echo "create emulator error by $type";
 		exit 1;
@@ -127,7 +127,7 @@ start_real_device() {
 # define build_pkg function
 build_pkg() {
 	cd $DIR;
-	cd ../;
+	cd ../../;
 	svn up;
 	
 	if [ ! -f "../../buildconfig/local.properties" ];then
@@ -148,7 +148,7 @@ build_pkg() {
 		exit;
 	fi;
 	
-	cd ../
+	cd ../../
 	
 	if [ -f "../../buildconfig/local.properties" ];then
 		cp "../../buildconfig/local.properties" com.quanleimu.test/local.properties;
@@ -180,9 +180,9 @@ echo "START test"
 adb kill-server;
 adb start-server;
 
-create_emulator testemulator1 "android-8";  #cmd "android list" get 2.2 id = android-8
-create_emulator testemulator2 "android-8";
-create_emulator testemulator3 "android-16"; #cmd "android list" get 4.1.2 id = android-16
+#create_emulator testemulator1 "android-8";  #cmd "android list" get 2.2 id = android-8
+#create_emulator testemulator2 "android-8";
+#create_emulator testemulator3 "android-16"; #cmd "android list" get 4.1.2 id = android-16
 #create_emulator testemulator4 "android-16";
 
 build_pkg;

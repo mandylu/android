@@ -5,6 +5,11 @@ usage(){
 }
 [[ $# -lt 3 ]] && usage
 
+adb kill-server;
+sleep 1;
+adb start-server;
+sleep 3;
+
 emulator="$1"
 type="$2"
 imgpath="$3"
@@ -16,6 +21,11 @@ if [ "$adbState" = "device" ]; then
     echo "$emulator started"
 else
 	android delete avd -n $emulator;  #TODO...run exists avd will crash
+	sleep 2;
+	android list 
+	android list |grep "$type";
+	android list |grep "$type"|awk '{print $2}'
+	echo "end";
 	typeid=`android list |grep "$type"|awk '{print $2}'`;
 	if [ "$typeid" = "" ];then
 		echo "create emulator error by $type";

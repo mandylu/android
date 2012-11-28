@@ -15,6 +15,7 @@ import java.util.zip.GZIPInputStream;
 
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
+import org.apache.http.StatusLine;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpGet;
 import org.apache.http.client.methods.HttpPost;
@@ -382,9 +383,11 @@ public class Communication implements Comparator<String> {
 
 	private static String doRequest(HttpClient httpClient, String url, boolean shutdown) throws UnsupportedEncodingException,
 	IOException, BXHttpException{
+//		Profiler.markStart("REQ_R");
+		final int paramStart = url.indexOf("/?");
 		HttpPost httpPost = new HttpPost(
-				url.substring(0, url.indexOf("/?") + 2));
-		StringEntity se = new StringEntity(url.substring(url.indexOf("/?") + 2));
+				url.substring(0, paramStart + 2));
+		StringEntity se = new StringEntity(url.substring(paramStart + 2));
 		httpPost.setEntity(se);
 		se.setContentType("application/x-www-form-urlencoded");
 		
@@ -399,11 +402,11 @@ public class Communication implements Comparator<String> {
 		} catch (NullPointerException e) {
 			return null;
 		}
-		if (response.getStatusLine() != null
-				&& response.getStatusLine().getStatusCode() >= 400) {
-			BXHttpException bxe = new BXHttpException(response.getStatusLine()
-					.getStatusCode(), response.getStatusLine()
-					.getReasonPhrase());
+		
+		StatusLine status = response.getStatusLine();
+		if (status != null && status.getStatusCode() >= 400) {
+			BXHttpException bxe = new BXHttpException(status.getStatusCode(),
+					status.getReasonPhrase());
 			throw bxe;
 		}
 		InputStream inputStream = response.getEntity().getContent();
@@ -414,38 +417,28 @@ public class Communication implements Comparator<String> {
 			inputStream = new GZIPInputStream(inputStream);
 		}
 
-		BufferedReader reader = new BufferedReader(new InputStreamReader(
-				inputStream, "utf-8"));// 设置编码,否则中文乱码
-		String lines = "";
-		String temp = "";
-//		StringBuilder sb = new StringBuilder();
-		
+		InputStreamReader reader = new InputStreamReader(
+				inputStream, "utf-8");
+		StringBuilder sb = new StringBuilder();
 
-//		char[] buffer = new char[1024];
-//		int numRead = 0;
-//		while((numRead = reader.read(buffer)) > 0){			
-//			sb.append(new String(buffer, 0, numRead));
-//		}
-
-//		Log.d("get data", "get databy url length:    " + sb.length());
-
-		while ((lines = reader.readLine()) != null) {
-//			Log.d("oooooo", "hahahaha datais: " + lines);
-			temp += lines;
-			
+		char[] buffer = new char[1024];
+		int numRead = 0;
+		while((numRead = reader.read(buffer)) > 0){			
+			sb.append(buffer, 0, numRead);
 		}
-
+		
 		reader.close();
+		final String result = sb.toString(); 
+//		Profiler.markEnd("REQ_READ");
+//		Profiler.markEnd("REQ_R");
 		// 断开连接
 		if(shutdown){
+//			Profiler.markStart("REQ_STORE");
 			httpClient.getConnectionManager().shutdown();
-		// if(E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE != dataPolicy){
-			QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), temp);
+			QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
+//			Profiler.markEnd("REQ_STORE");
 		}
-//		QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), sb.toString());
-		// }
-//		return sb.toString();
-		return temp;
+		return result;
 	}
 	
 	// get提交数据方法
@@ -459,8 +452,16 @@ public class Communication implements Comparator<String> {
 					|| cached != null)
 				return cached;
 		}
+//		Profiler.markStart("REG_USER");
 		registerDevice(httpClient);
-		return doRequest(httpClient, url, true);
+//		Profiler.markEnd("REG_USER");
+		
+//		Profiler.markStart("REQ_");
+		String result =  doRequest(httpClient, url, true);
+//		Profiler.markEnd("REQ_");
+		
+//		Profiler.dump();
+		return result;
 	}
 
 	public static String getCacheRequestIfExist(String url) {

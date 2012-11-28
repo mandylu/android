@@ -18,6 +18,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
 import android.util.Log;
+import android.util.Pair;
 import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
@@ -63,6 +64,44 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
     
+    protected static final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
+    
+    static {
+    	/**
+    	 * do IO on network request will prolong user's time waiting network. This thread do simple IO work on a separate thread.
+    	 */
+    	Thread t = new Thread(new Runnable() {
+			
+			public void run() {
+				while(true) {
+					Pair<String, String> item = null;
+					synchronized (storeList) {
+						if (storeList.size() > 0)
+						{
+							item = storeList.remove(0);
+						}
+						else
+						{
+							try {
+								storeList.wait(5 * 60 * 1000);
+//								Log.d("QLMAPP", "wakeup to handle store");
+							} catch (InterruptedException e) {
+								e.printStackTrace();
+							}
+						}
+					}
+					
+					if (item != null)
+					{
+//						Log.d("QLMAPP", "oh yeah, store it.");
+						storeCacheNetworkRequest(item.first, item.second);
+					}
+				}
+			}
+		});
+    	t.start();
+    }
+    
     public static final LazyImageLoader getImageLoader()
     {
     	if (lazyImageLoader == null)
@@ -72,8 +111,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
     	
     	return lazyImageLoader;
     }
+    
+    
 
-	
 	public static String getCacheNetworkRequest(String request){
 		synchronized(dbManager){
 			String response = null;
@@ -121,6 +161,13 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	public static void putCacheNetworkRequest(String request, String result){
+		synchronized (storeList) {
+			storeList.add(Pair.create(request, result));
+			storeList.notifyAll();
+		}
+	}
+	
+	private static void storeCacheNetworkRequest(String request, String result){
 		synchronized(dbManager){
 			SQLiteDatabase db = null; 
 			try{
