@@ -345,8 +345,10 @@ public class Util {
 		String dirPath = context.getFilesDir().getAbsolutePath();
 		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
 		
-		boolean succed = new File(dirPath).mkdirs();
-		if (!succed)
+		File dirFile = new File(dirPath);
+		dirFile.mkdirs();
+		
+		if (!dirFile.exists())
 		{
 			return null;
 		}
@@ -404,8 +406,9 @@ public class Util {
 		String dirPath = context.getFilesDir().getAbsolutePath();
 		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
 		
-		boolean succed = new File(dirPath).mkdirs();
-		if (!succed)
+		File dirFile = new File(dirPath);
+		dirFile.mkdirs();
+		if (!dirFile.exists())
 		{
 			return null;
 		}
