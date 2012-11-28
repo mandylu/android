@@ -740,9 +740,10 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 				this.handleBack();
 			}
 			break;
-		case R.id.search_action:
-		{
-			getCurrentFragment().handleSearch();
+		case R.id.search_action:{
+			if(getCurrentFragment() != null){
+				getCurrentFragment().handleSearch();
+			}
 			break;
 		}
 //		case R.id.ivHomePage:{
