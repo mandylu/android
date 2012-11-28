@@ -22,11 +22,8 @@ if [ "$adbState" = "device" ]; then
 else
 	android delete avd -n $emulator;  #TODO...run exists avd will crash
 	sleep 2;
-	android list 
-	android list |grep "$type";
-	android list |grep "$type"|awk '{print $2}'
-	echo "end";
-	typeid=`android list |grep "$type"|awk '{print $2}'`;
+	typeid=`android list |grep "$type"`;
+	typeid=`echo $typeid|awk '{print $2}'`;
 	if [ "$typeid" = "" ];then
 		echo "create emulator error by $type";
 		exit 1;
