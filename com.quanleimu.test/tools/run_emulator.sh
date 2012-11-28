@@ -5,6 +5,11 @@ usage(){
 }
 [[ $# -lt 3 ]] && usage
 
+adb kill-server;
+sleep 1;
+adb start-server;
+sleep 1;
+
 emulator="$1"
 port="$2"
 imgpath="$3"

@@ -223,15 +223,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putSerializable("params", params);
-		outState.putSerializable("postList", postList);
-		outState.putSerializable("listUrl", listUrl);
-		outState.putSerializable("bitmapUrl", bitmap_url);
-		outState.putInt("imgIndex", currentImgView);
-		outState.putInt("uploadCount", uploadCount);
-		outState.putInt("imgHeight", imgHeight);
-		outState.putParcelableArray("imgs", cachedBps);
-		
+		synchronized(this){
+			outState.putSerializable("params", params);
+			outState.putSerializable("postList", postList);
+			outState.putSerializable("listUrl", listUrl);
+			outState.putSerializable("bitmapUrl", bitmap_url);
+			outState.putInt("imgIndex", currentImgView);
+			outState.putInt("uploadCount", uploadCount);
+			outState.putInt("imgHeight", imgHeight);
+			outState.putParcelableArray("imgs", cachedBps);
+		}
 	}
 	
 	
@@ -2038,7 +2039,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Bitmap currentBmp = null;
 			if (path != null) {
 				try {
-				    
+				       
 				    BitmapFactory.Options bfo = new BitmapFactory.Options();
 			        bfo.inJustDecodeBounds = true;
 			        BitmapFactory.decodeFile(path, bfo);
