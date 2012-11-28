@@ -236,7 +236,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
         //set user profile info view
         user = Util.getCurrentUser();
         if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
-            userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile");
+            userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
             if (userProfile != null) {
                 fillProfile(userProfile, v);
             } else {

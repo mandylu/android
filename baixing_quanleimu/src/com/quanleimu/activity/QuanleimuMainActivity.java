@@ -613,7 +613,7 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		}
 //		Profiler.markEnd("maincreate");
 
-        String checkFlg = (String)Util.loadDataFromLocate(this, "umeng_update_check_flg");
+        String checkFlg = (String)Util.loadDataFromLocate(this, "umeng_update_check_flg", String.class);
         String todayFlg = String.valueOf(new Date().getDate());
         if (checkFlg == null || checkFlg.equals( todayFlg ) == false) {
             UmengUpdateAgent.update(this);

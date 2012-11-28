@@ -348,7 +348,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			QuanleimuApplication.getApplication().setListCityDetails(cityList.getListDetails());
 			
 			//update current city name
-			String cityName =  (String) Util.loadDataFromLocate(getApplicationContext(), "cityName");
+			String cityName =  (String) Util.loadDataFromLocate(getApplicationContext(), "cityName", String.class);
 			if (cityName == null || cityName.equals("")) {
 			} else {
 				List<CityDetail> cityDetails = QuanleimuApplication.getApplication().getListCityDetails();
@@ -507,7 +507,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public BXLocation getCurrentPosition(boolean bRealLocality) {
 		if(context.get() == null) return null;
 		if(null == location){
-			location = (BXLocation)Util.loadDataFromLocate(context.get(), "location_data");
+			location = (BXLocation)Util.loadDataFromLocate(context.get(), "location_data", BXLocation.class);
 			
 			if(null == location){
 				location = new BXLocation(true);

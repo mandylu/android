@@ -59,6 +59,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 
+import com.fasterxml.jackson.databind.ObjectMapper;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
@@ -182,11 +183,9 @@ public class Util {
 		}
 		String res = null;
 		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
 		try {
 			fos = context.openFileOutput(file, Activity.MODE_PRIVATE);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
+			mapper.writeValue(fos, object);
 		} catch (FileNotFoundException e) {
 			res = "没有找到文件";
 			e.printStackTrace();
@@ -198,9 +197,6 @@ public class Util {
 			e.printStackTrace();
 		} finally {
 			try {
-				if(null != oos){
-					oos.close();
-				}
 				if(null != fos){
 					fos.close();
 				}
@@ -493,7 +489,7 @@ public class Util {
 //		File file = context.getFileStreamPath(filename);
 //		long timestamp = file.lastModified()/1000;
 		
-		String s = (String) Util.loadDataFromLocate(context, filename);
+		String s = (String) Util.loadDataFromLocate(context, filename, String.class);
 		
 		if (s != null && s.length() > 0) {
 			int index = s.indexOf(',');
@@ -544,23 +540,19 @@ public class Util {
 		return pair;		
 	}
 
+	private static ObjectMapper mapper = new ObjectMapper();
+	
 	//将数据从手机内存中读出来
-	public static Object loadDataFromLocate(Context context,String file) {
+	public static Object loadDataFromLocate(Context context,String file, Class clsName) {
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){
 			file = "_" + file;
 		}
-//		File testfile = new File(file); 
-//		if(!testfile.exists()){
-//			return null;
-//		}
 
 		Object obj = null;
 		FileInputStream fis = null;
-		ObjectInputStream ois = null;
 		try {
 			fis = context.openFileInput(file);
-			ois = new ObjectInputStream(fis);
-			obj = ois.readObject();
+			obj = mapper.readValue(fis, clsName);
 			
 		} catch (FileNotFoundException e) {
 			obj = null;
@@ -568,17 +560,11 @@ public class Util {
 		} catch (IOException e) {
 			obj = null;
 			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
-			obj = null;
-			e.printStackTrace();
 		}catch (Exception e) {
 			obj = null;
 			e.printStackTrace();
 		} finally {
 			try {
-				if(null != ois){
-					ois.close();
-				}
 				if(null != fis){
 					fis.close();
 				}
@@ -1420,7 +1406,7 @@ public class Util {
      * @return 返回当前 UserBean user，未登录情况下返回 null
      */
     public static UserBean getCurrentUser() {
-        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
+        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
         return user;
     }
     
@@ -1463,7 +1449,7 @@ public class Util {
 	public static boolean isPushAlreadyThere(Context ctx, String pushCode){
 		if(ctx == null) return true;
 		if(pushCode == null || pushCode.equals("")) return false;
-		Object objCode = Util.loadDataFromLocate(ctx, "pushCode");
+		Object objCode = Util.loadDataFromLocate(ctx, "pushCode", String.class);
 		if(objCode != null){
 			String code = (String)objCode;
 			try{

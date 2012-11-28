@@ -183,7 +183,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		if (isMyAd() || !isValidMessage())
 		{
 			if (user==null)
-				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 			this.pv = PV.MYVIEWAD;
 			Tracker.getInstance()
 			.pv(PV.MYVIEWAD)
@@ -1539,7 +1539,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		json = "";
 		ArrayList<String> list = new ArrayList<String>();
 
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();
@@ -1563,7 +1563,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		json = "";
 		ArrayList<String> list = new ArrayList<String>();
 		
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();
@@ -1584,7 +1584,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		json = "";
 		ArrayList<String> list = new ArrayList<String>();
 
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user");
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			String mobile = user.getPhone();
 			String password = user.getPassword();

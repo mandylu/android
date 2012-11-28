@@ -94,7 +94,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
 
 
-		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 	}
 
 	@Override
@@ -765,7 +765,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         String tmpjson = null;
         ArrayList<String> requests = new ArrayList<String>();
 
-        UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+        UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
         if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
         	Util.makeupUserInfoParams(user, requests);
         }

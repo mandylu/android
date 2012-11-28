@@ -171,7 +171,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		}
 		else if (resultCode == REQ_CODE_REGISTER)
 		{
-			UserBean user = (UserBean) Util.loadDataFromLocate(getAppContext(), "user");
+//			UserBean user = (UserBean) Util.loadDataFromLocate(getAppContext(), "user", UserBean.class);
 			
 			handleRightAction();
 		} else if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS) {

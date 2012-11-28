@@ -104,10 +104,10 @@ public class BXNotificationService extends Service {
 		public void run() {
 			String apiName = "pushNotification";
 			ArrayList<String> list = new ArrayList<String>();
-			UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user");
+			UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user", UserBean.class);
 			list.add("userid=" + (user == null ? "" : URLEncoder.encode(user.getId())));
 			
-			Object timeObj = Util.loadDataFromLocate(BXNotificationService.this, "pushCode");
+			Object timeObj = Util.loadDataFromLocate(BXNotificationService.this, "pushCode", String.class);
 			if(timeObj != null){
 				list.add("pushCode=" + URLEncoder.encode((String)timeObj));
 			}

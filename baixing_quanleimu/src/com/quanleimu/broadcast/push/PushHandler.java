@@ -40,7 +40,7 @@ public abstract class PushHandler {
     
 	protected boolean isAuthenticated()
 	{
-		UserBean user = (UserBean) Util.loadDataFromLocate(cxt, "user");
+		UserBean user = (UserBean) Util.loadDataFromLocate(cxt, "user", UserBean.class);
 		if (user != null)
 		{
 			return user.getId() != null;

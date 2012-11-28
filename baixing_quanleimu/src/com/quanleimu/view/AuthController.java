@@ -46,7 +46,7 @@ public class AuthController {
 	{
 		try
 		{
-			UserBean user = (UserBean) Util.loadDataFromLocate(context, "user");
+			UserBean user = (UserBean) Util.loadDataFromLocate(context, "user", UserBean.class);
 			if (user == null || user.getId() == null)
 			{
 				if (failAction != null)
