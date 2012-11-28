@@ -6,7 +6,7 @@ LOGPATH="logs/test";
 DIR="$(cd "$(dirname "$0")" && pwd)";
 
 cd $DIR;
-cd ../
+cd ../../
 mkdir -p "logs";
 mkdir -p $LOGPATH;
 mkdir -p "logs/screen";
