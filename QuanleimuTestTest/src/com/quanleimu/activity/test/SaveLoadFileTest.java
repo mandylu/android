@@ -48,9 +48,14 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		assertNotNull(path);
 		assertTrue(new File(path).exists());
 		
+		String path2 = Util.saveDataToFile(getContext(), tmpDir, "cd.dat", ss.getBytes());
+		assertNotNull(path2);
+		assertTrue(new File(path2).exists());
+		
 		List<String> files = Util.listFiles(getContext(), tmpDir);
-		assertEquals(1, files.size());
+		assertEquals(2, files.size());
 		assertEquals(files.get(0), path);
+		assertEquals(files.get(1), path2);
 		
 		String ssResult = new String(Util.loadData(path));
 		assertEquals(ssResult, ss);
