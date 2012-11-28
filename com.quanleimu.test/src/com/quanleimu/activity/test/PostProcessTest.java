@@ -154,3 +154,4 @@ public class PostProcessTest extends BaixingTestCase {
 	   //若都未取到，则给提示
 	   assertTrue(b1 != null || b2 != null);
    }
+}

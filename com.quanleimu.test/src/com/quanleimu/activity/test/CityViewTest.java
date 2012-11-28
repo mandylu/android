@@ -18,8 +18,6 @@ public class CityViewTest extends BaixingTestCase {
 	public static final String TEST_DATA_CITY_HANGZHOU = "杭州";
 	
 	public CityViewTest() throws Exception {
-		super();
-		AthrunTestCase.setMaxTimeToFindView(10000);
 	}
 	
 	@Test
