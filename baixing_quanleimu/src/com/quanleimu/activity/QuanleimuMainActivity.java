@@ -46,6 +46,7 @@ import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
+import com.quanleimu.view.fragment.PostGoodsFragment;
 import com.quanleimu.view.fragment.TalkFragment;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -862,10 +863,11 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
             //发布赌约
             QuanleimuApplication.postEntryFlag = 0;
 
-			Bundle args = new Bundle(bundle);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
-			pushFragment(new GridCateFragment(), args, true);
+//			Bundle args = new Bundle(bundle);
+//			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
+//			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
+//			pushFragment(new GridCateFragment(), args, true);
+            pushFragment(new PostGoodsFragment(), new Bundle(), false);
 			break;
 		case 2:
 			this.pushFragment(new PersonalInfoFragment(), bundle, true);
