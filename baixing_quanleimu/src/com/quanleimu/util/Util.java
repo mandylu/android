@@ -180,6 +180,16 @@ public class Util {
 		}
 		return obj;
 	}
+	
+	public static void saveDataToLocateDelay(final Context context, final String file, final Object obj)
+	{
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				saveDataToLocate(context, file, obj);
+			}
+		});
+		t.start();
+	}
 
 	//将数据保存到手机内存中
 	public static String saveDataToLocate(Context context, String file,

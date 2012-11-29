@@ -664,7 +664,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 				}
 			}
 			
-			Util.saveDataToLocate(context.get(), "location_data", location);
+			Util.saveDataToLocateDelay(context.get(), "location_data", location);
 
 			location_updated = true;
 		}
