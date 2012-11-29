@@ -57,7 +57,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
-
+	
     //为赌约而设
     public static int postEntryFlag = -1;
 	
