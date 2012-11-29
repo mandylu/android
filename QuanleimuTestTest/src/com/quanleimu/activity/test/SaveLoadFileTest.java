@@ -101,7 +101,7 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		assertEquals(location.cityName, locationLoad.cityName);
 	}
 	
-	public void saveAndLoadJson()
+	public void testSaveAndLoadJson()
 	{
 		String json = "{abc:123}";
 		long timestamp = System.currentTimeMillis()/1000;
@@ -114,7 +114,7 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		assertEquals(p.first.longValue(), timestamp);
 	}
 	
-	public void saveAndLoadArray()
+	public void testSaveAndLoadArray()
 	{
 		List<String> arrayList = new ArrayList<String>();
 		for (int i=0; i<10; i++)

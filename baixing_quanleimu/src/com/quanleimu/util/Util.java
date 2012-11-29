@@ -546,10 +546,6 @@ public class Util {
 	 * @return Pair(LastModifiedTimeStamp, String): if file not exist, LastModifiedTimeStamp = 0;  
 	 */
 	public static Pair<Long, String> loadJsonAndTimestampFromLocate(Context context, String filename) {
-		if(filename != null && !filename.equals("") && filename.charAt(0) != '_'){
-			filename = "_" + filename;
-		}
-		
 //		File file = context.getFileStreamPath(filename);
 //		long timestamp = file.lastModified()/1000;
 		byte[] bytes = Util.loadData(context, filename);
