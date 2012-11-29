@@ -52,7 +52,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
 
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
-        userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile");
+        userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = inflater.inflate(R.layout.dialog_edit_username, null);

@@ -52,7 +52,8 @@ public class MarkLableFragment extends BaseFragment {
 			QuanleimuApplication.getApplication().setPersonMark(personMark);
 			(new AsyncTask<Boolean, Boolean, Boolean>() { 
 				protected Boolean doInBackground(Boolean... bs) {   
-					Util.saveDataToLocate(getActivity(), "personMark", personMark);
+//					Util.saveDataToLocate(getActivity(), "personMark", personMark);
+					Util.saveDataToFile(getActivity(), null, "personMark", personMark.getBytes());
 					return true;
 				}
 				

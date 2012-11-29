@@ -328,11 +328,11 @@ public class Communication implements Comparator<String> {
 	}
 	
 	private static void registerDevice(HttpClient httpClient){
-		UserBean currentUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
+		UserBean currentUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
 		if(currentUser == null){
-			UserBean anonymousUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser");
+			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
 			if(anonymousUser != null){
-				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, anonymousUser);
 				return;
 			}

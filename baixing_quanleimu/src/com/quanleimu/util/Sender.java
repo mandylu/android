@@ -80,6 +80,15 @@ public class Sender implements Runnable{
 		return Communication.isNetworkActive();
 	}
 	
+	//check if queue is too full(queue.size > 10)
+	private boolean checkQueueFull() {
+		boolean isQueueFull = false;
+		synchronized (queue) {
+			isQueueFull = queue.size()>10;
+		}
+		return isQueueFull;
+	}
+	
 	//save queue into files.
 	public void save() {
 		List<String> newQueue = new ArrayList<String>();
@@ -100,6 +109,7 @@ public class Sender implements Runnable{
 		if (context != null) {
 			String fileName = System.currentTimeMillis() + SENDER_FILE_SUFFIX;
 			try {
+				Log.d("sendlist","saveListToFile->"+fileName);
 				Util.saveDataToFile(context, SENDER_DIR, fileName, data.getBytes());
 			} catch (Exception e) {}			
 		}
@@ -176,6 +186,8 @@ public class Sender implements Runnable{
 	@Override
 	public void run() {
 		Log.d("sender", "run");
+		boolean hasMoreData;
+		boolean isQueueFull;
 		while(TrackConfig.getInstance().getLoggingFlag()) {//config flag
 				//First step : send memory data if there is any.
 				String list = null;
@@ -199,6 +211,7 @@ public class Sender implements Runnable{
 					if (recordPath != null)
 					{
 						String singleRecordList = new String(Util.loadData(recordPath));
+						Log.d("sendlist","file send->"+recordPath);
 						if (singleRecordList != null && sendList(singleRecordList))
 						{
 							Util.clearFile(recordPath);
@@ -212,20 +225,19 @@ public class Sender implements Runnable{
 				}
 				Log.d("sender", "check if there's more data to send");
 				//Check if we have more data to send.
-				boolean hasMoreData = hasDataToSend();
+				hasMoreData = hasDataToSend();
 				
-				boolean isQueueFull;
-				synchronized (queue) {
-					isQueueFull = queue.size()>10;
-				}
+				isQueueFull = checkQueueFull();
 				
 				while ((!isSendingReady() && !isQueueFull) || !hasMoreData) {//断网或者无数据
+					Log.d("sendlist","into small while");
 					try {
 						Log.d("sender", "wait");
 						synchronized (sendMutex) {
 							sendMutex.wait(300000);//time out 5 min
 						}
 						hasMoreData = hasDataToSend();
+						isQueueFull = checkQueueFull();
 						Log.d("sender", "hasMoredata:"+hasMoreData);
 						Log.d("sender", "wake up");
 					} catch (Exception e) {

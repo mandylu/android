@@ -28,6 +28,7 @@ import com.quanleimu.util.Communication;
 import com.quanleimu.util.ErrorHandler;
 import com.quanleimu.util.Helper;
 import com.quanleimu.util.TrackConfig.TrackMobile.PV;
+import com.quanleimu.util.Util;
 
 
 public class FeedbackFragment extends BaseFragment {
@@ -83,7 +84,7 @@ public class FeedbackFragment extends BaseFragment {
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.opinionback, null);
 		
-		user = (UserBean) Helper.loadDataFromLocate(getActivity(), "user");
+		user = (UserBean) Util.loadDataFromLocate(getActivity(), "user", UserBean.class);
 		if (user != null) {
 			mobile = user.getPhone();
 		}

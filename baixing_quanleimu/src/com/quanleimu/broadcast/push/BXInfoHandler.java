@@ -50,7 +50,8 @@ public class BXInfoHandler extends PushHandler {
 				QuanleimuApplication.udid = Util.getDeviceUdid(cxt);
 				ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_BXINFO, 
 						CommonIntentAction.ACTION_NOTIFICATION_BXINFO, title, content, null, false);
-				Util.saveDataToLocate(cxt, "pushCode", pushCode);
+//				Util.saveDataToLocate(cxt, "pushCode", pushCode);
+				Util.saveDataToFile(cxt, null, "pushCode", pushCode.getBytes());
 			}
 		}
 		catch(Throwable t)

@@ -213,7 +213,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 		
-		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
+		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			mobile = user.getPhone();
 			password = user.getPassword();
@@ -226,15 +226,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
 		
-		outState.putSerializable("params", params);
-		outState.putSerializable("postList", postList);
-		outState.putSerializable("listUrl", listUrl);
-		outState.putSerializable("bitmapUrl", bitmap_url);
-		outState.putInt("imgIndex", currentImgView);
-		outState.putInt("uploadCount", uploadCount);
-		outState.putInt("imgHeight", imgHeight);
-		outState.putParcelableArray("imgs", cachedBps);
-		
+		synchronized(this){
+			outState.putSerializable("params", params);
+			outState.putSerializable("postList", postList);
+			outState.putSerializable("listUrl", listUrl);
+			outState.putSerializable("bitmapUrl", bitmap_url);
+			outState.putInt("imgIndex", currentImgView);
+			outState.putInt("uploadCount", uploadCount);
+			outState.putInt("imgHeight", imgHeight);
+			outState.putParcelableArray("imgs", cachedBps);
+		}
 	}
 	
 	
@@ -2121,7 +2122,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Bitmap currentBmp = null;
 			if (path != null) {
 				try {
-				    
+				       
 				    BitmapFactory.Options bfo = new BitmapFactory.Options();
 			        bfo.inJustDecodeBounds = true;
 			        BitmapFactory.decodeFile(path, bfo);
@@ -2514,7 +2515,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
         // 优先显示上次存储的记录
         // 地理定位成功，1KM 外，换定位地址
 
-        BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation");
+        BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation", BXLocation.class);
         if (lastLocation != null) {
             autoAddress = lastLocation.detailAddress;
 

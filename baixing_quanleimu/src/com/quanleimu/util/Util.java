@@ -59,12 +59,19 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 
+import com.fasterxml.jackson.core.type.TypeReference;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.ObjectReader;
+import com.fasterxml.jackson.databind.ObjectWriter;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.message.BxMessageCenter;
 import com.quanleimu.message.IBxNotificationNames;
 public class Util {
+	
+	public static final String TAG = "QLM";
+	
 	private static String[] keys;
 	private static String[] values;
 	
@@ -173,20 +180,39 @@ public class Util {
 		}
 		return obj;
 	}
+	
+	public static void saveDataToLocateDelay(final Context context, final String file, final Object obj)
+	{
+		Thread t = new Thread(new Runnable() {
+			public void run() {
+				saveDataToLocate(context, file, obj);
+			}
+		});
+		t.start();
+	}
 
 	//将数据保存到手机内存中
 	public static String saveDataToLocate(Context context, String file,
 			Object object) {
+//		Profiler.markStart("WRITE_OBJ");
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){
 			file = "_" + file;
 		}
+		
+		if (object == null)
+		{
+			context.deleteFile(file);
+			return "保存成功";
+		}
+		
 		String res = null;
 		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
 		try {
 			fos = context.openFileOutput(file, Activity.MODE_PRIVATE);
-			oos = new ObjectOutputStream(fos);
-			oos.writeObject(object);
+			ObjectWriter writer = mapper.writer();
+			writer.writeValue(fos, object);
+//			mapper.writeValue(fos, object);
+			res = "保存成功";
 		} catch (FileNotFoundException e) {
 			res = "没有找到文件";
 			e.printStackTrace();
@@ -198,18 +224,16 @@ public class Util {
 			e.printStackTrace();
 		} finally {
 			try {
-				if(null != oos){
-					oos.close();
-				}
 				if(null != fos){
 					fos.close();
 				}
-				res = "保存成功";
 			} catch (IOException e) {
-				res = "没有数据";
 				e.printStackTrace();
 			}
 		}
+//		Profiler.markEnd("WRITE_OBJ");
+//		Profiler.dump();
+//		Profiler.clear();
 		return res;
 	}
 	
@@ -239,26 +263,31 @@ public class Util {
 		return list;
 	}
 	
-	public static byte[] loadData(String absolutePath)
+	public static byte[] loadData(Context context, String fileName) {
+		if (context == null || fileName == null)
+		{
+			return null;
+		}
+		
+		try {
+			return loadBytes(context.openFileInput(fileName));
+		} catch (FileNotFoundException e) {
+			//Ignor
+		}
+		
+		return null;
+	}
+	
+	private static byte[] loadBytes(FileInputStream ins)
 	{
-
-		if (absolutePath == null)
+		if (ins == null)
 		{
 			return null;
 		}
 		
-		File f = new File(absolutePath);
-		if (!f.exists() || f.isDirectory())
-		{
-			return null;
-		}
-		
-		byte[] data = null;
-		FileInputStream ins = null;
 		try
 		{
-			ins = new FileInputStream(f);
-			data = new byte[ins.available()];
+			byte[] data = new byte[ins.available()];
 			ins.read(data);
 			
 			return data;
@@ -280,8 +309,31 @@ public class Util {
 			{
 				//Ignor.
 			}
-			
 		}
+		
+		return null;
+	}
+	
+	public static byte[] loadData(String absolutePath)
+	{
+
+		if (absolutePath == null)
+		{
+			return null;
+		}
+		
+		File f = new File(absolutePath);
+		if (!f.exists() || f.isDirectory())
+		{
+			return null;
+		}
+		
+		try {
+			return loadBytes(new FileInputStream(f));
+		} catch (FileNotFoundException e) {
+			//Ignor
+		}
+		
 		
 		return null;
 	}
@@ -337,20 +389,28 @@ public class Util {
 	
 	public static String saveDataToFile(Context context, String dir, String file, byte[] data)
 	{
+		return saveDataToFile( context,  dir,  file, data, false);
+	}
+	
+	public static String saveDataToFile(Context context, String dir, String file, byte[] data, boolean append)
+	{
 		if (file == null || data == null || data.length == 0 || context == null)
 		{
 			return null;
 		}
 		
 		String dirPath = context.getFilesDir().getAbsolutePath();
-		dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
-		
-		File dirFile = new File(dirPath);
-		dirFile.mkdirs();
-		
-		if (!dirFile.exists())
+		if (dir != null)
 		{
-			return null;
+			dirPath  = dir.startsWith(File.separator) ? dirPath + dir : dirPath + File.separator + dir;
+			
+			File dirFile = new File(dirPath);
+			dirFile.mkdirs();
+			
+			if (!dirFile.exists())
+			{
+				return null;
+			}
 		}
 		
 		
@@ -358,7 +418,7 @@ public class Util {
 		FileOutputStream os =null;
 		try
 		{
-			os = new FileOutputStream(new File(filePath), true);
+			os = new FileOutputStream(new File(filePath), append);
 			os.write(data);
 			os.flush();
 			os.close();
@@ -476,7 +536,9 @@ public class Util {
 		if ((json.startsWith("[") && json.endsWith("]")) ||
 			(json.startsWith("{") && json.endsWith("}")) ) {
 			String s = String.format("%d,%s", timestamp, json);
-			return saveDataToLocate(context, file, s);
+//			return saveDataToLocate(context, file, s);
+			saveDataToFile(context, null, file, s.getBytes());
+			return "保存成功";
 		}else{
 			return "data invalid";
 		}
@@ -489,14 +551,10 @@ public class Util {
 	 * @return Pair(LastModifiedTimeStamp, String): if file not exist, LastModifiedTimeStamp = 0;  
 	 */
 	public static Pair<Long, String> loadJsonAndTimestampFromLocate(Context context, String filename) {
-		if(filename != null && !filename.equals("") && filename.charAt(0) != '_'){
-			filename = "_" + filename;
-		}
-		
 //		File file = context.getFileStreamPath(filename);
 //		long timestamp = file.lastModified()/1000;
-		
-		String s = (String) Util.loadDataFromLocate(context, filename);
+		byte[] bytes = Util.loadData(context, filename);
+		String s = bytes == null ? null : new String(bytes);
 		
 		if (s != null && s.length() > 0) {
 			int index = s.indexOf(',');
@@ -547,41 +605,39 @@ public class Util {
 		return pair;		
 	}
 
+	private static ObjectMapper mapper = new ObjectMapper();
+	
+	private static ObjectMapper getDefaultMapper()
+	{
+		if (mapper == null)
+		{
+			mapper = new ObjectMapper();
+		}
+		
+		return mapper;
+	}
+	
 	//将数据从手机内存中读出来
-	public static Object loadDataFromLocate(Context context,String file) {
-		if(file != null && !file.equals("") && file.charAt(0) != '_'){
+	public static Object loadDataFromLocate(Context context,String file, Class clsName) {
+//		Profiler.markStart("READ_OBJ");
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){//ForArray
 			file = "_" + file;
 		}
-//		File testfile = new File(file); 
-//		if(!testfile.exists()){
-//			return null;
-//		}
 
 		Object obj = null;
 		FileInputStream fis = null;
-		ObjectInputStream ois = null;
 		try {
 			fis = context.openFileInput(file);
-			ois = new ObjectInputStream(fis);
-			obj = ois.readObject();
-			
+			ObjectReader reader = mapper.reader(clsName);
+			obj = reader.readValue(fis);
 		} catch (FileNotFoundException e) {
 			obj = null;
-			e.printStackTrace();
 		} catch (IOException e) {
 			obj = null;
-			e.printStackTrace();
-		} catch (ClassNotFoundException e) {
+		}catch (Throwable e) {
 			obj = null;
-			e.printStackTrace();
-		}catch (Exception e) {
-			obj = null;
-			e.printStackTrace();
 		} finally {
 			try {
-				if(null != ois){
-					ois.close();
-				}
 				if(null != fis){
 					fis.close();
 				}
@@ -590,6 +646,9 @@ public class Util {
 				e.printStackTrace();
 			}
 		}
+//		Profiler.markEnd("READ_OBJ");
+//		Profiler.dump();
+//		Profiler.clear();
 		return obj;
 	}
 	
@@ -1410,9 +1469,9 @@ public class Util {
         Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "userProfile");
 		currentUserId = null;
 		
-		UserBean anonymousUser = (UserBean) Helper.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser");
+		UserBean anonymousUser = (UserBean) loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
 		if(anonymousUser != null){
-			Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+			saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
 		}
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
@@ -1423,7 +1482,7 @@ public class Util {
      * @return 返回当前 UserBean user，未登录情况下返回 null
      */
     public static UserBean getCurrentUser() {
-        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user");
+        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
         return user;
     }
     
@@ -1466,9 +1525,9 @@ public class Util {
 	public static boolean isPushAlreadyThere(Context ctx, String pushCode){
 		if(ctx == null) return true;
 		if(pushCode == null || pushCode.equals("")) return false;
-		Object objCode = Util.loadDataFromLocate(ctx, "pushCode");
+		byte[] objCode = Util.loadData(ctx, "pushCode");//Util.loadDataFromLocate(ctx, "pushCode", String.class);
 		if(objCode != null){
-			String code = (String)objCode;
+			String code = new String(objCode);
 			try{
 				return Integer.valueOf(pushCode) <= Integer.valueOf(code);
 			}catch(Throwable e){

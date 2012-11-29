@@ -55,4 +55,8 @@ public class BXLocation implements Serializable {
 
         }
     }
+    
+    public BXLocation() {
+    	this(false);
+    }
 };
