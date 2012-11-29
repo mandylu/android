@@ -194,7 +194,7 @@ public class Util {
 	//将数据保存到手机内存中
 	public static String saveDataToLocate(Context context, String file,
 			Object object) {
-		Profiler.markStart("WRITE_OBJ");
+//		Profiler.markStart("WRITE_OBJ");
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){
 			file = "_" + file;
 		}
@@ -231,9 +231,9 @@ public class Util {
 				e.printStackTrace();
 			}
 		}
-		Profiler.markEnd("WRITE_OBJ");
-		Profiler.dump();
-		Profiler.clear();
+//		Profiler.markEnd("WRITE_OBJ");
+//		Profiler.dump();
+//		Profiler.clear();
 		return res;
 	}
 	
@@ -618,7 +618,7 @@ public class Util {
 	
 	//将数据从手机内存中读出来
 	public static Object loadDataFromLocate(Context context,String file, Class clsName) {
-		Profiler.markStart("READ_OBJ");
+//		Profiler.markStart("READ_OBJ");
 		if(file != null && !file.equals("") && file.charAt(0) != '_'){//ForArray
 			file = "_" + file;
 		}
@@ -645,9 +645,9 @@ public class Util {
 				e.printStackTrace();
 			}
 		}
-		Profiler.markEnd("READ_OBJ");
-		Profiler.dump();
-		Profiler.clear();
+//		Profiler.markEnd("READ_OBJ");
+//		Profiler.dump();
+//		Profiler.clear();
 		return obj;
 	}
 	
