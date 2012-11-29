@@ -14,8 +14,6 @@ public class AdViewTest extends BaixingTestCase {
 	public static final String TEST_DATA_CATEGORY_NZN = "女找男";
 	public static final String TEST_DATA_CATEGORY_QICHE = "二手轿车";
 	
-	public static final String AD_VIEWDETAIL_AREA_TEXT = "地区";
-	
 	public AdViewTest() throws Exception {
 		
 	}
@@ -34,6 +32,7 @@ public class AdViewTest extends BaixingTestCase {
 		assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
 		//检查弹出式提示信息，包含“成功”
 		assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 1000));
+		goBack();
 	}
 	
 	@Test
@@ -61,7 +60,7 @@ public class AdViewTest extends BaixingTestCase {
 	
 	private void checkMap() throws Exception {
 		//提取当前信息的地区地点信息，如“浦东金桥”
-		TextViewElement tv = findDetailViewMetaByName(AD_VIEWDETAIL_AREA_TEXT);
+		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
 		if (tv != null) {
 			//点击地图查看
