@@ -161,7 +161,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		String categoryNames = this.getArguments().getString("cateNames");
 		
 		if(categoryNames == null || categoryNames.length() == 0){
-			categoryNames = (String)Util.loadDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
+			categoryNames = (String)Util.loadDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY, String.class);
 		}
 		if(categoryNames != null && !categoryNames.equals("")){
 			String[] names = categoryNames.split(",");
@@ -1483,7 +1483,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 			postList.clear();
 			
-			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY)){
+			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
 				bitmap_url.clear();
 				bitmap_url.add(null);
 				bitmap_url.add(null);
