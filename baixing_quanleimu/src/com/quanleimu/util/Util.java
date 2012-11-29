@@ -389,6 +389,11 @@ public class Util {
 	
 	public static String saveDataToFile(Context context, String dir, String file, byte[] data)
 	{
+		return saveDataToFile( context,  dir,  file, data, false);
+	}
+	
+	public static String saveDataToFile(Context context, String dir, String file, byte[] data, boolean append)
+	{
 		if (file == null || data == null || data.length == 0 || context == null)
 		{
 			return null;
@@ -413,7 +418,7 @@ public class Util {
 		FileOutputStream os =null;
 		try
 		{
-			os = new FileOutputStream(new File(filePath), true);
+			os = new FileOutputStream(new File(filePath), append);
 			os.write(data);
 			os.flush();
 			os.close();
