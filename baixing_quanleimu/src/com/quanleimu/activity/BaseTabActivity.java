@@ -1,5 +1,11 @@
 package com.quanleimu.activity;
 
+import java.util.ArrayList;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
+import java.util.Map;
+
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -42,8 +48,10 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected static int currentMainIndex = TAB_INDEX_CAT;
 	
-	protected static int ACTIVE_INSTANCE_COUNT = 0;
+//	protected static int ACTIVE_INSTANCE_COUNT = 0;
 	protected static boolean isExitingApp = false;
+//	protected boolean skipReduceInstanceCount = false;
+	protected static Map<Integer, Boolean> instanceList = new HashMap<Integer, Boolean>();
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
@@ -60,19 +68,29 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onStart()
 	{
 		super.onStart();
-		if (isExitingApp)
+		if (instanceList.containsKey(this.hashCode()))
 		{
-			if (ACTIVE_INSTANCE_COUNT > 0)
+			if (instanceList.get(this.hashCode()).booleanValue())
 			{
-				ACTIVE_INSTANCE_COUNT--;
+				instanceList.remove(this.hashCode());
 				this.finish();
 			}
-			
-			if (ACTIVE_INSTANCE_COUNT == 0)
-			{
-				isExitingApp = false;
-			}
 		}
+//		Log.d(LIFE_TAG, this.hashCode()+ " check exiting app " + isExitingApp + " [" + this.getClass().getName() + "]");
+//		if (isExitingApp)
+//		{
+//			if (ACTIVE_INSTANCE_COUNT > 0)
+//			{
+//				ACTIVE_INSTANCE_COUNT--;
+//				skipReduceInstanceCount = true;
+//				this.finish();
+//			}
+//			
+//			if (ACTIVE_INSTANCE_COUNT == 0)
+//			{
+//				isExitingApp = false;
+//			}
+//		}
 	}
 	
 	@Override
@@ -83,9 +101,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
-		Log.w(LIFE_TAG, "activity is created for class " + this.getClass().getName());
+		Log.w(LIFE_TAG, this.hashCode() + " activity is created for class " + this.getClass().getName());
 		super.onCreate(savedInstanceState);
-		ACTIVE_INSTANCE_COUNT++;
+//		ACTIVE_INSTANCE_COUNT++;
+//		Log.d(LIFE_TAG, this.hashCode() + " activity create with exiting app flag be " + isExitingApp + " and instace count is " + ACTIVE_INSTANCE_COUNT);
+		instanceList.put(this.hashCode(), Boolean.valueOf(false));
 		
 		if (savedInstanceState != null)
 		{
@@ -130,11 +150,12 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	}
 	
 	protected void onDestroy() {
-		if (!isExitingApp)
-		{
-			ACTIVE_INSTANCE_COUNT--;
-		}
-		Log.w(LIFE_TAG, "activity is destroy " + this.getClass().getName());
+//		if (!skipReduceInstanceCount)
+//		{
+//			ACTIVE_INSTANCE_COUNT--;
+//		}
+		instanceList.remove(this.hashCode());
+		Log.w(LIFE_TAG, this.hashCode() + " activity is destroy " + this.getClass().getName());
 		super.onDestroy();
 	}
 	
@@ -280,8 +301,20 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
-		    	isExitingApp = true;
-		    	ACTIVE_INSTANCE_COUNT--;
+//		    	if (ACTIVE_INSTANCE_COUNT > 1)
+//		    	{
+//		    		isExitingApp = true;
+//		    	}
+//		    	ACTIVE_INSTANCE_COUNT--;
+//		    	skipReduceInstanceCount = true;
+		    	Iterator<Integer> keys =  instanceList.keySet().iterator();
+		    	while (keys.hasNext())
+		    	{
+		    		Integer key = keys.next();
+		    		instanceList.put(key, Boolean.valueOf(true));
+		    	}
+		    	
+		    	instanceList.remove(this.hashCode());
 				BaseTabActivity.this.finish();
 		    }
 		});
