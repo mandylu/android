@@ -11,6 +11,7 @@ import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.Map;
 import java.util.Set;
 
 import org.json.JSONException;
@@ -32,9 +33,7 @@ import android.os.Environment;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
-import android.text.Editable;
 import android.text.InputType;
-import android.text.TextWatcher;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -45,11 +44,15 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
+import android.widget.ArrayAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.SimpleAdapter;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
@@ -64,8 +67,10 @@ import com.quanleimu.adapter.CheckableAdapter;
 import com.quanleimu.adapter.CheckableAdapter.CheckableItem;
 import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.entity.BXLocation;
+import com.quanleimu.entity.FirstStepCate;
 import com.quanleimu.entity.GoodsDetail;
 import com.quanleimu.entity.PostGoodsBean;
+import com.quanleimu.entity.SecondStepCate;
 import com.quanleimu.entity.UserBean;
 import com.quanleimu.jsonutil.JsonUtil;
 import com.quanleimu.util.Communication;
@@ -151,6 +156,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     
     private EditText etDescription = null;
     private EditText etContact = null;
+    
+    private static final String []texts 	= {"物品交易", "车辆买卖", "房屋租售", "全职招聘", 
+		   "兼职招聘", "求职简历", "交友活动", "宠物", 
+		   "生活服务", "教育培训"};
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -1688,7 +1697,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		//layout_txt.addView(border);
 	
 	}
-	
+	private AlertDialog ad=null;
+//	private String[] mListString = {"姓名：王魁锋","性别：男","年龄：23",  
+//            "居住地：上海市普陀区","邮箱：wangkuifeng0118@126.com"};
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
@@ -1699,9 +1710,43 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Bundle bundle = createArguments(null, null);
-				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-				pushFragment(new GridCateFragment(), bundle);
+//				Bundle bundle = createArguments(null, null);
+//				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+//				pushFragment(new GridCateFragment(), bundle);
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle("请选择分类").setItems(texts,null);
+				ad = builder.create();
+				final ListView lv = ad.getListView();
+				lv.setOnItemClickListener(new OnItemClickListener() {
+					@Override
+					public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long arg3) {
+						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+						if (allCates == null || allCates.size() <= pos)
+							return;
+						FirstStepCate selectedCate = null;
+						String selText = texts[pos];
+						for (int i = 0; i < allCates.size(); ++i) {
+							if (allCates.get(i).name.equals(selText)){
+								selectedCate = allCates.get(i);
+								break;
+							}
+						};
+						List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+						List<SecondStepCate> children = selectedCate.getChildren();
+						for (SecondStepCate cate : children)
+						{
+							Map<String, Object> map = new HashMap<String, Object>();
+							map.put("tvCategoryName", cate.getName());
+							list.add(map);
+						}
+						SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, android.R.layout.simple_list_item_1, 
+								new String[]{"tvCategoryName"}, new int[]{R.id.tvCategoryName});
+						lv.setAdapter(adapter);
+//						lv.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, mListString));
+					}
+					
+				});
+				ad.show();
 			}				
 		});
 		
