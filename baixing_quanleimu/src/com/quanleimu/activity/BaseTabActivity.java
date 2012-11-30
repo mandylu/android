@@ -62,8 +62,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		super.onStart();
 		if (isExitingApp)
 		{
-			ACTIVE_INSTANCE_COUNT--;
-			this.finish();
+			if (ACTIVE_INSTANCE_COUNT > 0)
+			{
+				ACTIVE_INSTANCE_COUNT--;
+				this.finish();
+			}
 			
 			if (ACTIVE_INSTANCE_COUNT == 0)
 			{
