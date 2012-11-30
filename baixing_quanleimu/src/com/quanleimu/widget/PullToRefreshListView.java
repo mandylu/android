@@ -24,8 +24,8 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baixing.util.Communication;
 import com.quanleimu.activity.R;
-import com.quanleimu.util.Communication;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener, OnClickListener {
 
