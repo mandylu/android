@@ -1,5 +1,6 @@
 package com.quanleimu.activity;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -13,6 +14,7 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
+import com.quanleimu.broadcast.CommonIntentAction;
 import com.quanleimu.broadcast.PushMessageService;
 import com.quanleimu.database.ChatMessageDatabase;
 import com.quanleimu.util.LocationService;
@@ -41,6 +43,9 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected static int currentMainIndex = TAB_INDEX_CAT;
 	
+	protected static int ACTIVE_INSTANCE_COUNT = 0;
+	protected static boolean isExitingApp = false;
+	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -52,7 +57,22 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 			savedInstanceState.putSerializable("tabCtrl", globalTabCtrl);
 		}
 	}
-
+	
+	protected void onStart()
+	{
+		super.onStart();
+		if (isExitingApp)
+		{
+			ACTIVE_INSTANCE_COUNT--;
+			this.finish();
+			
+			if (ACTIVE_INSTANCE_COUNT == 0)
+			{
+				isExitingApp = false;
+			}
+		}
+	}
+	
 	@Override
 	public void onRestoreInstanceState(Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
@@ -63,6 +83,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.w(LIFE_TAG, "activity is created for class " + this.getClass().getName());
 		super.onCreate(savedInstanceState);
+		ACTIVE_INSTANCE_COUNT++;
 		
 		if (savedInstanceState != null)
 		{
@@ -78,11 +99,39 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 					new TabIconRes(R.drawable.icon_footer_post_on, R.drawable.icon_footer_post),
 					new TabIconRes(R.drawable.icon_footer_profile_on, R.drawable.icon_footer_profile)});
 		}
-		
 		globalTabCtrl.setCurrentFocusIndex(getTabIndex()); //Always focus the right tab.
 	}
 	
+	protected final void onNewIntent(Intent intent)
+	{
+		super.onNewIntent(intent);
+		
+		/**
+		 * Let sub class to handle the new intent, if sub class do not handle it, let current top fragment handle it.
+		 */
+		if (!handleNewIntent(intent))
+		{
+			BaseFragment f = getCurrentFragment();
+			if (f != null && intent.getBooleanExtra(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, false))
+			{
+				f.onActivityResult(intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, -1), 
+						intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, -1), 
+						(Intent) intent.getExtras().get(CommonIntentAction.EXTRA_COMMON_DATA));
+			}
+		}
+	}
+	
+	protected boolean handleNewIntent(Intent intent)
+	{
+		//TODO:
+		return false;
+	}
+	
 	protected void onDestroy() {
+		if (!isExitingApp)
+		{
+			ACTIVE_INSTANCE_COUNT--;
+		}
 		Log.w(LIFE_TAG, "activity is destroy " + this.getClass().getName());
 		super.onDestroy();
 	}
@@ -228,9 +277,10 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	Log.d("quanleimu", "exit");
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
-		    	BaseTabActivity.this.finish();
-//		        System.exit(0);
-//		            		QuanleimuMainActivity.this.finish();
+		    	
+		    	isExitingApp = true;
+		    	ACTIVE_INSTANCE_COUNT--;
+				BaseTabActivity.this.finish();
 		    }
 		});
 		builder.create().show();
@@ -263,8 +313,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
 //		intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 		this.startActivity(intent);
-		this.startActivityIfNeeded(intent, 10);
-		this.overridePendingTransition(0, 0);
+//		BaseTabActivity.this.finish();
 		
 //		Intent gg = new Intent("switch");
 //		gg.setClass(this, ManagerActivity.class);

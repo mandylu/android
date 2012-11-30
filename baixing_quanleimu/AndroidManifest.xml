@@ -42,6 +42,18 @@
         <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="BaiduMapActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleTask">
         </activity>
         
+		<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".ThirdpartyTransitActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleTop">
+			<intent-filter>
+			    <action android:name="com.baixing.action.img.cap" />
+			    <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+			   	<action android:name="com.baixing.action.img.select" />
+			    <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+						    
+        </activity>
+        
 <!-- 		<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".ManagerActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
 			<intent-filter>
 			    <action android:name="android.intent.action.MAIN" />

@@ -248,13 +248,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
             //去掉幽梦旧sdk 更新调用
 		}
 		
-		/*//TODO: refactor
-		BaseView childView = new HomePageView(this, bundle);		
-		currentView = childView;
-		childView.setInfoChangeListener(this);		
-		setBaseLayout(childView);
-		scroll.addView(childView);*/
-		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
 			this.pushFragment(new HomeFragment(), bundle, true);
@@ -401,14 +394,18 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		super.onStart();
 	}
 	
-	@Override
-	protected void onNewIntent(Intent intent) {
-		super.onNewIntent(intent);
-		//Do not update intent if launch from history.
+	protected boolean handleIntent()
+	{
 		if ((intent.getFlags() & Intent.FLAG_ACTIVITY_LAUNCHED_FROM_HISTORY) == 0)
 		{
 			setIntent(intent);
 		}
+		return false;
+	}
+	
+//	protected void onNewIntent(Intent intent) {
+//		super.onNewIntent(intent);
+		//Do not update intent if launch from history.
 //		Runnable task = new Runnable() {
 //			public void run()
 //			{
@@ -428,7 +425,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		{
 //			pendingTask.add(task);
 //		}
-	}
+//	}
 	
 	private void startTalking(Intent intent)
 	{

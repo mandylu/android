@@ -137,18 +137,31 @@ public class ViewUtil {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which){
+				
+				Intent backIntent = new Intent();
+				backIntent.setClass(context, context.getClass());
+				
+				Intent goIntent = new Intent();
+				goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
 				switch(which){
 					case 0:
-						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
-						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
+						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+						goIntent.putExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH, "temp" + tmpFileIndex + ".jpg");
+						context.startActivity(goIntent);
+//						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
+//								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
+//						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 						break;						
 					case 1:
-						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
-						intent3.addCategory(Intent.CATEGORY_OPENABLE);
-						intent3.setType("image/*");
-						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_SELECT);
+						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+						context.startActivity(goIntent);
+//						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+//						intent3.addCategory(Intent.CATEGORY_OPENABLE);
+//						intent3.setType("image/*");
+//						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
 						break;
 
 				}				
