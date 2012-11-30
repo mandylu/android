@@ -100,10 +100,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	static final public String KEY_CATE_ENGLISHNAME = "cateEnglishName";
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
+	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	
 	
 	public static final int MSG_POST_SUCCEED = 0xF0000010; 
-//	public ImageView img1, img2, img3;
 	public String categoryEnglishName = "";
 	public String categoryName = "";
 	public String json = "";
@@ -152,9 +152,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     private EditText etDescription = null;
     private EditText etContact = null;
     
-//    private boolean postLayoutCreated = false;
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -162,17 +159,23 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		this.postLayoutCreated = false;
 		
 		String categoryNames = this.getArguments().getString("cateNames");
-		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
 		
-		String[] names = categoryNames.split(",");
-		if(names.length == 2){
-			this.categoryEnglishName = names[0];
-			this.categoryName = names[1];
-			
-		}else if(names.length == 1){
-			this.categoryEnglishName = names[0];
+		if(categoryNames == null || categoryNames.length() == 0){
+			categoryNames = (String)Util.loadDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY, String.class);
+		}
+		if(categoryNames != null && !categoryNames.equals("")){
+			String[] names = categoryNames.split(",");
+			if(names.length == 2){
+				this.categoryEnglishName = names[0];
+				this.categoryName = names[1];
+				
+			}else if(names.length == 1){
+				this.categoryEnglishName = names[0];
+			}
+			Util.saveDataToLocate(this.getActivity(), FILE_LAST_CATEGORY, categoryNames);
 		}
 		
+		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
 		postList = new LinkedHashMap<String, PostGoodsBean>();
 		
 		params = new PostParamsHolder();
@@ -543,13 +546,50 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			}).show();
 //		}
 	}
+		
+	private void deployDefaultLayout(){
+		initImageLayout();
+		addCategoryItem();
+		LayoutInflater inflater = LayoutInflater.from(getActivity());
+		for(int i = 1; i < fixedItemNames.length; ++ i){			
+			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
+					inflater.inflate(R.layout.item_post_location, null) : 
+						inflater.inflate(R.layout.item_post_edit, null);	
+			((TextView)v.findViewById(R.id.postshow)).setText(fixedItemDisplayNames[i]);
+
+			EditText text = (EditText)v.findViewById(R.id.postinput);
+			
+			PostGoodsBean bean = new PostGoodsBean();
+			bean.setControlType("input");
+			bean.setDisplayName(fixedItemDisplayNames[i]);
+			bean.setName(fixedItemNames[i]);
+
+			v.setTag(HASH_CONTROL, text);
+			v.setTag(HASH_POST_BEAN, bean);
+			
+			if(fixedItemNames[i].equals("价格")){
+				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
+			}
+			else if(fixedItemNames[i].equals("contact")) {
+				text.setInputType(InputType.TYPE_CLASS_PHONE);
+			}
+			LinearLayout.LayoutParams layoutParams = (LayoutParams) v.getLayoutParams();
+			if (layoutParams == null)
+				layoutParams = new LinearLayout.LayoutParams(
+				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+			v.setLayoutParams(layoutParams);
+			layout_txt.addView(v);
+		}
+		loadCachedData();
+	}
 	
-	private void showPost()
-	{
-//		if (postLayoutCreated)
-//			return;
-//		postLayoutCreated = true;
-		//获取发布模板
+	private void showPost(){
+		if(this.categoryEnglishName == null || categoryEnglishName.length() == 0){
+			deployDefaultLayout();
+			return;
+		}
+
 		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 			cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
@@ -558,28 +598,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		json = pair.second;
 		if (json != null && json.length() > 0) {
-			long time = pair.first;
-			if (time + (24 * 3600) < System.currentTimeMillis()/1000) {
-//				myHandler.sendEmptyMessage(1);
-//				sendMessage(1, null);
-//				addCategoryItem();
-//				buildPostLayout();
+			addCategoryItem();
+			if (pair.first + (24 * 3600) < System.currentTimeMillis()/1000) {
 				showSimpleProgress();
 				new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
-
-//				new Thread(new GetCategoryMetaThread(false,cityEnglishName)).start();
 			} else {
-//				myHandler.sendEmptyMessage(1);
-//				sendMessage(1, null);
-//				addCategoryItem();
 				buildPostLayout();
+				loadCachedData();
 			}
 		} else {
 			showSimpleProgress();
 			new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
 		}
-
-		loadCachedData();
 	}
 	
 	@Override
@@ -655,6 +685,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		} 
 		else if(v.getId() == R.id.iv_post_finish){
 			postFinish();
+		}else if(v.getId() == R.id.location){
+			if(this.detailLocation != null && locationView != null){
+				setDetailLocationControl(detailLocation);
+			}
 		}
 //		else if (v.getId() == R.id.right_action){
 //			Log.d("postgoods","R.id.right_action");
@@ -743,7 +777,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	static public void extractInputData(ViewGroup vg, PostParamsHolder params){
-		if(vg == null);
+		if(vg == null) return;
 		for(int i = 0; i < vg.getChildCount(); ++ i){
 			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(HASH_POST_BEAN);
 			if(postGoodsBean == null) continue;
@@ -1426,6 +1460,45 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
 			this.handleRightAction();
 			return;
+		}else if(message == MSG_CATEGORY_SEL_BACK && obj != null){
+			String[] names = ((String)obj).split(",");
+			if(names.length == 2){
+				if(names[0].equals(this.categoryEnglishName)){
+					return;
+				}
+				this.categoryEnglishName = names[0];
+				this.categoryName = names[1];
+				
+			}else if(names.length == 1){
+				if(names[0].equals(this.categoryEnglishName)){
+					return;
+				}
+				this.categoryEnglishName = names[0];
+			}
+			
+			if(this.layout_txt != null){
+				View v = layout_txt.findViewById(R.id.image_layout);
+				layout_txt.removeAllViews();
+				layout_txt.addView(v);
+			}
+			postList.clear();
+			
+			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+				bitmap_url.clear();
+				bitmap_url.add(null);
+				bitmap_url.add(null);
+				bitmap_url.add(null);
+				params.clear();
+				currentImgView = -1;
+				listUrl.clear();
+				uploadCount = 0;
+				cachedBps[0] = cachedBps[1] = cachedBps[2] = null;
+				imgs[0].setImageResource(R.drawable.btn_add_picture);
+				imgs[1].setImageResource(R.drawable.btn_add_picture);
+				imgs[2].setImageResource(R.drawable.btn_add_picture);
+			}			
+			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
+			this.showPost();
 		}
 		boolean match = fetchResultFromViewBack(message, obj, layout_txt, params);
 		if(match){
@@ -1548,6 +1621,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
+	private void initImageLayout(){
+		this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
+		layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
+		layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
+		layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
+		imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
+				(ImageView)layout_txt.findViewById(R.id.iv_2),
+				(ImageView)layout_txt.findViewById(R.id.iv_3)
+		};
+	}
+	
 	private void appendBeanToLayout(PostGoodsBean postBean)
 	{
 		if (postBean.getName().equals("contact") &&
@@ -1564,17 +1648,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		Activity activity = getActivity();
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
-			if(inLocating){
-				((TextView)layout.findViewById(R.id.postinput)).setHint("定位中...");
-			}else{
+			layout.findViewById(R.id.location).setOnClickListener(this);
+//			if(inLocating){
+//				((TextView)layout.findViewById(R.id.postinput)).setHint("定位中...");
+//			}else{
 				((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
-			}
+//			}
 			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
 			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
 			locationView = layout;
-			if(this.detailLocation != null && !inLocating){
-				setDetailLocationControl(detailLocation);
-			}
+//			if(this.detailLocation != null && !inLocating){
+//				setDetailLocationControl(detailLocation);
+//			}
 		}else if(postBean.getName().equals(STRING_AREA)){
 //			districtView = layout;
 //			if(this.detailLocation != null && !inLocating){
@@ -1590,19 +1675,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		
 		if (postBean.getControlType().equals("image")) {
-			this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
-			layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
-			layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
-			layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
-			imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
-					(ImageView)layout_txt.findViewById(R.id.iv_2),
-					(ImageView)layout_txt.findViewById(R.id.iv_3)
-			};
+			initImageLayout();
 		}
-		LayoutInflater flater = LayoutInflater.from(activity);
-		View border = flater.inflate(R.layout.seperator, null);
-		LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, 1, 1);
-		border.setLayoutParams(lp);
+//		LayoutInflater flater = LayoutInflater.from(activity);
+//		View border = flater.inflate(R.layout.seperator, null);
+//		LayoutParams lp = new LayoutParams(LayoutParams.FILL_PARENT, 1, 1);
+//		border.setLayoutParams(lp);
 		
 		if(layout != null){
 			layout_txt.addView(layout);
@@ -1611,35 +1689,39 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	}
 	
-//	private void addCategoryItem(){
-//		Activity activity = getActivity();
-//		if(this.goodsDetail != null)return;
-//		LayoutInflater inflater = LayoutInflater.from(activity);
-//		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
-//		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
-//		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
-//		categoryItem.setOnClickListener(new OnClickListener(){
-//			@Override
-//			public void onClick(View v) {
-//					Bundle bundle = createArguments(null, null);
-//					bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-//					pushFragment(new GridCateFragment(), bundle);
-//			}				
-//		});
-//		layout_txt.addView(categoryItem);
-//		
-//		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
-//			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
-//		}
-//		
-//		TextView border = new TextView(activity);
-//		border.setLayoutParams(new LayoutParams(
-//				LayoutParams.FILL_PARENT, 1, 1));
-//		border.setBackgroundResource(R.drawable.list_divider);
-//		layout_txt.addView(border);
-//	}
+	private void addCategoryItem(){
+		Activity activity = getActivity();
+		if(this.goodsDetail != null)return;
+		LayoutInflater inflater = LayoutInflater.from(activity);
+		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
+		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
+		categoryItem.setOnClickListener(new OnClickListener(){
+			@Override
+			public void onClick(View v) {
+				Bundle bundle = createArguments(null, null);
+				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+				pushFragment(new GridCateFragment(), bundle);
+			}				
+		});
+		
+		
+		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
+			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
+		}
+		
+		LinearLayout.LayoutParams layoutParams = (LayoutParams) categoryItem.getLayoutParams();
+		if (layoutParams == null)
+			layoutParams = new LinearLayout.LayoutParams(
+			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+		categoryItem.setLayoutParams(layoutParams);
+		
+		layout_txt.addView(categoryItem);
+	}
 	
 	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
+	private String[] fixedItemDisplayNames = {"", "描述", "价格", "联系电话", STRING_DETAIL_POSITION};
 	private String[] hiddenItemNames = {"wanted", "faburen"};
 	private boolean autoLocated;
 
@@ -1803,10 +1885,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		switch (msg.what) {
 		case MSG_GETLOCATION_TIMEOUT:{
 			if(inLocating){
-				setDetailLocationControl(null);
-				if(this.locationView != null){
-					((TextView)locationView.findViewById(R.id.postinput)).setHint("请输入");
-				}
+//				setDetailLocationControl(null);
+//				if(this.locationView != null){
+//					((TextView)locationView.findViewById(R.id.postinput)).setHint("请输入");
+//				}
 			}
 			inLocating = false;			
 			break;
@@ -1843,8 +1925,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			break;
 		}
 		case 1:
-//			addCategoryItem();
+			addCategoryItem();
 			buildPostLayout();
+			loadCachedData();
 			break;
 
 		case 2:
@@ -2188,7 +2271,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		title.m_title = (categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 		title.m_leftActionHint = "返回";
 //		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
-			title.m_rightActionHint = "完成";
+//			title.m_rightActionHint = "完成";
 //		}
 	}
 	
@@ -2234,7 +2317,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		Activity activity = fragment.getActivity();
 		if (postBean.getControlType().equals("input")) {
 			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = inflater.inflate(R.layout.item_post_edit, null);
+			View v = postBean.getName().equals(STRING_DETAIL_POSITION) ? 
+					inflater.inflate(R.layout.item_post_location, null) : 
+						inflater.inflate(R.layout.item_post_edit, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
@@ -2254,7 +2339,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout = (ViewGroup)v;
 		} else if (postBean.getControlType().equals("select")) {
 			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = inflater.inflate(R.layout.item_post_select, null);
+			View v = inflater.inflate(R.layout.item_post_select, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 			v.setTag(HASH_POST_BEAN, postBean);
 			v.setTag(HASH_CONTROL, v.findViewById(R.id.posthint));
@@ -2509,14 +2594,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		if(this.inLocating){
 			detailLocation = location;
-			if(locationView != null){
-				this.getActivity().runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						setDetailLocationControl(detailLocation);
-					}
-				});
-			}
+//			if(locationView != null){
+//				this.getActivity().runOnUiThread(new Runnable(){
+//					@Override
+//					public void run(){
+//						setDetailLocationControl(detailLocation);
+//					}
+//				});
+//			}
 		}
 		this.inLocating = false;
 	}

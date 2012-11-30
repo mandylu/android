@@ -1574,9 +1574,9 @@ public class Util {
 //            throw new RuntimeException(e);
         	e.printStackTrace();
         }
-        if(androidId.length() >= 20){
-        	return androidId.substring(0, 20);
-        }        
+//        if(androidId.length() >= 20){
+//        	return androidId.substring(0, 20);
+//        }        
         return androidId;
 
     }	

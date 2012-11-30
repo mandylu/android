@@ -46,6 +46,7 @@ import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
 import com.quanleimu.view.fragment.GridCateFragment;
 import com.quanleimu.view.fragment.HomeFragment;
 import com.quanleimu.view.fragment.PersonalInfoFragment;
+import com.quanleimu.view.fragment.PostGoodsFragment;
 import com.quanleimu.view.fragment.TalkFragment;
 import com.umeng.update.UmengUpdateAgent;
 
@@ -563,5 +564,4 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 			}
 		}
 	}
-	
 }

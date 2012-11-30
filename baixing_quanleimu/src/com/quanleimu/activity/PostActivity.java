@@ -15,10 +15,8 @@ public class PostActivity extends BaseTabActivity {
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
-			Bundle args = new Bundle(bundle);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
-			pushFragment(new GridCateFragment(), args, true);
+            QuanleimuApplication.postEntryFlag = 0;
+            pushFragment(new PostGoodsFragment(), new Bundle(), false);
 		}
 		
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);

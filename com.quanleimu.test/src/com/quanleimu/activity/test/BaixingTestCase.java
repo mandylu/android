@@ -281,10 +281,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 							InputType.TYPE_CLASS_NUMBER 
 							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
 							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
-						value = "30";
+						value = "" + (30 + (int)(Math.random() * 10));
 					} else {
 						int randLen = 8 + (int)(Math.random() * 12);
 						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
+						if (nv.getText().equals("描述")) randLen = 8 + (int)(Math.random() * 7);//TODO 营业员 描述字数
 						if (nv.getText().equals("目的地")) randLen = 9;
 						value = "";
 						for(int l = 0; l < randLen; l++) {
@@ -792,7 +793,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 					if (iv == null) continue;
 					Log.i(LOG_TAG, "openAdWithPic:ilv v4" + iv.getTag());
 					//if (!iv.checkImageByName(AD_VIEWLIST_ITEM_IMAGE_IMG)) continue;  //TODO
-					if (iv.getTag() == null || iv.getTag().length() == 0) continue; 
+					if (iv.getTag() == null || iv.getTag().length() == 0) {
+						if (havPic) continue; 
+					} else {
+						if (!havPic) continue;
+					}
 					Log.i(LOG_TAG, "openAdWithPic:ilv v5");
 					avi.doClick();
 					TimeUnit.SECONDS.sleep(1);
@@ -826,7 +831,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		for(int i = 0; i < 50; i++) {
 			lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
 			assertNotNull(lv);
-			lv.scrollByY(from, from - ((i < 12) ? 200 : 100));
+			lv.scrollByY(from, from - ((i < 14) ? 200 : 100));
 			if (i < 12) continue;
 			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
 			if (v != null) {
@@ -1124,7 +1129,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 		showAdPic(0);
 		//点击右上方按钮保存
 		if (v != null) v.doClick();
-		goBack();
 		goBack();
 		return v;
 	}
