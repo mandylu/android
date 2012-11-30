@@ -26,15 +26,15 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
-import com.quanleimu.util.TrackConfig.TrackMobile.Key;
-import com.quanleimu.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
-import com.quanleimu.view.fragment.CityChangeFragment;
-import com.quanleimu.view.fragment.FeedbackFragment;
-import com.quanleimu.view.fragment.LoginFragment;
-import com.quanleimu.view.fragment.SetMainFragment;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.util.TrackConfig.TrackMobile.Key;
+import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.view.fragment.CityChangeFragment;
+import com.baixing.view.fragment.FeedbackFragment;
+import com.baixing.view.fragment.LoginFragment;
+import com.baixing.view.fragment.SetMainFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 

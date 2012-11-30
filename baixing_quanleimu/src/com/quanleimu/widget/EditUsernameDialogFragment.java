@@ -14,15 +14,16 @@ import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.Toast;
+
+import com.baixing.entity.UserProfile;
+import com.baixing.util.Communication;
+import com.baixing.util.ParameterHolder;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.util.TrackConfig.TrackMobile.Key;
+import com.baixing.view.fragment.PersonalInfoFragment;
 import com.quanleimu.activity.R;
-import com.quanleimu.entity.UserProfile;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.ParameterHolder;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.Util;
-import com.quanleimu.util.TrackConfig.TrackMobile.Key;
-import com.quanleimu.util.TrackConfig.TrackMobile.BxEvent;
-import com.quanleimu.view.fragment.PersonalInfoFragment;
 
 import org.json.JSONException;
 import org.json.JSONObject;

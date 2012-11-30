@@ -11,12 +11,12 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.util.BitmapUtils;
+import com.baixing.util.UploadImageCommand;
+import com.baixing.util.UploadImageCommand.ProgressListener;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
-import com.quanleimu.imageCache.SimpleImageLoader;
-import com.quanleimu.util.BitmapUtils;
-import com.quanleimu.util.UploadImageCommand;
-import com.quanleimu.util.UploadImageCommand.ProgressListener;
 
 public class StateImage implements Serializable{
 

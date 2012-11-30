@@ -8,16 +8,16 @@ import android.os.Message;
 import android.util.Pair;
 import android.widget.Toast;
 
-import com.quanleimu.entity.AllCates;
-import com.quanleimu.entity.CityDetail;
-import com.quanleimu.entity.CityList;
-import com.quanleimu.entity.GoodsDetail;
-import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.Helper;
-import com.quanleimu.util.LocationService;
-import com.quanleimu.util.MobileConfig;
-import com.quanleimu.util.Util;
+import com.baixing.entity.AllCates;
+import com.baixing.entity.CityDetail;
+import com.baixing.entity.CityList;
+import com.baixing.entity.GoodsDetail;
+import com.baixing.jsonutil.JsonUtil;
+import com.baixing.util.Communication;
+import com.baixing.util.Helper;
+import com.baixing.util.LocationService;
+import com.baixing.util.MobileConfig;
+import com.baixing.util.Util;
 
 public class SplashJob {
 
