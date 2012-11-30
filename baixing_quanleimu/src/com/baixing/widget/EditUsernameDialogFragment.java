@@ -1,4 +1,4 @@
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 import android.app.Activity;
 import android.app.AlertDialog;

@@ -1,4 +1,4 @@
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 import android.content.Context;
 import android.graphics.Bitmap;

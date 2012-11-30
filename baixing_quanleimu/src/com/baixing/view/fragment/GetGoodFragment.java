@@ -47,11 +47,11 @@ import com.baixing.view.FilterUtil;
 import com.baixing.view.FilterUtil.CustomizeItem;
 import com.baixing.view.FilterUtil.FilterSelectListener;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
+import com.baixing.widget.PullToRefreshListView;
+import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.PullToRefreshListView;
-import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {

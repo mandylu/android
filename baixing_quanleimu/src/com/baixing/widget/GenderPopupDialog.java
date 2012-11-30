@@ -1,4 +1,4 @@
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 import android.widget.Spinner;
 import java.util.ArrayList;  

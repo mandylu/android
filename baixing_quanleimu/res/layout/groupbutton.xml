@@ -1,8 +1,8 @@
 <?xml version="1.0" encoding="utf-8"?>
-<com.quanleimu.widget.GroupButton xmlns:android="http://schemas.android.com/apk/res/android"
+<com.baixing.widget.GroupButton xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:background="@drawable/top_bg"
     android:gravity="center_vertical"
     android:orientation="horizontal" >
-</com.quanleimu.widget.GroupButton>
+</com.baixing.widget.GroupButton>

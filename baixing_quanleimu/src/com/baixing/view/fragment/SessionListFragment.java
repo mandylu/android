@@ -31,9 +31,9 @@ import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.PullToRefreshListView;
 
 public class SessionListFragment extends BaseFragment  implements View.OnClickListener, PullToRefreshListView.OnRefreshListener, OnItemClickListener{
 	private List<ChatSession> sessions = null;
