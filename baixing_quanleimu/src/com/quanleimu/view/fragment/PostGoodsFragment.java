@@ -78,7 +78,7 @@ import com.quanleimu.util.Tracker;
 import com.quanleimu.util.Util;
 import com.quanleimu.util.ViewUtil;
 
-public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener, TextWatcher{
+public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener{
 
 	public static final int MSG_START_UPLOAD = 5;
 	public static final int MSG_FAIL_UPLOAD = 6;
@@ -325,7 +325,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		super.onPause();
 	}
 	
-	private boolean inLocating = false;
+//	private boolean inLocating = false;
 	@Override
 	public void onStackTop(boolean isBack) {
 //		if(!userValidated){
@@ -336,7 +336,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			this.showPost();
 		}
 		if(isBack){
-			this.detailLocation = null;
+//			this.detailLocation = null;
 			final ScrollView scroll = (ScrollView) this.getView().findViewById(R.id.goodscontent);
 			scroll.post(new Runnable() {            
 			    @Override
@@ -346,9 +346,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			});
 		}
 		if(!isBack && this.goodsDetail == null){
-			inLocating = true;
+//			inLocating = true;
 			QuanleimuApplication.getApplication().addLocationListener(this);
-			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
+//			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
 		}
 		
 	}
@@ -751,7 +751,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void postAction() {
 		//定位成功的情况下，发布时保存当前经纬度和地理位置
-        if (inLocating == false && locationView != null && cacheLocation != null) {
+        if (/*inLocating == false &&*/ locationView != null && cacheLocation != null) {
             String inputAddress = ((TextView)locationView.findViewById(R.id.postinput)).getText().toString();
             BXLocation lastLocation = new BXLocation(cacheLocation);
             lastLocation.detailAddress = inputAddress;
@@ -1655,7 +1655,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
 //			}
 			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
-			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
+//			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
 			locationView = layout;
 //			if(this.detailLocation != null && !inLocating){
 //				setDetailLocationControl(detailLocation);
@@ -1883,16 +1883,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		
 		switch (msg.what) {
-		case MSG_GETLOCATION_TIMEOUT:{
-			if(inLocating){
-//				setDetailLocationControl(null);
-//				if(this.locationView != null){
-//					((TextView)locationView.findViewById(R.id.postinput)).setHint("请输入");
-//				}
-			}
-			inLocating = false;			
-			break;
-		}
+//		case MSG_GETLOCATION_TIMEOUT:{
+//			if(inLocating){
+////				setDetailLocationControl(null);
+////				if(this.locationView != null){
+////					((TextView)locationView.findViewById(R.id.postinput)).setHint("请输入");
+////				}
+//			}
+//			inLocating = false;			
+//			break;
+//		}
 		case MSG_START_UPLOAD:{		
 			Integer index = (Integer) msg.obj;
 			if (imgs != null){
@@ -2592,7 +2592,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
 		}
 		
-		if(this.inLocating){
+//		if(this.inLocating){
 			detailLocation = location;
 //			if(locationView != null){
 //				this.getActivity().runOnUiThread(new Runnable(){
@@ -2602,8 +2602,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //					}
 //				});
 //			}
-		}
-		this.inLocating = false;
+//		}
+//		this.inLocating = false;
 	}
 
 
@@ -2611,7 +2611,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public boolean onKey(View v, int keyCode, KeyEvent event) {
 		// TODO Auto-generated method stub
-		this.inLocating = false;
+//		this.inLocating = false;
 		return false;
 	}
 
@@ -2648,31 +2648,31 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 
 
-	@Override
-	public void afterTextChanged(Editable s) {
-
-		
-	}
-
-
-
-	@Override
-	public void beforeTextChanged(CharSequence s, int start, int count,
-			int after) {
-		// TODO Auto-generated method stub
-		
-	}
+//	@Override
+//	public void afterTextChanged(Editable s) {
+//
+//		
+//	}
 
 
+//
+//	@Override
+//	public void beforeTextChanged(CharSequence s, int start, int count,
+//			int after) {
+//		// TODO Auto-generated method stub
+//		
+//	}
 
-	@Override
-	public void onTextChanged(CharSequence s, int start, int before, int count) {
-		// TODO Auto-generated method stub
-		if(this.detailLocation == null) return;
-		if(s != null && !s.toString().equals(detailLocation.detailAddress) && !s.toString().equals(detailLocation.subCityName)){
-			detailLocation = null;
-		}
-	}
+
+
+//	@Override
+//	public void onTextChanged(CharSequence s, int start, int before, int count) {
+//		// TODO Auto-generated method stub
+//		if(this.detailLocation == null) return;
+//		if(s != null && !s.toString().equals(detailLocation.detailAddress) && !s.toString().equals(detailLocation.subCityName)){
+//			detailLocation = null;
+//		}
+//	}
 
 
 
