@@ -44,6 +44,7 @@ import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.GridCateFragment;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
+import com.baixing.view.fragment.PostGoodsFragment;
 import com.baixing.view.fragment.TalkFragment;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
@@ -863,11 +864,12 @@ public class QuanleimuMainActivity extends BaseActivity implements /*IWXAPIEvent
 		case 1:
             //发布赌约
             QuanleimuApplication.postEntryFlag = 0;
-
-			Bundle args = new Bundle(bundle);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
-			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
-			pushFragment(new GridCateFragment(), args, true);
+//
+//			Bundle args = new Bundle(bundle);
+//			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
+//			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
+//			pushFragment(new GridCateFragment(), args, true);
+            pushFragment(new PostGoodsFragment(), new Bundle(bundle), false);
 			break;
 		case 2:
 			this.pushFragment(new PersonalInfoFragment(), bundle, true);
