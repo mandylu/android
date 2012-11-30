@@ -2512,12 +2512,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private void setDetailLocationControl(BXLocation location){
         cacheLocation = location;
         String autoAddress = "";
-        // 优先显示上次存储的记录
-        // 地理定位成功，1KM 外，换定位地址
 
         BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation", BXLocation.class);
         if (lastLocation != null) {
-            autoAddress = lastLocation.detailAddress;
+            autoAddress = (lastLocation.detailAddress == null || lastLocation.detailAddress.equals("")) ? 
+            		((lastLocation.subCityName == null || lastLocation.subCityName.equals("")) ?
+							"" 
+							: lastLocation.subCityName)
+					: lastLocation.detailAddress;
 
             if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
                 Location newLocation = new Location("newLocation");
@@ -2532,10 +2534,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
                     autoAddress = location.detailAddress;
                 }
             }
-        } else { //没有存储地址，则显示新定位地址
-            if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
-                autoAddress = location.detailAddress;
-            }
+        } else {
+        	autoAddress = (location == null) ? "" :
+        		((location.detailAddress == null || location.detailAddress.equals("")) ? 
+        				((location.subCityName == null || location.subCityName.equals("")) ?
+    							"" 
+    							: location.subCityName)
+    					: location.detailAddress);
         }
 
 		if(locationView != null && locationView.findViewById(R.id.postinput) != null){

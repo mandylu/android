@@ -1,0 +1,25 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="18dp" >
+
+    <EditText
+        android:id="@+id/dialog_edit_username_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_bg"
+        android:drawableLeft="@drawable/iconsearch"
+        android:drawablePadding="6dp"
+        android:editable="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:gravity="center_vertical|left"
+        android:hint="username"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="@color/common_edit_text_color"
+        android:textSize="@dimen/font_input_text" />
+
+</RelativeLayout>
