@@ -2,9 +2,7 @@ package com.quanleimu.activity;
 
 import android.os.Bundle;
 
-import com.quanleimu.view.fragment.GridCateFragment;
-import com.quanleimu.view.fragment.PersonalInfoFragment;
-import com.quanleimu.view.fragment.PostGoodsFragment;
+import com.baixing.view.fragment.PostGoodsFragment;
 
 public class PostActivity extends BaseTabActivity {
 	

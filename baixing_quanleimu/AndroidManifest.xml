@@ -85,13 +85,13 @@
         </activity>
         
         <service
-            android:name="com.quanleimu.broadcast.BXNotificationService"
+            android:name="com.baixing.broadcast.BXNotificationService"
             android:exported="false"
             android:enabled="true" >
         </service>
         
 		<service
-            android:name="com.quanleimu.broadcast.PushMessageService"
+            android:name="com.baixing.broadcast.PushMessageService"
             android:exported="false"
             android:enabled="true" >
            <intent-filter>
@@ -108,16 +108,15 @@
         </service>
 
         <service
-                android:name="com.quanleimu.util.BXUpdateService"
-                android:label="AutoUpdateService"/>
+                android:name="com.baixing.util.BXUpdateService"  android:label="AutoUpdateService"/>
 
-        <receiver android:name="com.quanleimu.broadcast.NetworkConnectivityReceiver" android:enabled="true">
+        <receiver android:name="com.baixing.broadcast.NetworkConnectivityReceiver" android:enabled="true">
              <intent-filter>
                  <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
              </intent-filter>
         </receiver>
         
-		<receiver android:name="com.quanleimu.broadcast.NotificationHandler" android:enabled="true">
+		<receiver android:name="com.baixing.broadcast.NotificationHandler" android:enabled="true">
              <intent-filter>
                  <action android:name="com.baixing.action.notify.msg" />
                  <action android:name="com.baixing.action.notify.bxinfo" />
@@ -126,7 +125,7 @@
         </receiver>
         
 
-        <receiver android:name="com.quanleimu.broadcast.BXStartupIntentReceiver" >
+        <receiver android:name="com.baixing.broadcast.BXStartupIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.baixing.action.notify.upgrade" />

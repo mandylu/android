@@ -1,6 +1,5 @@
 package com.quanleimu.activity;
 
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -14,17 +13,17 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
-import com.quanleimu.broadcast.CommonIntentAction;
-import com.quanleimu.broadcast.PushMessageService;
-import com.quanleimu.database.ChatMessageDatabase;
-import com.quanleimu.util.LocationService;
-import com.quanleimu.util.Sender;
-import com.quanleimu.util.ShortcutUtil;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.view.AdViewHistory;
-import com.quanleimu.view.CustomizeTabHost;
-import com.quanleimu.view.CustomizeTabHost.TabIconRes;
-import com.quanleimu.view.CustomizeTabHost.TabSelectListener;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.broadcast.PushMessageService;
+import com.baixing.database.ChatMessageDatabase;
+import com.baixing.util.LocationService;
+import com.baixing.util.Sender;
+import com.baixing.util.ShortcutUtil;
+import com.baixing.util.Tracker;
+import com.baixing.view.AdViewHistory;
+import com.baixing.view.CustomizeTabHost;
+import com.baixing.view.CustomizeTabHost.TabIconRes;
+import com.baixing.view.CustomizeTabHost.TabSelectListener;
 
 /**
  * 
@@ -254,7 +253,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		        editor.putString("hasShowShortcut", "yes");
 		        // Commit the edits!
 		        editor.commit();
-				Intent pushIntent = new Intent(BaseTabActivity.this, com.quanleimu.broadcast.BXNotificationService.class);
+				Intent pushIntent = new Intent(BaseTabActivity.this, com.baixing.broadcast.BXNotificationService.class);
 				BaseTabActivity.this.startService(pushIntent);
 
 				Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);

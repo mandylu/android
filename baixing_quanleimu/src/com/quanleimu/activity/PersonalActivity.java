@@ -2,7 +2,7 @@ package com.quanleimu.activity;
 
 import android.os.Bundle;
 
-import com.quanleimu.view.fragment.PersonalInfoFragment;
+import com.baixing.view.fragment.PersonalInfoFragment;
 
 public class PersonalActivity extends BaseTabActivity {
 

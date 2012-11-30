@@ -24,7 +24,7 @@
             android:layout_height="50dp"
             android:background="@drawable/bg_contact_bar" >
 
-            <com.quanleimu.widget.ContextMenuItem
+            <com.baixing.widget.ContextMenuItem
                 android:id="@+id/vad_send_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
