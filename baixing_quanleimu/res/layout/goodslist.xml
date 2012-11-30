@@ -17,7 +17,7 @@
         android:background="@color/bg_screen"
         android:orientation="vertical" >
 
-        <com.quanleimu.widget.PullToRefreshListView
+        <com.baixing.widget.PullToRefreshListView
             android:id="@+id/lvGoodsList"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

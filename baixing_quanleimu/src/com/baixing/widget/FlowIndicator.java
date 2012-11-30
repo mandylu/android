@@ -13,9 +13,9 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.quanleimu.widget;
+package com.baixing.widget;
 
-import com.quanleimu.widget.ViewFlow.ViewSwitchListener;
+import com.baixing.widget.ViewFlow.ViewSwitchListener;
 
 /**
  * An interface which defines the contract between a ViewFlow and a

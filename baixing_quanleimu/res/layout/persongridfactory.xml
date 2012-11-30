@@ -91,7 +91,7 @@
                 android:background="#d6d6d6" />
         </RelativeLayout>
 
-        <com.quanleimu.widget.CustomizeGridView
+        <com.baixing.widget.CustomizeGridView
             android:id="@+id/gridcategory"
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"

@@ -25,7 +25,7 @@
  *
  */
 
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 import java.util.LinkedList;
 import java.util.Queue;

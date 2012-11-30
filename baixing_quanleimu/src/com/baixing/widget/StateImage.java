@@ -1,4 +1,4 @@
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 import java.io.File;
 import java.io.Serializable;

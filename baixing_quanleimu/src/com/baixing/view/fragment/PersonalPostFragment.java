@@ -38,11 +38,11 @@ import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.PullToRefreshListView;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
 	private final int MSG_MYPOST = 1;

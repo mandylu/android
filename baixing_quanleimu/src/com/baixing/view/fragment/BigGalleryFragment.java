@@ -39,10 +39,10 @@ import com.baixing.util.Communication;
 import com.baixing.util.Tracker;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.ViewFlow;
 
 public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	

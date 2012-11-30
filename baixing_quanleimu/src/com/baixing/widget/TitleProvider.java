@@ -13,7 +13,7 @@
  * See the License for the specific language governing permissions and
  * limitations under the License.
  */
-package com.quanleimu.widget;
+package com.baixing.widget;
 
 /**
  * A TitleProvider provides the title to display according to a view.

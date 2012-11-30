@@ -34,10 +34,10 @@ import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
+import com.baixing.widget.AnimatingImageView;
+import com.baixing.widget.ContextMenuItem;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.AnimatingImageView;
-import com.quanleimu.widget.ContextMenuItem;
 
 
 public class GoodsListAdapter extends BaseAdapter {

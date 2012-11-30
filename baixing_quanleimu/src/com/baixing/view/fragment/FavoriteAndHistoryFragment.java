@@ -25,11 +25,11 @@ import com.baixing.util.*;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.widget.PullToRefreshListView;
+import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.PullToRefreshListView;
-import com.quanleimu.widget.PullToRefreshListView.E_GETMORE;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder {
     private boolean isFav = false;

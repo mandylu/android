@@ -53,15 +53,15 @@ import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.view.fragment.HomeFragment.GetPersonalProfileThread;
+import com.baixing.widget.CustomizeGridView;
+import com.baixing.widget.EditUsernameDialogFragment;
+import com.baixing.widget.CustomizeGridView.GridInfo;
+import com.baixing.widget.CustomizeGridView.ItemClickListener;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.BaseFragment.TabDef;
 import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-import com.quanleimu.widget.CustomizeGridView;
-import com.quanleimu.widget.EditUsernameDialogFragment;
-import com.quanleimu.widget.CustomizeGridView.GridInfo;
-import com.quanleimu.widget.CustomizeGridView.ItemClickListener;
 
 public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, ItemClickListener {
 
