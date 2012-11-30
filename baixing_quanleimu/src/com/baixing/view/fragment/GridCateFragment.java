@@ -104,18 +104,12 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 				break;
 			}
 		}
+
+		Bundle bundle = new Bundle();
+		bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
+		bundle.putSerializable("cates", selectedCate);
+		bundle.putBoolean("isPost", true);
+		pushFragment(new SecondCateFragment(), bundle);
 		
-		if (this.requestCode != INVALID_REQUEST_CODE)
-		{
-			this.finishFragment(this.requestCode, selectedCate);
-		}
-		else
-		{
-			Bundle bundle = new Bundle();
-			bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
-			bundle.putSerializable("cates", selectedCate);
-			bundle.putBoolean("isPost", true);
-			pushFragment(new SecondCateFragment(), bundle);
-		}
 	}
 }
