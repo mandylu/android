@@ -1739,7 +1739,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							map.put("tvCategoryName", cate.getName());
 							list.add(map);
 						}
-						SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, android.R.layout.simple_list_item_1, 
+						SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, R.layout.item_seccategory, 
 								new String[]{"tvCategoryName"}, new int[]{R.id.tvCategoryName});
 						lv.setAdapter(adapter);
 //						lv.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, mListString));
