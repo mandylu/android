@@ -1,25 +1,82 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:orientation="vertical"
     android:padding="18dp" >
 
-    <EditText
-        android:id="@+id/dialog_edit_username_et"
-        android:layout_width="fill_parent"
+    <LinearLayout
+        android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:background="@drawable/edit_bg"
-        android:drawableLeft="@drawable/iconsearch"
-        android:drawablePadding="6dp"
-        android:editable="true"
-        android:enabled="true"
-        android:focusable="true"
-        android:gravity="center_vertical|left"
-        android:hint="username"
-        android:inputType="text"
-        android:singleLine="true"
-        android:textColor="@color/common_edit_text_color"
-        android:textSize="@dimen/font_input_text" />
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/post_padding" >
 
-</RelativeLayout>
+        <ImageView
+            android:id="@+id/iv_1"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/iv_2"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_marginLeft="13dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/iv_3"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_marginLeft="13dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+    </LinearLayout>
+
+    <LinearLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_gravity="center_horizontal"
+        android:orientation="horizontal"
+        android:paddingBottom="@dimen/post_padding" >
+
+        <ImageView
+            android:id="@+id/iv_4"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/iv_5"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_marginLeft="13dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+
+        <ImageView
+            android:id="@+id/iv_6"
+            android:layout_width="90dip"
+            android:layout_height="90dip"
+            android:layout_marginLeft="13dip"
+            android:layout_weight="1"
+            android:background="@drawable/btn_add_picture"
+            android:scaleType="centerCrop" >
+        </ImageView>
+    </LinearLayout>
+
+</LinearLayout>
