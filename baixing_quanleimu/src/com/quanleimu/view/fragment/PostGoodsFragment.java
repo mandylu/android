@@ -21,7 +21,6 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -37,6 +36,7 @@ import android.provider.MediaStore;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
+import android.view.Display;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -47,6 +47,7 @@ import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
+import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -55,7 +56,6 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.ScrollView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -161,15 +161,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		   "兼职招聘", "求职简历", "交友活动", "宠物", 
 		   "生活服务", "教育培训"};
     
-	@Override
-	public void onCreate(Bundle savedInstanceState) {
-		super.onCreate(savedInstanceState);
-		
-//		this.postLayoutCreated = false;
-		
-		String categoryNames = this.getArguments().getString("cateNames");
-		
-		if(categoryNames == null || categoryNames.length() == 0){
+    private void initWithCategoryNames(String categoryNames) {
+    	if(categoryNames == null || categoryNames.length() == 0){
 			categoryNames = (String)Util.loadDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY, String.class);
 		}
 		if(categoryNames != null && !categoryNames.equals("")){
@@ -183,6 +176,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 			Util.saveDataToLocate(this.getActivity(), FILE_LAST_CATEGORY, categoryNames);
 		}
+    }
+	@Override
+	public void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+//		this.postLayoutCreated = false;
+		
+		String categoryNames = this.getArguments().getString("cateNames");
+		initWithCategoryNames(categoryNames);
+		
 		
 		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
 		postList = new LinkedHashMap<String, PostGoodsBean>();
@@ -1700,12 +1703,48 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private AlertDialog ad=null;
 //	private String[] mListString = {"姓名：王魁锋","性别：男","年龄：23",  
 //            "居住地：上海市普陀区","邮箱：wangkuifeng0118@126.com"};
+	List<Map<String, Object>> list = null;
+	class SecondCateAdapter extends BaseAdapter{
+		
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			TextView tv = null;
+			if (position==0) {
+				v = LayoutInflater.from(getActivity()).inflate(R.layout.item_seccategory_simple, null);
+				tv = (TextView)v.findViewById(R.id.tv);
+			} else {
+				v = LayoutInflater.from(getActivity()).inflate(android.R.layout.simple_list_item_1, null);
+				tv = (TextView)v.findViewById(android.R.id.text1);
+			}
+			if (tv!=null)
+				tv.setText((String)list.get(position).get("tvCategoryName"));
+
+			return v;
+		}
+		
+	}
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
-		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));
+		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
@@ -1714,20 +1753,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle("请选择分类").setItems(texts,null).setNegativeButton("取消", new DialogInterface.OnClickListener(){
-
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						// TODO Auto-generated method stub
-						
-					}
-					
-				});
+				builder.setTitle("请选择分类").setItems(texts,null).setNegativeButton("取消", null);
 				ad = builder.create();
 				final ListView lv = ad.getListView();
+//				final ListView llv = new ListView(getActivity());
+				
 				lv.setOnItemClickListener(new OnItemClickListener() {
 					@Override
 					public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long arg3) {
+						ad.dismiss();
 						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
 						if (allCates == null || allCates.size() <= pos)
 							return;
@@ -1739,24 +1773,49 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 								break;
 							}
 						};
-						List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
+						list = new ArrayList<Map<String, Object>>();
 						List<SecondStepCate> children = selectedCate.getChildren();
+						Map<String, Object> backMap = new HashMap<String, Object>();
+						backMap.put("tvCategoryName", "返回上一级");
+						list.add(backMap);
 						for (SecondStepCate cate : children)
 						{
 							Map<String, Object> map = new HashMap<String, Object>();
 							map.put("tvCategoryName", cate.getName());
+							map.put("tvCategoryEnglishName", cate.getEnglishName());
 							list.add(map);
 						}
-						SimpleAdapter adapter = new SimpleAdapter(getActivity(), list, R.layout.item_seccategory, 
-								new String[]{"tvCategoryName"}, new int[]{R.id.tvCategoryName});
-						lv.setAdapter(adapter);
-//						lv.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, mListString));
+						SecondCateAdapter adapter = new SecondCateAdapter();
+						AlertDialog secondDialog = new AlertDialog.Builder(getActivity())
+						.setTitle("请选择子类")
+						.setAdapter(adapter, new DialogInterface.OnClickListener() {
+							
+							@Override
+							public void onClick(DialogInterface dialog, int which) {
+								if (which==0)
+									ad.show();
+								else {
+									Map<String, Object> map = (Map<String, Object>) list.get(which);
+									String categoryNames = map.get("tvCategoryEnglishName")+","+map.get("tvCategoryName");
+									initWithCategoryNames(categoryNames);
+									if(PostGoodsFragment.this.layout_txt != null){
+										View v = layout_txt.findViewById(R.id.image_layout);
+										layout_txt.removeAllViews();
+										layout_txt.addView(v);
+									}
+									postList.clear();
+									showPost();
+									
+								}									
+							}
+						}).setNegativeButton("取消", null).create();
+						secondDialog.show();
 					}
-					
 				});
 				ad.show();
 			}				
-		});
+		});//categoryItem.setOnClickListener
+		
 		
 		
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
