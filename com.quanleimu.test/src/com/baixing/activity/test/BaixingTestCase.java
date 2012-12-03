@@ -93,21 +93,29 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openPostFirstCategory(int firstCatIndex) throws Exception {
+		if (findElementById(POST_FORM_MARK_ID) != null) {
+			TextViewElement tv = findElementByText(POST_CATEGORY_TEXT, 0, true);
+			if (tv != null) {
+				tv.doClick();
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+		
 		ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
-		if (v != null) {
+		//if (v != null) {
 			AbsListViewElement lv = findElementById(POST_CATEGORY_GRIDVIEW_ID, AbsListViewElement.class);
 			ViewElement iv = lv.getChildByIndex(firstCatIndex);
 			if (iv != null) {
 				iv.doClick();
 				waitForHideMsgbox(3000);
 			}
-		} else {
+		/*} else {
 			ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
 			if (catTextView != null) {
 				catTextView.doClick();
 				waitForHideMsgbox(3000);
 			}
-		}
+		}*/
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {
@@ -287,18 +295,22 @@ public class BaixingTestCase extends BxBaseTestCase {
 						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
 						if (nv.getText().equals("描述")) randLen = 8 + (int)(Math.random() * 7);//TODO 营业员 描述字数
 						if (nv.getText().equals("目的地")) randLen = 9;
-						value = "";
-						for(int l = 0; l < randLen; l++) {
-							class RandomHan {
-							    private Random ran = new Random();
-							    private final static int delta = 0x9fa5 - 0x4e00 + 1;
-							     
-							    public char getRandomHan() {
-							        return (char)(0x4e00 + ran.nextInt(delta)); 
-							    }
+						if (nv.getText().equals("联系电话")) {
+							value = TEST_DATA_MOBILE;
+						} else {
+							value = "";
+							for(int l = 0; l < randLen; l++) {
+								class RandomHan {
+								    private Random ran = new Random();
+								    private final static int delta = 0x9fa5 - 0x4e00 + 1;
+								     
+								    public char getRandomHan() {
+								        return (char)(0x4e00 + ran.nextInt(delta)); 
+								    }
+								}
+								RandomHan han = new RandomHan();
+								value += han.getRandomHan();
 							}
-							RandomHan han = new RandomHan();
-							value += han.getRandomHan();
 						}
 					}
 					tv.setText(value);
@@ -504,13 +516,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
 				if (dv != null) {
+					TextViewElement tt = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
 					if (index == 1) {
-						TextViewElement tt = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
 						if (tt != null) {
 							if (firstTitle != null && firstTitle.equals(tt.getText())) break;
 							firstTitle = tt.getText();
 						}
 					}
+					if (tt != null && tt.getText().equals(POST_CATEGORY_TEXT)) continue;
+					
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 					dv.doClick();
 					TimeUnit.SECONDS.sleep(2);
@@ -571,12 +585,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
-		if (checkPostSuccess(MY_LISTING_MYAD_TEXT, deleted)) return true;
-		return checkPostSuccess(MY_LISTING_MYAD_APPROVE_TEXT, deleted);
-	}
-	
-	public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
-		if (gridText != null) openMyGridByText(gridText);
+		//if (checkPostSuccess(MY_LISTING_MYAD_TEXT, deleted)) return true;
+		//return checkPostSuccess(MY_LISTING_MYAD_APPROVE_TEXT, deleted);
+	//}
+	//public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
+		if (findElementById(POST_FORM_MARK_ID) != null) {
+			return false;
+		}
+		//if (gridText != null) openMyGridByText(gridText);
 		ViewGroupElement gv = openAdByItemIndex(0);
 		if (gv != null) {
 			if (deleted) {
@@ -894,7 +910,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 	
 	public void openMyGridByText(String text) throws Exception {
 		openTabbar(TAB_ID_MY_V3);
-		TextViewElement textView = getGridItemByText(text, CATEGORY_GRIDVIEW_ID);
+		TextViewElement textView = null;
+		//textView = getGridItemByText(text, CATEGORY_GRIDVIEW_ID);
+		textView = findElementByText(text);
 		if (textView != null) {
 			textView.doClick();
 			TimeUnit.SECONDS.sleep(2);
