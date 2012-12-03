@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import org.athrun.android.framework.Test;
 import java.util.concurrent.TimeUnit;

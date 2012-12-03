@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import android.test.suitebuilder.TestSuiteBuilder;
 import junit.framework.Test;
