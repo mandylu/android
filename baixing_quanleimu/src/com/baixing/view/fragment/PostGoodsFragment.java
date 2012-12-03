@@ -101,7 +101,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
-	
+	static final private String STRING_DESCRIPTION = "description";
 	
 	public static final int MSG_POST_SUCCEED = 0xF0000010; 
 	public String categoryEnglishName = "";
@@ -373,7 +373,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		View v = inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
-		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
+//		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		if (goodsDetail == null)
@@ -859,7 +859,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
-			if (postGoodsBean.getName().equals("description") || 
+			if (postGoodsBean.getName().equals(STRING_DESCRIPTION) || 
 					(postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean) && !postGoodsBean.getName().equals(STRING_AREA))) {
 				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
 						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
@@ -1068,7 +1068,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					try{
 						list.add(URLEncoder.encode(postList.get(key).getName(), "UTF-8")
 								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
-						if(postList.get(key).getName().equals("description")){//generate title from description
+						if(postList.get(key).getName().equals(STRING_DESCRIPTION)){//generate title from description
 							list.add("title"
 									+ "=" + URLEncoder.encode(values.substring(0, Math.min(25, values.length())), "UTF-8").replaceAll("%7E", "~"));
 						}
@@ -1477,7 +1477,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 			
 			if(this.layout_txt != null){
-				View v = layout_txt.findViewById(R.id.image_layout);
+				View v = layout_txt.findViewById(R.id.img_description);
 				layout_txt.removeAllViews();
 				layout_txt.addView(v);
 			}
@@ -1622,14 +1622,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void initImageLayout(){
-		this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
-		layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
-		layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
-		layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
-		imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
-				(ImageView)layout_txt.findViewById(R.id.iv_2),
-				(ImageView)layout_txt.findViewById(R.id.iv_3)
-		};
+//		this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
+		layout_txt.findViewById(R.id.myImg).setOnClickListener(PostGoodsFragment.this);
+//		layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
+//		layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
+//		imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
+//				(ImageView)layout_txt.findViewById(R.id.iv_2),
+//				(ImageView)layout_txt.findViewById(R.id.iv_3)
+//		};
 	}
 	
 	private void appendBeanToLayout(PostGoodsBean postBean)
@@ -1645,7 +1645,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}	
 		
 	
-		Activity activity = getActivity();
+//		Activity activity = getActivity();
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
 			layout.findViewById(R.id.location).setOnClickListener(this);
@@ -1670,7 +1670,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
 			etContact.setText(mobile);
 		}
-		if (postBean.getName().equals("description") && layout != null){
+		if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(HASH_CONTROL);
 		}
 		
@@ -1720,7 +1720,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		layout_txt.addView(categoryItem);
 	}
 	
-	private String[] fixedItemNames = {"images", "description", "价格", "contact", STRING_DETAIL_POSITION};
+	private String[] fixedItemNames = {"images", STRING_DESCRIPTION, "价格", "contact", STRING_DETAIL_POSITION};
 	private String[] fixedItemDisplayNames = {"", "描述", "价格", "联系电话", STRING_DETAIL_POSITION};
 	private String[] hiddenItemNames = {"wanted", "faburen"};
 	private boolean autoLocated;
@@ -1741,8 +1741,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 		
+		if(pm.containsKey(STRING_DESCRIPTION)){
+			PostGoodsBean bean = pm.get(STRING_DESCRIPTION);
+			if(bean != null){
+				View v = layout_txt.findViewById(R.id.img_description);
+				EditText text = (EditText)v.findViewById(R.id.description_input);
+				v.setTag(HASH_POST_BEAN, bean);
+				v.setTag(HASH_CONTROL, text);
+				
+				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
+				tv.setText(bean.getDisplayName());
+			}
+		}
+		
 		for(int i = 0; i < fixedItemNames.length; ++ i){
-			if(pm.containsKey(fixedItemNames[i])){
+			if(pm.containsKey(fixedItemNames[i]) && !fixedItemNames[i].equals(STRING_DESCRIPTION)){
 				this.appendBeanToLayout(pm.get(fixedItemNames[i]));
 			}
 		}
@@ -1831,10 +1844,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			if(goodsDetail != null && (postBean.getName().equals("images") && (goodsDetail.getImageList() != null 
 //					&& goodsDetail.getImageList().getResize180() != null 
 //					&& !goodsDetail.getImageList().getResize180().equals("")))){
-			if(postBean.getName().equals("images")){
-				this.appendBeanToLayout(postBean);
-				continue;
-			}
+//			if(postBean.getName().equals("images")){
+//				this.appendBeanToLayout(postBean);
+//				continue;
+//			}
 
 //			if(!postBean.getRequired().endsWith("required") 
 //					&& (goodsDetail == null 
@@ -2039,7 +2052,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			PostGoodsBean bean = postList.get(key);
 			if (bean.getName().equals("title")) 
 				titleBean = bean;
-			if (bean.getName().equals("description"))
+			if (bean.getName().equals(STRING_DESCRIPTION))
 				descriptionBean = bean;
 		}
 		if (titleBean != null && descriptionBean != null)
@@ -2371,7 +2384,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
 
-			if(postBean.getName().equals("description"))//description is builtin keyword
+			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
 			{
 				String personalMark = QuanleimuApplication.getApplication().getPersonMark();
 				if(personalMark != null && personalMark.length() > 0){
