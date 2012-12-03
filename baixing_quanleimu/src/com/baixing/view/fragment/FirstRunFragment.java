@@ -55,5 +55,8 @@ public class FirstRunFragment extends DialogFragment {
 		return v;
 	}
 	
-	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 }

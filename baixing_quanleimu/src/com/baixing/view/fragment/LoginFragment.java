@@ -270,5 +270,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			break;
 		}
 	}
+	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 
 }

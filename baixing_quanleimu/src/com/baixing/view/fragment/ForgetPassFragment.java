@@ -315,4 +315,9 @@ public class ForgetPassFragment extends BaseFragment {
 			}
 		}.start();
     }
+    
+    public boolean hasGlobalTab()
+	{
+		return false;
+	}
 }

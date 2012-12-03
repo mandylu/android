@@ -170,5 +170,4 @@ public class FillMoreDetailFragment extends BaseFragment {
 		finishFragment(requestCode, params);
 	}
 	
-	
 }

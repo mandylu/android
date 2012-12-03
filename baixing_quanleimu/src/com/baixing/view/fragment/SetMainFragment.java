@@ -344,6 +344,9 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 }).create().show();
     }
 
-
+    public boolean hasGlobalTab()
+	{
+		return false;
+	}
 
 }

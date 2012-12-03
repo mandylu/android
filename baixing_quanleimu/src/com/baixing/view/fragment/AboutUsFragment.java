@@ -65,5 +65,8 @@ public class AboutUsFragment extends BaseFragment {
 		return version;
 	}
 	
-	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 }

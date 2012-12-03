@@ -355,5 +355,9 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 //		gg.putExtra("intent", intent);
 //		this.startActivity(gg);
 	}
+	
+	protected void onStatckTop(BaseFragment f) {
+		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+	}
 
 }
