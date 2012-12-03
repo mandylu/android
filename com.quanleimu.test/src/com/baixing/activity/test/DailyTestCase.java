@@ -68,13 +68,13 @@ public class DailyTestCase extends BaixingTestCase {
 				findElementByText(CATEGORY_WUPINJIAOYI_SHOUJI_TEXT));
 		assertNotNull("Home Category wupinjiaoyi Second category jiadian not found", 
 				findElementByText(CATEGORY_WUPINJIAOYI_JIADIAN_TEXT));
-		assertNotNull("Home Category wupinjiaoyi Second category yueqi/wenju not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_YUEQIWENJU_TEXT));
 
 		assertNotNull("Second Category list id:CATEGORY_SECOND_GRIDVIEW_ID:gridSecCategory not found", 
 				findElementById(CATEGORY_SECOND_GRIDVIEW_ID));
 		doScrollView(CATEGORY_SECOND_GRIDVIEW_ID, 2);
 
+		assertNotNull("Home Category wupinjiaoyi Second category yueqi/wenju not found", 
+				findElementByText(CATEGORY_WUPINJIAOYI_YUEQIWENJU_TEXT));
 		assertNotNull("Home Category wupinjiaoyi Second category gongyeshebei not found", 
 				findElementByText(CATEGORY_WUPINJIAOYI_GONGYESHEBEI_TEXT));
 		assertNotNull("Home Category wupinjiaoyi Second category mianfeizengsong not found", 
@@ -351,7 +351,7 @@ public class DailyTestCase extends BaixingTestCase {
 		if (tv != null) {
 			//点击地图查看
 			tv.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			TimeUnit.SECONDS.sleep(3);
 			assertNull("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
 					findElementByText(categoryName));
 			//检查页面title包含当前地区地点文字“金桥”

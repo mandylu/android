@@ -117,11 +117,12 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_EDITTEXT_DESC_ID = "postdescriptioninput";
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
-	public static final String POST_SEND = "完成";
+	public static final String POST_SEND = "立即免费发布";
 	public static final String POST_BACK_DIALOG_OK_BUTTON_ID = "是";
 	public static final String POST_META_IMAGEVIEW1_ID = "iv_1";
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
+	public static final String POST_CATEGORY_TEXT = "分类";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
 	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
 	
@@ -197,8 +198,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	//Test DATA
-	public static final String TEST_DATA_MOBILE = "13524495634";
-	public static final String TEST_DATA_PASSWORD = "123456";
+	public static final String TEST_DATA_MOBILE = "13917067724";
+	public static final String TEST_DATA_PASSWORD = "whonwyhw";
 	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
 	
