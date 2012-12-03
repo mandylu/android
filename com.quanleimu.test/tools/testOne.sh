@@ -38,7 +38,7 @@ install_pkg() {
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port uninstall com.quanleimu.activity;
 	adb -s emulator-$port install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-	adb -s emulator-$port install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+	adb -s emulator-$port install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
 	
 	adb -s emulator-$port shell logcat -d >> $LOGPATH/logcat_emulator-"$port"_$LOGNOW.log;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
@@ -92,7 +92,7 @@ build_pkg() {
 	ant release;
 	sleep 1;
 	
-	if [ ! -f bin/com.quanleimu.test-release.apk ]; then
+	if [ ! -f bin/com.baixing.test-release.apk ]; then
 		echo "ANT build baixing test app error";
 		exit;
 	fi;
@@ -115,7 +115,7 @@ start_real_device() {
 		adb -s $emulator uninstall com.quanleimu.activity;
 		adb -s $emulator uninstall com.quanleimu.test;
 		adb -s $emulator install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-		adb -s $emulator install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+		adb -s $emulator install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
 		
 		adb -s $emulator shell input keyevent 82
 		adb -s $emulator shell input keyevent 4
