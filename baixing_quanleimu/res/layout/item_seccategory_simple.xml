@@ -6,14 +6,15 @@
 	<ImageView 
 	    android:id="@+id/img"
        	android:layout_width="wrap_content"
-       	android:layout_height="fill_parent"
+       	android:layout_height="60dp"
 		android:src="@drawable/arrow_back"
        	/>
     <TextView
         android:id="@+id/tv"
         android:layout_width="wrap_content"
-        android:layout_height="fill_parent"
-		
+        android:layout_height="60dp"
+		android:textSize="22sp"
+		android:padding="15dp"
         />
     
 </LinearLayout>
