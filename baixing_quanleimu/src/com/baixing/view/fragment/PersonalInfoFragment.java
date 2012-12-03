@@ -105,10 +105,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
 
-//	private List<ChatSession> sessions = null;
 	private UserProfile up = null;
-//	private BroadcastReceiver chatMessageReceiver;
-//	private LoginUtil loginHelper;
 	
 	@Override
 	public void onLoginFail(String message){
@@ -125,20 +122,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 	@Override
 	public void initTitle(TitleDef title) {
-//		LayoutInflater inflator = LayoutInflater.from(getActivity());
-//		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
-
 		title.m_visible = true;
 		title.m_title = "个人中心";
-//		title.hasGlobalSearch = true;
-		
-//		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
-//		
-//		logoRoot.setOnClickListener(new View.OnClickListener() {
-//			public void onClick(View v) {
-//				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
-//			}
-//		});
 	}
 	
 	public boolean hasGlobalTab()
@@ -186,54 +171,16 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		}
 
 		View v = inflater.inflate(R.layout.personalentryview, null);
-
-		int[] icons = { R.drawable.icon_my_posted, R.drawable.icon_my_limited,
-				R.drawable.icon_my_deleted, R.drawable.icon_my_fav,
-				R.drawable.icon_my_mail, R.drawable.icon_my_history,
-				R.drawable.icon_my_setting };
-
-		String[] texts = { "已发布", "审核未通过", "已删除", "收藏", "私信", "最近浏览", "设置" };
-
-		int[] numbers = { postNum, limitedNum, deletedNum, favoriteNum,
-				unreadMessageNum, historyNum, 0 };
-
-		boolean[] stars = { false, false, false, false, (unreadMessageNum > 0),
-				false, false };
-
-		List<GridInfo> gitems = new ArrayList<GridInfo>();
-		for (int i = 0; i < icons.length; i++) {
-			GridInfo gi = new GridInfo();
-			gi.imgResourceId = icons[i];
-			gi.text = texts[i];
-			// gi.number = numbers[i]; //数字不用加
-			gi.starred = stars[i];
-			gitems.add(gi);
-		}
-
-		// GridAdapter adapter = new GridAdapter(this.getActivity());
-		// adapter.setList(gitems, 3);
-		CustomizeGridView gv = (CustomizeGridView) v
-				.findViewById(R.id.gridcategory);
-		gv.setData(gitems, 3);
-		gv.setItemClickListener(this);
-		// gv.setAdapter(adapter);
-		// gv.setOnItemClickListener(this);
+		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
+		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
+		v.findViewById(R.id.rl_setting).setOnClickListener(this);
 
 		reloadUser(v);
-		
-//		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
-//		v.findViewById(R.id.rl_wohistory).setOnClickListener(this);
-//		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
-//		v.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
-//		v.findViewById(R.id.personalEdit).setOnClickListener(this);
-//		this.loginHelper = null;
-		
 		
 		return v;
 	}
 	
     private void reloadUser(View v) {
-        //set user profile info view
         user = Util.getCurrentUser();
         if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
             userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
@@ -248,8 +195,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	@Override
 	public void onPause() {
 		super.onPause();
-		
-		unregisterReceiver();
 	}
 
 	@Override
@@ -257,62 +202,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		super.onResume();
 		this.pv = PV.MY;
 		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
-	
-		registerReceiver();
 	}
 	
-	private void registerReceiver()
-	{
-//		if (chatMessageReceiver == null)
-//		{
-//			chatMessageReceiver = new BroadcastReceiver() {
-//
-//				public void onReceive(Context outerContext, Intent outerIntent) {
-//					View v = getView();
-//					if (v != null)
-//					{
-//						updateMessageCountInfo(v);
-//					}
-//					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
-//					{
-//						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-//						if (!hasSession(msg.getSession()))
-//						{
-//							new Thread(new GetPersonalSessionsThread()).start();
-//						}
-//					}
-//				}
-//			};
-//		}
-//		
-//		getActivity().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
-	}
 	
-	private void unregisterReceiver()
-	{
-//		if (chatMessageReceiver != null)
-//		{
-//			getActivity().unregisterReceiver(chatMessageReceiver);
-//		}
-	}
-	
-//	private boolean hasSession(String sessionId)
-//	{
-//		if (this.sessions == null || this.sessions.size() == 0)
-//		{
-//			return false;
-//		}
-//		
-//		for (ChatSession session : this.sessions)
-//		{
-//			if (sessionId.equals(session.getSessionId()))
-//			{
-//				return true;
-//			}
-//		}
-//		
-//		return false;
-//	}
 
 
 	@Override
@@ -664,6 +556,17 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
                 editUserDlg.handler = this.handler;
                 editUserDlg.show(getFragmentManager(), null);
                 break;
+            case R.id.rl_wosent:
+            	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);	
+            	break;
+            case R.id.rl_wofav:
+            	Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", true);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);		
+            	break;
+            case R.id.rl_setting:
+            	pushFragment(new SetMainFragment(), null);
+            	break;
 
             default:
                 break;
