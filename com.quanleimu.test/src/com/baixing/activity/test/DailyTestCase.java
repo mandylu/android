@@ -237,7 +237,7 @@ public class DailyTestCase extends BaixingTestCase {
 	public void testPost1() throws Exception {
 		logon();
 		openTabbar(TAB_ID_POST);
-		int first = (int)(Math.random()) * 3;
+		int first = (int)(Math.random() * 3);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
@@ -245,7 +245,7 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost2() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 3 + (int)(Math.random()) * 3;
+		int first = 3 + (int)(Math.random() * 3);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
@@ -253,7 +253,7 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost3() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 6 + (int)(Math.random()) * 4;
+		int first = 6 + (int)(Math.random() * 4);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
