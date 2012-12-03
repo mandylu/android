@@ -581,7 +581,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (eld == null) return false;
 		eld.doClick();
 		//waitForHideMsgbox(10 * 1000);
-		return waitForSubTexts("发布成功@重复", 5000);
+		return waitForSubTexts("发布成功@重复@超限", 5000);
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
@@ -591,6 +591,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 	//public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
 		if (findElementById(POST_FORM_MARK_ID) != null) {
 			return false;
+		}
+		TimeUnit.SECONDS.sleep(2);
+		ViewElement dt = findElementByText("是否用百姓网帐号");
+		if (dt != null) {
+			ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+			if (d != null) {
+				d.doClick();
+			}
 		}
 		//if (gridText != null) openMyGridByText(gridText);
 		ViewGroupElement gv = openAdByItemIndex(0);
