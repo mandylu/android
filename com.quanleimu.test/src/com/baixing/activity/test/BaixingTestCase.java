@@ -101,7 +101,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}
 		
-		ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
+		/*ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
 		//if (v != null) {
 			AbsListViewElement lv = findElementById(POST_CATEGORY_GRIDVIEW_ID, AbsListViewElement.class);
 			ViewElement iv = lv.getChildByIndex(firstCatIndex);
@@ -109,13 +109,27 @@ public class BaixingTestCase extends BxBaseTestCase {
 				iv.doClick();
 				waitForHideMsgbox(3000);
 			}
-		/*} else {
+		} else {
 			ViewGroupElement catTextView = getGridItemByIndex(firstCatIndex, POST_CATEGORY_GRIDVIEW_ID);
 			if (catTextView != null) {
 				catTextView.doClick();
 				waitForHideMsgbox(3000);
 			}
 		}*/
+		
+		AbsListViewElement lv = findListView();
+		if (lv != null) {
+			lv.getChildByIndex(firstCatIndex).doClick();
+			TimeUnit.SECONDS.sleep(1);
+		}
+	}
+	
+	public void openPostSecondCategory(int secondIndex) throws Exception {
+		AbsListViewElement lv = findListView();
+		if (lv != null) {
+			lv.getChildByIndex(secondIndex + 1).doClick();
+			TimeUnit.SECONDS.sleep(1);
+		}
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {

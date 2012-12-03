@@ -18,6 +18,7 @@ import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
+import org.athrun.android.framework.viewelement.ViewUtils;
 
 import android.os.Build;
 import android.os.Environment;
@@ -575,6 +576,20 @@ public class BxBaseTestCase extends AthrunTestCase {
 		assertNotNull(el);
 		el.doClick();
 		TimeUnit.SECONDS.sleep(1);
+	}
+	
+	public AbsListViewElement findListView() throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(false);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			try {
+				AbsListViewElement lv = findElementById(view.getId(), AbsListViewElement.class);
+				if (lv != null && lv.getChildCount() > 0) {
+					return lv;
+				}
+			} catch (IllegalArgumentException e) {}
+		}
+		return null;
 	}
 
 	public void goBack() throws Exception {

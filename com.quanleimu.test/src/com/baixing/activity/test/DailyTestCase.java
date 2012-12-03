@@ -383,7 +383,8 @@ public class DailyTestCase extends BaixingTestCase {
 	private void postByIndex(int firstIndex, int secondIndex) throws Exception {
 		String oldCateName = "";
 		openPostFirstCategory(firstIndex);
-		openSecondCategoryByIndex(secondIndex);
+		//openSecondCategoryByIndex(secondIndex);
+		openPostSecondCategory(secondIndex);
 		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		if (v == null) {
 			assertTrue("ERRORRETRY,checkPost Category,Post," + firstIndex + "," + secondIndex + ",", false);
