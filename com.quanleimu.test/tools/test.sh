@@ -87,7 +87,7 @@ run_test() {
 	local prefix="$3"
 	
 	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
-	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
+	adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
 
 }
 
@@ -201,21 +201,21 @@ install_pkg "5558"
 
 start_screen
 
-#run_test "emulator-5556" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
-#run_test "emulator-5580" "com.quanleimu.activity.test.KeepLiveTest#runPost" "run_post"
-run_test "emulator-5558" "com.quanleimu.activity.test.BXTestSuite" "run_test"
-#run_test "emulator-5560" "com.quanleimu.activity.test" "run_test"
+#run_test "emulator-5556" "com.baixing.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
+#run_test "emulator-5580" "com.baixing.activity.test.KeepLiveTest#runPost" "run_post"
+run_test "emulator-5558" "com.baixing.activity.test.BXTestSuite" "run_test"
+#run_test "emulator-5560" "com.baixing.activity.test" "run_test"
 
 
 start_real_device "015d18844854041c"
 if [ "$REALDEVICE" = "1" ]; then
 	echo "015d18844854041c test if connected";
-	#run_test "015d18844854041c" "com.quanleimu.activity.test.KeepLiveTest#runPostAll" "run_post_all"
+	#run_test "015d18844854041c" "com.baixing.activity.test.KeepLiveTest#runPostAll" "run_post_all"
 fi
 start_real_device "015d1458a51c0c0e"
 if [ "$REALDEVICE" = "1" ]; then
 	echo "015d1458a51c0c0e test if connected";
-	run_test "015d1458a51c0c0e" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adListing"
+	run_test "015d1458a51c0c0e" "com.baixing.activity.test.KeepLiveTest#runAdListing" "run_adListing"
 fi
 
 echo "END"

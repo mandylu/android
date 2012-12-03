@@ -54,8 +54,8 @@ run_test() {
 	local func="$2"
 	local prefix="$3"
 	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
-	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
-	echo "adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &"
+	adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
+	echo "adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &"
 	echo "tail -f $LOGPATH/"$prefix"_$LOGNOW.log"
 	tail -f $LOGPATH/"$prefix"_$LOGNOW.log
 }
@@ -140,17 +140,17 @@ echo $LOGNAME;
 if [ "$PORTDEVICE" = "015d18844854041c" ]; then
 	start_real_device "$PORTDEVICE"
 	if [ "$REALDEVICE" = "1" ]; then
-		run_test "$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+		run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 	fi
 else
 	if [ "$PORTDEVICE" = "015d1458a51c0c0e" ]; then
 		start_real_device "$PORTDEVICE"
 		if [ "$REALDEVICE" = "1" ]; then
-			run_test "$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+			run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 		fi
 	else
 		install_pkg "$PORTDEVICE"
-		run_test "emulator-$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+		run_test "emulator-$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 	fi
 fi
 
