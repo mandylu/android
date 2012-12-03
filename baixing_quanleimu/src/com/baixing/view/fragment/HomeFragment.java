@@ -362,16 +362,16 @@ public class HomeFragment extends BaseFragment implements PageProvider, PageSele
                 	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);				
                 }
 				break;
-			case INDEX_LIMITED:
-				{
-					pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
-				}
-				break;
-			case INDEX_DELETED:
-                {
-                	pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
-                }
-                break;
+//			case INDEX_LIMITED:
+//				{
+//					pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
+//				}
+//				break;
+//			case INDEX_DELETED:
+//                {
+//                	pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
+//                }
+//                break;
 			case INDEX_FAVORITE:
 				{
 					Bundle bundle = createArguments(null, null);
