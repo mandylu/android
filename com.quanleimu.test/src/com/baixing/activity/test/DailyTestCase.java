@@ -91,8 +91,8 @@ public class DailyTestCase extends BaixingTestCase {
 		findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT).doClick();
 		TimeUnit.SECONDS.sleep(1);
 		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
-		waitForHideMsgbox(6000);
-		
+		waitForHideMsgbox(10000);
+		TimeUnit.SECONDS.sleep(1);
 		//Check ershouche adlisting
 		assertNotNull("adlisting ershoujiaoche title not found", 
 				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
@@ -237,7 +237,7 @@ public class DailyTestCase extends BaixingTestCase {
 	public void testPost1() throws Exception {
 		logon();
 		openTabbar(TAB_ID_POST);
-		int first = (int)(Math.random()) * 3;
+		int first = (int)(Math.random() * 3);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
@@ -245,7 +245,7 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost2() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 3 + (int)(Math.random()) * 3;
+		int first = 3 + (int)(Math.random() * 3);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
@@ -253,7 +253,7 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost3() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 6 + (int)(Math.random()) * 4;
+		int first = 6 + (int)(Math.random() * 4);
 		int second = (int)(Math.random()) * 10;
 		postByIndex(first, second);
 	}
@@ -383,7 +383,8 @@ public class DailyTestCase extends BaixingTestCase {
 	private void postByIndex(int firstIndex, int secondIndex) throws Exception {
 		String oldCateName = "";
 		openPostFirstCategory(firstIndex);
-		openSecondCategoryByIndex(secondIndex);
+		//openSecondCategoryByIndex(secondIndex);
+		openPostSecondCategory(secondIndex);
 		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		if (v == null) {
 			assertTrue("ERRORRETRY,checkPost Category,Post," + firstIndex + "," + secondIndex + ",", false);
