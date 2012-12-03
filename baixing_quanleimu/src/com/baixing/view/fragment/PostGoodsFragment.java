@@ -1999,7 +1999,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 						if(activity != null){
 							Bundle args = createArguments(null, null);
-							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_INVERIFY);
+							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
 							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
 						}						
 					}
