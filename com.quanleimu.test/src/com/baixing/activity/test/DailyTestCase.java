@@ -92,7 +92,7 @@ public class DailyTestCase extends BaixingTestCase {
 		TimeUnit.SECONDS.sleep(1);
 		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 		waitForHideMsgbox(10000);
-		TimeUnit.SECONDS.sleep(1);
+		TimeUnit.SECONDS.sleep(3);
 		//Check ershouche adlisting
 		assertNotNull("adlisting ershoujiaoche title not found", 
 				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
