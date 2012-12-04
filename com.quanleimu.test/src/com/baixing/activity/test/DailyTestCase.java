@@ -307,7 +307,7 @@ public class DailyTestCase extends BaixingTestCase {
 				TextViewElement v = savePhoto();
 				assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
 				//检查弹出式提示信息，包含“成功”
-				assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 1000));
+				assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 3000));
 				
 				TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 				assertNotNull(tv);
