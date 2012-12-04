@@ -20,15 +20,18 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
 import android.util.Log;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.View.OnKeyListener;
 import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
+import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.BaseFragment;
@@ -37,20 +40,25 @@ import com.quanleimu.activity.R;
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener {
 	public static final String KEY_BITMAP_URL = "bitmapurl";
 	public static final String KEY_CACHED_BPS = "cachedbps";
+	public static final String KEY_THUMBNAIL_URL = "thumbnailurl";
+	public static final String KEY_HANDLER = "handler";
 	private static final int NONE = 0;
 	private static final int MSG_START_UPLOAD = 5;
 	private static final int MSG_FAIL_UPLOAD = 6;
 	private static final int MSG_SUCCEED_UPLOAD = 7;
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
+	public static final int MSG_IMG_SEL_DISMISSED = 0x11110001;
 	private  static final int PHOTORESOULT = 3;
 	
 	private int uploadCount = 0;
     private int currentImgView = -1;
-    private List<String> bitmap_url;
+    private ArrayList<String> bitmap_url;
+    private ArrayList<String> thumbnail_url;
     private int imgHeight = 0;
     private List<ImageView> imgs;
-    private List<Bitmap> cachedBps;
+    private ArrayList<Bitmap> cachedBps;
     private Bundle bundle;
+    private Handler outHandler;
 
 	enum ImageStatus{
 		ImageStatus_Normal,
@@ -58,12 +66,32 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		ImageStatus_Failed
 	}
     
-    public ImageSelectionDialog(Bundle bundle){
+    @SuppressWarnings("unchecked")
+	public ImageSelectionDialog(Bundle bundle){
     	this.bundle = bundle;
     	if(bundle != null){
-    		bitmap_url = (List<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		cachedBps = (List<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
+    		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
+    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
+    			List<String> list = bitmap_url.subList(0, imgIds.length);
+    			bitmap_url = new ArrayList<String>(list);
+    		}
+    		cachedBps = (ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
+    		if(cachedBps != null && cachedBps.size() > imgIds.length){
+    			List<Bitmap> list = cachedBps.subList(0, imgIds.length);
+    			cachedBps = new ArrayList<Bitmap>(list);
+    		}
+    		if(cachedBps == null){
+    			thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
+    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
+    				List<String> list = thumbnail_url.subList(0, imgIds.length);
+    				thumbnail_url = new ArrayList<String>(list);
+    			}
+    		}
     	}
+    }
+    
+    public void setMsgOutHandler(Handler handler){
+    	outHandler = handler;
     }
     
     static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
@@ -113,7 +141,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
-		Log.d("QLM", "start to handle activity result");
 		if (resultCode == NONE) {
 			return;
 		}
@@ -158,24 +185,49 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 	@Override
 	public void onDismiss(DialogInterface dialog){
+		if(outHandler != null){
+			if(this.bundle != null){
+				bundle.putSerializable(KEY_BITMAP_URL, bitmap_url);
+				bundle.putSerializable(KEY_CACHED_BPS, cachedBps);
+			}
+			outHandler.sendEmptyMessage(MSG_IMG_SEL_DISMISSED);
+		}
 		super.onDismiss(dialog);
 	}
 	
 	@Override
-	public void onSaveInstanceState(Bundle outState){
-		if(outState != null){
-			outState.putBoolean("kee", true);
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+		if(savedInstanceState != null){
+    		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
+    		cachedBps = (ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
 		}
 	}
 	
-	private Dialog reloadData(){
-		Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
-        LayoutInflater inflater = getActivity().getLayoutInflater();
-        View v = inflater.inflate(R.layout.dialog_image_selection, null);
-        dialog.setContentView(v);
-        return dialog;
+	@Override
+	public void onSaveInstanceState(Bundle outState){
+		super.onSaveInstanceState(outState);
+		if(outState != null){
+			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
+			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
+		}
 	}
 
+	public boolean handleBack(){
+		if(this.getDialog().isShowing()){
+			if(this.getView() != null){
+				View v = getView().findViewById(R.id.post_big);
+				if(v != null && v.isShown()){
+					v.setVisibility(View.INVISIBLE);
+					return true;
+				}
+			}
+			getDialog().dismiss();
+			return true;
+		}
+		return false;
+	}
+	
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	if(bitmap_url == null){
@@ -184,6 +236,11 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
    		imgs = new ArrayList<ImageView>(imgIds.length);
 		if(cachedBps == null){
 			cachedBps = new ArrayList<Bitmap>(imgIds.length);
+			if(thumbnail_url != null && thumbnail_url.size() > 0){
+				for(int i = 0; i < thumbnail_url.size(); ++ i){
+					setListContent(cachedBps, null, i);
+				}
+			}
 		}
 		
 		currentImgView = -1;
@@ -199,7 +256,11 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         int realSize = bitmap_url.size() > imgIds.length ? imgIds.length : bitmap_url.size();
         for(int i = 0; i < realSize; ++ i){
         	ImageView iv = (ImageView)v.findViewById(imgIds[i]);
-        	iv.setImageBitmap(cachedBps.get(i));
+        	if(cachedBps.get(i) != null){
+        		iv.setImageBitmap(cachedBps.get(i));
+        	}else{
+        		iv.setImageResource(R.drawable.icon_post_loading);
+        	}
         	iv.setVisibility(View.VISIBLE);
         	imgs.add(iv);
         }
@@ -216,8 +277,30 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         }
 
         v.setOnClickListener(this);
-        
+        dialog.setOnKeyListener(new DialogInterface.OnKeyListener(){
+
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode,
+					KeyEvent event) {
+				// TODO Auto-generated method stub
+				if(imgs.get(0).getRootView() != null){
+					View vv = imgs.get(0).getRootView().findViewById(R.id.post_big);
+					if(vv != null && vv.isShown()){
+						if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+							vv.setVisibility(View.GONE);
+							imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.VISIBLE);								
+							return true;
+						}
+					}
+				}
+				return false;
+			}
+			
+		});
         v.findViewById(R.id.post_big).setVisibility(View.GONE);
+        if(thumbnail_url != null && thumbnail_url.size() > 0){
+        	(new DownloadThumbnailsThread(thumbnail_url)).start();
+        }
         return dialog;
     }
     
@@ -534,6 +617,34 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				});						
 			}
 //			uploadMutex.notifyAll();
+			}
+		}
+	}
+	
+	class DownloadThumbnailsThread extends Thread{
+		private List<String> urls = new ArrayList<String>();
+		public DownloadThumbnailsThread(List<String> urls){
+			this.urls.addAll(urls);
+		}
+		@Override
+		public void run(){
+			if(urls.size() == 0) return;
+			synchronized(ImageSelectionDialog.this){
+				int size = cachedBps.size() < urls.size() ? cachedBps.size() : urls.size();
+				for(int i = 0; i < size; ++ i){
+					if(cachedBps.get(i) == null){
+						Bitmap bmp = Util.getImage(urls.get(i));
+						setListContent(cachedBps, bmp, i);
+					}
+				}
+				getActivity().runOnUiThread(new Runnable(){
+					@Override
+					public void run(){
+						for(int i = 0; i < cachedBps.size(); ++ i){
+							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i));
+						}
+					}
+				});
 			}
 		}
 	}

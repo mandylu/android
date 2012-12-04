@@ -126,27 +126,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 //	private AlertDialog ad; 
 //	private Button photoalbum, photomake, photocancle;
-	private ArrayList<String> bitmap_url;
 	private ArrayList<String> origin_bitmap_url;
-	private ImageView[] imgs;
-	private Bitmap[] cachedBps;
 	private String mobile, password;
 	private UserBean user;
 	private GoodsDetail goodsDetail;
 	public ArrayList<String> listUrl;
-	private int currentImgView = -1;
-	private int uploadCount = 0;
-	
+	private Bundle imgSelBundle = null;
 	private ImageSelectionDialog imgSelDlg = null;
-	
-//	private BaseActivity baseActivity;
-//	private Bundle bundle;
 	
 	private View locationView = null;
 //	private View districtView = null;
 	
 	private BXLocation detailLocation = null;
     private BXLocation cacheLocation = null;
+    
+    private List<String> bmpUrls = new ArrayList<String>();
 //	private ArrayList<String> otherProperties = new ArrayList<String>();
 	
 //	private View categoryItem = null;
@@ -154,6 +148,20 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     
     private EditText etDescription = null;
     private EditText etContact = null;
+    
+    @Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (resultCode == NONE) {
+			return;
+		}
+
+		if(this.imgSelDlg != null &&
+				(requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH
+				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
+				|| requestCode == PHOTORESOULT)){
+			imgSelDlg.onActivityResult(requestCode, resultCode, data);
+		}
+    }
     
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -185,35 +193,31 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		originParams = new PostParamsHolder();
 		
 		listUrl = new ArrayList<String>();
-		bitmap_url = new ArrayList<String>(3);
-		bitmap_url.add(null);
-		bitmap_url.add(null);
-		bitmap_url.add(null);
-		origin_bitmap_url = (ArrayList<String>) bitmap_url.clone();
+//		origin_bitmap_url = (ArrayList<String>) bitmap_url.clone();
 		
-		currentImgView = -1;
-		uploadCount = 0;
-		
-		cachedBps = new Bitmap[] {null, null, null};
-		
+//		currentImgView = -1;
+//		uploadCount = 0;
+//		
+//		cachedBps = new Bitmap[] {null, null, null};
+//		
 		if (savedInstanceState != null)
 		{
 			postList.putAll( (HashMap)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
 			listUrl.addAll((List) savedInstanceState.getSerializable("listUrl"));
-			bitmap_url.clear();
-			bitmap_url.addAll((List) savedInstanceState.getSerializable("bitmapUrl"));
+//			bitmap_url.clear();
+//			bitmap_url.addAll((List) savedInstanceState.getSerializable("bitmapUrl"));
 //			Util.filterArrayList(bitmap_url, 3);
-			currentImgView = savedInstanceState.getInt("imgIndex", -1);
-			uploadCount = savedInstanceState.getInt("uploadCount", 0);
+//			currentImgView = savedInstanceState.getInt("imgIndex", -1);
+//			uploadCount = savedInstanceState.getInt("uploadCount", 0);
 			imgHeight = savedInstanceState.getInt("imgHeight");
 			Parcelable[] ps = savedInstanceState.getParcelableArray("imgs");
-			cachedBps = new Bitmap[ps.length];
-			int i = 0;
-			for (Parcelable p : ps)
-			{
-				cachedBps[i++] = (Bitmap) p;
-			}
+//			cachedBps = new Bitmap[ps.length];
+//			int i = 0;
+//			for (Parcelable p : ps)
+//			{
+//				cachedBps[i++] = (Bitmap) p;
+//			}
 		}
 		
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -222,9 +226,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			password = user.getPassword();
 		}
 	}
-	
-	
-	
+		
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
@@ -233,11 +235,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			outState.putSerializable("params", params);
 			outState.putSerializable("postList", postList);
 			outState.putSerializable("listUrl", listUrl);
-			outState.putSerializable("bitmapUrl", bitmap_url);
-			outState.putInt("imgIndex", currentImgView);
-			outState.putInt("uploadCount", uploadCount);
+//			outState.putSerializable("bitmapUrl", bitmap_url);
+//			outState.putInt("imgIndex", currentImgView);
+//			outState.putInt("uploadCount", uploadCount);
 			outState.putInt("imgHeight", imgHeight);
-			outState.putParcelableArray("imgs", cachedBps);
+//			outState.putParcelableArray("imgs", cachedBps);
 		}
 	}
 	
@@ -282,7 +284,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	@Override
 	public boolean handleBack() {
-		
+		if(imgSelDlg != null)
+			if(imgSelDlg.handleBack()){
+				return true;
+		}
 		if(filled()){
 			ConfirmAbortAlert();
 			return true;
@@ -431,6 +436,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return displayValue;
 	}
 	
+	private void startImgSelDlg(ArrayList<String> bmpUrls, ArrayList<Bitmap> cachedBps, ArrayList<String> thumbUrls){
+		if(imgSelBundle == null){
+			imgSelBundle =  new Bundle();
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
+		}
+		
+		if(imgSelDlg == null){
+			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
+			imgSelDlg.setMsgOutHandler(handler);
+		}
+		imgSelDlg.show(getFragmentManager(), null);
+		
+	}
+	
 	private void editpostUI() {
 		if(goodsDetail == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
@@ -496,15 +517,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //							.getBig()).length() - 1);
 			big = Communication.replace(big);
 			String[] cbig = big.split(",");
-			List<String> smalls = new ArrayList<String>();
-			List<String> bigs = new ArrayList<String>();
+			ArrayList<String> smalls = new ArrayList<String>();
+			ArrayList<String> bigs = new ArrayList<String>();
 			for (int j = 0; j < listUrl.size(); j++) {
 				String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-				if(j > 2)break;
+//				if(j > 2)break;
 				smalls.add(listUrl.get(j));
 				bigs.add(bigUrl);
 			}
-			new Thread(new Imagethread(smalls, bigs)).start();
+//			startImgSelDlg(bigs, null, smalls);
+//			new Thread(new Imagethread(smalls, bigs)).start();
 		}
 	}
 	
@@ -618,75 +640,75 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onClick(View v) {
 		final Activity activity = getActivity();
-		if (v.getId() == R.id.iv_1 || v.getId() == R.id.iv_2 || v.getId() == R.id.iv_3) {
-			for (int i = 0; i < imgs.length; i++) {
-				if (imgs[i].equals(v)) {
-					currentImgView = i;
-					ImageStatus status = getCurrentImageStatus(i);
-					if(ImageStatus.ImageStatus_Unset == status){
-//						showDialog();
-						ViewUtil.pickupPhoto(getActivity(), this.currentImgView);
-					}
-					else if(ImageStatus.ImageStatus_Failed == status){
-						String[] items = {"重试", "换一张"};
-						new AlertDialog.Builder(activity)
-						.setTitle("选择操作")
-						.setItems(items, new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								if(0 == which){
-									new Thread(new UpLoadThread(bitmap_url.get(currentImgView), currentImgView)).start();
-								}
-								else{
-									if (cachedBps[currentImgView] != null)
-									{
-										cachedBps[currentImgView].recycle();
-										cachedBps[currentImgView] = null;
-									}
-									bitmap_url.set(currentImgView, null);
-									imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
-//									showDialog();
-									ViewUtil.pickupPhoto(getActivity(), currentImgView);
-									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
-								}
-								
-							}
-						})
-						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						}).show();
-					}
-					else{
-						//String[] items = {"删除"};
-						new AlertDialog.Builder(this.getActivity())
-						.setMessage("删除当前图片?")
-						.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								bitmap_url.set(currentImgView, null);
-								imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
-								cachedBps[currentImgView] = null;
-//								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
-							}
-						})
-						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-							
-							@Override
-							public void onClick(DialogInterface dialog, int which) {
-								dialog.dismiss();
-							}
-						}).show();
-					}
-				}
-			}
-		} 
-		else if(v.getId() == R.id.iv_post_finish){
+//		if (v.getId() == R.id.iv_1 || v.getId() == R.id.iv_2 || v.getId() == R.id.iv_3) {
+//			for (int i = 0; i < imgs.length; i++) {
+//				if (imgs[i].equals(v)) {
+//					currentImgView = i;
+//					ImageStatus status = getCurrentImageStatus(i);
+//					if(ImageStatus.ImageStatus_Unset == status){
+////						showDialog();
+//						ViewUtil.pickupPhoto(getActivity(), this.currentImgView);
+//					}
+//					else if(ImageStatus.ImageStatus_Failed == status){
+//						String[] items = {"重试", "换一张"};
+//						new AlertDialog.Builder(activity)
+//						.setTitle("选择操作")
+//						.setItems(items, new DialogInterface.OnClickListener() {
+//							
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								if(0 == which){
+//									new Thread(new UpLoadThread(bitmap_url.get(currentImgView), currentImgView)).start();
+//								}
+//								else{
+//									if (cachedBps[currentImgView] != null)
+//									{
+//										cachedBps[currentImgView].recycle();
+//										cachedBps[currentImgView] = null;
+//									}
+//									bitmap_url.set(currentImgView, null);
+//									imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
+////									showDialog();
+//									ViewUtil.pickupPhoto(getActivity(), currentImgView);
+//									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
+//								}
+//								
+//							}
+//						})
+//						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//							
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								dialog.dismiss();
+//							}
+//						}).show();
+//					}
+//					else{
+//						//String[] items = {"删除"};
+//						new AlertDialog.Builder(this.getActivity())
+//						.setMessage("删除当前图片?")
+//						.setPositiveButton("删除", new DialogInterface.OnClickListener() {
+//							
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								bitmap_url.set(currentImgView, null);
+//								imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
+//								cachedBps[currentImgView] = null;
+////								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
+//							}
+//						})
+//						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+//							
+//							@Override
+//							public void onClick(DialogInterface dialog, int which) {
+//								dialog.dismiss();
+//							}
+//						}).show();
+//					}
+//				}
+//			}
+//		} 
+		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
 			if(this.detailLocation != null && locationView != null){
@@ -761,11 +783,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
             Util.saveDataToLocate(getActivity(), "lastLocation", lastLocation);
         }
 
-		if(uploadCount > 0){
-			postResultFail("images are uploading!");
-			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
-		}
-		else{
+//		if(uploadCount > 0){
+//			postResultFail("images are uploading!");
+//			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
+//		}
+//		else
+		{
 			extractInputData(layout_txt, params);
 			if(!check2()){
 				return;
@@ -827,13 +850,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			if (url != null && url.startsWith("http://")) 
 //				return true;
 //		}
-		for (int i = 0; i < bitmap_url.size(); i++) {
-			String url = bitmap_url.get(i);
-			String originUrl = origin_bitmap_url.get(i);
-			if (url != originUrl) {
-				return true;
-			}
-		}
+//		for (int i = 0; i < bitmap_url.size(); i++) {
+//			String url = bitmap_url.get(i);
+//			String originUrl = origin_bitmap_url.get(i);
+//			if (url != originUrl) {
+//				return true;
+//			}
+//		}
 		
 		extractInputData(layout_txt, params);
 		if(!this.getView().findViewById(R.id.goodscontent).isShown() || 
@@ -875,8 +898,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 		if(categoryEnglishName.equals("nvzhaonan")){
-			for (int i = 0; i < bitmap_url.size(); i++) {
-				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
+			for (int i = 0; i < bmpUrls.size(); i++) {
+				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
 					return true;
 				}
 			}
@@ -1083,9 +1106,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			//发布图片
 			String images = "";
 			int imgCount = 0;
-			for (int i = 0; i < bitmap_url.size(); i++) {				
-				if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
-					images += "," + bitmap_url.get(i);
+			for (int i = 0; i < bmpUrls.size(); i++) {				
+				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
+					images += "," + bmpUrls.get(i);
 					imgCount++;
 				}
 			}
@@ -1172,8 +1195,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private int getImgCount() {
 		int imgCount = 0;
-		for (int i = 0; i < bitmap_url.size(); i++) {				
-			if(bitmap_url.get(i) != null && bitmap_url.get(i).contains("http:")){
+		for (int i = 0; i < bmpUrls.size(); i++) {				
+			if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
 				imgCount++;
 			}
 		}
@@ -1275,63 +1298,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			sendMessage(10, null);
 		}
 	}
-	
-	private Uri uri = null;
-
-	@Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
-		Log.d("QLM", "start to handle activity result");
-		if (resultCode == NONE) {
-			return;
-		}
 		
-//		this.showPost();
-		
-		if(imgSelDlg != null && 
-				(CommonIntentAction.PhotoReqCode.PHOTOHRAPH == requestCode
-				|| CommonIntentAction.PhotoReqCode.PHOTOZOOM == requestCode
-				|| PHOTORESOULT == requestCode)){
-			imgSelDlg.onActivityResult(requestCode, resultCode, data);
-			return;
-		}
-		// 拍照 
-		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
-			// 设置文件保存路径这里放在跟目录下
-			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg");
-			uri = Uri.fromFile(picture);
-			getBitmap(uri, requestCode); // 直接返回图片
-			//startPhotoZoom(uri); //截取图片尺寸
-		}
-
-		if (data == null) {
-			return;
-		}
-
-		// 读取相册缩放图片
-		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM) {
-			uri = data.getData();
-			//startPhotoZoom(uri);
-			getBitmap(uri, requestCode);
-		}
-		// 处理结果
-		if (requestCode == PHOTORESOULT) {
-			File picture = new File("/sdcard/cropped.jpg");
-			
-			uri = Uri.fromFile(picture);
-			getBitmap(uri, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
-			File file = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + "jpg");
-			try {
-				if(file.isFile() && file.exists()){
-					file.delete();
-				}
-			} catch (Exception e) {
-				e.printStackTrace();
-			}
-		}
-
-	}
-	
 //	private void appendSelectedProperties(String[] lists){
 //		if(lists == null || lists.length == 0) return;
 //		for(int i = 0; i < lists.length; ++ i){
@@ -1360,17 +1327,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void loadCachedData()
 	{
-		if (imgs != null)
-		{
-			for (int i=0; imgs.length>i; i++)
-			{
-				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
-				{
-					imgs[i].setImageBitmap(cachedBps[i]);
-					imgs[i].invalidate();
-				}
-			}
-		}
+//		if (imgs != null)
+//		{
+//			for (int i=0; imgs.length>i; i++)
+//			{
+//				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
+//				{
+//					imgs[i].setImageBitmap(cachedBps[i]);
+//					imgs[i].invalidate();
+//				}
+//			}
+//		}
 		
 		LinkedHashMap<String, String> uiMap = params.getUiData();
 		if (uiMap == null)
@@ -1494,18 +1461,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			postList.clear();
 			
 			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				bitmap_url.clear();
-				bitmap_url.add(null);
-				bitmap_url.add(null);
-				bitmap_url.add(null);
+//				bitmap_url.clear();
+//				bitmap_url.add(null);
+//				bitmap_url.add(null);
+//				bitmap_url.add(null);
 				params.clear();
-				currentImgView = -1;
+//				currentImgView = -1;
 				listUrl.clear();
-				uploadCount = 0;
-				cachedBps[0] = cachedBps[1] = cachedBps[2] = null;
-				imgs[0].setImageResource(R.drawable.btn_add_picture);
-				imgs[1].setImageResource(R.drawable.btn_add_picture);
-				imgs[2].setImageResource(R.drawable.btn_add_picture);
+//				uploadCount = 0;
+//				cachedBps[0] = cachedBps[1] = cachedBps[2] = null;
+//				imgs[0].setImageResource(R.drawable.btn_add_picture);
+//				imgs[1].setImageResource(R.drawable.btn_add_picture);
+//				imgs[2].setImageResource(R.drawable.btn_add_picture);
 			}			
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
@@ -1568,38 +1535,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			break;
 		}
 	}
-	
-	
-	private void getBitmap(Uri uri, int id) {
-		String path = uri == null ? "" : uri.toString();
-		Log.w("QLM", "upload image : " + path);
-		if (uri != null) {
-				if (imgs != null)
-				{
-					imgs[this.currentImgView].setFocusable(true);
-				}
-
-				new Thread(new UpLoadThread(path, currentImgView)).start();
-		}
-
-	}
-	
-	public String getRealPathFromURI(Uri contentUri) {
-		String[] proj = { MediaStore.Images.Media.DATA };
-		Cursor cursor = getActivity().managedQuery(contentUri, proj, null, null, null);
-
-		if (cursor == null)
-			return null;
-
-		int column_index = cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-		cursor.moveToFirst();
-
-		String ret = cursor.getString(column_index);
-//		cursor.close();
-		return ret;
-	}
 
 	public void startPhotoZoom(Uri uri) {
 		Intent intent = new Intent("com.android.camera.action.CROP");
@@ -1613,23 +1548,23 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		getActivity().startActivityForResult(intent, PHOTORESOULT);
 	}
 
-	public void saveSDCard(Bitmap photo) {
-		try {
-			String filepath = "/sdcard/baixing";
-			File files = new File(filepath);
-			files.mkdir();
-			File file = new File(filepath, "temp" + this.currentImgView + ".jpg");
-			FileOutputStream outStream = new FileOutputStream(file);
-			String path = file.getAbsolutePath();
-			Log.i(path, path);
-			photo.compress(CompressFormat.JPEG, 100, outStream);
-			outStream.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
+//	public void saveSDCard(Bitmap photo) {
+//		try {
+//			String filepath = "/sdcard/baixing";
+//			File files = new File(filepath);
+//			files.mkdir();
+//			File file = new File(filepath, "temp" + this.currentImgView + ".jpg");
+//			FileOutputStream outStream = new FileOutputStream(file);
+//			String path = file.getAbsolutePath();
+//			Log.i(path, path);
+//			photo.compress(CompressFormat.JPEG, 100, outStream);
+//			outStream.close();
+//		} catch (FileNotFoundException e) {
+//			e.printStackTrace();
+//		} catch (IOException e) {
+//			e.printStackTrace();
+//		}
+//	}
 	
 	private void initImageLayout(){
 //		this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
@@ -1766,10 +1701,25 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				v.findViewById(R.id.myImg).setOnClickListener(new OnClickListener(){
 					@Override
 					public void onClick(View v){
-						if(imgSelDlg == null){
-							imgSelDlg = new ImageSelectionDialog(new Bundle());
+						if(goodsDetail != null){
+							if(bmpUrls.size() == 0){
+								String big = (goodsDetail.getImageList().getBig());
+								big = Communication.replace(big);
+								String[] cbig = big.split(",");
+								ArrayList<String> smalls = new ArrayList<String>();
+								ArrayList<String> bigs = new ArrayList<String>();
+								for (int j = 0; j < listUrl.size(); j++) {
+									String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+									smalls.add(listUrl.get(j));
+									bigs.add(bigUrl);
+								}
+								startImgSelDlg(bigs, null, smalls);
+							}else{
+								startImgSelDlg(null, null, null);
+							}							
+						}else{
+							startImgSelDlg(null, null, null);
 						}
-						imgSelDlg.show(getFragmentManager(), null);
 					}
 				});
 			}
@@ -1927,33 +1877,25 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			inLocating = false;			
 //			break;
 //		}
-		case MSG_START_UPLOAD:{		
-			Integer index = (Integer) msg.obj;
-			if (imgs != null){
-				imgs[index.intValue()].setImageResource(R.drawable.icon_post_loading);
-				imgs[index].setClickable(false);
-				imgs[index.intValue()].invalidate();
+		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
+			if(imgSelBundle != null){
+				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
+				if(bps != null && bps.size() > 0){
+					if(getView() != null){
+						ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
+						if(iv != null){
+							iv.setImageBitmap(bps.get(0));
+						}
+					}
+				}
+				ArrayList<String> urls = (ArrayList<String>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_BITMAP_URL);
+				if(urls != null){
+					bmpUrls.clear();
+					bmpUrls.addAll(urls);
+				}
 			}
 			break;
-		}
-		case MSG_FAIL_UPLOAD:{
-			if (imgs != null){			
-				Integer index = (Integer) msg.obj;
-				imgs[index.intValue()].setImageResource(R.drawable.f);
-				imgs[index].setClickable(true);
-				imgs[index.intValue()].invalidate();
-			}
-			break;
-		}
-		case MSG_SUCCED_UPLOAD:{
-			Integer index = (Integer) msg.obj;
-			if (imgs != null){
-				imgs[index].setImageBitmap(cachedBps[index]);
-				imgs[index].setClickable(true);
-				imgs[index].invalidate();
-			}
-			break;
-		}
+		}		
 		case -2:{
 			loadCachedData();
 			break;
@@ -2106,149 +2048,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		setInputContent();
 //		imgHeight = imgs[0].getMeasuredHeight()
 	}
-
-
-	/**
-	 * 上传头像
-	 * 
-	 * @author Administrator
-	 * 
-	 */
-	class UpLoadThread implements Runnable {
-		private String bmpPath;
-		private int currentIndex = -1;
-		private Bitmap thumbnailBmp = null;
-
-		public UpLoadThread(String path, int index) {
-			super();
-			this.bmpPath = path;
-			currentIndex = index;
-		}
-
-		public void run() {
-
-			final Activity activity = getActivity();
-			if (activity == null)
-			{
-				return;
-			}
-			activity.runOnUiThread(new Runnable(){
-				public void run(){
-					//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_orange, BXDecorateImageView.ImagePos.ImagePos_Center);
-					sendMessage(MSG_START_UPLOAD, currentIndex);
-				}
-			});	
-			
-			synchronized(PostGoodsFragment.this){
-//			try{
-			//	uploadMutex.wait();
-//			}catch(InterruptedException e){
-				//e.printStackTrace();
-//			}
-			++ uploadCount;
-			if(bmpPath == null || bmpPath.equals("")) return;
-
-			Uri uri = Uri.parse(bmpPath);
-			String path = getRealPathFromURI(uri); // from Gallery
-			if (path == null) {
-				path = uri.getPath(); // from File Manager
-			}
-			Bitmap currentBmp = null;
-			if (path != null) {
-				try {
-				       
-				    BitmapFactory.Options bfo = new BitmapFactory.Options();
-			        bfo.inJustDecodeBounds = true;
-			        BitmapFactory.decodeFile(path, bfo);
-			        
-				    BitmapFactory.Options o =  new BitmapFactory.Options();
-	                o.inPurgeable = true;
-	                
-	                int maxDim = 600;
-	                
-	                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
-	                
-	                
-	                currentBmp = BitmapFactory.decodeFile(path, o);
-					//photo = Util.newBitmap(tphoto, 480, 480);
-					//tphoto.recycle();
-				} catch (Exception e) {
-					e.printStackTrace();
-				}
-			}			
-			if(currentBmp == null) {
-				-- uploadCount;
-				return;
-			}
-				
-			String result = Communication.uploadPicture(currentBmp);	
-			-- uploadCount;
-			if(imgs != null && imgs[currentIndex] != null && imgs[currentIndex].getHeight() != 0){
-				imgHeight = imgs[currentIndex].getHeight();
-			}
-			thumbnailBmp = PostGoodsFragment.createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
-			cachedBps[currentIndex] = thumbnailBmp;
-			currentBmp.recycle();
-			currentBmp = null;
-	
-			if (result != null) {
-				bitmap_url.set(currentIndex, result);
-
-				activity.runOnUiThread(new Runnable(){
-					public void run(){
-						sendMessage(MSG_SUCCED_UPLOAD, currentIndex);
-						Toast.makeText(activity, "上传图片成功", 0).show();
-					}
-				});	                
-			} else {
-//				PostGoods.BXImageAndUrl imgAn dUrl = new PostGoods.BXImageAndUrl();
-				activity.runOnUiThread(new Runnable(){
-					public void run(){
-						bitmap_url.set(currentIndex, bmpPath);
-						//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_red, BXDecorateImageView.ImagePos.ImagePos_RightTop);
-						sendMessage(MSG_FAIL_UPLOAD, currentIndex);
-						Toast.makeText(activity, "上传图片失败", 0).show();
-					}
-				});						
-			}
-//			uploadMutex.notifyAll();
-			}
-		}
-	}
-	
-	private static int getClosestResampleSize(int cx, int cy, int maxDim)
-    {
-        int max = Math.max(cx, cy);
-        
-        int resample = 1;
-        for (resample = 1; resample < Integer.MAX_VALUE; resample++)
-        {
-            if (resample * maxDim > max)
-            {
-                resample--;
-                break;
-            }
-        }
-        
-        if (resample > 0)
-        {
-            return resample;
-        }
-        return 1;
-    }
-
-	static private Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
-	{
-		Float width  = new Float(srcBmp.getWidth());
-		Float height = new Float(srcBmp.getHeight());
-		Float ratio = width/height;
-		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
-
-//		int padding = (THUMBNAIL_WIDTH - imageBitmap.getWidth())/2;
-//		imageView.setPadding(padding, 0, padding, 0);
-//		imageView.setImageBitmap(imageBitmap);
-		return thumbnail;
-	}
 	
 	class SetBitmapThread implements Runnable{
 		private int index = -1;
@@ -2260,8 +2059,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		@Override
 		public void run(){
-			PostGoodsFragment.this.imgs[index].setImageBitmap(bmp);
-			PostGoodsFragment.this.imgs[index].setClickable(true);
+//			PostGoodsFragment.this.imgs[index].setImageBitmap(bmp);
+//			PostGoodsFragment.this.imgs[index].setClickable(true);
 		}
 	}
 	
@@ -2281,21 +2080,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				return;
 			}
 			
-			for(int i = 0; i < smalls.size(); ++ i){
-				PostGoodsFragment.this.imgs[i].setClickable(false);
-			}
-			for(int t = 0; t < smalls.size(); ++ t){
-				try {
-					Bitmap tbitmap = Util.getImage(smalls.get(t));
-					PostGoodsFragment.this.bitmap_url.set(t, bigs.get(t));
-					PostGoodsFragment.this.origin_bitmap_url.set(t, bigs.get(t));
-					activity.runOnUiThread(new SetBitmapThread(t, tbitmap));
-					
-				} catch (Exception e) {
-					e.printStackTrace();
-					PostGoodsFragment.this.imgs[t].setClickable(true);
-				}
-			}
+//			for(int i = 0; i < smalls.size(); ++ i){
+//				PostGoodsFragment.this.imgs[i].setClickable(false);
+//			}
+//			for(int t = 0; t < smalls.size(); ++ t){
+//				try {
+//					Bitmap tbitmap = Util.getImage(smalls.get(t));
+//					PostGoodsFragment.this.bitmap_url.set(t, bigs.get(t));
+//					PostGoodsFragment.this.origin_bitmap_url.set(t, bigs.get(t));
+//					activity.runOnUiThread(new SetBitmapThread(t, tbitmap));
+//					
+//				} catch (Exception e) {
+//					e.printStackTrace();
+//					PostGoodsFragment.this.imgs[t].setClickable(true);
+//				}
+//			}
 		}
 	}
 
@@ -2313,17 +2112,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
 //		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
-	enum ImageStatus{
-		ImageStatus_Normal,
-		ImageStatus_Unset,
-		ImageStatus_Failed
-	}
-	private ImageStatus getCurrentImageStatus(int index){
-		if(bitmap_url.get(index) == null)return ImageStatus.ImageStatus_Unset;
-		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
-		return ImageStatus.ImageStatus_Failed;
 	}
 	
 	static public void popupSelection(BaseFragment fragment, View v, PostGoodsBean bean){
