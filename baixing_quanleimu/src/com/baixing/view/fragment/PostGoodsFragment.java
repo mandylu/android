@@ -73,6 +73,7 @@ import com.baixing.util.LocationService.BXRgcListener;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -135,6 +136,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public ArrayList<String> listUrl;
 	private int currentImgView = -1;
 	private int uploadCount = 0;
+	
+	private ImageSelectionDialog imgSelDlg = null;
 	
 //	private BaseActivity baseActivity;
 //	private Bundle bundle;
@@ -1285,6 +1288,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 //		this.showPost();
 		
+		if(imgSelDlg != null && 
+				(CommonIntentAction.PhotoReqCode.PHOTOHRAPH == requestCode
+				|| CommonIntentAction.PhotoReqCode.PHOTOZOOM == requestCode
+				|| PHOTORESOULT == requestCode)){
+			imgSelDlg.onActivityResult(requestCode, resultCode, data);
+			return;
+		}
 		// 拍照 
 		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
 			// 设置文件保存路径这里放在跟目录下
@@ -1623,7 +1633,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void initImageLayout(){
 //		this.layout_txt.findViewById(R.id.image_layout).setVisibility(View.VISIBLE);
-		layout_txt.findViewById(R.id.myImg).setOnClickListener(PostGoodsFragment.this);
+//		layout_txt.findViewById(R.id.myImg).setOnClickListener(PostGoodsFragment.this);
+//		layout_txt.findViewById(R.id.iv_1).setOnClickListener(PostGoodsFragment.this);
 //		layout_txt.findViewById(R.id.iv_2).setOnClickListener(PostGoodsFragment.this);
 //		layout_txt.findViewById(R.id.iv_3).setOnClickListener(PostGoodsFragment.this);
 //		imgs = new ImageView[]{(ImageView)layout_txt.findViewById(R.id.iv_1),
@@ -1751,6 +1762,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
 				tv.setText(bean.getDisplayName());
+				
+				v.findViewById(R.id.myImg).setOnClickListener(new OnClickListener(){
+					@Override
+					public void onClick(View v){
+						if(imgSelDlg == null){
+							imgSelDlg = new ImageSelectionDialog(new Bundle());
+						}
+						imgSelDlg.show(getFragmentManager(), null);
+					}
+				});
 			}
 		}
 		
