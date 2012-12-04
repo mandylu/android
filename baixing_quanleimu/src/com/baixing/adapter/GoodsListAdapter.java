@@ -270,15 +270,6 @@ public class GoodsListAdapter extends BaseAdapter {
 			final int position = getRealIndex(pos);
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 	
-			if (hasDelBtn) {
-				holder.operateView.setVisibility(View.VISIBLE);
-				holder.actionLine.setVisibility(View.VISIBLE);
-			} 
-			else{
-				holder.operateView.setVisibility(View.GONE);
-				holder.actionLine.setVisibility(View.GONE);
-			}
-	
 			if(null == defaultBk2){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
@@ -386,6 +377,16 @@ public class GoodsListAdapter extends BaseAdapter {
 			
 			final GoodsDetail detailObj = list.get(position);
 			
+			if (hasDelBtn) {
+				holder.operateView.setVisibility(View.VISIBLE);
+				holder.actionLine.setVisibility(View.VISIBLE);
+				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(this.isValidMessage(detailObj) ? R.drawable.btn_circle_arrow : R.drawable.icon_jingtnahao);
+			} 
+			else{
+				holder.operateView.setVisibility(View.GONE);
+				holder.actionLine.setVisibility(View.GONE);
+			}
+			
 //			String price = list.get(position).getMetaValueByKey("价格");
 			String price = detailObj.getValueByKey("价格");
 			if (price == null || price.equals("")) {
@@ -447,5 +448,11 @@ public class GoodsListAdapter extends BaseAdapter {
 			});	
 			return v;
 		}
+		
+	}
+	
+	private boolean isValidMessage(GoodsDetail detail)
+	{
+		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}
 }

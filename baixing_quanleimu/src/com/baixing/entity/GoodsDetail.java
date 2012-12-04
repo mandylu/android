@@ -5,6 +5,8 @@ import java.net.URLDecoder;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashMap;
+
+import com.fasterxml.jackson.annotation.JsonIgnore;
 public class GoodsDetail implements Serializable{
 	
 	/**
@@ -27,6 +29,7 @@ public class GoodsDetail implements Serializable{
 		EDATAKEYS_CITYENGLISHNAME("cityEnglishName"),
 		EDATAKEYS_AREANAME("areaNames"),
 		EDATAKEYS_MOBILE("mobile"),
+		EDATAKEYS_MOBILE_AREA("mobileArea"),
 		EDATAKEYS_WANTED("wanted"),
 		EDATAKEYS_CONTACT("contact"),
 		EDATAKEYS_LINK("link"),
@@ -38,54 +41,12 @@ public class GoodsDetail implements Serializable{
 			this.metaKey = key;
 		}
 	}
+	@JsonIgnore
 	public Set<String> getKeys(){
 		if(null == data) return null;
 		return data.keySet();
 	}
-//	private EDATAKEYS getEnumByString(String key){
-//		EDATAKEYS e = null;
-//		if(key.equals("title")){
-//			e = EDATAKEYS.EDATAKEYS_TITLE;
-//		}
-//		else if(key.equals("description")){
-//			e = EDATAKEYS.EDATAKEYS_DESCRIPTION;
-//		}
-//		else if(key.equals("lat")){
-//			e = EDATAKEYS.EDATAKEYS_LAT;
-//		}
-//		else if(key.equals("lng")){
-//			e = EDATAKEYS.EDATAKEYS_LON;
-//		}
-//		else if(key.equals("createdTime")){
-//			e = EDATAKEYS.EDATAKEYS_DATE;
-//		}
-//		else if(key.equals("id")){
-//			e = EDATAKEYS.EDATAKEYS_ID;
-//		}
-//		else if(key.equals("categoryEnglishName")){
-//			e = EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME;
-//		}
-//		else if(key.equals("cityEnglishName"))
-//		{
-//			e = EDATAKEYS.EDATAKEYS_CITYENGLISHNAME;
-//		}
-//		else if(key.equals("areaNames")){
-//			e = EDATAKEYS.EDATAKEYS_AREANAME;
-//		}
-//		else if(key.equals("mobile")){
-//			e = EDATAKEYS.EDATAKEYS_MOBILE;
-//		}
-//		else if(key.equals("wanted")){
-//			e = EDATAKEYS.EDATAKEYS_WANTED;
-//		}
-//		else if(key.equals("contact")){
-//			e = EDATAKEYS.EDATAKEYS_CONTACT;
-//		}
-//		else if(key.equals("link")){
-//			e = EDATAKEYS.EDATAKEYS_LINK;
-//		}
-//		return e;
-//	}
+	@JsonIgnore
 	private String getStringByEnum(EDATAKEYS e){
 		String key = "";
 		switch(e){
@@ -139,6 +100,7 @@ public class GoodsDetail implements Serializable{
 		}
 		return key;
 	}
+	@JsonIgnore
 	public String getValueByKey(EDATAKEYS e){
 		String key = e.metaKey; //getStringByEnum(e);
 		if(data.containsKey(key)){
@@ -146,7 +108,7 @@ public class GoodsDetail implements Serializable{
 		}
 		return  "";
 	}
-	
+	@JsonIgnore
 	public String getValueByKey(String key){
 		if(key.equals("")) return "";
 //		EDATAKEYS e =  getEnumByString(key);
@@ -156,13 +118,13 @@ public class GoodsDetail implements Serializable{
 		}
 		return  "";
 	}	
-	
+	@JsonIgnore
 	public void setValueByKey(EDATAKEYS e, String value){
 		String key =  getValueByKey(e);
 		if(key.equals("")) return;
 		data.put(key, value);
 	}
-	
+	@JsonIgnore
 	public void setValueByKey(String key, String value){
 		if(key == null || key.equals("")) return;
 //		EDATAKEYS e =  getEnumByString(key);
@@ -173,7 +135,7 @@ public class GoodsDetail implements Serializable{
 		}
 			
 	}
-	
+	@JsonIgnore
 	public String getMetaValueByKey(String key){
 		for(int i = 0; i < metaData.size(); ++ i){
 			String[] meta = metaData.get(i).split(" ");

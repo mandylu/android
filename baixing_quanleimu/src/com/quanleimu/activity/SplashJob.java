@@ -47,7 +47,7 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		LocationService.getInstance().start(parentActivity, QuanleimuApplication.mDemoApp);
+		LocationService.getInstance().start(parentActivity, QuanleimuApplication.getApplication());
 		QuanleimuApplication.udid = Util.getDeviceUdid(parentActivity);
 
 		QuanleimuApplication.version = Util.getVersion(parentActivity);

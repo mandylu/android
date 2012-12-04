@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
@@ -23,7 +24,6 @@ import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.support.v4.view.PagerAdapter;
@@ -52,25 +52,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
-import com.baixing.util.Helper;
 import com.baixing.util.TextUtil;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.view.AdViewHistory;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.AuthController;
-import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.activity.BaseActivity;
@@ -97,6 +94,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
 	public GoodsDetail detail = new GoodsDetail();
+	private boolean called = false;
 //	private View titleControlView = null;
 	private AuthController authCtrl;
 	private UserBean user = null;
@@ -205,6 +203,27 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onResume();
+		
+		if (called)
+		{
+			called = false;
+			if (!isInMyStore())
+			{
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle(R.string.dialog_title_info)
+				.setMessage(R.string.tip_add_fav)
+				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				})
+				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						handleStoreBtnClicked();
+					}
+					
+				}).create().show();
+			}
+		}
 	}
 	
 	private void updateButtonStatus()
@@ -222,31 +241,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		}
 	}
 	
-	private void saveToHistory(){
-		AdViewHistory.getInstance().markRead(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
-
-        if (detail.getValueByKey("status").equals("0") == false) { //非 active 信息不存到历史纪录
-            return;
-        }
-		List<GoodsDetail> listLookHistory = QuanleimuApplication.getApplication().getListLookHistory();
-		if(listLookHistory != null){
-			for(int i=0;i<listLookHistory.size();i++)
-			{
-				if(listLookHistory.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-						.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)))
-				{
-					return;
-				}
-			}
-		}
-		if(null == listLookHistory){
-			listLookHistory = new ArrayList<GoodsDetail>();
-		}
-		listLookHistory.add(0, detail);
-		QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
-//		Helper.saveDataToLocate(this.getContext(), "listLookHistory", listLookHistory);		
-	}
-
 	private boolean isMyAd(){
 		if(detail == null) return false;
 		return QuanleimuApplication.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
@@ -481,8 +475,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 					mListLoader.setSelection(pos);
 					updateTitleBar(getTitleDef());
 					updateContactBar(v.getRootView(), false);
-					saveToHistory();
-				
 				}
 				else
 				{
@@ -692,7 +684,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				}
 			});        
         
-        this.saveToHistory();
         return v;
 	}
 	
@@ -766,11 +757,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			else{
 				((TextView)contentView.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
 			}
-//			contentView.findViewById(R.id.fenxianglayout).setEnabled(false);
-//			contentView.findViewById(R.id.showmap).setEnabled(false);
-//			contentView.findViewById(R.id.jubaolayout).setEnabled(false);
-//			findViewById(R.id.sms).setEnabled(false);
-//			findViewById(R.id.call).setEnabled(false);
 			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
 		}
 		
@@ -851,6 +837,42 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void updateContactBar(View rootView, boolean forceHide)
 	{
+		
+		if (!isValidMessage() && !forceHide)
+		{
+			String tips = detail.getValueByKey("tips"); 
+			if(tips == null || tips.equals("")){
+				tips  = "该信息不符合《百姓网公约》";
+			}
+			
+			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			AlertDialog dialog = builder.setTitle(R.string.dialog_title_info)
+			.setMessage(tips)
+			.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					showSimpleProgress();
+					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+                    trackerLogEvent(BxEvent.MYVIEWAD_DELETE);	
+				}
+			})
+			.setPositiveButton(R.string.appeal, new DialogInterface.OnClickListener() {
+				public void onClick(DialogInterface dialog, int which) {
+					trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
+					Bundle bundle = createArguments(null, null);
+					bundle.putInt("type", 1);
+					bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+					pushAndFinish(new FeedbackFragment(), bundle);
+				}
+			}).create();
+			dialog.setCanceledOnTouchOutside(false);
+			dialog.setOnCancelListener(new OnCancelListener() {
+				public void onCancel(DialogInterface dialog) {
+					finishFragment();
+				}
+			});
+			dialog.show();
+		}
+		
 		LinearLayout rl_phone = (LinearLayout)rootView.findViewById(R.id.phonelayout);
 		if (forceHide)
 		{
@@ -879,15 +901,15 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
 
-		final String mobileV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
-		final boolean isFromMobile = isCurrentAdFromMobile();
+		final String contactS = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
+//		final boolean isFromMobile = isCurrentAdFromMobile();
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
 		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
-		btnImg.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
+//		btnImg.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
 		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
-		btnTxt.setTextColor(getResources().getColor(isFromMobile ? R.color.vad_buzz : R.color.vad_sms));
+		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
 		
-		final boolean buzzEnable = isFromMobile ? true : (TextUtil.isNumberSequence(mobileV) ? true : false);
+		final boolean buzzEnable = TextUtil.isNumberSequence(contactS) ? true : false;
 		btnBuzz.setEnabled(buzzEnable);
 		if (!buzzEnable)
 		{
@@ -896,38 +918,48 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 		
 		
-		
 //		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
-		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
-		iv_contact.updateOptionList("请选择", 
-		new String[] {"发送手机短信", "发送即时消息"}, 
-		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
-		//FIXME: prepare context menu for currnet vad.
+//		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
+//		iv_contact.updateOptionList("请选择", 
+//		new String[] {"发送手机短信", "发送即时消息"}, 
+//		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
 		rl_phone.setVisibility(View.VISIBLE);
 
 		//Enable or disable call button
-		final boolean callEnable = TextUtil.isNumberSequence(mobileV);
+		final boolean callEnable = TextUtil.isNumberSequence(contactS);
 		rootView.findViewById(R.id.vad_call_btn).setEnabled(callEnable);
 		rootView.findViewById(R.id.vad_call_btn).setOnClickListener(callEnable ? this : null);
 		View callImg = rootView.findViewById(R.id.icon_call);
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
+		String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
+		String text = contactS;
+		if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea))
+		{
+			text = contactS + "(" + mobileArea + ")";
+		}
+		else if (mobileArea == null || "".equals(mobileArea.trim()))
+		{
+			text = contactS + "(非手机号)";
+		}
+		
+		txtCall.setText(callEnable ? text : "无联系方式");
 		txtCall.setTextColor(getResources().getColor(callEnable ? R.color.vad_call_btn_text : R.color.common_button_disable));
 		
 	}
 	
-	private boolean isCurrentAdFromMobile()
-	{
-		if (detail == null)
-		{
-			return false;
-		}
-		
-		String postFrom = detail.getValueByKey("postMethod");
-		Log.d("postMethod", postFrom);
-		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom) || "api_wap".equalsIgnoreCase(postFrom);
-	}
+//	private boolean isCurrentAdFromMobile()
+//	{
+//		if (detail == null)
+//		{
+//			return false;
+//		}
+//		
+//		String postFrom = detail.getValueByKey("postMethod");
+//		Log.d("postMethod", postFrom);
+//		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom) || "api_wap".equalsIgnoreCase(postFrom);
+//	}
 	
 	
 	private String appendExtralMetaInfo(GoodsDetail detail, String description)
@@ -1093,7 +1125,28 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			Tracker.getInstance()
 			.event(BxEvent.VIEWAD_MOBILECALLCLICK)
 			.end();
-			startContact(false);
+			
+			final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
+			if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
+				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+				builder.setTitle(R.string.dialog_title_warning)
+				.setMessage(R.string.warning_danger_mobile)
+				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+					}
+				})
+				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+					public void onClick(DialogInterface dialog, int which) {
+						startContact(false);
+					}
+					
+				}).create().show();
+			}
+			else
+			{
+				startContact(false);
+			}
+			
 			break;
 		}
 		case R.id.retry_load_more:
@@ -1107,55 +1160,19 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
             trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
 			break;
 		case R.id.vad_buzz_btn:
-			if (isCurrentAdFromMobile()){
-				if(getView() != null){
-					View btn = getView().findViewById(R.id.vad_send_message);
-					if(btn != null){
-						btn.performLongClick();
-					}
-				}
-//				getView().findViewById(R.id.vad_send_message).performLongClick();
-			}
-			else
+//			if (isCurrentAdFromMobile()){
+//				if(getView() != null){
+//					View btn = getView().findViewById(R.id.vad_send_message);
+//					if(btn != null){
+//						btn.performLongClick();
+//					}
+//				}
+//			}
+//			else
 			{
 				startContact(true);
 			}
 			break;
-		/*case R.id.jubaolayout:{
-
-			UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user");
-			if(user == null){
-				new AlertDialog.Builder(getActivity())
-				.setMessage("请登陆后举报")
-				.setPositiveButton("现在登陆", new DialogInterface.OnClickListener() {							
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.dismiss();
-						Bundle bundle = createArguments(null, "返回");
-						pushFragment(new LoginFragment(), bundle);
-//						// TODO Auto-generated method stub
-//						if(GoodDetailView.this.m_viewInfoListener != null){
-//							GoodDetailView.this.m_viewInfoListener.onNewView(new LoginView(GoodDetailView.this.getContext(), mBundle));
-//						}						
-					}
-				})
-				.setNegativeButton(
-			     "取消", new DialogInterface.OnClickListener() {
-					@Override
-					public void onClick(DialogInterface dialog, int which) {
-						dialog.cancel();							
-					}
-				})
-			     .show();				
-			}else{
-				Bundle args = createArguments(null, null);
-				args.putInt("type", 0);
-				args.putString("adId", detail.getValueByKey("id"));
-				pushFragment(new FeedbackFragment(), args);
-			}
-			
-			break;
-		}*/
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
@@ -1265,23 +1282,23 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			ll_meta.addView(areaV);
 		}
 		
-		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
-		if (contact != null)
-		{
-			View contacV = createMetaView(inflater, "联系方式:",  contact, TextUtil.isNumberSequence(contact) ? new View.OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Log.d("tracker","VIEWAD_MOBILENUMBERCLICK");
-					//tracker
-					Tracker.getInstance()
-					.event(BxEvent.VIEWAD_MOBILENUMBERCLICK)
-					.end();
-					startContact(false);
-				}
-			} : null);
-			ll_meta.addView(contacV);
-		}
+//		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
+//		if (contact != null)
+//		{
+//			View contacV = createMetaView(inflater, "联系方式:",  contact, TextUtil.isNumberSequence(contact) ? new View.OnClickListener() {
+//				
+//				@Override
+//				public void onClick(View v) {
+//					Log.d("tracker","VIEWAD_MOBILENUMBERCLICK");
+//					//tracker
+//					Tracker.getInstance()
+//					.event(BxEvent.VIEWAD_MOBILENUMBERCLICK)
+//					.end();
+//					startContact(false);
+//				}
+//			} : null);
+//			ll_meta.addView(contacV);
+//		}
 		
 //		ArrayList<String> allMeta = detail.getMetaData();
 //		for (String meta : allMeta)
@@ -1450,6 +1467,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				} else {
 					// 删除失败
 					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
+					finishFragment();
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -1887,6 +1905,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			if (ls != null && ls.size() > 0)
 			{
 				startActivity(intent);
+				if (!sms)
+				{
+					called = true;
+				}
 			}
 			else
 			{
@@ -1939,104 +1961,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		} else {
             Toast.makeText(getActivity(), "显示地图失败", 1).show();
         }
-		
-		
-////		final GoodsDetail requestDetail = this.detail;
-//		
-////		String latV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-////		String lonV = requestDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-////		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
-////		{
-////			final double lat = Double.valueOf(latV);
-////			final double lon = Double.valueOf(lonV);
-////			Thread convertThread = new Thread(new Runnable(){
-////				@Override
-////				public void run(){
-////					String baiduUrl = String.format("http://api.map.baidu.com/ag/coord/convert?from=2&to=4&x=%s&y=%s", 
-////							String.valueOf(lat), String.valueOf(lon));
-////					try{
-////						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
-////						JSONObject js = new JSONObject(baiduJsn);
-////						Object errorCode = js.get("error");
-////						if(errorCode instanceof Integer && (Integer)errorCode == 0){
-////							String x = (String)js.get("x");
-////							String y = (String)js.get("y");
-////							byte[] bytes = Base64.decode(x);
-////							x = new String(bytes, "UTF-8");
-////							
-////							bytes = Base64.decode(y);
-////							y = new String(bytes, "UTF-8");
-////							
-////							Double dx = Double.valueOf(x);
-////							Double dy = Double.valueOf(y);
-////							
-////							int ix = (int)(dx * 1E6);
-////							int iy = (int)(dy * 1E6);
-////							
-////							x = String.valueOf(ix);
-////							y = String.valueOf(iy);
-////							
-////							Bundle bundle = new Bundle();
-////							bundle.putString("detailPosition", x +"," + y);
-////							String areaname = requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-////							if(areaname != null){
-////								String[] aryArea = areaname.split(",");
-////								if(aryArea != null && aryArea.length > 0){
-////									bundle.putString("title", aryArea[aryArea.length - 1]);
-////								}
-////							}
-////							
-////							startBaiduMap(bundle, requestDetail);
-////							return;
-////						}
-////
-////					}catch(UnsupportedEncodingException e){
-////						e.printStackTrace();
-////					}catch(Exception e){
-////						e.printStackTrace();
-////					}
-////					String positions = Integer.toString((int)(lat*1E6)) + "," + Integer.toString((int)(lon*1E6));
-////					Bundle bundle = new Bundle();
-////					bundle.putString("detailPosition", positions);
-////					bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-////					
-////					startBaiduMap(bundle,requestDetail);
-////				}
-////			});
-////			convertThread.start();
-////		}
-////		else{
-////			Thread getCoordinate = new Thread(new Runnable(){
-////	            @Override
-////	            public void run() {
-////	            	if(getActivity() == null) return;
-////					String city = QuanleimuApplication.getApplication().cityName;
-////					if(!city.equals("")){
-////						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-////						try{
-////							String googleJsn = Communication.getDataByUrlGet(googleUrl);
-////							String[] info = googleJsn.split(",");
-////							if(info != null && info.length == 4){
-////								String positions = 
-////										Integer.toString((int)(Double.parseDouble(info[2]) * 1E6))
-////										+ "," + Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-////								Bundle bundle = new Bundle();
-////								bundle.putString("detailPosition", positions);
-////								bundle.putString("title", requestDetail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
-////
-////								startBaiduMap(bundle, requestDetail);
-////							}
-////						}catch(UnsupportedEncodingException e){
-////							e.printStackTrace();
-////						}catch(Exception e){
-////							e.printStackTrace();
-////						}
-////					}	
-////	            }
-////			});
-////			getCoordinate.start();
-////
-////		}
 	}
 
 	public boolean hasGlobalTab()

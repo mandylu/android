@@ -1,15 +1,19 @@
 package com.quanleimu.activity.test;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.quanleimu.entity.BXLocation;
-import com.quanleimu.entity.UserBean;
-import com.quanleimu.util.Util;
-
+import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
+
+import com.baixing.entity.BXLocation;
+import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.UserBean;
+import com.baixing.util.Util;
+import com.quanleimu.activity.QuanleimuApplication;
 
 public class SaveLoadFileTest extends AndroidTestCase {
 	public void setUp()
@@ -130,5 +134,34 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		{
 			assertEquals(arrayList.get(i), result[i]);
 		}
+	}
+	
+	public void testSaveAndLoadFav()
+	{
+		QuanleimuApplication.context = new WeakReference<Context>(getContext());
+		
+		final String fileName = System.currentTimeMillis()+ "";
+		
+		final int count = 5;
+		GoodsDetail[] detail = new GoodsDetail[count];
+		for (int i=0; i<count; i++)
+		{
+			detail[i] = new GoodsDetail();
+			detail[i].setDistance(i);
+			QuanleimuApplication.getApplication().addFav(detail[i]);
+		}
+
+		List<GoodsDetail> list = QuanleimuApplication.getApplication().getListMyStore();
+		assertEquals(count, list.size());
+		Util.saveDataToLocate(getContext(), fileName, list);
+		
+		GoodsDetail[] result = (GoodsDetail[]) Util.loadDataFromLocate(getContext(), fileName, GoodsDetail[].class);
+		assertEquals(count, result.length);
+		for (int i=0; i<count;i++)
+		{
+			assertEquals(result[i], detail[i]);
+			assertEquals(result[i].getDistance(), detail[i].getDistance());
+		}
+		
 	}
 }

@@ -63,6 +63,8 @@ import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -629,8 +631,23 @@ public class Util {
 		FileInputStream fis = null;
 		try {
 			fis = context.openFileInput(file);
+			byte[] bs = new byte[fis.available()];
+			fis.read(bs);
+			String s = new String(bs);
+			
+//			JsonFactory f = new JsonFactory();
+//			JsonParser parser =f.createJsonParser(fis);
+//			if (parser.)
+//			{
+//				obj = mapper.readValues(parser, clsName);
+//			}
+//			else
+//			{
+//				obj = mapper.readValue(parser, clsName);
+//			}
 			ObjectReader reader = mapper.reader(clsName);
-			obj = reader.readValue(fis);
+			obj = reader.readValue(s);
+			
 		} catch (FileNotFoundException e) {
 			obj = null;
 		} catch (IOException e) {

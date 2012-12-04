@@ -79,8 +79,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	}
 
 	
-	
-	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

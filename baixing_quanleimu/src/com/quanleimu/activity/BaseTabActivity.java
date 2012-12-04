@@ -22,10 +22,12 @@ import android.widget.CheckBox;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.database.ChatMessageDatabase;
+import com.baixing.entity.GoodsDetail;
 import com.baixing.util.LocationService;
 import com.baixing.util.Sender;
 import com.baixing.util.ShortcutUtil;
 import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.CustomizeTabHost;
 import com.baixing.view.CustomizeTabHost.TabIconRes;
@@ -76,21 +78,6 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 				this.finish();
 			}
 		}
-//		Log.d(LIFE_TAG, this.hashCode()+ " check exiting app " + isExitingApp + " [" + this.getClass().getName() + "]");
-//		if (isExitingApp)
-//		{
-//			if (ACTIVE_INSTANCE_COUNT > 0)
-//			{
-//				ACTIVE_INSTANCE_COUNT--;
-//				skipReduceInstanceCount = true;
-//				this.finish();
-//			}
-//			
-//			if (ACTIVE_INSTANCE_COUNT == 0)
-//			{
-//				isExitingApp = false;
-//			}
-//		}
 	}
 	
 	@Override
@@ -286,7 +273,6 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 				
 				QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
-				QuanleimuApplication.mDemoApp = null;
 //				isInActiveStack = false;
 				
 				ChatMessageDatabase.prepareDB(BaseTabActivity.this);
@@ -301,12 +287,12 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
-//		    	if (ACTIVE_INSTANCE_COUNT > 1)
-//		    	{
-//		    		isExitingApp = true;
-//		    	}
-//		    	ACTIVE_INSTANCE_COUNT--;
-//		    	skipReduceInstanceCount = true;
+		    	List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+		    	if (favList != null)
+		    	{
+		    		Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
+		    	}
+		    	
 		    	Iterator<Integer> keys =  instanceList.keySet().iterator();
 		    	while (keys.hasNext())
 		    	{
@@ -315,6 +301,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	}
 		    	
 		    	instanceList.remove(this.hashCode());
+		    	QuanleimuApplication.resetApplication();//FIXME: check if application instance is needed after user press "exit" button.
 				BaseTabActivity.this.finish();
 		    }
 		});
