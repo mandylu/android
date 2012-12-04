@@ -331,4 +331,9 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //		}
 		finishFragment(requestCode, obj);
 	}
+	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 }

@@ -2038,6 +2038,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 ////
 ////		}
 	}
-	
+
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 	
 }

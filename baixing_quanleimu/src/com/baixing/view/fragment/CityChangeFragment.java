@@ -546,5 +546,10 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			
 		}
 	}
+
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 	
 }

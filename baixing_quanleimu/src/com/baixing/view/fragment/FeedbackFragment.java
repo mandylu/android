@@ -225,6 +225,9 @@ public class FeedbackFragment extends BaseFragment {
 		}
 	}
 	
-	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 	
 }

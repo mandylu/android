@@ -66,10 +66,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		super();
 	}
 	
-	protected void onStatckTop(BaseFragment f) {
-		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
-	}
-	
 	
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
