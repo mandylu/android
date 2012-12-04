@@ -120,7 +120,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		AbsListViewElement lv = findListView();
 		if (lv != null) {
 			lv.getChildByIndex(firstCatIndex).doClick();
-			TimeUnit.SECONDS.sleep(1);
+			TimeUnit.SECONDS.sleep(3);
 		}
 	}
 	
@@ -128,7 +128,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		AbsListViewElement lv = findListView();
 		if (lv != null) {
 			lv.getChildByIndex(secondIndex + 1).doClick();
-			TimeUnit.SECONDS.sleep(1);
+			TimeUnit.SECONDS.sleep(2);
 		}
 	}
 	
