@@ -767,10 +767,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
-//			params.add("status=1");
-//			params.add("wanted=1");//REMove
+			params.add("status=3");
+//			params.add("wanted=1");//FIXME: should remove status params??????
 		}
-//		else if(currentType == TYPE_INVERIFY){ //FIXME: should remove status params??????
+//		else if(currentType == TYPE_INVERIFY){ 
 //			params.add("status=1");
 //		}
 //		else if(currentType == TYPE_DELETED){

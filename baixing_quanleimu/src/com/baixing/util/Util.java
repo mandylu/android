@@ -631,23 +631,8 @@ public class Util {
 		FileInputStream fis = null;
 		try {
 			fis = context.openFileInput(file);
-			byte[] bs = new byte[fis.available()];
-			fis.read(bs);
-			String s = new String(bs);
-			
-//			JsonFactory f = new JsonFactory();
-//			JsonParser parser =f.createJsonParser(fis);
-//			if (parser.)
-//			{
-//				obj = mapper.readValues(parser, clsName);
-//			}
-//			else
-//			{
-//				obj = mapper.readValue(parser, clsName);
-//			}
 			ObjectReader reader = mapper.reader(clsName);
-			obj = reader.readValue(s);
-			
+			obj = reader.readValue(fis);
 		} catch (FileNotFoundException e) {
 			obj = null;
 		} catch (IOException e) {

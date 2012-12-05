@@ -380,7 +380,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			if (hasDelBtn) {
 				holder.operateView.setVisibility(View.VISIBLE);
 				holder.actionLine.setVisibility(View.VISIBLE);
-				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(this.isValidMessage(detailObj) ? R.drawable.btn_circle_arrow : R.drawable.icon_jingtnahao);
+				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(this.isValidMessage(detailObj) ? R.drawable.btn_circle_arrow : R.drawable.icon_warning);
 			} 
 			else{
 				holder.operateView.setVisibility(View.GONE);

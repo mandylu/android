@@ -373,9 +373,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		final int mCurIndex = getArguments().getInt("index", 0);
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
-		WindowManager wm = 
-				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-		
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
@@ -383,13 +380,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o);
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
-        final int current = vp.getCurrentItem();
         vp.setAdapter(new PagerAdapter() {
 			
 			public Object instantiateItem(View arg0, int position) 
 			{
 				Log.d("instantiateItem", "instantiateItem:    " + position);
-				Integer posObj = Integer.valueOf(position);
 				View detail = getNewPage(position);//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				
 				
@@ -733,32 +728,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		if(useRoot)
 			contentView = contentView.getRootView();
 		
-		WindowManager wm = 
-				(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-//		type = wm.getDefaultDisplay().getWidth();
-		
 		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-		
-		if(isValidMessage()){
-			contentView.findViewById(R.id.ll_appeal).setVisibility(View.GONE);
-			contentView.findViewById(R.id.graymask).setVisibility(View.GONE);
-			contentView.findViewById(R.id.verifyseperator).setVisibility(View.GONE);
-		}
-		else{
-			
-			contentView.findViewById(R.id.llMainContent).setEnabled(false);
-			contentView.findViewById(R.id.ll_appeal).setVisibility(View.VISIBLE);
-			contentView.findViewById(R.id.graymask).setVisibility(View.VISIBLE);
-			contentView.findViewById(R.id.verifyseperator).setVisibility(View.VISIBLE);
-			
-			if(detail.getValueByKey("tips").equals("")){
-				((TextView)contentView.findViewById(R.id.verifyreason)).setText("该信息不符合《百姓网公约》");
-			}
-			else{
-				((TextView)contentView.findViewById(R.id.verifyreason)).setText(detail.getValueByKey("tips"));
-			}
-			contentView.findViewById(R.id.appealbutton).setOnClickListener(this);
-		}
 		
 //		if(detail.getImageList() != null){
 			List<String>listUrl = getImageUrls(detail);
@@ -917,12 +887,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			btnImg.setImageResource(R.drawable.icon_sms_disable);
 		}
 		
-		
-//		TextView txt_phone = (TextView) rootView.findViewById(R.id.number);
-//		ContextMenuItem iv_contact = (ContextMenuItem) rootView.findViewById(R.id.vad_send_message);
-//		iv_contact.updateOptionList("请选择", 
-//		new String[] {"发送手机短信", "发送即时消息"}, 
-//		new int[] {R.id.vad_send_message + 1, R.id.vad_send_message + 2});
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
 		rl_phone.setVisibility(View.VISIBLE);
 
@@ -1013,28 +977,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		return description;
 	}
 	
-	private void requireAuth4Talk()
-	{
-//		if(null != m_viewInfoListener){
-//			m_viewInfoListener.onNewView(new LoginView(getContext(), "返回"));
-			Bundle bundle = createArguments(null, "返回");
-			pushFragment(new LoginFragment(), bundle);
-			if (authCtrl != null)
-			{
-				authCtrl.cancelAuth();
-			}
-			
-			authCtrl = new AuthController();
-			authCtrl.startWaitingAuth(new Runnable() {
-				public void run() {
-					startChat();
-				}
-				
-			}, null);
-			
-//		}
-	}
-	
 	private void startChat()
 	{
 		Log.d("track","VIEWAD_BUZZ");
@@ -1113,7 +1055,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 	@Override
 	public void onClick(View v) {
-		View rootView = getView();
 		switch (v.getId()) {
 		case R.id.vad_title_fav_parent:
 			handleStoreBtnClicked();
@@ -1152,26 +1093,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		case R.id.retry_load_more:
 			retryLoadMore();
 			break;
-		case R.id.appealbutton:
-			Bundle bundle = createArguments(null, null);
-			bundle.putInt("type", 1);
-			bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
-			pushFragment(new FeedbackFragment(), bundle);
-            trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
-			break;
 		case R.id.vad_buzz_btn:
-//			if (isCurrentAdFromMobile()){
-//				if(getView() != null){
-//					View btn = getView().findViewById(R.id.vad_send_message);
-//					if(btn != null){
-//						btn.performLongClick();
-//					}
-//				}
-//			}
-//			else
-			{
-				startContact(true);
-			}
+			startContact(true);
 			break;
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
@@ -1281,38 +1204,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			});
 			ll_meta.addView(areaV);
 		}
-		
-//		final String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
-//		if (contact != null)
-//		{
-//			View contacV = createMetaView(inflater, "联系方式:",  contact, TextUtil.isNumberSequence(contact) ? new View.OnClickListener() {
-//				
-//				@Override
-//				public void onClick(View v) {
-//					Log.d("tracker","VIEWAD_MOBILENUMBERCLICK");
-//					//tracker
-//					Tracker.getInstance()
-//					.event(BxEvent.VIEWAD_MOBILENUMBERCLICK)
-//					.end();
-//					startContact(false);
-//				}
-//			} : null);
-//			ll_meta.addView(contacV);
-//		}
-		
-//		ArrayList<String> allMeta = detail.getMetaData();
-//		for (String meta : allMeta)
-//		{
-//			if (!meta.startsWith("价格") &&
-//					!meta.startsWith("地区") && !meta.startsWith("查看"))
-//			{
-//				final int splitIndex = meta.indexOf(" ");
-//				if (splitIndex != -1)
-//				{
-//					ll_meta.addView(createMetaView(inflater, meta.substring(0, splitIndex), meta.substring(splitIndex), null));
-//				}
-//			}
-//		}
 	}
 	
 	
@@ -1914,19 +1805,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			{
 				ViewUtil.postShortToastMessage(getView(), sms ? R.string.warning_no_sms_app_install : R.string.warning_no_phone_app_install, 0);
 			}
-		}
-	}
-	
-	private void startBaiduMap(Bundle bundle, GoodsDetail requestDetail) {
-		if(keepSilent) return;
-		final BaseActivity baseActivity = (BaseActivity)getActivity();
-		if (baseActivity != null && requestDetail == detail){
-			baseActivity.getIntent().putExtras(bundle);
-			
-			baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-			baseActivity.startActivity(baseActivity.getIntent());
-			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
-//			Log.d("gooddetailfragment","baiduMap->cate:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)+",adId:"+detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		}
 	}
 	
