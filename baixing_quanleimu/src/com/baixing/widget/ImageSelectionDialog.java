@@ -237,7 +237,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 
 	public boolean handleBack(){
-		if(this.getDialog().isShowing()){
+		if(this.getDialog() != null && this.getDialog().isShowing()){
 			if(this.getView() != null){
 				View v = getView().findViewById(R.id.post_big);
 				if(v != null && v.isShown()){
