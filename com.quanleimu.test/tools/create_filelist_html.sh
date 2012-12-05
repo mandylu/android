@@ -1,10 +1,18 @@
 #!/bin/sh
-# This is a comment
+usage(){
+	echo "Usage: $0 path extension"
+	echo "sample: $0  ../logs/screen/ .png"
+	exit 1
+}
+[[ $# -lt 2 ]] && usage
 
-#ls -lA
-cd ../logs/screen/;
+DIR="$(cd "$(dirname "$0")" && pwd)";
 
-FILE_LIST="`ls *.png`"
+cd "$1";
+
+fileExt="$2"
+
+FILE_LIST="`ls *${fileExt}`"
 
 RESULT=""
 for file in ${FILE_LIST}
@@ -16,4 +24,4 @@ done
 
 echo "List of images:<br /><br />${RESULT}" > index.html
 
-cd ../../source_git
+cd $DIR
