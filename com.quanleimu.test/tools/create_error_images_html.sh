@@ -6,7 +6,7 @@ cd ../logs/screen/;
 
 FILE_LIST="`ls *.png`"
 
-RESULT="List of images:<br /><br />"
+RESULT=""
 for file in ${FILE_LIST}
 do
     RESULT="<a href=\"${file}\">${file}</a>
@@ -14,6 +14,6 @@ do
 
 done
 
-echo ${RESULT} > index.html
+echo "List of images:<br /><br />${RESULT}" > index.html
 
 cd ../../source_git
