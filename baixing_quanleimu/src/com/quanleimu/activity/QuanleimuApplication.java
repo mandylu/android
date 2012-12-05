@@ -46,7 +46,7 @@ import com.baixing.util.Util;
 public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer {
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
-	public static String udid="";
+//	public static String udid="";
 	public static String version="";
 	public static String channelId;
 	public static WeakReference<Context> context;	
