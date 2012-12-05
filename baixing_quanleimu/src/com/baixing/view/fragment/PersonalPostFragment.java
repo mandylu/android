@@ -46,12 +46,12 @@ import com.quanleimu.activity.R;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
 	private final int MSG_MYPOST = 1;
-	private final int MSG_INVERIFY = 2;
-	private final int MSG_DELETED = 3;
+//	private final int MSG_INVERIFY = 2;
+//	private final int MSG_DELETED = 3;
 	private final int MCMESSAGE_DELETE = 5;
 	private final int MSG_DELETE_POST_SUCCESS = 6;
 	private final int MSG_DELETE_POST_FAIL = 7;
-	private final int MSG_RESTORE_POST_SUCCESS = 8;
+//	private final int MSG_RESTORE_POST_SUCCESS = 8;
 	private final int MSG_RESTORE_POST_FAIL = 9;
     private final int MSG_ITEM_OPERATE = 10;
     private final int MSG_SHOW_BIND_DIALOG = 11;
@@ -60,8 +60,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = null;
-	private List<GoodsDetail> listInVerify = null;
-	private List<GoodsDetail> listDeleted = null;
+//	private List<GoodsDetail> listInVerify = null;
+//	private List<GoodsDetail> listDeleted = null;
 	
 	public GoodsListAdapter adapter = null;
 //	private String json;
@@ -72,8 +72,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
      */
     public final static String TYPE_KEY = "PersonalPostFragment_type_key";
     public final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
-    public final static int TYPE_INVERIFY = 1;
-    public final static int TYPE_DELETED = 2;
+//    public final static int TYPE_INVERIFY = 1;
+//    public final static int TYPE_DELETED = 2;
 
     private int currentType = TYPE_MYPOST;
 
@@ -243,67 +243,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             }
 
 		}
-		else if(TYPE_INVERIFY == currentType){
-            bxEvent = BxEvent.APPROVING_RESULT;
-
-			lvGoodsList.setVisibility(View.VISIBLE);
-//			ivMyads.setImageResource(R.drawable.bg_segment_sent);
-//			ivMyfav.setImageResource(R.drawable.bg_segment_approving_selected);
-//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
-			
-//			if(m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_title = "审核中";
-//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
-				refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
-			if(listInVerify == null){
-				adapter.setList(new ArrayList<GoodsDetail>());
-				adapter.notifyDataSetChanged();
-				lvGoodsList.invalidateViews();
-
-				showSimpleProgress();
-				this.onRefresh();
-			}
-			else{
-                adsCountValue = listInVerify.size();
-				adapter.setList(listInVerify);
-				adapter.notifyDataSetChanged();
-				lvGoodsList.invalidateViews();
-				GoodsList gl = new GoodsList();
-				gl.setData(listInVerify);
-				glLoader.setGoodsList(gl);
-
-			}
-		}
-		else{
-            bxEvent = BxEvent.DELETED_RESULT;
-			lvGoodsList.setVisibility(View.VISIBLE);
-//			ivMyads.setImageResource(R.drawable.bg_segment_sent);
-//			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
-//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted_selected);
-//			if(m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_title = "已删除";
-//				title.m_rightActionHint = "编辑";
-				refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
-			if(listDeleted == null){
-				adapter.setList(new ArrayList<GoodsDetail>());
-				adapter.notifyDataSetChanged();
-				lvGoodsList.invalidateViews();
-				showSimpleProgress();
-				this.onRefresh();
-			}
-			else{
-                adsCountValue = listDeleted.size();
-				adapter.setList(listDeleted);
-				adapter.notifyDataSetChanged();
-				lvGoodsList.invalidateViews();
-			}
-		}
 
         Tracker.getInstance().event(bxEvent).append(Key.ADSCOUNT, adsCountValue).end();
 
@@ -316,46 +255,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					return;
 				
 				if(TYPE_MYPOST == currentType && null != listMyPost && index < listMyPost.size() ){
-//					m_viewInfoListener.onNewView(new GoodDetailView(getContext(), bundle, glLoader, index, null));
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
 					pushFragment(new GoodDetailFragment(), bundle);
 					
-				}
-				else if(null !=  listInVerify && index < listInVerify.size() && TYPE_INVERIFY == currentType){
-					Bundle bundle = createArguments(null, null);
-					bundle.putSerializable("loader", glLoader);
-					bundle.putInt("index", index);
-					pushFragment(new GoodDetailFragment(), bundle);
-				}
-				else if(null != listDeleted && index < listDeleted.size() && TYPE_DELETED == currentType){
-					final String[] names = {"彻底删除", "恢复"};
-					new AlertDialog.Builder(getActivity()).setTitle("选择操作")
-					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-						
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.dismiss();
-						}
-					})
-					.setItems(names, new DialogInterface.OnClickListener(){
-						public void onClick(DialogInterface dialog, int which){
-							switch(which){
-								case 0:
-									String id = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-									showSimpleProgress();
-									(new Thread(new MyMessageDeleteThread(id))).start();
-									break;
-								case 1:
-									String id2 = listDeleted.get(index).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-									showSimpleProgress();
-									(new Thread(new MyMessageRestoreThread(id2))).start();
-									break;
-							}
-						}
-					}).show();
-
 				}
 			}
 		});
@@ -371,11 +275,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
 		case MSG_MYPOST:
-		case MSG_INVERIFY:
-		case MSG_DELETED:
+//		case MSG_INVERIFY:
+//		case MSG_DELETED:
 			hideProgress();
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
-			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(currentType==TYPE_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED));
+			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING));
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
 				Tracker.getInstance()
@@ -393,18 +297,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 					if(null != listMyPost) listMyPost.clear();
 				}
-				else if(msg.what == MSG_INVERIFY) {
-					if(listInVerify == null){
-						listInVerify = new ArrayList<GoodsDetail>();
-					}
-					listInVerify.clear();
-				}
-				else if(msg.what == MSG_DELETED){
-					if(listDeleted == null){
-						listDeleted = new ArrayList<GoodsDetail>();
-					}
-					listDeleted.clear();
-				}
 				glLoader.setGoodsList(new GoodsList());
 			}
 			else{
@@ -412,41 +304,15 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					listMyPost = gl.getData();
 					if(listMyPost != null){
 						for(int i = listMyPost.size() - 1; i >= 0; -- i){
-							if(!listMyPost.get(i).getValueByKey("status").equals("0")){
+							if(!listMyPost.get(i).getValueByKey("status").equals("0") 
+									&& !listMyPost.get(i).getValueByKey("status").equals("4")
+									&& !listMyPost.get(i).getValueByKey("status").equals("20")){
 								listMyPost.remove(i);
 							}
 						}
 					}
 					GoodsList gl2 = new GoodsList();
 					gl2.setData(listMyPost);
-					glLoader.setGoodsList(gl2);
-				}
-				else if(msg.what == MSG_INVERIFY) {
-					listInVerify = gl.getData();
-					if(listInVerify != null){
-						for(int i = listInVerify.size() - 1; i >= 0; -- i){
-							if(!listInVerify.get(i).getValueByKey("status").equals("4") 
-									&& !listInVerify.get(i).getValueByKey("status").equals("20")){
-								listInVerify.remove(i);
-							}
-						}
-					}
-					GoodsList gl2 = new GoodsList();
-					gl2.setData(listInVerify);
-					glLoader.setGoodsList(gl2);
-				}
-				else if(msg.what == MSG_DELETED){
-					listDeleted = gl.getData();
-					
-					if(listDeleted != null){
-						for(int i = listDeleted.size() - 1; i >= 0; -- i){
-							if(!listDeleted.get(i).getValueByKey("status").equals("3")){
-								listDeleted.remove(i);
-							}
-						}
-					}
-					GoodsList gl2 = new GoodsList();
-					gl2.setData(listDeleted);
 					glLoader.setGoodsList(gl2);
 				}
 			}
@@ -487,12 +353,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				if(msg.arg1 == TYPE_MYPOST){
 					refList = listMyPost;
 				}
-				else if(msg.arg1 == TYPE_INVERIFY){
-					refList = listInVerify;
-				}
-				else if(msg.arg1 == TYPE_DELETED){
-					refList = listDeleted;
-				}
+//				else if(msg.arg1 == TYPE_INVERIFY){
+//					refList = listInVerify;
+//				}
+//				else if(msg.arg1 == TYPE_DELETED){
+//					refList = listDeleted;
+//				}
 				if(refList == null) break;
 				if (code == 0) {
 					for(int i = 0; i < refList.size(); ++ i){
@@ -521,41 +387,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			hideProgress();
 			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
 			break;
-		case MSG_RESTORE_POST_SUCCESS:
-			hideProgress();
-			if(listDeleted == null) break;
-			try{
-				JSONObject jb = new JSONObject(json);
-				JSONObject js = jb.getJSONObject("error");
-				String message = js.getString("message");
-				int code = js.getInt("code");
-				if(code == 0){
-					for(int i = 0; i < listDeleted.size(); ++ i){
-						if(listDeleted.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)msg.obj)){
-							listDeleted.remove(i);
-							break;
-						}
-					}
-					if(TYPE_DELETED == currentType){
-						adapter.setList(listDeleted);
-						adapter.notifyDataSetChanged();
-						lvGoodsList.invalidateViews();
-					}
-					Toast.makeText(activity, message, 0).show();
-				}
-				else{
-					Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
-				}
-			}catch (JSONException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
-			}
-			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			hideProgress();
 			//tracker
 			Tracker.getInstance()
-			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(currentType==MSG_INVERIFY?PV.MYADS_APPROVING:PV.MYADS_DELETED)) )
+			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) )
 			.end();
 			
 			Message msg2 = Message.obtain();
@@ -649,6 +485,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}).show();
 		
 	}
+	
+	private boolean isValidMessage(GoodsDetail detail)
+	{
+		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
 
     /**
      *
@@ -664,17 +505,18 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         builder.setTitle("操作");
 
         int r_array_item_operate = R.array.item_operate_mypost;
-        if (currentType == TYPE_MYPOST) {
-            r_array_item_operate = R.array.item_operate_mypost;
-            Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
-        } else if (currentType == TYPE_INVERIFY) {
+        
+        if (isValidMessage(detail))
+        {
+        	r_array_item_operate = R.array.item_operate_mypost;
+        	Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
+        }
+        else
+        {
             r_array_item_operate = R.array.item_operate_inverify;
             Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
-        } else if (currentType == TYPE_DELETED) {
-            r_array_item_operate = R.array.item_operate_deleted;
-            Tracker.getInstance().event(BxEvent.DELETED_MANAGE).end();
         }
-
+        
         String tmpInsertedTime = detail.data.get("insertedTime");
         long tmpPostedSeconds = -1;
         if (tmpInsertedTime != null) {
@@ -685,7 +527,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
-                if (currentType == TYPE_MYPOST) {
+                if (isValidMessage(detail)) {
                     switch (clickedIndex) {
                         case 0://刷新
                             doRefresh(0, adId);
@@ -711,7 +553,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                                     .end();
                             break;
                     }
-                } else if (currentType == TYPE_INVERIFY) {
+                } 
+                else {
                     switch (clickedIndex) {
                         case 0://申诉
                             Bundle bundle = createArguments(null, null);
@@ -730,25 +573,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             new Thread(new MyMessageDeleteThread(adId)).start();
                             break;
                     }
-                } else if (currentType == TYPE_DELETED) {
-                    switch (clickedIndex) {
-                        case 0://恢复
-                            showSimpleProgress();
-                            new Thread(new MyMessageRestoreThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.DELETED_RECOVER)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 1://彻底删除
-                            showSimpleProgress();
-                            new Thread(new MyMessageDeleteThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.DELETED_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                    }
                 }
-
             }
         }).setNegativeButton(
                 "取消", new DialogInterface.OnClickListener() {
@@ -828,47 +653,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
     }
 
-
-    /**
-     * 恢复 ad
-     */
-	class MyMessageRestoreThread implements Runnable{
-		private String id;
-		public MyMessageRestoreThread(String id){
-			this.id = id;
-		}
-		
-		@Override
-		public void run(){
-			json = "";
-			String apiName = "ad_undelete";
-			ArrayList<String> list = new ArrayList<String>();
-			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-				Util.makeupUserInfoParams(user, list);
-			}
-			list.add("adId=" + id);
-			list.add("rt=1");
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, true);
-				if (json != null) {
-					sendMessage(MSG_RESTORE_POST_SUCCESS, id);
-				} else {
-					sendMessage(MSG_RESTORE_POST_FAIL, null);
-				} 
-				return;
-
-			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (Communication.BXHttpException e){
-				
-			}
-			hideProgress();
-		}
-	}
 
     /**
      * 删除 ad
@@ -962,11 +746,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		title.m_rightActionHint = "编辑";
 		if(currentType == TYPE_MYPOST){
 			title.m_title = "已发布的信息";
-		}else if(currentType == TYPE_INVERIFY){
-			title.m_title = "审核中";
-		}else if(currentType == TYPE_DELETED){
-			title.m_title = "已删除";
-		}		
+		}
 		title.m_visible = true;
 	}
 	
@@ -987,17 +767,18 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
-			params.add("status=0");
+			params.add("status=3");
+//			params.add("wanted=1");//FIXME: should remove status params??????
 		}
-		else if(currentType == TYPE_INVERIFY){
-			params.add("status=1");
-		}
-		else if(currentType == TYPE_DELETED){
-			params.add("status=2");
-		}
+//		else if(currentType == TYPE_INVERIFY){ 
+//			params.add("status=1");
+//		}
+//		else if(currentType == TYPE_DELETED){
+//			params.add("status=2");
+//		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
-		int msg = (currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
+		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
 	}
 	
@@ -1005,15 +786,17 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	public void onFragmentBackWithData(int message, Object obj){
 		if(GoodDetailFragment.MSG_ADINVERIFY_DELETED == message){
 			if(obj != null){
-				if(this.listInVerify != null){
-					for(int i = 0; i < listInVerify.size(); ++ i){
-						if(listInVerify.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)obj)){
-							listInVerify.remove(i);
+				if(this.listMyPost != null){
+					boolean updateUi = false;
+					for(int i = 0; i < listMyPost.size(); ++ i){
+						if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)obj)){
+							listMyPost.remove(i);
+							updateUi = true;
 							break;
 						}
 					}
-					if(currentType == TYPE_INVERIFY){
-						adapter.setList(listInVerify);
+					if(updateUi){
+						adapter.setList(listMyPost);
 						adapter.notifyDataSetChanged();
 						lvGoodsList.invalidateViews();
 					}

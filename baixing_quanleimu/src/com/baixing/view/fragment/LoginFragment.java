@@ -244,9 +244,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			if(this.getArguments() != null && getArguments().containsKey(KEY_RETURN_CODE)){
 				this.finishFragment(getArguments().getInt(KEY_RETURN_CODE), null);
 			}else{
-				Bundle bundle = createArguments(null, null);
+//				Bundle bundle = createArguments(null, null);
 //				bundle.putInt("defaultPageIndex", 1);
-				((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
+//				((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
+				this.finishFragment();
 			}
 			break;
 		case MSG_LOGINFAIL:
@@ -269,6 +270,11 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			Toast.makeText(getActivity(), "网络连接失败，请检查设置！", 3).show();
 			break;
 		}
+	}
+	
+	public boolean hasGlobalTab()
+	{
+		return false;
 	}
 
 }

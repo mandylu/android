@@ -515,5 +515,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		return R.anim.zoom_exit;
 	}
 
-	
+	public boolean hasGlobalTab()
+	{
+		return false;
+	}
 }

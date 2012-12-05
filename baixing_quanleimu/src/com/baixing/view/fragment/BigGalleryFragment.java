@@ -468,5 +468,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		public void onScanCompleted(String path, Uri uri) {
 			//Log.d("BigGalleryView", "onScanCompleted(), path: "+path+", uri: "+uri.getPath());
 		}
+		
+		public boolean hasGlobalTab()
+		{
+			return false;
+		}
 	
 }

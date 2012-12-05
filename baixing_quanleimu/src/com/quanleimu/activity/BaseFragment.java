@@ -724,7 +724,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	public boolean hasGlobalTab()
 	{
-		return false;
+		return true;
 	}
 	
 }

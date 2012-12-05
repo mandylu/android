@@ -57,7 +57,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
-
+	
     //为赌约而设
     public static int postEntryFlag = -1;
 	
@@ -229,20 +229,10 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 
 
 
-	//浏览历史
+	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
 	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
 	public List<GoodsDetail> getListLookHistory() {
 		return listLookHistory;
-	}
-
-	public void setListLookHistory(List<GoodsDetail> listLookHistory) {
-        if (listLookHistory == null) {
-            return;
-        } else if(listLookHistory.size() > 50){
-			this.listLookHistory = new ArrayList<GoodsDetail>(listLookHistory.subList(0, 50));
-		}else{
-			this.listLookHistory = listLookHistory;
-		}
 	}
 
 	public List<GoodsDetail> getListMyStore() {
@@ -343,29 +333,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	//我的收藏数据集合
-	public List<GoodsDetail> listMyStore = new ArrayList<GoodsDetail>();
+	private List<GoodsDetail> listMyStore = new ArrayList<GoodsDetail>();
 	
-//	//搜索结果集合总数
-//	public int searchCount = -1;
-//	
-//	public int getSearchCount() {
-//		return searchCount;
-//	}
-//
-//	public void setSearchCount(int searchCount) {
-//		this.searchCount = searchCount;
-//	}
-
-//	//搜索结果集合
-//	public List<GoodsDetail> listSearchGoods = new ArrayList<GoodsDetail>();
-//	
-//	public List<GoodsDetail> getListSearchGoods() {
-//		return listSearchGoods;
-//	}
-//
-//	public void setListSearchGoods(List<GoodsDetail> listSearchGoods) {
-//		this.listSearchGoods = listSearchGoods;
-//	}
 
 	//搜索记录
 	private List<String> listRemark = new ArrayList<String>();
@@ -707,6 +676,11 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 //	public void setActivity_type(String activity_type) {
 //		this.activity_type = activity_type;
 //	}
+	
+	static public void resetApplication()
+	{
+		QuanleimuApplication.mDemoApp = null;
+	}
 
 	static public QuanleimuApplication getApplication(){
 		if(null == preferences){
@@ -735,7 +709,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	static QuanleimuApplication mDemoApp = null;
+	private static QuanleimuApplication mDemoApp = null;
 
 	
 //	protected ViewStack viewStack;

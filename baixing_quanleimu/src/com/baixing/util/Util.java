@@ -63,6 +63,8 @@ import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.fasterxml.jackson.core.JsonFactory;
+import com.fasterxml.jackson.core.JsonParser;
 import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -78,7 +80,8 @@ public class Util {
 	public static String qq_access_key="";
 	public static String qq_access_secret="";
 	
-	private static String currentUserId;
+//	private static String currentUserId;
+	private static UserBean currentUser;
 	/**
 	 * 
 	 * @author henry_young
@@ -1467,11 +1470,13 @@ public class Util {
 	{
         Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "user");
         Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "userProfile");
-		currentUserId = null;
+//		currentUserId = null;
+        currentUser = null;
 		
 		UserBean anonymousUser = (UserBean) loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
 		if(anonymousUser != null){
 			saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+			currentUser = anonymousUser;
 		}
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
@@ -1482,6 +1487,11 @@ public class Util {
      * @return 返回当前 UserBean user，未登录情况下返回 null
      */
     public static UserBean getCurrentUser() {
+    	if (currentUser != null)
+    	{
+    		return currentUser;
+    	}
+    	
         UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
         return user;
     }
@@ -1494,32 +1504,21 @@ public class Util {
 
 	public static String getMyId(Context context)
 	{
-		if (currentUserId != null)
+		if (currentUser != null)
 		{
-			return currentUserId;
+			return currentUser.getId();
 		}
 		
-		UserBean user = Util.getCurrentUser();
-		if (user != null)
-		{
-			currentUserId = user.getId();
-		}
+		currentUser = Util.getCurrentUser();
 		
-		return currentUserId;
+		return currentUser == null ? null : currentUser.getId();
 	}
 	
 	public static String refreshAndGetMyId(Context context) {
-		UserBean user = Util.getCurrentUser();
-		if (user != null)
-		{
-			currentUserId = user.getId();
-		}
-		else
-		{
-			currentUserId = null;
-		}
+		currentUser = null;
+		currentUser = Util.getCurrentUser();
 		
-		return currentUserId;
+		return currentUser == null ? null : currentUser.getId();
 	}
 	
 	public static boolean isPushAlreadyThere(Context ctx, String pushCode){

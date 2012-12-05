@@ -176,7 +176,11 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			{
 				stackSize = newStackSize;
 			}
-			findViewById(R.id.splash_cover).setVisibility(View.GONE);
+			View cover =findViewById(R.id.splash_cover);
+			if (cover != null)
+			{
+				cover.setVisibility(View.GONE);
+			}
 			
 			onStatckTop(f);
 		}

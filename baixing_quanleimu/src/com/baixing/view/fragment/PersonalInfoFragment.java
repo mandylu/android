@@ -5,76 +5,41 @@ import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.Date;
-import java.util.List;
 import java.util.Locale;
-
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Activity;
-import android.app.AlertDialog;
-import android.app.ProgressDialog;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.DialogInterface;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.webkit.WebChromeClient.CustomViewCallback;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.database.ChatMessageDatabase;
-import com.baixing.entity.ChatMessage;
-import com.baixing.entity.ChatSession;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
-import com.baixing.imageCache.SimpleImageLoader;
-import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.LoginUtil;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.view.fragment.HomeFragment.GetPersonalProfileThread;
-import com.baixing.widget.CustomizeGridView;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.baixing.widget.EditUsernameDialogFragment;
-import com.baixing.widget.CustomizeGridView.GridInfo;
-import com.baixing.widget.CustomizeGridView.ItemClickListener;
 import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, ItemClickListener {
+public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, Observer {
 
 	public static final int REQ_EDIT_PROFILE = 1;
 	public static final int REQ_REGISTER = 2;
-	
-	public static final int INDEX_POSTED = 0;
-	public static final int INDEX_LIMITED = 1;
-	public static final int INDEX_DELETED = 2;
-	public static final int INDEX_FAVORITE = 3;
-	public static final int INDEX_MESSAGE = 4;
-	public static final int INDEX_HISTORY = 5;
-	public static final int INDEX_SETTING = 6;	
 	
 	public int postNum = 0;
 	public int limitedNum = 0;
@@ -83,14 +48,14 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public int unreadMessageNum = 0;
 	public int historyNum = 0;
 	
-    private UserProfile userProfile;
+//    private UserProfile userProfile;
     
     private EditUsernameDialogFragment editUserDlg;
 	
 	private Bundle bundle = null;
 	private UserBean user = null;
 	private String json = null;
-	private String upJson = null;
+//	private String upJson = null;
 //	private String locationJson = null;
 	private String sessionsJson = null;
 	static final int MSG_GETPERSONALADS = 1;
@@ -105,10 +70,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
 
-//	private List<ChatSession> sessions = null;
 	private UserProfile up = null;
-//	private BroadcastReceiver chatMessageReceiver;
-//	private LoginUtil loginHelper;
 	
 	@Override
 	public void onLoginFail(String message){
@@ -125,20 +87,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 	@Override
 	public void initTitle(TitleDef title) {
-//		LayoutInflater inflator = LayoutInflater.from(getActivity());
-//		title.m_titleControls = inflator.inflate(R.layout.title_home, null);
-
 		title.m_visible = true;
 		title.m_title = "个人中心";
-//		title.hasGlobalSearch = true;
-		
-//		View logoRoot = title.m_titleControls.findViewById(R.id.logo_root);
-//		
-//		logoRoot.setOnClickListener(new View.OnClickListener() {
-//			public void onClick(View v) {
-//				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
-//			}
-//		});
 	}
 	
 	public boolean hasGlobalTab()
@@ -158,6 +108,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.bundle = this.getArguments();
+		user = Util.getCurrentUser();
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		if (savedInstanceState != null)
 		{
 			Log.e(TAG, "check if arguments is auto saved ? restore:" + this.getArguments());
@@ -186,70 +139,45 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		}
 
 		View v = inflater.inflate(R.layout.personalentryview, null);
+		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
+		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
+		v.findViewById(R.id.rl_setting).setOnClickListener(this);
 
-		int[] icons = { R.drawable.icon_my_posted, R.drawable.icon_my_limited,
-				R.drawable.icon_my_deleted, R.drawable.icon_my_fav,
-				R.drawable.icon_my_mail, R.drawable.icon_my_history,
-				R.drawable.icon_my_setting };
-
-		String[] texts = { "已发布", "审核未通过", "已删除", "收藏", "私信", "最近浏览", "设置" };
-
-		int[] numbers = { postNum, limitedNum, deletedNum, favoriteNum,
-				unreadMessageNum, historyNum, 0 };
-
-		boolean[] stars = { false, false, false, false, (unreadMessageNum > 0),
-				false, false };
-
-		List<GridInfo> gitems = new ArrayList<GridInfo>();
-		for (int i = 0; i < icons.length; i++) {
-			GridInfo gi = new GridInfo();
-			gi.imgResourceId = icons[i];
-			gi.text = texts[i];
-			// gi.number = numbers[i]; //数字不用加
-			gi.starred = stars[i];
-			gitems.add(gi);
+		if (up != null)
+		{
+			this.fillProfile(up, v);
 		}
-
-		// GridAdapter adapter = new GridAdapter(this.getActivity());
-		// adapter.setList(gitems, 3);
-		CustomizeGridView gv = (CustomizeGridView) v
-				.findViewById(R.id.gridcategory);
-		gv.setData(gitems, 3);
-		gv.setItemClickListener(this);
-		// gv.setAdapter(adapter);
-		// gv.setOnItemClickListener(this);
-
-		reloadUser(v);
-		
-//		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
-//		v.findViewById(R.id.rl_wohistory).setOnClickListener(this);
-//		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
-//		v.findViewById(R.id.rl_woprivatemsg).setOnClickListener(this);		
-//		v.findViewById(R.id.personalEdit).setOnClickListener(this);
-//		this.loginHelper = null;
-		
+		else
+		{
+			reloadUser(v);
+		}
 		
 		return v;
 	}
 	
     private void reloadUser(View v) {
-        //set user profile info view
-        user = Util.getCurrentUser();
         if (user != null && user.getPhone() != null && !user.getPhone().equals("")) {
-            userProfile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
-            if (userProfile != null) {
-                fillProfile(userProfile, v);
-            } else {
-                new Thread(new GetPersonalProfileThread()).start();
-            }
+        	new Thread(new Runnable() {
+				
+				@Override
+				public void run() {
+					UserProfile profile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
+					if (profile != null)
+					{
+						sendMessage(MSG_GETPERSONALPROFILE, profile);
+					}
+					else
+					{
+						new Thread(new GetPersonalProfileThread()).start();
+					}
+				}
+			}).start();
         }
     }
 	
 	@Override
 	public void onPause() {
 		super.onPause();
-		
-		unregisterReceiver();
 	}
 
 	@Override
@@ -257,62 +185,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		super.onResume();
 		this.pv = PV.MY;
 		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
-	
-		registerReceiver();
 	}
 	
-	private void registerReceiver()
-	{
-//		if (chatMessageReceiver == null)
-//		{
-//			chatMessageReceiver = new BroadcastReceiver() {
-//
-//				public void onReceive(Context outerContext, Intent outerIntent) {
-//					View v = getView();
-//					if (v != null)
-//					{
-//						updateMessageCountInfo(v);
-//					}
-//					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
-//					{
-//						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-//						if (!hasSession(msg.getSession()))
-//						{
-//							new Thread(new GetPersonalSessionsThread()).start();
-//						}
-//					}
-//				}
-//			};
-//		}
-//		
-//		getActivity().registerReceiver(chatMessageReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
-	}
 	
-	private void unregisterReceiver()
-	{
-//		if (chatMessageReceiver != null)
-//		{
-//			getActivity().unregisterReceiver(chatMessageReceiver);
-//		}
-	}
-	
-//	private boolean hasSession(String sessionId)
-//	{
-//		if (this.sessions == null || this.sessions.size() == 0)
-//		{
-//			return false;
-//		}
-//		
-//		for (ChatSession session : this.sessions)
-//		{
-//			if (sessionId.equals(session.getSessionId()))
-//			{
-//				return true;
-//			}
-//		}
-//		
-//		return false;
-//	}
 
 
 	@Override
@@ -331,7 +206,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		
 		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();
-		new Thread(new GetPersonalSessionsThread()).start();
 	}
 
 
@@ -408,63 +282,16 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
             Toast.makeText(activity, msg.obj.toString(), 1).show();
             break;
 		case MSG_GETPERSONALADS:
-//			hideProgress();
-//			
-//			if (json != null) {
-//				GoodsList gl = JsonUtil.getGoodsListFromJson(json);
-//				
-//				List<GoodsDetail> listMyPost = gl.getData();
-//				if(listMyPost != null){
-//					for(int i = listMyPost.size() - 1; i >= 0; -- i){
-//						if(!listMyPost.get(i).getValueByKey("status").equals("0")){
-//							listMyPost.remove(i);
-//						}
-//					}
-//				}
-//				if(getActivity() != null)
-//				{
-//					TextView tvPersonalAds = (TextView) getActivity().findViewById(R.id.tv_sentcount);
-//					tvPersonalAds.setText(String.valueOf((listMyPost == null) ? 0 : listMyPost.size()));
-//				}
-//				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
-//			}
 			break;
 		case MSG_GETPERSONALPROFILE:
-			if(upJson != null){
-				up = UserProfile.from(upJson);
-				if (getActivity() != null)
-				{
-					Util.saveDataToLocate(getActivity(), "userProfile", up);
-					if(up != null){
-						fillProfile(up,rootView);
-					}
-				}
+			up = (UserProfile) msg.obj;
+			if(up != null){
+				fillProfile(up,rootView);
 			}
 			break;
 		case MSG_GETPERSONALLOCATION:
-//			if(locationJson != null){
-//				try{
-//					JSONArray metaAry = new JSONArray(locationJson);
-//					if(metaAry != null && metaAry.length() > 0){
-//						JSONObject meta = metaAry.getJSONObject(0);
-//						if(meta != null){
-//							if(meta.has("displayName")){
-//								String location = meta.getString("displayName");
-//								if(location != null){
-//									((TextView)getActivity().findViewById(R.id.personalLocation)).setText(location);
-//								}
-//							}								
-//						}
-//					}
-//				}catch(JSONException e){
-//					e.printStackTrace();
-//				}
-//			}
 			break;
 		case MSG_GETPERSONALSESSIONS:
-//			if(this.sessions != null){
-//				updateMessageCountInfo(rootView);
-//			}
 			break;
         case MSG_USER_LOGOUT:
         	getView().findViewById(R.id.userInfoLayout).setVisibility(View.GONE);
@@ -474,53 +301,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	}
 
-	private void updateMessageCountInfo(View rootView)
-	{
-//		if (this.sessions != null)
-//		{
-//			ChatMessageDatabase.prepareDB(getActivity());
-//			String count = String.valueOf(ChatMessageDatabase.getUnreadCount(null, Util.getMyId(getActivity())));
-//			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText(count + "未读");
-//		}else{
-//			((TextView)rootView.findViewById(R.id.tv_buzzcount)).setText("0未读");
-//		}
-	}
-	
-	class GetLocationThread implements Runnable{
-		public GetLocationThread(String objId){
-			this.objId = objId;
-		}
-		private String objId = "";
-		@Override
-		public void run() {
-//			String apiName = "metaobject";
-//			ArrayList<String> list = new ArrayList<String>();
-//			 
-//			list.add("objIds=" + objId);
-//			
-//			String url = Communication.getApiUrl(apiName, list);
-//			try {
-//				locationJson = Communication.getDataByUrl(url, false);
-//				sendMessage(MSG_GETPERSONALLOCATION, null);
-//				return;
-//			} catch (UnsupportedEncodingException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			} catch (IOException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			} catch (Communication.BXHttpException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			}
-//
-//			hideProgress();
-		}		
-	}
-	
 	class GetPersonalProfileThread implements Runnable {
 		@Override
 		public void run() {
@@ -528,52 +308,20 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			{
 				return;
 			}
-			upJson = Util.requestUserProfile(user.getId());
-			sendMessage(MSG_GETPERSONALPROFILE, null);
+			String upJson = Util.requestUserProfile(user.getId());
+			if(upJson != null){
+				UserProfile profile = UserProfile.from(upJson);
+				if (getActivity() != null)
+				{
+					Util.saveDataToLocate(getActivity(), "userProfile", profile);
+					sendMessage(MSG_GETPERSONALPROFILE, profile);
+				}
+			}
 
 			hideProgress();
 		}
 	}	
 
-	class GetPersonalSessionsThread implements Runnable {
-		@Override
-		public void run() {
-//			if (user == null)
-//			{
-//				return;
-//			}
-//			
-//			String apiName = "read_session";
-//			ArrayList<String> list = new ArrayList<String>();
-//			 
-//			list.add("u_id=" + user.getId());
-//			
-//			String url = Communication.getApiUrl(apiName, list);
-//			try {
-//				sessionsJson = Communication.getDataByUrl(url, true); //Only load cached data here.
-//				if(sessionsJson != null){
-//					sessions = ChatSession.fromJson(sessionsJson);
-//				}
-//				sendMessage(MSG_GETPERSONALSESSIONS, null);
-//				return;
-//			} catch (UnsupportedEncodingException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			} catch (IOException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			} catch (Communication.BXHttpException e) {
-//				Message msg2 = Message.obtain();
-//				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-//				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-//			}
-//
-//			hideProgress();
-		}
-	}	
-	
 	private void fillProfile(UserProfile up, View userInfoView){
         View activity = userInfoView;
 
@@ -582,7 +330,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
         }else{
             ((TextView)activity.findViewById(R.id.userInfoNickname)).setText("");
         }
-        // 新版本只保留 nickname
+        
         if(up.createTime != null && !up.equals("")){
             try{
                 Date date = new Date(Long.parseLong(up.createTime) * 1000);
@@ -592,62 +340,13 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
                 e.printStackTrace();
             }
         }
-        
+
         View userInfoLayout = activity.findViewById(R.id.userInfoLayout);
         userInfoLayout.setVisibility(View.VISIBLE);
         View editBtn = activity.findViewById(R.id.userInfo_editUsername_btn);
         editBtn.setOnClickListener(this);
     }
 	
-	@Override
-	public void onItemClick(GridInfo info, int index) {	
-		switch (index)
-		{
-		case INDEX_POSTED:
-            {
-            	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);				
-            }
-			break;
-		case INDEX_LIMITED:
-			{
-				pushPersonalPostFragment(PersonalPostFragment.TYPE_INVERIFY);
-			}
-			break;
-		case INDEX_DELETED:
-            {
-            	pushPersonalPostFragment(PersonalPostFragment.TYPE_DELETED);
-            }
-            break;
-		case INDEX_FAVORITE:
-			{
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", true);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);					
-			}
-			break;
-		case INDEX_MESSAGE:
-			{
-				Bundle bundle = createArguments(null, null);
-				ArrayList<ChatSession> tmpList = new ArrayList<ChatSession>();
-//				tmpList.addAll(this.sessions); 需要获取 sessions 数据
-				bundle.putSerializable("sessions", tmpList);
-				pushFragment(new SessionListFragment(), bundle);
-			}
-			break;
-		case INDEX_HISTORY:
-			{
-				Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", false);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);
-			}
-			break;
-		case INDEX_SETTING:
-			{
-				pushFragment(new SetMainFragment(), null);
-			}
-			break;
-		}
-	}
 	
 	
 	private void pushPersonalPostFragment(int type) {
@@ -664,6 +363,17 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
                 editUserDlg.handler = this.handler;
                 editUserDlg.show(getFragmentManager(), null);
                 break;
+            case R.id.rl_wosent:
+            	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);	
+            	break;
+            case R.id.rl_wofav:
+            	Bundle bundle = createArguments(null, null);
+				bundle.putBoolean("isFav", true);
+				pushFragment(new FavoriteAndHistoryFragment(), bundle);		
+            	break;
+            case R.id.rl_setting:
+            	pushFragment(new SetMainFragment(), null);
+            	break;
 
             default:
                 break;
@@ -680,9 +390,28 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		return 0;
 	}
 	
+	public void onDestroy()
+	{
+		super.onDestroy();
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+	}
+	
 	public int getExitAnimation()
 	{
 		return 0;
+	}
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
+				user = (UserBean) note.getObejct();
+				
+				reloadUser(getView());
+			}
+		}
 	}
 
 }
