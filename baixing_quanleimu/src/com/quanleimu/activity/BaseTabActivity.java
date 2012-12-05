@@ -32,6 +32,8 @@ import com.baixing.view.AdViewHistory;
 import com.baixing.view.CustomizeTabHost;
 import com.baixing.view.CustomizeTabHost.TabIconRes;
 import com.baixing.view.CustomizeTabHost.TabSelectListener;
+import com.baixing.view.fragment.GetGoodFragment;
+import com.baixing.view.fragment.PostGoodsFragment;
 
 /**
  * 
@@ -111,7 +113,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		globalTabCtrl.setCurrentFocusIndex(getTabIndex()); //Always focus the right tab.
 	}
 	
-	protected final void onNewIntent(Intent intent)
+	protected void onNewIntent(Intent intent)
 	{
 		super.onNewIntent(intent);
 		
@@ -323,6 +325,10 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 			intent.setClass(this, QuanleimuMainActivity.class);
 			break;
 		case TAB_INDEX_POST:
+			BaseFragment bf = this.getCurrentFragment();
+			if(bf != null && (bf instanceof GetGoodFragment)){
+				intent.putExtra(PostGoodsFragment.KEY_INIT_CATEGORY, ((GetGoodFragment)bf).getCategoryNames());
+			}
 			intent.setClass(this, PostActivity.class);
 			break;
 		case TAB_INDEX_PERSONAL:

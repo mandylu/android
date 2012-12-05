@@ -102,6 +102,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	static final public int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
 	
+	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final public String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final public String KEY_IS_EDITPOST = "isEditPost"; 
 	static final public String KEY_CATE_ENGLISHNAME = "cateEnglishName";
@@ -195,7 +196,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 //		this.postLayoutCreated = false;
 		
-		String categoryNames = this.getArguments().getString("cateNames");
+		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
 		
 		
@@ -626,6 +627,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout_txt.addView(v);
 		}
 		loadCachedData();
+	}
+	
+	public void updateNewCategoryLayout(String cateNames){
+		if(cateNames == null) return;
+		String[] names = cateNames.split(",");
+		if(names != null){
+			if(categoryEnglishName.equals(names[0])) return;
+		}
+		initWithCategoryNames(cateNames);
+		resetData();
+		Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, cateNames);
+		this.showPost();
 	}
 	
 	private void showPost(){
@@ -1404,6 +1417,26 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return match;
 	}
 	
+	private void resetData(){
+		if(this.layout_txt != null){
+			View v = layout_txt.findViewById(R.id.img_description);
+			layout_txt.removeAllViews();
+			layout_txt.addView(v);
+		}
+		postList.clear();
+		
+		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+			params.clear();
+			listUrl.clear();
+			this.bmpUrls.clear();
+			if(this.imgSelDlg != null){
+				imgSelDlg.clearResource();
+				imgSelDlg = null;
+			}
+			this.imgSelBundle = null;
+		}			
+	}
+	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj){	
 		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
@@ -1425,23 +1458,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.categoryEnglishName = names[0];
 			}
 			
-			if(this.layout_txt != null){
-				View v = layout_txt.findViewById(R.id.img_description);
-				layout_txt.removeAllViews();
-				layout_txt.addView(v);
-			}
-			postList.clear();
-			
-			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				params.clear();
-				listUrl.clear();
-				this.bmpUrls.clear();
-				if(this.imgSelDlg != null){
-					imgSelDlg.clearResource();
-					imgSelDlg = null;
-				}
-				this.imgSelBundle = null;
-			}			
+			resetData();
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
 		}
