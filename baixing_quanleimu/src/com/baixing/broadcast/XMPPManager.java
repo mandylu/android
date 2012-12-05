@@ -413,7 +413,7 @@ public class XMPPManager {
 //            broadcastStatus(context, old, status);
             if (DEBUG_MODE)
             {
-            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, null, "XMPPStatus", statusAsString(status) + ":" +  QuanleimuApplication.udid, null, true);
+            	ViewUtil.putOrUpdateNotification(context, NotificationIds.NOTIFICATION_XMPP_CONNECTION_STATUS, null, "XMPPStatus", statusAsString(status) + ":" +  Util.getDeviceUdid(context), null, true);
             }
             
             TraceUtil.trace(TAG, "XMPP change status to " + statusAsString(status));

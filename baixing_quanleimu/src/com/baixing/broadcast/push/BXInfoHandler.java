@@ -47,7 +47,6 @@ public class BXInfoHandler extends PushHandler {
 			}
 			if(!Util.isPushAlreadyThere(cxt, pushCode)){
 				QuanleimuApplication.version = Util.getVersion(cxt);
-				QuanleimuApplication.udid = Util.getDeviceUdid(cxt);
 				ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_BXINFO, 
 						CommonIntentAction.ACTION_NOTIFICATION_BXINFO, title, content, null, false);
 //				Util.saveDataToLocate(cxt, "pushCode", pushCode);

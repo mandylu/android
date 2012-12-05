@@ -79,8 +79,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	}
 
 	
-	
-	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
@@ -363,7 +361,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		if(intent != null){
 			if(intent.getBooleanExtra("fromNotification", false)){
 				QuanleimuApplication.version = Util.getVersion(this);
-				QuanleimuApplication.udid = Util.getDeviceUdid(this);
 			}
 		}
 //		Profiler.markEnd("maincreate");
