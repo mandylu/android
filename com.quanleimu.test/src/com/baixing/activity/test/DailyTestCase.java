@@ -16,6 +16,9 @@ import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 
+
+
+
 public class DailyTestCase extends BaixingTestCase {
 	public static final String LOGO_TEXT = "百姓网";
 	public static final String CATEGORY_WUPINJIAOYI_TEXT = "物品交易";
