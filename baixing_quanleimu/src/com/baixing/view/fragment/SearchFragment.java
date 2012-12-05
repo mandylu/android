@@ -353,10 +353,10 @@ public class SearchFragment extends BaseFragment {
 	private void addToListRemark(String searchContent) {
 		if (listRemark == null || listRemark.size() == 0) {
 			listRemark = new ArrayList<String>();
-			listRemark.add(searchContent);
-		} else if (!listRemark.contains(searchContent)) {
-			listRemark.add(searchContent);
+//			listRemark.add(searchContent);
 		}
+		listRemark.remove(searchContent);
+		listRemark.add(0, searchContent);
 		QuanleimuApplication.getApplication().updateRemark(listRemark);
 		// 将搜索记录保存本地
 		Util.saveDataToLocate(getActivity(), "listRemark", listRemark);

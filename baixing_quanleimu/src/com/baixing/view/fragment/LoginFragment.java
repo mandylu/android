@@ -73,10 +73,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 	@Override
 	public void initTitle(TitleDef title){
-		if(null != backPageName)
-			title.m_leftActionHint = this.backPageName;
-		else
-			title.m_leftActionHint = null;
+//		if(null != backPageName)
+//			title.m_leftActionHint = this.backPageName;
+//		else
+		title.m_leftActionHint = "返回";
 		
 		title.m_visible = true;
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
@@ -180,55 +180,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	
 	}
 
-//	public void handleRightAction()
-//	{
-////		if (check()) 
-//		{
-//			pd = ProgressDialog.show(getActivity(), "提示", "正在登录，请稍候...");
-//			pd.setCancelable(true);
-//			new Thread(new LoginThread()).start();
-//		}
-//		
-//	}
-	
-	// {"id":"79703763","error":{"message":"用户登录成功","code":0}}
-//	class LoginThread implements Runnable {
-//		public void run() {
-//			String apiName = "user_login";
-//			ArrayList<String> list = new ArrayList<String>();
-////			list.add("mobile=" + URLEncoder.encode(accoutnEt.getText().toString().trim(), "UTF-8"));
-//			String nickname = accoutnEt.getText().toString().trim();
-//			try{
-//				nickname = URLEncoder.encode(nickname, "UTF-8");
-//			}
-//			catch(Exception e){
-//				e.printStackTrace();
-//			}
-//			list.add("mobile=" + nickname);
-//			list.add("nickname=" + nickname);
-//			list.add("password=" + passwordEt.getText().toString().trim());
-//
-//			String url = Communication.getApiUrl(apiName, list);
-//			try {
-//				String json = Communication.getDataByUrl(url, true);
-//				if (json != null) {
-//					parseLoginResponse(json);
-//				} else {
-////					myHandler.sendEmptyMessage(2);
-//					sendMessage(2, null);
-//				}
-//			} catch (UnsupportedEncodingException e) {
-//				e.printStackTrace();
-//			} catch (Exception e) {
-////				myHandler.sendEmptyMessage(10);
-//				sendMessage(10, null);
-//				e.printStackTrace();
-//			}
-//		}
-//	}
-	
-	
-	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
