@@ -595,7 +595,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (eld == null) return false;
 		eld.doClick();
 		//waitForHideMsgbox(10 * 1000);
-		return waitForSubTexts("发布成功@重复@超限", 5000);
+		return waitForSubTexts("发布成功@重复@超限", 15000);
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
@@ -625,7 +625,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 			return true;
 		}
-		return false;
+		return true;
 	}
 	
 	public boolean afterPostSend() throws Exception {

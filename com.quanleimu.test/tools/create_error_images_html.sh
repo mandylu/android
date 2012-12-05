@@ -6,11 +6,11 @@ cd ../logs/screen/;
 
 FILE_LIST="`ls *.png`"
 
-RESULT="List of images:"
+RESULT="List of images:<br /><br />"
 for file in ${FILE_LIST}
 do
-    RESULT="${RESULT}<br />
-<a href=\"${file}\">${file}</a>";
+    RESULT="<a href=\"${file}\">${file}</a>
+<br />${RESULT}";
 
 done
 

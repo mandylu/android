@@ -676,9 +676,13 @@ public class BxBaseTestCase extends AthrunTestCase {
 	boolean waitForSubTexts(String texts, int timeout) {
 		ViewFinder viewFinder = new ViewFinder();
 		String[] tt = texts.split("@");
-		for(int i = 0; i < tt.length; i++) {
-			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
-			if (textViews != null && !textViews.isEmpty()) return true;
+		int tmpTimeout = 10;
+		int loop = (int)(timeout / tmpTimeout);
+		for (int j = 0; j < loop; j++) {
+			for(int i = 0; i < tt.length; i++) {
+				ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, tmpTimeout);
+				if (textViews != null && !textViews.isEmpty()) return true;
+			}
 		}
 		return false;
 	}
