@@ -184,53 +184,54 @@ public class DailyTestCase extends BaixingTestCase {
 	}
 	
 	@Test
-	public void testListingWupin() throws Exception {
-		openListingByFirstCategory(CATEGORY_WUPINJIAOYI_TEXT);
+	public void testListing1() throws Exception {
+		int first = (int)(Math.random() * 3);
+		switch (first) {
+			case 1:
+				openListingByFirstCategory(CATEGORY_CHELIANG_TEXT);
+				break;
+			case 2:
+				openListingByFirstCategory(CATEGORY_FANGWU_TEXT);
+				break;
+			default:
+				openListingByFirstCategory(CATEGORY_WUPINJIAOYI_TEXT);
+				break;
+		}
+	}
+
+	@Test
+	public void testListing2() throws Exception {
+		int first = (int)(Math.random() * 3);
+		switch (first) {
+			case 1:
+				openListingByFirstCategory(CATEGORY_QIUZHI_TEXT);
+				break;
+			case 2:
+				openListingByFirstCategory(CATEGORY_JIANZHIZHAOPIN_TEXT);
+				break;
+			default:
+				openListingByFirstCategory(CATEGORY_QUANZHIZHAOPIN_TEXT);
+				break;
+		}
 	}
 	
 	@Test
-	public void testListingCheliang() throws Exception {
-		openListingByFirstCategory(CATEGORY_CHELIANG_TEXT);
-	}
-
-	@Test
-	public void testListingFangwu() throws Exception {
-		openListingByFirstCategory(CATEGORY_FANGWU_TEXT);
-	}
-
-	@Test
-	public void testListingQuanzhiZhaopin() throws Exception {
-		openListingByFirstCategory(CATEGORY_QUANZHIZHAOPIN_TEXT);
-	}
-
-	@Test
-	public void testListingJianzhiZhaopin() throws Exception {
-		openListingByFirstCategory(CATEGORY_JIANZHIZHAOPIN_TEXT);
-	}
-
-	@Test
-	public void testListingQiuzhi() throws Exception {
-		openListingByFirstCategory(CATEGORY_QIUZHI_TEXT);
-	}
-
-	@Test
-	public void testListingJiaoyou() throws Exception {
-		openListingByFirstCategory(CATEGORY_JIAOYOU_TEXT);
-	}
-
-	@Test
-	public void testListingChongwu() throws Exception {
-		openListingByFirstCategory(CATEGORY_CHONGWU_TEXT);
-	}
-
-	@Test
-	public void testListingShenghuoFuwu() throws Exception {
-		openListingByFirstCategory(CATEGORY_SHENGHUOFUWU_TEXT);
-	}
-
-	@Test
-	public void testListingJiaoyuPeixun() throws Exception {
-		openListingByFirstCategory(CATEGORY_JIAOYUPEIXUN_TEXT);
+	public void testListing3() throws Exception {
+		int first = (int)(Math.random() * 4);
+		switch (first) {
+			case 1:
+				openListingByFirstCategory(CATEGORY_JIAOYOU_TEXT);
+				break;
+			case 2:
+				openListingByFirstCategory(CATEGORY_CHONGWU_TEXT);
+				break;
+			case 3:
+				openListingByFirstCategory(CATEGORY_JIAOYUPEIXUN_TEXT);
+				break;
+			default:
+				openListingByFirstCategory(CATEGORY_SHENGHUOFUWU_TEXT);
+				break;
+		}
 	}
 	
 	@Test
