@@ -307,7 +307,7 @@ public class DailyTestCase extends BaixingTestCase {
 				TextViewElement v = savePhoto();
 				assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
 				//检查弹出式提示信息，包含“成功”
-				assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 5000));
+				assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 10000));
 				
 				TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 				assertNotNull(tv);
@@ -394,12 +394,14 @@ public class DailyTestCase extends BaixingTestCase {
 				oldCateName = v.getText();
 				postAutoEnterData(oldCateName.equals("女找男"));
 				TimeUnit.SECONDS.sleep(1);
-				if (!postSend(false)) {
+				boolean success = postSend(false);
+				if (!success) {
 					//assertTrue("POST Category1:" + oldCateName + " ERROR", false); //TODO...
 				}
 				afterPostSend();
 				if (!checkPostSuccess(true)) {
-					assertTrue("ERROR,Category,Post," + firstIndex + "," + secondIndex + "," + oldCateName, false);
+					if (!success) 
+						assertTrue("ERROR,Category,Post," + firstIndex + "," + secondIndex + "," + oldCateName, false);
 				}
 			}
 		}

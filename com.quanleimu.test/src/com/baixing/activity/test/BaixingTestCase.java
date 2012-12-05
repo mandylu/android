@@ -869,7 +869,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		for(int i = 0; i < 50; i++) {
 			lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
 			assertNotNull(lv);
-			lv.scrollByY(from, from - ((i < 14) ? 200 : 100));
+			lv.scrollByY(from, from - ((i < 14) ? 200 : 50));
 			if (i < 12) continue;
 			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
 			if (v != null) {
