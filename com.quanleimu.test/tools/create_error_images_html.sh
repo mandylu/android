@@ -9,7 +9,7 @@ FILE_LIST="`ls *.png`"
 RESULT=""
 for file in ${FILE_LIST}
 do
-    RESULT="<a href=\"${file}\">${file}</a>
+    RESULT="<a href=\"${file}\" target=\"_blank\">${file}</a>
 <br />${RESULT}";
 
 done
