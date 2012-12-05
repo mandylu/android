@@ -222,16 +222,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(TYPE_MYPOST == currentType){
             bxEvent = BxEvent.SENT_RESULT;
 
-//			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
-//			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
-//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
-//			if(m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_title = "已发布的信息";
-//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
-				refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
 			GoodsList gl = new GoodsList();
 			gl.setData(listMyPost);
 			glLoader.setGoodsList(gl);
@@ -702,42 +692,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 	}
 
-//	@Override
-//	public void handleRightAction(){
-//		if(-1 == buttonStatus){
-////		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
-////			if(this.m_viewInfoListener != null){
-//				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "完成";
-//
-//				refreshHeader();
-////				m_viewInfoListener.onTitleChanged(title);
-////			}
-//			if(adapter != null){
-//				adapter.setHasDelBtn(true);
-//			}
-//			buttonStatus = 0;
-//		}
-//		else{
-////			btnEdit.setBackgroundResource(R.drawable.btn_search);
-////			if(this.m_viewInfoListener != null){
-//				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "编辑";
-//				refreshHeader();
-////				title.m_leftActionHint = "更新";
-////				m_viewInfoListener.onTitleChanged(title);
-////			}
-//			adapter.setHasDelBtn(false);
-//			buttonStatus = -1;
-//		}
-//		if(adapter != null)
-//		{
-//			adapter.notifyDataSetChanged();
-//			lvGoodsList.invalidateViews();
-//		}
-//	}
-	
-
 
 	@Override
 	public void initTitle(TitleDef title){
@@ -745,7 +699,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 //		title.m_rightActionHint = "编辑";
 		if(currentType == TYPE_MYPOST){
-			title.m_title = "已发布的信息";
+			title.m_title = "我的信息";
 		}
 		title.m_visible = true;
 	}

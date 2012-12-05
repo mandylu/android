@@ -51,6 +51,13 @@
             android:textColor="@color/font_title"
             android:textSize="@dimen/font_medium" >
         </TextView>
+        
+<View android:layout_width="fill_parent"
+    android:layout_height="1dp"
+    android:background="#d2d2d2"
+    android:layout_alignParentBottom="true"
+    />
+        
     </RelativeLayout>
 
     <com.baidu.mapapi.MapView
