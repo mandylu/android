@@ -35,6 +35,7 @@ import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.BaseFragment;
+import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener {
@@ -46,9 +47,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	private static final int MSG_START_UPLOAD = 5;
 	private static final int MSG_FAIL_UPLOAD = 6;
 	private static final int MSG_SUCCEED_UPLOAD = 7;
-	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	public static final int MSG_IMG_SEL_DISMISSED = 0x11110001;
-	private  static final int PHOTORESOULT = 3;
+	private static final int PHOTORESOULT = 3;
 	
 	private int uploadCount = 0;
     private int currentImgView = -1;
@@ -88,6 +88,29 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			}
     		}
     	}
+    }
+    
+    public void clearResource(){
+    	if(bitmap_url != null){
+	        for(int i = 0; i < bitmap_url.size(); ++ i){
+	        	QuanleimuApplication.getImageLoader().forceRecycle(bitmap_url.get(i));
+	        }
+	        bitmap_url.clear();
+    	}
+        if(thumbnail_url != null){
+        	for(int i = 0; i < thumbnail_url.size(); ++ i){
+        		QuanleimuApplication.getImageLoader().forceRecycle(thumbnail_url.get(i));
+        	}
+        	thumbnail_url.clear();
+        }
+        if(cachedBps != null){
+        	for(int i = 0; i < cachedBps.size(); ++ i){
+        		if(cachedBps.get(i) != null){
+        			cachedBps.get(i).recycle();
+        		}
+        	}
+        	cachedBps.clear();
+        }
     }
     
     public void setMsgOutHandler(Handler handler){

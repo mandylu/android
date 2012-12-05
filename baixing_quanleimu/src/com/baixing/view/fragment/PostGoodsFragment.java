@@ -68,6 +68,7 @@ import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.UserBean;
+import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
@@ -524,21 +525,20 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				listUrl.add(b);
 			}
 			
-			String big = (goodsDetail.getImageList().getBig());
-//					.substring(1, (goodsDetail.getImageList()
-//							.getBig()).length() - 1);
-			big = Communication.replace(big);
-			String[] cbig = big.split(",");
-			ArrayList<String> smalls = new ArrayList<String>();
-			ArrayList<String> bigs = new ArrayList<String>();
-			for (int j = 0; j < listUrl.size(); j++) {
-				String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-//				if(j > 2)break;
-				smalls.add(listUrl.get(j));
-				bigs.add(bigUrl);
+			if(listUrl.size() > 0){
+				SimpleImageLoader.showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
 			}
-//			startImgSelDlg(bigs, null, smalls);
-//			new Thread(new Imagethread(smalls, bigs)).start();
+			
+//			String big = (goodsDetail.getImageList().getBig());
+//			big = Communication.replace(big);
+//			String[] cbig = big.split(",");
+//			ArrayList<String> smalls = new ArrayList<String>();
+//			ArrayList<String> bigs = new ArrayList<String>();
+//			for (int j = 0; j < listUrl.size(); j++) {
+//				String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+//				smalls.add(listUrl.get(j));
+//				bigs.add(bigUrl);
+//			}
 		}
 	}
 	
@@ -587,8 +587,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private void deployDefaultLayout(){
 		initImageLayout();
 		addCategoryItem();
+		if(getView() != null){
+			View imgV = getView().findViewById(R.id.myImg);
+			if(imgV != null){
+				imgV.setOnClickListener(this);
+			}
+		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
-		for(int i = 1; i < fixedItemNames.length; ++ i){			
+		for(int i = 1; i < fixedItemNames.length; ++ i){	
+			if(fixedItemNames[i].equals(STRING_DESCRIPTION))continue;
 			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);	
@@ -652,79 +659,32 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onClick(View v) {
 		final Activity activity = getActivity();
-//		if (v.getId() == R.id.iv_1 || v.getId() == R.id.iv_2 || v.getId() == R.id.iv_3) {
-//			for (int i = 0; i < imgs.length; i++) {
-//				if (imgs[i].equals(v)) {
-//					currentImgView = i;
-//					ImageStatus status = getCurrentImageStatus(i);
-//					if(ImageStatus.ImageStatus_Unset == status){
-////						showDialog();
-//						ViewUtil.pickupPhoto(getActivity(), this.currentImgView);
-//					}
-//					else if(ImageStatus.ImageStatus_Failed == status){
-//						String[] items = {"重试", "换一张"};
-//						new AlertDialog.Builder(activity)
-//						.setTitle("选择操作")
-//						.setItems(items, new DialogInterface.OnClickListener() {
-//							
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								if(0 == which){
-//									new Thread(new UpLoadThread(bitmap_url.get(currentImgView), currentImgView)).start();
-//								}
-//								else{
-//									if (cachedBps[currentImgView] != null)
-//									{
-//										cachedBps[currentImgView].recycle();
-//										cachedBps[currentImgView] = null;
-//									}
-//									bitmap_url.set(currentImgView, null);
-//									imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
-////									showDialog();
-//									ViewUtil.pickupPhoto(getActivity(), currentImgView);
-//									//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
-//								}
-//								
-//							}
-//						})
-//						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//							
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								dialog.dismiss();
-//							}
-//						}).show();
-//					}
-//					else{
-//						//String[] items = {"删除"};
-//						new AlertDialog.Builder(this.getActivity())
-//						.setMessage("删除当前图片?")
-//						.setPositiveButton("删除", new DialogInterface.OnClickListener() {
-//							
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								bitmap_url.set(currentImgView, null);
-//								imgs[currentImgView].setImageResource(R.drawable.btn_add_picture);
-//								cachedBps[currentImgView] = null;
-////								((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
-//							}
-//						})
-//						.setNegativeButton("取消", new DialogInterface.OnClickListener() {
-//							
-//							@Override
-//							public void onClick(DialogInterface dialog, int which) {
-//								dialog.dismiss();
-//							}
-//						}).show();
-//					}
-//				}
-//			}
-//		} 
+
 		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
+			}
+		}else if(v.getId() == R.id.myImg){
+			if(goodsDetail != null){
+				if(bmpUrls.size() == 0){
+					String big = (goodsDetail.getImageList().getBig());
+					big = Communication.replace(big);
+					String[] cbig = big.split(",");
+					ArrayList<String> smalls = new ArrayList<String>();
+					ArrayList<String> bigs = new ArrayList<String>();
+					for (int j = 0; j < listUrl.size(); j++) {
+						String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+						smalls.add(listUrl.get(j));
+						bigs.add(bigUrl);
+					}
+					startImgSelDlg(bigs, null, smalls);
+				}else{
+					startImgSelDlg(null, null, null);
+				}							
+			}else{
+				startImgSelDlg(null, null, null);
 			}
 		}
 //		else if (v.getId() == R.id.right_action){
@@ -1473,18 +1433,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			postList.clear();
 			
 			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-//				bitmap_url.clear();
-//				bitmap_url.add(null);
-//				bitmap_url.add(null);
-//				bitmap_url.add(null);
 				params.clear();
-//				currentImgView = -1;
 				listUrl.clear();
-//				uploadCount = 0;
-//				cachedBps[0] = cachedBps[1] = cachedBps[2] = null;
-//				imgs[0].setImageResource(R.drawable.btn_add_picture);
-//				imgs[1].setImageResource(R.drawable.btn_add_picture);
-//				imgs[2].setImageResource(R.drawable.btn_add_picture);
+				this.bmpUrls.clear();
+				if(this.imgSelDlg != null){
+					imgSelDlg.clearResource();
+					imgSelDlg = null;
+				}
+				this.imgSelBundle = null;
 			}			
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
@@ -1804,37 +1760,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(bean != null){
 				View v = layout_txt.findViewById(R.id.img_description);
 				EditText text = (EditText)v.findViewById(R.id.description_input);
+				text.setText("");
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
 				
 				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
 				tv.setText(bean.getDisplayName());
 				
-				v.findViewById(R.id.myImg).setOnClickListener(new OnClickListener(){
-					@Override
-					public void onClick(View v){
-						if(goodsDetail != null){
-							if(bmpUrls.size() == 0){
-								String big = (goodsDetail.getImageList().getBig());
-								big = Communication.replace(big);
-								String[] cbig = big.split(",");
-								ArrayList<String> smalls = new ArrayList<String>();
-								ArrayList<String> bigs = new ArrayList<String>();
-								for (int j = 0; j < listUrl.size(); j++) {
-									String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-									smalls.add(listUrl.get(j));
-									bigs.add(bigUrl);
-								}
-								startImgSelDlg(bigs, null, smalls);
-							}else{
-								startImgSelDlg(null, null, null);
-							}							
-						}else{
-							startImgSelDlg(null, null, null);
-						}
+				v.findViewById(R.id.myImg).setOnClickListener(this);
+				((ImageView)v.findViewById(R.id.myImg)).setImageResource(R.drawable.btn_add_picture);
+				if(imgSelBundle != null){
+					ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
+					if(bps != null && bps.size() > 0){
+						((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bps.get(0));
 					}
-				});
-			}
+				}				
+			}			
 		}
 		
 		for(int i = 0; i < fixedItemNames.length; ++ i){
@@ -1992,11 +1933,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
 			if(imgSelBundle != null){
 				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
-				if(bps != null && bps.size() > 0){
-					if(getView() != null){
-						ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
-						if(iv != null){
-							iv.setImageBitmap(bps.get(0));
+				if(getView() != null){
+					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
+					if(iv != null){						
+						if(bps != null && bps.size() > 0){
+							if(iv != null){
+								iv.setImageBitmap(bps.get(0));
+							}
+						}else{
+							iv.setImageResource(R.id.myImg);
 						}
 					}
 				}

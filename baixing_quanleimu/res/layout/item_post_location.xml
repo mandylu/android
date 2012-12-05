@@ -49,7 +49,7 @@
             android:layout_marginRight="8dp"
             android:layout_alignParentRight="true"
             android:gravity="center_vertical"
-            android:background="@drawable/icon_location"
+            android:src="@drawable/icon_location"
             />
     </RelativeLayout>
 
