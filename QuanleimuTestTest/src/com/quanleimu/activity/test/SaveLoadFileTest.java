@@ -163,5 +163,6 @@ public class SaveLoadFileTest extends AndroidTestCase {
 			assertEquals(result[i].getDistance(), detail[i].getDistance());
 		}
 		
+		
 	}
 }

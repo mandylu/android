@@ -199,7 +199,6 @@ public class BXNotificationService extends Service {
 						if(!Util.isPushAlreadyThere(BXNotificationService.this, time)){
 							Log.d("task", "task  increase get_notification");
 							QuanleimuApplication.version = Util.getVersion(BXNotificationService.this);
-							QuanleimuApplication.udid = Util.getDeviceUdid(BXNotificationService.this);
 							BXNotificationService.this.showNotification(ticket, title, content);
 //							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
 							Util.saveDataToFile(BXNotificationService.this, null, "pushCode", time.getBytes());
