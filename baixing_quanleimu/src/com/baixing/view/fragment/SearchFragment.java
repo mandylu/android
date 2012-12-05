@@ -87,6 +87,8 @@ public class SearchFragment extends BaseFragment {
 				R.layout.title_search, null);
 		etSearch = (EditText) title.m_titleControls.findViewById(R.id.etSearch);
 		title.m_leftActionHint = "返回";
+		
+		title.m_rightActionHint = "搜索";
 
 		etSearch.setOnKeyListener(new View.OnKeyListener() {
 
@@ -120,6 +122,17 @@ public class SearchFragment extends BaseFragment {
 		});;
 		
 	}
+	
+	
+	
+
+	@Override
+	public void handleRightAction() {
+		SearchFragment.this.doSearch();
+	}
+
+
+
 
 	public void initTab(TabDef tab) {
 		tab.m_visible = false;
