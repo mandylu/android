@@ -1788,8 +1788,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
 				
-				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
-				tv.setText(bean.getDisplayName());
+//				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
+//				tv.setText(bean.getDisplayName());
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
 				((ImageView)v.findViewById(R.id.myImg)).setImageResource(R.drawable.btn_add_picture);

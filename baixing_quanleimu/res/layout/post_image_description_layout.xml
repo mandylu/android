@@ -10,6 +10,7 @@
     android:paddingRight="@dimen/post_padding"
     android:paddingTop="@dimen/post_padding" >
 
+    <!--
     <TextView
         android:id="@+id/description"
         android:layout_width="wrap_content"
@@ -21,17 +22,18 @@
         android:text="描述"
         android:textColor="#838383"
         android:textSize="18dip" />
+    -->
 
     <EditText
         android:id="@+id/description_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
         android:layout_toLeftOf="@+id/myImg"
-        android:layout_toRightOf="@id/description"
         android:background="@null"
         android:ellipsize="end"
         android:gravity="left|top"
-        android:hint="请输入"
+        android:hint="请输入详细描述..."
         android:inputType="textMultiLine"
         android:paddingLeft="5dip"
         android:paddingRight="5dip"
