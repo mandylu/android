@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -78,7 +80,9 @@ import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.baixing.widget.CustomDialog;
+import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -1741,70 +1745,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 	}
 	
-	private void configCategoryDialog(final CustomDialog ad) {
-
-		ad.setTitle("请选择分类");
-		final ListView lv = ad.getListView();
-		lv.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, texts));				
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long arg3) {
-				ad.setTitle("请选择子类");
-				List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
-				if (allCates == null || allCates.size() <= pos)
-					return;
-				FirstStepCate selectedCate = null;
-				String selText = texts[pos];
-				for (int i = 0; i < allCates.size(); ++i) {
-					if (allCates.get(i).name.equals(selText)){
-						selectedCate = allCates.get(i);
-						break;
-					}
-				};
-				list = new ArrayList<Map<String, Object>>();
-				List<SecondStepCate> children = selectedCate.getChildren();
-				Map<String, Object> backMap = new HashMap<String, Object>();
-				backMap.put("tvCategoryName", "返回上一级");
-				list.add(backMap);
-				for (SecondStepCate cate : children)
-				{
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("tvCategoryName", cate.getName());
-					map.put("tvCategoryEnglishName", cate.getEnglishName());
-					list.add(map);
-				}
-				SecondCateAdapter adapter = new SecondCateAdapter();
-				lv.setAdapter(adapter);
-				lv.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0,
-							View arg1, int pos, long arg3) {
-						if (pos==0) {
-							//back
-							configCategoryDialog(ad);
-						} else {
-							Map<String, Object> map = (Map<String, Object>) list
-									.get(pos);
-							String categoryNames = map
-									.get("tvCategoryEnglishName")
-									+ ","
-									+ map.get("tvCategoryName");
-							initWithCategoryNames(categoryNames);
-							if (PostGoodsFragment.this.layout_txt != null) {
-								View v = layout_txt.findViewById(R.id.image_layout);
-								layout_txt.removeAllViews();
-								layout_txt.addView(v);
-							}
-							postList.clear();
-							showPost();
-							ad.dismiss();
-						}
-					}
-				});
-			}
-		});
-	}
-	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
@@ -1818,9 +1758,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
-				CustomDialog ad = new CustomDialog(getActivity());
-				ad.show();
-				configCategoryDialog(ad);
+				
+				Bundle bundle = createArguments(null, null);
+				bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
+				bundle.putString("categoryItem", "categoryItem");//标识从category启动dialog
+				bundle.putInt("maxLevel", 1);
+				CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), bundle);
+				cdb.start();
 				
 			}				
 		});//categoryItem.setOnClickListener
@@ -2458,7 +2402,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
 			layout = (ViewGroup)v;
-		} else if (postBean.getControlType().equals("select")) {
+		} else if (postBean.getControlType().equals("select")) {//select的设置
 			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = inflater.inflate(R.layout.item_post_select, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
@@ -2504,7 +2448,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			v.setTag(HASH_POST_BEAN, postBean);
 			v.setTag(HASH_CONTROL, descriptionEt);
 			layout = (ViewGroup)v;
-		}
+		}//获取到item的layout
 		
 		if (layout == null)
 			return null;
@@ -2519,25 +2463,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //								if(postBean.getLevelCount() == 1){
 //									popupSelection(fragment, v, postBean);
 //								}else{
-								/*
-								 * 以下代码为采用dialog的方式获取选择的内容
-								 * */
-//								new AlertDialog.Builder(fragment.getActivity())
-//								.setTitle("列表框")
-//								.setItems(new String[]{"Item1","Item2"}, new DialogInterface.OnClickListener() {
-//									
-//									@Override
-//									public void onClick(DialogInterface dialog, int which) {
-//										
-//									}
-//									
-//								})
-//								.setNegativeButton("取消", null)
-//								.create().show();
-								/*
-								 * 以下代码为切换MultiLevelSelectionFragment的代码，以获取选择的内容
-								 */
-								
+
 									ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = 
 											new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
 									for(int i = 0; i < postBean.getLabels().size(); ++ i){
@@ -2550,7 +2476,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 									bundle.putSerializable("items", items);
 									bundle.putInt("maxLevel", postBean.getLevelCount() - 1);
-									Log.d("bundle",""+(postBean.getLevelCount()-1));
 									String selectedValue = null;
 									if (fragment instanceof PostGoodsFragment)
 									{
@@ -2564,10 +2489,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									
 									if (selectedValue != null)
 										bundle.putString("selectedValue", selectedValue);
-									Bundle b = fragment.getArguments();
-									int g = b.getInt("maxLevel");
-									Log.d("bundle",""+g);
-									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
+
+									//以下代码为使用dialog的方式切换
+									CustomDialogBuilder cdb = new CustomDialogBuilder(fragment.getActivity(), bundle);
+									cdb.start();
+									
+									//以下代码为使用MultiLevelSelectionFragment切换
+//									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
 									
 //								}
 							}//postBean.getLevelCount() > 0
