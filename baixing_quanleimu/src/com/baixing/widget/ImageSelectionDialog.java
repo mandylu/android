@@ -324,9 +324,19 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         if(thumbnail_url != null && thumbnail_url.size() > 0){
         	(new DownloadThumbnailsThread(thumbnail_url)).start();
         }
+        
+        if(bitmap_url.size() == 0){
+        	imgs.get(0).post(new Runnable(){
+        		@Override
+        		public void run(){
+        			imgs.get(0).performClick();
+        		}
+        	});
+        }
+
         return dialog;
     }
-    
+        
 	private ImageStatus getCurrentImageStatus(int index){
 		if(bitmap_url.size() <= index || bitmap_url.get(index) == null)return ImageStatus.ImageStatus_Unset;
 		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 

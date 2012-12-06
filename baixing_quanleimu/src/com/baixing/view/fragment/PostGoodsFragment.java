@@ -672,13 +672,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	@Override
 	public void onClick(View v) {
-		final Activity activity = getActivity();
-
 		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
+			}else if(detailLocation == null){
+				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
 			}
 		}else if(v.getId() == R.id.myImg){
 			if(goodsDetail != null){
@@ -701,9 +701,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				startImgSelDlg(null, null, null);
 			}
 		}
-//		else if (v.getId() == R.id.right_action){
-//			Log.d("postgoods","R.id.right_action");
-//		}
 //		else if (v == photoalbum) {
 //			// 相册
 //			if (ad.isShowing()) {
@@ -2439,55 +2436,66 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void setDetailLocationControl(BXLocation location){
-        cacheLocation = location;
-        String autoAddress = "";
-
-        BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation", BXLocation.class);
-        if (lastLocation != null) {
-            autoAddress = (lastLocation.detailAddress == null || lastLocation.detailAddress.equals("")) ? 
-            		((lastLocation.subCityName == null || lastLocation.subCityName.equals("")) ?
-							"" 
-							: lastLocation.subCityName)
-					: lastLocation.detailAddress;
-
-            if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
-                Location newLocation = new Location("newLocation");
-                newLocation.setLatitude(location.fLat);
-                newLocation.setLongitude(location.fLon);
-                Location oldLocation = new Location("oldLocation");
-                oldLocation.setLatitude(lastLocation.fLat);
-                oldLocation.setLongitude(lastLocation.fLon);
-
-                float distance = newLocation.distanceTo(oldLocation);
-                if (distance > 1000) {
-                    autoAddress = location.detailAddress;
-                }
-            }
-        } else {
-        	autoAddress = (location == null) ? "" :
-        		((location.detailAddress == null || location.detailAddress.equals("")) ? 
-        				((location.subCityName == null || location.subCityName.equals("")) ?
-    							"" 
-    							: location.subCityName)
-    					: location.detailAddress);
-        }
-
+		if(location == null) return;
 		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
-			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
-			if(chars == null || chars.toString().equals("")){
-				((TextView)locationView.findViewById(R.id.postinput)).setText(autoAddress);
-				autoLocated = true;
-				for (String key : postList.keySet())
-				{
-					PostGoodsBean bean = postList.get(key);
-					if (bean.getName().equals(STRING_DETAIL_POSITION)) {
-						originParams.put(bean.getDisplayName(), autoAddress, autoAddress);
-					}
-				}
-				
-				Toast.makeText(getActivity(), "已获得当前位置", Toast.LENGTH_SHORT).show();
-			}
+			String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
+            		((location.subCityName == null || location.subCityName.equals("")) ?
+							"" 
+							: location.subCityName)
+					: location.detailAddress;
+			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}
+		
+//		
+//        cacheLocation = location;
+//        String autoAddress = "";
+//
+//        BXLocation lastLocation = (BXLocation)Util.loadDataFromLocate(getActivity(), "lastLocation", BXLocation.class);
+//        if (lastLocation != null) {
+//            autoAddress = (lastLocation.detailAddress == null || lastLocation.detailAddress.equals("")) ? 
+//            		((lastLocation.subCityName == null || lastLocation.subCityName.equals("")) ?
+//							"" 
+//							: lastLocation.subCityName)
+//					: lastLocation.detailAddress;
+//
+//            if (location != null && location.detailAddress != null && !location.detailAddress.equals("")) {
+//                Location newLocation = new Location("newLocation");
+//                newLocation.setLatitude(location.fLat);
+//                newLocation.setLongitude(location.fLon);
+//                Location oldLocation = new Location("oldLocation");
+//                oldLocation.setLatitude(lastLocation.fLat);
+//                oldLocation.setLongitude(lastLocation.fLon);
+//
+//                float distance = newLocation.distanceTo(oldLocation);
+//                if (distance > 1000) {
+//                    autoAddress = location.detailAddress;
+//                }
+//            }
+//        } else {
+//        	autoAddress = (location == null) ? "" :
+//        		((location.detailAddress == null || location.detailAddress.equals("")) ? 
+//        				((location.subCityName == null || location.subCityName.equals("")) ?
+//    							"" 
+//    							: location.subCityName)
+//    					: location.detailAddress);
+//        }
+//
+//		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
+//			CharSequence chars = ((TextView)locationView.findViewById(R.id.postinput)).getText();
+//			if(chars == null || chars.toString().equals("")){
+//				((TextView)locationView.findViewById(R.id.postinput)).setText(autoAddress);
+//				autoLocated = true;
+//				for (String key : postList.keySet())
+//				{
+//					PostGoodsBean bean = postList.get(key);
+//					if (bean.getName().equals(STRING_DETAIL_POSITION)) {
+//						originParams.put(bean.getDisplayName(), autoAddress, autoAddress);
+//					}
+//				}
+//				
+//				Toast.makeText(getActivity(), "已获得当前位置", Toast.LENGTH_SHORT).show();
+//			}
+//		}
 //		if(districtView != null && location != null && location.subCityName != null && !location.subCityName.equals("")){
 //			CharSequence chars = ((TextView)districtView.findViewById(R.id.posthint)).getText();
 //			if(chars != null && !chars.toString().equals("")) return;
