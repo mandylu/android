@@ -87,6 +87,8 @@ public class SearchFragment extends BaseFragment {
 				R.layout.title_search, null);
 		etSearch = (EditText) title.m_titleControls.findViewById(R.id.etSearch);
 		title.m_leftActionHint = "返回";
+		
+		title.m_rightActionHint = "搜索";
 
 		etSearch.setOnKeyListener(new View.OnKeyListener() {
 
@@ -120,6 +122,17 @@ public class SearchFragment extends BaseFragment {
 		});;
 		
 	}
+	
+	
+	
+
+	@Override
+	public void handleRightAction() {
+		SearchFragment.this.doSearch();
+	}
+
+
+
 
 	public void initTab(TabDef tab) {
 		tab.m_visible = false;
@@ -353,10 +366,10 @@ public class SearchFragment extends BaseFragment {
 	private void addToListRemark(String searchContent) {
 		if (listRemark == null || listRemark.size() == 0) {
 			listRemark = new ArrayList<String>();
-			listRemark.add(searchContent);
-		} else if (!listRemark.contains(searchContent)) {
-			listRemark.add(searchContent);
+//			listRemark.add(searchContent);
 		}
+		listRemark.remove(searchContent);
+		listRemark.add(0, searchContent);
 		QuanleimuApplication.getApplication().updateRemark(listRemark);
 		// 将搜索记录保存本地
 		Util.saveDataToLocate(getActivity(), "listRemark", listRemark);

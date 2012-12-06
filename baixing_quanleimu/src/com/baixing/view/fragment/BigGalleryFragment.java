@@ -318,8 +318,8 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	            }else{
 	            	scannerConnection.scanFile(mediaFileName, "image/png");
 	            }
-	            
-	            Toast.makeText(getActivity(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
+//	            Toast.makeText(getActivity(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
+	            Toast.makeText(getActivity(), "图片已保存到相册", Toast.LENGTH_LONG).show();
 	        } catch (Exception e) {
 	            e.printStackTrace();
 	            Toast.makeText(getActivity(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();

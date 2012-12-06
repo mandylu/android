@@ -1,8 +1,8 @@
 package com.quanleimu.activity.test;
 
-import com.quanleimu.util.TextUtil;
-
 import android.test.AndroidTestCase;
+
+import com.baixing.util.TextUtil;
 
 public class TextUtilTest extends AndroidTestCase {
 

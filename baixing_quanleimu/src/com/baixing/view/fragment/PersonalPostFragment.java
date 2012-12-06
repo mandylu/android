@@ -222,16 +222,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(TYPE_MYPOST == currentType){
             bxEvent = BxEvent.SENT_RESULT;
 
-//			ivMyads.setImageResource(R.drawable.bg_segment_sent_selected);
-//			ivMyfav.setImageResource(R.drawable.bg_segment_approving);
-//			ivMyhistory.setImageResource(R.drawable.bg_segment_deleted);
-//			if(m_viewInfoListener != null){
-				TitleDef title = getTitleDef();
-				title.m_title = "已发布的信息";
-//				title.m_rightActionHint = (-1 == buttonStatus ? "编辑" : "完成");
-				refreshHeader();
-//				m_viewInfoListener.onTitleChanged(title);
-//			}
 			GoodsList gl = new GoodsList();
 			gl.setData(listMyPost);
 			glLoader.setGoodsList(gl);
@@ -315,34 +305,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					gl2.setData(listMyPost);
 					glLoader.setGoodsList(gl2);
 				}
-//				else if(msg.what == MSG_INVERIFY) {
-//					listInVerify = gl.getData();
-//					if(listInVerify != null){
-//						for(int i = listInVerify.size() - 1; i >= 0; -- i){
-//							if(!listInVerify.get(i).getValueByKey("status").equals("4") 
-//									&& !listInVerify.get(i).getValueByKey("status").equals("20")){
-//								listInVerify.remove(i);
-//							}
-//						}
-//					}
-//					GoodsList gl2 = new GoodsList();
-//					gl2.setData(listInVerify);
-//					glLoader.setGoodsList(gl2);
-//				}
-//				else if(msg.what == MSG_DELETED){
-//					listDeleted = gl.getData();
-//					
-//					if(listDeleted != null){
-//						for(int i = listDeleted.size() - 1; i >= 0; -- i){
-//							if(!listDeleted.get(i).getValueByKey("status").equals("3")){
-//								listDeleted.remove(i);
-//							}
-//						}
-//					}
-//					GoodsList gl2 = new GoodsList();
-//					gl2.setData(listDeleted);
-//					glLoader.setGoodsList(gl2);
-//				}
 			}
 			if(msg.what == MSG_MYPOST){
 				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
@@ -513,6 +475,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}).show();
 		
 	}
+	
+	private boolean isValidMessage(GoodsDetail detail)
+	{
+		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
 
     /**
      *
@@ -528,18 +495,18 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         builder.setTitle("操作");
 
         int r_array_item_operate = R.array.item_operate_mypost;
-        if (currentType == TYPE_MYPOST) {
-            r_array_item_operate = R.array.item_operate_mypost;
-            Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
-        } 
-//        else if (currentType == TYPE_INVERIFY) {
-//            r_array_item_operate = R.array.item_operate_inverify;
-//            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
-//        } else if (currentType == TYPE_DELETED) {
-//            r_array_item_operate = R.array.item_operate_deleted;
-//            Tracker.getInstance().event(BxEvent.DELETED_MANAGE).end();
-//        }
-
+        
+        if (isValidMessage(detail))
+        {
+        	r_array_item_operate = R.array.item_operate_mypost;
+        	Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
+        }
+        else
+        {
+            r_array_item_operate = R.array.item_operate_inverify;
+            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+        }
+        
         String tmpInsertedTime = detail.data.get("insertedTime");
         long tmpPostedSeconds = -1;
         if (tmpInsertedTime != null) {
@@ -550,7 +517,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
-                if (currentType == TYPE_MYPOST) {
+                if (isValidMessage(detail)) {
                     switch (clickedIndex) {
                         case 0://刷新
                             doRefresh(0, adId);
@@ -577,44 +544,26 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             break;
                     }
                 } 
-//                else if (currentType == TYPE_INVERIFY) {
-//                    switch (clickedIndex) {
-//                        case 0://申诉
-//                            Bundle bundle = createArguments(null, null);
-//                            bundle.putInt("type", 1);
-//                            bundle.putString("adId", adId);
-//                            pushFragment(new FeedbackFragment(), bundle);
-//                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            break;
-//                        case 1://删除
-//                            showSimpleProgress();
-//                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            new Thread(new MyMessageDeleteThread(adId)).start();
-//                            break;
-//                    }
-//                } else if (currentType == TYPE_DELETED) {
-//                    switch (clickedIndex) {
-//                        case 0://恢复
-//                            showSimpleProgress();
-//                            new Thread(new MyMessageRestoreThread(adId)).start();
-//                            Tracker.getInstance().event(BxEvent.DELETED_RECOVER)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            break;
-//                        case 1://彻底删除
-//                            showSimpleProgress();
-//                            new Thread(new MyMessageDeleteThread(adId)).start();
-//                            Tracker.getInstance().event(BxEvent.DELETED_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            break;
-//                    }
-//                }
-
+                else {
+                    switch (clickedIndex) {
+                        case 0://申诉
+                            Bundle bundle = createArguments(null, null);
+                            bundle.putInt("type", 1);
+                            bundle.putString("adId", adId);
+                            pushFragment(new FeedbackFragment(), bundle);
+                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
+                            break;
+                        case 1://删除
+                            showSimpleProgress();
+                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds)
+                                    .end();
+                            new Thread(new MyMessageDeleteThread(adId)).start();
+                            break;
+                    }
+                }
             }
         }).setNegativeButton(
                 "取消", new DialogInterface.OnClickListener() {
@@ -743,42 +692,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 	}
 
-//	@Override
-//	public void handleRightAction(){
-//		if(-1 == buttonStatus){
-////		btnEdit.setBackgroundResource(R.drawable.btn_clearall);
-////			if(this.m_viewInfoListener != null){
-//				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "完成";
-//
-//				refreshHeader();
-////				m_viewInfoListener.onTitleChanged(title);
-////			}
-//			if(adapter != null){
-//				adapter.setHasDelBtn(true);
-//			}
-//			buttonStatus = 0;
-//		}
-//		else{
-////			btnEdit.setBackgroundResource(R.drawable.btn_search);
-////			if(this.m_viewInfoListener != null){
-//				TitleDef title = getTitleDef();
-//				title.m_rightActionHint = "编辑";
-//				refreshHeader();
-////				title.m_leftActionHint = "更新";
-////				m_viewInfoListener.onTitleChanged(title);
-////			}
-//			adapter.setHasDelBtn(false);
-//			buttonStatus = -1;
-//		}
-//		if(adapter != null)
-//		{
-//			adapter.notifyDataSetChanged();
-//			lvGoodsList.invalidateViews();
-//		}
-//	}
-	
-
 
 	@Override
 	public void initTitle(TitleDef title){
@@ -786,7 +699,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 //		title.m_rightActionHint = "编辑";
 		if(currentType == TYPE_MYPOST){
-			title.m_title = "已发布的信息";
+			title.m_title = "我的信息";
 		}
 		title.m_visible = true;
 	}
@@ -808,9 +721,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
-//			params.add("status=1");
+			params.add("status=3");
+//			params.add("wanted=1");//FIXME: should remove status params??????
 		}
-//		else if(currentType == TYPE_INVERIFY){ //FIXME: should remove status params??????
+//		else if(currentType == TYPE_INVERIFY){ 
 //			params.add("status=1");
 //		}
 //		else if(currentType == TYPE_DELETED){
