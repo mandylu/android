@@ -26,8 +26,6 @@
         android:id="@+id/description_input"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignBottom="@+id/myImg"
-        android:layout_alignTop="@+id/myImg"
         android:layout_toLeftOf="@+id/myImg"
         android:layout_toRightOf="@id/description"
         android:background="@null"
@@ -48,6 +46,7 @@
         android:layout_width="90dip"
         android:layout_height="90dip"
         android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
         android:layout_weight="1"
         android:background="@drawable/btn_add_picture"
         android:scaleType="centerCrop" >
