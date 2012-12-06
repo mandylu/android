@@ -615,9 +615,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			
 			if(fixedItemNames[i].equals("价格")){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
-			}
-			else if(fixedItemNames[i].equals("contact")) {
+			}else if(fixedItemNames[i].equals("contact")) {
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
+			}else if(fixedItemNames[i].equals(STRING_DETAIL_POSITION)){
+				v.findViewById(R.id.location).setOnClickListener(this);
+				locationView = v;
 			}
 			LinearLayout.LayoutParams layoutParams = (LayoutParams) v.getLayoutParams();
 			if (layoutParams == null)
@@ -2443,6 +2445,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							"" 
 							: location.subCityName)
 					: location.detailAddress;
+            if(address == null || address.length() == 0) return;
+            if(location.adminArea != null && location.adminArea.length() > 0){
+            	address = address.replaceFirst(location.adminArea, "");
+            }
+            if(location.cityName != null && location.cityName.length() > 0){
+            	address = address.replaceFirst(location.cityName, "");
+            }
 			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}
 		
