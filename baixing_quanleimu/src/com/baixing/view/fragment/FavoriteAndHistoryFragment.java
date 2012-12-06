@@ -594,7 +594,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 		if (data instanceof IBxNotification)
 		{
 			IBxNotification notification = (IBxNotification) data;
-			GoodsDetail detail = (GoodsDetail) notification.getObejct();
+			GoodsDetail detail = (GoodsDetail) notification.getObject();
 			boolean needUpdateAdapter = false;
 			if (IBxNotificationNames.NOTIFICATION_FAV_ADDED.equals(notification.getName()) && detail != null)
 			{
