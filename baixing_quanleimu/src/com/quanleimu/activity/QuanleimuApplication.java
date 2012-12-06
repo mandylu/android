@@ -255,7 +255,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		}
 		
 		this.listMyStore.add(detail);
-		
+		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_ADDED, detail);
 		return this.listMyStore;
 	}
 	
@@ -270,6 +270,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
 					.equals(listMyStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
 				listMyStore.remove(i);
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_REMOVE, detail);
 				break;
 			}
 		}
