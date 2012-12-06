@@ -138,7 +138,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
-		
+		if(mb_loading != null){
+			mb_loading.recycle();
+			mb_loading = null;
+		}
+
 //		if(null != listUrl && listUrl.size() > 0)
 //			SimpleImageLoader.Cancel(listUrl);
 //		this.mListLoader = null;
@@ -359,10 +363,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	@Override
 	public void onDestroyView(){
-		if(mb_loading != null){
-			mb_loading.recycle();
-			mb_loading = null;
-		}
+//		if(mb_loading != null){
+//			mb_loading.recycle();
+//			mb_loading = null;
+//		}		
 		super.onDestroyView();
 	}
 
