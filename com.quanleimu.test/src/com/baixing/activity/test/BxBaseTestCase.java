@@ -95,7 +95,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";
-	public static final String AD_BIG_IMAGE_SAVED_TEXT = "成功";
+	public static final String AD_BIG_IMAGE_SAVED_TEXT = "图片已保存到相册";
 	//public static final String AD_FAVORITE_BUTTON_ID = "btn_fav_unfav";
 	//public static final String AD_FAVORITE_ADD_IMG = "icon_fav";
 	//public static final String AD_FAVORITE_REMOVE_IMG = "icon_unfav";

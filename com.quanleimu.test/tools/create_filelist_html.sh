@@ -22,6 +22,10 @@ do
 
 done
 
-echo "List of images:<br /><br />${RESULT}" > index.html
+filetype="files";
+if [ "$fileExt" = ".png" ]; then
+	filetype="images";
+fi
+echo "List of ${filetype}:<br /><br />${RESULT}" > index.html
 
 cd $DIR
