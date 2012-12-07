@@ -277,19 +277,18 @@ public class BaixingTestCase extends BxBaseTestCase {
 			String editDisplayId = POST_META_EDIT_DISPLAY_ID;
 			String editTextId = POST_META_EDITTEXT_ID;
 			TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
+			BXTextViewElement tv = null;
 			if (nv == null) {
 				editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
 				editTextId = POST_META_EDITTEXT_DESC_ID;
+				tv = dv.findElementById(editTextId, BXTextViewElement.class);
 				nv = dv.findElementById(editDisplayId, TextViewElement.class);
 			}
 			if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
-			if (nv != null) {
+			if (nv != null || tv != null) {
 				if (displayName != null && !nv.getText().equals(displayName)) return null;
 				Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + (displayName != null ? displayName : ""));
-				BXTextViewElement tv = null;
-				if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
-					tv = dv.findElementById(editTextId, BXTextViewElement.class);
-				} else {
+				if (!editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
 					for(int i = 1; i < dv.getChildCount(); i++) {
 						ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
 						tv = ddv.findElementById(editTextId, BXTextViewElement.class);
@@ -306,22 +305,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 						value = "" + (30 + (int)(Math.random() * 10));
 					} else {
 						int randLen = 8 + (int)(Math.random() * 12);
-						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
-						if (nv.getText().equals("描述")) randLen = 8 + (int)(Math.random() * 7);//TODO 营业员 描述字数
-						if (nv.getText().equals("目的地")) randLen = 9;
-						if (nv.getText().equals("联系电话")) {
+						if (nv != null && nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
+						if (nv != null && nv.getText().equals("描述")) randLen = 8 + (int)(Math.random() * 7);//TODO 营业员 描述字数
+						if (nv != null && nv.getText().equals("目的地")) randLen = 9;
+						if (nv != null && nv.getText().equals("联系电话")) {
 							value = TEST_DATA_MOBILE;
 						} else {
 							value = "";
 							for(int l = 0; l < randLen; l++) {
-								class RandomHan {
-								    private Random ran = new Random();
-								    private final static int delta = 0x9fa5 - 0x4e00 + 1;
-								     
-								    public char getRandomHan() {
-								        return (char)(0x4e00 + ran.nextInt(delta)); 
-								    }
-								}
 								RandomHan han = new RandomHan();
 								value += han.getRandomHan();
 							}
@@ -497,6 +488,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 		String value = "";
 		int loop = 0;
 		//String firstVal = null;
+		TextViewElement descV = findElementById(POST_META_EDITTEXT_DESC_ID, TextViewElement.class);
+		if (descV != null) {
+			for(int l = 0; l < 20; l++) {
+				RandomHan han = new RandomHan();
+				value += han.getRandomHan();
+			}
+			descV.setText(value);
+		}
 		while(index < 15) {
 			try {
 				BXTextViewElement tv = findTextMetaByIndex(index++, true);
@@ -1198,7 +1197,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 		showAdPic(0);
 		//点击右上方按钮保存
 		if (v != null) v.doClick();
-		goBack();
 		return v;
 	}
 
