@@ -15,7 +15,10 @@
     <string name="warning_no_phone_app_install">您的设备尚未安装拨打电话的应用，请先安装</string>
     <string name="warning_no_sms_app_install">您的设备尚未安装发送短信的应用，请先安装</string>
     <string name="tip_add_fav">您刚联系过对方，是否收藏该信息，方便下次查找</string>
-    <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，汇款和网银转帐请当心。</string>
+    <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，不要轻信汇款和转账相关的行为</string>
+    
+    <!-- tips show as toast. -->
+    <string name="tip_clipd_contact">联系方式已经复制到粘贴板</string>
 
     <!-- time related -->
     <string name="common_time_ago">前</string>
@@ -44,7 +47,7 @@
 
     <!-- dialog text -->
     <string name="dialog_title_info">提示</string>
-    <string name="dialog_title_warning">警告</string>
+    <string name="dialog_title_warning">安全提示</string>
 
     <!-- dialog text confirm -->
     <string name="dialog_message_confirm_exit">确认退出？</string>
@@ -98,6 +101,11 @@
     <string-array name="item_operate_inverify">
         <item>申诉</item>
         <item>删除</item>
+    </string-array>
+    
+	<string-array name="item_call_nonmobile">
+        <item>立即拨打</item>
+        <item>复制此号码</item>
     </string-array>
 
     <string-array name="item_operate_deleted">
