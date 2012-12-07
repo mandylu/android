@@ -598,6 +598,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(imgV != null){
 				imgV.setOnClickListener(this);
 			}
+			
+			View textArea = getView().findViewById(R.id.img_description);
+			if(textArea != null){
+				textArea.setOnClickListener(this);
+			}
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
 		for(int i = 1; i < fixedItemNames.length; ++ i){	
@@ -705,6 +710,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}							
 			}else{
 				startImgSelDlg(null, null, null);
+			}
+		}else if(v.getId() == R.id.img_description){
+			final View et = v.findViewById(R.id.description_input);
+			if(et != null){
+				et.postDelayed(new Runnable(){
+					@Override
+					public void run(){
+						if (et != null)
+						{
+							et.requestFocus();
+							InputMethodManager inputMgr = 
+									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+							inputMgr.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+						}
+					}			
+				}, 100);
 			}
 		}
 //		else if (v == photoalbum) {
@@ -1730,17 +1751,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
+		if(layout_txt != null){
+			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
+		}
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
 		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
+		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
-
+				extractInputData(layout_txt, params);
 				CustomDialog ad = new CustomDialog(getActivity());
 				ad.show();
 				configCategoryDialog(ad);
@@ -1793,7 +1818,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				text.setText("");
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
-				
+				v.setOnClickListener(this);
 //				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
 //				tv.setText(bean.getDisplayName());
 				

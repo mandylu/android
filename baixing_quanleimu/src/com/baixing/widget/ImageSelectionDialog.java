@@ -411,6 +411,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				}
 				else{
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
+					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
 					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(null);
 					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
@@ -422,6 +423,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 						public void onClick(View v){
 							imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.GONE);
 							imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.VISIBLE);
+							imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
 						}
 					});
 					imgs.get(0).getRootView().findViewById(R.id.btn_post_del_img).setOnClickListener(new OnClickListener(){
@@ -454,7 +456,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				return;
 			}
 		}
-		this.dismiss();
+		if(v.getId() == R.id.btn_finish_sel){
+			this.dismiss();	
+		}		
 	}
 	
 	
