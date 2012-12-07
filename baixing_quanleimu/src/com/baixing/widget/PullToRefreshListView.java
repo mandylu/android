@@ -16,6 +16,7 @@ import android.view.animation.LinearInterpolator;
 import android.view.animation.RotateAnimation;
 import android.widget.AbsListView;
 import android.widget.AbsListView.OnScrollListener;
+import android.widget.HeaderViewListAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListAdapter;
@@ -24,6 +25,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.util.Communication;
 import com.quanleimu.activity.R;
 
@@ -59,6 +61,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     private LinearLayout mGapHeaderView = null;
     
     private ViewGroup mGetmoreView = null;
+    private ViewGroup mNoInfoView = null;
     //private TextView mGetmoreViewText;
 
     private int mCurrentScrollState;
@@ -165,6 +168,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 	        //mGetmoreViewText = (TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore);
 	        addFooterView(mGetmoreView, null, true);
         }
+        
+        mNoInfoView = (ViewGroup) mInflater.inflate(R.layout.goodslist_empty_hint, null);
+        addFooterView(mNoInfoView);
 
         super.setOnScrollListener(this);
 
@@ -193,6 +199,18 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
 	    	}
     	}
+    	
+    	 ListAdapter adapter = findGoodListAdapter();
+         if (adapter == null || adapter.getCount() == 0)
+         {
+//         	mNoInfoView.setVisibility(View.VISIBLE);
+         	this.addFooterView(mNoInfoView);
+         }
+         else
+         {
+//         	mNoInfoView.setVisibility(View.GONE);
+         	this.removeFooterView(mNoInfoView);
+         }
     }
     
     @Override
@@ -240,6 +258,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 		prepareForRefresh();
 		super.setSelection(0);
 		
+		mNoInfoView.setVisibility(View.GONE);
 		if(null != mOnRefreshListener){
 			mOnRefreshListener.onRefresh();
 		}
@@ -737,7 +756,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 
     public void onRefresh() {
         //Log.d(TAG, "onRefresh");
-
+    	mNoInfoView.setVisibility(View.GONE);
         if (mOnRefreshListener != null) {
             mOnRefreshListener.onRefresh();
         }
@@ -782,7 +801,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
      */
     public void onRefreshComplete() {        
         //Log.d(TAG, "onRefreshComplete");
-        
         mLastUpdateTimeMs = System.currentTimeMillis();
 
         mRefreshState = TAP_TO_REFRESH;
@@ -797,8 +815,22 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
             setSelection(0);
         }
         
-        updateFooter(true);        
+        updateFooter(true); 
     }
+    
+	private ListAdapter findGoodListAdapter()
+	{
+		ListAdapter adapter = this.getAdapter();
+		if (adapter instanceof HeaderViewListAdapter)
+		{
+			HeaderViewListAdapter realAdapter = (HeaderViewListAdapter) adapter;
+			return realAdapter.getWrappedAdapter();
+		}
+		else
+		{
+			return adapter;
+		}
+	}
     
 	public enum E_GETMORE{
 		E_GETMORE_OK,
@@ -818,6 +850,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     	mGetMoreState = SCROLLDOWN_TO_GETMORE;
     	
     	updateFooter(hasMore);
+    	
     }
 
     /**

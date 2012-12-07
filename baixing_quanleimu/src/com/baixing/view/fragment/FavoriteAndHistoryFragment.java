@@ -2,6 +2,8 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,10 +19,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 
 import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.broadcast.BXNotificationService;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsList;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.*;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
@@ -31,7 +37,7 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder {
+public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder, Observer {
     private boolean isFav = false;
     static final int MSG_UPDATEFAV = 1;
     static final int MSG_UPDATEHISTORY = 2;
@@ -58,9 +64,19 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         }
 
         glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
+        
+        BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
+        BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
     }
 
     @Override
+	public void onDestroy() {
+		super.onDestroy();
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+	}
+
+
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -570,6 +586,39 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
         return false;
     }
+
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification notification = (IBxNotification) data;
+			GoodsDetail detail = (GoodsDetail) notification.getObject();
+			boolean needUpdateAdapter = false;
+			if (IBxNotificationNames.NOTIFICATION_FAV_ADDED.equals(notification.getName()) && detail != null)
+			{
+				if (tempGoodsList != null && tempGoodsList.getData() != null && !tempGoodsList.getData().contains(detail))
+				{
+					tempGoodsList.getData().add(detail);
+					needUpdateAdapter = true;
+				}
+			}
+			else if (IBxNotificationNames.NOTIFICATION_FAV_REMOVE.equals(notification.getName()))
+			{
+				if (tempGoodsList != null && tempGoodsList.getData() != null && tempGoodsList.getData().contains(detail))
+				{
+					tempGoodsList.getData().remove(detail);
+					needUpdateAdapter = true;
+				}
+			}
+			
+			if (needUpdateAdapter && adapter != null)
+			{
+				adapter.setList(tempGoodsList.getData());
+				adapter.notifyDataSetChanged();
+			}
+		}
+	}
 
 
 }

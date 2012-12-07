@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,6 +18,7 @@ import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
+import org.athrun.android.framework.viewelement.ViewUtils;
 
 import android.os.Build;
 import android.os.Environment;
@@ -94,7 +95,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";
-	public static final String AD_BIG_IMAGE_SAVED_TEXT = "成功";
+	public static final String AD_BIG_IMAGE_SAVED_TEXT = "图片已保存到相册";
 	//public static final String AD_FAVORITE_BUTTON_ID = "btn_fav_unfav";
 	//public static final String AD_FAVORITE_ADD_IMG = "icon_fav";
 	//public static final String AD_FAVORITE_REMOVE_IMG = "icon_unfav";
@@ -117,11 +118,12 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_EDITTEXT_DESC_ID = "postdescriptioninput";
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
-	public static final String POST_SEND = "完成";
+	public static final String POST_SEND = "立即免费发布";
 	public static final String POST_BACK_DIALOG_OK_BUTTON_ID = "是";
 	public static final String POST_META_IMAGEVIEW1_ID = "iv_1";
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
+	public static final String POST_CATEGORY_TEXT = "分类";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
 	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
 	
@@ -160,6 +162,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
 	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "vad_btn_delete";
 	public static final String MY_VIEWLIST_DELXUPDATE_BUTTON_ID = "btnListOperate";
+	public static final String MY_VIEWLIST_SHENSU_BUTTON_TEXT = "申诉";
 	public static final String MY_VIEWLIST_DELETE_BUTTON_TEXT = "删除";
 	public static final String MSGBOX_CANCEL_TEXT = "取消";
 	public static final String MSGBOX_OPT_TITLE = "操作";
@@ -197,8 +200,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	//Test DATA
-	public static final String TEST_DATA_MOBILE = "13524495634";
-	public static final String TEST_DATA_PASSWORD = "123456";
+	public static final String TEST_DATA_MOBILE = "13917067724";
+	public static final String TEST_DATA_PASSWORD = "whonwyhw";
 	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
 	
@@ -294,6 +297,10 @@ public class BxBaseTestCase extends AthrunTestCase {
 		assertNotNull(null, object);
 	}
 	
+	public static void assertNull(Object object) {
+		assertNull(null, object);
+	}
+	
 	public static void assertTrue(boolean condition) {
 		assertTrue(null, condition);
 	}
@@ -309,6 +316,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static void assertNotNull(String message, Object object) {
 		if (object == null) waitScreenSave();
 		AthrunTestCase.assertNotNull(message, object);
+	}
+	
+	public static void assertNull(String message, Object object) {
+		if (object == null) waitScreenSave();
+		AthrunTestCase.assertNull(message, object);
 	}
 	
 	public static void assertTrue(String message, boolean condition) {
@@ -575,6 +587,20 @@ public class BxBaseTestCase extends AthrunTestCase {
 		el.doClick();
 		TimeUnit.SECONDS.sleep(1);
 	}
+	
+	public AbsListViewElement findListView() throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(false);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			try {
+				AbsListViewElement lv = findElementById(view.getId(), AbsListViewElement.class);
+				if (lv != null && lv.getChildCount() > 0) {
+					return lv;
+				}
+			} catch (IllegalArgumentException e) {}
+		}
+		return null;
+	}
 
 	public void goBack() throws Exception {
 		goBack(true);
@@ -660,9 +686,13 @@ public class BxBaseTestCase extends AthrunTestCase {
 	boolean waitForSubTexts(String texts, int timeout) {
 		ViewFinder viewFinder = new ViewFinder();
 		String[] tt = texts.split("@");
-		for(int i = 0; i < tt.length; i++) {
-			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
-			if (textViews != null && !textViews.isEmpty()) return true;
+		int tmpTimeout = 10;
+		int loop = (int)(timeout / tmpTimeout);
+		for (int j = 0; j < loop; j++) {
+			for(int i = 0; i < tt.length; i++) {
+				ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, tmpTimeout);
+				if (textViews != null && !textViews.isEmpty()) return true;
+			}
 		}
 		return false;
 	}
