@@ -447,6 +447,8 @@ public class JsonUtil {
 												il.setBig(imgStr.substring(0, imgStr.length() - 1));
 											}else if(imgType.equals("resize180")){
 												il.setResize180(imgStr.substring(0, imgStr.length() - 1));
+											}else if(imgType.equals("square")){
+												il.setSquare(imgStr.substring(0, imgStr.length() - 1));
 											}
 										}
 										jt = parser.nextToken();
