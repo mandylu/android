@@ -46,9 +46,6 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -65,10 +62,8 @@ import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
@@ -81,7 +76,6 @@ import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
-import com.baixing.widget.CustomDialog;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
@@ -89,7 +83,7 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener{
-
+	
 	public static final int MSG_START_UPLOAD = 5;
 	public static final int MSG_FAIL_UPLOAD = 6;
 	public static final int MSG_SUCCED_UPLOAD = 7;
@@ -128,6 +122,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public static final int POST_CHECKSELECT = 6;
 	public static final int MSG_MULTISEL_BACK = 10;
 	public static final int MSG_CATEGORY_SEL_BACK = 11;
+	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private PostParamsHolder params;
@@ -834,7 +829,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return value;
 	}
 
-	private boolean filled() {
+	private boolean filled() {//判断是否填入数据
 		// check if images uploaded.
 //		for (String url : bitmap_url)
 //		{
@@ -1171,7 +1166,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 	}
+	
 
+	
 	private int getLineCount() {
 		return etDescription != null ? etDescription.getLineCount() : 1;
 	}
@@ -1472,8 +1469,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return match;
 	}
 	
-	@Override
-	public void onFragmentBackWithData(int message, Object obj){	
+	private void handleBackWithData(int message, Object obj) {
 		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
 			this.handleRightAction();
 			return;
@@ -1574,6 +1570,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		default:
 			break;
 		}
+	}
+	
+	@Override
+	public void onFragmentBackWithData(int message, Object obj){	
+		handleBackWithData(message, obj);
 	}
 	
 	
@@ -1759,11 +1760,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
 				
+				
 				Bundle bundle = createArguments(null, null);
 				bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
-				bundle.putString("categoryItem", "categoryItem");//标识从category启动dialog
 				bundle.putInt("maxLevel", 1);
-				CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), bundle);
+				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+				if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
+					bundle.putString("selectedValue", categoryName);
+				}
+				
+				extractInputData(layout_txt, params);
+				CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
 				cdb.start();
 				
 			}				
@@ -1791,7 +1798,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean autoLocated;
 
 	
-	private void buildFixedPostLayout(){
+	private void buildFixedPostLayout(){//添加fixedItemNames和postList交集的beanLayout
 		if(this.postList == null || this.postList.size() == 0) return;
 		
 		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();
@@ -1834,6 +1841,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				{
 					String defaultValue = bean.getDefaultValue();
 					if (defaultValue != null && defaultValue.length() > 0) {
+						//String key, String uiValue, String data
 						this.params.put(bean.getDisplayName(), 
 								defaultValue,
 								defaultValue);
@@ -1877,15 +1885,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(postList == null || postList.size() == 0){
 			postList = JsonUtil.getPostGoodsBean(json);
 		}
-		buildFixedPostLayout();
-		addHiddenItemsToParams();
+		buildFixedPostLayout();//添加固定item的layout
+		addHiddenItemsToParams();//params中加入隐藏元素的default值
 		
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
 			
-			if(isFixedItem(postBean) || isHiddenItem(postBean))
+			if(isFixedItem(postBean) || isHiddenItem(postBean))//排除固定和隐藏元素
 				continue;
 			
 			if(postBean.getName().equals(STRING_AREA)){
@@ -1909,8 +1917,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				continue;
 //			}
 			
-			this.appendBeanToLayout(postBean);
-		}
+			this.appendBeanToLayout(postBean);//加入元素
+		}//for : postList
 //		if(otherProperties.size() > 0){
 //			LayoutInflater inflater = LayoutInflater.from(activity);
 //			View v = inflater.inflate(R.layout.item_post_select, null);
@@ -1933,12 +1941,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 
 		
-		editpostUI();
-		originParams.merge(params);		
-		extractInputData(layout_txt, originParams);		
+		editpostUI();//编辑goodsDetail时调用
+		originParams.merge(params);//orginPrams合并params
+		extractInputData(layout_txt, originParams);//将界面元素的值存入originParams	
 	}//buildPostLayout
 	
-	
+
 
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
@@ -1958,6 +1966,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			inLocating = false;			
 //			break;
 //		}
+		case MSG_DIALOG_BACK_WITH_DATA:{
+			Bundle bundle = (Bundle)msg.obj;
+			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
+			break;
+		}
+		
 		case MSG_START_UPLOAD:{		
 			Integer index = (Integer) msg.obj;
 			if (imgs != null){
@@ -2330,6 +2344,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 
+	
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
@@ -2491,7 +2506,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 										bundle.putString("selectedValue", selectedValue);
 
 									//以下代码为使用dialog的方式切换
-									CustomDialogBuilder cdb = new CustomDialogBuilder(fragment.getActivity(), bundle);
+									extractInputData(((PostGoodsFragment)fragment).layout_txt, ((PostGoodsFragment)fragment).params);
+									CustomDialogBuilder cdb = new CustomDialogBuilder(fragment.getActivity(), fragment.getHandler(), bundle);
 									cdb.start();
 									
 									//以下代码为使用MultiLevelSelectionFragment切换

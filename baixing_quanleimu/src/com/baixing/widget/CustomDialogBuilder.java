@@ -1,5 +1,6 @@
 package com.baixing.widget;
 
+import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -27,13 +28,18 @@ import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
+import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class CustomDialogBuilder {
 
 	private final int MESSAGE_GET_METAOBJ = 1;
-	
+	public static final int MSG_CATEGORY_SEL_BACK = 11;
+	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
+	static final public int HOLDER_TAG = "secondCateAdapter_itemholder".hashCode();
+
+	public static final String ARG_COMMON_REQ_CODE = "reqestCode";
 	private Context context = null;
 	private int remainLevel = 0;
 	private boolean hasNextLevel = false;
@@ -46,14 +52,18 @@ public class CustomDialogBuilder {
 	private Handler handler = null;
 	private Object lastChoise = null;
 	private ProgressDialog pd;
+	private Handler delegateHandler;
+	private int requestCode;
 	
-	public CustomDialogBuilder(Context context, Bundle bundle) {
+	public CustomDialogBuilder(Context context,Handler delegateHandler, Bundle bundle) {
 		this.context = context;
+		this.delegateHandler = delegateHandler;
 		this.remainLevel = bundle.getInt("maxLevel");
 		hasNextLevel = remainLevel > 0;
 		
 		this.items = (List) bundle.getSerializable("items");
-		if (bundle.containsKey("categoryItem"))
+		this.requestCode = bundle.getInt(ARG_COMMON_REQ_CODE);
+		if (bundle.getInt(ARG_COMMON_REQ_CODE) == MSG_CATEGORY_SEL_BACK)
 			isCategoryItem = true;
 		if (bundle.containsKey("selectedValue"))
 		{
@@ -179,15 +189,14 @@ public class CustomDialogBuilder {
 					}//not category over
 					
 				} else {
-					handleLastLevelChoice();
+					
+					MultiLevelItem item = (MultiLevelItem) items.get(pos);
+					CustomDialogBuilder.this.lastChoise = item;
+					handleLastLevelChoice(cd);
 				}
 			}
 		});
 	}
-	
-//	private void initContent(final boolean hasNextLevel) {
-//		
-//	}
 	
 	protected final void showProgress(int titleResid, int messageResid, boolean cancelable) {
 		String title = context.getString(titleResid);
@@ -250,15 +259,28 @@ public class CustomDialogBuilder {
 						MultiLevelItem item = (MultiLevelItem) list.get(pos);
 						CustomDialogBuilder.this.lastChoise = item;
 					}
-					handleLastLevelChoice();
+					handleLastLevelChoice(cd);
 				}
 			}
 		});
 	}
 	
-	private void handleLastLevelChoice() {
+	private void handleLastLevelChoice(CustomDialog cd) {
 		//send a message with data to let caller to handle message.
 		//use this.lastChoise
+		cd.dismiss();
+		
+		Message message = null;
+		if (delegateHandler != null) {
+			message = delegateHandler.obtainMessage();
+			message.what = MSG_DIALOG_BACK_WITH_DATA;
+			Bundle bundle = new Bundle();
+			bundle.putSerializable("lastChoise", (Serializable) this.lastChoise);
+//			bundle.putBoolean("isCategoryItem", isCategoryItem);
+			bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+			message.obj = bundle;
+			delegateHandler.sendMessage(message);
+		}
 	}
 	private CustomDialog getCustomDialog() {
 		return new CustomDialog(context);
@@ -288,7 +310,6 @@ public class CustomDialogBuilder {
 	
 	class SecondCateAdapter extends BaseAdapter {
 		private List list = null;
-
 		public SecondCateAdapter(List list) {
 			this.list = list;
 		}
@@ -310,6 +331,28 @@ public class CustomDialogBuilder {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
+			/*
+			if (convertView == null) {
+				Holder holder = new Holder();
+				if (position == 0) {
+					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(R.layout.item_seccategory_simple, null);
+					holder.tv = (TextView) convertView.findViewById(R.id.tv);
+					convertView.setTag(HOLDER_TAG, holder);
+				} else {
+					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(android.R.layout.simple_list_item_1, null);
+					holder.tv = (TextView) convertView.findViewById(android.R.id.text1);
+					convertView.setTag(HOLDER_TAG, holder);
+				}
+			}
+			Holder holder = (Holder) convertView.getTag(HOLDER_TAG);
+			if (holder != null && holder.tv != null) {
+				String displayText = isCategoryItem 
+						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
+						: (String)(((List<MultiLevelItem>)list).get(position).toString());
+				holder.tv.setText(displayText);
+			}
+			return convertView;
+			*/
 			View v = convertView;
 			TextView tv = null;
 			if (position == 0) {
@@ -321,15 +364,18 @@ public class CustomDialogBuilder {
 						.inflate(android.R.layout.simple_list_item_1, null);
 				tv = (TextView) v.findViewById(android.R.id.text1);
 			}
+			
 			if (tv != null) {
 				String displayText = isCategoryItem 
 						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
 						: (String)(((List<MultiLevelItem>)list).get(position).toString());
 				tv.setText(displayText);
 			}
-
 			return v;
 		}
-
+		class Holder {
+			public TextView tv;
+			
+		}
 	}
 }
