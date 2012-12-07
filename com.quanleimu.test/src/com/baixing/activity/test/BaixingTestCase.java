@@ -1040,8 +1040,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 			goBack();
 			TimeUnit.SECONDS.sleep(2);
 			//列表上的 DELETE UPDATE 小按钮
-			ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
-			delv.doClick();
+			int i = 0;
+			while(true) {
+				ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
+				if (delv != null) {
+					delv.doClick();
+					break;
+				}
+				TimeUnit.SECONDS.sleep(1);
+				if (i++ > 20) break;
+			}
 			TimeUnit.SECONDS.sleep(1);
 			ViewElement delButton = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
 			if (delButton != null) {
