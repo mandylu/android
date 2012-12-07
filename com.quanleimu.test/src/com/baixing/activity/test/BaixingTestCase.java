@@ -1001,12 +1001,29 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		ViewGroupElement gv = openAdByItemIndex(index);
 		if (gv != null) {
+			TimeUnit.SECONDS.sleep(1);
 			deleteAdOnView(false);
 			TimeUnit.SECONDS.sleep(1);
 		}
 	}
 	
 	public void deleteAdOnView(boolean force) throws Exception {
+		ViewElement mv = findElementByText(MSGBOX_TITLE_TEXT, 0, true);
+		if (mv != null) {
+			mv = findElementByText(MY_VIEWLIST_SHENSU_BUTTON_TEXT, 0, true);
+			if (mv != null) {
+				if (mv != null) {
+					mv = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
+					if (mv != null) {
+						if (force){
+							mv.doClick();
+							TimeUnit.SECONDS.sleep(1);
+							return;
+						}
+					}
+				}
+			}
+		}
 		if (force) {
 			ViewElement vd = findElementById(MY_DETAILVIEW_DELETE_BUTTON_ID);
 			if (vd == null) {
@@ -1021,9 +1038,21 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//goBack();
 		} else {
 			goBack();
+			TimeUnit.SECONDS.sleep(2);
 			//列表上的 DELETE UPDATE 小按钮
-			ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
-			delv.doClick();
+			int i = 0;
+			while(true) {
+				ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
+				if (delv != null) {
+					delv.doClick();
+					break;
+				}
+				TimeUnit.SECONDS.sleep(1);
+				if (i == 5 && findElementByText(MSGBOX_TITLE_TEXT, 0, true) != null) {
+					goBack();
+				}
+				if (i++ > 20) break;
+			}
 			TimeUnit.SECONDS.sleep(1);
 			ViewElement delButton = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
 			if (delButton != null) {

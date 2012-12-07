@@ -162,6 +162,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
 	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "vad_btn_delete";
 	public static final String MY_VIEWLIST_DELXUPDATE_BUTTON_ID = "btnListOperate";
+	public static final String MY_VIEWLIST_SHENSU_BUTTON_TEXT = "申诉";
 	public static final String MY_VIEWLIST_DELETE_BUTTON_TEXT = "删除";
 	public static final String MSGBOX_CANCEL_TEXT = "取消";
 	public static final String MSGBOX_OPT_TITLE = "操作";
