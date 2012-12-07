@@ -14,6 +14,8 @@
     <string name="tip_loading_im_history">正在加载历史对话，请耐心等待</string>
     <string name="warning_no_phone_app_install">您的设备尚未安装拨打电话的应用，请先安装</string>
     <string name="warning_no_sms_app_install">您的设备尚未安装发送短信的应用，请先安装</string>
+    <string name="tip_add_fav">您刚联系过对方，是否收藏该信息，方便下次查找</string>
+    <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，汇款和网银转帐请当心。</string>
 
     <!-- time related -->
     <string name="common_time_ago">前</string>
@@ -34,6 +36,7 @@
     <string name="cancel">取消</string>
     <string name="back">返回</string>
     <string name="delete">删除</string>
+    <string name="appeal">申诉</string>
 
     <string name="tab_browse">分类查找</string>
     <string name="tab_user_center">个人中心</string>

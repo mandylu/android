@@ -72,7 +72,7 @@
                 android:layout_height="fill_parent"
                 android:orientation="vertical" >
                 
-					<LinearLayout
+<!-- 					<LinearLayout
 			            android:id="@+id/ll_appeal"
 			            android:layout_width="fill_parent"
 			            android:layout_height="wrap_content"
@@ -109,7 +109,7 @@
 			            android:layout_width="fill_parent"
 			            android:layout_height="2dip"
 			            android:src="#82C726" />
-            
+             -->
 
 					<LinearLayout
 		                android:id="@+id/llMainContent"
@@ -168,7 +168,7 @@
 								    android:visibility="gone"
 								    android:textColor="@color/common_placeholder"/>
 								
-								   <com.quanleimu.widget.HorizontalListView
+								   <com.baixing.widget.HorizontalListView
 		                            android:id="@+id/glDetail"
 		                            android:layout_centerInParent="true"
 		                            android:layout_marginLeft="20dp"
@@ -219,7 +219,7 @@
 		                    </LinearLayout>
             	</LinearLayout>
             	
-            	<ImageView
+            	<!-- <ImageView
                 android:id="@+id/graymask"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
@@ -228,7 +228,7 @@
                 android:layout_alignRight="@+id/llMainContent"
                 android:layout_alignTop="@+id/llMainContent"
                 android:src="#C87D7D7D"
-                android:visibility="visible" />
+                android:visibility="visible" /> -->
 
 			</RelativeLayout>
 </LinearLayout>

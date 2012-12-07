@@ -49,7 +49,7 @@
             android:layout_below="@+id/linearType"
             android:orientation="vertical">
             
-	        <com.quanleimu.widget.PullToRefreshListView
+	        <com.baixing.widget.PullToRefreshListView
 		         android:listSelector="#00000000"
 		         android:scrollingCache="false"
 		         android:id="@+id/lvGoodsList"

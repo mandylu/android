@@ -8,16 +8,16 @@ import android.os.Message;
 import android.util.Pair;
 import android.widget.Toast;
 
-import com.quanleimu.entity.AllCates;
-import com.quanleimu.entity.CityDetail;
-import com.quanleimu.entity.CityList;
-import com.quanleimu.entity.GoodsDetail;
-import com.quanleimu.jsonutil.JsonUtil;
-import com.quanleimu.util.Communication;
-import com.quanleimu.util.Helper;
-import com.quanleimu.util.LocationService;
-import com.quanleimu.util.MobileConfig;
-import com.quanleimu.util.Util;
+import com.baixing.entity.AllCates;
+import com.baixing.entity.CityDetail;
+import com.baixing.entity.CityList;
+import com.baixing.entity.GoodsDetail;
+import com.baixing.jsonutil.JsonUtil;
+import com.baixing.util.Communication;
+import com.baixing.util.Helper;
+import com.baixing.util.LocationService;
+import com.baixing.util.MobileConfig;
+import com.baixing.util.Util;
 
 public class SplashJob {
 
@@ -47,9 +47,7 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		LocationService.getInstance().start(parentActivity, QuanleimuApplication.mDemoApp);
-		QuanleimuApplication.udid = Util.getDeviceUdid(parentActivity);
-
+		LocationService.getInstance().start(parentActivity, QuanleimuApplication.getApplication());
 		QuanleimuApplication.version = Util.getVersion(parentActivity);
 
 		try {
@@ -154,7 +152,7 @@ public class SplashJob {
 		}
 	}
 
-	public List<String> listRemark = new ArrayList<String>();
+	public String[] listRemark = new String[]{};//new ArrayList<String>();
 
 	class ReadInfoThread implements Runnable {
 
@@ -162,45 +160,15 @@ public class SplashJob {
 		@Override
 		public void run() { 
 			// 获取搜索记录
-			Object objRemark = Helper.loadDataFromLocate(parentActivity, "listRemark");
-			if(objRemark != null)
-			{
-				listRemark = (List<String>)objRemark;
-			}
-			else
-			{
-				listRemark = null;
-			}
-			QuanleimuApplication.getApplication().setListRemark(listRemark);
+			String[] objRemark = (String[]) Util.loadDataFromLocate(parentActivity, "listRemark", String[].class);
+			QuanleimuApplication.getApplication().updateRemark(objRemark);
 
-			// 获取我的浏览历史以及我的收藏
-			Object objLookHistory = Helper.loadDataFromLocate(parentActivity, "listLookHistory");
-			List<GoodsDetail> listLookHistory;
-			if(objLookHistory != null)
-			{
-				listLookHistory = (List<GoodsDetail>)objLookHistory;
-			}
-			else
-			{
-				listLookHistory = null;
-			}
-			QuanleimuApplication.getApplication().setListLookHistory(listLookHistory);
-
-			Object objStore = Helper.loadDataFromLocate(parentActivity, "listMyStore");
-			List<GoodsDetail> listMyStore;
-			if(objStore != null)
-			{
-				listMyStore = (List<GoodsDetail>)objStore;
-			}
-			else
-			{
-				listMyStore = null;
-			}
-			QuanleimuApplication.getApplication().setListMyStore(listMyStore);
+			GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(parentActivity, "listMyStore", GoodsDetail[].class);
+			QuanleimuApplication.getApplication().updateFav(objStore);
 			
-			Object personalMark = Helper.loadDataFromLocate(parentActivity, "personMark");
+			byte[] personalMark = Util.loadData(parentActivity, "personMark");//.loadDataFromLocate(parentActivity, "personMark");
 			if(personalMark != null){
-				QuanleimuApplication.getApplication().setPersonMark((String)personalMark);
+				QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
 			}
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}

@@ -23,6 +23,10 @@
     <dimen name="font_input_text">16sp</dimen>
     <dimen name="filter_gap">10dp</dimen>
     
+    <!-- personal center -->
+    <dimen name="icon_width_small">30dp</dimen>
+    <dimen name="icon_height_small">30dp</dimen>
+    
     <!--  -->
     <dimen name="font_large">20sp</dimen>
     <dimen name="font_medium">16sp</dimen>

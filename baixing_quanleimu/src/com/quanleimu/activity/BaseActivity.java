@@ -28,12 +28,12 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
-import com.quanleimu.entity.CityDetail;
-import com.quanleimu.util.TrackConfig;
-import com.quanleimu.util.Sender;
-import com.quanleimu.util.Tracker;
-import com.quanleimu.util.LocationService;
-import com.quanleimu.view.fragment.FirstRunFragment;
+import com.baixing.entity.CityDetail;
+import com.baixing.util.LocationService;
+import com.baixing.util.Sender;
+import com.baixing.util.TrackConfig;
+import com.baixing.util.Tracker;
+import com.baixing.view.fragment.FirstRunFragment;
 import com.umeng.analytics.MobclickAgent;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
@@ -176,7 +176,11 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			{
 				stackSize = newStackSize;
 			}
-			findViewById(R.id.splash_cover).setVisibility(View.GONE);
+			View cover =findViewById(R.id.splash_cover);
+			if (cover != null)
+			{
+				cover.setVisibility(View.GONE);
+			}
 			
 			onStatckTop(f);
 		}

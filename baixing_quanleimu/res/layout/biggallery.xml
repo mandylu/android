@@ -22,7 +22,7 @@
     	android:layout_width="fill_parent"
     	android:layout_height="fill_parent">					
 					
-    	<com.quanleimu.widget.ViewFlow
+    	<com.baixing.widget.ViewFlow
     		android:id="@+id/vfCoupon" 
     		android:layout_width="fill_parent"
     		android:layout_height="fill_parent"

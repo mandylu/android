@@ -22,6 +22,10 @@ CLASS=$2;
 LOGNAME=$3;
 REBUILD=$4;
 
+adb kill-server;
+sleep 1;
+adb start-server;
+sleep 1;
 
 if [ "$CLASS" = "" ]; then
 	CLASS=".BXTestSuite";
@@ -59,10 +63,14 @@ run_test() {
 # define build_pkg function
 build_pkg() {
 	cd $DIR;
-	cd ../;
-	svn up;
+	cd ../../;
 	
-	if [ "$1" = "" ]; then
+	buildBaixing="$1";
+	if [ ! -f baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk ]; then
+		buildBaixing="";
+	fi;
+	
+	if [ "$buildBaixing" = "" ]; then
 		cp -f com.quanleimu.test/local.properties baixing_quanleimu/local.properties;
 		
 		cd baixing_quanleimu/;

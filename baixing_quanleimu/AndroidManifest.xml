@@ -39,9 +39,44 @@
         <meta-data android:name="UMENG_CHANNEL" android:value="androidmarket_umeng" />
         <meta-data android:name="publishTime" android:value="2012-09-29 11:05" />
         
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="BaiduMapActivity" android:screenOrientation="portrait" android:launchMode="singleTask">
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="BaiduMapActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleTask">
         </activity>
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:screenOrientation="portrait" android:launchMode="singleTask" android:windowSoftInputMode="adjustResize">
+        
+		<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".ThirdpartyTransitActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleTop">
+			<intent-filter>
+			    <action android:name="com.baixing.action.img.cap" />
+			    <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+            <intent-filter>
+			   	<action android:name="com.baixing.action.img.select" />
+			    <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
+						    
+        </activity>
+        
+<!-- 		<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".ManagerActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
+			<intent-filter>
+			    <action android:name="android.intent.action.MAIN" />
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+			<intent-filter>
+			    <action android:name="switch" />
+            </intent-filter>
+        </activity> -->
+        
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PersonalActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
+			<intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PostActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
+            <intent-filter>
+                <category android:name="android.intent.category.LAUNCHER" />
+            </intent-filter>
+        </activity>
+        
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance" android:windowSoftInputMode="adjustResize">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 
@@ -50,13 +85,13 @@
         </activity>
         
         <service
-            android:name="com.quanleimu.broadcast.BXNotificationService"
+            android:name="com.baixing.broadcast.BXNotificationService"
             android:exported="false"
             android:enabled="true" >
         </service>
         
 		<service
-            android:name="com.quanleimu.broadcast.PushMessageService"
+            android:name="com.baixing.broadcast.PushMessageService"
             android:exported="false"
             android:enabled="true" >
            <intent-filter>
@@ -73,16 +108,15 @@
         </service>
 
         <service
-                android:name="com.quanleimu.util.BXUpdateService"
-                android:label="AutoUpdateService"/>
+                android:name="com.baixing.util.BXUpdateService"  android:label="AutoUpdateService"/>
 
-        <receiver android:name="com.quanleimu.broadcast.NetworkConnectivityReceiver" android:enabled="true">
+        <receiver android:name="com.baixing.broadcast.NetworkConnectivityReceiver" android:enabled="true">
              <intent-filter>
                  <action android:name="android.net.conn.CONNECTIVITY_CHANGE" />
              </intent-filter>
         </receiver>
         
-		<receiver android:name="com.quanleimu.broadcast.NotificationHandler" android:enabled="true">
+		<receiver android:name="com.baixing.broadcast.NotificationHandler" android:enabled="true">
              <intent-filter>
                  <action android:name="com.baixing.action.notify.msg" />
                  <action android:name="com.baixing.action.notify.bxinfo" />
@@ -91,7 +125,7 @@
         </receiver>
         
 
-        <receiver android:name="com.quanleimu.broadcast.BXStartupIntentReceiver" >
+        <receiver android:name="com.baixing.broadcast.BXStartupIntentReceiver">
             <intent-filter>
                 <action android:name="android.intent.action.BOOT_COMPLETED" />
                 <action android:name="com.baixing.action.notify.upgrade" />
