@@ -1001,12 +1001,29 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		ViewGroupElement gv = openAdByItemIndex(index);
 		if (gv != null) {
+			TimeUnit.SECONDS.sleep(1);
 			deleteAdOnView(false);
 			TimeUnit.SECONDS.sleep(1);
 		}
 	}
 	
 	public void deleteAdOnView(boolean force) throws Exception {
+		ViewElement mv = findElementByText(MSGBOX_TITLE_TEXT, 0, true);
+		if (mv != null) {
+			mv = findElementByText(MY_VIEWLIST_SHENSU_BUTTON_TEXT, 0, true);
+			if (mv != null) {
+				if (mv != null) {
+					mv = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
+					if (mv != null) {
+						if (force){
+							mv.doClick();
+							TimeUnit.SECONDS.sleep(1);
+							return;
+						}
+					}
+				}
+			}
+		}
 		if (force) {
 			ViewElement vd = findElementById(MY_DETAILVIEW_DELETE_BUTTON_ID);
 			if (vd == null) {
