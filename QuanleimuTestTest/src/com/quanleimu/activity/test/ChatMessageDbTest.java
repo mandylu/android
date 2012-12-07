@@ -1,9 +1,11 @@
 package com.quanleimu.activity.test;
 
+import java.util.List;
+
 import android.test.AndroidTestCase;
 
-import com.baixing.database.ChatMessageDatabase;
-import com.baixing.entity.ChatMessage;
+import com.quanleimu.database.ChatMessageDatabase;
+import com.quanleimu.entity.ChatMessage;
 
 public class ChatMessageDbTest extends AndroidTestCase {
 	

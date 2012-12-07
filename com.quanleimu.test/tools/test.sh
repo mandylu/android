@@ -17,10 +17,6 @@ chmod -R 777 "logs";
 # define create_emulator function
 create_emulator() {
 	local emulator="$1"
-	if [ ! -f "logs/emulator/$emulator.img" ];
-	then
-		mksdcard 256M "logs/emulator/$emulator.img"
-	fi
 	local type="$2"
 	if [ $type = "" ]; then
 		type="android-8"
@@ -31,6 +27,10 @@ create_emulator() {
 		exit 1;
 	fi
 	(echo "")|android create avd -n $emulator -t $typeid -s WVGA800;
+	if [ ! -f "logs/emulator/$emulator.img" ];
+	then
+		mksdcard 256M "logs/emulator/$emulator.img"
+	fi
 }
 
 # define start_emulator function
@@ -57,7 +57,7 @@ install_pkg() {
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port uninstall com.quanleimu.activity;
 	adb -s emulator-$port install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-	adb -s emulator-$port install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
+	adb -s emulator-$port install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 	
 	adb -s emulator-$port shell logcat -d >> $LOGPATH/build_$LOGNOW.log;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
@@ -87,7 +87,7 @@ run_test() {
 	local prefix="$3"
 	
 	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
-	adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
+	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
 
 }
 
@@ -107,7 +107,7 @@ start_real_device() {
 		adb -s $emulator uninstall com.quanleimu.activity;
 		adb -s $emulator uninstall com.quanleimu.test;
 		adb -s $emulator install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-		adb -s $emulator install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
+		adb -s $emulator install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
 		
 		adb -s $emulator shell input keyevent 82
 		adb -s $emulator shell input keyevent 4
@@ -148,7 +148,7 @@ build_pkg() {
 		exit;
 	fi;
 	
-	cd ../
+	cd ../../
 	
 	if [ -f "../../buildconfig/local.properties" ];then
 		cp "../../buildconfig/local.properties" com.quanleimu.test/local.properties;
@@ -159,10 +159,10 @@ build_pkg() {
 	ant release;
 	sleep 1;
 	
-	if [ ! -f bin/com.baixing.test-release.apk ];
+	if [ ! -f bin/com.quanleimu.test-release.apk ];
 	then
 		echo "ANT build baixing test app error";
-		#echo "ANT build baixing test app error" >> $LOGPATH/build_$LOGNOW.log
+		echo "ANT build baixing test app error" >> $LOGPATH/build_$LOGNOW.log
 		exit;
 	fi;
 	cd ../
@@ -201,21 +201,21 @@ install_pkg "5558"
 
 start_screen
 
-#run_test "emulator-5556" "com.baixing.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
-#run_test "emulator-5580" "com.baixing.activity.test.KeepLiveTest#runPost" "run_post"
-run_test "emulator-5558" "com.baixing.activity.test.BXTestSuite" "run_test"
-#run_test "emulator-5560" "com.baixing.activity.test" "run_test"
+#run_test "emulator-5556" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adlisting"
+#run_test "emulator-5580" "com.quanleimu.activity.test.KeepLiveTest#runPost" "run_post"
+run_test "emulator-5558" "com.quanleimu.activity.test.BXTestSuite" "run_test"
+#run_test "emulator-5560" "com.quanleimu.activity.test" "run_test"
 
 
 start_real_device "015d18844854041c"
 if [ "$REALDEVICE" = "1" ]; then
 	echo "015d18844854041c test if connected";
-	#run_test "015d18844854041c" "com.baixing.activity.test.KeepLiveTest#runPostAll" "run_post_all"
+	#run_test "015d18844854041c" "com.quanleimu.activity.test.KeepLiveTest#runPostAll" "run_post_all"
 fi
 start_real_device "015d1458a51c0c0e"
 if [ "$REALDEVICE" = "1" ]; then
 	echo "015d1458a51c0c0e test if connected";
-	run_test "015d1458a51c0c0e" "com.baixing.activity.test.KeepLiveTest#runAdListing" "run_adListing"
+	run_test "015d1458a51c0c0e" "com.quanleimu.activity.test.KeepLiveTest#runAdListing" "run_adListing"
 fi
 
 echo "END"

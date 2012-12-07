@@ -122,7 +122,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		pushFragment(new PostGoodsFragment(), bundle);
 	}
 	
-	
+	public String getCategoryNames(){
+		String categoryName = getArguments().getString("categoryName");
+		return categoryEnglishName + "," + categoryName;
+	}
 	
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result) {

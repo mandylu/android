@@ -1,4 +1,4 @@
-package com.baixing.activity.test;
+package com.quanleimu.activity.test;
 
 import java.lang.reflect.Constructor;
 import java.lang.reflect.InvocationTargetException;

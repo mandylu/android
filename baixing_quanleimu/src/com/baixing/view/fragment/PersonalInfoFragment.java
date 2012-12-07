@@ -407,7 +407,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			IBxNotification note = (IBxNotification) data;
 			if (IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
-				user = (UserBean) note.getObject();
+				user = (UserBean) note.getObejct();
 				
 				reloadUser(getView());
 			}

@@ -44,6 +44,7 @@ import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.GridCateFragment;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
+import com.baixing.view.fragment.PostGoodsFragment;
 import com.baixing.view.fragment.TalkFragment;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
@@ -553,4 +554,42 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 			}
 		}
 	}
+//<<<<<<< HEAD
+//
+////	private int lastIndex;
+//	@Override
+//	public void beforeChange(int currentIndex, int nextIndex) {
+////		if (nextIndex != 1)
+////		{
+////			lastIndex = nextIndex;
+////		}
+//	}
+//
+//	/**
+//	 * This code only have short life and will be replaced with new logic after 3.0 release. So just ignor if you think it's ugly
+//	 */
+//	public void afterChange(int newSelectIndex) {
+//		switch(newSelectIndex)
+//		{
+//		case 0:
+//			this.pushFragment(new HomeFragment(), bundle, true);
+//			break;
+//		case 1:
+//            //发布赌约
+//            QuanleimuApplication.postEntryFlag = 0;
+////
+////			Bundle args = new Bundle(bundle);
+////			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
+////			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
+////			pushFragment(new GridCateFragment(), args, true);
+//            pushFragment(new PostGoodsFragment(), new Bundle(bundle), false);
+//			break;
+//		case 2:
+//			this.pushFragment(new PersonalInfoFragment(), bundle, true);
+//			break;
+//		}
+//	}
+//	
+//=======
+//>>>>>>> f9aba27162b666117968449b15e2a9528d97e16c
 }

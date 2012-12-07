@@ -29,7 +29,6 @@ import android.os.Message;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
-import android.text.ClipboardManager;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -38,6 +37,7 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
+import android.view.WindowManager;
 import android.view.animation.Animation;
 import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
@@ -67,9 +67,7 @@ import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.baixing.view.AdViewHistory;
 import com.baixing.view.AuthController;
-import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.BaiduMapActivity;
 import com.quanleimu.activity.BaseActivity;
@@ -140,7 +138,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
-		
+		if(mb_loading != null){
+			mb_loading.recycle();
+			mb_loading = null;
+		}
+
 //		if(null != listUrl && listUrl.size() > 0)
 //			SimpleImageLoader.Cancel(listUrl);
 //		this.mListLoader = null;
@@ -361,10 +363,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	@Override
 	public void onDestroyView(){
-		if(mb_loading != null){
-			mb_loading.recycle();
-			mb_loading = null;
-		}
+//		if(mb_loading != null){
+//			mb_loading.recycle();
+//			mb_loading = null;
+//		}		
 		super.onDestroyView();
 	}
 
@@ -809,7 +811,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void updateContactBar(View rootView, boolean forceHide)
 	{
-		AdViewHistory.getInstance().markRead(detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 		
 		if (!isValidMessage() && !forceHide)
 		{
@@ -875,13 +876,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
 
 		final String contactS = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
-		final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
+//		final boolean isFromMobile = isCurrentAdFromMobile();
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
 		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
+//		btnImg.setImageResource(isFromMobile ? R.drawable.icon_buzz : R.drawable.icon_sms);
 		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
 		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
 		
-		final boolean buzzEnable = TextUtil.isNumberSequence(contactS) && mobileArea != null && !"".equals(mobileArea) ? true : false;
+		final boolean buzzEnable = TextUtil.isNumberSequence(contactS) ? true : false;
 		btnBuzz.setEnabled(buzzEnable);
 		if (!buzzEnable)
 		{
@@ -899,6 +901,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		View callImg = rootView.findViewById(R.id.icon_call);
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
+		String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 		String text = contactS;
 		if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea))
 		{
@@ -907,9 +910,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		else if (mobileArea == null || "".equals(mobileArea.trim()))
 		{
 			text = contactS + "(非手机号)";
-			ContextMenuItem opts = (ContextMenuItem) rootView.findViewById(R.id.vad_call_nonmobile);
-			opts.updateOptionList("", getResources().getStringArray(R.array.item_call_nonmobile), 
-					new int[] {R.id.vad_call_nonmobile + 1, R.id.vad_call_nonmobile + 2});
 		}
 		
 		txtCall.setText(callEnable ? text : "无联系方式");
@@ -1072,11 +1072,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.end();
 			
 			final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
-			if (mobileArea == null || "".equals(mobileArea.trim()))
-			{
-				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
-			}
-			else if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
+			if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(R.string.dialog_title_warning)
 				.setMessage(R.string.warning_danger_mobile)
@@ -1770,17 +1766,16 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		Log.d("goodetail","itemselect:"+menuItem.getItemId());
 		switch (menuItem.getItemId())
 		{
-			case R.id.vad_call_nonmobile + 1: {
-				startContact(false);
-				return true;
-			}
-			case R.id.vad_call_nonmobile + 2: {
-				ClipboardManager clipboard = (ClipboardManager)
-				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
-				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
-				ViewUtil.postShortToastMessage(getView(), R.string.tip_clipd_contact, 0);
-				return true;
-			}
+		case R.id.vad_send_message + 1: {
+			startContact(true);
+			return true;
+		}
+		case R.id.vad_send_message + 2: {
+			startChat();
+			return true;
+		}
+		case R.id.vad_send_message + 3:
+			return true;
 		}
 		
 		return super.onContextItemSelected(menuItem);

@@ -25,7 +25,7 @@
             android:background="@drawable/bg_contact_bar" >
 
             <com.baixing.widget.ContextMenuItem
-                android:id="@+id/vad_call_nonmobile"
+                android:id="@+id/vad_send_message"
                 android:layout_width="wrap_content"
                 android:layout_height="wrap_content"
                 android:layout_alignParentLeft="true"
