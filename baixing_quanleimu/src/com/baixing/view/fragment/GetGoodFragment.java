@@ -749,6 +749,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		singleFilter.setOnClickListener(listener);
 		moreItem.setOnClickListener(listener);
 		
+		View filterParent =getView() == null ? null : getView().findViewById(R.id.filter_bar_root);
+		if (filterParent != null)
+		{
+			filterParent.setVisibility(View.VISIBLE);
+		}
+		
 	}
 	
 	private View[] findAllFilterView()
