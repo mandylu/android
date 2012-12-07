@@ -2,7 +2,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#7D000000"
+    android:background="#CC000000"
     android:orientation="vertical" >
 
     <LinearLayout
@@ -16,16 +16,17 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
-            android:orientation="horizontal"
-            android:paddingBottom="@dimen/post_padding" >
+            android:orientation="horizontal" >
 
             <ImageView
                 android:id="@+id/iv_1"
                 android:layout_width="90dip"
                 android:layout_height="90dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
-                android:scaleType="centerCrop" >
+                android:background="#FFFFFF"
+                android:padding="2dip"
+                android:scaleType="fitXY"
+                android:src="@drawable/btn_add_picture" >
             </ImageView>
 
             <ImageView
@@ -34,8 +35,10 @@
                 android:layout_height="90dip"
                 android:layout_marginLeft="13dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
+                android:background="#FFFFFF"
+                android:padding="2dip"
                 android:scaleType="centerCrop"
+                android:src="@drawable/btn_add_picture"
                 android:visibility="invisible" >
             </ImageView>
 
@@ -45,8 +48,10 @@
                 android:layout_height="90dip"
                 android:layout_marginLeft="13dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
+                android:background="#FFFFFF"
+                android:padding="2dip"
                 android:scaleType="centerCrop"
+                android:src="@drawable/btn_add_picture"
                 android:visibility="invisible" >
             </ImageView>
         </LinearLayout>
@@ -56,15 +61,17 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
-            android:paddingBottom="@dimen/post_padding" >
+            android:paddingTop="@dimen/post_padding" >
 
             <ImageView
                 android:id="@+id/iv_4"
                 android:layout_width="90dip"
                 android:layout_height="90dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
+                android:background="#FFFFFF"
+                android:padding="2dip"
                 android:scaleType="centerCrop"
+                android:src="@drawable/btn_add_picture"
                 android:visibility="invisible" >
             </ImageView>
 
@@ -74,8 +81,10 @@
                 android:layout_height="90dip"
                 android:layout_marginLeft="13dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
+                android:background="#FFFFFF"
+                android:padding="2dip"
                 android:scaleType="centerCrop"
+                android:src="@drawable/btn_add_picture"
                 android:visibility="invisible" >
             </ImageView>
 
@@ -85,12 +94,27 @@
                 android:layout_height="90dip"
                 android:layout_marginLeft="13dip"
                 android:layout_weight="1"
-                android:background="@drawable/btn_add_picture"
+                android:background="#FFFFFF"
+                android:padding="2dip"
                 android:scaleType="centerCrop"
+                android:src="@drawable/btn_add_picture"
                 android:visibility="invisible" >
             </ImageView>
         </LinearLayout>
     </LinearLayout>
+
+    <Button
+        android:id="@+id/btn_finish_sel"
+        android:layout_width="180dip"
+        android:layout_height="48dip"
+        android:layout_below="@id/img_sel_content"
+        android:layout_centerHorizontal="true"
+        android:layout_marginTop="3dip"
+        android:background="#000000"
+        android:text="完成添加"
+        android:textColor="#FFFFFF"
+        android:textStyle="bold" >
+    </Button>
 
     <include
         android:id="@+id/post_big"

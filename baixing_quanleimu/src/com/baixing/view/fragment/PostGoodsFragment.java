@@ -529,6 +529,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			
 			if(listUrl.size() > 0){
 				SimpleImageLoader.showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
+				((TextView)layout_txt.findViewById(R.id.myImg)).setText(listUrl.size());
+				layout_txt.findViewById(R.id.myImg).setVisibility(View.VISIBLE);
+			}else{
+				layout_txt.findViewById(R.id.myImg).setVisibility(View.INVISIBLE);
 			}
 			
 //			String big = (goodsDetail.getImageList().getBig());
@@ -1970,6 +1974,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							iv.setImageResource(R.id.myImg);
 						}
 					}
+					
+					TextView tv = (TextView)getView().findViewById(R.id.imgCout);
+					if(iv != null){
+						if(bps != null && bps.size() > 0){
+							tv.setText(String.valueOf(bps.size()));
+							tv.setVisibility(View.VISIBLE);
+						}else{
+							tv.setVisibility(View.INVISIBLE);
+						}
+					}
 				}
 				ArrayList<String> urls = (ArrayList<String>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_BITMAP_URL);
 				if(urls != null){
@@ -2184,7 +2198,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = (categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
+		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 		title.m_leftActionHint = "返回";
 //		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
 //			title.m_rightActionHint = "完成";

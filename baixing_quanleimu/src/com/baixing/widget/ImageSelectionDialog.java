@@ -25,7 +25,10 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.ViewGroup;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
@@ -126,6 +129,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     		imgs.add((ImageView)v.findViewById(imgIds[currentImgView + 1]));
     		v.findViewById(imgIds[currentImgView + 1]).setVisibility(View.VISIBLE);
     	}
+    	adjustImageLines();
     }
     
     private void adjustImageCountAfterDel(View v){
@@ -147,6 +151,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			v.findViewById(imgIds[i]).setVisibility(View.INVISIBLE);
     		}
     	}
+    	adjustImageLines();
     }    
     
     private Uri uri = null;
@@ -251,6 +256,19 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		return false;
 	}
 	
+	private void adjustImageLines(){
+		if(imgs == null) return;
+		if(imgs.size() <= imgIds.length / 2){
+			for(int i = imgIds.length / 2; i < imgIds.length; ++ i){
+				imgs.get(0).getRootView().findViewById(imgIds[i]).setVisibility(View.GONE);
+			}
+		}else{
+			for(int i = imgs.size(); i < imgIds.length; ++ i){
+				imgs.get(0).getRootView().findViewById(imgIds[i]).setVisibility(View.INVISIBLE);
+			}			
+		}
+	}
+	
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
     	if(bitmap_url == null){
@@ -276,6 +294,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         for(int i = 0; i < imgIds.length; ++ i){
         	v.findViewById(imgIds[i]).setOnClickListener(this);
         }
+        v.findViewById(R.id.btn_finish_sel).setOnClickListener(this);
         int realSize = bitmap_url.size() > imgIds.length ? imgIds.length : bitmap_url.size();
         for(int i = 0; i < realSize; ++ i){
         	ImageView iv = (ImageView)v.findViewById(imgIds[i]);
@@ -298,6 +317,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	iv.setVisibility(View.VISIBLE);
         	imgs.add(iv);
         }
+        
+        adjustImageLines();
 
         v.setOnClickListener(this);
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener(){
@@ -522,7 +543,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		Float width  = new Float(srcBmp.getWidth());
 		Float height = new Float(srcBmp.getHeight());
 		Float ratio = width/height;
-		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
+//		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
+		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, thumbHeight, thumbHeight, true);
 		return thumbnail;
 	}
 	
