@@ -1048,6 +1048,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 					break;
 				}
 				TimeUnit.SECONDS.sleep(1);
+				if (i == 5 && findElementByText(MSGBOX_TITLE_TEXT, 0, true) != null) {
+					goBack();
+				}
 				if (i++ > 20) break;
 			}
 			TimeUnit.SECONDS.sleep(1);
