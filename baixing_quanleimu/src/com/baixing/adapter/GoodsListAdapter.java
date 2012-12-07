@@ -119,7 +119,7 @@ public class GoodsListAdapter extends BaseAdapter {
 
 	@Override
 	public int getCount() {
-		return this.getGroupCount()  + ((list == null || 0 == list.size()) ? 1 : list.size());
+		return this.getGroupCount()  + ((list == null || 0 == list.size()) ? 0 : list.size());
 	}
 	
 	private int getGroupCount()
@@ -214,16 +214,17 @@ public class GoodsListAdapter extends BaseAdapter {
 	@Override
 	public View getView(final int pos, View convertView, ViewGroup parent) {
 //		Log.d("goodslistadapter", "hahaha, position: " + position);
-		if(list == null || 0 == list.size()){
-			View v = null;
-			
-			if(0 == pos){			
-				
-				LayoutInflater inflater = LayoutInflater.from(context);
-				v = inflater.inflate(R.layout.goodslist_empty_hint, null);
-			}
-			return v;
-		}else{
+//		if(list == null || 0 == list.size()){
+//			View v = null;
+//			
+//			if(0 == pos){			
+//				
+//				LayoutInflater inflater = LayoutInflater.from(context);
+//				v = inflater.inflate(R.layout.goodslist_empty_hint, null);
+//			}
+//			return v;
+//		}else
+		{
 			ViewHolder holder;
 			View v = convertView;
 			if(v == null || v.getTag() == null || !(v.getTag() instanceof ViewHolder)){
@@ -296,9 +297,8 @@ public class GoodsListAdapter extends BaseAdapter {
 				
 				if (list.get(position).getImageList() == null
 						|| list.get(position).getImageList().equals("")
-						|| list.get(position).getImageList().getResize180() == null
-						|| list.get(position).getImageList().getResize180()
-								.equals("")) {
+						|| list.get(position).getImageList().getSquare() == null
+						|| list.get(position).getImageList().getSquare().equals("")) {
 					
 					if(null != strTag && strTag.length() > 0)
 						listUrlsToCancel.add(strTag);
@@ -308,7 +308,7 @@ public class GoodsListAdapter extends BaseAdapter {
 						holder.ivInfo.setImageBitmap(defaultBk2);	
 					}
 				} else {
-						String b = (list.get(position).getImageList().getResize180());
+						String b = (list.get(position).getImageList().getSquare());
 //						.substring(1, (list.get(position).getImageList()
 //								.getResize180()).length() - 1);
 						b = Communication.replace(b);

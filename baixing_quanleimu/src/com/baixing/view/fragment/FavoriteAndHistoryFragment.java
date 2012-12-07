@@ -51,7 +51,6 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     private GoodsListAdapter adapter = null;
     private PullToRefreshListView pullListView = null;
-    private Bundle bundle = null;
     private int buttonStatus = -1;//-1:edit 0:finish
     private GoodsListLoader glLoader = null;
     private GoodsList tempGoodsList = null;

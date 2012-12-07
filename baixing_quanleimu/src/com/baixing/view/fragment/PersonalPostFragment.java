@@ -5,12 +5,15 @@ import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
@@ -30,6 +33,9 @@ import com.baixing.entity.UserBean;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
@@ -44,7 +50,7 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener{
+public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
 	private final int MSG_MYPOST = 1;
 //	private final int MSG_INVERIFY = 2;
 //	private final int MSG_DELETED = 3;
@@ -66,6 +72,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	public GoodsListAdapter adapter = null;
 //	private String json;
 	UserBean user;
+	private boolean needReloadData = false;
 
     /**
      * 用这几个 static value 区分不同类别“我的信息”
@@ -95,12 +102,46 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
+		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+		filterOutAd(listMyPost, user);
+		
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+	}
+	
+	
+	public void onDestroy() {
+		super.onDestroy();
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+	}
+
+
+
+	private  void filterOutAd(List<GoodsDetail> list, UserBean user)
+	{
+		if (list != null && user != null)
+		{
+			int i=0;
+			while (i<listMyPost.size())
+			{
+				GoodsDetail detail = list.get(i);
+				if (!detail.getValueByKey("userId").equals(user.getId()))
+				{
+					list.remove(i);
+				}
+				else
+				{
+					i++;
+				}
+			}
+		}
 	}
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		if(!isBack){
+		if(!isBack || needReloadData){
 			lvGoodsList.fireRefresh();
+			needReloadData = false;
 		}
 	}
 
@@ -130,8 +171,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		ivMyads.setOnClickListener(this);
 //		ivMyfav.setOnClickListener(this);
 //		ivMyhistory.setOnClickListener(this);
-		if (currentType == TYPE_MYPOST)
-			listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+//		if (currentType == TYPE_MYPOST)
+//			listMyPost = QuanleimuApplication.getApplication().getListMyPost();
 		
 		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost, null);
         adapter.setHasDelBtn(true);
@@ -776,5 +817,24 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			}
 		}
 
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
+					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
+				user = (UserBean) note.getObject();
+				filterOutAd(listMyPost, user);
+				needReloadData = true;
+				if (adapter != null)
+				{
+					adapter.notifyDataSetChanged();
+				}
+			}
+		}
+		
 	}
 }

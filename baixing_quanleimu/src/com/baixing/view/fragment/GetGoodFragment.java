@@ -122,7 +122,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		pushFragment(new PostGoodsFragment(), bundle);
 	}
 	
-	
+	public String getCategoryNames(){
+		String categoryName = getArguments().getString("categoryName");
+		return categoryEnglishName + "," + categoryName;		
+	}
 	
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result) {
@@ -210,15 +213,18 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
-				
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					goodsListLoader.cancelFetching();
-					finishFragment();
-				}
-			});
-			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+//			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
+//				
+//				@Override
+//				public void onCancel(DialogInterface dialog) {
+//					goodsListLoader.cancelFetching();
+//					finishFragment();
+//				}
+//			});
+			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
+			lvGoodsList.setAdapter(adapter);
+//			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+			lvGoodsList.fireRefresh();
 		}
 		
 		
@@ -399,10 +405,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		GoodsListAdapter adapter = this.findGoodListAdapter();
-		switch(v.getId()){
-
-		}
 	}
 	
 	@Override
@@ -745,6 +747,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		singleFilter.setOnClickListener(listener);
 		moreItem.setOnClickListener(listener);
+		
+		View filterParent =getView() == null ? null : getView().findViewById(R.id.filter_bar_root);
+		if (filterParent != null)
+		{
+			filterParent.setVisibility(View.VISIBLE);
+		}
 		
 	}
 	

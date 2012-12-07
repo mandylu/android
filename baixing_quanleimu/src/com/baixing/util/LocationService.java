@@ -73,7 +73,7 @@ public class LocationService{
 	    		location = new BXLocation(false);
 	    		location.address = result.strBusiness;
 	    		location.detailAddress = result.strAddr;
-	    		location.cityName = result.addressComponents == null ? null : result.addressComponents.city.replace("市", "");
+	    		location.cityName = result.addressComponents == null ? null : result.addressComponents.city;//.replace("市", "");
 	    		location.subCityName = result.addressComponents == null ? null : result.addressComponents.district;
 	    		location.adminArea = result.addressComponents == null ? null : result.addressComponents.province;
 	    		if(null != location.cityName && location.cityName.length() > 0)
