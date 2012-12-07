@@ -199,6 +199,18 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
 	    	}
     	}
+    	
+    	 ListAdapter adapter = findGoodListAdapter();
+         if (adapter == null || adapter.getCount() == 0)
+         {
+//         	mNoInfoView.setVisibility(View.VISIBLE);
+         	this.addFooterView(mNoInfoView);
+         }
+         else
+         {
+//         	mNoInfoView.setVisibility(View.GONE);
+         	this.removeFooterView(mNoInfoView);
+         }
     }
     
     @Override
@@ -804,16 +816,6 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
         }
         
         updateFooter(true); 
-        
-        ListAdapter adapter = findGoodListAdapter();
-        if (adapter == null || adapter.getCount() == 0)
-        {
-        	mNoInfoView.setVisibility(View.VISIBLE);
-        }
-        else
-        {
-        	mNoInfoView.setVisibility(View.GONE);
-        }
     }
     
 	private ListAdapter findGoodListAdapter()
@@ -848,6 +850,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     	mGetMoreState = SCROLLDOWN_TO_GETMORE;
     	
     	updateFooter(hasMore);
+    	
     }
 
     /**
