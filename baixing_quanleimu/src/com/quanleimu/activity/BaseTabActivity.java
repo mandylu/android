@@ -39,6 +39,7 @@ import com.baixing.view.CustomizeTabHost.TabSelectListener;
  *
  */
 public class BaseTabActivity extends BaseActivity implements TabSelectListener {
+	
 	public static final String LIFE_TAG = "mainActivity";
 	public static final int TAB_INDEX_CAT = 0;
 	public static final int TAB_INDEX_POST = 1;
@@ -54,12 +55,15 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected static boolean isExitingApp = false;
 //	protected boolean skipReduceInstanceCount = false;
 	protected static Map<Integer, Boolean> instanceList = new HashMap<Integer, Boolean>();
+	protected int originalAppHash = 0;
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(savedInstanceState);
-		
+		if (originalAppHash != 0)
+		{
+			savedInstanceState.putInt("appHash", originalAppHash);
+		}
 		if (globalTabCtrl != null)
 		{
 			globalTabCtrl.setCurrentFocusIndex(getTabIndex()); //Always save current index to the fixed one.
@@ -70,13 +74,15 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onStart()
 	{
 		super.onStart();
-		if (instanceList.containsKey(this.hashCode()))
+		if ((instanceList.containsKey(this.hashCode()) && instanceList.get(this.hashCode()).booleanValue()))
 		{
-			if (instanceList.get(this.hashCode()).booleanValue())
-			{
-				instanceList.remove(this.hashCode());
-				this.finish();
-			}
+			instanceList.remove(this.hashCode());
+			this.finish();
+		}
+		else if (originalAppHash != 0 && QuanleimuApplication.isAppDestroy(originalAppHash))
+		{
+			finish();
+			return;
 		}
 	}
 	
@@ -90,6 +96,17 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.w(LIFE_TAG, this.hashCode() + " activity is created for class " + this.getClass().getName());
 		super.onCreate(savedInstanceState);
+		
+		if (savedInstanceState != null)
+		{
+			originalAppHash = savedInstanceState.getInt("appHash", 0);
+		}
+		else
+		{
+			originalAppHash = QuanleimuApplication.getApplication().hashCode();
+		}
+		
+		
 //		ACTIVE_INSTANCE_COUNT++;
 //		Log.d(LIFE_TAG, this.hashCode() + " activity create with exiting app flag be " + isExitingApp + " and instace count is " + ACTIVE_INSTANCE_COUNT);
 		instanceList.put(this.hashCode(), Boolean.valueOf(false));
