@@ -529,10 +529,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			
 			if(listUrl.size() > 0){
 				SimpleImageLoader.showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
-				((TextView)layout_txt.findViewById(R.id.myImg)).setText(listUrl.size());
-				layout_txt.findViewById(R.id.myImg).setVisibility(View.VISIBLE);
+				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
+				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
 			}else{
-				layout_txt.findViewById(R.id.myImg).setVisibility(View.INVISIBLE);
+				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
 			
 //			String big = (goodsDetail.getImageList().getBig());
