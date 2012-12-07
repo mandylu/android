@@ -124,7 +124,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	public String getCategoryNames(){
 		String categoryName = getArguments().getString("categoryName");
-		return categoryEnglishName + "," + categoryName;
+		return categoryEnglishName + "," + categoryName;		
 	}
 	
 	@Override

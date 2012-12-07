@@ -16,7 +16,7 @@ public class BxMessageCenter
     public static interface IBxNotification
     {
         public String getName();
-        public Object getObejct();
+        public Object getObject();
         public Map getAdditionalInfo();
     }
     
@@ -133,7 +133,7 @@ public class BxMessageCenter
         }
 
         @Override
-        public Object getObejct()
+        public Object getObject()
         {
             return obj;
         }
