@@ -57,6 +57,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
+	private static QuanleimuApplication mDemoApp = null;
+	private static int lastDestoryInstanceHash = 0;
+//	private static ArrayList<Integer> destroyList = new ArrayList<Integer>();
 	
     //为赌约而设
     public static int postEntryFlag = -1;
@@ -680,7 +683,21 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	
 	static public void resetApplication()
 	{
+		if (mDemoApp != null)
+		{
+			lastDestoryInstanceHash = mDemoApp.hashCode();
+		}
 		QuanleimuApplication.mDemoApp = null;
+	}
+	
+	static void initStaticFields()
+	{
+		lastDestoryInstanceHash = 0;
+	}
+	
+	static public boolean isAppDestroy(int appHash)
+	{
+		return appHash !=0 && appHash == lastDestoryInstanceHash;
 	}
 
 	static public QuanleimuApplication getApplication(){
@@ -710,7 +727,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	private static QuanleimuApplication mDemoApp = null;
 
 	
 //	protected ViewStack viewStack;
