@@ -297,9 +297,8 @@ public class GoodsListAdapter extends BaseAdapter {
 				
 				if (list.get(position).getImageList() == null
 						|| list.get(position).getImageList().equals("")
-						|| list.get(position).getImageList().getResize180() == null
-						|| list.get(position).getImageList().getResize180()
-								.equals("")) {
+						|| list.get(position).getImageList().getSquare() == null
+						|| list.get(position).getImageList().getSquare().equals("")) {
 					
 					if(null != strTag && strTag.length() > 0)
 						listUrlsToCancel.add(strTag);
@@ -309,7 +308,7 @@ public class GoodsListAdapter extends BaseAdapter {
 						holder.ivInfo.setImageBitmap(defaultBk2);	
 					}
 				} else {
-						String b = (list.get(position).getImageList().getResize180());
+						String b = (list.get(position).getImageList().getSquare());
 //						.substring(1, (list.get(position).getImageList()
 //								.getResize180()).length() - 1);
 						b = Communication.replace(b);

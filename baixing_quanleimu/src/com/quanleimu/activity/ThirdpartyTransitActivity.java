@@ -65,7 +65,7 @@ public class ThirdpartyTransitActivity extends Activity{
 				goIntent = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
 				if (intent.hasExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH))
 				{
-					goIntent.putExtra(MediaStore.ACTION_IMAGE_CAPTURE, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), intent.getStringExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH))));
+					goIntent.putExtra(MediaStore.EXTRA_OUTPUT, Uri.fromFile(new File(Environment.getExternalStorageDirectory(), intent.getStringExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH))));
 				}
 			}
 			else if (CommonIntentAction.ACTION_IMAGE_SELECT.equals(intent.getAction()))

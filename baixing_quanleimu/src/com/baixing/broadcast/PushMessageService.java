@@ -323,7 +323,7 @@ public class PushMessageService extends Service implements Observer
 			if (IBxNotificationNames.NOTIFICATION_USER_CREATE.equals(note.getName())
 					|| IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
-				registeDevice(null, (UserBean) note.getObject());
+				registeDevice(null, (UserBean) note.getObejct());
 			}
 		}
 	}

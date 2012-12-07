@@ -396,8 +396,9 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			String cityName = "";
 			CityDetail cityDetail = null;
 			for(CityDetail city : QuanleimuApplication.getApplication().getListCityDetails()){
-				if (location.cityName.equals(city.getName())) {
-					cityName = location.cityName;
+				if(city.getName() == null) continue;
+				if (location.cityName.contains(city.getName())) {
+					cityName = city.getName();//location.cityName;
 					cityDetail = city;
 //					break;
 				}else if(location.subCityName != null && location.subCityName.contains(city.getName())){

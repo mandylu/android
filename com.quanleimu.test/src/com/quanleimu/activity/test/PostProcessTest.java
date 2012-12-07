@@ -1,4 +1,4 @@
-package com.baixing.activity.test;
+package com.quanleimu.activity.test;
 
 import org.athrun.android.framework.AthrunDevice;
 import org.athrun.android.framework.AthrunTestCase;

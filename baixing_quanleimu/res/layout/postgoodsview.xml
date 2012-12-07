@@ -3,24 +3,23 @@
     android:id="@+id/postgoodslayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen">
+    android:background="@color/bg_screen" >
 
     <ScrollView
         android:id="@+id/goodscontent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:clickable="true"
-        android:scrollbars="none"
-        android:padding="@dimen/post_padding" 
-        android:focusableInTouchMode="true" >
+        android:focusableInTouchMode="true"
+        android:padding="@dimen/post_padding"
+        android:scrollbars="none" >
 
         <LinearLayout
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:clickable="true"
             android:focusableInTouchMode="true"
-            android:orientation="vertical"
-            >
+            android:orientation="vertical" >
 
             <LinearLayout
                 android:id="@+id/layout_txt"
@@ -31,20 +30,20 @@
                 android:orientation="vertical" >
 
                 <include
-                    android:id="@+id/image_layout"
-                    layout="@layout/post_image_layout" />
+                    android:id="@+id/img_description"
+                    layout="@layout/post_image_description_layout" />
             </LinearLayout>
 
             <Button
-                android:text="立即免费发布"
-                android:textColor="#FFFFFF"
-                android:textSize="18dp"
-                android:textStyle="bold"
                 android:id="@+id/iv_post_finish"
                 android:layout_width="fill_parent"
                 android:layout_height="48dp"
                 android:layout_marginTop="0dip"
-                android:background="@drawable/post_finish_btn" >
+                android:background="@drawable/post_finish_btn"
+                android:text="立即免费发布"
+                android:textColor="#FFFFFF"
+                android:textSize="18dp"
+                android:textStyle="bold" >
             </Button>
         </LinearLayout>
     </ScrollView>
@@ -67,8 +66,8 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_marginTop="20dp"
-            android:textColor="@color/common_info"
             android:text="网络出错"
+            android:textColor="@color/common_info"
             android:textSize="18dp" />
     </LinearLayout>
 
