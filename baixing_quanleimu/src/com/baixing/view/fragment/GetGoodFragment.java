@@ -416,7 +416,22 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	@Override
-	public void onDestroy(){		
+	public void onDestroy(){
+		final GoodsListAdapter adapter = findGoodListAdapter();
+		if(adapter != null){
+			Thread t = new Thread(new Runnable(){
+				public void run(){
+					try{
+						Thread.sleep(2000);
+						adapter.releaseResource();
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();
+
+		}
 		this.lvGoodsList = null;
 //		this.adapter = null;
 		GoodsList goodData = this.goodsListLoader.getGoodsList();
@@ -431,8 +446,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					 if(gd != null){
 						 ImageList il = gd.getImageList();
 						 if(il != null){
-							 if(il.getResize180() != null){
-								 String b = il.getResize180();
+							 if(il.getSquare() != null){
+								 String b = il.getSquare();
 								 if (b.contains(",")) {
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
