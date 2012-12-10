@@ -621,6 +621,18 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 		return null;
 	}
+	
+	public TextViewElement findTextView(ViewGroupElement gv) throws Exception {
+		if (gv != null) {
+			try {
+				TextViewElement tv = gv.getChildByIndex(0, TextViewElement.class);
+				if (tv != null && tv.getText().length() > 0) return tv;
+			} catch (IllegalArgumentException e) {
+				
+			}
+		}
+		return null;
+	}
 
 	public void goBack() throws Exception {
 		goBack(true);
