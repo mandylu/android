@@ -134,6 +134,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onStop() {
 		Tracker.getInstance().event(BxEvent.APP_STOP).end();
+		Tracker.getInstance().save();
 		super.onStop();
 	}
 	
@@ -383,6 +384,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onStart() {
 		Tracker.getInstance().event(BxEvent.APP_START).end();
+		Tracker.getInstance().save();
 		super.onStart();
 	}
 	
