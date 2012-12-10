@@ -19,6 +19,7 @@
     
     <!-- tips show as toast. -->
     <string name="tip_clipd_contact">联系方式已经复制到粘贴板</string>
+    <string name="tip_searching">搜索中...</string>
 
     <!-- time related -->
     <string name="common_time_ago">前</string>
