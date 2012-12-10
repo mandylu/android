@@ -2,6 +2,7 @@ package com.baixing.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -297,8 +298,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private ArrayList<String> getSearchParams()
 	{
-		ArrayList basicParams = new ArrayList<String>();
+		ArrayList<String> basicParams = new ArrayList<String>();
 		basicParams.add("query=" + filterParamHolder.toUrlString());
+		// keyword 单独处理，放到ad_list的keyword参数里。
+		String keyword = filterParamHolder.getData("");
+		if (keyword != null && keyword.length() > 0)
+		{
+			basicParams.add("keyword=" + URLEncoder.encode(keyword));
+		}
+		
 		if (isSerchNearBy() && this.curLocation != null)
 		{
 			basicParams.add("lat="+curLocation.fLat);
