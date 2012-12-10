@@ -19,8 +19,8 @@ public class Sender implements Runnable{
 	private Context context = null;
 	private static String apiName = "trackdata";
 	private List<String> queue = null;
-	private static final String SENDER_DIR = "sender_dir";
-	private static final String SENDER_FILE_SUFFIX = ".log";//记录文件
+	static final String SENDER_DIR = "sender_dir";
+	static final String SENDER_FILE_SUFFIX = ".log";//记录文件
 	private long dataSize;
 	private Object sendMutex = new Object();
 
