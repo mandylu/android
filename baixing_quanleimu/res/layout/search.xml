@@ -5,23 +5,36 @@
     android:background="@color/bg_screen"    
     android:orientation="vertical" >
 
-    <ListView
-        android:id="@+id/lvSearchHistory"
+    <LinearLayout
+        android:id="@+id/searching_parent"
         android:layout_width="fill_parent"
-        android:layout_height="wrap_content"
-        android:layout_gravity="bottom"
-        android:focusable="false"
-        android:focusableInTouchMode="true"
-        android:divider="@drawable/list_divider"
-        android:dividerHeight="0dp"
-        android:listSelector="#00000000"
-        android:scrollingCache="false"
-        />
+        android:layout_height="48dp"
+        android:background="#fafafa"
+        android:gravity="center"
+        android:orientation="horizontal" >
+
+        <ProgressBar
+            android:id="@+id/loadingProgress"
+            android:layout_width="20dp"
+            android:layout_height="20dp" />
+
+        <TextView
+            xmlns:android="http://schemas.android.com/apk/res/android"
+            android:id="@+id/pulldown_to_getmore"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:paddingLeft="10dp"
+            android:text="@string/tip_searching"
+            android:textColor="#707070"
+            android:textSize="@dimen/font_small"
+            android:textStyle="bold" />
+    </LinearLayout>
 
     <LinearLayout
         android:id="@+id/searchResult"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/searching_parent"
         android:layout_marginLeft="16dp"
         android:layout_marginRight="16dp"
         android:orientation="vertical"

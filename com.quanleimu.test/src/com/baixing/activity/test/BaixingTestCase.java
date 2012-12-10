@@ -311,11 +311,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 						if (nv != null && nv.getText().equals("联系电话")) {
 							value = TEST_DATA_MOBILE;
 						} else {
-							value = "";
-							for(int l = 0; l < randLen; l++) {
-								RandomHan han = new RandomHan();
-								value += han.getRandomHan();
-							}
+							value = (new RandomHan()).getRandomString(randLen);
 						}
 					}
 					tv.setText(value);
@@ -423,6 +419,17 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void selectAutoMeta() throws Exception {
+		int loop = 10;
+		while (findElementById(POST_FORM_MARK_ID) == null) {
+			AbsListViewElement lv1 = findListView();
+			if (lv1 != null) {
+				int index = lv1.getChildCount() > 1 ? 1 : 0;
+				ViewElement gv = lv1.getChildByIndex(index, ViewElement.class);
+				gv.doClick();
+				return;
+			}
+			if (loop++ > 10) break;
+		}
 		int i = 2;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 		while(i >= 0) {
@@ -490,11 +497,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//String firstVal = null;
 		TextViewElement descV = findElementById(POST_META_EDITTEXT_DESC_ID, TextViewElement.class);
 		if (descV != null) {
-			for(int l = 0; l < 20; l++) {
-				RandomHan han = new RandomHan();
-				value += han.getRandomHan();
-			}
-			descV.setText(value);
+			descV.setText( (new RandomHan()).getRandomString(16));
 		}
 		while(index < 15) {
 			try {

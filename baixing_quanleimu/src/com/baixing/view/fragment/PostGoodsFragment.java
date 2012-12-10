@@ -597,6 +597,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(imgV != null){
 				imgV.setOnClickListener(this);
 			}
+			
+			View textArea = getView().findViewById(R.id.img_description);
+			if(textArea != null){
+				textArea.setOnClickListener(this);
+			}
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
 		for(int i = 1; i < fixedItemNames.length; ++ i){	
@@ -642,7 +647,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(categoryEnglishName.equals(names[0])) return;
 		}
 		initWithCategoryNames(cateNames);
-		resetData();
+		resetData(true);
 		Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, cateNames);
 		this.showPost();
 	}
@@ -704,6 +709,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}							
 			}else{
 				startImgSelDlg(null, null, null);
+			}
+		}else if(v.getId() == R.id.img_description){
+			final View et = v.findViewById(R.id.description_input);
+			if(et != null){
+				et.postDelayed(new Runnable(){
+					@Override
+					public void run(){
+						if (et != null)
+						{
+							et.requestFocus();
+							InputMethodManager inputMgr = 
+									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+							inputMgr.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
+						}
+					}			
+				}, 100);
 			}
 		}
 //		else if (v == photoalbum) {
@@ -1421,7 +1442,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		return match;
 	}
-	private void resetData(){
+	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
 			View v = layout_txt.findViewById(R.id.img_description);
 			layout_txt.removeAllViews();
@@ -1429,16 +1450,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		postList.clear();
 		
-		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-			params.clear();
-			listUrl.clear();
-			this.bmpUrls.clear();
-			if(this.imgSelDlg != null){
-				imgSelDlg.clearResource();
-				imgSelDlg = null;
+		if(clearImgs){
+			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+				params.clear();
+				listUrl.clear();
+				this.bmpUrls.clear();
+				if(this.imgSelDlg != null){
+					imgSelDlg.clearResource();
+					imgSelDlg = null;
+				}
+				this.imgSelBundle = null;
 			}
-			this.imgSelBundle = null;
-		}			
+		}
 	}
 
 	private void handleBackWithData(int message, Object obj) {
@@ -1462,7 +1485,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.categoryEnglishName = names[0];
 			}
 			
-			resetData();
+			resetData(false);
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
 		}
@@ -1703,10 +1726,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
+		if(layout_txt != null){
+			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
+		}
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
 		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
+		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -1773,7 +1800,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				text.setText("");
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
-				
+				v.setOnClickListener(this);
 //				TextView tv = (TextView)layout_txt.findViewById(R.id.description);
 //				tv.setText(bean.getDisplayName());
 				
@@ -2033,6 +2060,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					// 发布成功
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 					// 3).show();
+					resetData(true);
 					if(goodsDetail == null){
 						String lp = getArguments().getString("lastPost");
 						if(lp != null && !lp.equals("")){
