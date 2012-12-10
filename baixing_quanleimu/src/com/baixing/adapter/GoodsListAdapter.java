@@ -62,6 +62,25 @@ public class GoodsListAdapter extends BaseAdapter {
 	
 //	private RelativeLayout.LayoutParams lp = null;
 	
+	public void releaseResource(){
+		Thread t = new Thread(new Runnable(){
+			public void run(){
+//				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
+				try{
+					Thread.sleep(2000);
+					if(defaultBk2 != null){
+						defaultBk2.recycle();
+						defaultBk2 = null;
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
+		t.start();
+
+	}
+	
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
 	    if (observer != null) {
