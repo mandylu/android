@@ -311,11 +311,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 						if (nv != null && nv.getText().equals("联系电话")) {
 							value = TEST_DATA_MOBILE;
 						} else {
-							value = "";
-							for(int l = 0; l < randLen; l++) {
-								RandomHan han = new RandomHan();
-								value += han.getRandomHan();
-							}
+							value = (new RandomHan()).getRandomString(randLen);
 						}
 					}
 					tv.setText(value);
@@ -490,11 +486,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//String firstVal = null;
 		TextViewElement descV = findElementById(POST_META_EDITTEXT_DESC_ID, TextViewElement.class);
 		if (descV != null) {
-			for(int l = 0; l < 20; l++) {
-				RandomHan han = new RandomHan();
-				value += han.getRandomHan();
-			}
-			descV.setText(value);
+			descV.setText( (new RandomHan()).getRandomString(20));
 		}
 		while(index < 15) {
 			try {
