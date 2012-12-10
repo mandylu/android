@@ -519,6 +519,26 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	
+	public void goToTab(String vId) throws Exception {
+		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
+		if (v != null) {
+			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			assertNotNull(tv);
+			if (tv == null) return;
+			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
+				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
+				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
+			{
+				v.doClick();
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+		else
+		{
+			throw new Exception("Tab not found for " + vId);
+		}
+	}
+	
 	public TextViewElement getGridItemByText(String text, String gridId) throws Exception {
 		ViewGroupElement gridView = null;
 		try {
