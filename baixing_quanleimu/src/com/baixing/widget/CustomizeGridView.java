@@ -26,7 +26,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		public int imgResourceId;
 		public String text;
 		public int number = 0;
-		public boolean starred = false;
+//		public boolean starred = false;
 	}
 	
 	static public interface ItemClickListener
@@ -37,7 +37,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     static private class GridHolder {  
         ImageButton imageBtn;  
         public TextView text;  
-        public View starIcon;
+//        public View starIcon;
         public GridInfo info;
         public int index;
     }  
@@ -103,7 +103,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     	holder.imageBtn.setClickable(false);
     	holder.imageBtn.setFocusable(false);
     	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-    	holder.starIcon = convertView.findViewById(R.id.star);
+//    	holder.starIcon = convertView.findViewById(R.id.star);
         convertView.setTag(holder);
         convertView.setOnClickListener(this);
         holder.index = index;
@@ -118,12 +118,12 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         	}
             holder.text.setText(text);
             holder.imageBtn.setImageResource(info.imgResourceId);
-            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
+//            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  
         else
         {
-        	holder.starIcon.setVisibility(View.GONE);
+//        	holder.starIcon.setVisibility(View.GONE);
         	convertView.setEnabled(false);
         }
         
