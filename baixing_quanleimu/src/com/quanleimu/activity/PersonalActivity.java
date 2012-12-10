@@ -26,7 +26,7 @@ public class PersonalActivity extends BaseTabActivity {
 		Intent intent = getIntent();
 		
 		String action = intent.getAction();
-		if (action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
+		if (action != null && action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
 			Bundle extras = intent.getExtras();
 			if(extras != null){
 				pushFragment(new PersonalPostFragment(), extras, false);
