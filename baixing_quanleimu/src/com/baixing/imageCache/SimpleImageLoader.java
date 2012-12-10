@@ -46,10 +46,10 @@ public class SimpleImageLoader
 		return QuanleimuApplication.getImageLoader().getFileInDiskCache(url);
 	}
 
-	public static void showImg(final View view,final String url, final String preUrl, Context con, final int defaultResImgId)
+	public static void showImg(final View view,final String url, final String preUrl, Context con, Bitmap bmp)//final int defaultResImgId)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view,defaultResImgId));
+		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view, bmp));//defaultResImgId));
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
@@ -116,7 +116,7 @@ public class SimpleImageLoader
 	
 	public static void showImg(final View view,final String url, String preUrl, Context con)
 	{
-		showImg(view, url, preUrl, con, -1);
+		showImg(view, url, preUrl, con, null);
 	}
 	
 	static HashMap<Integer, ArrayList<Integer>> bmpReferenceMap = new HashMap<Integer, ArrayList<Integer>>();
@@ -152,7 +152,7 @@ public class SimpleImageLoader
 		}
 	}
 	
-	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final int defaultImgRes)
+	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final Bitmap defaultBmp)//final int defaultImgRes)
 	{		
 		return new ImageLoaderCallback()
 		{ 
@@ -213,15 +213,16 @@ public class SimpleImageLoader
 
 			@Override
 			public void fail(String url) {
-				if(url.equals(view.getTag().toString()) && defaultImgRes != -1 && !inFailStatus)
+				if(url.equals(view.getTag().toString()) && defaultBmp != null && !inFailStatus)
 				{
 					//method #fail(String url) maybe not called on main thread(UI thread), we should make sure the UI update on main thread
 					view.postDelayed(new Runnable() {
 						public void run() {
 							if(view instanceof ImageView){
-								((ImageView)view).setImageResource(defaultImgRes);
+								((ImageView)view).setImageBitmap(defaultBmp);//(defaultImgRes);
 							}else{
-								view.setBackgroundResource(defaultImgRes);
+								BitmapDrawable bd = new BitmapDrawable(defaultBmp);
+								view.setBackgroundDrawable(bd);//setBackgroundResource(defaultImgRes);
 							}
 						}
 					}, 100);

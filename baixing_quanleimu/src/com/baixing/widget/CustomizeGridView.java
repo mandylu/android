@@ -100,8 +100,8 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		}
 	}
 	
-	public void releaseResource(){
-		Collection<Bitmap> bmps = images.values();
+	private void recycleBmps(Map<Integer, Bitmap> container){
+		Collection<Bitmap> bmps = container.values();
 		if(bmps != null){
 			Iterator<Bitmap> ite = bmps.iterator();
 			while(ite.hasNext()){
@@ -111,7 +111,28 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 				}
 			}
 		}
-		images.clear();
+		container.clear();
+	}
+	
+	public void releaseResource(final int delayMills){
+		if(delayMills == 0){
+			recycleBmps(images);
+		}else{
+			final Map<Integer, Bitmap> tmpBmps = new HashMap<Integer, Bitmap>();
+			tmpBmps.putAll(images);
+			images.clear();
+			Thread t = new Thread(new Runnable(){
+				public void run(){
+					try{
+						Thread.sleep(delayMills);
+						recycleBmps(tmpBmps);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();			
+		}
 	}
 	
 	private Map<Integer, Bitmap> images = new HashMap<Integer, Bitmap>();
