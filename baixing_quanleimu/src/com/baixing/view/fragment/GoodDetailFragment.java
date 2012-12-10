@@ -146,12 +146,21 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //		this.mListLoader = null;
 		
 		//View history is disabled from version 3.1
-//		Thread t = new Thread(new Runnable(){
-//			public void run(){
+		Thread t = new Thread(new Runnable(){
+			public void run(){
 //				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
-//			}
-//		});
-//		t.start();
+				try{
+					Thread.sleep(2000);
+					if(mb_loading != null){
+						mb_loading.recycle();
+						mb_loading = null;
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
+		t.start();
 	
 		super.onDestroy();
 	}
@@ -361,10 +370,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	@Override
 	public void onDestroyView(){
-//		if(mb_loading != null){
-//			mb_loading.recycle();
-//			mb_loading = null;
-//		}
 		super.onDestroyView();
 	}
 
