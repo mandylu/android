@@ -76,6 +76,10 @@ public abstract class BaseFragment extends Fragment {
 		//EBUTT_STYLE_FORWARD
 	};
 	
+	public Handler getHandler() {
+		return handler;
+	}
+
 	public final class TitleDef{	
 		private TitleDef() {}
 		public boolean m_visible = true;
@@ -113,7 +117,7 @@ public abstract class BaseFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 	}
-
+	
 	protected void handleMessage(Message msg, Activity activity, View rootView)
 	{
 		//Override me to process you message.

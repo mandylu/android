@@ -115,7 +115,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_EDITTEXT_ID = "postinput";
 	public static final String POST_META_EDIT_DISPLAY_ID = "postshow";
 	public static final String POST_META_EDIT_DISPLAY_DESC_ID = "postdescriptionshow";
-	public static final String POST_META_EDITTEXT_DESC_ID = "postdescriptioninput";
+	public static final String POST_META_EDITTEXT_DESC_ID = "description_input";
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
 	public static final String POST_SEND = "立即免费发布";

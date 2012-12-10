@@ -4,9 +4,11 @@ import java.io.File;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.IOException;
+import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
+import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -44,9 +46,6 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.AdapterView;
-import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.Button;
 import android.widget.CheckBox;
@@ -63,10 +62,8 @@ import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
@@ -80,14 +77,15 @@ import com.baixing.widget.ImageSelectionDialog;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.baixing.widget.CustomDialog;
+import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
+import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener, OnKeyListener{
-
+	
 	public static final int MSG_START_UPLOAD = 5;
 	public static final int MSG_FAIL_UPLOAD = 6;
 	public static final int MSG_SUCCED_UPLOAD = 7;
@@ -127,6 +125,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public static final int POST_CHECKSELECT = 6;
 	public static final int MSG_MULTISEL_BACK = 10;
 	public static final int MSG_CATEGORY_SEL_BACK = 11;
+	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	public static final String IMAGEUNSPECIFIED = "image/*";
 
 	private PostParamsHolder params;
@@ -648,7 +647,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(categoryEnglishName.equals(names[0])) return;
 		}
 		initWithCategoryNames(cateNames);
-		resetData();
+		resetData(true);
 		Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, cateNames);
 		this.showPost();
 	}
@@ -853,7 +852,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return value;
 	}
 
-	private boolean filled() {
+	private boolean filled() {//判断是否填入数据
 		// check if images uploaded.
 //		for (String url : bitmap_url)
 //		{
@@ -1190,7 +1189,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 	}
+	
 
+	
 	private int getLineCount() {
 		return etDescription != null ? etDescription.getLineCount() : 1;
 	}
@@ -1441,8 +1442,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		return match;
 	}
-	
-	private void resetData(){
+	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
 			View v = layout_txt.findViewById(R.id.img_description);
 			layout_txt.removeAllViews();
@@ -1450,20 +1450,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		postList.clear();
 		
-		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-			params.clear();
-			listUrl.clear();
-			this.bmpUrls.clear();
-			if(this.imgSelDlg != null){
-				imgSelDlg.clearResource();
-				imgSelDlg = null;
+		if(clearImgs){
+			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+				params.clear();
+				listUrl.clear();
+				this.bmpUrls.clear();
+				if(this.imgSelDlg != null){
+					imgSelDlg.clearResource();
+					imgSelDlg = null;
+				}
+				this.imgSelBundle = null;
 			}
-			this.imgSelBundle = null;
-		}			
+		}
 	}
-	
-	@Override
-	public void onFragmentBackWithData(int message, Object obj){	
+
+	private void handleBackWithData(int message, Object obj) {
+
 		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
 			this.handleRightAction();
 			return;
@@ -1483,7 +1485,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.categoryEnglishName = names[0];
 			}
 			
-			resetData();
+			resetData(false);
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
 		}
@@ -1545,6 +1547,43 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			break;
 		}
 	}
+	
+	@Override
+	public void onFragmentBackWithData(int message, Object obj){	
+		handleBackWithData(message, obj);
+	}
+	
+	
+//	private void getBitmap(Uri uri, int id) {
+//		String path = uri == null ? "" : uri.toString();
+//		Log.w("QLM", "upload image : " + path);
+//		if (uri != null) {
+//				if (imgs != null)
+//				{
+//					imgs[this.currentImgView].setFocusable(true);
+//				}
+//				new Thread(new UpLoadThread(path, currentImgView)).start();
+//		}
+//
+//	}
+	
+	public String getRealPathFromURI(Uri contentUri) {
+		String[] proj = { MediaStore.Images.Media.DATA };
+		Cursor cursor = getActivity().managedQuery(contentUri, proj, null, null, null);
+
+		if (cursor == null)
+			return null;
+
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+		cursor.moveToFirst();
+
+		String ret = cursor.getString(column_index);
+//		cursor.close();
+		return ret;
+	}
+
 
 	public void startPhotoZoom(Uri uri) {
 		Intent intent = new Intent("com.android.camera.action.CROP");
@@ -1684,70 +1723,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 	}
 	
-	private void configCategoryDialog(final CustomDialog ad) {
-
-		ad.setTitle("请选择分类");
-		final ListView lv = ad.getListView();
-		lv.setAdapter(new ArrayAdapter<String>(getActivity(),android.R.layout.simple_list_item_1, texts));				
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1,int pos, long arg3) {
-				ad.setTitle("请选择子类");
-				List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
-				if (allCates == null || allCates.size() <= pos)
-					return;
-				FirstStepCate selectedCate = null;
-				String selText = texts[pos];
-				for (int i = 0; i < allCates.size(); ++i) {
-					if (allCates.get(i).name.equals(selText)){
-						selectedCate = allCates.get(i);
-						break;
-					}
-				};
-				list = new ArrayList<Map<String, Object>>();
-				List<SecondStepCate> children = selectedCate.getChildren();
-				Map<String, Object> backMap = new HashMap<String, Object>();
-				backMap.put("tvCategoryName", "返回上一级");
-				list.add(backMap);
-				for (SecondStepCate cate : children)
-				{
-					Map<String, Object> map = new HashMap<String, Object>();
-					map.put("tvCategoryName", cate.getName());
-					map.put("tvCategoryEnglishName", cate.getEnglishName());
-					list.add(map);
-				}
-				SecondCateAdapter adapter = new SecondCateAdapter();
-				lv.setAdapter(adapter);
-				lv.setOnItemClickListener(new OnItemClickListener() {
-					@Override
-					public void onItemClick(AdapterView<?> arg0,
-							View arg1, int pos, long arg3) {
-						if (pos==0) {
-							//back
-							configCategoryDialog(ad);
-						} else {
-							Map<String, Object> map = (Map<String, Object>) list
-									.get(pos);
-							String categoryNames = map
-									.get("tvCategoryEnglishName")
-									+ ","
-									+ map.get("tvCategoryName");
-							initWithCategoryNames(categoryNames);
-							if (PostGoodsFragment.this.layout_txt != null) {
-								View v = layout_txt.findViewById(R.id.img_description);
-								layout_txt.removeAllViews();
-								layout_txt.addView(v);
-							}
-							postList.clear();
-							showPost();
-							ad.dismiss();
-						}
-					}
-				});
-			}
-		});
-	}
-	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
@@ -1765,11 +1740,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
-				extractInputData(layout_txt, params);
-				CustomDialog ad = new CustomDialog(getActivity());
-				ad.show();
-				configCategoryDialog(ad);
 				
+				Bundle bundle = createArguments(null, null);
+				bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
+				bundle.putInt("maxLevel", 1);
+				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+				if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
+					bundle.putString("selectedValue", categoryName);
+				}
+				
+				extractInputData(layout_txt, params);
+				CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
+				cdb.start();
 			}				
 		});//categoryItem.setOnClickListener
 		
@@ -1795,7 +1777,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean autoLocated;
 
 	
-	private void buildFixedPostLayout(){
+	private void buildFixedPostLayout(){//添加fixedItemNames和postList交集的beanLayout
 		if(this.postList == null || this.postList.size() == 0) return;
 		
 		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();
@@ -1861,6 +1843,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				{
 					String defaultValue = bean.getDefaultValue();
 					if (defaultValue != null && defaultValue.length() > 0) {
+						//String key, String uiValue, String data
 						this.params.put(bean.getDisplayName(), 
 								defaultValue,
 								defaultValue);
@@ -1904,15 +1887,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(postList == null || postList.size() == 0){
 			postList = JsonUtil.getPostGoodsBean(json);
 		}
-		buildFixedPostLayout();
-		addHiddenItemsToParams();
+		buildFixedPostLayout();//添加固定item的layout
+		addHiddenItemsToParams();//params中加入隐藏元素的default值
 		
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
 			
-			if(isFixedItem(postBean) || isHiddenItem(postBean))
+			if(isFixedItem(postBean) || isHiddenItem(postBean))//排除固定和隐藏元素
 				continue;
 			
 			if(postBean.getName().equals(STRING_AREA)){
@@ -1936,8 +1919,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				continue;
 //			}
 			
-			this.appendBeanToLayout(postBean);
-		}
+			this.appendBeanToLayout(postBean);//加入元素
+		}//for : postList
 //		if(otherProperties.size() > 0){
 //			LayoutInflater inflater = LayoutInflater.from(activity);
 //			View v = inflater.inflate(R.layout.item_post_select, null);
@@ -1960,12 +1943,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 
 		
-		editpostUI();
-		originParams.merge(params);		
-		extractInputData(layout_txt, originParams);		
+		editpostUI();//编辑goodsDetail时调用
+		originParams.merge(params);//orginPrams合并params
+		extractInputData(layout_txt, originParams);//将界面元素的值存入originParams	
 	}//buildPostLayout
 	
-	
+
 
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
@@ -1985,6 +1968,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			inLocating = false;			
 //			break;
 //		}
+		case MSG_DIALOG_BACK_WITH_DATA:{
+			Bundle bundle = (Bundle)msg.obj;
+			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
+			break;
+		}
+		
 		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
 			if(imgSelBundle != null){
 				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
@@ -2071,6 +2060,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					// 发布成功
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 					// 3).show();
+					resetData(true);
 					if(goodsDetail == null){
 						String lp = getArguments().getString("lastPost");
 						if(lp != null && !lp.equals("")){
@@ -2220,6 +2210,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 
+	
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
@@ -2281,7 +2272,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
 			}
 			layout = (ViewGroup)v;
-		} else if (postBean.getControlType().equals("select")) {
+		} else if (postBean.getControlType().equals("select")) {//select的设置
 			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = inflater.inflate(R.layout.item_post_select, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
@@ -2327,7 +2318,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			v.setTag(HASH_POST_BEAN, postBean);
 			v.setTag(HASH_CONTROL, descriptionEt);
 			layout = (ViewGroup)v;
-		}
+		}//获取到item的layout
 		
 		if (layout == null)
 			return null;
@@ -2342,25 +2333,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //								if(postBean.getLevelCount() == 1){
 //									popupSelection(fragment, v, postBean);
 //								}else{
-								/*
-								 * 以下代码为采用dialog的方式获取选择的内容
-								 * */
-//								new AlertDialog.Builder(fragment.getActivity())
-//								.setTitle("列表框")
-//								.setItems(new String[]{"Item1","Item2"}, new DialogInterface.OnClickListener() {
-//									
-//									@Override
-//									public void onClick(DialogInterface dialog, int which) {
-//										
-//									}
-//									
-//								})
-//								.setNegativeButton("取消", null)
-//								.create().show();
-								/*
-								 * 以下代码为切换MultiLevelSelectionFragment的代码，以获取选择的内容
-								 */
-								
+
 									ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = 
 											new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
 									for(int i = 0; i < postBean.getLabels().size(); ++ i){
@@ -2373,7 +2346,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 									bundle.putSerializable("items", items);
 									bundle.putInt("maxLevel", postBean.getLevelCount() - 1);
-									Log.d("bundle",""+(postBean.getLevelCount()-1));
 									String selectedValue = null;
 									if (fragment instanceof PostGoodsFragment)
 									{
@@ -2387,10 +2359,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									
 									if (selectedValue != null)
 										bundle.putString("selectedValue", selectedValue);
-									Bundle b = fragment.getArguments();
-									int g = b.getInt("maxLevel");
-									Log.d("bundle",""+g);
-									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
+
+									//以下代码为使用dialog的方式切换
+									extractInputData(((PostGoodsFragment)fragment).layout_txt, ((PostGoodsFragment)fragment).params);
+									CustomDialogBuilder cdb = new CustomDialogBuilder(fragment.getActivity(), fragment.getHandler(), bundle);
+									cdb.start();
+									
+									//以下代码为使用MultiLevelSelectionFragment切换
+//									((BaseActivity)fragment.getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false);
 									
 //								}
 							}//postBean.getLevelCount() > 0

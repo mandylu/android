@@ -193,6 +193,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		String postErrors = "";
 		savePhoto(6, 1);
 		goBack();
+		goBack();
 		logon();
 		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
@@ -265,6 +266,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	
 	public void runOnePost() throws Exception {
 		savePhoto(6, 1);
+		goBack();
 		goBack();
 		logon();
 		runOnePost(4, "传单派发");

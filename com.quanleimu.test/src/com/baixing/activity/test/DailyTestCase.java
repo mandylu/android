@@ -309,7 +309,7 @@ public class DailyTestCase extends BaixingTestCase {
 				assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
 				//检查弹出式提示信息，包含“成功”
 				assertEquals(true, waitForSubText(AD_BIG_IMAGE_SAVED_TEXT, 10000));
-				
+				goBack();
 				TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 				assertNotNull(tv);
 				checkMap(firstCategory, categoryName);
@@ -377,7 +377,6 @@ public class DailyTestCase extends BaixingTestCase {
 		showAdPic(0);
 		//点击右上方按钮保存
 		if (v != null) v.doClick();
-		goBack();
 		return v;
 	}
 	
