@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.baixing.entity.FirstStepCate;
@@ -28,7 +29,6 @@ import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
@@ -85,17 +85,25 @@ public class CustomDialogBuilder {
 	private void configCustomDialog(final CustomDialog cd) {
 		
 		final ListView lv = cd.getListView();
-		final List<String> firstLevelList = new ArrayList<String>();
+		final List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
 		if (isCategoryItem) {
 			cd.setTitle("请选择分类");
-			firstLevelList.addAll((List<String>)items);
+			for (String item : (List<String>)items) {
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("tv", item);
+				firstLevelList.add(map);
+			}
 		} else {
 			cd.setTitle("请选择");
 			for (MultiLevelItem item : (List<MultiLevelItem>)items) {
-				firstLevelList.add(item.toString());
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("tv", item.toString());
+				firstLevelList.add(map);
 			}
 		}
-		lv.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1, firstLevelList));				
+		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
+				new String[]{"tv"}, new int[]{R.id.tv});
+		lv.setAdapter(simpleAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
@@ -108,7 +116,7 @@ public class CustomDialogBuilder {
 						if (allCates == null || allCates.size() <= pos)
 							return;
 						FirstStepCate selectedCate = null;
-						String selText = firstLevelList.get(pos);
+						String selText = (String) firstLevelList.get(pos).get("tv");
 						for (int i=0; i< allCates.size(); i++) {
 							if (allCates.get(i).name.equals(selText)) {
 								selectedCate = allCates.get(i);
@@ -361,8 +369,8 @@ public class CustomDialogBuilder {
 				tv = (TextView) v.findViewById(R.id.tv);
 			} else {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
-						.inflate(android.R.layout.simple_list_item_1, null);
-				tv = (TextView) v.findViewById(android.R.id.text1);
+						.inflate(R.layout.item_seccategory_simple2, null);
+				tv = (TextView) v.findViewById(R.id.tv);
 			}
 			
 			if (tv != null) {
