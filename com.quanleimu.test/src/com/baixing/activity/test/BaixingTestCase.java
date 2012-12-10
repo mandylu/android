@@ -124,12 +124,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 	}
 	
-	public void openPostSecondCategory(int secondIndex) throws Exception {
+	public TextViewElement openPostSecondCategory(int secondIndex) throws Exception {
 		AbsListViewElement lv = findListView();
 		if (lv != null) {
-			lv.getChildByIndex(secondIndex + 1).doClick();
+			TextViewElement tv = lv.getChildByIndex(secondIndex + 1, TextViewElement.class);
+			//TextViewElement tv = findTextView(gv);
+			tv.doClick();
 			TimeUnit.SECONDS.sleep(2);
+			if (tv != null) return tv;
 		}
+		return null;
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {
@@ -421,16 +425,22 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void selectAutoMeta() throws Exception {
 		int loop = 10;
 		while (findElementById(POST_FORM_MARK_ID) == null) {
+			if (findElementByText("全部", 0, true) != null) {
+				findElementByText("全部", 0, true).doClick();
+				TimeUnit.SECONDS.sleep(1);
+				return;
+			}
 			AbsListViewElement lv1 = findListView();
 			if (lv1 != null) {
 				int index = lv1.getChildCount() > 1 ? 1 : 0;
 				ViewElement gv = lv1.getChildByIndex(index, ViewElement.class);
 				gv.doClick();
-				return;
+				TimeUnit.SECONDS.sleep(1);
 			}
 			if (loop++ > 10) break;
 		}
-		int i = 2;
+		//assertTrue("selectAutoMeta error", false);
+		/*int i = 2;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 		while(i >= 0) {
 			ViewElement v = selectMetaByIndex(i--, false);
@@ -439,7 +449,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				continue;
 			}
 			break;
-		}
+		}*/
 	}
 	
 	public void postOtherDone() throws Exception {
@@ -575,9 +585,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 				Log.i(LOG_TAG, "findSelectMetaByIndex:IndexOutOfBoundsException" + index);
 				if (loop++ > 1) break;
 				index = 0;
-				ScrollViewElement lv = getPostScrollView();
-				lv.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(1);
+				//ScrollViewElement lv = getPostScrollView();
+				AbsListViewElement lv = findListView();
+				if (lv != null) {
+					lv.scrollToNextScreen();
+					TimeUnit.SECONDS.sleep(1);
+				}
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
@@ -597,7 +610,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (eld == null) return false;
 		eld.doClick();
 		//waitForHideMsgbox(10 * 1000);
-		return waitForSubTexts("发布成功@重复@超限", 15000);
+		return waitForSubTexts("发布成功@百姓网公约@重复@超限@失败", 5000);
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
@@ -614,7 +627,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 			ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
 			if (d != null) {
 				d.doClick();
+				TimeUnit.SECONDS.sleep(1);
 			}
+		}
+		if (findElementByText("个人中心") != null && findElementByText("我的信息") != null) {
+			findElementByText("我的信息").doClick();
+			TimeUnit.SECONDS.sleep(1);
+			
 		}
 		//if (gridText != null) openMyGridByText(gridText);
 		ViewGroupElement gv = openAdByItemIndex(0);
@@ -684,9 +703,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openSecondCategoryByName(String name) throws Exception {
-		TextViewElement subCatView = findElementByViewId(CATEGORY_SECOND_GRIDVIEW_ID, name);
+		/*TextViewElement subCatView = findElementByViewId(CATEGORY_SECOND_GRIDVIEW_ID, name);
 		assertNotNull(subCatView);
-		subCatView.doClick();
+		subCatView.doClick();*/
+		if (findElementById(POST_FORM_MARK_ID) == null) {
+			AbsListViewElement lv = findListView();
+			if (lv != null) {
+				int loop = 0;
+				while(loop++ < 50) {
+					TextViewElement tv = findElementByText(name, 0, true);
+					if (tv != null) {
+						tv.doClick();
+						break;
+					}
+					lv.scrollToNextScreen();
+				}
+				TimeUnit.SECONDS.sleep(2);
+			}
+		}
 		waitForHideMsgbox(10000);
 	}
 	
