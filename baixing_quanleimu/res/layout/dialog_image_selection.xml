@@ -109,8 +109,8 @@
         android:layout_height="40dp"
         android:layout_below="@id/img_sel_content"
         android:layout_centerHorizontal="true"
-        android:layout_marginTop="3dip"
         android:background="@drawable/bg_message_btn_selector"
+        android:paddingTop="@dimen/post_padding"
         android:text="完成添加"
         android:textSize="@dimen/font_medium" />
 

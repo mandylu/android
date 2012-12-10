@@ -62,6 +62,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     private ArrayList<Bitmap> cachedBps;
     private Bundle bundle;
     private Handler outHandler;
+    private boolean pickDlgShown = false;
 
 	enum ImageStatus{
 		ImageStatus_Normal,
@@ -129,6 +130,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     		imgs.add((ImageView)v.findViewById(imgIds[currentImgView + 1]));
     		v.findViewById(imgIds[currentImgView + 1]).setVisibility(View.VISIBLE);
     	}
+		imgs.get(0).setVisibility(View.VISIBLE);
+		imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
     	adjustImageLines();
     }
     
@@ -151,6 +154,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			v.findViewById(imgIds[i]).setVisibility(View.INVISIBLE);
     		}
     	}
+		imgs.get(0).setVisibility(View.VISIBLE);
+		imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
     	adjustImageLines();
     }    
     
@@ -169,10 +174,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 
+		pickDlgShown = false;
+		
 		if (resultCode == NONE) {
 			return;
 		}
-		
+		imgs.get(0).setVisibility(View.VISIBLE);
+		imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
 //		this.showPost();
 		
 		// 拍照 
@@ -209,6 +217,17 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				e.printStackTrace();
 			}
 		}
+	}
+	
+	@Override
+	public void onResume(){
+		if(pickDlgShown){
+			if(!imgs.get(0).isShown()){
+				this.dismiss();
+			}			
+		}
+		pickDlgShown = false;
+		super.onResume();
 	}
 	
 	@Override
@@ -353,6 +372,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         			imgs.get(0).performClick();
         		}
         	});
+
+        	imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.INVISIBLE);
+        	imgs.get(0).setVisibility(View.INVISIBLE);
         }
 
         return dialog;
@@ -362,6 +384,55 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		if(bitmap_url.size() <= index || bitmap_url.get(index) == null)return ImageStatus.ImageStatus_Unset;
 		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
 		return ImageStatus.ImageStatus_Failed;
+	}
+	
+	private void pickupPhoto(final int tmpFileIndex){
+		final String[] names = {"拍照","相册"};
+		new AlertDialog.Builder(getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
+		.setItems(names, new DialogInterface.OnClickListener(){
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which){
+				
+				Intent backIntent = new Intent();
+				backIntent.setClass(getActivity(), getActivity().getClass());
+				
+				Intent goIntent = new Intent();
+				goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
+				switch(which){
+					case 0:
+						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
+						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+						goIntent.putExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH, "temp" + tmpFileIndex + ".jpg");
+						getActivity().startActivity(goIntent);
+//						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
+//						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
+//								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
+//						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+						break;						
+					case 1:
+						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_SELECT);
+						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+						getActivity().startActivity(goIntent);
+//						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+//						intent3.addCategory(Intent.CATEGORY_OPENABLE);
+//						intent3.setType("image/*");
+//						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+						break;
+
+				}				
+			}
+		})
+		.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+			@Override
+			public void onClick(DialogInterface dialog, int which){
+				dialog.dismiss();
+				if(!imgs.get(0).isShown()){
+					ImageSelectionDialog.this.dismiss();
+				}		
+				pickDlgShown = false;
+			}
+		}).show();			
 	}
 
 	@Override
@@ -373,7 +444,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				ImageStatus status = getCurrentImageStatus(i);
 				if(ImageStatus.ImageStatus_Unset == status){
 //					showDialog();
-					ViewUtil.pickupPhoto(getActivity(), this.currentImgView);
+					pickupPhoto(this.currentImgView);
+					pickDlgShown = true;
 				}
 				else if(ImageStatus.ImageStatus_Failed == status){
 					String[] items = {"重试", "换一张"};
@@ -395,7 +467,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 //								bitmap_url.set(currentImgView, null);
 								imgs.get(currentImgView).setImageResource(R.drawable.btn_add_picture);
 //								showDialog();
-								ViewUtil.pickupPhoto(getActivity(), currentImgView);
+								pickupPhoto(currentImgView);
 								//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
 							}
 							
@@ -411,6 +483,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				}
 				else{
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
+					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
 					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(null);
 					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
@@ -422,6 +495,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 						public void onClick(View v){
 							imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.GONE);
 							imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.VISIBLE);
+							imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
 						}
 					});
 					imgs.get(0).getRootView().findViewById(R.id.btn_post_del_img).setOnClickListener(new OnClickListener(){
@@ -454,7 +528,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				return;
 			}
 		}
-		this.dismiss();
+		if(v.getId() == R.id.btn_finish_sel){
+			this.dismiss();	
+		}		
 	}
 	
 	
