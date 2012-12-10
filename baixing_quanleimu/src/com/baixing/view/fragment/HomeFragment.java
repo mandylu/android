@@ -184,6 +184,16 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	public void onPause(){
 //		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
+		
+		final CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
+		if(gv != null){
+			gv.postDelayed(new Runnable(){
+				@Override
+				public void run(){
+					gv.releaseResource();
+				}
+			}, 2000);
+		}
 //		if(glDetail != null){
 //			glDetail.setAdapter(null);
 //		}

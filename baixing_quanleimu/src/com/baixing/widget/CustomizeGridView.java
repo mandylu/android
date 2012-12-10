@@ -1,9 +1,15 @@
 package com.baixing.widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -94,6 +100,22 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		}
 	}
 	
+	public void releaseResource(){
+		Collection<Bitmap> bmps = images.values();
+		if(bmps != null){
+			Iterator<Bitmap> ite = bmps.iterator();
+			while(ite.hasNext()){
+				Bitmap bmp = ite.next();
+				if(bmp != null){
+					bmp.recycle();
+				}
+			}
+		}
+		images.clear();
+	}
+	
+	private Map<Integer, Bitmap> images = new HashMap<Integer, Bitmap>();
+	
 	public View getView(int index) {
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
         GridHolder holder;  
@@ -117,7 +139,16 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageResource(info.imgResourceId);
+            if(images.containsKey(index)){
+            	holder.imageBtn.setImageBitmap(images.get(index));
+            }else{
+            	BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(info.imgResourceId);
+            	if(bd != null){
+            		images.put(index, bd.getBitmap());
+            		holder.imageBtn.setImageBitmap(bd.getBitmap());
+            	}
+            }
+            
 //            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  
