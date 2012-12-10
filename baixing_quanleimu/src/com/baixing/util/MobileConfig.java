@@ -9,12 +9,12 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
-import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication.BXHttpException;
 import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
 
 public class MobileConfig {
 	private JSONObject json = null;
@@ -49,7 +49,7 @@ public class MobileConfig {
 			}
 		}
 	}
-		
+	
 	public boolean isEnableTracker() {
 		try {
 			return json.getBoolean("trackFlag");
@@ -126,7 +126,11 @@ public class MobileConfig {
 				e.printStackTrace();
 			} catch (JSONException e) {
 				e.printStackTrace();
-			}			
+			}
+			finally
+			{
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE, null);
+			}
 		}
 		
 	}

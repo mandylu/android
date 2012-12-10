@@ -66,15 +66,22 @@ public class Tracker {
 	
 	public void addLog(LogData log)
 	{
-		dataString += log.toJsonObj().toString() + ",";
+		if (TrackConfig.getInstance().getLoggingFlag())
+		{
+			dataString += log.toJsonObj().toString() + ",";
 //		Util.saveDataToSdCard("baixing", "log", log.toJsonObj().toString()+"\n");
-		size++;
-		if (size > threshold) {//100 items,10 for testing
-			try {
-				Log.d("sender", "try to addLog");
-				Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
-				clear();
-			} catch (Exception e) {Log.d("sender", "sender is null when track.addLog");}
+			size++;
+			if (size > threshold) {//100 items,10 for testing
+				try {
+					Log.d("sender", "try to addLog");
+					Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
+					clear();
+				} catch (Exception e) {Log.d("sender", "sender is null when track.addLog");}
+			}
+		}
+		else
+		{
+			Tracker.getInstance().clear();
 		}
 	}
 	

@@ -87,7 +87,7 @@ public class LogData {
     }
 	
 	public void end() {
-		if (!TrackConfig.getInstance().getLoggingFlag()) return;
+//		if (!TrackConfig.getInstance().getLoggingFlag()) return;
 //		for (Entry<String,String> e : map.entrySet()) {
 //			Log.d("trackmobile", "==="+e.getKey()+"=>"+e.getValue());
 //		}

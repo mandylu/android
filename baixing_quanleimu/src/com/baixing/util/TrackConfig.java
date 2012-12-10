@@ -1,9 +1,17 @@
 package com.baixing.util;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-public class TrackConfig {
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 
+
+public class TrackConfig implements Observer {
+
+	private boolean logEnabled = true;
 	private static TrackConfig instance = null;
 	public static TrackConfig getInstance() {
 		if (instance==null) {
@@ -13,11 +21,11 @@ public class TrackConfig {
 	}
 	//constructor
 	private TrackConfig() {
-		
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE);
 	}
 
 	public boolean getLoggingFlag() {
-		return MobileConfig.getInstance().isEnableTracker();
+		return logEnabled;
 	}
 	
 	
@@ -231,6 +239,18 @@ public class TrackConfig {
 				return description;
 			}
 			
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification notification = (IBxNotification) data;
+			if (notification.getName().equals(IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE));
+			{
+				this.logEnabled = MobileConfig.getInstance().isEnableTracker();
+			}
 		}
 	}
 }
