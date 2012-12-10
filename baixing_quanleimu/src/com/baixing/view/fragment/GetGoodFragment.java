@@ -423,8 +423,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					 if(gd != null){
 						 ImageList il = gd.getImageList();
 						 if(il != null){
-							 if(il.getResize180() != null){
-								 String b = il.getResize180();
+							 if(il.getSquare() != null){
+								 String b = il.getSquare();
 								 if (b.contains(",")) {
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
