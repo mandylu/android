@@ -2061,7 +2061,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 					// 3).show();
 					resetData(true);
+					
+//					cxt.sendBroadcast(intent);
+
+
 					if(goodsDetail == null){
+						showPost();
 						String lp = getArguments().getString("lastPost");
 						if(lp != null && !lp.equals("")){
 							lp += "," + id;
@@ -2074,21 +2079,30 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						args.putBoolean(KEY_IS_EDITPOST, goodsDetail!=null);
 						
 						args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
-						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-						if(activity != null){
+//						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+						if(activity != null){							
 							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
-							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+							
+							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
+							activity.sendBroadcast(intent);
+//							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
 						}						
 					}else{
 						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 					}
 				}else{
 					if(code == 505){
-						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+//						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 						if(activity != null){
+							resetData(true);
+							showPost();
 							Bundle args = createArguments(null, null);
 							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
-							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+//							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
+							activity.sendBroadcast(intent);							
 						}						
 					}
 				}
