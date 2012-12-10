@@ -237,6 +237,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return findSelectMetaByIndex(index, null);
 	}
 	public ViewGroupElement findSelectMetaByIndex(int index, String displayName) throws Exception {
+		if (displayName == null) {
+			AbsListViewElement lv = findListView();
+			if (lv != null) {
+				if (index >= lv.getChildCount()) index = lv.getChildCount() - 1;
+				return lv.getChildByIndex(index, ViewGroupElement.class);
+			}
+			return null;
+		} 
 		ViewGroupElement dv = findElementById(POST_META_ITEM_ID, index, ViewGroupElement.class);
 		Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index);
 		
@@ -486,7 +494,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//String firstVal = null;
 		TextViewElement descV = findElementById(POST_META_EDITTEXT_DESC_ID, TextViewElement.class);
 		if (descV != null) {
-			descV.setText( (new RandomHan()).getRandomString(20));
+			descV.setText( (new RandomHan()).getRandomString(16));
 		}
 		while(index < 15) {
 			try {
