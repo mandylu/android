@@ -19,8 +19,8 @@ public class Sender implements Runnable{
 	private Context context = null;
 	private static String apiName = "trackdata";
 	private List<String> queue = null;
-	private static final String SENDER_DIR = "sender_dir";
-	private static final String SENDER_FILE_SUFFIX = ".log";//记录文件
+	static final String SENDER_DIR = "sender_dir";
+	static final String SENDER_FILE_SUFFIX = ".log";//记录文件
 	private long dataSize;
 	private Object sendMutex = new Object();
 
@@ -44,12 +44,17 @@ public class Sender implements Runnable{
 		new Thread(this).start();
 	}
 	
+	public void notifySendMutex() {
+		Log.d("sendlistfunction","notifySendMutex");
+		// Notify send thread to send data.
+		synchronized (sendMutex) {
+			sendMutex.notifyAll();
+		}
+	}
+	
 	public void notifyNetworkReady()
 	{
-		
-		synchronized (sendMutex) {
-			this.sendMutex.notifyAll();
-		}
+		notifySendMutex();
 	}
 	
 	public void addToQueue(String dataString) {
@@ -57,10 +62,7 @@ public class Sender implements Runnable{
 			queue.add(dataString);
  		}
 		
-		//Notify send thread to send data.
-		synchronized (sendMutex) {
-			sendMutex.notifyAll();
-		}
+		notifySendMutex();
 	}
 	
 	public List<String> getQueue() {
@@ -80,17 +82,17 @@ public class Sender implements Runnable{
 		return Communication.isNetworkActive();
 	}
 	
-	//check if queue is too full(queue.size > 10)
 	private boolean checkQueueFull() {
 		boolean isQueueFull = false;
 		synchronized (queue) {
-			isQueueFull = queue.size()>10;
+			isQueueFull = queue.size()>3;
 		}
 		return isQueueFull;
 	}
 	
 	//save queue into files.
 	public void save() {
+		Log.d("sendlistfunction","sender save");
 		List<String> newQueue = new ArrayList<String>();
 		//in locker,addall is lightweight operation, not write file operation
 		synchronized (queue) {
@@ -99,7 +101,29 @@ public class Sender implements Runnable{
 		}
 		
 		if (newQueue.size() > 0) {
-			saveListToFile((new JSONArray(newQueue)).toString());
+			JSONArray compositeArray = new JSONArray();
+			for(String itemString : newQueue) {
+				JSONArray itemArray = null;
+				try {
+					itemArray = new JSONArray(itemString);
+				} catch (JSONException e) {
+					e.printStackTrace();
+				}
+				if (itemArray!=null && itemArray.length()>0) {
+					for (int i=0;i<itemArray.length();i++) {
+						try {
+							compositeArray.put(itemArray.get(i));
+						} catch (JSONException e) {
+							e.printStackTrace();
+						}
+					}
+				}
+			}
+			if (compositeArray.length()>0) {
+				saveListToFile(compositeArray.toString());
+			}
+//			saveListToFile((new JSONArray(newQueue)).toString());
+			notifySendMutex();
 			newQueue.clear();
 		}
 	}
@@ -154,7 +178,7 @@ public class Sender implements Runnable{
 	}
 	
 	private boolean sendList(final String jsonStr) {//流量统计:统计每次上传成功的字节数
-		Log.d("sendlist",jsonStr);
+		Log.d("sendlistfunction",jsonStr);
 		boolean succed = Sender.executeSyncPostTask(apiName, jsonStr);
 		if (succed)
 			try {
@@ -172,7 +196,7 @@ public class Sender implements Runnable{
 					JSONObject log = null;
 					log = array.getJSONObject(i);
 					if (log != null) {
-						Util.saveDataToSdCard("baixing", "log", log.toString()
+						Util.saveDataToSdCard("baixing", "sender_sendlistlog", log.toString()
 								+ "\n", true);
 					}
 				}
@@ -195,14 +219,14 @@ public class Sender implements Runnable{
 					if (queue.size() > 0)
 						list = queue.remove(0);
 				}
-				
+				Log.d("sendlistfunction","big while");
 				if (list != null) {//there's memory data, send
 					Log.d("sender", "has memory data");
-					boolean succed = sendList("["+list+"]");
+					boolean succed = sendList(list);
 					Log.d("sender", "after sendList");
 					if (!succed) {
 						Log.d("sender", "saveListToFile");
-						saveListToFile("["+list+"]");
+						saveListToFile(list);
 					}
 				}
 				else	//try load & send persistence file if there is any.
@@ -232,14 +256,14 @@ public class Sender implements Runnable{
 				while ((!isSendingReady() && !isQueueFull) || !hasMoreData) {//断网或者无数据
 					Log.d("sendlist","into small while");
 					try {
-						Log.d("sender", "wait");
+						Log.d("sendlistfunction", "small while,wait");
 						synchronized (sendMutex) {
 							sendMutex.wait(300000);//time out 5 min
 						}
 						hasMoreData = hasDataToSend();
 						isQueueFull = checkQueueFull();
 						Log.d("sender", "hasMoredata:"+hasMoreData);
-						Log.d("sender", "wake up");
+						Log.d("sendlistfunction", "wake up");
 					} catch (Exception e) {
 						e.printStackTrace();
 					}

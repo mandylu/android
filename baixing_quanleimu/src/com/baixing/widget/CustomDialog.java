@@ -5,6 +5,7 @@ import android.content.Context;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Button;
 import android.widget.ListView;
 import android.widget.TextView;
 
@@ -13,10 +14,12 @@ import com.quanleimu.activity.R;
 public class CustomDialog extends Dialog {
 	
 	private Context context = null;
-	private TextView textview = null;
+	private Button button = null;
 	private ListView listview_custom = null;
 	
+	
 	public CustomDialog(Context context) {
+//		super(context);
 		super(context);
 		this.context = context;
 	}
@@ -33,19 +36,12 @@ public class CustomDialog extends Dialog {
 
 	protected void onCreate(Bundle savedInstanceState){
 		 super.onCreate(savedInstanceState);
+		 this.getWindow().setBackgroundDrawableResource(R.drawable.custom_shape);
 		 setContentView(R.layout.custom_dialog);
 
-//		Button buttonCancel = (Button) findViewById(R.id.button_cancel);
-//		buttonCancel.setOnClickListener(new Button.OnClickListener(){
-//
-//				public void onClick(View v) {
-//					dismiss();
-//					
-//				}
-//	        });
 		 listview_custom = (ListView)findViewById(R.id.listview_custom);
-		 textview = (TextView) findViewById(R.id.textview_cancel);
-		 textview.setOnClickListener(new android.view.View.OnClickListener(){
+		 button = (Button) findViewById(R.id.button_cancel);
+		 button.setOnClickListener(new android.view.View.OnClickListener(){
 			@Override
 			public void onClick(View v) {
 				dismiss();

@@ -20,6 +20,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
+import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
 import com.baixing.entity.FirstStepCate;
@@ -28,7 +29,6 @@ import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
@@ -85,17 +85,25 @@ public class CustomDialogBuilder {
 	private void configCustomDialog(final CustomDialog cd) {
 		
 		final ListView lv = cd.getListView();
-		final List<String> firstLevelList = new ArrayList<String>();
+		final List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
 		if (isCategoryItem) {
 			cd.setTitle("请选择分类");
-			firstLevelList.addAll((List<String>)items);
+			for (String item : (List<String>)items) {
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("tv", item);
+				firstLevelList.add(map);
+			}
 		} else {
 			cd.setTitle("请选择");
 			for (MultiLevelItem item : (List<MultiLevelItem>)items) {
-				firstLevelList.add(item.toString());
+				Map<String,Object> map = new HashMap<String,Object>();
+				map.put("tv", item.toString());
+				firstLevelList.add(map);
 			}
 		}
-		lv.setAdapter(new ArrayAdapter<String>(context,android.R.layout.simple_list_item_1, firstLevelList));				
+		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
+				new String[]{"tv"}, new int[]{R.id.tv});
+		lv.setAdapter(simpleAdapter);
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
@@ -108,7 +116,7 @@ public class CustomDialogBuilder {
 						if (allCates == null || allCates.size() <= pos)
 							return;
 						FirstStepCate selectedCate = null;
-						String selText = firstLevelList.get(pos);
+						String selText = (String) firstLevelList.get(pos).get("tv");
 						for (int i=0; i< allCates.size(); i++) {
 							if (allCates.get(i).name.equals(selText)) {
 								selectedCate = allCates.get(i);
@@ -130,8 +138,7 @@ public class CustomDialogBuilder {
 						//configSecondLevel
 						configSecondLevel(cd, lv, list);
 					}//isCategoryItem over
-					else {
-						//not category Item,need Thread & handler
+					else {//not category Item,need Thread & handler
 						handler = new Handler() {
 							@Override
 							public void handleMessage(Message msg) {
@@ -152,8 +159,9 @@ public class CustomDialogBuilder {
 													CustomDialogBuilder.this.secondLevelItems.add(tBack);
 													if (bean.getLabels().size() > 1) {
 														MultiLevelItem tAll = new MultiLevelItem();
-														tAll.txt = "全部";
-														tAll.id = null;
+														MultiLevelItem selectedItem = (MultiLevelItem)msg.obj;
+														tAll.txt = selectedItem.toString();
+														tAll.id = selectedItem.id;
 														CustomDialogBuilder.this.secondLevelItems.add(tAll);
 													}
 													for (int i=0; i<bean.getLabels().size(); i++) {
@@ -185,7 +193,8 @@ public class CustomDialogBuilder {
 						};
 						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
 						CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
-						(new Thread(new GetMetaDataThread(id))).start();
+						String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+						(new Thread(new GetMetaDataThread(id,txt))).start();
 					}//not category over
 					
 				} else {
@@ -288,9 +297,11 @@ public class CustomDialogBuilder {
 	
 	class GetMetaDataThread implements Runnable {
 		private String id;
+		private String txt;
 
-		public GetMetaDataThread(String id) {
+		public GetMetaDataThread(String id, String txt) {
 			this.id = id;
+			this.txt = txt;
 		}
 
 		@Override
@@ -304,7 +315,10 @@ public class CustomDialogBuilder {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			sendMessage(MESSAGE_GET_METAOBJ, null);
+			MultiLevelItem selectedItem = new MultiLevelItem();
+			selectedItem.id = this.id;
+			selectedItem.txt = this.txt;
+			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 		}
 	}
 	
@@ -361,14 +375,15 @@ public class CustomDialogBuilder {
 				tv = (TextView) v.findViewById(R.id.tv);
 			} else {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
-						.inflate(android.R.layout.simple_list_item_1, null);
-				tv = (TextView) v.findViewById(android.R.id.text1);
+						.inflate(R.layout.item_seccategory_simple2, null);
+				tv = (TextView) v.findViewById(R.id.tv);
 			}
 			
 			if (tv != null) {
 				String displayText = isCategoryItem 
 						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
 						: (String)(((List<MultiLevelItem>)list).get(position).toString());
+				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
 			return v;
