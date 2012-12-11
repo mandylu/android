@@ -340,7 +340,7 @@ public abstract class BaseFragment extends Fragment {
 			action = "feedback";
 			break;
 		case OPTION_EXIT:
-			QuanleimuMainActivity mainActivity = (QuanleimuMainActivity) this.getActivity();
+			BaseTabActivity mainActivity = (BaseTabActivity) this.getActivity();
 			mainActivity.exitMainActivity();
 			action = "exit";
 			break;
