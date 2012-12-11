@@ -14,6 +14,7 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -1624,5 +1625,23 @@ public class Util {
 			String userToken = Communication.getMD5(password1);
 			params.add("userToken=" + userToken);
 		}    	
+    }
+    
+    public static ArrayList<WeakReference<Bitmap> > wrapBitmapWithWeakRef(List<Bitmap> bmps){
+    	if(bmps == null) return null;
+    	ArrayList<WeakReference<Bitmap> > wraps = new ArrayList<WeakReference<Bitmap> >();
+    	for(int i = 0; i < bmps.size(); ++ i){
+    		wraps.add(new WeakReference<Bitmap>(bmps.get(i)));
+    	}
+    	return wraps;
+    }
+    
+    public static ArrayList<Bitmap> discardWrappedWeakRef(List<WeakReference<Bitmap> > bmps){
+    	if(bmps == null) return null;
+    	ArrayList<Bitmap> ret = new ArrayList<Bitmap>();
+    	for(int i = 0; i < bmps.size(); ++ i){
+    		ret.add(bmps.get(i).get());
+    	}
+    	return ret;
     }
 }
