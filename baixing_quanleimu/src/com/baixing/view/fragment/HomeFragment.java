@@ -98,23 +98,15 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		return true;
 	}
 	
-
-	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
-		logCreateView(savedInstanceState);
-
-		View v = inflater.inflate(R.layout.homepageview, null);
-
-//		pageMgr.attachView(v, this, this);
-		
+	private void setViewContent(){
+		if(getView() == null) return;
 		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
-						   R.drawable.icon_category_jianzhi,     R.drawable.icon_category_vita, 	R.drawable.icon_category_friend, 	R.drawable.icon_category_pet,
-						   R.drawable.icon_category_service,     R.drawable.icon_category_education};
+				   R.drawable.icon_category_jianzhi,     R.drawable.icon_category_vita, 	R.drawable.icon_category_friend, 	R.drawable.icon_category_pet,
+				   R.drawable.icon_category_service,     R.drawable.icon_category_education};
 		String []texts 	= {"物品交易", "车辆买卖", "房屋租售", "全职招聘", 
 						   "兼职招聘", "求职简历", "交友活动", "宠物", 
 						   "生活服务", "教育培训"};
-		
+
 		List<GridInfo> gitems = new ArrayList<GridInfo>();
 		for (int i = 0; i < icons.length; i++)
 		{
@@ -124,9 +116,19 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 			gitems.add(gi);
 		}
 
-		CustomizeGridView gv = (CustomizeGridView) v.findViewById(R.id.gridcategory);
+		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
 		gv.setData(gitems, 3);
 		gv.setItemClickListener(this);
+	}
+
+	@Override
+	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState) {
+		logCreateView(savedInstanceState);
+
+		View v = inflater.inflate(R.layout.homepageview, null);
+
+//		pageMgr.attachView(v, this, this);
 		
 		return v;
 	}
@@ -178,12 +180,24 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	@Override
 	public void onResume(){
 		super.onResume();
+		setViewContent();
 	}
 	
 	@Override
 	public void onPause(){
 //		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
+		
+		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
+		gv.releaseResource(2000);
+//		if(gv != null){
+//			gv.postDelayed(new Runnable(){
+//				@Override
+//				public void run(){
+//					gv.releaseResource();
+//				}
+//			}, 2000);
+//		}
 //		if(glDetail != null){
 //			glDetail.setAdapter(null);
 //		}

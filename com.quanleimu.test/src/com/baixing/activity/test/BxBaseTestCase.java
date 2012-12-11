@@ -123,6 +123,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_IMAGEVIEW1_ID = "iv_1";
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
+	public static final String POST_META_DESC_IMAGEVIEW_ID = "myImg";
 	public static final String POST_CATEGORY_TEXT = "分类";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
 	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
@@ -334,6 +335,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		TimeUnit.SECONDS.sleep(5);
 		TextViewElement vm = findElementByText("以后再说");
 		if (vm != null) {
 			vm.doClick();
@@ -519,6 +521,26 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	
+	public void goToTab(String vId) throws Exception {
+		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
+		if (v != null) {
+			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			assertNotNull(tv);
+			if (tv == null) return;
+			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
+				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
+				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
+			{
+				v.doClick();
+				TimeUnit.SECONDS.sleep(1);
+			}
+		}
+		else
+		{
+			throw new Exception("Tab not found for " + vId);
+		}
+	}
+	
 	public TextViewElement getGridItemByText(String text, String gridId) throws Exception {
 		ViewGroupElement gridView = null;
 		try {
@@ -598,6 +620,18 @@ public class BxBaseTestCase extends AthrunTestCase {
 					return lv;
 				}
 			} catch (IllegalArgumentException e) {}
+		}
+		return null;
+	}
+	
+	public TextViewElement findTextView(ViewGroupElement gv) throws Exception {
+		if (gv != null) {
+			try {
+				TextViewElement tv = gv.getChildByIndex(0, TextViewElement.class);
+				if (tv != null && tv.getText().length() > 0) return tv;
+			} catch (IllegalArgumentException e) {
+				
+			}
 		}
 		return null;
 	}

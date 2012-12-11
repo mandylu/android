@@ -5,6 +5,7 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -201,7 +202,17 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     	}
     	
     	 ListAdapter adapter = findGoodListAdapter();
-    	 this.removeFooterView(mNoInfoView);
+    	 if (mNoInfoView != null)
+    	 {
+    		 try
+    		 {
+    			 this.removeFooterView(mNoInfoView);
+    		 }
+    		 catch(Throwable t)
+    		 {
+    			 mNoInfoView.setVisibility(View.GONE);
+    		 }
+    	 }
          if (adapter == null || adapter.getCount() == 0)
          {
          	mNoInfoView.setVisibility(View.VISIBLE);
@@ -616,6 +627,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
         		&& mCurrentScrollState == SCROLL_STATE_TOUCH_SCROLL
                 && mRefreshState != REFRESHING && this.judgeListFull()) {
             pullToRefresh(firstVisibleItem);
+//            Log.w(TAG, "on scroll first branch " + firstVisibleItem);
         }/* else if (mCurrentScrollState == SCROLL_STATE_FLING
                 && firstVisibleItem == 0
                 && mRefreshState != REFRESHING) {
@@ -650,6 +662,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
             	if(mRefreshState != REFRESHING 
             			&& velocityX > SNAP_VELOCITY
             			&& mRefreshView.getTop() >= 0){
+//            		Log.d(TAG, "open header view");
 	                mRefreshState = REFRESHING;
 	                openHeaderView();
 	                checkLastUpdateTime();
