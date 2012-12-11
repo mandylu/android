@@ -75,8 +75,10 @@ public class Tracker {
 				+ "/baixing_debug_log_crl.dat").exists()) {
 			try {
 				if (log != null) {
-					Util.saveDataToSdCard("baixing", "tracker_addlog", log.toJsonObj().toString()
-							+ "\n", true);
+					synchronized (this) {
+						Util.saveDataToSdCard("baixing", "tracker_addlog", log.toJsonObj().toString()
+								+ "\n", true);
+					}
 				}
 			} catch (Exception e) {
 				e.printStackTrace();

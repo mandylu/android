@@ -1,20 +1,15 @@
 package com.quanleimu.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 import android.widget.Toast;
 
 import com.baixing.entity.AllCates;
-import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.baixing.util.Helper;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.Util;
@@ -59,11 +54,7 @@ public class SplashJob {
 			e.printStackTrace();
 		}
 		
-		MobileConfig.getInstance().syncMobileConfig();
-		
-		new Thread(new ReadCityListThread()).start();
-		new Thread(new ReadInfoThread()).start();
-		new Thread(new ReadCateListThread()).start();
+		new Thread(new LoadConfigTask()).start();
 	}
 	
 	
@@ -126,6 +117,27 @@ public class SplashJob {
 			
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
 		}
+	}
+	
+	class LoadConfigTask implements Runnable {
+
+		public void run() {
+			try
+			{
+				MobileConfig.getInstance().syncMobileConfig();
+			}
+			catch(Throwable t)
+			{
+				
+			}
+			finally
+			{
+				new Thread(new ReadCityListThread()).start();
+				new Thread(new ReadInfoThread()).start();
+				new Thread(new ReadCateListThread()).start();
+			}
+		}
+		
 	}
 	
 	class ReadCityListThread implements Runnable {

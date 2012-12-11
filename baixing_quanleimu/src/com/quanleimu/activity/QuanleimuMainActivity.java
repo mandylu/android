@@ -117,7 +117,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		}
 		else
 		{
-			startTalking(getIntent());
 			responseOnResume();
 		}
 		
@@ -146,7 +145,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 
 	private void responseOnResume()
 	{
-		this.checkAndUpdateBadge(0);
 		registerMsgListener();
 	}
 	
@@ -250,7 +248,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		{
 			this.notifyStackTop();
 		}
-		findViewById(R.id.splash_cover).setVisibility(View.GONE);
+//		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 		
 //		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 //		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
@@ -260,7 +258,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
 //		showDetailViewFromWX();
 		
-		startTalking(getIntent()); //Launch after splash job.
+//		startTalking(getIntent()); //Launch after splash job.
 		
 		responseOnResume();
 		
@@ -421,24 +419,24 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		}
 //	}
 	
-	private void startTalking(Intent intent)
-	{
-		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
-		{
-			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-			Bundle bundle = new Bundle();
-			bundle.putString("receiverId", msg.getFrom());
-			bundle.putString("adId", msg.getAdId());
-			bundle.putString("sessionId", msg.getSession());
-			bundle.putSerializable("message", msg);
-			pushFragment(new TalkFragment(), bundle, false);
-		}
-
-		if (intent.hasExtra("isTalking"))
-		{
-			intent.putExtra("isTalking", false);
-		}
-	}
+//	private void startTalking(Intent intent)
+//	{
+//		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
+//		{
+//			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+//			Bundle bundle = new Bundle();
+//			bundle.putString("receiverId", msg.getFrom());
+//			bundle.putString("adId", msg.getAdId());
+//			bundle.putString("sessionId", msg.getSession());
+//			bundle.putSerializable("message", msg);
+//			pushFragment(new TalkFragment(), bundle, false);
+//		}
+//
+//		if (intent.hasExtra("isTalking"))
+//		{
+//			intent.putExtra("isTalking", false);
+//		}
+//	}
 
 //	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
 //	@Override

@@ -201,7 +201,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		for (int i = firstIndex; i < 10; i++) {
 			openTabbar(TAB_ID_POST);
 			openPostFirstCategory(i);
-			AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
+			/*AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 					AbsListViewElement.class);
 			if (subCatListView == null) {
 				goBack();
@@ -209,7 +209,8 @@ public class KeepLiveTest extends BaixingTestCase {
 				openPostFirstCategory(i);
 				subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 						AbsListViewElement.class);
-			}
+			}*/
+			AbsListViewElement subCatListView = findListView();
 			int count = (subCatListView != null) ? subCatListView.getChildCount() : 50;
 			Log.i(LOG_TAG, "runPostAll:" + count);
 			String oldCateName = "";
@@ -218,9 +219,9 @@ public class KeepLiveTest extends BaixingTestCase {
 				BXLog.x("Category,Post," + i + "," + j);
 				openTabbar(TAB_ID_POST);
 				openPostFirstCategory(i);
-				openSecondCategoryByIndex(j);
+				TextViewElement v = openPostSecondCategory(j);
 				Log.i(LOG_TAG, "runPostAll:" + j);
-				TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+				/*TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 				if (v == null) {
 					Log.i(LOG_TAG, "runPostAll:Category v==null prev" + oldCateName);
 					BXLog.x("ERRORRETRY,Category,Post," + i + "," + j + "," + oldCateName);
@@ -229,7 +230,8 @@ public class KeepLiveTest extends BaixingTestCase {
 						Log.i(LOG_TAG, "runPostAll:Category v==null retry" + oldCateName);
 						continue;
 					}
-				}
+				}*/
+				assertNotNull("get Second Category TextView", v);
 				if (v != null) {
 					retry = 0;
 					if(!oldCateName.equals(v.getText())) {
@@ -269,17 +271,19 @@ public class KeepLiveTest extends BaixingTestCase {
 		goBack();
 		goBack();
 		logon();
-		runOnePost(4, "传单派发");
+		runOnePost(4, "模特");
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
 		openTabbar(TAB_ID_POST);
 		openPostFirstCategory(firstIndex);
 		openSecondCategoryByName(cateName);
+		
 		Log.i(LOG_TAG, "runOnePost:" + cateName);
 		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		assertNotNull("runOnePost:Category v==null prev", v);
-		assertEquals(cateName, v.getText());
+		//assertEquals(cateName, v.getText());
+		assertNotNull("runOnePost:Category name ==null prev", findElementByText(cateName));
 		BXLog.x("Category,OnePost," + firstIndex + "," + cateName);
 		Log.i(LOG_TAG, "runOnePost:Category " + cateName);
 		postAutoEnterData(cateName.equals("女找男"));

@@ -1,9 +1,15 @@
 package com.baixing.widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -26,7 +32,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		public int imgResourceId;
 		public String text;
 		public int number = 0;
-		public boolean starred = false;
+//		public boolean starred = false;
 	}
 	
 	static public interface ItemClickListener
@@ -37,7 +43,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     static private class GridHolder {  
         ImageButton imageBtn;  
         public TextView text;  
-        public View starIcon;
+//        public View starIcon;
         public GridInfo info;
         public int index;
     }  
@@ -94,6 +100,43 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		}
 	}
 	
+	private void recycleBmps(Map<Integer, Bitmap> container){
+		Collection<Bitmap> bmps = container.values();
+		if(bmps != null){
+			Iterator<Bitmap> ite = bmps.iterator();
+			while(ite.hasNext()){
+				Bitmap bmp = ite.next();
+				if(bmp != null){
+					bmp.recycle();
+				}
+			}
+		}
+		container.clear();
+	}
+	
+	public void releaseResource(final int delayMills){
+		if(delayMills == 0){
+			recycleBmps(images);
+		}else{
+			final Map<Integer, Bitmap> tmpBmps = new HashMap<Integer, Bitmap>();
+			tmpBmps.putAll(images);
+			images.clear();
+			Thread t = new Thread(new Runnable(){
+				public void run(){
+					try{
+						Thread.sleep(delayMills);
+						recycleBmps(tmpBmps);
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();			
+		}
+	}
+	
+	private Map<Integer, Bitmap> images = new HashMap<Integer, Bitmap>();
+	
 	public View getView(int index) {
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
         GridHolder holder;  
@@ -103,7 +146,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     	holder.imageBtn.setClickable(false);
     	holder.imageBtn.setFocusable(false);
     	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-    	holder.starIcon = convertView.findViewById(R.id.star);
+//    	holder.starIcon = convertView.findViewById(R.id.star);
         convertView.setTag(holder);
         convertView.setOnClickListener(this);
         holder.index = index;
@@ -117,13 +160,22 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageResource(info.imgResourceId);
-            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
+            if(images.containsKey(index)){
+            	holder.imageBtn.setImageBitmap(images.get(index));
+            }else{
+            	BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(info.imgResourceId);
+            	if(bd != null){
+            		images.put(index, bd.getBitmap());
+            		holder.imageBtn.setImageBitmap(bd.getBitmap());
+            	}
+            }
+            
+//            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  
         else
         {
-        	holder.starIcon.setVisibility(View.GONE);
+//        	holder.starIcon.setVisibility(View.GONE);
         	convertView.setEnabled(false);
         }
         
