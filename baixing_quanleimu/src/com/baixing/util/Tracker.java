@@ -24,11 +24,7 @@ import com.quanleimu.activity.QuanleimuApplication;
  */
 //singleton
 public class Tracker {
-//	private static final String TRACKER_FILE = "bx_tracker.log";//saved file
 	private Context context = null;
-//	private static final String TRACKER_DIR = "tracker_dir";
-	private static final String SENDER_DIR = "sender_dir";
-	private static final String SENDER_FILE_SUFFIX = ".log";//记录文件
 
 	private int size;
 	private int threshold;
@@ -75,7 +71,8 @@ public class Tracker {
 				+ "/baixing_debug_log_crl.dat").exists()) {
 			try {
 				if (log != null) {
-					synchronized (this) {
+					synchronized(this) {
+
 						Util.saveDataToSdCard("baixing", "tracker_addlog", log.toJsonObj().toString()
 								+ "\n", true);
 					}
@@ -99,11 +96,10 @@ public class Tracker {
 	public void save() {
 		Log.d("sendlistfunction","tracker save");
 		if (context != null && dataArray.length() > 0) {
-			String fileName = "tracker" + System.currentTimeMillis() + SENDER_FILE_SUFFIX;
+			String fileName = "tracker" + System.currentTimeMillis() + Sender.SENDER_FILE_SUFFIX;
 			try {
-				Util.saveDataToFile(context, SENDER_DIR, fileName, dataArray.toString().getBytes());
+				Util.saveDataToFile(context, Sender.SENDER_DIR, fileName, dataArray.toString().getBytes());
 				clear();
-				Sender.getInstance().notifySendMutex();
 			} catch (Exception e) {}
 		}
 	}
