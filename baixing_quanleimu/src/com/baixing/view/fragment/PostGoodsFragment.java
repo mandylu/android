@@ -244,7 +244,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
+		extractInputData(layout_txt, params);
 		synchronized(this){
 			outState.putSerializable("params", params);
 			outState.putSerializable("postList", postList);
@@ -302,10 +302,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(imgSelDlg.handleBack()){
 				return true;
 		}
-		if(filled()){
-			ConfirmAbortAlert();
-			return true;
-		}
+//		if(filled()){
+//			ConfirmAbortAlert();
+//			return true;
+//		}
 		
 		return super.handleBack();
 	}
@@ -547,7 +547,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
+	private boolean inPosting = false;
+	
 	private void doPost(boolean registered, BXLocation location){
+		if(inPosting) return;
 		showSimpleProgress();
 		new Thread(new UpdateThread(registered, location)).start();		
 	}
@@ -1033,6 +1036,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			this.location = location;
 		}
 		public void run() {
+			inPosting = true;
 			Log.d("location", "location, in UpdateThread::run");
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
@@ -1187,6 +1191,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				});
 			}
+			inPosting = false;
 		}
 	}
 	

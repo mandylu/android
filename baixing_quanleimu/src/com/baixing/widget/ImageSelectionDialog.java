@@ -96,6 +96,10 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     	}
     }
     
+    public ImageSelectionDialog(){
+    	
+    }
+    
     public void clearResource(){
     	if(bitmap_url != null){
 	        for(int i = 0; i < bitmap_url.size(); ++ i){
@@ -248,8 +252,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState != null){
-    		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
+    		bitmap_url = (ArrayList<String>)savedInstanceState.getSerializable(KEY_BITMAP_URL);
+    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)savedInstanceState.getSerializable(KEY_CACHED_BPS));
 		}
 	}
 	
