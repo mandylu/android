@@ -7,13 +7,13 @@ fi
 echo "Start java screenshot jar"; 
 echo `pwd`;
 
-if [ ! -f "com.quanleimu.screenshot/screenshot.jar" ];
+if [ ! -f "../source_git/com.quanleimu.screenshot/screenshot.jar" ];
 then
+	java -jar com.quanleimu.screenshot/screenshot.jar & 
+else
 	cd ../
 	java -jar source_git/com.quanleimu.screenshot/screenshot.jar & 
 	cd source_git/
-else
-	java -jar com.quanleimu.screenshot/screenshot.jar & 
 fi
 echo "Started java screenshot jar";
 sleep 1;

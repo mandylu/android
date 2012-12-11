@@ -46,6 +46,10 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	public static final String PREF_FIRSTRUN  = "firstRunFlag";
 	
+	protected static interface BUNDLE_KEYS {
+		public static final String KEY_FIRST_FRAGMENT_ID = "firstFragmentId";
+	}
+	
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
@@ -57,7 +61,9 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	
 	private int stackSize;
 	
+	public static final int INVALID_FIRSTFRAGMENT_ID = -1;
 	private boolean savedInstance = false;
+	protected int firstFragmentId = INVALID_FIRSTFRAGMENT_ID;
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
@@ -83,7 +89,9 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		}
 		
 		savedInstanceState.putStringArrayList("cityDetails", strDetails);
+		savedInstanceState.putInt(BUNDLE_KEYS.KEY_FIRST_FRAGMENT_ID, firstFragmentId);
 		savedInstance = true;
+		
 		
         super.onSaveInstanceState(savedInstanceState);
     }
@@ -122,7 +130,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			cityDetails.add(detail);
 		}
 		QuanleimuApplication.getApplication().setListCityDetails(cityDetails);
-		
+		firstFragmentId = savedInstanceState.getInt(BUNDLE_KEYS.KEY_FIRST_FRAGMENT_ID, INVALID_FIRSTFRAGMENT_ID);
     }
 	
 	protected TextView tvAddMore ;
@@ -317,12 +325,13 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	public final void pushFragment(BaseFragment fragment, Bundle bundle, String popTo)
 	{
 		if(savedInstance) return;
-		
+
 		if (bundle != null)
 		{
 			fragment.setArguments(bundle);
 		}
 		FragmentManager fm = getSupportFragmentManager();
+		final boolean isFirstFragment = fm.getBackStackEntryCount() == 1; 
 		FragmentTransaction ft = fm.beginTransaction();
 		ft.setCustomAnimations(fragment.getEnterAnimation(), /*R.anim.right_to_left_exit*/0, /*R.anim.left_to_right_enter*/0, fragment.getExitAnimation());
 		if (!"".equals(popTo))
@@ -332,10 +341,19 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		
 		ft.setTransition(FragmentTransaction.TRANSIT_FRAGMENT_OPEN);
 		
-		
 		ft.replace(R.id.contentLayout, fragment);
 		ft.addToBackStack(fragment.getName());
-		ft.commit();
+		int id = ft.commit();
+		if (isFirstFragment)
+		{
+			firstFragmentId = id;
+//			getIntent().putExtra("firstIndicator", id);
+			Log.e(TAG, "first fragment added to stack id is " + id);
+		}
+		else
+		{
+			Log.w(TAG, "fragment added to stack id is " + id);
+		}
 	}
 	
 	public final void pushFragment(BaseFragment f, Bundle bundle, boolean clearStack)
