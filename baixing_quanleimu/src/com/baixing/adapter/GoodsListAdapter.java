@@ -1,4 +1,5 @@
 package com.baixing.adapter;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 
 import java.util.ArrayList;
@@ -52,8 +53,8 @@ public class GoodsListAdapter extends BaseAdapter {
 	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
 	private List<GroupItem> groups  = new ArrayList<GoodsListAdapter.GroupItem>();
 	private boolean hasDelBtn = false;
-	private Bitmap defaultBk2;
-	private Bitmap downloadFailBk;
+	private WeakReference<Bitmap> defaultBk2;
+	private WeakReference<Bitmap> downloadFailBk;
 //	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
@@ -69,12 +70,12 @@ public class GoodsListAdapter extends BaseAdapter {
 //				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
 				try{
 					Thread.sleep(2000);
-					if(defaultBk2 != null){
-						defaultBk2.recycle();
+					if(defaultBk2 != null && defaultBk2.get() != null){
+						defaultBk2.get().recycle();
 						defaultBk2 = null;
 					}
-					if(null != downloadFailBk){
-						downloadFailBk.recycle();
+					if(null != downloadFailBk && null != downloadFailBk.get()){
+						downloadFailBk.get().recycle();
 						downloadFailBk = null;
 					}
 				}catch(Exception e){
@@ -299,14 +300,14 @@ public class GoodsListAdapter extends BaseAdapter {
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
 				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o);
-				defaultBk2 = tmb1;
+				defaultBk2 = new WeakReference<Bitmap>(tmb1);
 			}
 			
 			if(null == downloadFailBk){				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
 				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o);
-				downloadFailBk = tmb1;				
+				downloadFailBk = new WeakReference<Bitmap>(tmb1);				
 			}
 			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -336,7 +337,7 @@ public class GoodsListAdapter extends BaseAdapter {
 					
 					if(strTag == null || strTag.length() > 0){
 						holder.ivInfo.setTag("");
-						holder.ivInfo.setImageBitmap(defaultBk2);	
+						holder.ivInfo.setImageBitmap(defaultBk2.get());	
 					}
 				} else {
 						String b = (list.get(position).getImageList().getSquare());
@@ -353,7 +354,7 @@ public class GoodsListAdapter extends BaseAdapter {
 								
 								if(strTag == null || strTag.length() > 0){
 									holder.ivInfo.setTag("");
-									holder.ivInfo.setImageBitmap(defaultBk2);
+									holder.ivInfo.setImageBitmap(defaultBk2.get());
 		//							ivInfo.invalidate();
 								}
 							} else {
@@ -377,7 +378,7 @@ public class GoodsListAdapter extends BaseAdapter {
 								
 								if(strTag == null || strTag.length() > 0){
 									holder.ivInfo.setTag("");
-									holder.ivInfo.setImageBitmap(defaultBk2);
+									holder.ivInfo.setImageBitmap(defaultBk2.get());
 								}
 							} else {
 								
