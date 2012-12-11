@@ -104,7 +104,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 //	private Bundle mBundle;
 	
-	private Bitmap mb_loading = null;
+	private WeakReference<Bitmap> mb_loading = null;
 	
 //	private int type = 240;//width of screen
 //	private int paddingLeftMetaPixel = 16;//meta, right part, value
@@ -151,8 +151,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 //				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
 				try{
 					Thread.sleep(2000);
-					if(mb_loading != null){
-						mb_loading.recycle();
+					if(mb_loading != null && mb_loading.get() != null){
+						mb_loading.get().recycle();
 						mb_loading = null;
 					}
 				}catch(Exception e){
@@ -384,7 +384,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
-        mb_loading = BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o);
+        mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
         
         final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
         vp.setAdapter(new PagerAdapter() {
@@ -1586,7 +1586,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				root = LayoutInflater.from(context).inflate(R.layout.item_detailview, null);
 			}
 			ImageView iv = (ImageView) root.findViewById(R.id.ivGoods);
-			iv.setImageBitmap(mb_loading);
+			iv.setImageBitmap(mb_loading.get());
 			
 			if (listUrl.size() != 0 && listUrl.get(position) != null && !listUrl.get(position).equals("")) {
 				String prevTag = (String)iv.getTag();

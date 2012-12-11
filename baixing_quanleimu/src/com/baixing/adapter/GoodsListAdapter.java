@@ -299,15 +299,13 @@ public class GoodsListAdapter extends BaseAdapter {
 			if(null == defaultBk2){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
-				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o);
-				defaultBk2 = new WeakReference<Bitmap>(tmb1);
+				defaultBk2 = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o));
 			}
 			
 			if(null == downloadFailBk){				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
-				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o);
-				downloadFailBk = new WeakReference<Bitmap>(tmb1);				
+				downloadFailBk = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o));				
 			}
 			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);

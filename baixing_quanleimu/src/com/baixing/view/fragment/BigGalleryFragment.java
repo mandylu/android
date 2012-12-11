@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.IOException;
 import java.io.InputStream;
 import java.io.OutputStream;
+import java.lang.ref.WeakReference;
 import java.text.SimpleDateFormat;
 import java.util.ArrayList;
 import java.util.List;
@@ -54,7 +55,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	private int postIndex = -1;
 	public GoodsDetail goodsDetail;
 	public List<String> listUrl = new ArrayList<String>();
-	private Bitmap mb;
+	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
 	
 	private android.media.MediaScannerConnection scannerConnection = null;
@@ -122,7 +123,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
-                mb = BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o);  
+                mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o));  
                 
 				ViewFlow vfCoupon = (ViewFlow)v.findViewById(R.id.vfCoupon);
 				
@@ -172,9 +173,9 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 //  		listUrl = null;
 //  		System.gc();
         
-        if(mb != null)
+        if(mb != null && mb.get() != null)
         {
-            mb.recycle();
+            mb.get().recycle();
             mb = null;
         }
         
@@ -240,11 +241,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
 	    	QuanleimuApplication.getImageLoader().enableSampleSize();
-			if (null == mb) {
+			if (null == mb || mb.get() == null) {
 				BitmapFactory.Options o = new BitmapFactory.Options();
 				o.inPurgeable = true;
-				mb = BitmapFactory.decodeResource(getResources(),
-					R.drawable.loading_210_black, o);
+				mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(), R.drawable.loading_210_black, o));
 			}
 	    }
 	    

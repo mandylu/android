@@ -1,6 +1,7 @@
 package com.baixing.widget;
 
 import java.io.File;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -60,7 +61,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     private ArrayList<String> thumbnail_url;
     private int imgHeight = 0;
     private List<ImageView> imgs;
-    private ArrayList<Bitmap> cachedBps;
+    private ArrayList<WeakReference<Bitmap> > cachedBps;
     private Bundle bundle;
     private Handler outHandler;
     private boolean pickDlgShown = false;
@@ -80,10 +81,10 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			List<String> list = bitmap_url.subList(0, imgIds.length);
     			bitmap_url = new ArrayList<String>(list);
     		}
-    		cachedBps = (ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
+    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
     		if(cachedBps != null && cachedBps.size() > imgIds.length){
-    			List<Bitmap> list = cachedBps.subList(0, imgIds.length);
-    			cachedBps = new ArrayList<Bitmap>(list);
+    			List<WeakReference<Bitmap> > list = cachedBps.subList(0, imgIds.length);
+    			cachedBps = new ArrayList<WeakReference<Bitmap> >(list);
     		}
     		if(cachedBps == null){
     			thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
@@ -110,8 +111,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         }
         if(cachedBps != null){
         	for(int i = 0; i < cachedBps.size(); ++ i){
-        		if(cachedBps.get(i) != null){
-        			cachedBps.get(i).recycle();
+        		if(cachedBps.get(i) != null && cachedBps.get(i).get() != null){
+        			cachedBps.get(i).get().recycle();
         		}
         	}
         	cachedBps.clear();
@@ -143,7 +144,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     		((ImageView)imgs.get(currentImgView)).setImageResource(R.drawable.btn_add_picture);
     	}else{
     		for(int i = currentImgView; i < bitmap_url.size(); ++ i){
-    			imgs.get(i).setImageBitmap(cachedBps.get(i));
+    			imgs.get(i).setImageBitmap(cachedBps.get(i).get());
     		}
     		if(imgs.size() < imgIds.length || bitmap_url.size() + 1 < imgIds.length){
     			imgs.remove(imgs.size() - 1);
@@ -236,7 +237,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		if(outHandler != null){
 			if(this.bundle != null){
 				bundle.putSerializable(KEY_BITMAP_URL, bitmap_url);
-				bundle.putSerializable(KEY_CACHED_BPS, cachedBps);
+				bundle.putSerializable(KEY_CACHED_BPS, Util.discardWrappedWeakRef(cachedBps));
 			}
 			outHandler.sendEmptyMessage(MSG_IMG_SEL_DISMISSED);
 		}
@@ -248,7 +249,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onCreate(savedInstanceState);
 		if(savedInstanceState != null){
     		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		cachedBps = (ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
+    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
 		}
 	}
 	
@@ -257,7 +258,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onSaveInstanceState(outState);
 		if(outState != null){
 			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
-			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
+			outState.putSerializable(KEY_CACHED_BPS, Util.discardWrappedWeakRef(cachedBps));
 		}
 	}
 
@@ -301,7 +302,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     	}
    		imgs = new ArrayList<ImageView>(imgIds.length);
 		if(cachedBps == null){
-			cachedBps = new ArrayList<Bitmap>(imgIds.length);
+			cachedBps = new ArrayList<WeakReference<Bitmap> >(imgIds.length);
 			if(thumbnail_url != null && thumbnail_url.size() > 0){
 				for(int i = 0; i < thumbnail_url.size(); ++ i){
 					setListContent(cachedBps, null, i);
@@ -324,7 +325,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         for(int i = 0; i < realSize; ++ i){
         	ImageView iv = (ImageView)v.findViewById(imgIds[i]);
         	if(cachedBps.get(i) != null){
-        		iv.setImageBitmap(cachedBps.get(i));
+        		iv.setImageBitmap(cachedBps.get(i).get());
         	}else{
         		iv.setImageResource(R.drawable.icon_post_loading);
         	}
@@ -466,7 +467,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 							}
 							else{
 								if (cachedBps.size() > currentImgView && cachedBps.get(currentImgView) != null){
-									cachedBps.get(currentImgView).recycle();
+									if(cachedBps.get(currentImgView) != null && cachedBps.get(currentImgView).get() != null){
+										cachedBps.get(currentImgView).get().recycle();
+									}
 									cachedBps.set(currentImgView, null);
 								}
 								setListContent(bitmap_url, null, currentImgView);
@@ -589,7 +592,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			case MSG_SUCCEED_UPLOAD:{
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
-					imgs.get(index).setImageBitmap(cachedBps.get(index));
+					imgs.get(index).setImageBitmap(cachedBps.get(index).get());
 					imgs.get(index).setClickable(true);
 					imgs.get(index).invalidate();
 				}
@@ -641,7 +644,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	class UpLoadThread implements Runnable {
 		private String bmpPath;
 		private int currentIndex = -1;
-		private Bitmap thumbnailBmp = null;
+		private WeakReference<Bitmap> thumbnailBmp = null;
 
 		public UpLoadThread(String path, int index) {
 			super();
@@ -709,7 +712,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			if(imgs != null && imgs.get(currentIndex) != null && imgs.get(currentIndex).getHeight() != 0){
 				imgHeight = imgs.get(currentIndex).getHeight();
 			}
-			thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
+			thumbnailBmp = new WeakReference<Bitmap>(createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight));//imgs[currentIndex].getHeight());
 			setListContent(cachedBps, thumbnailBmp, currentIndex);
 //			if(cachedBps.size() > currentIndex){
 //				cachedBps.set(currentIndex, thumbnailBmp);
@@ -770,7 +773,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				int size = cachedBps.size() < urls.size() ? cachedBps.size() : urls.size();
 				for(int i = 0; i < size; ++ i){
 					if(cachedBps.get(i) == null){
-						Bitmap bmp = Util.getImage(urls.get(i));
+						WeakReference<Bitmap> bmp = new WeakReference<Bitmap>(Util.getImage(urls.get(i)));
 						setListContent(cachedBps, bmp, i);
 					}
 				}
@@ -778,7 +781,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					@Override
 					public void run(){
 						for(int i = 0; i < cachedBps.size(); ++ i){
-							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i));
+							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i).get());
 						}
 					}
 				});

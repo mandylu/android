@@ -43,13 +43,13 @@ public class ImageManager
 	
 	private Context context;	
 	
-	public static Bitmap userDefualtHead;
+//	public static Bitmap userDefualtHead;
 	
 	public ImageManager(Context context)
 	{
 		this.context = context;
 		//imgCache = new HashMap<String, SoftReference<Bitmap>>();
-		userDefualtHead =drawabltToBitmap(context.getResources().getDrawable(R.drawable.moren));
+//		userDefualtHead =drawabltToBitmap(context.getResources().getDrawable(R.drawable.moren));
 		
 	    // Get memory class of this device, exceeding this amount will throw an
 	    // OutOfMemory exception.
@@ -498,13 +498,13 @@ public class ImageManager
 	
 	
 	
-	private Bitmap drawabltToBitmap(Drawable drawable)
-	{
-		
-		BitmapDrawable tempDrawable = (BitmapDrawable)drawable;
-		return tempDrawable.getBitmap();
-		
-	}
+//	private Bitmap drawabltToBitmap(Drawable drawable)
+//	{
+//		
+//		BitmapDrawable tempDrawable = (BitmapDrawable)drawable;
+//		return tempDrawable.getBitmap();
+//		
+//	}
 
 	public String getFileInDiskCache(String url) {
 		if(null != imageDiskLruCache){

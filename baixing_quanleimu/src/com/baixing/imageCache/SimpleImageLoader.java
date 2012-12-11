@@ -54,7 +54,7 @@ public class SimpleImageLoader
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
-		if(bitmap==null){
+		if(bitmap==null || bitmap.get() == null){
 		    
 //		    BitmapFactory.Options o =  new BitmapFactory.Options();
 //            o.inPurgeable = true;
