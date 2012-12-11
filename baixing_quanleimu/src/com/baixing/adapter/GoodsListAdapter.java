@@ -53,6 +53,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	private List<GroupItem> groups  = new ArrayList<GoodsListAdapter.GroupItem>();
 	private boolean hasDelBtn = false;
 	private Bitmap defaultBk2;
+	private Bitmap downloadFailBk;
 //	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
@@ -61,6 +62,29 @@ public class GoodsListAdapter extends BaseAdapter {
 	private AdViewHistory vadHistory;
 	
 //	private RelativeLayout.LayoutParams lp = null;
+	
+	public void releaseResource(){
+		Thread t = new Thread(new Runnable(){
+			public void run(){
+//				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
+				try{
+					Thread.sleep(2000);
+					if(defaultBk2 != null){
+						defaultBk2.recycle();
+						defaultBk2 = null;
+					}
+					if(null != downloadFailBk){
+						downloadFailBk.recycle();
+						downloadFailBk = null;
+					}
+				}catch(Exception e){
+					e.printStackTrace();
+				}
+			}
+		});
+		t.start();
+
+	}
 	
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
@@ -278,6 +302,13 @@ public class GoodsListAdapter extends BaseAdapter {
 				defaultBk2 = tmb1;
 			}
 			
+			if(null == downloadFailBk){				
+				BitmapFactory.Options o =  new BitmapFactory.Options();
+		        o.inPurgeable = true;
+				Bitmap tmb1 = BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o);
+				downloadFailBk = tmb1;				
+			}
+			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
 				
 //			boolean showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
@@ -334,7 +365,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(c[0]);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 								}
 							}
@@ -357,7 +388,7 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(b);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 								}
 							}
