@@ -225,6 +225,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+			mRefreshUsingLocal = true;
 			lvGoodsList.fireRefresh();
 		}
 		
