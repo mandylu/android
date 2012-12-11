@@ -66,6 +66,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	static final int MSG_LOGINFAIL = 6;
 	static final int MSG_NEWREGISTERVIEW = 7;
 	static final int MSG_FORGETPASSWORDVIEW = 8;
+	static final int MSG_ANONYMOUS_USER = 9;
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
@@ -173,6 +174,11 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				}
 			}).start();
         }
+        else
+        {
+        	sendMessage(MSG_ANONYMOUS_USER, null);
+        }
+        
     }
 	
 	@Override
@@ -204,7 +210,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	{
 		showProgress(R.string.dialog_title_info, R.string.dialog_message_data_loading, true);
 		
-		new Thread(new GetPersonalAdsThread()).start();
+//		new Thread(new GetPersonalAdsThread()).start();
 		new Thread(new GetPersonalProfileThread()).start();
 	}
 
@@ -289,6 +295,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				fillProfile(up,rootView);
 			}
 			break;
+		case MSG_ANONYMOUS_USER:
+			fillProfile(null, rootView);
+			break;
 		case MSG_GETPERSONALLOCATION:
 			break;
 		case MSG_GETPERSONALSESSIONS:
@@ -324,6 +333,13 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 
 	private void fillProfile(UserProfile up, View userInfoView){
         View activity = userInfoView;
+        
+        if (up == null)
+        {
+        	View userInfoLayout = activity.findViewById(R.id.userInfoLayout);
+        	userInfoLayout.setVisibility(View.GONE);
+        	return;
+        }
 
         if(up.nickName != null){
             ((TextView)activity.findViewById(R.id.userInfoNickname)).setText(up.nickName);
@@ -408,7 +424,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			if (IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
 				user = (UserBean) note.getObject();
-				
+				up = null;
 				reloadUser(getView());
 			}
 		}
