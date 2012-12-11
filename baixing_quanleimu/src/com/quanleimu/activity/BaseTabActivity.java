@@ -12,6 +12,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -330,6 +332,25 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 
 	@Override
 	public void beforeChange(int currentIndex, int nextIndex) {
+	}
+	
+	public void deprecatSelect(int currentIndex)
+	{
+		FragmentManager fm =  getSupportFragmentManager();
+		int currentSize = fm.getBackStackEntryCount();
+		if (currentSize > 1)
+		{
+			FragmentTransaction ft = fm.beginTransaction();
+			if (firstFragmentId == INVALID_FIRSTFRAGMENT_ID)
+			{
+				fm.popBackStack();
+			}
+			else
+			{
+				fm.popBackStack(firstFragmentId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			}
+			ft.commit();
+		}
 	}
 
 	@Override
