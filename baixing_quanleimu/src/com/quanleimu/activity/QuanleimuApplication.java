@@ -257,7 +257,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			this.listMyStore = new ArrayList<GoodsDetail>();
 		}
 		
-		this.listMyStore.add(detail);
+		this.listMyStore.add(0, detail);
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_ADDED, detail);
 		return this.listMyStore;
 	}

@@ -599,7 +599,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 			{
 				if (tempGoodsList != null && tempGoodsList.getData() != null && !tempGoodsList.getData().contains(detail))
 				{
-					tempGoodsList.getData().add(detail);
+					tempGoodsList.getData().add(0, detail);
 					needUpdateAdapter = true;
 				}
 			}
@@ -616,6 +616,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 			{
 				adapter.setList(tempGoodsList.getData());
 				adapter.notifyDataSetChanged();
+				
+				if (pullListView != null)
+				{
+					pullListView.onRefreshComplete();
+				}
 			}
 		}
 	}
