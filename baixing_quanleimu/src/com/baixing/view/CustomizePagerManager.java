@@ -117,5 +117,11 @@ public class CustomizePagerManager implements TabSelectListener {
 			p.setCurrentItem(newSelectIndex);
 		}
 	}
-	
+
+	/* (non-Javadoc)
+	 * @see com.baixing.view.CustomizeTabHost.TabSelectListener#deprecatSelect(int)
+	 */
+	@Override
+	public void deprecatSelect(int currentIndex) {
+	}
 }

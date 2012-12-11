@@ -194,10 +194,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
 	    	mHasMore = hasMore;
 	    	if(mHasMore){
 	    		boolean showProgress = Communication.isWifiConnection();
-	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(!showProgress ? R.string.click_to_get_more : R.string.scrolldown_to_getmore);
-	    		mGetmoreView.findViewById(R.id.loadingProgress).setVisibility(showProgress ? View.VISIBLE : View.GONE);
+	    		updateFooterTip(!showProgress ? R.string.click_to_get_more : R.string.scrolldown_to_getmore, showProgress);
 	    	}else{
-	    		((TextView)mGetmoreView.findViewById(R.id.pulldown_to_getmore)).setText(R.string.scrolldown_to_getmore_nomore);
+	    		updateFooterTip(R.string.scrolldown_to_getmore_nomore, false);
 	    	}
     	}
     	

@@ -32,6 +32,7 @@ public final class CustomizeTabHost implements Serializable
     {
         public void beforeChange(int currentIndex, int nextIndex);
         public void afterChange(int newSelectIndex);
+        public void deprecatSelect(int currentIndex);
     }
 	
 	public static final class TabIconRes implements Serializable {
@@ -166,6 +167,10 @@ public final class CustomizeTabHost implements Serializable
     {
         if (newIndex == currentFocusIndex)
         {
+        	if (tabChangeListener != null)
+        	{
+        		tabChangeListener.deprecatSelect(currentFocusIndex);
+        	}
             return;
         }
         
