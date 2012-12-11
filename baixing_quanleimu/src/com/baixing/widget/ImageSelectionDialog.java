@@ -28,6 +28,7 @@ import android.view.View.OnKeyListener;
 import android.view.ViewGroup;
 import android.widget.ImageView;
 import android.widget.ImageView.ScaleType;
+import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
@@ -281,7 +282,12 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			for(int i = imgIds.length / 2; i < imgIds.length; ++ i){
 				imgs.get(0).getRootView().findViewById(imgIds[i]).setVisibility(View.GONE);
 			}
+			LinearLayout ll = (LinearLayout)imgs.get(0).getRootView().findViewById(imgIds[imgIds.length / 2]).getParent();
+			ll.setVisibility(View.GONE);
 		}else{
+			LinearLayout ll = (LinearLayout)imgs.get(0).getRootView().findViewById(imgIds[imgIds.length / 2]).getParent();
+			ll.setVisibility(View.VISIBLE);
+
 			for(int i = imgs.size(); i < imgIds.length; ++ i){
 				imgs.get(0).getRootView().findViewById(imgIds[i]).setVisibility(View.INVISIBLE);
 			}			

@@ -61,7 +61,7 @@
             android:layout_height="wrap_content"
             android:layout_gravity="center_horizontal"
             android:orientation="horizontal"
-            android:paddingTop="@dimen/post_padding" >
+            android:layout_marginTop="@dimen/post_padding" >
 
             <ImageView
                 android:id="@+id/iv_4"
@@ -110,7 +110,8 @@
         android:layout_below="@id/img_sel_content"
         android:layout_centerHorizontal="true"
         android:background="@drawable/bg_message_btn_selector"
-        android:paddingTop="@dimen/post_padding"
+        android:gravity="center"
+        android:layout_marginTop="@dimen/post_padding"
         android:text="完成添加"
         android:textSize="@dimen/font_medium" />
 
