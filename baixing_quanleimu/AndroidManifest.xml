@@ -2,7 +2,7 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quanleimu.activity"
     android:versionCode="19"
-    android:versionName="3.0.1"
+    android:versionName="3.0.2"
     android:installLocation= "auto">
 
     <uses-sdk android:minSdkVersion="7" />
@@ -64,19 +64,22 @@
             </intent-filter>
         </activity> -->
         
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PersonalActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PersonalActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan">
 			<intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PostActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance">
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".PostActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan">
             <intent-filter>
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
         
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance" android:windowSoftInputMode="adjustResize">
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name=".QuanleimuMainActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance"
+            android:windowSoftInputMode="adjustPan">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
 

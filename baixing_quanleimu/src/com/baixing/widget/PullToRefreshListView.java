@@ -170,7 +170,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
         }
         
         mNoInfoView = (ViewGroup) mInflater.inflate(R.layout.goodslist_empty_hint, null);
-        addFooterView(mNoInfoView);
+//        addFooterView(mNoInfoView);
 
         super.setOnScrollListener(this);
 
@@ -201,15 +201,11 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     	}
     	
     	 ListAdapter adapter = findGoodListAdapter();
+    	 this.removeFooterView(mNoInfoView);
          if (adapter == null || adapter.getCount() == 0)
          {
-//         	mNoInfoView.setVisibility(View.VISIBLE);
+         	mNoInfoView.setVisibility(View.VISIBLE);
          	this.addFooterView(mNoInfoView);
-         }
-         else
-         {
-//         	mNoInfoView.setVisibility(View.GONE);
-         	this.removeFooterView(mNoInfoView);
          }
     }
     
