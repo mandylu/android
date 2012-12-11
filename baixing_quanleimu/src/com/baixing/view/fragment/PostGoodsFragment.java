@@ -1460,6 +1460,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					imgSelDlg = null;
 				}
 				this.imgSelBundle = null;
+				
+				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
 		}
 	}
@@ -2229,7 +2231,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
-		title.m_leftActionHint = "返回";
+//		title.m_leftActionHint = "返回";
 //		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
 //			title.m_rightActionHint = "完成";
 //		}

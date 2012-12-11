@@ -54,10 +54,15 @@ run_test() {
 	local func="$2"
 	local prefix="$3"
 	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
+	
+	sh com.quanleimu.test/tools/run_screenshot.sh >> $LOGPATH/${prefix}_${LOGNOW}_screen.log
+	
 	adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
 	echo "adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &"
 	echo "tail -f $LOGPATH/"$prefix"_$LOGNOW.log"
 	tail -f $LOGPATH/"$prefix"_$LOGNOW.log
+	
+	
 }
 
 # define build_pkg function
