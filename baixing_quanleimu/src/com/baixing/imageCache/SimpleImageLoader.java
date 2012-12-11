@@ -6,6 +6,7 @@
  */
 package com.baixing.imageCache;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,14 +47,14 @@ public class SimpleImageLoader
 		return QuanleimuApplication.getImageLoader().getFileInDiskCache(url);
 	}
 
-	public static void showImg(final View view,final String url, final String preUrl, Context con, Bitmap bmp)//final int defaultResImgId)
+	public static void showImg(final View view,final String url, final String preUrl, Context con, WeakReference<Bitmap> bmp)//final int defaultResImgId)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view, bmp));//defaultResImgId));
+		WeakReference<Bitmap> bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view, bmp));//defaultResImgId));
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
-		if(bitmap==null){
+		if(bitmap==null || bitmap.get() == null){
 		    
 //		    BitmapFactory.Options o =  new BitmapFactory.Options();
 //            o.inPurgeable = true;
@@ -77,8 +78,8 @@ public class SimpleImageLoader
 //							Log.d("load image: ", "hahaha ln79  load url is: " + url + " and view:    " + view.hashCode() + "   "+ System.currentTimeMillis());
 							if(!bitmap_.isRecycled()){
 								if(!url.equals(preUrl)){
-									Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
-									if(bmp != null){
+									WeakReference<Bitmap> bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
+									if(bmp != null && bmp.get() != null){
 										Drawable curDrawable = 
 												view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
 										if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
@@ -110,7 +111,7 @@ public class SimpleImageLoader
 						}
 					}
 				}
-			}).execute(bitmap);			
+			}).execute(bitmap.get());			
 		}	
 	}
 	
@@ -152,7 +153,7 @@ public class SimpleImageLoader
 		}
 	}
 	
-	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final Bitmap defaultBmp)//final int defaultImgRes)
+	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final WeakReference<Bitmap> defaultBmp)//final int defaultImgRes)
 	{		
 		return new ImageLoaderCallback()
 		{ 
@@ -165,7 +166,7 @@ public class SimpleImageLoader
 //						Log.d("load image: ", "hahaha ln107  load url is: " + url + "  and view:  " + view.hashCode() + "   "+ System.currentTimeMillis());
 						if(!bitmap.isRecycled()){
 							if(!url.equals(preUrl)){
-								Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
+								WeakReference<Bitmap> bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 								if(bmp != null){
 									Drawable curDrawable = 
 											view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
@@ -219,9 +220,9 @@ public class SimpleImageLoader
 					view.postDelayed(new Runnable() {
 						public void run() {
 							if(view instanceof ImageView){
-								((ImageView)view).setImageBitmap(defaultBmp);//(defaultImgRes);
+								((ImageView)view).setImageBitmap(defaultBmp.get());//(defaultImgRes);
 							}else{
-								BitmapDrawable bd = new BitmapDrawable(defaultBmp);
+								BitmapDrawable bd = new BitmapDrawable(defaultBmp.get());
 								view.setBackgroundDrawable(bd);//setBackgroundResource(defaultImgRes);
 							}
 						}

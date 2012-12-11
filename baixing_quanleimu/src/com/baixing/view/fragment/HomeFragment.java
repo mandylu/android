@@ -1,11 +1,15 @@
 package com.baixing.view.fragment;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -98,6 +102,8 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		return true;
 	}
 	
+	private List<WeakReference<Bitmap> > bmpCaches = new ArrayList<WeakReference<Bitmap> >();
+	
 	private void setViewContent(){
 		if(getView() == null) return;
 		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
@@ -111,8 +117,17 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		for (int i = 0; i < icons.length; i++)
 		{
 			GridInfo gi = new GridInfo();
-			gi.imgResourceId = icons[i];
+			if(bmpCaches.size() <= i){
+				Bitmap bmp = ((BitmapDrawable)getResources().getDrawable(icons[i])).getBitmap(); 
+				bmpCaches.add(new WeakReference<Bitmap>(bmp));
+			}
+			if(bmpCaches.get(i).get() == null){
+				bmpCaches.set(i, new WeakReference<Bitmap>(((BitmapDrawable)getResources().getDrawable(icons[i])).getBitmap()));
+				Log.d("shit", "bitmap null");
+			}
+			gi.img = bmpCaches.get(i).get();
 			gi.text = texts[i];
+//			gi.resId = icons[i];
 			gitems.add(gi);
 		}
 
@@ -177,24 +192,36 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		super.onDestroy();
 	}
 	
+	private boolean isActivated = true;
 	@Override
 	public void onResume(){
 		super.onResume();
-		setViewContent();
+//		isActivated = true;
+		synchronized(HomeFragment.this){
+			setViewContent();
+		}
 	}
 	
 	@Override
 	public void onPause(){
 //		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
-		
-		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
-		gv.releaseResource(2000);
-//		if(gv != null){
-//			gv.postDelayed(new Runnable(){
+//		isActivated = false;
+//		final List<Bitmap> tmp = new ArrayList<Bitmap>();
+//		tmp.addAll(bmpCaches);
+//		bmpCaches.clear();
+//		if(this.getView() != null){
+//			getView().postDelayed(new Runnable(){
 //				@Override
 //				public void run(){
-//					gv.releaseResource();
+//					synchronized(HomeFragment.this){
+////						if(!isActivated){
+//							for(int i = 0; i < tmp.size(); ++ i){
+//								tmp.get(i).recycle();
+//							}
+//							tmp.clear();
+////						}
+//					}
 //				}
 //			}, 2000);
 //		}

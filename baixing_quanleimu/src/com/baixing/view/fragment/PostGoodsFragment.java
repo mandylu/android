@@ -2177,21 +2177,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		imgHeight = imgs[0].getMeasuredHeight()
 	}
 	
-	class SetBitmapThread implements Runnable{
-		private int index = -1;
-		private Bitmap bmp;
-		public SetBitmapThread(int index, Bitmap bmp){
-			this.index = index;
-			this.bmp = bmp;
-		}
-		
-		@Override
-		public void run(){
-//			PostGoodsFragment.this.imgs[index].setImageBitmap(bmp);
-//			PostGoodsFragment.this.imgs[index].setClickable(true);
-		}
-	}
-	
 	class Imagethread implements Runnable {
 		private List<String> smalls;
 		private List<String> bigs;
