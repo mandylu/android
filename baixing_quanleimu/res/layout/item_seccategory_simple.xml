@@ -8,13 +8,16 @@
        	android:layout_width="wrap_content"
        	android:layout_height="60dp"
 		android:src="@drawable/arrow_back"
+		android:layout_marginLeft="12dp"
        	/>
     <TextView
         android:id="@+id/tv"
         android:layout_width="wrap_content"
         android:layout_height="60dp"
 		android:textSize="22sp"
-		android:padding="15dp"
+		android:paddingTop="15dp"
+		android:paddingBottom="15dp"
+		android:paddingLeft="10dp"
         />
     
 </LinearLayout>
