@@ -138,8 +138,7 @@ public class CustomDialogBuilder {
 						//configSecondLevel
 						configSecondLevel(cd, lv, list);
 					}//isCategoryItem over
-					else {
-						//not category Item,need Thread & handler
+					else {//not category Item,need Thread & handler
 						handler = new Handler() {
 							@Override
 							public void handleMessage(Message msg) {
@@ -160,8 +159,9 @@ public class CustomDialogBuilder {
 													CustomDialogBuilder.this.secondLevelItems.add(tBack);
 													if (bean.getLabels().size() > 1) {
 														MultiLevelItem tAll = new MultiLevelItem();
-														tAll.txt = "全部";
-														tAll.id = null;
+														MultiLevelItem selectedItem = (MultiLevelItem)msg.obj;
+														tAll.txt = selectedItem.toString();
+														tAll.id = selectedItem.id;
 														CustomDialogBuilder.this.secondLevelItems.add(tAll);
 													}
 													for (int i=0; i<bean.getLabels().size(); i++) {
@@ -193,7 +193,8 @@ public class CustomDialogBuilder {
 						};
 						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
 						CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
-						(new Thread(new GetMetaDataThread(id))).start();
+						String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+						(new Thread(new GetMetaDataThread(id,txt))).start();
 					}//not category over
 					
 				} else {
@@ -296,9 +297,11 @@ public class CustomDialogBuilder {
 	
 	class GetMetaDataThread implements Runnable {
 		private String id;
+		private String txt;
 
-		public GetMetaDataThread(String id) {
+		public GetMetaDataThread(String id, String txt) {
 			this.id = id;
+			this.txt = txt;
 		}
 
 		@Override
@@ -312,7 +315,10 @@ public class CustomDialogBuilder {
 			} catch (Exception e) {
 				e.printStackTrace();
 			}
-			sendMessage(MESSAGE_GET_METAOBJ, null);
+			MultiLevelItem selectedItem = new MultiLevelItem();
+			selectedItem.id = this.id;
+			selectedItem.txt = this.txt;
+			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 		}
 	}
 	
@@ -377,6 +383,7 @@ public class CustomDialogBuilder {
 				String displayText = isCategoryItem 
 						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
 						: (String)(((List<MultiLevelItem>)list).get(position).toString());
+				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
 			return v;
