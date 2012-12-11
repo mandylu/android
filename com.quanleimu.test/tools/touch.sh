@@ -1,7 +1,7 @@
 # define usage function
 usage(){
 	echo "Usage: $0 deviveName \"x\" \"y\" [no]"
-	echo "	sample1: testOne.sh 015d1458a51c0c0e 150 1810 no"
+	echo "	sample1: testOne.sh 015d1458a51c0c0e 150 1850 no"
 	echo "	sample2: testOne.sh emulator-5556 100 710"
 	echo " ps: [no] for Nexus 7 pad: 015d1458a51c0c0e,015d18844854041c"
 	exit 1

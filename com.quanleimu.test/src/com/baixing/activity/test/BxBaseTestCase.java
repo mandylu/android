@@ -123,6 +123,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_IMAGEVIEW1_ID = "iv_1";
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
+	public static final String POST_META_DESC_IMAGEVIEW_ID = "myImg";
 	public static final String POST_CATEGORY_TEXT = "分类";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
 	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
@@ -334,6 +335,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		TimeUnit.SECONDS.sleep(5);
 		TextViewElement vm = findElementByText("以后再说");
 		if (vm != null) {
 			vm.doClick();

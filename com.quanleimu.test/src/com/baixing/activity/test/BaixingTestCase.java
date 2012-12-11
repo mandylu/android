@@ -128,6 +128,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 		AbsListViewElement lv = findListView();
 		if (lv != null) {
 			TextViewElement tv = lv.getChildByIndex(secondIndex + 1, TextViewElement.class);
+			if (tv == null) {
+				ViewGroupElement gv = lv.getChildByIndex(secondIndex + 1, ViewGroupElement.class);
+				gv.doClick();
+				tv = findTextView(gv);
+			}
 			//TextViewElement tv = findTextView(gv);
 			tv.doClick();
 			TimeUnit.SECONDS.sleep(2);
@@ -378,6 +383,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}*/
 		iv = findElementById(POST_META_IMAGEVIEW1_ID, BXImageViewElement.class);
+		if (iv == null) {
+			iv = findElementById(POST_META_DESC_IMAGEVIEW_ID, BXImageViewElement.class);
+		}
 		if (iv != null) {
 			iv.doClick();
 			SleepUtils.sleep(300);
@@ -423,25 +431,28 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void selectAutoMeta() throws Exception {
-		int loop = 10;
-		while (findElementById(POST_FORM_MARK_ID) == null) {
-			if (findElementByText("全部", 0, true) != null) {
-				findElementByText("全部", 0, true).doClick();
-				TimeUnit.SECONDS.sleep(1);
-				return;
-			}
-			AbsListViewElement lv1 = findListView();
-			if (lv1 != null) {
-				int index = lv1.getChildCount() > 1 ? 1 : 0;
-				ViewElement gv = lv1.getChildByIndex(index, ViewElement.class);
-				gv.doClick();
-				TimeUnit.SECONDS.sleep(1);
-			}
-			if (loop++ > 10) break;
-		}
-		//assertTrue("selectAutoMeta error", false);
-		/*int i = 2;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+		if (lv == null) {
+			int loop = 10;
+			while (findElementById(POST_FORM_MARK_ID) == null) {
+				if (findElementByText("全部", 0, true) != null) {
+					findElementByText("全部", 0, true).doClick();
+					TimeUnit.SECONDS.sleep(1);
+					return;
+				}
+				AbsListViewElement lv1 = findListView();
+				if (lv1 != null) {
+					int index = lv1.getChildCount() > 1 ? 1 : 0;
+					ViewElement gv = lv1.getChildByIndex(index, ViewElement.class);
+					gv.doClick();
+					TimeUnit.SECONDS.sleep(1);
+				}
+				if (loop++ > 10) break;
+			}
+			//assertTrue("selectAutoMeta error", false);
+			return;
+		}
+		int i = 2;
 		while(i >= 0) {
 			ViewElement v = selectMetaByIndex(i--, false);
 			ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
@@ -449,7 +460,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				continue;
 			}
 			break;
-		}*/
+		}
 	}
 	
 	public void postOtherDone() throws Exception {
@@ -538,6 +549,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		index = 0;
 		loop = 0;
 		String firstTitle = null;
+		boolean categoryFound = false; //todo
 		while(index < 10) {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
@@ -549,7 +561,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 							firstTitle = tt.getText();
 						}
 					}
-					if (tt != null && tt.getText().equals(POST_CATEGORY_TEXT)) continue;
+					if (tt != null && tt.getText().equals(POST_CATEGORY_TEXT)) {
+						if (!categoryFound) { //todo
+							categoryFound = true;
+							continue;
+						}
+					}
 					
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 					dv.doClick();
@@ -655,9 +672,17 @@ public class BaixingTestCase extends BxBaseTestCase {
 			goBack();
 			ViewElement dt = findElementByText("提示", 0, true);
 			if (dt != null) {
-				ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
-				if (d != null) {
-					d.doClick();
+				ViewElement dt2 = findElementByText("确认退出？", 0, true);
+				if (dt2 != null) {
+					ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+					if (d != null) {
+						d.doClick();
+					}
+				} else {
+					ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
+					if (d != null) {
+						d.doClick();
+					}
 				}
 			}
 			goBack();
@@ -1179,7 +1204,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
 			x= 250; y = 710;
 			if (Build.MODEL.equals("Nexus 7")) {
-				x = 550; y = 1810;
+				if (Build.VERSION.SDK_INT >= 17) {
+					x = 550; y = 1850;
+				} else {
+					x = 550; y = 1810;
+				}
 			}
 		}
 		waitClickXY(x, y);
@@ -1188,7 +1217,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
 			x= 400; y = 710;
 			if (Build.MODEL.equals("Nexus 7")) {
-				x = 1200; y = 1810;
+				if (Build.VERSION.SDK_INT >= 17) {
+					x = 1100; y = 1850;
+				} else {
+					x = 1200; y = 1810;
+				}
 			}
 		}
 		waitClickXY(x, y);
