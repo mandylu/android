@@ -1891,6 +1891,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				View v = layout_txt.findViewById(R.id.img_description);
 				EditText text = (EditText)v.findViewById(R.id.description_input);
 				text.setText("");
+				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
 				v.setOnClickListener(this);
