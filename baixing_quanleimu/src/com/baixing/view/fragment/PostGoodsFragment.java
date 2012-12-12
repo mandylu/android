@@ -504,10 +504,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void startImgSelDlg(ArrayList<String> bmpUrls, ArrayList<Bitmap> cachedBps, ArrayList<String> thumbUrls){
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
-		
+		if(bmpUrls != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
+		}
+		if(cachedBps != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
+		}
+		if(thumbUrls != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
+		}
+		imgSelDlg.setMsgOutBundle(imgSelBundle);
+//		imgSelDlg = new ImageSelectionDialog(imgSelBundle);
 		imgSelDlg.show(getFragmentManager(), null);
 		
 //		getFragmentManager().
@@ -587,9 +594,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
 			
-//			String big = (goodsDetail.getImageList().getBig());
-//			big = Communication.replace(big);
-//			String[] cbig = big.split(",");
+			String big = (goodsDetail.getImageList().getBig());
+			if(big != null && big.length() > 0){
+				big = Communication.replace(big);
+				String[] cbig = big.split(",");
+				for(int i = 0; i < cbig.length; ++ i){
+					this.bmpUrls.add(cbig[i]);
+				}
+			}
 //			ArrayList<String> smalls = new ArrayList<String>();
 //			ArrayList<String> bigs = new ArrayList<String>();
 //			for (int j = 0; j < listUrl.size(); j++) {
@@ -748,7 +760,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}else if(v.getId() == R.id.myImg){
 			if(goodsDetail != null){
-				if(bmpUrls.size() == 0){					
+				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_BITMAP_URL)){
+					startImgSelDlg(null, null, null);
+				}else{					
 					ArrayList<String> smalls = new ArrayList<String>();
 					ArrayList<String> bigs = new ArrayList<String>();
 					String big = (goodsDetail.getImageList().getBig());
@@ -762,8 +776,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						}
 					}
 					startImgSelDlg(bigs, null, smalls);
-				}else{
-					startImgSelDlg(null, null, null);
 				}							
 			}else{
 				startImgSelDlg(null, null, null);
@@ -2122,7 +2134,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					// 发布成功
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 					// 3).show();
-					resetData(true);
+					resetData(goodsDetail == null);
 					
 //					cxt.sendBroadcast(intent);
 
@@ -2276,7 +2288,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
-//		title.m_leftActionHint = "返回";
+		if(this.goodsDetail != null){
+			title.m_leftActionHint = "返回";
+		}
 //		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
 //			title.m_rightActionHint = "完成";
 //		}

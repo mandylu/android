@@ -94,26 +94,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     @SuppressWarnings("unchecked")
 	public ImageSelectionDialog(Bundle bundle){
-    	this.bundle = bundle;
-    	if(bundle != null){
-    		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
-    			List<String> list = bitmap_url.subList(0, imgIds.length);
-    			bitmap_url = new ArrayList<String>(list);
-    		}
-    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
-    		if(cachedBps != null && cachedBps.size() > imgIds.length){
-    			List<WeakReference<Bitmap> > list = cachedBps.subList(0, imgIds.length);
-    			cachedBps = new ArrayList<WeakReference<Bitmap> >(list);
-    		}
-    		if(cachedBps == null){
-    			thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
-    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
-    				List<String> list = thumbnail_url.subList(0, imgIds.length);
-    				thumbnail_url = new ArrayList<String>(list);
-    			}
-    		}
-    	}
+    	this.setMsgOutBundle(bundle); 	
     }
     
     public ImageSelectionDialog(){
@@ -149,6 +130,31 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     public void setMsgOutBundle(Bundle bundle){
     	this.bundle = bundle;
+    	if(bundle != null){
+    		if(bundle.containsKey(KEY_BITMAP_URL)){
+    			bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
+    		}
+    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
+    			List<String> list = bitmap_url.subList(0, imgIds.length);
+    			bitmap_url = new ArrayList<String>(list);
+    		}
+    		if(bundle.containsKey(KEY_CACHED_BPS)){
+    			cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
+    		}
+    		if(cachedBps != null && cachedBps.size() > imgIds.length){
+    			List<WeakReference<Bitmap> > list = cachedBps.subList(0, imgIds.length);
+    			cachedBps = new ArrayList<WeakReference<Bitmap> >(list);
+    		}
+    		if(cachedBps == null){
+    			if(bundle.containsKey(KEY_THUMBNAIL_URL)){
+    				thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
+    			}
+    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
+    				List<String> list = thumbnail_url.subList(0, imgIds.length);
+    				thumbnail_url = new ArrayList<String>(list);
+    			}
+    		}
+    	}       	
     }
     
     static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
@@ -693,6 +699,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 	
 	static <T> void setListContent(List<T> container, T obj, int index){
+		if(container == null) return;
 		if(container.size() > index){
 			container.set(index, obj);
 		}else{
