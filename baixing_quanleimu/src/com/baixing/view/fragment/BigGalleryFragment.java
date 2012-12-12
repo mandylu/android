@@ -57,6 +57,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	public List<String> listUrl = new ArrayList<String>();
 	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
+	private boolean exit = false;
 	
 	private android.media.MediaScannerConnection scannerConnection = null;
 	static private String mediaPath = Environment.getExternalStorageDirectory().getPath()+"/quanleimu/favorites/百姓网收藏图片/";
@@ -81,6 +82,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 
 	@Override
 	public boolean handleBack(){
+		exit = true;
 		this.finishFragment(MSG_GALLERY_BACK, null);
 		return true;
 	}
@@ -431,6 +433,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		public void onSwitched(View view, int position) {
 			if(listUrl == null) return;
 			postIndex = position;
+			if (exit)
+			{
+				return;
+			}
 			
 //			if(null != m_viewInfoListener){
 				TitleDef title = getTitleDef();
