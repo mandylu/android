@@ -836,7 +836,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.setPositiveButton(R.string.appeal, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
-					Bundle bundle = createArguments(null, null);
+					Bundle bundle = createArguments("申诉", null);
 					bundle.putInt("type", 1);
 					bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					pushAndFinish(new FeedbackFragment(), bundle);

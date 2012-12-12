@@ -588,7 +588,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                 else {
                     switch (clickedIndex) {
                         case 0://申诉
-                            Bundle bundle = createArguments(null, null);
+                            Bundle bundle = createArguments("申诉", null);
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);

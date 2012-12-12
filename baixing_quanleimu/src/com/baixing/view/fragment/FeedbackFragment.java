@@ -47,6 +47,7 @@ public class FeedbackFragment extends BaseFragment {
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
+		title.m_title = getArguments() != null && getArguments().containsKey(ARG_COMMON_TITLE) ? getArguments().getString(ARG_COMMON_TITLE) : "反馈信息";
 	}
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
