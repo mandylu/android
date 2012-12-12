@@ -20,6 +20,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentActivity;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -39,14 +43,18 @@ import com.baixing.util.Communication;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.PostGoodsFragment;
+import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class ImageSelectionDialog extends DialogFragment implements OnClickListener {
+public class ImageSelectionDialog extends DialogFragment implements OnClickListener{
 	public static final String KEY_BITMAP_URL = "bitmapurl";
 	public static final String KEY_CACHED_BPS = "cachedbps";
+	private static final String KEY_CURRENT_IMGVIEW = "currentImageView";
+	private static final String KEY_OUT_HANDLER = "outHandler";
 	public static final String KEY_THUMBNAIL_URL = "thumbnailurl";
+	private static final String KEY_BUNDLE = "key_bundle";
 	public static final String KEY_HANDLER = "handler";
 	private static final int NONE = 0;
 	private static final int MSG_START_UPLOAD = 5;
@@ -70,6 +78,18 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		ImageStatus_Normal,
 		ImageStatus_Unset,
 		ImageStatus_Failed
+	}
+	
+	public static class PhotoTaken extends Object{
+		public int requestCode;
+		public int resultCode;
+		public Intent data; 
+	};
+	
+	private PhotoTaken photoTaken = null;
+	
+	public void setPhotoTaken(PhotoTaken taken){
+		photoTaken = taken;
 	}
     
     @SuppressWarnings("unchecked")
@@ -125,6 +145,10 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     public void setMsgOutHandler(Handler handler){
     	outHandler = handler;
+    }
+    
+    public void setMsgOutBundle(Bundle bundle){
+    	this.bundle = bundle;
     }
     
     static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
@@ -236,6 +260,18 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onResume();
 	}
 	
+//	private void popUpDlgFragment(){
+//		FragmentManager fm = getActivity().getSupportFragmentManager();
+//		int count = fm.getBackStackEntryCount();
+//		if(count > 0){
+//			FragmentManager.BackStackEntry backEntry = fm.getBackStackEntryAt(count - 1);
+//		    String str = backEntry.getName();
+//		    if(str.contains(ImageSelectionDialog.class.getName())){
+//				fm.popBackStackImmediate();	
+//		    }
+//		}
+//	}
+	
 	@Override
 	public void onDismiss(DialogInterface dialog){
 		if(outHandler != null){
@@ -245,15 +281,32 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			outHandler.sendEmptyMessage(MSG_IMG_SEL_DISMISSED);
 		}
+//		popUpDlgFragment();
 		super.onDismiss(dialog);
 	}
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState){
 		super.onCreate(savedInstanceState);
+		
 		if(savedInstanceState != null){
     		bitmap_url = (ArrayList<String>)savedInstanceState.getSerializable(KEY_BITMAP_URL);
     		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)savedInstanceState.getSerializable(KEY_CACHED_BPS));
+    		currentImgView = savedInstanceState.getInt(KEY_CURRENT_IMGVIEW);
+    		bundle = savedInstanceState.getBundle(KEY_BUNDLE);
+		}
+		
+	}
+	
+	@Override
+	public void onStart(){
+		super.onStart();
+		FragmentActivity activity = getActivity();
+		if(activity != null){
+			FragmentManager fm = activity.getSupportFragmentManager();
+			if(fm != null){
+				fm.putFragment(this.bundle, "imageFragment", this);
+			}
 		}
 	}
 	
@@ -263,6 +316,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		if(outState != null){
 			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
 			outState.putSerializable(KEY_CACHED_BPS, Util.discardWrappedWeakRef(cachedBps));
+			outState.putInt(KEY_CURRENT_IMGVIEW, currentImgView);
+			outState.putBundle(KEY_BUNDLE, bundle);
 		}
 	}
 
@@ -314,7 +369,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 		}
 		
-		currentImgView = -1;
 		uploadCount = 0;
         
         Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
@@ -376,7 +430,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	(new DownloadThumbnailsThread(thumbnail_url)).start();
         }
         
-        if(bitmap_url.size() == 0){
+        if(bitmap_url.size() == 0 && savedInstanceState == null){
         	imgs.get(0).post(new Runnable(){
         		@Override
         		public void run(){
@@ -386,6 +440,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 
         	imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.INVISIBLE);
         	imgs.get(0).setVisibility(View.INVISIBLE);
+        }else if(photoTaken != null){
+        	this.onActivityResult(photoTaken.requestCode, photoTaken.resultCode, photoTaken.data);
         }
 
         return dialog;
@@ -404,7 +460,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which){
-				
 				Intent backIntent = new Intent();
 				backIntent.setClass(getActivity(), getActivity().getClass());
 				
