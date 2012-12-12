@@ -1548,9 +1548,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
-					imgSelDlg = null;
+//					imgSelDlg = null;
 				}
-				this.imgSelBundle = null;
+				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
