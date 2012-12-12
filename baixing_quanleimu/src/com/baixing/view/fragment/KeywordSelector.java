@@ -95,7 +95,7 @@ public class KeywordSelector extends BaseFragment {
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
-		View rootV = inflater.inflate(R.layout.keyword_selector, null);
+		ViewGroup rootV = (ViewGroup) inflater.inflate(R.layout.keyword_selector, null);
 
 		// 通过ID获取控件
 		lvSearchHistory = (ListView) rootV.findViewById(R.id.lvSearchHistory);
@@ -104,7 +104,10 @@ public class KeywordSelector extends BaseFragment {
 //		LinearLayout layout = new LinearLayout(getActivity());
 //		layout.setOrientation(LinearLayout.HORIZONTAL);
 		
-		tvClear = (TextView) rootV.findViewById(R.id.lvClearHistory);//new TextView(getActivity());
+		tvClear = (TextView) inflater.inflate(R.layout.button_clear, null);
+		tvClear.setHeight(getResources().getDimensionPixelSize(R.dimen.tab_height));
+		lvSearchHistory.addFooterView(tvClear);
+		
 //		tvClear.setTextSize(22);
 //		tvClear.setText("清除历史记录");
 //		tvClear.setGravity(Gravity.CENTER_VERTICAL);
@@ -148,6 +151,7 @@ public class KeywordSelector extends BaseFragment {
 	}
 	
 	private void showSearchHistory() {
+		
 		if (listRemark != null && listRemark.size() != 0) {
 			lvSearchHistory.setVisibility(View.VISIBLE);
 			tvClear.setVisibility(View.VISIBLE);

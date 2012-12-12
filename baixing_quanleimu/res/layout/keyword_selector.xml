@@ -16,16 +16,6 @@
         android:scrollingCache="false"
         />
     
-    	<TextView
-        android:id="@+id/lvClearHistory"
-        android:layout_width="fill_parent"
-        android:layout_height="48dp"
-        android:layout_below="@+id/lvSearchHistory"
-        android:gravity="center"
-        android:layout_centerHorizontal="true"
-        android:text="清除历史记录"
-        android:textSize="@dimen/font_medium"/>
-    	
     	<ScrollView android:layout_width="fill_parent"
     	    android:layout_height="fill_parent"
     	    android:layout_below="@+id/lvClearHistory">
