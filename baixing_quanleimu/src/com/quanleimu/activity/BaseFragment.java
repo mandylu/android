@@ -336,7 +336,7 @@ public abstract class BaseFragment extends Fragment {
 			action = "setting";
 			break;
 		case OPTION_FEEDBACK:
-			this.pushFragment(new FeedbackFragment(), createArguments("反馈", ""));
+			this.pushFragment(new FeedbackFragment(), createArguments("反馈信息", ""));
 			action = "feedback";
 			break;
 		case OPTION_EXIT:

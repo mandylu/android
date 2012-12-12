@@ -836,7 +836,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.setPositiveButton(R.string.appeal, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
 					trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
-					Bundle bundle = createArguments(null, null);
+					Bundle bundle = createArguments("申诉", null);
 					bundle.putInt("type", 1);
 					bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					pushAndFinish(new FeedbackFragment(), bundle);
@@ -947,7 +947,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		for (String meta : allMeta)
 		{
 			if (!meta.startsWith("价格") && !meta.startsWith("地点") &&
-					!meta.startsWith("地区") && !meta.startsWith("查看") && !meta.startsWith("来自") && !meta.startsWith("具体地点") && !meta.startsWith("分类"))
+					!meta.startsWith("地区") && !meta.startsWith("查看") && !meta.startsWith("来自") && !meta.startsWith("具体地点"))
 			{
 				final int splitIndex = meta.indexOf(" ");
 				if (splitIndex != -1)
