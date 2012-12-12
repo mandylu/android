@@ -35,6 +35,9 @@ import android.os.Environment;
 import android.os.Message;
 import android.os.Parcelable;
 import android.provider.MediaStore;
+import android.support.v4.app.Fragment;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -105,6 +108,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	static final public String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final public String KEY_IS_EDITPOST = "isEditPost"; 
 	static final public String KEY_CATE_ENGLISHNAME = "cateEnglishName";
+	
+	static final private String KEY_IMG_BUNDLE = "key_image_bundle";
+	
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
@@ -157,16 +163,52 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     private EditText etContact = null;
     
     @Override
-	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == NONE) {
 			return;
 		}
 
+		
+		FragmentManager fm = getActivity().getSupportFragmentManager();
+//		int count = fm.getBackStackEntryCount();
+//		if(count > 0){
+//			FragmentManager.BackStackEntry backEntry = 
+//					fm.getBackStackEntryAt(count - 1);
+//		    String str = backEntry.getName();
+//		    Fragment fragment = fm.findFragmentByTag("imageSelection");
+////		    fm.getFragment(arg0, arg1)
+//			if(fragment != this && fragment instanceof ImageSelectionDialog){
+//				this.imgSelDlg = (ImageSelectionDialog)fragment;
+//			}
+//		}
+		Fragment fg = fm.getFragment(this.imgSelBundle, "imageFragment");
+		if(fg != null && (fg instanceof ImageSelectionDialog)){
+			this.imgSelDlg = (ImageSelectionDialog)fg;
+		}
 		if(this.imgSelDlg != null &&
 				(requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH
 				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
 				|| requestCode == PHOTORESOULT)){
+			imgSelDlg.setMsgOutHandler(handler);
+			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
 			imgSelDlg.onActivityResult(requestCode, resultCode, data);
+//			imgSelDlg.show(getFragmentManager(), null);
+//			if(!imgSelDlg.isVisible()){
+//				imgSelDlg.show(getFragmentManager(), null);
+//				Thread t = new Thread(new Runnable(){
+//					@Override
+//					public void run(){
+//						try{
+//							Thread.sleep(3000);
+//						}catch(Exception e){
+//							e.printStackTrace();
+//						}
+//						imgSelDlg.onActivityResult(requestCode, resultCode, data);		
+//					}
+//				});
+//				t.start();
+//			}
+			
 		}
     }
     
@@ -225,13 +267,23 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			currentImgView = savedInstanceState.getInt("imgIndex", -1);
 //			uploadCount = savedInstanceState.getInt("uploadCount", 0);
 			imgHeight = savedInstanceState.getInt("imgHeight");
-			Parcelable[] ps = savedInstanceState.getParcelableArray("imgs");
+//			Parcelable[] ps = savedInstanceState.getParcelableArray("imgs");
 //			cachedBps = new Bitmap[ps.length];
 //			int i = 0;
 //			for (Parcelable p : ps)
 //			{
 //				cachedBps[i++] = (Bitmap) p;
 //			}
+			this.imgSelBundle = savedInstanceState.getBundle(KEY_IMG_BUNDLE);
+		}
+		
+		if(imgSelBundle == null){
+			imgSelBundle =  new Bundle();
+		}
+
+		if(imgSelDlg == null){
+			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
+			imgSelDlg.setMsgOutHandler(handler);
 		}
 		
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -244,7 +296,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		
+		extractInputData(layout_txt, params);
 		synchronized(this){
 			outState.putSerializable("params", params);
 			outState.putSerializable("postList", postList);
@@ -254,6 +306,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //			outState.putInt("uploadCount", uploadCount);
 			outState.putInt("imgHeight", imgHeight);
 //			outState.putParcelableArray("imgs", cachedBps);
+			outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
 		}
 	}
 	
@@ -302,10 +355,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(imgSelDlg.handleBack()){
 				return true;
 		}
-		if(filled()){
-			ConfirmAbortAlert();
-			return true;
-		}
+//		if(filled()){
+//			ConfirmAbortAlert();
+//			return true;
+//		}
 		
 		return super.handleBack();
 	}
@@ -451,18 +504,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void startImgSelDlg(ArrayList<String> bmpUrls, ArrayList<Bitmap> cachedBps, ArrayList<String> thumbUrls){
-		if(imgSelBundle == null){
-			imgSelBundle =  new Bundle();
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
-		}
+		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
+		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
+		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
 		
-		if(imgSelDlg == null){
-			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
-			imgSelDlg.setMsgOutHandler(handler);
-		}
 		imgSelDlg.show(getFragmentManager(), null);
+		
+//		getFragmentManager().
+//		FragmentManager fm = getActivity().getSupportFragmentManager();
+//		FragmentTransaction ft = fm.beginTransaction();		
+//		ft.add(imgSelDlg, "imageSelection");
+//		ft.addToBackStack(imgSelDlg.getClass().getName()  + imgSelDlg.hashCode());
+//		ft.commit();
 		
 	}
 	
@@ -547,7 +600,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
+	private boolean inPosting = false;
+	
 	private void doPost(boolean registered, BXLocation location){
+		if(inPosting) return;
 		showSimpleProgress();
 		new Thread(new UpdateThread(registered, location)).start();		
 	}
@@ -692,16 +748,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}else if(v.getId() == R.id.myImg){
 			if(goodsDetail != null){
-				if(bmpUrls.size() == 0){
-					String big = (goodsDetail.getImageList().getBig());
-					big = Communication.replace(big);
-					String[] cbig = big.split(",");
+				if(bmpUrls.size() == 0){					
 					ArrayList<String> smalls = new ArrayList<String>();
 					ArrayList<String> bigs = new ArrayList<String>();
-					for (int j = 0; j < listUrl.size(); j++) {
-						String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-						smalls.add(listUrl.get(j));
-						bigs.add(bigUrl);
+					String big = (goodsDetail.getImageList().getBig());
+					if(big != null && big.length() > 0){
+						big = Communication.replace(big);
+						String[] cbig = big.split(",");
+						for (int j = 0; j < listUrl.size(); j++) {
+							String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+							smalls.add(listUrl.get(j));
+							bigs.add(bigUrl);
+						}
 					}
 					startImgSelDlg(bigs, null, smalls);
 				}else{
@@ -1033,6 +1091,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			this.location = location;
 		}
 		public void run() {
+			inPosting = true;
 			Log.d("location", "location, in UpdateThread::run");
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
@@ -1187,6 +1246,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				});
 			}
+			inPosting = false;
 		}
 	}
 	
@@ -1812,6 +1872,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
 					if(bps != null && bps.size() > 0){
 						((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bps.get(0));
+						((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
+						((TextView)v.findViewById(R.id.imgCout)).setText(String.valueOf(bps.size()));
+
 					}
 				}				
 			}			
