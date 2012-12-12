@@ -1098,10 +1098,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			if(registered){
 				list.add("mobile=" + mobile);
-				String password1 = Communication.getMD5(password);
-				password1 += Communication.apiSecret;
-				String userToken = Communication.getMD5(password1);
-				list.add("userToken=" + userToken);	
+				list.add("userToken=" + Util.generateUsertoken(password));	
 			}
 			
 			list.add("categoryEnglishName=" + categoryEnglishName);

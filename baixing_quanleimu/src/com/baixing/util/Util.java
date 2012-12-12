@@ -1620,11 +1620,14 @@ public class Util {
     static public void makeupUserInfoParams(UserBean user, List<String> params){
 		if(user != null && params != null){
 			params.add("mobile=" + user.getPhone());
-			String password1 = Communication.getMD5(user.getPassword());
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			params.add("userToken=" + userToken);
+			params.add("userToken=" + generateUsertoken(user.getPassword()));
 		}    	
+    }
+    
+    static public String generateUsertoken(String password){
+    		String password1 = Communication.getMD5(password.trim());
+		password1 += Communication.apiSecret;
+		return Communication.getMD5(password1);
     }
     
     public static ArrayList<WeakReference<Bitmap> > wrapBitmapWithWeakRef(List<Bitmap> bmps){
