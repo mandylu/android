@@ -334,6 +334,16 @@ public class BxBaseTestCase extends AthrunTestCase {
 		AthrunTestCase.assertEquals(message, expected, actual);
 	}
 	
+	public void assertElementByText(String text) throws Exception {
+		ViewElement v = findElementByText(text);
+		assertNotNull(v);
+	}
+	
+	public void assertElementById(String id) throws Exception {
+		ViewElement v = findElementById(id);
+		assertNotNull(v);
+	}
+	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
 		TimeUnit.SECONDS.sleep(5);

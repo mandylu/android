@@ -88,11 +88,16 @@ build_pkg() {
 			exit;
 		fi;
 		
-		cd ../com.quanleimu.screenshot/;
-		ant
-		sleep 1;
+		cd ../
+		if [ ! -f com.quanleimu.screenshot/screenshot.jar ]; then
+			cd com.quanleimu.screenshot/;
+			ant
+			sleep 1;
+			cd ../com.quanleimu.test/;
+		else
+			cd com.quanleimu.test/;
+		fi
 		
-		cd ../com.quanleimu.test/;
 	else
 		cd com.quanleimu.test/;
 	fi
