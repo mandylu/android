@@ -20,6 +20,7 @@ import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
 import org.athrun.android.framework.viewelement.ViewUtils;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -579,6 +580,10 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return (T)textView;
 	}
 	
+	public boolean showNextView() throws Exception {
+		return showNextView(AD_DETAILVIEW_ID);
+	}
+	
 	public boolean showNextView(String viewId) throws Exception {
 		BXViewGroupElement bv = findElementById(viewId,
 				BXViewGroupElement.class);
@@ -589,6 +594,10 @@ public class BxBaseTestCase extends AthrunTestCase {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean showPrevView() throws Exception {
+		return showPrevView(AD_DETAILVIEW_ID);
 	}
 	
 	public boolean showPrevView(String viewId) throws Exception {
@@ -624,13 +633,67 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return null;
 	}
 	
+	public TextViewElement findTextView() throws Exception {
+		String[] nots = {};
+		return findTextView(nots);
+	}
+	
+	public TextViewElement findTextView(String[] nots) throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(true);
+		if (views.size() == 0) return null;
+		int maxX = getDevice().getScreenHeight();
+		int maxY = getDevice().getScreenWidth();
+		for (View view : views) {
+			/*if (ViewUtils.isViewOutOfScreen(view)) continue;
+			if (!view.isClickable()) continue;
+			if (!view.isShown()) continue;
+			if (view.getVisibility() == View.INVISIBLE) continue;*/
+			int[] location = new int[2];
+		    view.getLocationOnScreen(location);
+		    int x = location[0];
+		    int y = location[1];
+			if (x < 0 || x > maxX) continue;
+			if (y < 0 || y > maxY) continue;
+			view.getLocationInWindow(location);
+		    x = location[0];
+		    y = location[1];
+			if (x < 0 || x > maxX) continue;
+			if (y < 0 || y > maxY) continue;
+			try {
+				TextViewElement tv = findElementById(view.getId(), TextViewElement.class);
+				if (tv != null && tv.getText().length() > 0) {
+					boolean found = false;
+					for (int i = 0; i < nots.length; i++) {
+						if (tv.getText().indexOf(nots[i]) != -1) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						return tv;
+					}
+				}
+			} catch (IllegalArgumentException e) {}
+		}
+		return null;
+	}
+	
+	public TextViewElement findTextView(String viewId) throws Exception {
+		ViewGroupElement gv = findElementById(viewId, ViewGroupElement.class);
+		return findTextView(gv);
+	}
+	
 	public TextViewElement findTextView(ViewGroupElement gv) throws Exception {
 		if (gv != null) {
-			try {
-				TextViewElement tv = gv.getChildByIndex(0, TextViewElement.class);
-				if (tv != null && tv.getText().length() > 0) return tv;
-			} catch (IllegalArgumentException e) {
-				
+			int i = 0;
+			int c = gv.getChildCount();
+			while(i < c) {
+				try {
+					TextViewElement tv = gv.getChildByIndex(i++, TextViewElement.class);
+					if (tv != null && tv.getText().length() > 0) return tv;
+				} catch (IllegalArgumentException e) {
+					
+				}
 			}
 		}
 		return null;

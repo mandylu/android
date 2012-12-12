@@ -150,6 +150,58 @@ public class KeepLiveTest extends BaixingTestCase {
         	Runtime.getRuntime().gc();
         }
 	}
+	
+	/*
+	 * Start run touch Viewad
+	 */
+	@Test
+	public void runTouchViewad() throws Exception {
+		BXLog.xr();
+		openHomeCategoryByIndex(1);
+		assertNotNull(findElementByText("车辆买卖"));
+		openSecondCategoryByIndex(0);
+		assertNotNull(findElementByText("二手轿车"));
+		openAdWithPic(true);
+		assertTrue(findElementByText("收藏") != null || findElementByText("取消收藏") != null );
+		assertNotNull(findElementByText("短信"));
+		String[] nots = {"收藏", "取消收藏", "前发布", "刚刚发布", "短信", "无联系方式", "发布"};
+		//第一页找到一个文本
+		TextViewElement tv1 = findTextView(nots);
+		assertNotNull(tv1);
+		showNextView();
+		TimeUnit.SECONDS.sleep(3);
+		//第二页找到一个文本
+		TextViewElement tv2 = findTextView(nots);
+		assertNotNull(tv2);
+		//两个文本不能一样
+		assertTrue(tv1.getText() + ":" + tv2.getText(), !tv1.getText().equals(tv2.getText()));
+		TextViewElement tv3 = findElementById(tv1.getId(), TextViewElement.class);
+		//同一 id 的文本两页中应该不一样
+		assertTrue(tv1.getText() + ":" + tv3.getText(), !tv1.getText().equals(tv3.getText()));
+		showNextView(); //翻页
+		showPrevView(); //回翻
+		TimeUnit.SECONDS.sleep(3);
+		tv3 = findElementById(tv2.getId(), TextViewElement.class);
+		//同一 id 的文本两页中应该一样 （都是第二页）
+		assertTrue(tv3.getText() + ":" + tv2.getText(), tv3.getText().equals(tv2.getText()));
+		int i = 0;
+		while(i++ < 30) {
+			int j = 0;
+			while(j++ < 5) {
+				showNextView();
+				assertTrue(findElementByText("收藏") != null || findElementByText("取消收藏") != null );
+				showNextView();
+				showNextView();
+				showPrevView();
+				showNextView();
+				showNextView();
+				showPrevView();
+				showPrevView();
+				showNextView();
+				assertTrue(findElementByText("收藏") != null || findElementByText("取消收藏") != null );
+			}
+		}
+	}
 
 	/*
 	 * Start run post all category Test
