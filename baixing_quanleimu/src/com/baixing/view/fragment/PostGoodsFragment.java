@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -286,10 +287,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			imgSelDlg.setMsgOutHandler(handler);
 		}
 		
-		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
+		user = Util.getCurrentUser();//(UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			mobile = user.getPhone();
 			password = user.getPassword();
+		}
+		String appPhone = QuanleimuApplication.getApplication().getPhoneNumber();
+		if(appPhone == null || appPhone.length() == 0){
+			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
 		}
 	}
 		
@@ -692,7 +697,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(fixedItemNames[i].equals("价格")){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}else if(fixedItemNames[i].equals("contact")) {
+				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
+				text.setText(phone);
 			}else if(fixedItemNames[i].equals(STRING_DETAIL_POSITION)){
 				v.findViewById(R.id.location).setOnClickListener(this);
 				locationView = v;
@@ -869,6 +876,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		else
 		{
 			extractInputData(layout_txt, params);
+			String contactDisplayName = "";
+			if(postList != null){
+				Collection<PostGoodsBean> beans = postList.values();
+				if(beans != null){
+					Iterator<PostGoodsBean> ite = beans.iterator();
+					while(ite.hasNext()){
+						PostGoodsBean bean = ite.next();
+						if(bean.getName().equals("contact")){
+							contactDisplayName = bean.getDisplayName();
+							break;
+						}
+					}
+				}
+			}
+			QuanleimuApplication.getApplication().setPhoneNumber(params.getUiData(contactDisplayName));
 			if(!check2()){
 				return;
 			}
@@ -1734,7 +1756,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
-			etContact.setText(mobile);
+			etContact.setText(QuanleimuApplication.getApplication().getPhoneNumber());
 		}
 		if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(HASH_CONTROL);
@@ -1848,7 +1870,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean autoLocated;
 
 	
-	private void buildFixedPostLayout(){//添加fixedItemNames和postList交集的beanLayout
+	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
 		
 		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();

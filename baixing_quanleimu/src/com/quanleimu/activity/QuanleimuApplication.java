@@ -425,6 +425,15 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		}
 	}
 	
+	private String phoneNumber = "";
+	
+	public void setPhoneNumber(String number){
+		phoneNumber = number;
+	}
+	
+	public String getPhoneNumber(){
+		return phoneNumber;
+	}
 	
 	//热门城市列表
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
