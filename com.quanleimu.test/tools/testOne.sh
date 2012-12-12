@@ -88,6 +88,10 @@ build_pkg() {
 			exit;
 		fi;
 		
+		cd ../com.quanleimu.screenshot/;
+		ant
+		sleep 1;
+		
 		cd ../com.quanleimu.test/;
 	else
 		cd com.quanleimu.test/;
