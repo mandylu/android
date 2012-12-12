@@ -420,7 +420,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			    }
 			});
 		}
-		if(!isBack && this.goodsDetail == null){
+		if(!isBack){
 //			inLocating = true;
 			QuanleimuApplication.getApplication().addLocationListener(this);
 //			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
