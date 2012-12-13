@@ -47,6 +47,7 @@ public class FeedbackFragment extends BaseFragment {
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
+		title.m_title = getArguments() != null && getArguments().containsKey(ARG_COMMON_TITLE) ? getArguments().getString(ARG_COMMON_TITLE) : "反馈信息";
 	}
 	public void initTab(TabDef tab){
 		tab.m_visible = false;
@@ -210,8 +211,8 @@ public class FeedbackFragment extends BaseFragment {
 
 	@Override
 	public void handleRightAction() {
-		content = etOpinion.getText().toString();
-		String contact = ((TextView)getView().findViewById(R.id.et_contact)).getText().toString();
+		content = etOpinion.getText().toString().trim();
+		String contact = ((TextView)getView().findViewById(R.id.et_contact)).getText().toString().trim();
 		if(contact != null && !contact.equals("")){
 			content += "    联系方式: " + contact;
 		}

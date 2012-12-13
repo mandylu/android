@@ -128,8 +128,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public void onResume() {
         super.onResume();
-        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
-
+//        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
+        this.pv = PV.FAVADS;
         int adsCount = 0; //恶心的判断，能否有办法去除？
         if (glLoader != null && glLoader.getGoodsList() != null && glLoader.getGoodsList().getData() != null) {
             adsCount = glLoader.getGoodsList().getData().size();
@@ -230,10 +230,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         switch (msg.what) {
             case MSG_UPDATEFAV:
                 hideProgress();
-                
-                tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+                String lastJson = glLoader.getLastJson();
+                final boolean noResult = lastJson == null || lastJson.trim().length() == 0; 
+                tempGoodsList = JsonUtil.getGoodsListFromJson(lastJson);
                 Log.d("fav","updatefav.size:"+tempGoodsList.getData().size());
-                if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
+                if (null == tempGoodsList || (0 == tempGoodsList.getData().size() && noResult)) {
                     Message msg2 = Message.obtain();
                     msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
                     QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
@@ -242,31 +243,33 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 } else {
                     List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
                     List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-
-                    if (tempGoodsList.getData().size() <= favList.size()) {
-                        for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
-                            boolean exist = false;
-                            for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
-                                if (favList.get(i).equals(tempGoodsList.getData().get(j))) {
-                                    tmp.add(0, tempGoodsList.getData().get(j));
-                                    favList.set(i, tempGoodsList.getData().get(j));
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist) {
-                                favList.remove(i);
-                            }
-                        }
-                    }
-                    tempGoodsList.setData(tmp);
+                    
+//                    if (tempGoodsList.getData().size() <= favList.size()) {//Got no idea what this block code want to do !
+//                        for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
+//                            boolean exist = false;
+//                            for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
+//                                if (favList.get(i).equals(tempGoodsList.getData().get(j))) {
+//                                    tmp.add(0, tempGoodsList.getData().get(j));
+//                                    favList.set(i, tempGoodsList.getData().get(j));
+//                                    exist = true;
+//                                    break;
+//                                }
+//                            }
+//                            if (!exist) {
+//                                favList.remove(i);
+//                            }
+//                        }
+//                    }
+                    
+                    tmp.addAll(tempGoodsList.getData());
+                    favList = tmp;//tempGoodsList.getData();
 
                 	QuanleimuApplication.getApplication().updateFav(favList);
                 	Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
                 	
                     adapter.setList(tempGoodsList.getData());
                     glLoader.setGoodsList(tempGoodsList);
-                    glLoader.setHasMore(tempGoodsList.getData().size() < favList.size());
+                    glLoader.setHasMore(tempGoodsList.getData().size() >= 30);
                 }
 
                 pullListView.onRefreshComplete();
@@ -321,10 +324,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 int pos = (Integer) msg.obj;
                 if (isFav) {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListMyStore();
-                    goodsList.remove(pos);
+                    GoodsDetail detail = goodsList.remove(pos);
                     if (goodsList != tempGoodsList.getData())
-                        tempGoodsList.getData().remove(pos);
+                        tempGoodsList.getData().remove(detail);
                     //QuanleimuApplication.getApplication().setListMyStore(goodsList);
+                    QuanleimuApplication.getApplication().removeFav(detail);
                     Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", goodsList);
                 } else {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListLookHistory();
@@ -383,7 +387,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 if (isFav) {
                     Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
                 } else {
-                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
+//                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
                 }
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
@@ -397,7 +401,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                             if (isFav) {
                                                 Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
                                             } else {
-                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
+//                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
                                             }
                                         }
                                     }

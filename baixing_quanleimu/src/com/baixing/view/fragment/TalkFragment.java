@@ -261,8 +261,8 @@ public class TalkFragment extends BaseFragment {
 		{
 			super.onResume();
 			isAttachedToWindow = true;
-			this.pv = PV.BUZZ;
-			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
+//			this.pv = PV.BUZZ;
+//			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
 			
 			//Load history or load msg from server.
 			if (sessionId == null)

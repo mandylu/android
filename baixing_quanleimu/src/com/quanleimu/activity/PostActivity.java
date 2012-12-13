@@ -67,6 +67,7 @@ public class PostActivity extends BaseTabActivity {
 	
 	@Override
 	protected void onNewIntent(Intent intent) {
+		super.onNewIntent(intent);
 		BaseFragment bf = this.getCurrentFragment();
 		if(bf != null && (bf instanceof PostGoodsFragment)){
             if(intent != null && intent.hasExtra(PostGoodsFragment.KEY_INIT_CATEGORY)){
@@ -75,8 +76,7 @@ public class PostActivity extends BaseTabActivity {
             		((PostGoodsFragment)bf).updateNewCategoryLayout(extra.getString(PostGoodsFragment.KEY_INIT_CATEGORY));
             	}
             }
-		}
-		super.onNewIntent(intent);
+		}		
 	}
 	
 	@Override

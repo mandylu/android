@@ -39,11 +39,14 @@ import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
+import com.baixing.util.LogData;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.view.fragment.GoodDetailFragment.REQUEST_TYPE;
+import com.baixing.view.fragment.GoodDetailFragment.RequestThread;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
@@ -190,11 +193,19 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		lvGoodsList.setOnRefreshListener(this);	
 		
 		Bundle bundle = this.getArguments();
-		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
-			if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-				this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+		if(bundle != null){
+			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
+				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
+					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+				}
+				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
 			}
-			bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
+			if(bundle.containsKey("forceUpdate")){
+				if(bundle.getBoolean("forceUpdate")){
+					this.needReloadData = true;
+				}
+				bundle.remove("forceUpdate");
+			}
 		}
 		
 		return v;
@@ -310,7 +321,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		case MSG_DELETED:
 			hideProgress();
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
-			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING));
+//			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
+			this.pv = PV.MYADS_SENT;
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
 				Tracker.getInstance()
@@ -422,7 +434,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			hideProgress();
 			//tracker
 			Tracker.getInstance()
-			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) )
+//			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
+			.pv(PV.MYADS_SENT)
 			.end();
 			
 			Message msg2 = Message.obtain();
@@ -521,6 +534,28 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}
+	
+	private void postDelete(final LogData event, final String adId, final long postedSeconds)
+	{
+		new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		.setMessage("是否确定删除")
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+                showSimpleProgress();
+                new Thread(new MyMessageDeleteThread(adId)).start();
+                        event.end();
+			}
+		})
+		.setNegativeButton(
+	     "取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();							
+			}
+		})
+	     .show();
+	}
 
     /**
      *
@@ -545,7 +580,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         else
         {
             r_array_item_operate = R.array.item_operate_inverify;
-            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+//            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
         }
         
         String tmpInsertedTime = detail.data.get("insertedTime");
@@ -577,31 +612,31 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                                     .end();
                             break;
                         case 2://删除
-                            showSimpleProgress();
-                            new Thread(new MyMessageDeleteThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
+                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
                 } 
                 else {
                     switch (clickedIndex) {
                         case 0://申诉
-                            Bundle bundle = createArguments(null, null);
+                            Bundle bundle = createArguments("申诉", null);
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
-                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
+//                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
+//                                    .append(Key.POSTEDSECONDS, postedSeconds)
+//                                    .end();
                             break;
                         case 1://删除
-                            showSimpleProgress();
-                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            new Thread(new MyMessageDeleteThread(adId)).start();
+//                            showSimpleProgress();
+//                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+//                                    .append(Key.POSTEDSECONDS, postedSeconds)
+//                                    .end();
+//                            new Thread(new MyMessageDeleteThread(adId)).start();
+//                            postDelete(Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+//                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+                            
                             break;
                     }
                 }

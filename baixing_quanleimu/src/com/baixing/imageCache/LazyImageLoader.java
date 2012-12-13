@@ -90,17 +90,14 @@ public class LazyImageLoader
 		if(imgManger.contains(url))
 		{
 			bitmap = imgManger.getFromMemoryCache(url);
-//			if(bitmap!=null && bitmap.isRecycled()){
-//				Log.d("imageCache", "bitmap in cache, but it is recycled and reclaimed, oOH...");
-//			}
 		}
 		
 		
-		if(bitmap!=null){//if found in memory cache, just return that to the caller
+		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
-		}else
-		{//else, try try to load from disk cache
+		}else{//else, try try to load from disk cache
 			callbackManager.put(url, callback);			
+			Log.d("set bmp", "bitmap, startFetchingTread: " + url);
 			startFetchingTread(url);
 	    }
 		
@@ -314,11 +311,11 @@ public class LazyImageLoader
 			try
 			{
 				while(isRun && urlDequeDiskIO.size() > 0)
-				{
+				{					
 //					synchronized(mCurrentUrl){
 						mCurrentUrl = urlDequeDiskIO.remove(0);
 //					}
-					
+						
 					if(null == mCurrentUrl){
 						continue;
 					} 
