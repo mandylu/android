@@ -229,7 +229,7 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
                 Tracker.getInstance().event(BxEvent.SETTINGS_ABOUT).end();
                 break;
             case R.id.setFeedback:
-                pushFragment(new FeedbackFragment(), createArguments(null, null));
+                pushFragment(new FeedbackFragment(), createArguments("反馈信息", null));
                 Tracker.getInstance().event(BxEvent.SETTINGS_FEEDBACK).end();
                 break;
             default:

@@ -160,6 +160,7 @@ public class SimpleImageLoader
 			private boolean inFailStatus = false;
 			public void refresh(String url, Bitmap bitmap)
 			{
+				if(bitmap == null) return;
 				synchronized(QuanleimuApplication.getImageLoader()){
 					if(url.equals(view.getTag().toString()))
 					{

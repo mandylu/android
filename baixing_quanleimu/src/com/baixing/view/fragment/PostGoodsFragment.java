@@ -9,6 +9,7 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.Arrays;
+import java.util.Collection;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -289,10 +290,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			imgSelDlg.setMsgOutHandler(handler);
 		}
 		
-		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
+		user = Util.getCurrentUser();//(UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			mobile = user.getPhone();
 			password = user.getPassword();
+		}
+		String appPhone = QuanleimuApplication.getApplication().getPhoneNumber();
+		if(appPhone == null || appPhone.length() == 0){
+			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
 		}
 	}
 		
@@ -399,6 +404,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onPause() {
 		QuanleimuApplication.getApplication().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
+		setPhoneAndAddress();
+		
 //		this.postLayoutCreated = false;
 		super.onPause();
 	}
@@ -423,7 +430,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			    }
 			});
 		}
-		if(!isBack && this.goodsDetail == null){
+		if(!isBack){
 //			inLocating = true;
 			QuanleimuApplication.getApplication().addLocationListener(this);
 //			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
@@ -508,10 +515,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void startImgSelDlg(ArrayList<String> bmpUrls, ArrayList<Bitmap> cachedBps, ArrayList<String> thumbUrls){
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
-		imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
-		
+		if(bmpUrls != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
+		}
+		if(cachedBps != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
+		}
+		if(thumbUrls != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
+		}
+		imgSelDlg.setMsgOutBundle(imgSelBundle);
+//		imgSelDlg = new ImageSelectionDialog(imgSelBundle);
 		imgSelDlg.show(getFragmentManager(), null);
 		
 //		getFragmentManager().
@@ -543,7 +557,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(control instanceof TextView){
 				((TextView)control).setText(displayValue);
 			}
-			this.params.put(bean.getDisplayName(), displayValue, detailValue);
+			this.params.put(bean.getDisplayName(), 
+					displayValue, 
+					detailValue,
+					bean.getName());
 			
 		
 			if(bean.getDisplayName().equals(STRING_AREA)){
@@ -591,9 +608,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
 			
-//			String big = (goodsDetail.getImageList().getBig());
-//			big = Communication.replace(big);
-//			String[] cbig = big.split(",");
+			String big = (goodsDetail.getImageList().getBig());
+			if(big != null && big.length() > 0){
+				big = Communication.replace(big);
+				String[] cbig = big.split(",");
+				for(int i = 0; i < cbig.length; ++ i){
+					this.bmpUrls.add(cbig[i]);
+				}
+			}
 //			ArrayList<String> smalls = new ArrayList<String>();
 //			ArrayList<String> bigs = new ArrayList<String>();
 //			for (int j = 0; j < listUrl.size(); j++) {
@@ -724,7 +746,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(fixedItemNames[i].equals("价格")){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}else if(fixedItemNames[i].equals("contact")) {
+				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
+				if(phone != null && phone.length() > 0){
+					text.setText(phone);
+				}
 			}else if(fixedItemNames[i].equals(STRING_DETAIL_POSITION)){
 				v.findViewById(R.id.location).setOnClickListener(this);
 				locationView = v;
@@ -800,7 +826,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 			if(goodsDetail != null){
-				if(bmpUrls.size() == 0){					
+				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_BITMAP_URL)){
+					startImgSelDlg(null, null, null);
+				}else{					
 					ArrayList<String> smalls = new ArrayList<String>();
 					ArrayList<String> bigs = new ArrayList<String>();
 					String big = (goodsDetail.getImageList().getBig());
@@ -814,8 +842,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						}
 					}
 					startImgSelDlg(bigs, null, smalls);
-				}else{
-					startImgSelDlg(null, null, null);
 				}							
 			}else{
 				startImgSelDlg(null, null, null);
@@ -892,6 +918,40 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
+	private void setPhoneAndAddress(){
+		String contactDisplayName = "";
+		String addressDisplayName = "";
+		if(postList != null){
+			Collection<PostGoodsBean> beans = postList.values();
+			if(beans != null){
+				Iterator<PostGoodsBean> ite = beans.iterator();
+				while(ite.hasNext()){
+					PostGoodsBean bean = ite.next();
+					if(bean.getName().equals("contact")){
+						contactDisplayName = bean.getDisplayName();
+						if(addressDisplayName.length() > 0){
+							break;
+						}
+					}else if(bean.getName().equals(STRING_DETAIL_POSITION)){
+						addressDisplayName = bean.getDisplayName();
+						if(contactDisplayName.length() > 0){
+							break;
+						}
+					}
+				}
+			}
+		}
+		String phone = params.getData(contactDisplayName);
+		if(phone != null && phone.length() > 0){
+			QuanleimuApplication.getApplication().setPhoneNumber(phone);
+		}
+		String address = params.getData(addressDisplayName);
+		if(address != null && address.length() > 0){
+			QuanleimuApplication.getApplication().setAddress(address);
+		}
+		
+	}
+	
 	private void postAction() {
 		//定位成功的情况下，发布时保存当前经纬度和地理位置
         if (/*inLocating == false &&*/ locationView != null && cacheLocation != null) {
@@ -908,6 +968,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		else
 		{
 			extractInputData(layout_txt, params);
+			setPhoneAndAddress();
 			if(!check2()){
 				return;
 			}
@@ -932,7 +993,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				if(et != null){
 //					String displayValue = et.getText().toString();
 //					displayValue = displayValue.endsWith(postGoodsBean.getUnit()) ? 
-					params.put(postGoodsBean.getDisplayName(),  et.getText().toString(), et.getText().toString());
+					params.put(postGoodsBean.getDisplayName(),  
+							et.getText().toString(), 
+							et.getText().toString(),
+							postGoodsBean.getName());
 				}
 			}
 			else if(postGoodsBean.getControlType().equals("checkbox")){
@@ -940,10 +1004,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
 					if(box != null){
 						if(box.isChecked()){
-							params.put(postGoodsBean.getDisplayName(), postGoodsBean.getValues().get(0), postGoodsBean.getValues().get(0));
+							params.put(postGoodsBean.getDisplayName(),//key 
+									postGoodsBean.getValues().get(0), //uivalue
+									postGoodsBean.getValues().get(0),
+									postGoodsBean.getName());//key for ui value
 						}
 						else{
-							params.remove(postGoodsBean.getDisplayName());
+							params.remove(postGoodsBean.getDisplayName(),postGoodsBean.getName());
 						}
 					}
 				}
@@ -1149,10 +1216,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			if(registered){
 				list.add("mobile=" + mobile);
-				String password1 = Communication.getMD5(password);
-				password1 += Communication.apiSecret;
-				String userToken = Communication.getMD5(password1);
-				list.add("userToken=" + userToken);	
+				list.add("userToken=" + Util.generateUsertoken(password));	
 			}
 			
 			list.add("categoryEnglishName=" + categoryEnglishName);
@@ -1447,20 +1511,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 //	}
 	
+	private String lookupMetaNameByLabel(String displayName){
+		if (postList == null || postList.isEmpty())
+			return displayName;
+		Set<String> keySet = postList.keySet();
+		for (String key : keySet)
+		{
+			PostGoodsBean bean = postList.get(key);
+			if(bean.getDisplayName().equals(displayName)){
+				return bean.getName();
+			}
+		}
+		return displayName;
+	}
+	
 	private void loadCachedData()
 	{
-//		if (imgs != null)
-//		{
-//			for (int i=0; imgs.length>i; i++)
-//			{
-//				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
-//				{
-//					imgs[i].setImageBitmap(cachedBps[i]);
-//					imgs[i].invalidate();
-//				}
-//			}
-//		}
-		
 		LinkedHashMap<String, String> uiMap = params.getUiData();
 		if (uiMap == null)
 		{
@@ -1468,14 +1534,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		Iterator<String> it = uiMap.keySet().iterator();
 		while (it.hasNext()){
-			String displayName = it.next();
+			String name = it.next();
 			for (int i=0; i<layout_txt.getChildCount(); i++)
 			{
 				View v = layout_txt.getChildAt(i);
 				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-				if(bean == null || !bean.getDisplayName().equals(displayName)) continue;
+				if(bean == null || 
+						!bean.getName().equals(name)//check display name 
+						) continue;
 				View control = (View)v.getTag(HASH_CONTROL);
-				String displayValue = uiMap.get(displayName);
+				String displayValue = uiMap.get(name);
 				
 				if(control instanceof CheckBox){
 					if(displayValue.contains(((CheckBox)control).getText())){
@@ -1510,7 +1578,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, txtValue);
+					params.put(bean.getDisplayName(), txt, txtValue, bean.getName());
 				}
 				else if(obj instanceof String){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -1537,7 +1605,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, value);
+					params.put(bean.getDisplayName(), txt, value,bean.getName());
 				}
 				else if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -1546,7 +1614,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
+					params.put(bean.getDisplayName(), 
+							((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, 
+							((MultiLevelSelectionFragment.MultiLevelItem)obj).id,
+							bean.getName());
 				}
 			}
 		}
@@ -1568,9 +1639,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
-					imgSelDlg = null;
+//					imgSelDlg = null;
 				}
-				this.imgSelBundle = null;
+				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
@@ -1766,6 +1837,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
 //			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
 			locationView = layout;
+			
+			String address = QuanleimuApplication.getApplication().getAddress();
+			if(address != null && address.length() > 0){
+				((TextView)layout.findViewById(R.id.postinput)).setText(address);
+			}
 //			if(this.detailLocation != null && !inLocating){
 //				setDetailLocationControl(detailLocation);
 //			}
@@ -1775,11 +1851,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				setDetailLocationControl(detailLocation);
 //			}			
 		}
-		if(postBean.getName().equals("contact") && layout != null){
+		else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
-			etContact.setText(mobile);
+			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+			if(phone != null && phone.length() > 0){
+				etContact.setText(phone);
+			}
 		}
-		if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
+		else if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(HASH_CONTROL);
 		}
 		
@@ -1893,7 +1972,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean autoLocated;
 
 	
-	private void buildFixedPostLayout(){//添加fixedItemNames和postList交集的beanLayout
+	private void buildFixedPostLayout(){
 		if(this.postList == null || this.postList.size() == 0) return;
 		
 		HashMap<String, PostGoodsBean> pm = new HashMap<String, PostGoodsBean>();
@@ -1924,7 +2003,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						return false;
 					}
 				});
-				
+
+				text.setHint("请输入" + bean.getDisplayName());
+
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
 				v.setOnClickListener(this);
@@ -1976,11 +2057,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						//String key, String uiValue, String data
 						this.params.put(bean.getDisplayName(), 
 								defaultValue,
-								defaultValue);
+								defaultValue,
+								bean.getName());
 					} else {
 						this.params.put(bean.getDisplayName(), 
 								bean.getLabels().get(0), 
-								bean.getValues().get(0));
+								bean.getValues().get(0),
+								bean.getName());
 					}
 					break;
 				}
@@ -2081,7 +2164,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 
 	@Override
-	protected void handleMessage(Message msg, Activity activity, View rootView) {
+	protected void handleMessage(Message msg, final Activity activity, View rootView) {
 
 		if(msg.what != MSG_GETLOCATION_TIMEOUT){
 			hideProgress();
@@ -2182,15 +2265,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					e.printStackTrace();
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
-				String message = replaceTitleToDescription(json.getString("message"));
-				Toast.makeText(activity, message, 0).show();
+				String message = replaceTitleToDescription(json.getString("message"));			
 				if (!id.equals("") && code == 0) {
+					Toast.makeText(activity, message, 0).show();
 					final Bundle args = createArguments(null, null);
 					args.putInt("forceUpdate", 1);
 					// 发布成功
 					// Toast.makeText(PostGoods.this, "未显示，请手动刷新",
 					// 3).show();
-					resetData(true);
+					resetData(goodsDetail == null);
 					
 //					cxt.sendBroadcast(intent);
 
@@ -2214,7 +2297,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
 							
 							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
+							intent.putExtras(args);
 							activity.sendBroadcast(intent);
 //							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
 						}						
@@ -2223,17 +2306,28 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				}else{
 					if(code == 505){
-//						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-						if(activity != null){
-							resetData(true);
-							showPost();
-							Bundle args = createArguments(null, null);
-							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
-//							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
-							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
-							activity.sendBroadcast(intent);							
-						}						
+						AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+		                bd.setTitle("")
+		                        .setMessage(message)
+		                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+		                            @Override
+		                            public void onClick(DialogInterface dialog, int which) {
+		                                dialog.dismiss();
+		        						if(activity != null){
+		        							resetData(true);
+		        							showPost();
+		        							Bundle args = createArguments(null, null);
+		        							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+//		        							args.putString("505id", id);
+//		        							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+		        							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+		        							intent.putExtras(args);
+		        							activity.sendBroadcast(intent);							
+		        						}
+		                            }
+		                        });
+		                AlertDialog alert = bd.create();
+		                alert.show();	
 					}
 				}
 			} catch (JSONException e) {
@@ -2292,7 +2386,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			View control = (View)v.getTag(HASH_CONTROL);
 			if(control != null && control instanceof TextView){
 				if(params != null && params.containsKey(bean.getDisplayName())){
-					((TextView)control).setText(params.getUiData(bean.getDisplayName()));
+					String value = params.getUiData(bean.getDisplayName());
+					if(value == null){
+						value = params.getUiData(bean.getName());
+					}
+					if(bean.getName().equals("contact")){
+						String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+						if(phone != null && phone.length() > 0){
+							((TextView)control).setText(phone);
+							continue;
+						}
+					}
+					((TextView)control).setText(value);
 				}
 			}
 		}
@@ -2344,7 +2449,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
-//		title.m_leftActionHint = "返回";
+		if(this.goodsDetail != null){
+			title.m_leftActionHint = "返回";
+		}
 //		if(this.getView().findViewById(R.id.goodscontent).isShown()){		
 //			title.m_rightActionHint = "完成";
 //		}
@@ -2586,8 +2693,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						for(int t = 0; t < bean.getLabels().size(); ++ t){
 							if(location.subCityName.contains(bean.getLabels().get(t))){
 //								((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
-								params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
-								originParams.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+								params.put(bean.getDisplayName(), 
+										bean.getLabels().get(t), 
+										bean.getValues().get(t),
+										bean.getName());
+								originParams.put(bean.getDisplayName(), 
+										bean.getLabels().get(t), 
+										bean.getValues().get(t),
+										bean.getName());
 								return;
 							}
 						}

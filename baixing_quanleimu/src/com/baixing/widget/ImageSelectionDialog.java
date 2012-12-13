@@ -86,34 +86,15 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		public Intent data; 
 	};
 	
-	private PhotoTaken photoTaken = null;
+//	private PhotoTaken photoTaken = null;
 	
-	public void setPhotoTaken(PhotoTaken taken){
-		photoTaken = taken;
-	}
+//	public void setPhotoTaken(PhotoTaken taken){
+//		photoTaken = taken;
+//	}
     
     @SuppressWarnings("unchecked")
 	public ImageSelectionDialog(Bundle bundle){
-    	this.bundle = bundle;
-    	if(bundle != null){
-    		bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
-    			List<String> list = bitmap_url.subList(0, imgIds.length);
-    			bitmap_url = new ArrayList<String>(list);
-    		}
-    		cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
-    		if(cachedBps != null && cachedBps.size() > imgIds.length){
-    			List<WeakReference<Bitmap> > list = cachedBps.subList(0, imgIds.length);
-    			cachedBps = new ArrayList<WeakReference<Bitmap> >(list);
-    		}
-    		if(cachedBps == null){
-    			thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
-    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
-    				List<String> list = thumbnail_url.subList(0, imgIds.length);
-    				thumbnail_url = new ArrayList<String>(list);
-    			}
-    		}
-    	}
+    	this.setMsgOutBundle(bundle); 	
     }
     
     public ImageSelectionDialog(){
@@ -149,6 +130,31 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     public void setMsgOutBundle(Bundle bundle){
     	this.bundle = bundle;
+    	if(bundle != null){
+    		if(bundle.containsKey(KEY_BITMAP_URL)){
+    			bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
+    		}
+    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
+    			List<String> list = bitmap_url.subList(0, imgIds.length);
+    			bitmap_url = new ArrayList<String>(list);
+    		}
+    		if(bundle.containsKey(KEY_CACHED_BPS)){
+    			cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
+    		}
+    		if(cachedBps != null && cachedBps.size() > imgIds.length){
+    			List<WeakReference<Bitmap> > list = cachedBps.subList(0, imgIds.length);
+    			cachedBps = new ArrayList<WeakReference<Bitmap> >(list);
+    		}
+    		if(cachedBps == null){
+    			if(bundle.containsKey(KEY_THUMBNAIL_URL)){
+    				thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
+    			}
+    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
+    				List<String> list = thumbnail_url.subList(0, imgIds.length);
+    				thumbnail_url = new ArrayList<String>(list);
+    			}
+    		}
+    	}       	
     }
     
     static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
@@ -382,7 +388,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         int realSize = bitmap_url.size() > imgIds.length ? imgIds.length : bitmap_url.size();
         for(int i = 0; i < realSize; ++ i){
         	ImageView iv = (ImageView)v.findViewById(imgIds[i]);
-        	if(cachedBps.get(i) != null){
+        	if(cachedBps.size() > i && cachedBps.get(i) != null){
         		iv.setImageBitmap(cachedBps.get(i).get());
         	}else{
         		iv.setImageResource(R.drawable.icon_post_loading);
@@ -403,7 +409,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         }
         
         adjustImageLines();
-
+        
         v.setOnClickListener(this);
         dialog.setOnKeyListener(new DialogInterface.OnKeyListener(){
 
@@ -440,9 +446,10 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 
         	imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.INVISIBLE);
         	imgs.get(0).setVisibility(View.INVISIBLE);
-        }else if(photoTaken != null){
-        	this.onActivityResult(photoTaken.requestCode, photoTaken.resultCode, photoTaken.data);
         }
+//        	else if(photoTaken != null){
+//        	this.onActivityResult(photoTaken.requestCode, photoTaken.resultCode, photoTaken.data);
+//        }
 
         return dialog;
     }
@@ -693,6 +700,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 	
 	static <T> void setListContent(List<T> container, T obj, int index){
+		if(container == null) return;
 		if(container.size() > index){
 			container.set(index, obj);
 		}else{
@@ -772,17 +780,32 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				imgHeight = imgs.get(currentIndex).getHeight();
 			}
 			thumbnailBmp = new WeakReference<Bitmap>(createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight));//imgs[currentIndex].getHeight());
+
 			setListContent(cachedBps, thumbnailBmp, currentIndex);
-//			if(cachedBps.size() > currentIndex){
-//				cachedBps.set(currentIndex, thumbnailBmp);
-//			}else{
-//				cachedBps.add(thumbnailBmp);
-//			}
+			
+	        if(cachedBps.size() < imgs.size()){
+	        	int count = 0;
+	        	if(imgs.size() < imgIds.length){
+	        		count = imgs.size() - 1 - cachedBps.size();
+	        	}else{
+	        		count = imgs.size() - cachedBps.size();
+	        	}
+	        	for(int i = 0; i < count; ++ i){
+	        		cachedBps.add(new WeakReference<Bitmap>(null));
+	        	}
+	        }
 			currentBmp.recycle();
 			currentBmp = null;
 	
 			if (result != null) {
-				setListContent(bitmap_url, result, currentIndex);
+				setListContent(bitmap_url, result, currentIndex);						
+
+				if(handler == null) return;
+				Message msg = Message.obtain();
+				msg.what = MSG_SUCCEED_UPLOAD;
+				msg.obj = currentIndex;
+				handler.sendMessage(msg);
+
 //				if(bitmap_url.size() > currentIndex){
 //					bitmap_url.set(currentIndex, result);
 //				}else{
@@ -791,26 +814,19 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 
 				activity.runOnUiThread(new Runnable(){
 					public void run(){
-						if(handler == null) return;
-						Message msg = Message.obtain();
-						msg.what = MSG_SUCCEED_UPLOAD;
-						msg.obj = currentIndex;
-						handler.sendMessage(msg);
 						Toast.makeText(activity, "上传图片成功", 0).show();
 					}
 				});	                
 			} else {
-//				PostGoods.BXImageAndUrl imgAn dUrl = new PostGoods.BXImageAndUrl();
+				setListContent(bitmap_url, bmpPath, currentIndex);
+				if(handler == null) return;
+				Message msg = Message.obtain();
+				msg.what = MSG_FAIL_UPLOAD;
+				msg.obj = currentIndex;
+				handler.sendMessage(msg);
+
 				activity.runOnUiThread(new Runnable(){
 					public void run(){
-						setListContent(bitmap_url, bmpPath, currentIndex);
-//						bitmap_url.set(currentIndex, bmpPath);
-						//((BXDecorateImageView)imgs[PostGoods.this.currentImgView]).setDecorateResource(R.drawable.alert_red, BXDecorateImageView.ImagePos.ImagePos_RightTop);
-						if(handler == null) return;
-						Message msg = Message.obtain();
-						msg.what = MSG_FAIL_UPLOAD;
-						msg.obj = currentIndex;
-						handler.sendMessage(msg);
 						Toast.makeText(activity, "上传图片失败", 0).show();
 					}
 				});						
