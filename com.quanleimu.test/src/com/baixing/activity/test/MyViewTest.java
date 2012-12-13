@@ -27,7 +27,7 @@ public class MyViewTest extends BaixingTestCase {
 		logon();
 		sleep(2);
 		//检查是否包含登录按钮，确保登录成功
-		assertNotNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
+		assertElementById(MY_PROFILE_EDIT_BUTTON_ID);
 		//点击编辑按钮进入个人资料
 		clickById(MY_PROFILE_EDIT_BUTTON_ID);
 	    //点击用户名，清空

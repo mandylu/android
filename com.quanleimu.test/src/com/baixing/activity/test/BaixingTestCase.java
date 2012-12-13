@@ -928,6 +928,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return null;
 	}
 	
+	public ViewElement scrollAdListViewToFooter() throws Exception {
+		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+		assertNotNull("adlisting ershoujiaoche listView not found", lv);
+		return scrollAdListViewToFooter(lv);
+	}
+	
 	public ViewElement scrollAdListViewToFooter(BXViewGroupElement lv) throws Exception {
 
 		//检查底部提示：点击载入下30条

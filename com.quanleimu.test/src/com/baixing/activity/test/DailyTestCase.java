@@ -51,42 +51,35 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testHome() throws Exception {
 		//Check some tab && logo
-		assertNotNull("Home Category/Search title not found", findElementByText(TAB_ID_HOME_TEXT));
-		assertNotNull("Home Post title not found", findElementByText(TAB_ID_POST_TEXT));
-		assertNotNull("Home MyCenter title not found", findElementByText(TAB_ID_MY_TEXT));
-		assertNotNull("Home BaixingWang title not found", findElementByText(LOGO_TEXT));
+		assertElementByText("Home Category/Search title not found", TAB_ID_HOME_TEXT);
+		assertElementByText("Home Post title not found", TAB_ID_POST_TEXT);
+		assertElementByText("Home MyCenter title not found", TAB_ID_MY_TEXT);
+		assertElementByText("Home BaixingWang title not found", LOGO_TEXT);
 		
 		//Check first some category
-		assertNotNull("Home First Category wupinjiaoyi not found", findElementByText(CATEGORY_WUPINJIAOYI_TEXT));
-		assertNotNull("Home First Category jianzhizhaopin not found", findElementByText(CATEGORY_JIANZHIZHAOPIN_TEXT));
-		assertNotNull("Home First Category jiaoyupeixun not found", findElementByText(CATEGORY_JIAOYUPEIXUN_TEXT));
+		assertElementByText("Home First Category wupinjiaoyi not found", CATEGORY_WUPINJIAOYI_TEXT);
+		assertElementByText("Home First Category jianzhizhaopin not found", CATEGORY_JIANZHIZHAOPIN_TEXT);
+		assertElementByText("Home First Category jiaoyupeixun not found", CATEGORY_JIAOYUPEIXUN_TEXT);
 		
 		//Check second some category
 		findElementByText(CATEGORY_WUPINJIAOYI_TEXT).doClick();
 		sleep(1);
-		assertNotNull("Home Category wupinjiaoyi Second category shouji not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_SHOUJI_TEXT));
-		assertNotNull("Home Category wupinjiaoyi Second category jiadian not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_JIADIAN_TEXT));
+		assertElementByText("Home Category wupinjiaoyi Second category shouji not found", CATEGORY_WUPINJIAOYI_SHOUJI_TEXT);
+		assertElementByText("Home Category wupinjiaoyi Second category jiadian not found", CATEGORY_WUPINJIAOYI_JIADIAN_TEXT);
 
-		assertNotNull("Second Category list id:CATEGORY_SECOND_GRIDVIEW_ID:gridSecCategory not found", 
-				findElementById(CATEGORY_SECOND_GRIDVIEW_ID));
+		assertElementById("Second Category list id:CATEGORY_SECOND_GRIDVIEW_ID:gridSecCategory not found", CATEGORY_SECOND_GRIDVIEW_ID);
 		doScrollView(CATEGORY_SECOND_GRIDVIEW_ID, 2);
 
-		assertNotNull("Home Category wupinjiaoyi Second category yueqi/wenju not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_YUEQIWENJU_TEXT));
-		assertNotNull("Home Category wupinjiaoyi Second category gongyeshebei not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_GONGYESHEBEI_TEXT));
-		assertNotNull("Home Category wupinjiaoyi Second category mianfeizengsong not found", 
-				findElementByText(CATEGORY_WUPINJIAOYI_MIANFEIZENGSONG_TEXT));
+		assertElementByText("Home Category wupinjiaoyi Second category yueqi/wenju not found", CATEGORY_WUPINJIAOYI_YUEQIWENJU_TEXT);
+		assertElementByText("Home Category wupinjiaoyi Second category gongyeshebei not found", CATEGORY_WUPINJIAOYI_GONGYESHEBEI_TEXT);
+		assertElementByText("Home Category wupinjiaoyi Second category mianfeizengsong not found", CATEGORY_WUPINJIAOYI_MIANFEIZENGSONG_TEXT);
 		
 		goBack(true);
 		//Check some adListing
 		//Check and click ershouche
-		assertNotNull("Home First Category cheliangmaimai not found", findElementByText(CATEGORY_CHELIANG_TEXT));
+		assertElementByText("Home First Category cheliangmaimai not found", CATEGORY_CHELIANG_TEXT);
 		findElementByText(CATEGORY_CHELIANG_TEXT).doClick();
-		assertNotNull("Home Category cheliangmaimai Second category ershoujiaoche not found", 
-				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
+		assertElementByText("Home Category cheliangmaimai Second category ershoujiaoche not found", CATEGORY_CHELIANG_JIAOCHE_TEXT);
 		//Click ershouche
 		findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT).doClick();
 		sleep(1);
@@ -94,23 +87,17 @@ public class DailyTestCase extends BaixingTestCase {
 		waitForHideMsgbox(20000);
 		sleep(5);
 		//Check ershouche adlisting
-		assertNotNull("adlisting ershoujiaoche title not found", 
-				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
-		assertNotNull("adlisting ershoujiaoche fabu title not found", 
-				findElementByText(ADLISTING_POST_TEXT));
-		assertNotNull("adlisting ershoujiaoche filter more title not found", 
-				findElementByText(ADLISTING_FILTER_MORE_TEXT));
+		assertElementByText("adlisting ershoujiaoche title not found",  CATEGORY_CHELIANG_JIAOCHE_TEXT);
+		assertElementByText("adlisting ershoujiaoche fabu title not found",  ADLISTING_POST_TEXT);
+		assertElementByText("adlisting ershoujiaoche filter more title not found",  ADLISTING_FILTER_MORE_TEXT);
 
-		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
-		assertNotNull("adlisting ershoujiaoche listView not found", lv);
+		assertElementById("adlisting ershoujiaoche listView not found", AD_VIEWLIST_ID);
 		
 		//Open a Ad with pics
 		openAdWithPic(true);
 		//Check AdView
-		assertNotNull("adlisting ershoujiaoche adview price title not found", 
-				findElementByText(ADVIEW_PRICE_TEXT));
-		assertNotNull("adlisting ershoujiaoche adview favorite title not found", 
-				findElementByText(AD_FAVORITE_BUTTON_TEXT));
+		assertElementByText("adlisting ershoujiaoche adview price title not found", ADVIEW_PRICE_TEXT);
+		assertElementByText("adlisting ershoujiaoche adview favorite title not found", AD_FAVORITE_BUTTON_TEXT);
 		
 		goBack();
 		
@@ -118,31 +105,23 @@ public class DailyTestCase extends BaixingTestCase {
 		openAdWithPic(false);
 		//Check AdView
 		if (findElementById(AD_VIEWLIST_ID) == null) {
-			assertNotNull("adlisting ershoujiaoche adview price title not found", 
-					findElementByText(ADVIEW_PRICE_TEXT));
-			assertNotNull("adlisting ershoujiaoche adview favorite title not found", 
-					findElementByText(AD_FAVORITE_BUTTON_TEXT));
-			assertNotNull("adlisting ershoujiaoche adview no pic title not found", 
-					findElementByText(ADVIEW_NO_PIC_TEXT));
+			assertElementByText("adlisting ershoujiaoche adview price title not found", ADVIEW_PRICE_TEXT);
+			assertElementByText("adlisting ershoujiaoche adview favorite title not found", AD_FAVORITE_BUTTON_TEXT);
+			assertElementByText("adlisting ershoujiaoche adview no pic title not found", ADVIEW_NO_PIC_TEXT);
 			goBack();
 		}
 		//Check more button
-		lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
-		assertNotNull("adlisting ershoujiaoche listView not found", lv);
-		ViewElement footer = scrollAdListViewToFooter(lv);
+		ViewElement footer = scrollAdListViewToFooter();
 		assertNotNull("adlisting ershoujiaoche more button not found", footer);
 		
 		//Return
-		assertNotNull("adlisting id:AD_VIEWLIST_ID:lvGoodsList not found", 
-				findElementById(AD_VIEWLIST_ID));
+		assertElementById("adlisting id:AD_VIEWLIST_ID:lvGoodsList not found", AD_VIEWLIST_ID);
 		
 		goBack();
-		assertNotNull("Second Category list id:CATEGORY_SECOND_GRIDVIEW_ID:gridSecCategory not found", 
-				findElementById(CATEGORY_SECOND_GRIDVIEW_ID));
+		assertElementById("Second Category list id:CATEGORY_SECOND_GRIDVIEW_ID:gridSecCategory not found", CATEGORY_SECOND_GRIDVIEW_ID);
 		
 		goBack();
-		assertNotNull("Home Category list id:CATEGORY_GRIDVIEW_ID:gridcategory not found", 
-				findElementById(CATEGORY_GRIDVIEW_ID));
+		assertElementById("Home Category list id:CATEGORY_GRIDVIEW_ID:gridcategory not found", CATEGORY_GRIDVIEW_ID);
 		
 		sleep(1);
 		
@@ -161,8 +140,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
-		ViewElement v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
-		assertNotNull(v);
+		assertElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		//点击返回
 		goBack();
 		//点击返回
@@ -176,8 +154,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
-		assertNull(v);
+		assertElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		goBack();
 		goBack();
 		setAdListingViewType(MY_SETTING_VIETTYPE_PIC_TEXT);
@@ -238,25 +215,19 @@ public class DailyTestCase extends BaixingTestCase {
 	public void testPost1() throws Exception {
 		logon();
 		openTabbar(TAB_ID_POST);
-		int first = random(3);
-		int second = random(10);
-		postByIndex(first, second);
+		postByIndex(random(3), random(10));
 	}
 	
 	@Test
 	public void testPost2() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 3 + random(3);
-		int second = random(10);
-		postByIndex(first, second);
+		postByIndex(3 + random(3), random(10));
 	}
 	
 	@Test
 	public void testPost3() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 6 + random(4);
-		int second = random(10);
-		postByIndex(first, second);
+		postByIndex(6 + random(4), random(10));
 	}
 	
 	private void openListingByFirstCategory(String categoryName) throws Exception {
@@ -302,8 +273,8 @@ public class DailyTestCase extends BaixingTestCase {
 					findElementByText(ADLISTING_FILTER_MORE_OK_TEXT) != null) {
 				findElementByText(ADLISTING_FILTER_MORE_OK_TEXT).doClick();
 			} else {
-				assertNotNull("checkListing " + firstCategory + ":" + categoryName + " adview favorite title not found", 
-						findElementByText(AD_FAVORITE_BUTTON_TEXT));
+				assertElementByText("checkListing " + firstCategory + ":" + categoryName + " adview favorite title not found", 
+						AD_FAVORITE_BUTTON_TEXT);
 
 				TextViewElement v = savePhoto();
 				assertNotNull(v); // clickByText(AD_BIG_IMAGE_SAVE_TEXT);
@@ -332,8 +303,8 @@ public class DailyTestCase extends BaixingTestCase {
 					findElementByText(ADLISTING_FILTER_MORE_OK_TEXT) != null) {
 				findElementByText(ADLISTING_FILTER_MORE_OK_TEXT).doClick();
 			} else {
-				assertNotNull("checkListing " + firstCategory + ":" + categoryName + " adview no pic title not found",
-						findElementByText(ADVIEW_NO_PIC_TEXT));
+				assertElementByText("checkListing " + firstCategory + ":" + categoryName + " adview no pic title not found",
+						ADVIEW_NO_PIC_TEXT);
 
 				TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 				assertNotNull(tv);
@@ -349,20 +320,18 @@ public class DailyTestCase extends BaixingTestCase {
 		//提取当前信息的地区地点信息，如“浦东金桥”
 		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
-		if (tv != null) {
-			//点击地图查看
-			tv.doClick();
-			sleep(3);
-			assertNull("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
-					findElementByText(categoryName));
-			//检查页面title包含当前地区地点文字“金桥”
-			String area = tv.getText();
-			tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
-			assertNotNull(tv);
-			boolean found = false;
-			assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
-			goBack();
-		}
+		//点击地图查看
+		tv.doClick();
+		sleep(3);
+		assertElementByText("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
+				categoryName);
+		//检查页面title包含当前地区地点文字“金桥”
+		String area = tv.getText();
+		tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+		assertNotNull(tv);
+		boolean found = false;
+		assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
+		goBack();
 	}
 	
 	private TextViewElement savePhoto() throws Exception {
@@ -384,25 +353,21 @@ public class DailyTestCase extends BaixingTestCase {
 		String oldCateName = "";
 		openPostFirstCategory(firstIndex);
 		//openSecondCategoryByIndex(secondIndex);
-		openPostSecondCategory(secondIndex);
-		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
-		if (v == null) {
-			assertTrue("ERRORRETRY,checkPost Category,Post," + firstIndex + "," + secondIndex + ",", false);
-		}
-		if (v != null) {
-			if(!oldCateName.equals(v.getText())) {
-				oldCateName = v.getText();
-				postAutoEnterData(oldCateName.equals("女找男"));
-				sleep(1);
-				boolean success = postSend(false);
-				if (!success) {
-					//assertTrue("POST Category1:" + oldCateName + " ERROR", false); //TODO...
-				}
-				afterPostSend();
-				if (!checkPostSuccess(true)) {
-					if (!success) 
-						assertTrue("ERROR,Category,Post," + firstIndex + "," + secondIndex + "," + oldCateName, false);
-				}
+		TextViewElement v = openPostSecondCategory(secondIndex);
+		//TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+		assertNotNull("ERRORRETRY,checkPost Category,Post," + firstIndex + "," + secondIndex + ",", v);
+		if(!oldCateName.equals(v.getText())) {
+			oldCateName = v.getText();
+			postAutoEnterData(oldCateName.equals("女找男"));
+			sleep(1);
+			boolean success = postSend(false);
+			if (!success) {
+				//assertTrue("POST Category1:" + oldCateName + " ERROR", false); //TODO...
+			}
+			afterPostSend();
+			if (!checkPostSuccess(true)) {
+				if (!success) 
+					assertTrue("ERROR,Category,Post," + firstIndex + "," + secondIndex + "," + oldCateName, false);
 			}
 		}
 	}

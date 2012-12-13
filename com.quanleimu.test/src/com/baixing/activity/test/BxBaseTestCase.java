@@ -335,11 +335,19 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void assertElementByText(String text) throws Exception {
-		assertNotNull(findElementByText(text));
+		assertElementByText(null, text);
+	}
+	
+	public void assertElementByText(String message, String text) throws Exception {
+		assertNotNull(message, findElementByText(text));
 	}
 	
 	public void assertNoElementByText(String text) throws Exception {
-		assertNull(findElementByText(text));
+		assertNoElementByText(null, text);
+	}
+	
+	public void assertNoElementByText(String message, String text) throws Exception {
+		assertNull(message, findElementByText(text));
 	}
 	
 	public void assertElementByTexts(String texts, boolean all) throws Exception {
@@ -359,7 +367,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void assertElementById(String id) throws Exception {
-		assertNotNull(findElementById(id));
+		assertElementById(null, id);
+	}
+	
+	public void assertElementById(String message, String id) throws Exception {
+		assertNotNull(message, findElementById(id));
 	}
 	
 	private void startScreen() throws Exception {
