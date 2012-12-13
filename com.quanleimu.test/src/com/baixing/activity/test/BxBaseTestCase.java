@@ -690,6 +690,22 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return null;
 	}
 	
+	public BXImageViewElement findImageView(String imageNamed) throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(true);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			if (!isViewInScreen(view)) continue;
+			try {
+				BXImageViewElement iv = findElementById(view.getId(), BXImageViewElement.class);
+				if (iv != null && (iv.checkImageByName(imageNamed) || iv.checkImageByName(imageNamed, false))) {
+					return iv;
+				}
+			} catch (IllegalArgumentException e) {
+			} catch (NullPointerException ex) {}
+		}
+		return null;
+	}
+	
 	public TextViewElement findTextView(String viewId) throws Exception {
 		ViewGroupElement gv = findElementById(viewId, ViewGroupElement.class);
 		return findTextView(gv);

@@ -382,17 +382,25 @@ public class BaixingTestCase extends BxBaseTestCase {
 				}
 			}
 		}*/
-		iv = findElementById(POST_META_IMAGEVIEW1_ID, BXImageViewElement.class);
+		/*iv = findElementById(POST_META_IMAGEVIEW1_ID, BXImageViewElement.class);
 		if (iv == null) {
 			iv = findElementById(POST_META_DESC_IMAGEVIEW_ID, BXImageViewElement.class);
-		}
+		}*/
+		iv = findImageView("btn_add_picture");
 		if (iv != null) {
 			iv.doClick();
-			SleepUtils.sleep(300);
+			sleep(1);
+			if (findElementByText("完成添加") != null) {
+				iv = findImageView("btn_add_picture");
+				if (iv != null) {
+					iv.doClick();
+					sleep(1);
+				}
+			}
 			ViewElement v = findElementByText(POST_CAMERA_PHOTO_TEXT, 0, true);
 			assertNotNull(v);
 			//v.doClick();
-			SleepUtils.sleep(300);
+			sleep(1);
 			//getActivity();
 			//Instrumentation inst = getInstrumentation();
 			//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_CENTER);
@@ -1225,6 +1233,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		waitClickXY(x, y);
 		sleep(5);
+		clickByText("完成添加");
 	}
 	
 	private void waitGallery() throws Exception {
