@@ -243,8 +243,13 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 } else {
                     List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
                     List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-
+                    
                     if (tempGoodsList.getData().size() <= favList.size()) {
+                    	if (tempGoodsList.getData().size() == 0)
+                    	{
+                    		favList.clear(); 
+                    	}
+                    	
                         for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
                             boolean exist = false;
                             for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
