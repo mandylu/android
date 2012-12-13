@@ -335,27 +335,45 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public void assertElementByText(String text) throws Exception {
-		ViewElement v = findElementByText(text);
-		assertNotNull(v);
+		assertNotNull(findElementByText(text));
+	}
+	
+	public void assertNoElementByText(String text) throws Exception {
+		assertNull(findElementByText(text));
+	}
+	
+	public void assertElementByTexts(String texts, boolean all) throws Exception {
+		String[] tt = texts.split("@");
+		boolean found = false;
+		for(int i = 0; i < tt.length; i ++) {
+			if (all) {
+				assertNotNull(findElementByText(tt[i]));
+			} else {
+				if (findElementByText(tt[i]) != null) {
+					found = true;
+					break;
+				}
+			}
+		}
+		assertTrue(found);
 	}
 	
 	public void assertElementById(String id) throws Exception {
-		ViewElement v = findElementById(id);
-		assertNotNull(v);
+		assertNotNull(findElementById(id));
 	}
 	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
-		TimeUnit.SECONDS.sleep(5);
+		sleep(5);
 		TextViewElement vm = findElementByText("以后再说");
 		if (vm != null) {
 			vm.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
 		if (v != null) {
 			v.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 	}
 	
@@ -369,7 +387,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			ViewElement c = findElementByText(TEST_DATA_DEFAULT_CITYNAME, 1, true);
 			assertNotNull(c);
 			c.doClick();
-			TimeUnit.SECONDS.sleep(10);
+			sleep(10);
 		}
 	}
 	
@@ -442,7 +460,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		while(v3 == null) {
 			if (scrollView != null) scrollView.scrollToNextScreen();
 			else listView.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			v3 = findElementByText(displayName, 0, true);
 			if (loop++ > 10) break;
 		}
@@ -481,7 +499,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			assertNotNull(v);
 		}
 		if (v != null) v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	public String getTextByElementId(String vId) throws Exception {
@@ -505,7 +523,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		ViewElement v = findElementByText(HOME_BACK_BUTTON_TEXT, 0, true);
 		if (v == null) return false;
 		v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		return true;
 	}
 	
@@ -527,7 +545,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
 			{
 				v.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 			}
 		}
 	}
@@ -543,7 +561,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
 			{
 				v.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 			}
 		}
 		else
@@ -598,9 +616,9 @@ public class BxBaseTestCase extends AthrunTestCase {
 		BXViewGroupElement bv = findElementById(viewId,
 				BXViewGroupElement.class);
 		if (bv != null) {
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			bv.doTouch(-bv.getWidth() + 20);
-			TimeUnit.SECONDS.sleep(3);
+			sleep(3);
 			return true;
 		}
 		return false;
@@ -614,9 +632,9 @@ public class BxBaseTestCase extends AthrunTestCase {
 		BXViewGroupElement bv = findElementById(viewId,
 				BXViewGroupElement.class);
 		if (bv != null) {
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			bv.doTouch(bv.getWidth() - 20);
-			TimeUnit.SECONDS.sleep(3);
+			sleep(3);
 			return true;
 		}
 		return false;
@@ -626,7 +644,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		ViewElement el = findElementById(itemId);
 		assertNotNull(el);
 		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	public AbsListViewElement findListView() throws Exception {
@@ -651,24 +669,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public TextViewElement findTextView(String[] nots) throws Exception {
 		ArrayList<View> views = ViewUtils.getAllViews(true);
 		if (views.size() == 0) return null;
-		int maxX = getDevice().getScreenHeight();
-		int maxY = getDevice().getScreenWidth();
 		for (View view : views) {
-			/*if (ViewUtils.isViewOutOfScreen(view)) continue;
-			if (!view.isClickable()) continue;
-			if (!view.isShown()) continue;
-			if (view.getVisibility() == View.INVISIBLE) continue;*/
-			int[] location = new int[2];
-		    view.getLocationOnScreen(location);
-		    int x = location[0];
-		    int y = location[1];
-			if (x < 0 || x > maxX) continue;
-			if (y < 0 || y > maxY) continue;
-			view.getLocationInWindow(location);
-		    x = location[0];
-		    y = location[1];
-			if (x < 0 || x > maxX) continue;
-			if (y < 0 || y > maxY) continue;
+			if (!isViewInScreen(view)) continue;
 			try {
 				TextViewElement tv = findElementById(view.getId(), TextViewElement.class);
 				if (tv != null && tv.getText().length() > 0) {
@@ -726,7 +728,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			getDevice().pressBack();
 		}
 
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	/*
@@ -739,7 +741,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		for (int i = 0; i < (page > 0 ? page: 10); i++) {
 			lv.scrollToNextScreen();
 		}
-		TimeUnit.SECONDS.sleep(3);
+		sleep(3);
 		int lastIndex = lv.getLastVisiblePosition();
 		return lastIndex;
 	}
@@ -761,7 +763,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			BXViewGroupElement bv = findElementById(viewId, BXViewGroupElement.class);
 			assertNotNull(bv);
 			bv.scrollByY(fromY, toY);
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 		}
 	}
 	
@@ -790,7 +792,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return textViews.isEmpty() ? false : true;
 	}
 	
-	boolean waitForSubTexts(String texts, int timeout) {
+	public boolean waitForSubTexts(String texts, int timeout) {
 		ViewFinder viewFinder = new ViewFinder();
 		String[] tt = texts.split("@");
 		int tmpTimeout = 10;
@@ -804,7 +806,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return false;
 	}
 	
-	boolean waitForMsgBox(String msg, String btnText, int timeout) throws Exception {
+	public boolean waitForMsgBox(String msg, String btnText, int timeout) throws Exception {
 		if (waitForSubText(msg, timeout)) {
 			ViewElement v = findElementByText(btnText, 0, true);
 			if (v != null) {
@@ -814,6 +816,31 @@ public class BxBaseTestCase extends AthrunTestCase {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isViewInScreen(View view) {
+		int maxX = getDevice().getScreenHeight();
+		int maxY = getDevice().getScreenWidth();
+		int[] location = new int[2];
+	    view.getLocationOnScreen(location);
+	    int x = location[0];
+	    int y = location[1];
+		if (x < 0 || x > maxX) return false;
+		if (y < 0 || y > maxY) return false;
+		view.getLocationInWindow(location);
+	    x = location[0];
+	    y = location[1];
+		if (x < 0 || x > maxX) return false;
+		if (y < 0 || y > maxY) return false;
+		return true;
+	}
+	
+	public int random(int max) {
+		return (int)(Math.random() * max);
+	}
+	
+	public void sleep(int second) throws Exception {
+		TimeUnit.SECONDS.sleep(second);
 	}
 	
 }

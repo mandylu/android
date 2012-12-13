@@ -65,7 +65,7 @@ public class AdViewTest extends BaixingTestCase {
 		if (tv != null) {
 			//点击地图查看
 			tv.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			assertNull(findElementByText(TEST_DATA_CATEGORY_QICHE));
 			//检查页面title包含当前地区地点文字“金桥”
 			String area = tv.getText();

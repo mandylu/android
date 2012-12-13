@@ -42,7 +42,7 @@ public class MainActivityTest extends BaixingTestCase {
 		goBack();
 		doSearch("mac book");
 		//getDevice().pressMenu();
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 		goBack();
 		goBack();
 		selectSearch("ipad");
@@ -67,9 +67,9 @@ public class MainActivityTest extends BaixingTestCase {
 	public void testCategoryClick() throws Exception {
 		openCategoryByIndex(2, 1);
 		goBack();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		goBack();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	@Test
@@ -108,9 +108,9 @@ public class MainActivityTest extends BaixingTestCase {
 	public void testPostPhoto() throws Exception {
 		openTabbar(TAB_ID_POST);
 		openPostCategory(3, 2);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		doClickPostPhoto();
-		TimeUnit.SECONDS.sleep(5);
+		sleep(5);
 		ViewElement v = findElementByText(MSGBOX_CANCEL_TEXT, 0, true);
 		assertNotNull(v);
 		v.doClick();
@@ -198,11 +198,11 @@ public class MainActivityTest extends BaixingTestCase {
 				AbsListViewElement.class);
 		assertEquals(23,  catListView.getLastVisiblePosition());
 		catListView.scrollToNextScreen();
-		TimeUnit.SECONDS.sleep(3);
+		sleep(3);
 		assertEquals(8, catListView.getFirstVisiblePosition());
 		catListView.scrollToNextScreen();
 		assertEquals(30, catListView.getLastVisiblePosition());
-		TimeUnit.SECONDS.sleep(3);
+		sleep(3);
 		assertEquals(8, catListView.getFirstVisiblePosition());
 	}
 	

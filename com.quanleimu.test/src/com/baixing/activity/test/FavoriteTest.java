@@ -23,8 +23,7 @@ public class FavoriteTest extends BaixingTestCase {
 	   //检查列表的title view文字部分包含“租房”
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_ZUFANG);
 	   //任选一个信息进入
-		int rand = (int)Math.random() * 6; //任一
-		assertNotNull(openAdByIndex(rand));
+		assertNotNull(openAdByIndex(random(6)));//任一
 	   //检查右上方按钮为收藏前图片（空心五角星）
 		//BXImageViewElement iv = findElementById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
 		//assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));

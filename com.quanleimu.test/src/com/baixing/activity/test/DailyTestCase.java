@@ -63,7 +63,7 @@ public class DailyTestCase extends BaixingTestCase {
 		
 		//Check second some category
 		findElementByText(CATEGORY_WUPINJIAOYI_TEXT).doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		assertNotNull("Home Category wupinjiaoyi Second category shouji not found", 
 				findElementByText(CATEGORY_WUPINJIAOYI_SHOUJI_TEXT));
 		assertNotNull("Home Category wupinjiaoyi Second category jiadian not found", 
@@ -89,10 +89,10 @@ public class DailyTestCase extends BaixingTestCase {
 				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
 		//Click ershouche
 		findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT).doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 		waitForHideMsgbox(20000);
-		TimeUnit.SECONDS.sleep(5);
+		sleep(5);
 		//Check ershouche adlisting
 		assertNotNull("adlisting ershoujiaoche title not found", 
 				findElementByText(CATEGORY_CHELIANG_JIAOCHE_TEXT));
@@ -144,7 +144,7 @@ public class DailyTestCase extends BaixingTestCase {
 		assertNotNull("Home Category list id:CATEGORY_GRIDVIEW_ID:gridcategory not found", 
 				findElementById(CATEGORY_GRIDVIEW_ID));
 		
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		
 	}
 	
@@ -185,7 +185,7 @@ public class DailyTestCase extends BaixingTestCase {
 	
 	@Test
 	public void testListing1() throws Exception {
-		int first = (int)(Math.random() * 3);
+		int first = random(3);
 		switch (first) {
 			case 1:
 				openListingByFirstCategory(CATEGORY_CHELIANG_TEXT);
@@ -201,7 +201,7 @@ public class DailyTestCase extends BaixingTestCase {
 
 	@Test
 	public void testListing2() throws Exception {
-		int first = (int)(Math.random() * 3);
+		int first = random(3);
 		switch (first) {
 			case 1:
 				openListingByFirstCategory(CATEGORY_QIUZHI_TEXT);
@@ -217,7 +217,7 @@ public class DailyTestCase extends BaixingTestCase {
 	
 	@Test
 	public void testListing3() throws Exception {
-		int first = (int)(Math.random() * 4);
+		int first = random(4);
 		switch (first) {
 			case 1:
 				openListingByFirstCategory(CATEGORY_JIAOYOU_TEXT);
@@ -238,24 +238,24 @@ public class DailyTestCase extends BaixingTestCase {
 	public void testPost1() throws Exception {
 		logon();
 		openTabbar(TAB_ID_POST);
-		int first = (int)(Math.random() * 3);
-		int second = (int)(Math.random()) * 10;
+		int first = random(3);
+		int second = random(10);
 		postByIndex(first, second);
 	}
 	
 	@Test
 	public void testPost2() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 3 + (int)(Math.random() * 3);
-		int second = (int)(Math.random()) * 10;
+		int first = 3 + random(3);
+		int second = random(10);
 		postByIndex(first, second);
 	}
 	
 	@Test
 	public void testPost3() throws Exception {
 		openTabbar(TAB_ID_POST);
-		int first = 6 + (int)(Math.random() * 4);
-		int second = (int)(Math.random()) * 10;
+		int first = 6 + random(4);
+		int second = random(10);
 		postByIndex(first, second);
 	}
 	
@@ -273,7 +273,7 @@ public class DailyTestCase extends BaixingTestCase {
 		}
 		int count = (subCatListView != null) ? subCatListView.getChildCount() : 50;
 		String oldCateName = "";
-		int j = (int)(Math.random()) * 20;
+		int j = random(20);
 		openSecondCategoryByIndex(j);
 		TextViewElement v = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		assertNotNull("checkListing " + categoryName + ":" + j + " id:VIEW_TITLE_ID:tvTitle not found", v);
@@ -319,7 +319,7 @@ public class DailyTestCase extends BaixingTestCase {
 			adNoPic = true;
 		}
 		int from = lv.getHeight() / 2 + lv.getHeight() /3;
-		int max = (int)(Math.random() * 3);
+		int max = random(3);
 		for(int i = 0; i < max; i++)
 			lv.scrollByY(from, from - 200);
 		
@@ -352,7 +352,7 @@ public class DailyTestCase extends BaixingTestCase {
 		if (tv != null) {
 			//点击地图查看
 			tv.doClick();
-			TimeUnit.SECONDS.sleep(3);
+			sleep(3);
 			assertNull("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
 					findElementByText(categoryName));
 			//检查页面title包含当前地区地点文字“金桥”
@@ -393,7 +393,7 @@ public class DailyTestCase extends BaixingTestCase {
 			if(!oldCateName.equals(v.getText())) {
 				oldCateName = v.getText();
 				postAutoEnterData(oldCateName.equals("女找男"));
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				boolean success = postSend(false);
 				if (!success) {
 					//assertTrue("POST Category1:" + oldCateName + " ERROR", false); //TODO...

@@ -72,11 +72,11 @@ public class PostViewTest extends BaixingTestCase {
 		clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
 		//检查拍照页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitClickCamera();
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		assertNotNull(findElementByText(TEST_DATA_SHEYING));
 		assertNotNull(findElementByText(POST_SEND));
 		//再次点击拍照按钮
@@ -86,7 +86,7 @@ public class PostViewTest extends BaixingTestCase {
 		clickByText(POST_GALLERY_PHOTO_TEXT);
 		//检查相册选择页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitSendKey(KeyEvent.KEYCODE_BACK);
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
