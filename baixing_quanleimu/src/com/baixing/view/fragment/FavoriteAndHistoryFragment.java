@@ -230,10 +230,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         switch (msg.what) {
             case MSG_UPDATEFAV:
                 hideProgress();
-                
-                tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+                String lastJson = glLoader.getLastJson();
+                final boolean noResult = lastJson == null || lastJson.trim().length() == 0; 
+                tempGoodsList = JsonUtil.getGoodsListFromJson(lastJson);
                 Log.d("fav","updatefav.size:"+tempGoodsList.getData().size());
-                if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
+                if (null == tempGoodsList || (0 == tempGoodsList.getData().size() && noResult)) {
                     Message msg2 = Message.obtain();
                     msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
                     QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
