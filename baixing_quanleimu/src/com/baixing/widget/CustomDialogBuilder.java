@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -65,9 +66,9 @@ public class CustomDialogBuilder {
 		this.requestCode = bundle.getInt(ARG_COMMON_REQ_CODE);
 		if (bundle.getInt(ARG_COMMON_REQ_CODE) == MSG_CATEGORY_SEL_BACK)
 			isCategoryItem = true;
-		if (bundle.containsKey("selectedValue"))
+		if (bundle.containsKey("selectedValue") && bundle.getString("selectedValue")!=null)
 		{
-			this.selectedValue = bundle.getString("selectedValue");
+			this.selectedValue = bundle.getString("selectedValue");//selectedValue
 		}
 //		if (bundle.containsKey("metaId"))
 //		{
@@ -369,6 +370,7 @@ public class CustomDialogBuilder {
 			*/
 			View v = convertView;
 			TextView tv = null;
+			ImageView img = null;
 			if (position == 0) {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple, null);
@@ -377,6 +379,7 @@ public class CustomDialogBuilder {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple2, null);
 				tv = (TextView) v.findViewById(R.id.tv);
+				img = (ImageView) v.findViewById(R.id.img);
 			}
 			
 			if (tv != null) {
@@ -386,6 +389,11 @@ public class CustomDialogBuilder {
 				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
+//			if (img != null) {
+//				if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+//					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+//				}
+//			}
 			return v;
 		}
 		class Holder {
