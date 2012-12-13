@@ -2048,7 +2048,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 
 	@Override
-	protected void handleMessage(Message msg, Activity activity, View rootView) {
+	protected void handleMessage(Message msg, final Activity activity, View rootView) {
 
 		if(msg.what != MSG_GETLOCATION_TIMEOUT){
 			hideProgress();
@@ -2149,9 +2149,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					e.printStackTrace();
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
-				String message = replaceTitleToDescription(json.getString("message"));
-				Toast.makeText(activity, message, 0).show();
+				String message = replaceTitleToDescription(json.getString("message"));			
 				if (!id.equals("") && code == 0) {
+					Toast.makeText(activity, message, 0).show();
 					final Bundle args = createArguments(null, null);
 					args.putInt("forceUpdate", 1);
 					// 发布成功
@@ -2181,7 +2181,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
 							
 							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
+							intent.putExtras(args);
 							activity.sendBroadcast(intent);
 //							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
 						}						
@@ -2190,17 +2190,28 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					}
 				}else{
 					if(code == 505){
-//						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-						if(activity != null){
-							resetData(true);
-							showPost();
-							Bundle args = createArguments(null, null);
-							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
-//							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
-							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-							intent.putExtra(CommonIntentAction.EXTRA_MSG_FINISHED_POST, args);
-							activity.sendBroadcast(intent);							
-						}						
+						AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+		                bd.setTitle("")
+		                        .setMessage(message)
+		                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+		                            @Override
+		                            public void onClick(DialogInterface dialog, int which) {
+		                                dialog.dismiss();
+		        						if(activity != null){
+		        							resetData(true);
+		        							showPost();
+		        							Bundle args = createArguments(null, null);
+		        							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+//		        							args.putString("505id", id);
+//		        							((BaseActivity)activity).pushFragment(new PersonalPostFragment(), args, false);
+		        							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+		        							intent.putExtras(args);
+		        							activity.sendBroadcast(intent);							
+		        						}
+		                            }
+		                        });
+		                AlertDialog alert = bd.create();
+		                alert.show();	
 					}
 				}
 			} catch (JSONException e) {
