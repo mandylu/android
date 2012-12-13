@@ -11,6 +11,7 @@
         android:layout_centerInParent="true"
         android:background="@drawable/loading_210_black"
         android:maxWidth="280dip"
+        android:maxHeight="280dip"
         android:scaleType="centerCrop" >
     </ImageView>
 
