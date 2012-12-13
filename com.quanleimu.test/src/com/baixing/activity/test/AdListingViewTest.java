@@ -98,8 +98,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
-		assertNull(v);
+		assertNoElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		goBack();
 		goBack();
 		setAdListingViewType(MY_SETTING_VIETTYPE_PIC_TEXT);

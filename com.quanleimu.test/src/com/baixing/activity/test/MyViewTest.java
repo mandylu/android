@@ -20,7 +20,7 @@ public class MyViewTest extends BaixingTestCase {
 		openTabbar(TAB_ID_HOME_V3);
 		logout();
 		//检查是否包含登录按钮
-		assertNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
+		assertNoElementById(MY_PROFILE_EDIT_BUTTON_ID);
 		//若包含登录按钮,则输入正确用户名，密码
 		//点击登录
 		//等待3s

@@ -55,7 +55,7 @@ public class SampleTest extends BaixingTestCase {
 		assertNotNull(findElementById(SEARCH_TEXTVIEW_ID));
 		//assertNotNull(findElementById(SEARCH_BUTTON_ID));
 		try {
-			ViewElement v = findElementById("ipad");//稍微复杂了点，因为上面那种会出错
+			ViewElement v = findElementByText("ipad");//稍微复杂了点，因为上面那种会出错
 			assertNull(v);
 		} catch (NoSuchFieldException ex) {
 		}

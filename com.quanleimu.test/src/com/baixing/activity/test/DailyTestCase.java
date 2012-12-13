@@ -154,7 +154,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		assertElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
+		assertNoElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		goBack();
 		goBack();
 		setAdListingViewType(MY_SETTING_VIETTYPE_PIC_TEXT);
@@ -323,7 +323,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击地图查看
 		tv.doClick();
 		sleep(3);
-		assertElementByText("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
+		assertNoElementByText("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
 				categoryName);
 		//检查页面title包含当前地区地点文字“金桥”
 		String area = tv.getText();

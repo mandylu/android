@@ -374,6 +374,14 @@ public class BxBaseTestCase extends AthrunTestCase {
 		assertNotNull(message, findElementById(id));
 	}
 	
+	public void assertNoElementById(String id) throws Exception {
+		assertNoElementById(null, id);
+	}
+	
+	public void assertNoElementById(String message, String id) throws Exception {
+		assertNull(message, findElementById(id));
+	}
+	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
 		sleep(5);
