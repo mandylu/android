@@ -702,7 +702,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(fixedItemNames[i].equals("contact")) {
 				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
-				text.setText(phone);
+				if(phone != null && phone.length() > 0){
+					text.setText(phone);
+				}
 			}else if(fixedItemNames[i].equals(STRING_DETAIL_POSITION)){
 				v.findViewById(R.id.location).setOnClickListener(this);
 				locationView = v;
@@ -1772,7 +1774,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
-			etContact.setText(QuanleimuApplication.getApplication().getPhoneNumber());
+			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+			if(phone != null && phone.length() > 0){
+				etContact.setText(phone);
+			}
 		}
 		if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(HASH_CONTROL);
