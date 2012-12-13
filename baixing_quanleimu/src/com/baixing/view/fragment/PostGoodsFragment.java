@@ -401,6 +401,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onPause() {
 		QuanleimuApplication.getApplication().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
+		setPhoneAndAddress();
+		
 //		this.postLayoutCreated = false;
 		super.onPause();
 	}
@@ -865,6 +867,40 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
+	private void setPhoneAndAddress(){
+		String contactDisplayName = "";
+		String addressDisplayName = "";
+		if(postList != null){
+			Collection<PostGoodsBean> beans = postList.values();
+			if(beans != null){
+				Iterator<PostGoodsBean> ite = beans.iterator();
+				while(ite.hasNext()){
+					PostGoodsBean bean = ite.next();
+					if(bean.getName().equals("contact")){
+						contactDisplayName = bean.getDisplayName();
+						if(addressDisplayName.length() > 0){
+							break;
+						}
+					}else if(bean.getName().equals(STRING_DETAIL_POSITION)){
+						addressDisplayName = bean.getDisplayName();
+						if(contactDisplayName.length() > 0){
+							break;
+						}
+					}
+				}
+			}
+		}
+		String phone = params.getData(contactDisplayName);
+		if(phone != null && phone.length() > 0){
+			QuanleimuApplication.getApplication().setPhoneNumber(phone);
+		}
+		String address = params.getData(addressDisplayName);
+		if(address != null && address.length() > 0){
+			QuanleimuApplication.getApplication().setAddress(address);
+		}
+		
+	}
+	
 	private void postAction() {
 		//定位成功的情况下，发布时保存当前经纬度和地理位置
         if (/*inLocating == false &&*/ locationView != null && cacheLocation != null) {
@@ -881,21 +917,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		else
 		{
 			extractInputData(layout_txt, params);
-			String contactDisplayName = "";
-			if(postList != null){
-				Collection<PostGoodsBean> beans = postList.values();
-				if(beans != null){
-					Iterator<PostGoodsBean> ite = beans.iterator();
-					while(ite.hasNext()){
-						PostGoodsBean bean = ite.next();
-						if(bean.getName().equals("contact")){
-							contactDisplayName = bean.getDisplayName();
-							break;
-						}
-					}
-				}
-			}
-			QuanleimuApplication.getApplication().setPhoneNumber(params.getUiData(contactDisplayName));
+			setPhoneAndAddress();
 			if(!check2()){
 				return;
 			}
@@ -1763,6 +1785,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			((TextView)layout.findViewById(R.id.postinput)).setOnKeyListener(this);
 //			((TextView)layout.findViewById(R.id.postinput)).addTextChangedListener(this);
 			locationView = layout;
+			
+			String address = QuanleimuApplication.getApplication().getAddress();
+			if(address != null && address.length() > 0){
+				((TextView)layout.findViewById(R.id.postinput)).setText(address);
+			}
 //			if(this.detailLocation != null && !inLocating){
 //				setDetailLocationControl(detailLocation);
 //			}
@@ -1772,14 +1799,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				setDetailLocationControl(detailLocation);
 //			}			
 		}
-		if(postBean.getName().equals("contact") && layout != null){
+		else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 			if(phone != null && phone.length() > 0){
 				etContact.setText(phone);
 			}
 		}
-		if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
+		else if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(HASH_CONTROL);
 		}
 		
@@ -2293,7 +2320,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			View control = (View)v.getTag(HASH_CONTROL);
 			if(control != null && control instanceof TextView){
 				if(params != null && params.containsKey(bean.getDisplayName())){
-					((TextView)control).setText(params.getUiData(bean.getDisplayName()));
+					String value = params.getUiData(bean.getDisplayName());
+					if(value == null){
+						value = params.getUiData(bean.getName());
+					}
+					if(bean.getName().equals("contact")){
+						String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+						if(phone != null && phone.length() > 0){
+							((TextView)control).setText(phone);
+							continue;
+						}
+					}
+					((TextView)control).setText(value);
 				}
 			}
 		}

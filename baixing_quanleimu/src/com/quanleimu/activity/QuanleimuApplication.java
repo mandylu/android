@@ -435,6 +435,16 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		return phoneNumber;
 	}
 	
+	private String address = "";
+	
+	public void setAddress(String ad){
+		address = ad;
+	}
+	
+	public String getAddress(){
+		return address;
+	}	
+	
 	//热门城市列表
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
 	

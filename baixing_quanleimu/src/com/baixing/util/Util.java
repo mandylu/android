@@ -1480,6 +1480,8 @@ public class Util {
 			currentUser = anonymousUser;
 		}
 		
+		QuanleimuApplication.getApplication().setPhoneNumber("");
+		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
 
