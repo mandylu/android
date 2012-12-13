@@ -14,7 +14,7 @@ public class BXTestSuite extends TestSuite {
 		addTestSuite(PostProcessTest.class);
 		//addTestSuite(PostViewTest.class);
 		addTest(createTest(PostViewTest.class, "testPostChecking"));
-		addTestSuite(MainActivityTest.class);
+		//addTestSuite(SampleTest.class);
 		//addTest(createTest(KeepLiveTest.class, "runPost"));
 	}
 	
