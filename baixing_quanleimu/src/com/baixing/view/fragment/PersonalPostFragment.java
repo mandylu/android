@@ -193,11 +193,19 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		lvGoodsList.setOnRefreshListener(this);	
 		
 		Bundle bundle = this.getArguments();
-		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
-			if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-				this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+		if(bundle != null){
+			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
+				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
+					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+				}
+				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
 			}
-			bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
+			if(bundle.containsKey("forceUpdate")){
+				if(bundle.getBoolean("forceUpdate")){
+					this.needReloadData = true;
+				}
+				bundle.remove("forceUpdate");
+			}
 		}
 		
 		return v;
