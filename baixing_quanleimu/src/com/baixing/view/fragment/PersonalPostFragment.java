@@ -39,11 +39,14 @@ import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
+import com.baixing.util.LogData;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.view.fragment.GoodDetailFragment.REQUEST_TYPE;
+import com.baixing.view.fragment.GoodDetailFragment.RequestThread;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
@@ -521,6 +524,28 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}
+	
+	private void postDelete(final LogData event, final String adId, final long postedSeconds)
+	{
+		new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		.setMessage("是否确定删除")
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+                showSimpleProgress();
+                new Thread(new MyMessageDeleteThread(adId)).start();
+                        event.end();
+			}
+		})
+		.setNegativeButton(
+	     "取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();							
+			}
+		})
+	     .show();
+	}
 
     /**
      *
@@ -577,11 +602,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                                     .end();
                             break;
                         case 2://删除
-                            showSimpleProgress();
-                            new Thread(new MyMessageDeleteThread(adId)).start();
-                            Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
+                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
                 } 
@@ -597,11 +619,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                                     .end();
                             break;
                         case 1://删除
-                            showSimpleProgress();
-                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            new Thread(new MyMessageDeleteThread(adId)).start();
+                            postDelete(Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+                            
                             break;
                     }
                 }
