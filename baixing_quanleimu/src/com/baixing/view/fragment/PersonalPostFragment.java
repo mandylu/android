@@ -310,7 +310,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		case MSG_DELETED:
 			hideProgress();
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
-			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING));
+//			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
+			this.pv = PV.MYADS_SENT;
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
 				Tracker.getInstance()
@@ -422,7 +423,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			hideProgress();
 			//tracker
 			Tracker.getInstance()
-			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) )
+//			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
+			.pv(PV.MYADS_SENT)
 			.end();
 			
 			Message msg2 = Message.obtain();
@@ -545,7 +547,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         else
         {
             r_array_item_operate = R.array.item_operate_inverify;
-            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+//            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
         }
         
         String tmpInsertedTime = detail.data.get("insertedTime");
@@ -592,15 +594,15 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
-                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
+//                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
+//                                    .append(Key.POSTEDSECONDS, postedSeconds)
+//                                    .end();
                             break;
                         case 1://删除
                             showSimpleProgress();
-                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
+//                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
+//                                    .append(Key.POSTEDSECONDS, postedSeconds)
+//                                    .end();
                             new Thread(new MyMessageDeleteThread(adId)).start();
                             break;
                     }

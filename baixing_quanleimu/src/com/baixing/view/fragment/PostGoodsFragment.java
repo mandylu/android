@@ -43,9 +43,11 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
+import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnKeyListener;
+import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.WindowManager;
 import android.view.inputmethod.InputMethodManager;
@@ -143,6 +145,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private String mobile, password;
 	private UserBean user;
 	private GoodsDetail goodsDetail;
+	private static boolean isPost = true;
 	public ArrayList<String> listUrl;
 	private Bundle imgSelBundle = null;
 	private ImageSelectionDialog imgSelDlg = null;
@@ -448,6 +451,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		View v = inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
+		
 //		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
@@ -654,20 +658,58 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				imgV.setOnClickListener(this);
 			}
 			
+			View descriptionV = getView().findViewById(R.id.description_input);
+			if (descriptionV != null) {
+				descriptionV.setOnTouchListener(new OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						if (event.getAction() == MotionEvent.ACTION_DOWN) {
+							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
+							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
+						}
+						return false;
+					}
+				});
+			}
+			
 			View textArea = getView().findViewById(R.id.img_description);
 			if(textArea != null){
 				textArea.setOnClickListener(this);
 			}
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
-		for(int i = 1; i < fixedItemNames.length; ++ i){	
-			if(fixedItemNames[i].equals(STRING_DESCRIPTION))continue;
+		for(int i = 1; i < fixedItemNames.length; ++ i){
+			if(fixedItemNames[i].equals(STRING_DESCRIPTION)){
+//				text.setOnTouchListener(new OnTouchListener() {
+//					@Override
+//					public boolean onTouch(View v, MotionEvent event) {
+//						if (event.getAction() == MotionEvent.ACTION_DOWN) {
+//							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
+//							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
+//						}
+//						return false;
+//					}
+//				});
+				continue;
+			}
 			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(fixedItemDisplayNames[i]);
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
+			final String fixedItemDisplayName = fixedItemDisplayNames[i];
+			text.setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if (event.getAction()==MotionEvent.ACTION_DOWN) {
+						//goodsDetail==null decide post or editpost
+						Log.d("xx","action:" + fixedItemDisplayName);
+						Tracker.getInstance().event(goodsDetail==null?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, fixedItemDisplayName).end();
+					}
+					return false;
+				}
+			});
 			
 			PostGoodsBean bean = new PostGoodsBean();
 			bean.setControlType("input");
@@ -676,6 +718,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			v.setTag(HASH_CONTROL, text);
 			v.setTag(HASH_POST_BEAN, bean);
+			
+		
 			
 			if(fixedItemNames[i].equals("价格")){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
@@ -741,12 +785,20 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
+			Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DETAIL_POSITION);
+			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
+			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
 			}else if(detailLocation == null){
 				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
 			}
 		}else if(v.getId() == R.id.myImg){
+			
+			//记录ima框点击事件
+			Log.d("xx","isPost:"+(goodsDetail==null)+",action:image");
+			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
+			
 			if(goodsDetail != null){
 				if(bmpUrls.size() == 0){					
 					ArrayList<String> smalls = new ArrayList<String>();
@@ -828,14 +880,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private boolean gettingLocationFromBaidu = false;
 	@Override
 	public void handleRightAction(){
-		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNHEADERCLICKED":"EDITPOST_POSTBTNHEADERCLICKED");
 		if (this.getView().findViewById(R.id.goodscontent).isShown())
 		{
 			//tracker
-			Tracker.getInstance()
-			.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
-			.append(Key.SECONDCATENAME, categoryEnglishName)
-			.end();
+//			Tracker.getInstance()
+//			.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
+//			.append(Key.SECONDCATENAME, categoryEnglishName)
+//			.end();
 			
 			this.postAction();
 		}
@@ -1703,6 +1754,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 	
 //		Activity activity = getActivity();
+		isPost = (goodsDetail==null);
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
 			layout.findViewById(R.id.location).setOnClickListener(this);
@@ -1802,6 +1854,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 //				pushFragment(new GridCateFragment(), bundle);
+				Log.d("xx","action:类目");
+				Tracker.getInstance().event(BxEvent.POST_INPUTING).append(Key.ACTION, "类目").end();
 				
 				Bundle bundle = createArguments(null, null);
 				bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
@@ -1860,6 +1914,17 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				View v = layout_txt.findViewById(R.id.img_description);
 				EditText text = (EditText)v.findViewById(R.id.description_input);
 				text.setText("");
+				text.setOnTouchListener(new OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						if (event.getAction() == MotionEvent.ACTION_DOWN) {
+							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
+							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
+						}
+						return false;
+					}
+				});
+				
 				v.setTag(HASH_POST_BEAN, bean);
 				v.setTag(HASH_CONTROL, text);
 				v.setOnClickListener(this);
@@ -2310,9 +2375,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		builder.show();
 	}
 	
-	public static ViewGroup createItemByPostBean(PostGoodsBean postBean, final BaseFragment fragment){//??
+	public static ViewGroup createItemByPostBean(PostGoodsBean postBean, final BaseFragment fragment){
 		ViewGroup layout = null;
-		
+//		if (goodsDetail==null) return true;
 		Activity activity = fragment.getActivity();
 		if (postBean.getControlType().equals("input")) {
 			LayoutInflater inflater = LayoutInflater.from(activity);
@@ -2386,10 +2451,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		if (layout == null)
 			return null;
-		
+
 		if(postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")){
+			final String actionName = ((PostGoodsBean)layout.getTag(HASH_POST_BEAN)).getDisplayName();
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
+					Log.d("xx","isPost:"+isPost+",action:"+actionName);
+					Tracker.getInstance().event(isPost?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
+
 					PostGoodsBean postBean = (PostGoodsBean) v.getTag(HASH_POST_BEAN);
 
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
@@ -2468,8 +2537,20 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						}
 					}
 				}
-			});//layout.setOnClickListener
+			});//layout.setOnClickListener:select or checkbox
 		} else {//not select or checkbox
+			final String actionName = ((PostGoodsBean)layout.getTag(HASH_POST_BEAN)).getDisplayName();
+			((View)layout.getTag(HASH_CONTROL)).setOnTouchListener(new OnTouchListener() {
+				@Override
+				public boolean onTouch(View v, MotionEvent event) {
+					if (event.getAction() == MotionEvent.ACTION_DOWN) {
+						Log.d("xx","isPost:"+isPost+",action:"+actionName);
+						Tracker.getInstance().event(isPost?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
+					}
+					return false;
+				}
+			});
+			
 			layout.setOnClickListener(new OnClickListener() {
 				
 				@Override

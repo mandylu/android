@@ -128,8 +128,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public void onResume() {
         super.onResume();
-        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
-
+//        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
+        this.pv = PV.FAVADS;
         int adsCount = 0; //恶心的判断，能否有办法去除？
         if (glLoader != null && glLoader.getGoodsList() != null && glLoader.getGoodsList().getData() != null) {
             adsCount = glLoader.getGoodsList().getData().size();
@@ -383,7 +383,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 if (isFav) {
                     Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
                 } else {
-                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
+//                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
                 }
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
@@ -397,7 +397,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                             if (isFav) {
                                                 Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
                                             } else {
-                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
+//                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
                                             }
                                         }
                                     }
