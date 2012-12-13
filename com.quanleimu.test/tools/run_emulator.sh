@@ -58,8 +58,8 @@ else
 		rm "$imgpath/$emulator.img.lock";
 	fi
 	emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img &
-	#adb -s emulator-$port wait-for-device  #TODO
 	wait_for_boot_complete
 	echo "Device emulator-$port connected."
-	sleep 10;
+	adb -s emulator-$port wait-for-device
+	sleep 60;
 fi
