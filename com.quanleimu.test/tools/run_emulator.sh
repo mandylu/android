@@ -31,11 +31,17 @@ wait_for_boot_complete()
   local result=$(adb -s emulator-$port shell getprop dev.bootcomplete)
   local result_test=${result:1:1}
   echo -n "."
+  
+  declare -i i=0;
   while [ -z $result_test ]; do
     sleep 1
     echo -n "."
     result=$(adb -s emulator-$port shell getprop dev.bootcomplete)
     result_test=${result:0:1}
+    i=`expr "$i + 1" | bc`;
+    if [ $i -ge 300 ];then
+    	break;
+    fi
   done
   echo "finished booting"
 }
@@ -52,8 +58,8 @@ else
 		rm "$imgpath/$emulator.img.lock";
 	fi
 	emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img &
-	adb -s emulator-$port wait-for-device
+	#adb -s emulator-$port wait-for-device  #TODO
 	wait_for_boot_complete
 	echo "Device emulator-$port connected."
-	sleep 300;
+	sleep 10;
 fi
