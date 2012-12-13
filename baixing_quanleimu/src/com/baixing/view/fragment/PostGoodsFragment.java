@@ -551,7 +551,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(control instanceof TextView){
 				((TextView)control).setText(displayValue);
 			}
-			this.params.put(bean.getDisplayName(), displayValue, detailValue);
+			this.params.put(bean.getDisplayName(), 
+					displayValue, 
+					detailValue,
+					bean.getName());
 			
 		
 			if(bean.getDisplayName().equals(STRING_AREA)){
@@ -915,7 +918,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				if(et != null){
 //					String displayValue = et.getText().toString();
 //					displayValue = displayValue.endsWith(postGoodsBean.getUnit()) ? 
-					params.put(postGoodsBean.getDisplayName(),  et.getText().toString(), et.getText().toString());
+					params.put(postGoodsBean.getDisplayName(),  
+							et.getText().toString(), 
+							et.getText().toString(),
+							postGoodsBean.getName());
 				}
 			}
 			else if(postGoodsBean.getControlType().equals("checkbox")){
@@ -923,10 +929,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
 					if(box != null){
 						if(box.isChecked()){
-							params.put(postGoodsBean.getDisplayName(), postGoodsBean.getValues().get(0), postGoodsBean.getValues().get(0));
+							params.put(postGoodsBean.getDisplayName(),//key 
+									postGoodsBean.getValues().get(0), //uivalue
+									postGoodsBean.getValues().get(0),
+									postGoodsBean.getName());//key for ui value
 						}
 						else{
-							params.remove(postGoodsBean.getDisplayName());
+							params.remove(postGoodsBean.getDisplayName(),postGoodsBean.getName());
 						}
 					}
 				}
@@ -1427,20 +1436,22 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 //	}
 	
+	private String lookupMetaNameByLabel(String displayName){
+		if (postList == null || postList.isEmpty())
+			return displayName;
+		Set<String> keySet = postList.keySet();
+		for (String key : keySet)
+		{
+			PostGoodsBean bean = postList.get(key);
+			if(bean.getDisplayName().equals(displayName)){
+				return bean.getName();
+			}
+		}
+		return displayName;
+	}
+	
 	private void loadCachedData()
 	{
-//		if (imgs != null)
-//		{
-//			for (int i=0; imgs.length>i; i++)
-//			{
-//				if (i >= 0 && i < cachedBps.length && cachedBps[i] != null)
-//				{
-//					imgs[i].setImageBitmap(cachedBps[i]);
-//					imgs[i].invalidate();
-//				}
-//			}
-//		}
-		
 		LinkedHashMap<String, String> uiMap = params.getUiData();
 		if (uiMap == null)
 		{
@@ -1448,14 +1459,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		Iterator<String> it = uiMap.keySet().iterator();
 		while (it.hasNext()){
-			String displayName = it.next();
+			String name = it.next();
 			for (int i=0; i<layout_txt.getChildCount(); i++)
 			{
 				View v = layout_txt.getChildAt(i);
 				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-				if(bean == null || !bean.getDisplayName().equals(displayName)) continue;
+				if(bean == null || 
+						!bean.getName().equals(name)//check display name 
+						) continue;
 				View control = (View)v.getTag(HASH_CONTROL);
-				String displayValue = uiMap.get(displayName);
+				String displayValue = uiMap.get(name);
 				
 				if(control instanceof CheckBox){
 					if(displayValue.contains(((CheckBox)control).getText())){
@@ -1490,7 +1503,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, txtValue);
+					params.put(bean.getDisplayName(), txt, txtValue, bean.getName());
 				}
 				else if(obj instanceof String){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -1517,7 +1530,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, value);
+					params.put(bean.getDisplayName(), txt, value,bean.getName());
 				}
 				else if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -1526,7 +1539,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
+					params.put(bean.getDisplayName(), 
+							((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, 
+							((MultiLevelSelectionFragment.MultiLevelItem)obj).id,
+							bean.getName());
 				}
 			}
 		}
@@ -1943,11 +1959,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						//String key, String uiValue, String data
 						this.params.put(bean.getDisplayName(), 
 								defaultValue,
-								defaultValue);
+								defaultValue,
+								bean.getName());
 					} else {
 						this.params.put(bean.getDisplayName(), 
 								bean.getLabels().get(0), 
-								bean.getValues().get(0));
+								bean.getValues().get(0),
+								bean.getName());
 					}
 					break;
 				}
@@ -2550,8 +2568,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						for(int t = 0; t < bean.getLabels().size(); ++ t){
 							if(location.subCityName.contains(bean.getLabels().get(t))){
 //								((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
-								params.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
-								originParams.put(bean.getDisplayName(), bean.getLabels().get(t), bean.getValues().get(t));
+								params.put(bean.getDisplayName(), 
+										bean.getLabels().get(t), 
+										bean.getValues().get(t),
+										bean.getName());
+								originParams.put(bean.getDisplayName(), 
+										bean.getLabels().get(t), 
+										bean.getValues().get(t),
+										bean.getName());
 								return;
 							}
 						}
