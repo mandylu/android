@@ -1643,10 +1643,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout_txt.addView(v);
 		}
 		postList.clear();
-		
+		params.clear();
 		if(clearImgs){
 			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				params.clear();
+				
 				listUrl.clear();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
@@ -1657,9 +1657,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}
-		}else{
-			PostParamsHolder newParams = new PostParamsHolder();
-//			for(int i = 0; i < this.fixedItemDisplayNames)
 		}
 	}
 
