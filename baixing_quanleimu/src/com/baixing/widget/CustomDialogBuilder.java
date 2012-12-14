@@ -161,13 +161,24 @@ public class CustomDialogBuilder {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 					long arg3) {
+				System.out.println("onItemClick");
 				if (hasNextLevel) {
+					System.out.println("hasNextLevel true");
 					final List<Map<String,Object>> secondLevelList = new ArrayList<Map<String,Object>>();//
 					if (isCategoryItem) {
+						System.out.println("isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
 						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
 						if (allCates == null || allCates.size() <= pos)
-							return;
+						{
+							System.out.println("Reload category");
+							QuanleimuApplication.getApplication().loadCategorySync();//reload
+							allCates = QuanleimuApplication.getApplication().getListFirst();//recheck
+							if(allCates == null || allCates.size() <= pos){
+								System.out.println("仁至义尽");
+								return;
+							}
+						}
 						FirstStepCate selectedCate = null;
 						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
 						for (int i=0; i< allCates.size(); i++) {
@@ -261,7 +272,7 @@ public class CustomDialogBuilder {
 					}//not category over
 					
 				} else {
-					
+					System.out.println("hasNextLevel false");
 					MultiLevelItem item = (MultiLevelItem) items.get(pos);
 					CustomDialogBuilder.this.lastChoise = item;
 					handleLastLevelChoice(cd);
