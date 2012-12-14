@@ -431,28 +431,6 @@ public class CustomDialogBuilder {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			/*
-			if (convertView == null) {
-				Holder holder = new Holder();
-				if (position == 0) {
-					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(R.layout.item_seccategory_simple, null);
-					holder.tv = (TextView) convertView.findViewById(R.id.tv);
-					convertView.setTag(HOLDER_TAG, holder);
-				} else {
-					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(android.R.layout.simple_list_item_1, null);
-					holder.tv = (TextView) convertView.findViewById(android.R.id.text1);
-					convertView.setTag(HOLDER_TAG, holder);
-				}
-			}
-			Holder holder = (Holder) convertView.getTag(HOLDER_TAG);
-			if (holder != null && holder.tv != null) {
-				String displayText = isCategoryItem 
-						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
-						: (String)(((List<MultiLevelItem>)list).get(position).toString());
-				holder.tv.setText(displayText);
-			}
-			return convertView;
-			*/
 			View v = convertView;
 			TextView tv = null;
 			ImageView img = null;
