@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
+import com.baixing.entity.AllCates;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
@@ -33,6 +34,7 @@ import com.baixing.entity.HotList;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.LazyImageLoader;
+import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -915,4 +917,21 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			}
 		}
 	}
+	
+	public void loadCategorySync(){
+		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getApplicationContext(), 
+				"saveFirstStepCate");
+		
+		if (pair.second == null || pair.second.length() == 0){
+			pair = Util.loadDataAndTimestampFromAssets(this.getApplicationContext(), "cateJson.txt");
+		}
+		
+		String json = pair.second;
+		if (json != null && json.length() > 0) {
+			AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
+			QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
+		}
+	
+	}
+	
 }
