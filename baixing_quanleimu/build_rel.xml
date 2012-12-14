@@ -98,7 +98,7 @@
         </foreachTask>
 </target>
  <tstamp>
-    <format property="TODAY_CN" pattern="yyyy-MM-dd hh:mm aa" locale="zh,CN"/>
+    <format property="TODAY_CN" pattern="yyyy-MM-dd hh:mm" locale="zh,CN"/>
  </tstamp>
 
 <target name="release_channel">
