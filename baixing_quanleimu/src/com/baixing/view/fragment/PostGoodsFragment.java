@@ -1085,16 +1085,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}
 			}
 		}
-		if(categoryEnglishName.equals("nvzhaonan")){
-			for (int i = 0; i < bmpUrls.size(); i++) {
-				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
-					return true;
-				}
-			}
-			postResultFail("upload an image,let others know you!");
-			Toast.makeText(this.getActivity(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
-			return false;
-		}
+//		if(categoryEnglishName.equals("nvzhaonan")){
+//			for (int i = 0; i < bmpUrls.size(); i++) {
+//				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
+//					return true;
+//				}
+//			}
+//			postResultFail("upload an image,let others know you!");
+//			Toast.makeText(this.getActivity(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
+//			return false;
+//		}
 		return true;
 	}
 
