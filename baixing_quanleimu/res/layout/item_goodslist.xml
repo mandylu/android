@@ -73,7 +73,7 @@
             android:layout_marginLeft="10dp"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
+            android:textColor="@color/vad_list_sub_info"
             android:textSize="14dip"
             android:layout_toLeftOf="@+id/rlListOperate"
             android:layout_marginRight="5dp">
@@ -87,7 +87,7 @@
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/ivInfo"
             android:singleLine="true"
-            android:textColor="@drawable/vad_price_selector"
+            android:textColor="@color/vad_meta_price"
             android:textSize="14dip"
                 >
         </TextView>
@@ -100,7 +100,7 @@
             android:layout_marginLeft="10dip"
             android:layout_toRightOf="@+id/tvPrice"
             android:singleLine="true"
-            android:textColor="@drawable/list_textselector"
+            android:textColor="@color/vad_list_sub_info"
             android:textSize="14dip" >
         </TextView>
 

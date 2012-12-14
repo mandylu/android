@@ -904,14 +904,14 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		View callImg = rootView.findViewById(R.id.icon_call);
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
-		String text = contactS;
+		String text = "立即拨打" + contactS;
 		if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea))
 		{
-			text = contactS + "(" + mobileArea + ")";
+//			text = contactS + "(" + mobileArea + ")";
 		}
 		else if (mobileArea == null || "".equals(mobileArea.trim()))
 		{
-			text = contactS + "(非手机号)";
+//			text = contactS + "(非手机号)";
 			ContextMenuItem opts = (ContextMenuItem) rootView.findViewById(R.id.vad_call_nonmobile);
 			opts.updateOptionList("", getResources().getStringArray(R.array.item_call_nonmobile), 
 					new int[] {R.id.vad_call_nonmobile + 1, R.id.vad_call_nonmobile + 2});
@@ -1081,21 +1081,21 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			{
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
-			else if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(R.string.dialog_title_warning)
-				.setMessage(R.string.warning_danger_mobile)
-				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-					}
-				})
-				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						startContact(false);
-					}
-					
-				}).create().show();
-			}
+//			else if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
+//				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+//				builder.setTitle(R.string.dialog_title_warning)
+//				.setMessage(R.string.warning_danger_mobile)
+//				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//					}
+//				})
+//				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+//					public void onClick(DialogInterface dialog, int which) {
+//						startContact(false);
+//					}
+//					
+//				}).create().show();
+//			}
 			else
 			{
 				startContact(false);

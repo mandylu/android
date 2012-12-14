@@ -2718,14 +2718,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	@Override
 	public int getEnterAnimation() {
-		return R.anim.zoom_enter;
+		return 0;
 	}
 
 
 
 	@Override
 	public int getExitAnimation() {
-		return R.anim.zoom_exit;
+		return 0;
 	}
 
 	private boolean inreverse = false;
