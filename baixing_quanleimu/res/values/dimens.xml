@@ -14,7 +14,7 @@
     <dimen name="tab_icon_height">24dp</dimen>
     <dimen name="set_table_height">48dp</dimen>
     <dimen name="set_table_header_text_height">12dp</dimen><dimen name="set_table_item_text_height">16dp</dimen>
-    <dimen name="list_margin_LF">14dp</dimen>
+    <dimen name="list_margin_LF">16dp</dimen>
     <dimen name="vad_margin_LF">16dp</dimen>
     <dimen name="list_filter_more_item_width">54dp</dimen>
     <dimen name="vad_meta_item_height">40dp</dimen>
