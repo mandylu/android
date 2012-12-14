@@ -700,6 +700,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(textArea != null){
 				textArea.setOnClickListener(this);
 			}
+			
+			PostGoodsBean bean = new PostGoodsBean();
+			bean.setControlType("input");
+			bean.setDisplayName(fixedItemDisplayNames[1]);
+			bean.setName(fixedItemNames[1]);
+
+			textArea.setTag(HASH_CONTROL, descriptionV);
+			textArea.setTag(HASH_POST_BEAN, bean);
+
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
 		for(int i = 1; i < fixedItemNames.length; ++ i){
@@ -1634,10 +1643,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout_txt.addView(v);
 		}
 		postList.clear();
-		
+		params.clear();
 		if(clearImgs){
 			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				params.clear();
+				
 				listUrl.clear();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
@@ -2160,9 +2169,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 
 		
-		editpostUI();//编辑goodsDetail时调用
-		originParams.merge(params);//orginPrams合并params
-		extractInputData(layout_txt, originParams);//将界面元素的值存入originParams	
+		editpostUI();
+		originParams.merge(params);
+		extractInputData(layout_txt, originParams);	
 	}//buildPostLayout
 	
 
