@@ -39,6 +39,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -383,7 +384,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+		QuanleimuApplication.getApplication().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
 			Tracker.getInstance()
@@ -432,7 +433,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(!isBack){
 //			inLocating = true;
-			QuanleimuApplication.getApplication().addLocationListener(this);
+			
+			
 //			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
 		}
 		
@@ -698,6 +700,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(textArea != null){
 				textArea.setOnClickListener(this);
 			}
+			
+			PostGoodsBean bean = new PostGoodsBean();
+			bean.setControlType("input");
+			bean.setDisplayName(fixedItemDisplayNames[1]);
+			bean.setName(fixedItemNames[1]);
+
+			textArea.setTag(HASH_CONTROL, descriptionV);
+			textArea.setTag(HASH_POST_BEAN, bean);
+
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
 		for(int i = 1; i < fixedItemNames.length; ++ i){
@@ -748,6 +759,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(fixedItemNames[i].equals("contact")) {
 				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
+				text.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 				if(phone != null && phone.length() > 0){
 					text.setText(phone);
 				}
@@ -1082,16 +1094,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}
 			}
 		}
-		if(categoryEnglishName.equals("nvzhaonan")){
-			for (int i = 0; i < bmpUrls.size(); i++) {
-				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
-					return true;
-				}
-			}
-			postResultFail("upload an image,let others know you!");
-			Toast.makeText(this.getActivity(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
-			return false;
-		}
+//		if(categoryEnglishName.equals("nvzhaonan")){
+//			for (int i = 0; i < bmpUrls.size(); i++) {
+//				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
+//					return true;
+//				}
+//			}
+//			postResultFail("upload an image,let others know you!");
+//			Toast.makeText(this.getActivity(), "传张照片吧，让大家更好地认识你^-^" ,0).show();
+//			return false;
+//		}
 		return true;
 	}
 
@@ -1631,10 +1643,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout_txt.addView(v);
 		}
 		postList.clear();
-		
+		params.clear();
 		if(clearImgs){
 			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				params.clear();
+				
 				listUrl.clear();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
@@ -1853,6 +1865,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
+			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 			if(phone != null && phone.length() > 0){
 				etContact.setText(phone);
@@ -2156,9 +2169,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 
 		
-		editpostUI();//编辑goodsDetail时调用
-		originParams.merge(params);//orginPrams合并params
-		extractInputData(layout_txt, originParams);//将界面元素的值存入originParams	
+		editpostUI();
+		originParams.merge(params);
+		extractInputData(layout_txt, originParams);	
 	}//buildPostLayout
 	
 
@@ -2843,14 +2856,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	@Override
 	public int getEnterAnimation() {
-		return R.anim.zoom_enter;
+		return 0;
 	}
 
 
 
 	@Override
 	public int getExitAnimation() {
-		return R.anim.zoom_exit;
+		return 0;
 	}
 
 	private boolean inreverse = false;

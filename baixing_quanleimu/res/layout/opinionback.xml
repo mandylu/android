@@ -23,6 +23,7 @@
                 android:focusableInTouchMode="true"
                 android:gravity="top"
                 android:hint="请输入反馈，我们将会为您做的更好"
+                android:textColorHint="@color/common_placeholder"
                 android:marqueeRepeatLimit="marquee_forever"
 		        android:textSize="@dimen/font_input_text"
 		        android:textColor="@color/common_edit_text_color"
@@ -45,6 +46,7 @@
 		        android:textColor="@color/common_edit_text_color"
 		        android:background="@drawable/edit_bg"
                 android:hint="留下手机号，以便我们给您回复"
+                android:textColorHint="@color/common_placeholder"
                 android:singleLine="true" />
         </RelativeLayout>
     </ScrollView>
