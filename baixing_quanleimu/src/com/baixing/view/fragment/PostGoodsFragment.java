@@ -1643,19 +1643,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			layout_txt.addView(v);
 		}
 		postList.clear();
-		params.clear();
-		if(clearImgs){
-			if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
-				
+		
+		
+		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+			if(clearImgs){
 				listUrl.clear();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
-//					imgSelDlg = null;
+		//					imgSelDlg = null;
 				}
 				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
+			}else{
+				params.clear();
 			}
 		}
 	}
