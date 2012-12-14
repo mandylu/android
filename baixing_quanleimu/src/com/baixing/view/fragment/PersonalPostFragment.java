@@ -13,11 +13,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,25 +26,23 @@ import android.widget.Toast;
 
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
 import com.baixing.util.LogData;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.view.fragment.GoodDetailFragment.REQUEST_TYPE;
-import com.baixing.view.fragment.GoodDetailFragment.RequestThread;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
@@ -624,19 +620,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
-//                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
                             break;
                         case 1://删除
-//                            showSimpleProgress();
-//                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            new Thread(new MyMessageDeleteThread(adId)).start();
-//                            postDelete(Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            
+                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_APPEAL)
+                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
                 }
