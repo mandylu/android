@@ -85,8 +85,8 @@ public class CustomDialogBuilder {
 	
 	private void configCustomDialog(final CustomDialog cd) {
 		
-		final ListView lv = cd.getListView();
-		final List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
+		ListView lv = cd.getListView();
+		List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
 		if (isCategoryItem) {
 			cd.setTitle("请选择分类");
 			for (String item : (List<String>)items) {
@@ -99,25 +99,77 @@ public class CustomDialogBuilder {
 			for (MultiLevelItem item : (List<MultiLevelItem>)items) {
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("tv", item.toString());
+				map.put("id", item.id);
 				firstLevelList.add(map);
 			}
 		}
-		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
-				new String[]{"tv"}, new int[]{R.id.tv});
-		lv.setAdapter(simpleAdapter);
+		
+//		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
+//				new String[]{"tv"}, new int[]{R.id.tv});
+//		lv.setAdapter(simpleAdapter);
+		
+		configFirstLevel(cd, lv, firstLevelList);
+		
+		
+	}
+	
+	protected final void showProgress(int titleResid, int messageResid, boolean cancelable) {
+		String title = context.getString(titleResid);
+		String message = context.getString(messageResid);
+		showProgress(title, message, cancelable);
+	}
+	
+	protected final void showProgress(String title, String message, boolean cancelable)
+	{
+		hideProgress();
+
+        if (context != null)
+		{
+			pd = ProgressDialog.show(context, title, message);
+			pd.setCancelable(cancelable);
+            pd.setCanceledOnTouchOutside(cancelable);
+		}
+	}
+	
+	protected final void hideProgress()
+	{
+		if (pd != null && pd.isShowing())
+		{
+			pd.dismiss();
+		}
+	}
+	
+	private void sendMessage(int what, Object data) {
+		Message message = null;
+		if (handler != null) {
+			message = handler.obtainMessage();
+			message.what = what;
+			if (data != null)
+				message.obj = data;
+			
+			handler.sendMessage(message);
+		}
+	}
+	
+	private void configFirstLevel(final CustomDialog cd, final ListView lv, final List list) {
+		//adapter
+		FirstCateAdapter firstAdapter = new FirstCateAdapter(list);//List<Map<String,Object>> firstLevelList
+		lv.setAdapter(firstAdapter);
+		//lv set on item click listener
+		
 		lv.setOnItemClickListener(new OnItemClickListener() {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 					long arg3) {
 				if (hasNextLevel) {
-					final List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
+					final List<Map<String,Object>> secondLevelList = new ArrayList<Map<String,Object>>();//
 					if (isCategoryItem) {
 						cd.setTitle("请选择分类");
 						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
 						if (allCates == null || allCates.size() <= pos)
 							return;
 						FirstStepCate selectedCate = null;
-						String selText = (String) firstLevelList.get(pos).get("tv");
+						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
 						for (int i=0; i< allCates.size(); i++) {
 							if (allCates.get(i).name.equals(selText)) {
 								selectedCate = allCates.get(i);
@@ -128,16 +180,16 @@ public class CustomDialogBuilder {
 						Map<String,Object> backMap = new HashMap<String,Object>();
 						backMap.put("tvCategoryName", "返回上一级");
 						backMap.put("tvCategoryEnglishName", "back");
-						list.add(backMap);
+						secondLevelList.add(backMap);//
 						List<SecondStepCate> children = selectedCate.getChildren();
 						for (SecondStepCate cate : children) {
 							Map<String,Object> map = new HashMap<String,Object>();
 							map.put("tvCategoryName", cate.getName());
 							map.put("tvCategoryEnglishName", cate.getEnglishName());
-							list.add(map);
+							secondLevelList.add(map);//
 						}
 						//configSecondLevel
-						configSecondLevel(cd, lv, list);
+						configSecondLevel(cd, lv, secondLevelList);//
 					}//isCategoryItem over
 					else {//not category Item,need Thread & handler
 						handler = new Handler() {
@@ -195,10 +247,17 @@ public class CustomDialogBuilder {
 							}//handleMessage
 							
 						};
-						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
-						CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
-						String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
-						(new Thread(new GetMetaDataThread(id,txt))).start();
+						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");
+						if (selText.equals("全部")) {
+							MultiLevelItem item = (MultiLevelItem) items.get(pos);
+							CustomDialogBuilder.this.lastChoise = item;
+							handleLastLevelChoice(cd);
+						} else {
+							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+							CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
+							String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+							(new Thread(new GetMetaDataThread(id,txt))).start();
+						}
 					}//not category over
 					
 				} else {
@@ -209,44 +268,7 @@ public class CustomDialogBuilder {
 				}
 			}
 		});
-	}
-	
-	protected final void showProgress(int titleResid, int messageResid, boolean cancelable) {
-		String title = context.getString(titleResid);
-		String message = context.getString(messageResid);
-		showProgress(title, message, cancelable);
-	}
-	
-	protected final void showProgress(String title, String message, boolean cancelable)
-	{
-		hideProgress();
-
-        if (context != null)
-		{
-			pd = ProgressDialog.show(context, title, message);
-			pd.setCancelable(cancelable);
-            pd.setCanceledOnTouchOutside(cancelable);
-		}
-	}
-	
-	protected final void hideProgress()
-	{
-		if (pd != null && pd.isShowing())
-		{
-			pd.dismiss();
-		}
-	}
-	
-	private void sendMessage(int what, Object data) {
-		Message message = null;
-		if (handler != null) {
-			message = handler.obtainMessage();
-			message.what = what;
-			if (data != null)
-				message.obj = data;
-			
-			handler.sendMessage(message);
-		}
+		
 	}
 	
 	private void configSecondLevel(final CustomDialog cd, ListView lv, final List list) {
@@ -325,7 +347,56 @@ public class CustomDialogBuilder {
 			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 		}
 	}
-	
+	class FirstCateAdapter extends BaseAdapter {
+		private List list = null;
+		public FirstCateAdapter(List list) {
+			this.list = list;
+		}
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			TextView tv = null;
+			ImageView img = null;
+			
+			v = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(
+					R.layout.item_seccategory_simple2, null);
+			
+			tv = (TextView) v.findViewById(R.id.tv);
+			img = (ImageView) v.findViewById(R.id.img);
+			
+			if (tv != null) {
+				String displayText = (String)((Map<String,Object>)(list.get(position))).get("tv");
+				tv.setText(displayText);
+			}
+			if (!isCategoryItem && img != null) {
+				if (((Map<String,Object>)list.get(position)).get("id").equals(CustomDialogBuilder.this.selectedValue)) {
+					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+				}
+			}
+			
+			return v;
+		}
+		class Holder {
+			public TextView tv;
+			
+		}
+	}
 	class SecondCateAdapter extends BaseAdapter {
 		private List list = null;
 		public SecondCateAdapter(List list) {
@@ -392,11 +463,11 @@ public class CustomDialogBuilder {
 				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
-//			if (img != null) {
-//				if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
-//					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
-//				}
-//			}
+			if (!isCategoryItem && img != null) {
+				if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+				}
+			}
 			return v;
 		}
 		class Holder {
