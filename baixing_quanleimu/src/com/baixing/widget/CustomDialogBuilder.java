@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -45,7 +46,7 @@ public class CustomDialogBuilder {
 	private boolean hasNextLevel = false;
 	private boolean isCategoryItem = false;
 	private List items = null;
-	private List<MultiLevelItem> secondLevelItems = null;
+//	private List<MultiLevelItem> secondLevelItems = null;
 	private String selectedValue = null;
 	private String id = null;
 	private String json = null;
@@ -65,9 +66,9 @@ public class CustomDialogBuilder {
 		this.requestCode = bundle.getInt(ARG_COMMON_REQ_CODE);
 		if (bundle.getInt(ARG_COMMON_REQ_CODE) == MSG_CATEGORY_SEL_BACK)
 			isCategoryItem = true;
-		if (bundle.containsKey("selectedValue"))
+		if (bundle.containsKey("selectedValue") && bundle.getString("selectedValue")!=null)
 		{
-			this.selectedValue = bundle.getString("selectedValue");
+			this.selectedValue = bundle.getString("selectedValue");//selectedValue
 		}
 //		if (bundle.containsKey("metaId"))
 //		{
@@ -150,40 +151,43 @@ public class CustomDialogBuilder {
 										LinkedHashMap<String,PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
 										if (beans != null) {
 											PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
-											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
-												CustomDialogBuilder.this.secondLevelItems = new ArrayList<MultiLevelItem>();
+//											List<MultiLevelItem> secondLevelItems = null;
+//											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
+												List<MultiLevelItem> secondLevelItems = new ArrayList<MultiLevelItem>();
 												if (bean.getLabels() != null) {
 													MultiLevelItem tBack = new MultiLevelItem();
 													tBack.txt = "返回上一级";
 													tBack.id = null;
-													CustomDialogBuilder.this.secondLevelItems.add(tBack);
+													secondLevelItems.add(tBack);
 													if (bean.getLabels().size() > 1) {
 														MultiLevelItem tAll = new MultiLevelItem();
 														MultiLevelItem selectedItem = (MultiLevelItem)msg.obj;
 														tAll.txt = selectedItem.toString();
 														tAll.id = selectedItem.id;
-														CustomDialogBuilder.this.secondLevelItems.add(tAll);
+														secondLevelItems.add(tAll);
 													}
 													for (int i=0; i<bean.getLabels().size(); i++) {
 														MultiLevelItem t = new MultiLevelItem();
 														t.txt = bean.getLabels().get(i);
 														t.id = bean.getValues().get(i);
-														CustomDialogBuilder.this.secondLevelItems.add(t);
+														secondLevelItems.add(t);
 													}
 												}
 												else {
 													//
 													return;
 												}
-											}
-											else {
-												
-											}
+//											}
+//											else {
+//												
+//											}
 											//secondLevelItems -> list
 											//List<MultiLevelItem> -> List<Map<String,Object>>
 											//configSecondLevel
-											configSecondLevel(cd, lv, CustomDialogBuilder.this.secondLevelItems);										}
+											configSecondLevel(cd, lv, secondLevelItems);										}
 									}
+									else
+										return;
 									
 									break;
 								}
@@ -369,6 +373,7 @@ public class CustomDialogBuilder {
 			*/
 			View v = convertView;
 			TextView tv = null;
+			ImageView img = null;
 			if (position == 0) {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple, null);
@@ -377,6 +382,7 @@ public class CustomDialogBuilder {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple2, null);
 				tv = (TextView) v.findViewById(R.id.tv);
+				img = (ImageView) v.findViewById(R.id.img);
 			}
 			
 			if (tv != null) {
@@ -386,6 +392,11 @@ public class CustomDialogBuilder {
 				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
+//			if (img != null) {
+//				if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+//					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+//				}
+//			}
 			return v;
 		}
 		class Holder {
