@@ -11,7 +11,7 @@
         android:layout_height="wrap_content"
         android:text="上海"
         android:textColor="@color/vad_meta_label"
-        android:width="80dip"
+        android:width="40dip"
         android:textSize="14sp" 
         >
     </TextView>
