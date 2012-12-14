@@ -39,6 +39,7 @@ import android.provider.MediaStore;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.util.Log;
 import android.util.Pair;
@@ -380,7 +381,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
-		
+		QuanleimuApplication.getApplication().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
 			Tracker.getInstance()
@@ -429,7 +430,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		if(!isBack){
 //			inLocating = true;
-			QuanleimuApplication.getApplication().addLocationListener(this);
+			
+			
 //			handler.sendEmptyMessageDelayed(MSG_GETLOCATION_TIMEOUT, 100);
 		}
 		
@@ -704,6 +706,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(fixedItemNames[i].equals("contact")) {
 				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
+				text.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 				if(phone != null && phone.length() > 0){
 					text.setText(phone);
 				}
@@ -1801,6 +1804,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
+			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 			if(phone != null && phone.length() > 0){
 				etContact.setText(phone);
