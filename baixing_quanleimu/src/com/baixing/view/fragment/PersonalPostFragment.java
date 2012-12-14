@@ -196,7 +196,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(bundle != null){
 			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
 				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
 				}
 				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
 			}

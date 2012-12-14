@@ -8,17 +8,16 @@
         android:id="@+id/tvCategoryName"
         android:layout_width="wrap_content"
         android:gravity="center_vertical"
-        android:layout_height="38dp"
-        android:textSize="18dp"
-       	android:layout_marginLeft="10dp"
-       	android:layout_marginRight="10dp"
-       	android:layout_marginBottom="2dp"
+        android:layout_height="47dp"
+        android:textSize="@dimen/font_medium"
+       	android:layout_marginLeft="@dimen/list_margin_LF"
+       	android:layout_marginRight="@dimen/list_margin_LF"
         />
     <View 
        	android:layout_width="wrap_content"
        	android:layout_height="1dp"
        	android:background="@color/list_seperator"
-       	android:layout_marginLeft="10dp"
-       	android:layout_marginRight="10dp"
+       	android:layout_marginLeft="@dimen/list_margin_LF"
+       	android:layout_marginRight="@dimen/list_margin_LF"
        	/>
 </LinearLayout>

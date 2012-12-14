@@ -13,6 +13,7 @@ import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.drawable.BitmapDrawable;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
@@ -564,7 +565,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
-					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(null);
+					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageResource(R.drawable.loading_210_black);
 					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
 							bitmap_url.get(currentImgView),
 							"",
@@ -640,6 +641,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			switch(msg.what){
 			case MSG_START_UPLOAD:{
+				Log.d("bitmap", "bitmap MSG_START_UPLOAD got");
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
 					imgs.get(index.intValue()).setImageResource(R.drawable.icon_post_loading);
@@ -651,15 +653,20 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				break;		
 			}
 			case MSG_FAIL_UPLOAD:{
+				Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got");
 				if (imgs != null){			
 					Integer index = (Integer) msg.obj;
-					imgs.get(index.intValue()).setImageResource(R.drawable.f);
+					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
+					imgs.get(index.intValue()).setImageBitmap(bd.getBitmap());
+//					imgs.get(index.intValue()).setImageResource(R.drawable.f);
 					imgs.get(index).setClickable(true);
-					imgs.get(index.intValue()).invalidate();
+					imgs.get(index.intValue()).invalidate();	
+					Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got, and invalidate");
 				}
 				break;			
 			}
 			case MSG_SUCCEED_UPLOAD:{
+				Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got");
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
 					imgs.get(index).setImageBitmap(cachedBps.get(index));
@@ -729,16 +736,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			{
 				return;
 			}
-			activity.runOnUiThread(new Runnable(){
-				public void run(){
-					if(handler != null){
-						Message msg = Message.obtain();
-						msg.what = MSG_START_UPLOAD;
-						msg.obj = currentIndex;
-						handler.sendMessage(msg);
-					}
-				}
-			});	
+
+			if(handler != null){
+				Message msg = Message.obtain();
+				msg.what = MSG_START_UPLOAD;
+				msg.obj = currentIndex;
+				handler.sendMessage(msg);
+			}
 			
 			synchronized(ImageSelectionDialog.this){
 			++ uploadCount;
@@ -772,69 +776,65 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					e.printStackTrace();
 				}
 			}			
-			if(currentBmp == null) {
+									
+			if(currentBmp != null){
+				String result = Communication.uploadPicture(currentBmp);	
 				-- uploadCount;
-				return;
-			}
-				
-			String result = Communication.uploadPicture(currentBmp);	
-			-- uploadCount;
-			if(imgs != null && imgs.get(currentIndex) != null && imgs.get(currentIndex).getHeight() != 0){
-				imgHeight = imgs.get(currentIndex).getHeight();
-			}
-			Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
-
-			setListContent(cachedBps, thumbnailBmp, currentIndex);
-			
-	        if(cachedBps.size() < imgs.size()){
-	        	int count = 0;
-	        	if(imgs.size() < imgIds.length){
-	        		count = imgs.size() - 1 - cachedBps.size();
-	        	}else{
-	        		count = imgs.size() - cachedBps.size();
-	        	}
-	        	for(int i = 0; i < count; ++ i){
-	        		cachedBps.add(null);
-	        	}
-	        }
-			currentBmp.recycle();
-			currentBmp = null;
+				if(imgs != null && imgs.get(currentIndex) != null && imgs.get(currentIndex).getHeight() != 0){
+					imgHeight = imgs.get(currentIndex).getHeight();
+				}
+				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
 	
-			if (result != null) {
-				setListContent(bitmap_url, result, currentIndex);						
-
-				if(handler == null) return;
-				Message msg = Message.obtain();
-				msg.what = MSG_SUCCEED_UPLOAD;
-				msg.obj = currentIndex;
-				handler.sendMessage(msg);
-
-//				if(bitmap_url.size() > currentIndex){
-//					bitmap_url.set(currentIndex, result);
-//				}else{
-//					bitmap_url.add(result);
-//				}				
-
-				activity.runOnUiThread(new Runnable(){
-					public void run(){
-						Toast.makeText(activity, "上传图片成功", 0).show();
-					}
-				});	                
-			} else {
+				setListContent(cachedBps, thumbnailBmp, currentIndex);
+				
+		        if(cachedBps.size() < imgs.size()){
+		        	int count = 0;
+		        	if(imgs.size() < imgIds.length){
+		        		count = imgs.size() - 1 - cachedBps.size();
+		        	}else{
+		        		count = imgs.size() - cachedBps.size();
+		        	}
+		        	for(int i = 0; i < count; ++ i){
+		        		cachedBps.add(null);
+		        	}
+		        }
+				currentBmp.recycle();
+				currentBmp = null;
+	
+				if (result != null) {
+					setListContent(bitmap_url, result, currentIndex);						
+	
+					if(handler == null) return;
+					Message msg = Message.obtain();
+					msg.what = MSG_SUCCEED_UPLOAD;
+					msg.obj = currentIndex;
+					handler.sendMessage(msg);
+	
+					activity.runOnUiThread(new Runnable(){
+						public void run(){
+							Toast.makeText(activity, "上传图片成功", 0).show();
+						}
+					});	     
+					return;
+				} 
+			}else{
+				Log.d("bitmap", "bitmap is nullllllll");
+				-- uploadCount;
 				setListContent(bitmap_url, bmpPath, currentIndex);
-				if(handler == null) return;
-				Message msg = Message.obtain();
-				msg.what = MSG_FAIL_UPLOAD;
-				msg.obj = currentIndex;
-				handler.sendMessage(msg);
-
-				activity.runOnUiThread(new Runnable(){
-					public void run(){
-						Toast.makeText(activity, "上传图片失败", 0).show();
-					}
-				});						
 			}
-//			uploadMutex.notifyAll();
+			
+			if(handler == null) return;
+			Message msg = Message.obtain();
+			msg.what = MSG_FAIL_UPLOAD;
+			msg.obj = currentIndex;
+			handler.sendMessage(msg);
+			Log.d("bitmap", "bitmap send Mesage");
+
+//			activity.runOnUiThread(new Runnable(){
+//				public void run(){
+//					Toast.makeText(activity, "上传图片失败", 0).show();
+//				}
+//			});
 			}
 		}
 	}
