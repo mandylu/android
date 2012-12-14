@@ -136,14 +136,14 @@ public class SessionListAdapter extends BaseAdapter {
 				
 				@Override
 				public void onClick(View v) {
-					Tracker.getInstance().event(BxEvent.BUZZLIST_MANAGE).end();
+//					Tracker.getInstance().event(BxEvent.BUZZLIST_MANAGE).end();
 					
 					AlertDialog.Builder builder = new AlertDialog.Builder(context);
 	                builder.setTitle("操作")
 	                        .setItems(R.array.item_operate_session,
 	                                new DialogInterface.OnClickListener() {
 	                                    public void onClick(DialogInterface dialog, int which) {
-	                    					Tracker.getInstance().event(BxEvent.BUZZLIST_DELETE).end();	                                    	
+//	                    					Tracker.getInstance().event(BxEvent.BUZZLIST_DELETE).end();	                                    	
 	                                        if (which == 0) {
 	                                        	new Thread(new DeleteSessionThread(list.get(position))).start();
 	                                        }

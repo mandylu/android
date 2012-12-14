@@ -220,15 +220,18 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			called = false;
 			if (!isInMyStore())
 			{
+				Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAV).end();
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(R.string.dialog_title_info)
 				.setMessage(R.string.tip_add_fav)
 				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
+						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, "cancel").end();
 					}
 				})
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
+						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, "fav").end();
 						handleStoreBtnClicked();
 					}
 					
@@ -988,11 +991,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void startChat()
 	{
-		Log.d("track","VIEWAD_BUZZ");
 		//tracker
-		Tracker.getInstance()
-		.event(BxEvent.VIEWAD_BUZZ)
-		.end();
+//		Tracker.getInstance()
+//		.event(BxEvent.VIEWAD_BUZZ)
+//		.end();
 		if (this.fromChat)
 		{
 			this.finishFragment();
@@ -1079,6 +1081,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
+				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLE).end();
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
 //			else if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
@@ -1776,10 +1779,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
+				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, "call").end();
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
+				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, "copy").end();
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));

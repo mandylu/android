@@ -70,8 +70,8 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	@Override
 	public void onResume(){
 		super.onResume();
-		this.pv = PV.POSTCATE1;
-		Tracker.getInstance().pv(this.pv).end();
+//		this.pv = PV.POSTCATE1;
+//		Tracker.getInstance().pv(this.pv).end();
 //		getView().requestFocus();
 	}
 
