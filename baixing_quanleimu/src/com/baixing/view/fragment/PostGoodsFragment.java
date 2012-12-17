@@ -635,42 +635,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		showSimpleProgress();
 		new Thread(new UpdateThread(registered, location)).start();		
 	}
-	
-//	private void postNoRegister(){
-//		doPost(false);
-//	}
-
 	private boolean usercheck() {
 		return (user != null && user.getPhone() != null && !user.getPhone().equals(""));
-//			doPost(true);
-//		}
-//		else {
-//			doPost(false);
-//			final String[] names = {"免注册发布","已注册用户发布"};
-//			new AlertDialog.Builder(this.getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
-//			.setItems(names, new DialogInterface.OnClickListener(){
-//				
-//				@Override
-//				public void onClick(DialogInterface dialog, int which){
-//					switch(which){
-//						case 0:
-//							postNoRegister();
-//							break;
-//						case 1:
-//							Bundle bundle = createArguments(null, "取消");
-//							bundle.putInt(LoginFragment.KEY_RETURN_CODE, VALUE_LOGIN_SUCCEEDED);
-//							pushFragment(new LoginFragment(), bundle);
-//							break;
-//					}				
-//				}
-//			})
-//			.setNegativeButton("取消", new DialogInterface.OnClickListener(){
-//				@Override
-//				public void onClick(DialogInterface dialog, int which){
-//					dialog.dismiss();
-//				}
-//			}).show();
-//		}
 	}
 		
 	private void deployDefaultLayout(){
@@ -712,17 +678,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		LayoutInflater inflater = LayoutInflater.from(getActivity());
 		for(int i = 1; i < fixedItemNames.length; ++ i){
-			if(fixedItemNames[i].equals(STRING_DESCRIPTION)){
-//				text.setOnTouchListener(new OnTouchListener() {
-//					@Override
-//					public boolean onTouch(View v, MotionEvent event) {
-//						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-//							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
-//							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
-//						}
-//						return false;
-//					}
-//				});
+			if(fixedItemNames[i].equals(STRING_DESCRIPTION)){//上面已经特殊处理了description
 				continue;
 			}
 			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
@@ -875,33 +831,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}, 100);
 			}
 		}
-//		else if (v == photoalbum) {
-//			// 相册
-//			if (ad.isShowing()) {
-//				ad.dismiss();
-//			}
-//			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
-//			Bundle ext = new Bundle();
-//			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Albam);
-//			thirdparty.putExtras(ext);
-//			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//			activity.startActivity(thirdparty);
-//			
-//		} else if (v == photomake) {
-//			if (ad.isShowing()) {
-//				ad.dismiss();
-//			}
-//			Intent thirdparty = new Intent(this.getActivity(), ThirdpartyTransitActivity.class);
-//			Bundle ext = new Bundle();
-//			ext.putString(ThirdpartyTransitActivity.ThirdpartyKey, ThirdpartyTransitActivity.ThirdpartyType_Photo);
-//			ext.putInt(ThirdpartyTransitActivity.Name_PhotoNumber, this.currentImgView);
-//			thirdparty.putExtras(ext);
-//			thirdparty.addFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-//			activity.startActivity(thirdparty);
-//
-//		} else if (v == photocancle) {
-//			ad.dismiss();
-//		}
 	}
 	
 	private void postFinish() {
@@ -920,12 +849,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void handleRightAction(){
 		if (this.getView().findViewById(R.id.goodscontent).isShown())
 		{
-			//tracker
-//			Tracker.getInstance()
-//			.event(goodsDetail==null?BxEvent.POST_POSTBTNHEADERCLICKED:BxEvent.EDITPOST_POSTBTNHEADERCLICKED)
-//			.append(Key.SECONDCATENAME, categoryEnglishName)
-//			.end();
-			
 			this.postAction();
 		}
 	}
@@ -972,24 +895,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
             lastLocation.detailAddress = inputAddress;
             Util.saveDataToLocate(getActivity(), "lastLocation", lastLocation);
         }
-
-//		if(uploadCount > 0){
-//			postResultFail("images are uploading!");
-//			Toast.makeText(this.getActivity(),"图片正在上传" + "!", 0).show();
-//		}
-//		else
-		{
-			extractInputData(layout_txt, params);
-			setPhoneAndAddress();
-			if(!check2()){
-				return;
-			}
-			if(this.detailLocation != null){
-				doPost(usercheck(), detailLocation);
-			}else{
-				this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
-				retreiveLocation();
-			}
+		extractInputData(layout_txt, params);
+		setPhoneAndAddress();
+		if(!this.checkInputComplete()){
+			return;
+		}
+		if(this.detailLocation != null){
+			doPost(usercheck(), detailLocation);
+		}else{
+			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
+			retreiveLocation();
 		}
 	}
 	
@@ -1077,7 +992,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 
 	
-	private boolean check2() {
+	private boolean checkInputComplete() {
+		if(this.categoryEnglishName == null || this.categoryEnglishName.equals("")){
+			Toast.makeText(this.getActivity(), "请选择分类" ,0).show();
+			popupCategorySelectionDialog();
+			return false;
+		}
+		
 		LinkedHashMap<String, String> postMap = params.getData();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
@@ -1931,6 +1852,19 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 	}
 	
+	private void popupCategorySelectionDialog(){
+		Bundle bundle = createArguments(null, null);
+		bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
+		bundle.putInt("maxLevel", 1);
+		bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
+		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
+			bundle.putString("selectedValue", categoryName);
+		}
+		extractInputData(layout_txt, params);
+		CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
+		cdb.start();
+	}
+	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
 		if(this.goodsDetail != null)return;
@@ -1945,27 +1879,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-//				Bundle bundle = createArguments(null, null);
-//				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-//				pushFragment(new GridCateFragment(), bundle);
 				Log.d("xx","action:类目");
 				Tracker.getInstance().event(BxEvent.POST_INPUTING).append(Key.ACTION, "类目").end();
-				
-				Bundle bundle = createArguments(null, null);
-				bundle.putSerializable("items", (Serializable) Arrays.asList(texts));
-				bundle.putInt("maxLevel", 1);
-				bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-				if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
-					bundle.putString("selectedValue", categoryName);
-				}
-				
-				extractInputData(layout_txt, params);
-				CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
-				cdb.start();
+				popupCategorySelectionDialog();
 			}				
 		});//categoryItem.setOnClickListener
-		
-		
 		
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
 			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
