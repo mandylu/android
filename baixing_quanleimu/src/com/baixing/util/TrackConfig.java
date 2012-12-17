@@ -86,6 +86,7 @@ public class TrackConfig implements Observer {
 			//from3.1
 			RESULT("result","结果"),
 			ACTION("action","inputing动作"),
+			STATUS("status","信息状态"),
 			;
 			private String name;
 			private String description;
