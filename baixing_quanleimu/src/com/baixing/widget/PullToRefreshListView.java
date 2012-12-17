@@ -317,6 +317,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
         super.setAdapter(adapter);
 
         setSelectionFromTop(1, 0);
+        updateFooter(mHasMore);
     }
     
 

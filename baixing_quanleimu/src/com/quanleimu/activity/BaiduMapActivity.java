@@ -230,6 +230,14 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			QuanleimuApplication.context = new WeakReference<Context>(this);
 		}
 		this.setContentView(R.layout.baidumaplayout);
+		findViewById(R.id.search_action).setVisibility(View.GONE);
+		findViewById(R.id.right_action).setVisibility(View.GONE);
+		if (savedInstanceState == null)
+		{
+			TextView tTitle = (TextView) findViewById(R.id.tvTitle);
+			tTitle.setText("位置");
+		}
+		
 		if (mBMapMan == null) 
 		{
 			mBMapMan = new BMapManager(QuanleimuApplication.getApplication().getApplicationContext());
@@ -245,6 +253,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		});
 		this.findViewById(R.id.left_action).setPadding(0, 0, 0, 0);		
         super.initMapActivity(mBMapMan);
+        
         
 	}
 	

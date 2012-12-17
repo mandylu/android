@@ -86,6 +86,7 @@ public class TrackConfig implements Observer {
 			//from3.1
 			RESULT("result","结果"),
 			ACTION("action","inputing动作"),
+			STATUS("status","信息状态"),
 			;
 			private String name;
 			private String description;
@@ -191,6 +192,7 @@ public class TrackConfig implements Observer {
 			SENT_REFRESH("Sent_Refresh","Sent_Refresh"),
 			SENT_EDIT("Sent_Edit","Sent_Edit"),
 			SENT_DELETE("Sent_Delete","Sent_Delete"),
+			SENT_APPEAL("Sent_Appeal", "Sent_Appeal"),
 //			APPROVING_RESULT("Approving_Result","Approving_Result"),
 //			APPROVING_MANAGE("Approving_Manage","Approving_Manage"),
 //			APPROVING_APPEAL("Approving_Appeal","Approving_Appeal"),

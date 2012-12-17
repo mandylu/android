@@ -103,18 +103,7 @@ public class SplashJob {
 
 		@Override
 		public void run() {
-			Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(parentActivity, "saveFirstStepCate");
-			
-			if (pair.second == null || pair.second.length() == 0){
-				pair = Util.loadDataAndTimestampFromAssets(parentActivity, "cateJson.txt");
-			}
-			
-			String json = pair.second;
-			if (json != null && json.length() > 0) {
-				AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
-				QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
-			}
-			
+			QuanleimuApplication.getApplication().loadCategorySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
 		}
 	}
@@ -144,22 +133,7 @@ public class SplashJob {
 		
 		@Override
 		public void run() {
-			CityList cityList = new CityList();
-			// 1. load from locate.
-			Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(parentActivity, "cityjson");
-			
-			// 2. load from asset
-			if (pair.second == null || pair.second.length() == 0)
-			{	
-				pair = Util.loadDataAndTimestampFromAssets(parentActivity, "cityjson.txt");
-			}
-			
-			if (pair.second == null || pair.second.length() == 0) {
-				cityList = null;
-			} else {
-				cityList = JsonUtil.parseCityListFromJson((pair.second));
-				QuanleimuApplication.getApplication().updateCityList(cityList);
-			}
+			QuanleimuApplication.getApplication().loadCitySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_CITY_LIST);
 		}
 	}
@@ -171,17 +145,7 @@ public class SplashJob {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() { 
-			// 获取搜索记录
-			String[] objRemark = (String[]) Util.loadDataFromLocate(parentActivity, "listRemark", String[].class);
-			QuanleimuApplication.getApplication().updateRemark(objRemark);
-
-			GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(parentActivity, "listMyStore", GoodsDetail[].class);
-			QuanleimuApplication.getApplication().updateFav(objStore);
-			
-			byte[] personalMark = Util.loadData(parentActivity, "personMark");//.loadDataFromLocate(parentActivity, "personMark");
-			if(personalMark != null){
-				QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
-			}
+			QuanleimuApplication.getApplication().loadPersonalSync();
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}
 

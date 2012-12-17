@@ -13,6 +13,7 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
@@ -831,9 +832,13 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.setMessage(tips)
 			.setNegativeButton(R.string.delete, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-					showSimpleProgress();
-					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
-                    trackerLogEvent(BxEvent.MYVIEWAD_DELETE);	
+					postDelete(true, new OnCancelListener() {
+						
+						@Override
+						public void onCancel(DialogInterface dialog) {
+							finishFragment();
+						}
+					});
 				}
 			})
 			.setPositiveButton(R.string.appeal, new DialogInterface.OnClickListener() {
@@ -1129,27 +1134,44 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			break;
 		}
 		case R.id.vad_btn_delete:{
-			new AlertDialog.Builder(getActivity()).setTitle("提醒")
-			.setMessage("是否确定删除")
-			.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					showSimpleProgress();
-					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
-                    trackerLogEvent(BxEvent.MYVIEWAD_DELETE);
-				}
-			})
-			.setNegativeButton(
-		     "取消", new DialogInterface.OnClickListener() {
-				@Override
-				public void onClick(DialogInterface dialog, int which) {
-					dialog.cancel();							
-				}
-			})
-		     .show();
+			postDelete(true, null);
 			break;
 		}
 		}
+	}
+	
+	private void postDelete(boolean cancelable, OnCancelListener listener)
+	{
+		Builder builder = new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		.setMessage("是否确定删除")
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				showSimpleProgress();
+				new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+                trackerLogEvent(BxEvent.MYVIEWAD_DELETE);
+			}
+		});
+		
+		if (cancelable)
+		{
+			builder = builder.setNegativeButton(
+					"取消", new DialogInterface.OnClickListener() {
+						@Override
+						public void onClick(DialogInterface dialog, int which) {
+							dialog.cancel();							
+						}
+					});
+		}
+		
+		AlertDialog dialog = builder.create();
+		dialog.show();
+		if (listener != null)
+		{
+			dialog.setOnCancelListener(listener);
+		}
+		
+		dialog.show();
 	}
 
 
