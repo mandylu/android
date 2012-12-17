@@ -285,8 +285,9 @@ public class ImageManager
 //            }
 //        }
 //	  imgCache.clear();
-		
-		imageLruCache.evictAll();
+		synchronized (this) {
+			imageLruCache.evictAll();
+		}
 	}
 	
 	public WeakReference<Bitmap> safeGetFromFileCacheOrAssets(String url)
@@ -313,15 +314,7 @@ public class ImageManager
 			}
 		}
 		
-		if(null != bitmap)
-		{
-			synchronized (this)
-			{
-				//imgCache.put(url, new SoftReference<Bitmap>(bitmap));
-				
-				imageLruCache.put(url, bitmap);
-			}			
-		}
+		saveBitmapToCache(url, bitmap);
 		
 		return bitmap;
 	}
@@ -331,27 +324,35 @@ public class ImageManager
 	{
 		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
 
-		if(null != bitmap && bitmap.get() != null)
+		saveBitmapToCache(url, bitmap);
+		
+		return bitmap;
+	}
+	
+	private void saveBitmapToCache(String url, WeakReference<Bitmap> bitmap)
+	{
+		try
 		{
-			synchronized (this)
+			if(null != bitmap && bitmap.get() != null)
 			{
-				imageLruCache.put(url, bitmap);
+				synchronized (this)
+				{
+					imageLruCache.put(url, bitmap);
+				}
 			}
 		}
-		return bitmap;
+		catch(Throwable t)
+		{
+			//Ignor runtime exception to make sure everything works.
+		}
 	}
 	
 	public WeakReference<Bitmap> safeGetFromNetwork(String url) throws HttpException
 	{
 		WeakReference<Bitmap> bitmap = new WeakReference<Bitmap>(downloadImg(url));
 		
-		if(null != bitmap && bitmap.get() != null)
-		{
-			synchronized (this)
-			{
-				imageLruCache.put(url, bitmap);
-			}
-		}
+		saveBitmapToCache(url, bitmap);
+		
 		return bitmap;
 	}
 	
