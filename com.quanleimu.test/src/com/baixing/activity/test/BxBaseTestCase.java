@@ -199,7 +199,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	//Test DATA
 	public static final String TEST_DATA_MOBILE = "13917067724";
-	public static final String TEST_DATA_PASSWORD = "whonwyhw";
+	public static final String TEST_DATA_PASSWORD = "mblogger1";
 	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
 	
@@ -847,6 +847,25 @@ public class BxBaseTestCase extends AthrunTestCase {
 				try {
 					TextViewElement tv = gv.getChildByIndex(i++, TextViewElement.class);
 					if (tv != null && tv.getText().length() > 0) return tv;
+				} catch (IllegalArgumentException e) {
+					
+				}
+			}
+			
+			i = 0;
+			while(i < c) {
+				try {
+					ViewGroupElement ggv = gv.getChildByIndex(i++, ViewGroupElement.class);
+					int ii = 0;
+					int cc = ggv.getChildCount();
+					while(ii < cc) {
+						try {
+							TextViewElement tv = ggv.getChildByIndex(ii++, TextViewElement.class);
+							if (tv != null && tv.getText().length() > 0) return tv;
+						} catch (IllegalArgumentException e) {
+							
+						}
+					}
 				} catch (IllegalArgumentException e) {
 					
 				}

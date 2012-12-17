@@ -132,11 +132,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 			TextViewElement tv = lv.getChildByIndex(secondIndex + 1, TextViewElement.class);
 			if (tv == null) {
 				ViewGroupElement gv = lv.getChildByIndex(secondIndex + 1, ViewGroupElement.class);
-				gv.doClick();
+				assertNotNull(gv);
 				tv = findTextView(gv);
+				gv.doClick();
+			} else {
+				tv.doClick();
 			}
-			//TextViewElement tv = findTextView(gv);
-			tv.doClick();
 			sleep(2);
 			if (tv != null) return tv;
 		}
@@ -351,6 +352,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		return null;
 	}
+	
+	public TextViewElement findMetaValueViewByName(String displayName, int index) throws Exception {
+		//TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_PARENT_ID, displayName);
+		//assertNotNull(dtv);
+		while(index < 20) {
+			try {
+				TextViewElement tv = findTextMetaByIndex(index++, displayName);
+				if (tv != null) {
+					return tv;
+				}
+			} catch (IndexOutOfBoundsException e) {
+				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
+				break;
+			}
+		}
+		return null;
+	}
+	
 	public void doClickPostPhoto() throws Exception {
 		ViewGroupElement df = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
 		assertNotNull(df);
@@ -697,6 +716,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 			goBack();
 			goBack();
 			return false;
+		} else {
+			TextViewElement tv = findElementByText("确定", 0, true);
+			if (tv != null) {
+				tv.doClick();
+				sleep(1);
+			}
 		}
 		return true;
 	}
@@ -1118,6 +1143,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 		} else {
 			goBack();
 			sleep(2);
+			ViewElement t = findElementByText("确定", 0, true);
+			if (t != null ) {
+				t.doClick();
+				sleep(1);
+			}
 			//列表上的 DELETE UPDATE 小按钮
 			int i = 0;
 			while(true) {
@@ -1133,12 +1163,20 @@ public class BaixingTestCase extends BxBaseTestCase {
 				if (i++ > 20) break;
 			}
 			sleep(1);
-			ViewElement delButton = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
+			ViewElement delButton = findElementByText("删除", 0, true);
 			if (delButton != null) {
 				if (findElementByText(MSGBOX_CANCEL_TEXT, 0, true) != null 
-						&& findElementByText(MSGBOX_OPT_TITLE, 0, true) != null) {
+						&& findElementByText("操作", 0, true) != null) {
 					delButton.doClick();
 					sleep(1);
+					if (findElementByText(MSGBOX_CANCEL_TEXT, 0, true) != null 
+							&& findElementByText("提醒", 0, true) != null) {
+						delButton = findElementByText("确定", 0, true);
+						if (delButton != null) {
+							delButton.doClick();
+							sleep(1);
+						}
+					}
 				}
 			}
 		}
