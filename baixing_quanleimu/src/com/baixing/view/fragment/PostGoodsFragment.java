@@ -2411,12 +2411,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 	}
-	
+	private void updateUserData(){
+		user = Util.getCurrentUser();
+		if(user != null){
+			this.mobile = Util.getCurrentUser().getPhone();
+			this.password = Util.getCurrentUser().getPassword();
+		}
+	}
 	@Override
 	public void onStart(){
 		super.onStart();
 		setInputContent();
-//		imgHeight = imgs[0].getMeasuredHeight()
+		updateUserData();//in case user data change(mobile number, password, etc);
 	}
 	
 	class Imagethread implements Runnable {
