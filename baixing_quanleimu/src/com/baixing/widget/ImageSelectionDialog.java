@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.content.DialogInterface;
+import android.content.DialogInterface.OnKeyListener;
 import android.content.Intent;
 import android.database.Cursor;
 import android.graphics.Bitmap;
@@ -114,26 +115,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     }
     
     public void clearResource(){
-//    	if(bitmap_url != null){
-//	        for(int i = 0; i < bitmap_url.size(); ++ i){
-//	        	QuanleimuApplication.getImageLoader().forceRecycle(bitmap_url.get(i));
-//	        }
-//	        bitmap_url.clear();
-//    	}
-//        if(thumbnail_url != null){
-//        	for(int i = 0; i < thumbnail_url.size(); ++ i){
-//        		QuanleimuApplication.getImageLoader().forceRecycle(thumbnail_url.get(i));
-//        	}
-//        	thumbnail_url.clear();
-//        }
-//        if(cachedBps != null){
-//        	for(int i = 0; i < cachedBps.size(); ++ i){
-//        		if(cachedBps.get(i) != null){// && cachedBps.get(i).get() != null){
-//        			cachedBps.get(i).recycle();
-//        		}
-//        	}
-//        	cachedBps.clear();
-//        }
+    	for(int i = 0; i < imgContainer.length; ++ i){
+    		imgContainer[i].reset();
+    	}
     }
     
     public void setMsgOutHandler(Handler handler){
@@ -484,7 +468,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 	private void pickupPhoto(final int tmpFileIndex){
 		final String[] names = {"拍照","相册"};
-		new AlertDialog.Builder(getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
+		Activity act = getActivity();
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
 		.setItems(names, new DialogInterface.OnClickListener(){
 			
 			@Override
@@ -527,7 +512,27 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				}		
 				pickDlgShown = false;
 			}
-		}).show();			
+		});//.show();
+		AlertDialog dlg = builder.create();
+		dlg.setOnKeyListener(new OnKeyListener(){
+
+			@Override
+			public boolean onKey(DialogInterface dialog, int keyCode,
+					KeyEvent event) {
+				// TODO Auto-generated method stub
+				if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+					dialog.dismiss();
+					pickDlgShown = false;
+					if(imgs.size() <= 1){
+						ImageSelectionDialog.this.dismiss();						
+					}
+					return true;
+				}
+				return false;
+			}
+			
+		});
+		dlg.show();
 	}
 
 	@Override
