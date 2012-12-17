@@ -1611,6 +1611,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
+				
+				params.remove("描述", STRING_DESCRIPTION);
+				params.remove("价格", "价格");
 			}
 		}
 	}
