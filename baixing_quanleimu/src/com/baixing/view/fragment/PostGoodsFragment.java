@@ -70,6 +70,7 @@ import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
@@ -298,7 +299,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			password = user.getPassword();
 		}
 		String appPhone = QuanleimuApplication.getApplication().getPhoneNumber();
-		if(appPhone == null || appPhone.length() == 0){
+		if(goodsDetail == null && (appPhone == null || appPhone.length() == 0)){
 			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
 		}
 	}
@@ -702,8 +703,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
 				text.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-				if(phone != null && phone.length() > 0){
-					text.setText(phone);
+				if(this.goodsDetail != null){
+					text.setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+				}else{	
+					if(phone != null && phone.length() > 0){
+						text.setText(phone);
+					}
 				}
 			}else if(fixedItemNames[i].equals(STRING_DETAIL_POSITION)){
 				v.findViewById(R.id.location).setOnClickListener(this);
@@ -878,7 +883,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 		String phone = params.getData(contactDisplayName);
-		if(phone != null && phone.length() > 0){
+		if(phone != null && phone.length() > 0 && goodsDetail == null){
 			QuanleimuApplication.getApplication().setPhoneNumber(phone);
 		}
 		String address = params.getData(addressDisplayName);
@@ -1595,6 +1600,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		
 		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
+			clearCategoryParameters();
 			if(clearImgs){
 				listUrl.clear();
 				this.bmpUrls.clear();
@@ -1605,8 +1611,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
-			}else{
-				clearCategoryParameters();
+				
+				params.remove("描述", STRING_DESCRIPTION);
+				params.remove("价格", "价格");
 			}
 		}
 	}
@@ -1818,8 +1825,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
-			if(phone != null && phone.length() > 0){
-				etContact.setText(phone);
+			if(this.goodsDetail != null){
+				etContact.setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+			}else{
+				if(phone != null && phone.length() > 0){
+					etContact.setText(phone);
+				}
 			}
 		}
 		else if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
@@ -2381,10 +2392,18 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						value = params.getUiData(bean.getName());
 					}
 					if(bean.getName().equals("contact")){
-						String phone = QuanleimuApplication.getApplication().getPhoneNumber();
-						if(phone != null && phone.length() > 0){
-							((TextView)control).setText(phone);
-							continue;
+						if(this.goodsDetail != null){
+							((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+						}else{
+							String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+							if(this.goodsDetail != null){
+								((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+							}else{
+								if(phone != null && phone.length() > 0){
+									((TextView)control).setText(phone);
+									continue;
+								}
+							}
 						}
 					}
 					((TextView)control).setText(value);

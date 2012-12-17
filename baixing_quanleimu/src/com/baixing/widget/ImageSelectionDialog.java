@@ -836,7 +836,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 					activity.runOnUiThread(new Runnable(){
 						public void run(){
-							Toast.makeText(activity, "上传图片成功", 0).show();
+							if(getDialog() != null && getDialog().isShowing()){
+								Toast.makeText(activity, "上传图片成功", 0).show();
+							}
 						}
 					});	     
 					return;
