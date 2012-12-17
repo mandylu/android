@@ -213,14 +213,13 @@ public class FeedbackFragment extends BaseFragment {
 	public void handleRightAction() {
 		content = etOpinion.getText().toString().trim();
 		String contact = ((TextView)getView().findViewById(R.id.et_contact)).getText().toString().trim();
-		if(contact != null && !contact.equals("")){
-			content += "    联系方式: " + contact;
-		}
 		if (content.equals("")) {
 			Toast.makeText(getActivity(), "内容不能为空",
 					Toast.LENGTH_SHORT).show();
 		} else {
-			
+			if(contact != null && !contact.equals("")){
+				content += "    联系方式: " + contact;
+			}
 			showSimpleProgress();
 			new Thread(new FeedbackThread()).start();
 		}

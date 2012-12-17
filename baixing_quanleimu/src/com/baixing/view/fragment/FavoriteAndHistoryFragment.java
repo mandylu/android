@@ -68,6 +68,21 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
     }
+    
+    private GoodsListLoader createGoodsListLoader()
+    {
+    	List<GoodsDetail> data = new ArrayList<GoodsDetail>();
+    	if (tempGoodsList != null && tempGoodsList.getData() != null)
+    	{
+    		data.addAll(tempGoodsList.getData());
+    	}
+    	GoodsList list = new GoodsList(data);
+    	
+    	GoodsListLoader loader = new GoodsListLoader(null, null, null, list);
+    	loader.setHasMore(false);
+    	
+    	return loader;
+    }
 
     @Override
 	public void onDestroy() {
@@ -92,7 +107,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 GoodDetailFragment f = new GoodDetailFragment();
                 f.setListHolder(FavoriteAndHistoryFragment.this);
                 Bundle bundle = createArguments(null, null);
-                bundle.putSerializable("loader", glLoader);
+                bundle.putSerializable("loader", createGoodsListLoader());
                 bundle.putInt("index", position);
 
                 buttonStatus = -1; //Reset button status when go to other screen.
