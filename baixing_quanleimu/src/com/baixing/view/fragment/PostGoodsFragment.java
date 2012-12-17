@@ -1557,6 +1557,33 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		return match;
 	}
+	
+	private boolean inArray(String item, String [] array){
+		for(int i = 0;i<array.length;i++){
+			if(item.equals(array[i])){
+				return true;
+			}
+		}
+		return false;
+	}
+	
+	private void clearCategoryParameters(){//keep fixed(common) parameters there
+		LinkedHashMap<String, String> uiData = params.getUiData();
+		LinkedHashMap<String, String> data = params.getData();
+		Object [] uikeys = uiData.keySet().toArray();
+		Object [] datakeys = data.keySet().toArray();
+		
+	    	for(int i = 0; i < uikeys.length; i++)
+	    	{
+	    		String uikey = uikeys[i].toString();
+	    		String datakey = datakeys[i].toString();
+	    		Log.d("clearCategoryParameters", "uikey = " + uikey + " ; datakey = " + datakey);
+	    		if(!inArray(uikey, this.fixedItemNames) ){
+	    			params.remove(datakey,uikey);
+	    		}
+	    	}
+	}
+	
 	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
 			View v = layout_txt.findViewById(R.id.img_description);
@@ -1578,7 +1605,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 			}else{
-				params.clear();
+				clearCategoryParameters();
 			}
 		}
 	}
