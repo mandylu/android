@@ -560,8 +560,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 		sleep(1);
 	}
 	
-	public ViewElement clickListViewByIndex(int index) throws Exception {
-		AbsListViewElement lv = findListView();
+	public ViewElement clickListViewByIndex(AbsListViewElement lv, int index) throws Exception {
+		if (lv == null) lv = findListView();
 		if (lv != null) {
 			try {
 				ViewElement v = lv.getChildByIndex(index);

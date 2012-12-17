@@ -57,7 +57,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		scrollAdListViewToFooter(lv);
 		sleep(1);
 		//页面展开后，点击一个信息进入
-		ViewGroupElement av = openAdByIndex(random(30));
+		ViewGroupElement av = openAdByIndex(lv, random(30));
 		assertNotNull(av);
 		sleep(1);
 		//从viewad页面返回至listing页面

@@ -759,15 +759,19 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public ViewGroupElement openAdByItemIndex(int index) throws Exception {
-		ViewElement v = clickListViewByIndex(index);
+		return openAdByItemIndex(null, index);
+	}
+	
+	public ViewGroupElement openAdByItemIndex(AbsListViewElement lv, int index) throws Exception {
+		ViewElement v = clickListViewByIndex(lv, index);
 		if (v != null) {
 			return castObject(v, ViewGroupElement.class);
 		}
 		return null;
 	}
 	
-	public ViewGroupElement openAdByIndex(int index) throws Exception {
-		return openAdByItemIndex(index);
+	public ViewGroupElement openAdByIndex(AbsListViewElement lv, int index) throws Exception {
+		return openAdByItemIndex(lv, index);
 	}
 	
 	/*public ViewGroupElement openAdByIndex(int index, String viewListId, AbsListViewElement avl) throws Exception {
@@ -839,7 +843,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(firstCatIndex, secondCatIndex);
 		sleep(1);
-		assertNotNull(openAdByIndex(index));
+		assertNotNull(openAdByIndex(null, index));
 		BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 				BXViewGroupElement.class);
 		return detailView;

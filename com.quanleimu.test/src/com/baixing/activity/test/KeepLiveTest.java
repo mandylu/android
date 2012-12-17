@@ -384,7 +384,7 @@ public class KeepLiveTest extends BaixingTestCase {
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = random((lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;
 			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
-			ViewGroupElement vg = openAdByIndex(rndIndex);
+			ViewGroupElement vg = openAdByIndex(avl, rndIndex);
 			/*if (vg == null && findElementById(AD_VIEWLIST_ID, AbsListViewElement.class) != null) {
 				vg = openAdByIndex(1, null, avl);
 			}*/
@@ -392,7 +392,7 @@ public class KeepLiveTest extends BaixingTestCase {
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 					BXViewGroupElement.class);
 			if (detailView == null) {
-				assertNotNull(openAdByIndex(1));
+				assertNotNull(openAdByIndex(avl, 1));
 				detailView = findElementById(AD_DETAILVIEW_ID, BXViewGroupElement.class);
 			}
 			assertNotNull(detailView);
