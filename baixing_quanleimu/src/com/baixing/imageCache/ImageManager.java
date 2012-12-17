@@ -22,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.util.Pair;
 
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.DiskLruCache;
@@ -36,8 +37,8 @@ public class ImageManager
 
 	//private Map<String, SoftReference<Bitmap>> imgCache ;
 	
-	private List<WeakReference<Bitmap> > trashList = new ArrayList<WeakReference<Bitmap> >();
-	private LruCache<String, WeakReference<Bitmap> > imageLruCache;
+	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
+	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
 	private DiskLruCache imageDiskLruCache = null;
 
 	
@@ -71,17 +72,19 @@ public class ImageManager
 	    // Use 1/8th of the available memory for this memory cache.
 	    final int cacheSize = 1024 * 1024 * memClass / 8;    
 	    
-	    imageLruCache = new LruCache<String, WeakReference<Bitmap> >(cacheSize){
+	    
+	    imageLruCache = new LruCache<String, Pair<Integer, WeakReference<Bitmap>>>(cacheSize){
 	        @Override
-	        protected int sizeOf(String key, WeakReference<Bitmap> bitmap) {
+	        protected int sizeOf(String key, Pair<Integer, WeakReference<Bitmap>> value) {
 	            // The cache size will be measured in bytes rather than number of items.
-	        	if(bitmap.get() == null) return 0;
-	            int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
-	            return bytes;
+	        	if(value == null) return 0;
+	        	return value.first;
+//	            int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
+//	            return bytes;
 	        }
 	        
 	        @Override
-	        protected void entryRemoved(boolean evicted, String key, WeakReference<Bitmap> oldValue, WeakReference<Bitmap> newValue){
+	        protected void entryRemoved(boolean evicted, String key, Pair<Integer, WeakReference<Bitmap>> oldValue, Pair<Integer, WeakReference<Bitmap>> newValue){
 //	        	if(!evicted)
 //	        		oldValue.recycle();
 	        	
@@ -186,8 +189,14 @@ public class ImageManager
 //			
 //		}
 		
+		
+		
 		synchronized (this){
-			bitmap = imageLruCache.get(url);			
+			Pair<Integer, WeakReference<Bitmap>> p = imageLruCache.get(url);
+			if (p != null)
+			{
+				bitmap = p.second;			
+			}
 		}
 		return bitmap;
 	}
@@ -203,7 +212,11 @@ public class ImageManager
 		if(url == null || url.equals(""))return;
 		WeakReference<Bitmap> bitmap = null;
 		synchronized(this){
-			bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+			Pair<Integer, WeakReference<Bitmap>> p = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+			if (p != null)
+			{
+				bitmap = p.second;
+			}
 		}
 		if(bitmap != null){
 			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", recycle right now ? " + rightNow);
@@ -337,7 +350,8 @@ public class ImageManager
 			{
 				synchronized (this)
 				{
-					imageLruCache.put(url, bitmap);
+					int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
+					imageLruCache.put(url, new Pair(bytes, bitmap));
 				}
 			}
 		}
