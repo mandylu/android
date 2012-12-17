@@ -1,6 +1,7 @@
 package com.baixing.widget;
 
 import java.io.File;
+import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -21,41 +22,32 @@ import android.os.Handler;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.support.v4.app.DialogFragment;
-import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentActivity;
 import android.support.v4.app.FragmentManager;
-import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnKeyListener;
-import android.view.ViewGroup;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
-import com.baixing.view.fragment.PostGoodsFragment;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener{
-	public static final String KEY_BITMAP_URL = "bitmapurl";
-	public static final String KEY_CACHED_BPS = "cachedbps";
+//	public static final String KEY_BITMAP_URL = "bitmapurl";
+//	public static final String KEY_CACHED_BPS = "cachedbps";
 	private static final String KEY_CURRENT_IMGVIEW = "currentImageView";
-	private static final String KEY_OUT_HANDLER = "outHandler";
+//	private static final String KEY_OUT_HANDLER = "outHandler";
 	public static final String KEY_THUMBNAIL_URL = "thumbnailurl";
 	private static final String KEY_BUNDLE = "key_bundle";
+	public static final String KEY_IMG_CONTAINER = "image_container";
 	public static final String KEY_HANDLER = "handler";
 	private static final int NONE = 0;
 	private static final int MSG_START_UPLOAD = 5;
@@ -66,34 +58,52 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 	private int uploadCount = 0;
     private int currentImgView = -1;
-    private ArrayList<String> bitmap_url;
-    private ArrayList<String> thumbnail_url;
+//    private ArrayList<String> bitmap_url;
+//    private ArrayList<String> thumbnail_url;
     private int imgHeight = 0;
     private List<ImageView> imgs;
 //    private ArrayList<WeakReference<Bitmap> > cachedBps;
-    private ArrayList<Bitmap> cachedBps;
+//    private ArrayList<Bitmap> cachedBps;
     private Bundle bundle;
     private Handler outHandler;
     private boolean pickDlgShown = false;
 
-	enum ImageStatus{
+	public static enum ImageStatus{
 		ImageStatus_Normal,
 		ImageStatus_Unset,
-		ImageStatus_Failed
+		ImageStatus_Failed,
+		ImageStatus_Uploading
 	}
 	
-	public static class PhotoTaken extends Object{
-		public int requestCode;
-		public int resultCode;
-		public Intent data; 
+	static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
+	
+	public static class ImageContainer implements Serializable{
+		/**
+		 * 
+		 */
+		private static final long serialVersionUID = 8249910731524630367L;
+		public ImageStatus status = ImageStatus.ImageStatus_Unset;
+		public String bitmapUrl = "";
+		public String thumbnailPath = "";
+		public String bitmapPath = "";
+		public void reset(){
+			status = ImageStatus.ImageStatus_Unset;
+			bitmapUrl = "";
+			thumbnailPath = "";
+			bitmapPath = "";			
+		}
+		public void set(ImageContainer rhs){
+			status = rhs.status;
+			bitmapUrl = rhs.bitmapUrl;
+			bitmapPath = rhs.bitmapPath;
+			thumbnailPath = rhs.thumbnailPath;
+		}
 	};
+	    
+	private ImageContainer[] imgContainer = 
+			new ImageContainer[]{new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer()}; 
 	
-//	private PhotoTaken photoTaken = null;
 	
-//	public void setPhotoTaken(PhotoTaken taken){
-//		photoTaken = taken;
-//	}
-    
     @SuppressWarnings("unchecked")
 	public ImageSelectionDialog(Bundle bundle){
     	this.setMsgOutBundle(bundle); 	
@@ -104,26 +114,26 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     }
     
     public void clearResource(){
-    	if(bitmap_url != null){
-	        for(int i = 0; i < bitmap_url.size(); ++ i){
-	        	QuanleimuApplication.getImageLoader().forceRecycle(bitmap_url.get(i));
-	        }
-	        bitmap_url.clear();
-    	}
-        if(thumbnail_url != null){
-        	for(int i = 0; i < thumbnail_url.size(); ++ i){
-        		QuanleimuApplication.getImageLoader().forceRecycle(thumbnail_url.get(i));
-        	}
-        	thumbnail_url.clear();
-        }
-        if(cachedBps != null){
-        	for(int i = 0; i < cachedBps.size(); ++ i){
-        		if(cachedBps.get(i) != null){// && cachedBps.get(i).get() != null){
-        			cachedBps.get(i).recycle();
-        		}
-        	}
-        	cachedBps.clear();
-        }
+//    	if(bitmap_url != null){
+//	        for(int i = 0; i < bitmap_url.size(); ++ i){
+//	        	QuanleimuApplication.getImageLoader().forceRecycle(bitmap_url.get(i));
+//	        }
+//	        bitmap_url.clear();
+//    	}
+//        if(thumbnail_url != null){
+//        	for(int i = 0; i < thumbnail_url.size(); ++ i){
+//        		QuanleimuApplication.getImageLoader().forceRecycle(thumbnail_url.get(i));
+//        	}
+//        	thumbnail_url.clear();
+//        }
+//        if(cachedBps != null){
+//        	for(int i = 0; i < cachedBps.size(); ++ i){
+//        		if(cachedBps.get(i) != null){// && cachedBps.get(i).get() != null){
+//        			cachedBps.get(i).recycle();
+//        		}
+//        	}
+//        	cachedBps.clear();
+//        }
     }
     
     public void setMsgOutHandler(Handler handler){
@@ -133,34 +143,14 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     public void setMsgOutBundle(Bundle bundle){
     	this.bundle = bundle;
     	if(bundle != null){
-    		if(bundle.containsKey(KEY_BITMAP_URL)){
-    			bitmap_url = (ArrayList<String>)bundle.getSerializable(KEY_BITMAP_URL);
-    		}
-    		if(bitmap_url != null && bitmap_url.size() > imgIds.length){
-    			List<String> list = bitmap_url.subList(0, imgIds.length);
-    			bitmap_url = new ArrayList<String>(list);
-    		}
-    		if(bundle.containsKey(KEY_CACHED_BPS)){
-//    			cachedBps = Util.wrapBitmapWithWeakRef((ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS));
-    			cachedBps = (ArrayList<Bitmap>)bundle.getSerializable(KEY_CACHED_BPS);
-    		}
-    		if(cachedBps != null && cachedBps.size() > imgIds.length){
-    			List<Bitmap> list = cachedBps.subList(0, imgIds.length);
-    			cachedBps = new ArrayList<Bitmap>(list);
-    		}
-    		if(cachedBps == null){
-    			if(bundle.containsKey(KEY_THUMBNAIL_URL)){
-    				thumbnail_url = (ArrayList<String>)bundle.getSerializable(KEY_THUMBNAIL_URL);
-    			}
-    			if(thumbnail_url != null && thumbnail_url.size() > imgIds.length){
-    				List<String> list = thumbnail_url.subList(0, imgIds.length);
-    				thumbnail_url = new ArrayList<String>(list);
+    		Object[] container = (Object[])bundle.getSerializable(KEY_IMG_CONTAINER);
+    		if(container != null){
+    			for(int i = 0; i < imgContainer.length && i < container.length; ++ i){
+    				imgContainer[i].set((ImageContainer)container[i]);
     			}
     		}
     	}       	
     }
-    
-    static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
     
     private void adjustImageCountAfterNew(View v){
     	if(this.currentImgView >= imgIds.length - 1) return;
@@ -174,24 +164,40 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     	adjustImageLines();
     }
     
+    private void removeImageContainer(int index){
+    	if(index < 0 || index >= imgContainer.length) return;
+    	for(int i = index; i < imgContainer.length - 1; ++ i){
+    		imgContainer[i].set(imgContainer[i + 1]);
+    	}
+    	imgContainer[imgContainer.length - 1].reset();
+    }
+    
+    static public Bitmap getThumbnailWithPath(String path){
+    	if(path == null || path.length() <= 0) return null;
+    	WeakReference<Bitmap> thumbnail = QuanleimuApplication.getImageLoader().getWithImmediateIO(path);
+    	if(thumbnail == null) return null;
+    	return thumbnail.get();
+    }
+    
     private void adjustImageCountAfterDel(View v){
-		bitmap_url.remove(currentImgView);
-		cachedBps.remove(currentImgView);
-    	if(currentImgView == imgIds.length - 1){
-    		((ImageView)imgs.get(currentImgView)).setImageResource(R.drawable.btn_add_picture);
-    	}else{
-    		for(int i = currentImgView; i < bitmap_url.size(); ++ i){
-    			imgs.get(i).setImageBitmap(cachedBps.get(i));
+    	removeImageContainer(currentImgView);
+//		bitmap_url.remove(currentImgView);
+//		cachedBps.remove(currentImgView);
+    	int i = currentImgView;
+    	for(; i < imgs.size(); ++ i){
+    		if(imgContainer[i].status == ImageStatus.ImageStatus_Unset){
+    			break;
     		}
-    		if(imgs.size() < imgIds.length || bitmap_url.size() + 1 < imgIds.length){
-    			imgs.remove(imgs.size() - 1);
+    		if(imgContainer[i].thumbnailPath != null && imgContainer[i].thumbnailPath.length() > 0){
+    			imgs.get(i).setImageBitmap(getThumbnailWithPath(imgContainer[i].thumbnailPath));
     		}
-    		if(imgs.size() > 0){
-    			imgs.get(imgs.size() - 1).setImageResource(R.drawable.btn_add_picture);
-    		}
-    		for(int i = imgs.size(); i < imgIds.length; ++ i){
-    			v.findViewById(imgIds[i]).setVisibility(View.INVISIBLE);
-    		}
+    	}
+    	imgs.get(i).setImageResource(R.drawable.btn_add_picture);
+    	for(int j = i + 1; j < imgs.size(); ++ j){
+    		imgs.get(j).setVisibility(View.INVISIBLE);
+    	}
+    	if(i + 1 < imgs.size()){
+    		imgs = imgs.subList(0, i + 1);
     	}
 		imgs.get(0).setVisibility(View.VISIBLE);
 		imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
@@ -206,13 +212,15 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			if (imgs != null){
 				imgs.get(currentImgView).setFocusable(true);
 			}
+//			imgContainer[currentImgView].status = ImageStatus.ImageStatus_Uploading;
+//			imgContainer[currentImgView].bitmapPath = path;
 			new Thread(new UpLoadThread(path, currentImgView)).start();
 		}
 	}
     
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-
+		Log.d("index", "bitmap, onActivityResult");
 		pickDlgShown = false;
 		
 		if (resultCode == NONE) {
@@ -269,25 +277,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onResume();
 	}
 	
-//	private void popUpDlgFragment(){
-//		FragmentManager fm = getActivity().getSupportFragmentManager();
-//		int count = fm.getBackStackEntryCount();
-//		if(count > 0){
-//			FragmentManager.BackStackEntry backEntry = fm.getBackStackEntryAt(count - 1);
-//		    String str = backEntry.getName();
-//		    if(str.contains(ImageSelectionDialog.class.getName())){
-//				fm.popBackStackImmediate();	
-//		    }
-//		}
-//	}
-	
 	@Override
 	public void onDismiss(DialogInterface dialog){
 		if(outHandler != null){
 			if(this.bundle != null){
-				bundle.putSerializable(KEY_BITMAP_URL, bitmap_url);
-//				bundle.putSerializable(KEY_CACHED_BPS, Util.discardWrappedWeakRef(cachedBps));
-				bundle.putSerializable(KEY_CACHED_BPS, (cachedBps));
+//				bundle.putSerializable(KEY_BITMAP_URL, bitmap_url);
+//				bundle.putSerializable(KEY_CACHED_BPS, (cachedBps));
+				bundle.putSerializable(KEY_IMG_CONTAINER, imgContainer);
 			}
 			outHandler.sendEmptyMessage(MSG_IMG_SEL_DISMISSED);
 		}
@@ -300,10 +296,18 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onCreate(savedInstanceState);
 		
 		if(savedInstanceState != null){
-    		bitmap_url = (ArrayList<String>)savedInstanceState.getSerializable(KEY_BITMAP_URL);
-    		cachedBps = (ArrayList<Bitmap>)savedInstanceState.getSerializable(KEY_CACHED_BPS);
-    		currentImgView = savedInstanceState.getInt(KEY_CURRENT_IMGVIEW);
+//    		bitmap_url = (ArrayList<String>)savedInstanceState.getSerializable(KEY_BITMAP_URL);
+//    		cachedBps = (ArrayList<Bitmap>)savedInstanceState.getSerializable(KEY_CACHED_BPS);
+			currentImgView = savedInstanceState.getInt(KEY_CURRENT_IMGVIEW);
+    		Log.d("index", "bitmap:   onCreate: " + String.valueOf(currentImgView));
     		bundle = savedInstanceState.getBundle(KEY_BUNDLE);
+    		Object[] container = (Object[])savedInstanceState.getSerializable(KEY_IMG_CONTAINER);
+    		if(container != null){
+    			for(int i = 0; i < imgContainer.length && i < container.length; ++ i){
+    				imgContainer[i].set((ImageContainer)container[i]);
+    			}
+    		}
+    		 
 		}
 		
 	}
@@ -324,10 +328,12 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public void onSaveInstanceState(Bundle outState){
 		super.onSaveInstanceState(outState);
 		if(outState != null){
-			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
-			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
+//			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
+//			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
 			outState.putInt(KEY_CURRENT_IMGVIEW, currentImgView);
+			Log.d("index", "bitmap:   onsave: " + String.valueOf(currentImgView));
 			outState.putBundle(KEY_BUNDLE, bundle);
+			outState.putSerializable(KEY_IMG_CONTAINER, imgContainer);
 		}
 	}
 
@@ -365,21 +371,49 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		}
 	}
 	
-    @Override
-    public Dialog onCreateDialog(Bundle savedInstanceState) {
-    	if(bitmap_url == null){
-    		bitmap_url = new ArrayList<String>();
-    	}
-   		imgs = new ArrayList<ImageView>(imgIds.length);
-		if(cachedBps == null){
-			cachedBps = new ArrayList<Bitmap>(imgIds.length);
-			if(thumbnail_url != null && thumbnail_url.size() > 0){
-				for(int i = 0; i < thumbnail_url.size(); ++ i){
-					setListContent(cachedBps, null, i);
+	private void setImageViews(View parent, boolean reUploadBitmap){
+		Log.d("index", "bitmap, setImageViews");
+		imgs = new ArrayList<ImageView>();
+		if(imgContainer.length == 0){
+	        ImageView iv = (ImageView)parent.findViewById(imgIds[0]);
+	    	iv.setVisibility(View.VISIBLE);
+	    	imgs.add(iv);
+		}else{
+			for(int i = 0; i < imgContainer.length; ++ i){
+				if(imgContainer[i].status == ImageStatus.ImageStatus_Unset){
+					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
+					iv.setVisibility(View.VISIBLE);
+					imgs.add(iv);
+					break;
+				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Normal){
+					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
+					iv.setVisibility(View.VISIBLE);
+					if(imgContainer[i].thumbnailPath != null){
+						if(imgContainer[i].thumbnailPath.contains("http://")){
+							SimpleImageLoader.showImg(iv, imgContainer[i].thumbnailPath, null, getActivity());
+						}else{
+							Bitmap bmp = getThumbnailWithPath(imgContainer[i].thumbnailPath);
+							iv.setImageBitmap(bmp);
+						}
+					}
+					imgs.add(iv);
+				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Uploading){
+					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
+					iv.setImageResource(R.drawable.icon_post_loading);
+					iv.setVisibility(View.VISIBLE);
+					if(reUploadBitmap && imgContainer[i].bitmapPath != null && imgContainer[i].bitmapPath.length() > 0){
+						new Thread(new UpLoadThread(imgContainer[i].bitmapPath, i)).start();
+					}
+					imgs.add(iv);
 				}
 			}
 		}
-		
+	}
+	
+    @Override
+    public Dialog onCreateDialog(Bundle savedInstanceState) {
+//   		imgs = new ArrayList<ImageView>(imgIds.length);
+		Log.d("index", "bitmap, onCreateDialog");
 		uploadCount = 0;
         
         Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
@@ -390,28 +424,14 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	v.findViewById(imgIds[i]).setOnClickListener(this);
         }
         v.findViewById(R.id.btn_finish_sel).setOnClickListener(this);
-        int realSize = bitmap_url.size() > imgIds.length ? imgIds.length : bitmap_url.size();
-        for(int i = 0; i < realSize; ++ i){
-        	ImageView iv = (ImageView)v.findViewById(imgIds[i]);
-        	if(cachedBps.size() > i && cachedBps.get(i) != null){
-        		iv.setImageBitmap(cachedBps.get(i));
-        	}else{
-        		iv.setImageResource(R.drawable.icon_post_loading);
-        	}
-        	iv.setVisibility(View.VISIBLE);
-        	imgs.add(iv);
-        }
-        if(realSize < imgIds.length && realSize > 0){
-        	ImageView iv = (ImageView)v.findViewById(imgIds[realSize]);
-        	iv.setVisibility(View.VISIBLE);
-        	imgs.add(iv);
+        Log.d("index", "index, before setimageview, container count is:   " + imgContainer.length);
+        
+        for(int i = 0; i < imgContainer.length; ++ i){
+        	Log.d("bitmap", "bitmap container content:  " + imgContainer[i].status + "index:  " + i);
         }
         
-        if(realSize == 0){
-        	ImageView iv = (ImageView)v.findViewById(imgIds[0]);
-        	iv.setVisibility(View.VISIBLE);
-        	imgs.add(iv);
-        }
+        setImageViews(v, true);
+        Log.d("index", "index, after setimageview, count is:   " + imgs.size());
         
         adjustImageLines();
         
@@ -438,11 +458,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			
 		});
         v.findViewById(R.id.post_big).setVisibility(View.GONE);
-        if(thumbnail_url != null && thumbnail_url.size() > 0){
-        	(new DownloadThumbnailsThread(thumbnail_url)).start();
-        }
         
-        if(bitmap_url.size() == 0 && savedInstanceState == null){
+        if(imgContainer[0].status == ImageStatus.ImageStatus_Unset && savedInstanceState == null){
         	imgs.get(0).post(new Runnable(){
         		@Override
         		public void run(){
@@ -453,16 +470,16 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.INVISIBLE);
         	imgs.get(0).setVisibility(View.INVISIBLE);
         }
-//        	else if(photoTaken != null){
-//        	this.onActivityResult(photoTaken.requestCode, photoTaken.resultCode, photoTaken.data);
-//        }
+
         return dialog;
     }
         
 	private ImageStatus getCurrentImageStatus(int index){
-		if(bitmap_url.size() <= index || bitmap_url.get(index) == null)return ImageStatus.ImageStatus_Unset;
-		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
-		return ImageStatus.ImageStatus_Failed;
+		if(index < 0 || index >= imgContainer.length) return ImageStatus.ImageStatus_Unset;
+//		if(imgContainer.length <= index || imgContainer.get(index) == null)return ImageStatus.ImageStatus_Unset;
+		return imgContainer[index].status;
+//		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
+//		return ImageStatus.ImageStatus_Failed;
 	}
 	
 	private void pickupPhoto(final int tmpFileIndex){
@@ -534,16 +551,16 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							if(0 == which){
-								new Thread(new UpLoadThread(bitmap_url.get(currentImgView), currentImgView)).start();
+								new Thread(new UpLoadThread(imgContainer[currentImgView].bitmapPath, currentImgView)).start();
 							}
 							else{
-								if (cachedBps.size() > currentImgView && cachedBps.get(currentImgView) != null){
-									if(cachedBps.get(currentImgView) != null && cachedBps.get(currentImgView) != null){
-										cachedBps.get(currentImgView).recycle();
-									}
-									cachedBps.set(currentImgView, null);
-								}
-								setListContent(bitmap_url, null, currentImgView);
+//								if (cachedBps.size() > currentImgView && cachedBps.get(currentImgView) != null){
+//									if(cachedBps.get(currentImgView) != null && cachedBps.get(currentImgView) != null){
+//										cachedBps.get(currentImgView).recycle();
+//									}
+//									cachedBps.set(currentImgView, null);
+//								}
+//								setListContent(bitmap_url, null, currentImgView);
 //								bitmap_url.set(currentImgView, null);
 								imgs.get(currentImgView).setImageResource(R.drawable.btn_add_picture);
 //								showDialog();
@@ -567,7 +584,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
 					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageResource(R.drawable.loading_210_black);
 					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
-							bitmap_url.get(currentImgView),
+//							bitmap_url.get(currentImgView),
+							imgContainer[currentImgView].bitmapUrl,
 							"",
 							getActivity());
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setOnClickListener(new OnClickListener(){
@@ -615,6 +633,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 	
 	private String getRealPathFromURI(Uri contentUri) {
+		if(getActivity() == null) return null;
 		String[] proj = { MediaStore.Images.Media.DATA };
 		Cursor cursor = getActivity().managedQuery(contentUri, proj, null, null, null);
 
@@ -666,10 +685,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				break;			
 			}
 			case MSG_SUCCEED_UPLOAD:{
-				Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got");
+				
 				Integer index = (Integer) msg.obj;
+				Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got:  " + String.valueOf(index));
 				if (imgs != null){
-					imgs.get(index).setImageBitmap(cachedBps.get(index));
+//					imgs.get(index).setImageBitmap(cachedBps.get(index));
+					Bitmap bmp = getThumbnailWithPath(imgContainer[index].thumbnailPath);
+					imgs.get(index).setImageBitmap(bmp);
 					imgs.get(index).setClickable(true);
 					imgs.get(index).invalidate();
 				}
@@ -744,7 +766,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				handler.sendMessage(msg);
 			}
 			
-			synchronized(ImageSelectionDialog.this){
+//			synchronized(ImageSelectionDialog.this){
 			++ uploadCount;
 			if(bmpPath == null || bmpPath.equals("")) return;
 
@@ -778,33 +800,35 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}			
 									
 			if(currentBmp != null){
-				String result = Communication.uploadPicture(currentBmp);	
+				imgContainer[currentIndex].bitmapPath = path;
+				ImageSelectionDialog p = ImageSelectionDialog.this;
+				Log.d("index", "bitmap:   upload started: " + String.valueOf(currentIndex));
+				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Uploading;
+				String result = Communication.uploadPicture(currentBmp);
+				Log.d("index", "bitmap:   upload finished: " + String.valueOf(currentIndex));
+				ImageSelectionDialog p2 = ImageSelectionDialog.this;
+				imgContainer[currentIndex].bitmapUrl = result;
+				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Normal; 
 				-- uploadCount;
-				if(imgs != null && imgs.get(currentIndex) != null && imgs.get(currentIndex).getHeight() != 0){
-					imgHeight = imgs.get(currentIndex).getHeight();
+				if(imgs != null && imgs.size() > 0 && imgs.get(0) != null && imgs.get(0).getHeight() != 0){
+					imgHeight = imgs.get(0).getHeight();
 				}
 				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
-	
-				setListContent(cachedBps, thumbnailBmp, currentIndex);
-				
-		        if(cachedBps.size() < imgs.size()){
-		        	int count = 0;
-		        	if(imgs.size() < imgIds.length){
-		        		count = imgs.size() - 1 - cachedBps.size();
-		        	}else{
-		        		count = imgs.size() - cachedBps.size();
-		        	}
-		        	for(int i = 0; i < count; ++ i){
-		        		cachedBps.add(null);
-		        	}
-		        }
+				if(thumbnailBmp != null){
+					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
+				}
 				currentBmp.recycle();
 				currentBmp = null;
 	
 				if (result != null) {
-					setListContent(bitmap_url, result, currentIndex);						
+//					setListContent(bitmap_url, result, currentIndex);						
 	
-					if(handler == null) return;
+					if(handler == null) {
+						Log.d("bitmap", "bitmap, handler is nullllll");
+						return;
+					}
+					Log.d("index", "bitmap, handler is NOTTTT nullllll  " + handler.toString());
 					Message msg = Message.obtain();
 					msg.what = MSG_SUCCEED_UPLOAD;
 					msg.obj = currentIndex;
@@ -820,7 +844,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}else{
 				Log.d("bitmap", "bitmap is nullllllll");
 				-- uploadCount;
-				setListContent(bitmap_url, bmpPath, currentIndex);
+				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
+//				setListContent(bitmap_url, bmpPath, currentIndex);
 			}
 			
 			if(handler == null) return;
@@ -835,7 +860,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 //					Toast.makeText(activity, "上传图片失败", 0).show();
 //				}
 //			});
-			}
+//			}
 		}
 	}
 	
@@ -848,21 +873,21 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		public void run(){
 			if(urls.size() == 0) return;
 			synchronized(ImageSelectionDialog.this){
-				int size = cachedBps.size() < urls.size() ? cachedBps.size() : urls.size();
-				for(int i = 0; i < size; ++ i){
-					if(cachedBps.get(i) == null){
-						Bitmap bmp = Util.getImage(urls.get(i));
-						setListContent(cachedBps, bmp, i);
-					}
-				}
-				getActivity().runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						for(int i = 0; i < cachedBps.size(); ++ i){
-							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i));
-						}
-					}
-				});
+//				int size = cachedBps.size() < urls.size() ? cachedBps.size() : urls.size();
+//				for(int i = 0; i < size; ++ i){
+//					if(cachedBps.get(i) == null){
+//						Bitmap bmp = Util.getImage(urls.get(i));
+//						setListContent(cachedBps, bmp, i);
+//					}
+//				}
+//				getActivity().runOnUiThread(new Runnable(){
+//					@Override
+//					public void run(){
+//						for(int i = 0; i < cachedBps.size(); ++ i){
+//							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i));
+//						}
+//					}
+//				});
 			}
 		}
 	}

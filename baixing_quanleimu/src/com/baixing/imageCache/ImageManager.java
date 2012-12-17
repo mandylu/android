@@ -300,9 +300,10 @@ public class ImageManager
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 	            o.inPurgeable = true;
 	            bitmap = new WeakReference<Bitmap>(BitmapFactory.decodeStream(is, null, o));
-	            
-	            if(null != imageDiskLruCache){
-	            	imageDiskLruCache.put(fileName, bitmap.get());
+	            if(bitmap != null && bitmap.get() != null){
+		            if(null != imageDiskLruCache){
+		            	imageDiskLruCache.put(fileName, bitmap.get());
+		            }
 	            }
 	            
 			}catch(FileNotFoundException ee){
@@ -330,7 +331,7 @@ public class ImageManager
 	{
 		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
 
-		if(null != bitmap)
+		if(null != bitmap && bitmap.get() != null)
 		{
 			synchronized (this)
 			{
@@ -352,6 +353,11 @@ public class ImageManager
 			}
 		}
 		return bitmap;
+	}
+	
+	public void putImageToDisk(String url, Bitmap bmp){
+		String key = getMd5(url);
+		imageDiskLruCache.put(key, bmp);
 	}
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException

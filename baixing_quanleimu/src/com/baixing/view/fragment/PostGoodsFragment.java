@@ -86,6 +86,7 @@ import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.baixing.widget.CustomDialogBuilder;
+import com.baixing.widget.ImageSelectionDialog.ImageContainer;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -516,27 +517,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return displayValue;
 	}
 	
-	private void startImgSelDlg(ArrayList<String> bmpUrls, ArrayList<Bitmap> cachedBps, ArrayList<String> thumbUrls){
-		if(bmpUrls != null){
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_BITMAP_URL, bmpUrls);
-		}
-		if(cachedBps != null){
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_CACHED_BPS, cachedBps);
-		}
-		if(thumbUrls != null){
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_THUMBNAIL_URL, thumbUrls);
+	private void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
+		if(container != null){
+			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
 		}
 		imgSelDlg.setMsgOutBundle(imgSelBundle);
-//		imgSelDlg = new ImageSelectionDialog(imgSelBundle);
 		imgSelDlg.show(getFragmentManager(), null);
-		
-//		getFragmentManager().
-//		FragmentManager fm = getActivity().getSupportFragmentManager();
-//		FragmentTransaction ft = fm.beginTransaction();		
-//		ft.add(imgSelDlg, "imageSelection");
-//		ft.addToBackStack(imgSelDlg.getClass().getName()  + imgSelDlg.hashCode());
-//		ft.commit();
-		
 	}
 	
 	private void editpostUI() {
@@ -838,8 +824,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 			if(goodsDetail != null){
-				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_BITMAP_URL)){
-					startImgSelDlg(null, null, null);
+				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_IMG_CONTAINER)){
+					startImgSelDlg(null);
 				}else{					
 					ArrayList<String> smalls = new ArrayList<String>();
 					ArrayList<String> bigs = new ArrayList<String>();
@@ -853,10 +839,25 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							bigs.add(bigUrl);
 						}
 					}
-					startImgSelDlg(bigs, null, smalls);
+					if(bigs != null){
+						List<ImageSelectionDialog.ImageContainer> container = new ArrayList<ImageSelectionDialog.ImageContainer>();
+						for(int i = 0; i < bigs.size(); ++ i){
+							ImageSelectionDialog.ImageContainer ic = new ImageSelectionDialog.ImageContainer();
+							ic.bitmapUrl = bigs.get(i);
+							ic.status = ImageSelectionDialog.ImageStatus.ImageStatus_Normal;
+							ic.thumbnailPath = smalls.get(i);
+							container.add(ic);
+						}
+						ImageSelectionDialog.ImageContainer[] ic = new ImageSelectionDialog.ImageContainer[container.size()];
+						for(int i = 0; i < container.size(); ++ i){
+							ic[i] = new ImageSelectionDialog.ImageContainer();
+							ic[i].set(container.get(i));
+						}
+						startImgSelDlg(ic);
+					}
 				}							
 			}else{
-				startImgSelDlg(null, null, null);
+				startImgSelDlg(null);
 			}
 		}else if(v.getId() == R.id.img_description){
 			final View et = v.findViewById(R.id.description_input);
@@ -2030,12 +2031,23 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				v.findViewById(R.id.myImg).setOnClickListener(this);
 				((ImageView)v.findViewById(R.id.myImg)).setImageResource(R.drawable.btn_add_picture);
 				if(imgSelBundle != null){
-					ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
-					if(bps != null && bps.size() > 0){
-						((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bps.get(0));
-						((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
-						((TextView)v.findViewById(R.id.imgCout)).setText(String.valueOf(bps.size()));
-
+		    		Object[] container = (Object[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
+					if(container != null && container.length > 0
+							&& ((ImageSelectionDialog.ImageContainer)container[0]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
+						Bitmap bp = ImageSelectionDialog.getThumbnailWithPath(((ImageSelectionDialog.ImageContainer)container[0]).thumbnailPath);
+						if(bp != null){
+							((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bp);
+							((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
+							int count = 0;
+							for(int i = 0; i < container.length; ++ i){
+								if(((ImageSelectionDialog.ImageContainer)container[i]).status
+										== ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
+									break;
+								}
+								++ count;
+							}
+							((TextView)v.findViewById(R.id.imgCout)).setText(String.valueOf(count));
+						}
 					}
 				}				
 			}			
@@ -2204,37 +2216,55 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
 			if(imgSelBundle != null){
-				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
-				if(getView() != null){
+				ImageSelectionDialog.ImageContainer[] container = 
+						(ImageSelectionDialog.ImageContainer[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
+//				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
+				if(getView() != null && container != null){
 					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
 					if(iv != null){						
-						if(bps != null && bps.size() > 0){
-							if(iv != null){
-								iv.setImageBitmap(bps.get(0));
+						if(container != null && container.length > 0 && container[0].bitmapPath != null){
+							Bitmap thumbnail = ImageSelectionDialog.getThumbnailWithPath(container[0].thumbnailPath);
+							if(iv != null && thumbnail != null){
+								iv.setImageBitmap(thumbnail);
+							}else{
+								iv.setImageResource(R.drawable.btn_add_picture);
 							}
 						}else{
-							iv.setImageResource(R.id.myImg);
+							iv.setImageResource(R.drawable.btn_add_picture);
 						}
 					}
 					
 					TextView tv = (TextView)getView().findViewById(R.id.imgCout);
 					if(iv != null){
-						if(bps != null && bps.size() > 0){
-							tv.setText(String.valueOf(bps.size()));
+						int containerCount = 0;
+						for(int i = 0; i < container.length; ++ i){
+							if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
+								break;
+							}else if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
+								++ containerCount;
+							}
+						}
+						if(containerCount > 0){
+							tv.setText(String.valueOf(containerCount));
 							tv.setVisibility(View.VISIBLE);
 						}else{
 							tv.setVisibility(View.INVISIBLE);
 						}
 					}
-				}
-				ArrayList<String> urls = (ArrayList<String>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_BITMAP_URL);
-				if(urls != null){
+					
 					bmpUrls.clear();
-					bmpUrls.addAll(urls);
+					if(container != null){
+						for(int i = 0; i < container.length; ++ i){
+							if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
+								bmpUrls.add(container[i].bitmapUrl);
+							}
+						}
+					}
+					
 				}
 			}
+		}
 			break;
-		}		
 		case -2:{
 			loadCachedData();
 			break;

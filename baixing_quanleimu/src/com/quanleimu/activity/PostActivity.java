@@ -13,6 +13,8 @@ import com.baixing.view.fragment.PostGoodsFragment;
 
 public class PostActivity extends BaseTabActivity {
 	
+	private BroadcastReceiver postReceiver;
+	
 	@Override
 	public void onCreate(Bundle savedBundle){
 		super.onCreate(savedBundle);
@@ -31,38 +33,42 @@ public class PostActivity extends BaseTabActivity {
             }
             pushFragment(new PostGoodsFragment(), bundle, false);
 		}
-		registerBroadcast();
+		
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		initTitleAction();
 	}
 	
 	private void registerBroadcast(){
 		IntentFilter intentFilter = new IntentFilter(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-		this.registerReceiver(new BroadcastReceiver() {
-			@Override
-			public void onReceive(Context context, Intent intent) {
-				String action = intent.getAction();
+		if(postReceiver == null){
+			postReceiver = new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					String action = intent.getAction();
 
-				if (action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
-					Bundle bundle = intent.getExtras();
-					
-					Intent personalIntent = new Intent();
-					personalIntent.setClass(PostActivity.this, PersonalActivity.class);
-					personalIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-					personalIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-					personalIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-					personalIntent.setAction(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-					personalIntent.putExtras(bundle);
-					
-					startActivity(personalIntent);					
+					if (action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
+						Bundle bundle = intent.getExtras();
+						
+						Intent personalIntent = new Intent();
+						personalIntent.setClass(PostActivity.this, PersonalActivity.class);
+						personalIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+						personalIntent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+						personalIntent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+						personalIntent.setAction(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+						personalIntent.putExtras(bundle);
+						
+						startActivity(personalIntent);					
+					}
 				}
-			}
-		}, intentFilter);		
+			};
+		}
+		this.registerReceiver(postReceiver, intentFilter);		
 	}
 	
 	@Override
 	public void onResume(){
 		super.onResume();
+		registerBroadcast();
 	}
 	
 	@Override
@@ -77,6 +83,14 @@ public class PostActivity extends BaseTabActivity {
             	}
             }
 		}		
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		if(postReceiver != null){
+			this.unregisterReceiver(postReceiver);
+		}
 	}
 	
 	@Override
