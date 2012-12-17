@@ -17,6 +17,14 @@ public class AdListingViewTest extends BaixingTestCase {
 	public AdListingViewTest() throws Exception {
 	}
 	
+	@Test 
+	public void testListing() throws Exception {
+		openTabbar(TAB_ID_HOME_TEXT);
+		openCategoryByIndex(0, 0);
+		assertNotNull(scrollAdListViewToFooter());
+		sleep(2);
+	}
+	
 	@Test
 	public void testViewListing() throws Exception {
 		// android3.0
@@ -35,26 +43,21 @@ public class AdListingViewTest extends BaixingTestCase {
 		goBack();
 
 		//验证是 Listing 页面
-		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+		
+		AbsListViewElement lv = findListView();
 		assertNotNull(lv);
 		//向下滚动
-		ViewElement footer = scrollAdListViewToFooter(lv);
+		ViewElement footer = scrollAdListViewToFooter();
 		assertNotNull(footer);
 		sleep(2);
 		//试图点击（有可能已经自动加载了）
-		footer = findElementById(AD_VIEWLIST_MORE_ID);
 		if (footer != null) footer.doClick();
 		sleep(1);
 	    //向下拖动
-		footer = scrollAdListViewToFooter(lv);
-		//assertNotNull(footer);
+		scrollAdListViewToFooter(lv);
 		sleep(1);
-		//页面展开后，点击最后一个信息进入
-		ViewGroupElement av = null;
-		for(int i = 8; i > 1; i--) {
-			av = openAdByIndex(i);
-			if (av != null) break;
-		}
+		//页面展开后，点击一个信息进入
+		ViewGroupElement av = openAdByIndex(random(30));
 		assertNotNull(av);
 		sleep(1);
 		//从viewad页面返回至listing页面
@@ -63,11 +66,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		goBack(true);
 		goBack(true);
 	    //检查当前页的tab bar上的文字是“浏览信息”
-		ViewGroupElement gv = findElementById(TAB_ID_HOME_V3, ViewGroupElement.class);
-		assertNotNull(gv);
-		TextViewElement t = findElementById(TAB_TEXT_ID, 0, TextViewElement.class);
-		assertNotNull("f " + first + " s" + second, t);
-		assertEquals(t.getText(), TAB_ID_HOME_TEXT);
+		assertElementByText(TAB_ID_HOME_TEXT);
 	}
 	
 	@Test
@@ -79,7 +78,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
@@ -94,7 +93,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示

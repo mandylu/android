@@ -23,7 +23,7 @@ public class AdViewTest extends BaixingTestCase {
 		
 		//android3.0
 		//首页点击交友活动>女找男
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(6, 1);
 		//检查列表的title view文字部分包含“女找男”
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_NZN);
@@ -40,7 +40,7 @@ public class AdViewTest extends BaixingTestCase {
 			
 		//android3.0
 	    //进入类目车辆买卖>二手轿车
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(1, 0);
 		//检查列表的title view文字部分包含"二手轿车"
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_QICHE);

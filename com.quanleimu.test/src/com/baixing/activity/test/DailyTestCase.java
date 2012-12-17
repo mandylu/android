@@ -136,7 +136,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
@@ -150,7 +150,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
@@ -214,19 +214,19 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost1() throws Exception {
 		logon();
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(random(3), random(10));
 	}
 	
 	@Test
 	public void testPost2() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(3 + random(3), random(10));
 	}
 	
 	@Test
 	public void testPost3() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(6 + random(4), random(10));
 	}
 	
