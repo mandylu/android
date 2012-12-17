@@ -166,12 +166,12 @@ public class KeepLiveTest extends BaixingTestCase {
 		assertElementByText("短信");
 		String[] nots = {"收藏", "取消收藏", "前发布", "刚刚发布", "短信", "无联系方式", "发布"};
 		//第一页找到一个文本
-		TextViewElement tv1 = findTextView(null, nots);
+		TextViewElement tv1 = findTextView(nots);
 		assertNotNull(tv1);
 		showNextView();
 		sleep(3);
 		//第二页找到一个文本
-		TextViewElement tv2 = findTextView(null, nots);
+		TextViewElement tv2 = findTextView(nots);
 		assertNotNull(tv2);
 		//两个文本不能一样
 		assertTrue(tv1.getText() + ":" + tv2.getText(), !tv1.getText().equals(tv2.getText()));
@@ -247,17 +247,17 @@ public class KeepLiveTest extends BaixingTestCase {
 		goBack();
 		goBack();
 		logon();
-		openTabbar(TAB_ID_MY_TEXT);
+		openTabbar(TAB_ID_MY_V3);
 		deleteAllAds(MY_LISTING_MYAD_TEXT);
 		deleteAllAds(MY_LISTING_MYAD_APPROVE_TEXT);
 		for (int i = firstIndex; i < 10; i++) {
-			openTabbar(TAB_ID_POST_TEXT);
+			openTabbar(TAB_ID_POST);
 			openPostFirstCategory(i);
 			/*AbsListViewElement subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 					AbsListViewElement.class);
 			if (subCatListView == null) {
 				goBack();
-				openTabbar(TAB_ID_POST_TEXT);
+				openTabbar(TAB_ID_POST);
 				openPostFirstCategory(i);
 				subCatListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 						AbsListViewElement.class);
@@ -269,7 +269,7 @@ public class KeepLiveTest extends BaixingTestCase {
 			int retry = 0;
 			for(int j = (i == firstIndex ? secondIndex : 0); j < count ; j++) {
 				BXLog.x("Category,Post," + i + "," + j);
-				openTabbar(TAB_ID_POST_TEXT);
+				openTabbar(TAB_ID_POST);
 				openPostFirstCategory(i);
 				TextViewElement v = openPostSecondCategory(j);
 				Log.i(LOG_TAG, "runPostAll:" + j);
@@ -283,6 +283,9 @@ public class KeepLiveTest extends BaixingTestCase {
 						continue;
 					}
 				}*/
+				if (v == null) {
+					v = findMetaValueViewByName("分类", 0);
+				}
 				assertNotNull("get Second Category TextView", v);
 				if (v != null) {
 					retry = 0;
@@ -327,7 +330,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	}
 	
 	private void runOnePost(int firstIndex, String cateName) throws Exception {
-		openTabbar(TAB_ID_POST_TEXT);
+		openTabbar(TAB_ID_POST);
 		openPostFirstCategory(firstIndex);
 		openSecondCategoryByName(cateName);
 		
@@ -384,15 +387,15 @@ public class KeepLiveTest extends BaixingTestCase {
 		for(int i = 0; i < (lastAdNum > 5 ? 5 : 2); i++) {
 			int rndIndex = random((lastAdNum > 4 ? lastAdNum - 4 : 0)) + 1;
 			Log.i(LOG_TAG, "Start do Rand Ad.index." + index + "/" + lastAdNum + "/" + rndIndex);
-			ViewGroupElement vg = openAdByIndex(avl, rndIndex);
-			/*if (vg == null && findElementById(AD_VIEWLIST_ID, AbsListViewElement.class) != null) {
+			ViewGroupElement vg = openAdByIndex(rndIndex, null, avl);
+			if (vg == null && findElementById(AD_VIEWLIST_ID, AbsListViewElement.class) != null) {
 				vg = openAdByIndex(1, null, avl);
-			}*/
+			}
 			assertNotNull(vg);
 			BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 					BXViewGroupElement.class);
 			if (detailView == null) {
-				assertNotNull(openAdByIndex(avl, 1));
+				assertNotNull(openAdByIndex(1));
 				detailView = findElementById(AD_DETAILVIEW_ID, BXViewGroupElement.class);
 			}
 			assertNotNull(detailView);
@@ -410,7 +413,7 @@ public class KeepLiveTest extends BaixingTestCase {
 	}
 	
 	private void doPost(int index) throws Exception {
-		openTabbar(TAB_ID_POST_TEXT);
+		openTabbar(TAB_ID_POST);
 		String[][] postData = postDataQiecheyongpin;
 		if (index == 0) postData = postDataJiaju;
 		if (index == 2) postData = postDataXiezilou;
