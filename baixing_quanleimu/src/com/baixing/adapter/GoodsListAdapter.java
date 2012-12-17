@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -406,11 +407,11 @@ public class GoodsListAdapter extends BaseAdapter {
 			}
 			
 			final GoodsDetail detailObj = list.get(position);
-			
+			final boolean isValidMessage = this.isValidMessage(detailObj);
 			if (hasDelBtn) {
 				holder.operateView.setVisibility(View.VISIBLE);
 				holder.actionLine.setVisibility(View.VISIBLE);
-				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(this.isValidMessage(detailObj) ? R.drawable.btn_circle_arrow : R.drawable.icon_warning);
+				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(isValidMessage ? R.drawable.btn_circle_arrow : R.drawable.icon_warning);
 			} 
 			else{
 				holder.operateView.setVisibility(View.GONE);
@@ -466,6 +467,23 @@ public class GoodsListAdapter extends BaseAdapter {
 			{
 				holder.tvDateAndAddress.setText("");
 			}
+			
+			
+			if (isValidMessage)
+			{
+				holder.tvPrice.setVisibility(View.VISIBLE);
+				holder.tvUpdateDate.setVisibility(View.VISIBLE);
+				holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
+			}
+			else
+			{
+				holder.tvPrice.setVisibility(View.GONE);
+				holder.tvUpdateDate.setVisibility(View.GONE);
+				holder.tvDateAndAddress.setText("审核未通过");
+				holder.tvDateAndAddress.setTextColor(Color.RED);
+			}
+			
+			
 	
 			holder.operateView.setOnClickListener(new View.OnClickListener() {
 				@Override
