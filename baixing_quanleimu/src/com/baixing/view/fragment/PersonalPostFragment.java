@@ -562,6 +562,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         final GoodsDetail detail = glLoader.getGoodsList().getData().get(pos);        
         final String adId = detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
+        String tmpInsertedTime = detail.data.get("insertedTime");
+        long tmpPostedSeconds = -1;
+        if (tmpInsertedTime != null) {
+            long nowTime = new Date().getTime() / 1000;
+            tmpPostedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
+        }
+        final long postedSeconds = tmpPostedSeconds;
+        
         // 弹出 menu 确认操作
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("操作");
@@ -571,21 +579,26 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         if (isValidMessage(detail))
         {
         	r_array_item_operate = R.array.item_operate_mypost;
-        	Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
+        	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+        	.append(Key.STATUS, "valid")
+            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.POSTEDSECONDS, postedSeconds)
+        	.end();
         }
         else
         {
             r_array_item_operate = R.array.item_operate_inverify;
 //            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+            Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+        	.append(Key.STATUS, "approving")
+            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.POSTEDSECONDS, postedSeconds)
+        	.end();
         }
         
-        String tmpInsertedTime = detail.data.get("insertedTime");
-        long tmpPostedSeconds = -1;
-        if (tmpInsertedTime != null) {
-            long nowTime = new Date().getTime() / 1000;
-            tmpPostedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
-        }
-        final long postedSeconds = tmpPostedSeconds;
+        
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
@@ -594,21 +607,29 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://刷新
                             doRefresh(0, adId);
                             Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                    .append(Key.STATUS, "valid")
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 1://修改
-
                             Bundle args = createArguments(null, null);
                             args.putSerializable("goodsDetail", detail);
                             args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
                             Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                    .append(Key.STATUS, "valid")
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 2://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                        			.append(Key.STATUS, "valid")
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
@@ -616,13 +637,22 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                 else {
                     switch (clickedIndex) {
                         case 0://申诉
+                        	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
+                            .append(Key.STATUS, "approving")
+                            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                            .append(Key.POSTEDSECONDS, postedSeconds)
+                            .end();
                             Bundle bundle = createArguments("申诉", null);
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
                             break;
                         case 1://删除
-                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_APPEAL)
+                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                        			.append(Key.STATUS, "approving")
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                        			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
