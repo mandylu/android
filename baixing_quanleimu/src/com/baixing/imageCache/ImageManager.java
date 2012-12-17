@@ -293,13 +293,16 @@ public class ImageManager
 	{
 		String fileName = getMd5(url);
 		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
-		
+		Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  " + url + "  md5:  " + fileName);
 		if(null == bitmap || bitmap.get() == null){
 			try{
+				Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap is null");
+				
 				FileInputStream is = context.getAssets().openFd(fileName).createInputStream();
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 	            o.inPurgeable = true;
 	            bitmap = new WeakReference<Bitmap>(BitmapFactory.decodeStream(is, null, o));
+	            Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap:  " + bitmap.toString());
 	            if(bitmap != null && bitmap.get() != null){
 		            if(null != imageDiskLruCache){
 		            	imageDiskLruCache.put(fileName, bitmap.get());
@@ -357,6 +360,7 @@ public class ImageManager
 	
 	public void putImageToDisk(String url, Bitmap bmp){
 		String key = getMd5(url);
+		Log.d("bitmap", "bitmap, imagemanager:putImageToDisk:  " + url + "  md5:  " + key);
 		imageDiskLruCache.put(key, bmp);
 	}
 	

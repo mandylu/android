@@ -178,11 +178,14 @@ public class LazyImageLoader
 		WeakReference<Bitmap> result = null;
 		
 		if(imgManger.contains(url)){
-			result = imgManger.getFromMemoryCache(url); 			
+			Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " imgManager contains");
+			result = imgManger.getFromMemoryCache(url); 	
+			if(result != null && result.get() != null){
+				return result;
+			}
 		}		
-		else{
-			result = imgManger.safeGetFromFileCacheOrAssets(url);
-	    }
+		Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " call safeGetFromFileCacheOrAssets");
+		result = imgManger.safeGetFromFileCacheOrAssets(url);
 
 		return result;		
 	}

@@ -691,11 +691,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			case MSG_SUCCEED_UPLOAD:{
 				
-				Integer index = (Integer) msg.obj;
-				Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got:  " + String.valueOf(index));
+				Integer index = (Integer)msg.obj;
+				
 				if (imgs != null){
 //					imgs.get(index).setImageBitmap(cachedBps.get(index));
 					Bitmap bmp = getThumbnailWithPath(imgContainer[index].thumbnailPath);
+					Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got, thumbnailpath:  " + imgContainer[index].thumbnailPath
+							+ "bitmap:   " + (bmp == null ? "" : bmp.toString()));
 					imgs.get(index).setImageBitmap(bmp);
 					imgs.get(index).setClickable(true);
 					imgs.get(index).invalidate();
@@ -744,6 +746,37 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		}else{
 			container.add(obj);
 		}	
+	}
+	
+	class UploadMsg extends Object{
+		int index;
+		String bitmapUrl;
+		UploadMsg(int index, String url){
+			this.index = index;
+			bitmapUrl = url;
+		}
+	}
+	
+	private int adjustImgContainerAfterUpload(String bitmapPath, int index, String bitmapUrl, String thumbnailPath){
+		String url = imgContainer[index].bitmapPath;
+		int ret = -1;
+		if(url != null && url.length() > 0 && url.equals(bitmapPath) && imgContainer[index].status == ImageStatus.ImageStatus_Uploading){
+			ret = index;
+		}else{
+			for(int i = index; i >= 0; -- i){
+				url = imgContainer[i].bitmapPath;
+				if(url != null && url.equals(bitmapPath) && imgContainer[i].status == ImageStatus.ImageStatus_Uploading){
+					ret = i;
+					break;
+				}
+			}
+		}
+		if(ret >= 0){
+			imgContainer[ret].status = ImageStatus.ImageStatus_Normal;
+			imgContainer[ret].bitmapUrl = bitmapUrl;
+			imgContainer[ret].thumbnailPath = thumbnailPath;
+		}
+		return ret;
 	}
 	
 	class UpLoadThread implements Runnable {
@@ -806,23 +839,27 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 									
 			if(currentBmp != null){
 				imgContainer[currentIndex].bitmapPath = path;
-				ImageSelectionDialog p = ImageSelectionDialog.this;
-				Log.d("index", "bitmap:   upload started: " + String.valueOf(currentIndex));
 				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Uploading;
 				String result = Communication.uploadPicture(currentBmp);
-				Log.d("index", "bitmap:   upload finished: " + String.valueOf(currentIndex));
-				ImageSelectionDialog p2 = ImageSelectionDialog.this;
-				imgContainer[currentIndex].bitmapUrl = result;
-				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Normal; 
+//				imgContainer[currentIndex].bitmapUrl = result;
+//				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Normal;
 				-- uploadCount;
 				if(imgs != null && imgs.size() > 0 && imgs.get(0) != null && imgs.get(0).getHeight() != 0){
 					imgHeight = imgs.get(0).getHeight();
 				}
 				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
+				String thumbnailPath = "";
 				if(thumbnailBmp != null){
 					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
-					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
+//					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
+					thumbnailPath = "thumbnail_" + path;
+					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
+				}else{
+					Log.d("bitmap", "bitmap  thumbnail is nullllllll");
 				}
+				currentIndex = adjustImgContainerAfterUpload(path, currentIndex, result, thumbnailPath);
+				if(currentIndex < 0) return;
+
 				currentBmp.recycle();
 				currentBmp = null;
 	
