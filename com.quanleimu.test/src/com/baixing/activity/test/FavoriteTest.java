@@ -18,12 +18,12 @@ public class FavoriteTest extends BaixingTestCase {
 		
 	   //android3.0
 	   //进入类目，房屋租售>租房
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(3, 0);
 	   //检查列表的title view文字部分包含“租房”
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_ZUFANG);
 	   //任选一个信息进入
-		assertNotNull(openAdByIndex(random(6)));//任一
+		assertNotNull(openAdByIndex(null, random(6)));//任一
 	   //检查右上方按钮为收藏前图片（空心五角星）
 		//BXImageViewElement iv = findElementById(AD_FAVORITE_BUTTON_ID, BXImageViewElement.class);
 		//assertTrue(iv.checkImageByName(AD_FAVORITE_ADD_IMG));
@@ -65,7 +65,7 @@ public class FavoriteTest extends BaixingTestCase {
 	   //点击返回
 		goBack();
 	   //点击我的百姓网>收藏
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		openMyGridByText(MY_LISTING_FAVORITE_TEXT);
 	   //检查前两个信息的收藏顺序，顺序应为“标题2”,“标题1”
 		assertNotNull(openAdByItemIndex(0));

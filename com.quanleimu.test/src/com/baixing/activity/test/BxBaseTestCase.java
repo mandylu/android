@@ -1,6 +1,8 @@
 package com.baixing.activity.test;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Timer;
 import java.util.TimerTask;
@@ -43,15 +45,9 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String CATEGORY_GRIDVIEW_ID = "gridcategory";
 	public static final String CATEGROY_GRIDVIEW_NAME_ID = "itemtext";
 	public static final String CATEGORY_SECOND_GRIDVIEW_ID = "gridSecCategory";
-	public static final String TAB_ID_HOME = "ivHomePage";
-	public static final String TAB_ID_HOME_V3 = "tab_button_1";
 	public static final String TAB_ID_HOME_TEXT = "分类查找";
-	public static final String TAB_ID_POST = "tab_button_2";
 	public static final String TAB_ID_POST_TEXT = "免费发布";
-	public static final String TAB_ID_MY = "ivMyCenter";
-	public static final String TAB_ID_MY_V3 = "tab_button_3";
 	public static final String TAB_ID_MY_TEXT = "个人中心";
-	public static final String TAB_TEXT_ID = "tab_text";
 	//Home ID
 	public static final String HOME_APP_NAME_ID = "title_label_app_name";
 	public static final String HOME_FIRST_RUN_ID = "topguide";
@@ -382,6 +378,48 @@ public class BxBaseTestCase extends AthrunTestCase {
 		assertNull(message, findElementById(id));
 	}
 	
+	public <T> T castObject(ViewElement v, Class<T> returnType) {
+		Constructor<?>[] constructors = returnType.getDeclaredConstructors();
+		Object obj = null;
+		try {
+			constructors[0].setAccessible(true);
+			obj = constructors[0].newInstance(getInstrumentation(), v.getView());
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnType.cast(obj);
+	}
+	
+	public <T> T castObject(View view, Class<T> returnType) {
+		Constructor<?>[] constructors = returnType.getDeclaredConstructors();
+		Object obj = null;
+		try {
+			constructors[0].setAccessible(true);
+			obj = constructors[0].newInstance(getInstrumentation(), view);
+
+		} catch (IllegalArgumentException e) {
+			e.printStackTrace();
+		} catch (InstantiationException e) {
+			e.printStackTrace();
+		} catch (IllegalAccessException e) {
+			e.printStackTrace();
+		} catch (InvocationTargetException e) {
+			e.printStackTrace();
+		} catch (Exception e) {
+			e.printStackTrace();
+		}
+		return returnType.cast(obj);
+	}
+	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
 		sleep(5);
@@ -522,6 +560,21 @@ public class BxBaseTestCase extends AthrunTestCase {
 		sleep(1);
 	}
 	
+	public ViewElement clickListViewByIndex(AbsListViewElement lv, int index) throws Exception {
+		if (lv == null) lv = findListView();
+		if (lv != null) {
+			try {
+				ViewElement v = lv.getChildByIndex(index);
+				if (v != null) {
+					v.doClick();
+					sleep(1);
+					return v;
+				}
+			} catch (IndexOutOfBoundsException ex) {}
+		}
+		return null;
+	}
+	
 	public String getTextByElementId(String vId) throws Exception {
 		TextViewElement titleView = findElementById(vId, TextViewElement.class);
 		assertNotNull(titleView);
@@ -547,46 +600,43 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return true;
 	}
 	
-	public void openTabbar(String vId) throws Exception {
-		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
+	public boolean goHome() throws Exception {
+		TextViewElement v = null;
 		int i = 0;
-		while(v == null) {
-			goBack();
-			if (checkHomeAlert()) break;
-			if (i++ > 10) break;
-			v = findElementById(vId, ViewGroupElement.class);
-		}
-		if (v != null) {
-			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
-			assertNotNull(tv);
-			if (tv == null) return;
-			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
-				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
-				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
-			{
-				v.doClick();
-				sleep(1);
+		while(i < 10 && v == null) {
+			if (i++ > 0) {
+				goBack();
+				if (checkHomeAlert()) break;
 			}
+			/*v = findImageView("icon_footer_post_on");
+			if (v == null) v = findImageView("icon_footer_post"); assertNotNull(v);
+			if (v == null) continue;
+			v = findImageView("icon_footer_profile_on");
+			if (v == null) v = findImageView("icon_footer_profile");assertNotNull(v);
+			if (v == null) continue;
+			v = findImageView("icon_footer_category_on");
+			if (v == null) v = findImageView("icon_footer_category");assertNotNull(v);
+			if (v == null) continue;
+			v.doClick();*/
+			v = findElementByText(TAB_ID_HOME_TEXT, 0, true);
+			if (v != null) v = findElementByText(TAB_ID_POST_TEXT, 0, true);
+			if (v != null) v = findElementByText(TAB_ID_MY_TEXT, 0, true);
+			if (v == null) continue;
+			sleep(1);
+			BXImageViewElement bv = findImageView("icon_header_city_arrow");
+			if (bv == null) continue;
+			if (findTextView("百姓网") == null) v = null;
 		}
+		return v != null;
 	}
 	
-	public void goToTab(String vId) throws Exception {
-		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
-		if (v != null) {
-			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+	public void openTabbar(String tabName) throws Exception {
+		if (goHome()) {
+			TextViewElement tv = findElementByText(tabName, 0, true);
 			assertNotNull(tv);
-			if (tv == null) return;
-			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
-				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
-				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
-			{
-				v.doClick();
-				sleep(1);
-			}
-		}
-		else
-		{
-			throw new Exception("Tab not found for " + vId);
+			tv.doClick();
+			//clickByText(tabName);
+			sleep(1);
 		}
 	}
 	
@@ -683,30 +733,92 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public TextViewElement findTextView() throws Exception {
 		String[] nots = {};
-		return findTextView(nots);
+		return findTextView(null, nots);
 	}
 	
-	public TextViewElement findTextView(String[] nots) throws Exception {
+	public TextViewElement findTextView(String text) throws Exception {
+		return findTextView(text, true);
+	}
+	
+	public TextViewElement findTextView(String text, boolean inScreen) throws Exception {
+		String[] nots = {};
+		return findTextView(text, nots, inScreen);
+	}
+	
+	public TextViewElement findTextView(String text, String[] nots) throws Exception {
+		return findTextView(text, nots, true);
+	}
+	
+	public TextViewElement findTextView(String text, String[] nots, boolean inScreen) throws Exception {
 		ArrayList<View> views = ViewUtils.getAllViews(true);
+		
 		if (views.size() == 0) return null;
 		for (View view : views) {
-			if (!isViewInScreen(view)) continue;
-			try {
-				TextViewElement tv = findElementById(view.getId(), TextViewElement.class);
-				if (tv != null && tv.getText().length() > 0) {
-					boolean found = false;
-					for (int i = 0; i < nots.length; i++) {
-						if (tv.getText().indexOf(nots[i]) != -1) {
-							found = true;
-							break;
-						}
-					}
-					if (!found) {
+			TextViewElement tv = findTextViewByView(view, text, nots, inScreen);
+			//if (tv == null) {
+			//	tv = findTextViewInGroupViewByView(view, text, nots, inScreen);
+			//}
+			if (tv != null) return tv;
+		}
+		return null;
+	}
+	
+	private TextViewElement findTextViewByView(View view, String text, String[] nots, boolean inScreen) throws Exception {
+		TextViewElement tv = null;
+		try {
+			tv = findElementById(view.getId(), TextViewElement.class);
+			//Log.i("test", "testTextView:" + view.getId());
+			//tv = castObject(view, TextViewElement.class);
+			if (tv == null) return null;
+			//Log.i("test", "testTextView:" + tv.getText());
+			if (text != null && tv.getText().equals(text)) {
+				if (inScreen && !isViewInScreen(view)) return null;
+				return tv;
+			}
+		} catch (IllegalArgumentException e) {
+			return null;
+		}
+		if (!isViewInScreen(view)) return null;
+		if (tv.getText().length() > 0) {
+			boolean found = false;
+			for (int i = 0; i < nots.length; i++) {
+				if (tv.getText().indexOf(nots[i]) != -1) {
+					found = true;
+					break;
+				}
+			}
+			if (!found) {
+				if (text != null) {
+					if (tv.getText().equals(text))
 						return tv;
+					else
+						return null;
+				}
+				return tv;
+			}
+		}
+		return null;
+	}
+	
+	private TextViewElement findTextViewInGroupViewByView(View view, String text, String[] nots, boolean inScreen) throws Exception {
+		ViewGroupElement gv = null;
+		try {
+			gv = findElementById(view.getId(), ViewGroupElement.class);
+			if (gv == null) return null;
+			for (int i = 0; i < gv.getChildCount(); i++) {
+				TextViewElement tv = gv.getChildByIndex(i, TextViewElement.class);
+				if (tv != null) {
+					TextViewElement ttv = findTextViewByView(tv.getView(), text, nots, inScreen);
+					if (ttv != null) return ttv;
+				} else {
+					ViewGroupElement ggv = gv.getChildByIndex(i, ViewGroupElement.class);
+					if (ggv != null) {
+						//TextViewElement ttv = findTextViewInGroupViewByView(ggv.getView(), text, nots, inScreen);
+						//if (ttv != null) return ttv;
 					}
 				}
-			} catch (IllegalArgumentException e) {}
-		}
+			}
+		} catch (IllegalArgumentException e) {}
 		return null;
 	}
 	
@@ -716,7 +828,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 		for (View view : views) {
 			if (!isViewInScreen(view)) continue;
 			try {
-				BXImageViewElement iv = findElementById(view.getId(), BXImageViewElement.class);
+				//BXImageViewElement iv = findElementById(view.getId(), BXImageViewElement.class);
+				BXImageViewElement iv = castObject(view, BXImageViewElement.class);
 				if (iv != null && (iv.checkImageByName(imageNamed) || iv.checkImageByName(imageNamed, false))) {
 					return iv;
 				}
@@ -724,11 +837,6 @@ public class BxBaseTestCase extends AthrunTestCase {
 			} catch (NullPointerException ex) {}
 		}
 		return null;
-	}
-	
-	public TextViewElement findTextView(String viewId) throws Exception {
-		ViewGroupElement gv = findElementById(viewId, ViewGroupElement.class);
-		return findTextView(gv);
 	}
 	
 	public TextViewElement findTextView(ViewGroupElement gv) throws Exception {

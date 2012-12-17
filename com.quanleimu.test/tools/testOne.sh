@@ -14,6 +14,7 @@ usage(){
 	echo "	sample4: $0 5580 \".KeepLiveTest#runPost\" run_post no"
 	echo "	sample5: $0 015d18844854041c \".KeepLiveTest#runPost\" run_post"
 	echo "  sample6: $0 015d1458a51c0c0e \".KeepLiveTest#runOnePost\" run_post"
+	adb devices;
 	exit 1
 }
 
@@ -146,25 +147,33 @@ start_real_device() {
 	fi
 }
 
+is_real_device() {
+	if grep '^[[:digit:]]*$' <<< "${PORTDEVICE}"; then
+		if [ $PORTDEVICE -gt 10000 ]; then
+			REALDEVICE="1"
+		fi
+	else
+		REALDEVICE="1"
+	fi
+}
+
 [[ $# -lt 3 ]] && usage
 
 build_pkg "$REBUILD"
 
 echo $LOGNAME;
-if [ "$PORTDEVICE" = "015d18844854041c" ]; then
+
+is_real_device
+
+if [ "$REALDEVICE" = "1" ]; then
 	start_real_device "$PORTDEVICE"
 	if [ "$REALDEVICE" = "1" ]; then
 		run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
+	else
+		echo "device connected error"
 	fi
 else
-	if [ "$PORTDEVICE" = "015d1458a51c0c0e" ]; then
-		start_real_device "$PORTDEVICE"
-		if [ "$REALDEVICE" = "1" ]; then
-			run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
-		fi
-	else
-		install_pkg "$PORTDEVICE"
-		run_test "emulator-$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
-	fi
+	install_pkg "$PORTDEVICE"
+	run_test "emulator-$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 fi
 

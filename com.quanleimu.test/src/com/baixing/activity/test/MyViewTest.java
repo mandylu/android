@@ -17,7 +17,7 @@ public class MyViewTest extends BaixingTestCase {
 		
 		//android3.0
 		//进入“我的百姓网”页面
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		logout();
 		//检查是否包含登录按钮
 		assertNoElementById(MY_PROFILE_EDIT_BUTTON_ID);

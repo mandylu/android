@@ -78,7 +78,7 @@ public class PostProcessTest extends BaixingTestCase {
 	public void testErshouProcess() throws Exception {
 		
 		//android3.0
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		//openGridByText("物品交易");
 		openPostFirstCategory(0);
 		//选择类目“二手手机”
@@ -120,7 +120,7 @@ public class PostProcessTest extends BaixingTestCase {
    public void testQuanzhiProcess() throws Exception {
 	
 	    //android3.0
-	   openTabbar(TAB_ID_POST);
+	   openTabbar(TAB_ID_POST_TEXT);
 	    //选择类目“全职求职简历”
 	   openPostFirstCategory(5);
 	   openSecondCategoryByIndex(0);
