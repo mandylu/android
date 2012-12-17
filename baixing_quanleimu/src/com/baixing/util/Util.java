@@ -751,16 +751,6 @@ public class Util {
 		BufferedReader reader = null ;
 		String str = "";
 		try {
-//			URL url = new URL(path);
-//			urlCon = (HttpURLConnection) url.openConnection();
-//			urlCon.setDoOutput(true);
-//			urlCon.setDoInput(true);
-//			urlCon.setRequestMethod("POST");
-//			urlCon.setUseCaches(false);
-//			urlCon.setInstanceFollowRedirects(true);
-//			urlCon.setRequestProperty("Content-Type", "application/x-www-form-urlencoded");
-//			urlCon.connect();
-			
 			
 			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
             
@@ -814,16 +804,6 @@ public class Util {
 		DataInputStream dis = null;
 		String readUrl = "";
 		try {
-//			URL url = new URL(urlString);
-//			HttpURLConnection urlConn = (HttpURLConnection) url
-//					.openConnection();
-//			urlConn.setRequestMethod("POST");
-//			urlConn.setDoOutput(true);
-//			urlConn.setDoInput(true);
-//			OutputStream os = urlConn.getOutputStream();
-//			os.write(str.getBytes());
-			
-			
 			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
             
             HttpPost httpPost = new HttpPost(urlString); 
@@ -969,7 +949,6 @@ public class Util {
 		}
 		else
 		{
-//			bmp = BitmapFactory.decodeStream(fis);
 		    BitmapFactory.Options o =  new BitmapFactory.Options();
             o.inPurgeable = true;
 			bmp = BitmapFactory.decodeByteArray(aa, 0, aa.length, o);
@@ -1012,56 +991,12 @@ public class Util {
 	public static int getWidthByContext(Context context){
 		Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
-//		int a = 0;
-//		if(width == 240)
-//		{
-//			a = 1;
-//		}
-//		else if(width == 320)
-//		{
-//			a = 2;
-//		}
-//		else if(width == 480)
-//		{
-//			a = 3;
-//		}
-//		else if(width == 540)
-//		{
-//			a = 4;
-//		}
-//		else if(width == 640)
-//		{
-//			a = 5;
-//		}
-		
 		return width;
 	}
 	
 	public static int getHeightByContext(Context context){
 		Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
 		int height = display.getHeight();
-//		int a = 0;
-//		if(width == 240)
-//		{
-//			a = 1;
-//		}
-//		else if(width == 320)
-//		{
-//			a = 2;
-//		}
-//		else if(width == 480)
-//		{
-//			a = 3;
-//		}
-//		else if(width == 540)
-//		{
-//			a = 4;
-//		}
-//		else if(width == 640)
-//		{
-//			a = 5;
-//		}
-		
 		return height;
 	}
 	
@@ -1328,115 +1263,7 @@ public class Util {
 		return addr;  
 	}
 	
-	//GSM和CDMA手机定位
-//	private boolean goGsm = true;
-//	private boolean running = true;
-//	public class NewThread extends Thread{
-//		private long time = 0;
-//		public void run(){
-//			time = System.currentTimeMillis();
-//			while(running){
-//				if(System.currentTimeMillis() - time >= 10000){
-//					break;
-//				}
-//			}
-//			if(running){
-//				goGsm = false;
-//				geoLat = 31.1984;
-//		      	geoLon = 121.436475;
-//		      	myHandler.sendEmptyMessage(1);
-//			}
-//		}
-//	}
-//	public void ddd(){
-//        Thread thread = new Thread(){
-//                public void run(){
-//                        try {
-//                                DefaultHttpClient client = new DefaultHttpClient();
-//                                HttpPost post = new HttpPost("http://www.google.com/loc/json");//http://www.google.com/glm/mmap");//
-//                                
-//                                JSONObject holder = new JSONObject();
-//                                holder.put("version", "1.1.0");
-//                                holder.put("request_address", true);
-//                                holder.put("address_language", "en-us");
-//
-//                                JSONObject data ;
-//                                JSONArray array = new JSONArray();
-//                                data = new JSONObject();
-//                                data.put("cell_id", c.getCid());  // 9457, 8321,8243
-//                                data.put("location_area_code", c.getLac());// 28602
-//                                data.put("mobile_country_code", ss.substring(0, 3));// 208
-//                                data.put("mobile_network_code", ss.substring(3, 5));// 0
-//                                data.put("age", 0);
-////                                
-//                                array.put(data);
-//                                for(int i =0;i<(count<2?count:2);i++){
-//                                        data = new JSONObject();
-//                                        data.put("cell_id", ci[i]);  // 9457, 8321,8243
-//                                        data.put("location_area_code", lac[i]);// 28602
-//                                        data.put("mobile_country_code", ss.substring(0, 3));// 208
-//                                        data.put("mobile_network_code", ss.substring(3, 5));// 0
-//                                        data.put("age", 0);
-//                                        array.put(data);
-//                                }
-//                                holder.put("cell_towers", array);
-////                                
-//                                StringEntity se = new StringEntity(holder.toString());
-//                                Log.e("Location send",holder.toString());
-//                                post.setEntity(se);
-//                                HttpResponse resp = client.execute(post);
-//                                
-//                                HttpEntity entity = resp.getEntity();
-//
-//                                BufferedReader br = new BufferedReader(new InputStreamReader(entity
-//                                                .getContent()));
-//                                StringBuffer sb = new StringBuffer();
-//                                String result = br.readLine();
-//                                while (result != null) {
-//                                        Log.e("Locaiton reseive", result);
-//                                        sb.append(result);
-//                                        result = br.readLine(); 
-//                                }
-//                                result_location = sb.toString();
-//                                
-//                                
-//                                data = new JSONObject(sb.toString());
-//                                data = (JSONObject) data.get("location");
-//                                geoLat = (Double) data.get("latitude");
-//                                geoLon = (Double) data.get("longitude");
-//                                if(geoLat != 0.0 && geoLon != 0.0 && geoLat != 0 && geoLon != 0)
-//								{
-//                                	running = false;
-//                                	if(goGsm == true)
-//                                	{
-//                                		myHandler.sendEmptyMessage(0);
-//                                	}
-//								}
-//								else
-//								{
-//                                	running = false;
-//									geoLat = 31.1984;
-//							      	geoLon = 121.436475;
-//							      	if(goGsm == true)
-//                                	{
-//                                		myHandler.sendEmptyMessage(1);
-//                                	} 
-//								}
-//                        } 
-//                        catch (ClientProtocolException e) {
-//                                e.printStackTrace();
-//                        } catch (IOException e) {
-//                                e.printStackTrace();
-//                        } 
-//                        catch (JSONException e) {
-//                                e.printStackTrace();
-////                                loc.setText("");
-//                        }
-//                }
-//        };
-//        thread.start();
-//	}
-	
+		
 	public static String extractUrlWithoutSecret(String url){
 		if(url == null || url.equals("")) return null;
 		int index1 = url.indexOf("access_token=");
@@ -1485,24 +1312,28 @@ public class Util {
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
 
+    public static UserBean reloadUser(){
+    		UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
+        return user;
+    }
+    
     /**
      *
      * @return 返回当前 UserBean user，未登录情况下返回 null
      */
     public static UserBean getCurrentUser() {
-    	if (currentUser != null)
-    	{
-    		return currentUser;
-    	}
-    	
-        UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
-        return user;
+	    	if (currentUser != null)
+	    	{
+	    		return currentUser;
+	    	}
+	    	currentUser = reloadUser(); 
+    	    return currentUser;
     }
     
     public static boolean isUserLogin()
     {
-    	UserBean user = getCurrentUser();
-    	return user != null && user.getPhone() != null && user.getPhone().length() > 0;
+	    	UserBean user = getCurrentUser();
+	    	return user != null && user.getPhone() != null && user.getPhone().length() > 0;
     }
 
 	public static String getMyId(Context context)
