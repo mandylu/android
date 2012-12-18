@@ -83,6 +83,7 @@ public class TrackConfig implements Observer {
 			MENU_SHOW_PAGEURL("menuShowInPageURL","菜单出现的页面URL"),
 			MENU_ACTION_TYPE("menuActionType","菜单动作类型"),
 			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市"),
+			FRAGMENT("fragment","fragment"),
 			//from3.1
 			RESULT("result","结果"),
 			ACTION("action","inputing动作"),

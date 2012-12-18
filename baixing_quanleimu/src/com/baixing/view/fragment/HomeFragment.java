@@ -16,6 +16,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.baixing.entity.FirstStepCate;
+import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Tracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
@@ -95,6 +96,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+//		this.pv = PV.HOME;
 	}
 	
 	public boolean hasGlobalTab()
@@ -200,6 +202,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		synchronized(HomeFragment.this){
 			setViewContent();
 		}
+		Tracker.getInstance().pv(PV.HOME).end();
 	}
 	
 	@Override
