@@ -1838,10 +1838,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			if (ls != null && ls.size() > 0)
 			{
 				startActivity(intent);
-				if (!sms)
-				{
-					called = true;
-				}
+				called = true;
 			}
 			else
 			{

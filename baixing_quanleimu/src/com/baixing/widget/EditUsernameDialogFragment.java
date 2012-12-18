@@ -93,7 +93,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
 
 
     private void updateUsername() {
-        EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
+        final EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
         if (editUsernameEt.getText().toString().trim().length() <= 0) {
             Toast.makeText(getActivity(), "请输入用户名", 1).show();
             return;
@@ -121,7 +121,14 @@ public class EditUsernameDialogFragment extends DialogFragment {
                                 .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
                                 .end();
                     } else {
-                        Util.clearData(getActivity(), "userProfile");
+//                        Util.clearData(getActivity(), "userProfile");
+                    	userProfile.nickName = editUsernameEt.getText().toString();
+                    	Activity activity = getActivity();
+                    	if (activity != null)
+                    	{
+                    		Util.saveDataToLocate(activity, "userProfile", userProfile);
+                    	}
+                    
                         msg.what = PersonalInfoFragment.MSG_EDIT_USERNAME_SUCCESS;
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, true)
