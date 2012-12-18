@@ -645,7 +645,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
+							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);//648,1985
 							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 						}
 						return false;
@@ -832,6 +832,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					public void run(){
 						if (et != null)
 						{
+							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 							et.requestFocus();
 							InputMethodManager inputMgr = 
 									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
