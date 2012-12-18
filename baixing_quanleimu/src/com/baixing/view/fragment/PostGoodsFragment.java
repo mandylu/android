@@ -58,6 +58,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
@@ -722,7 +723,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				layoutParams = new LinearLayout.LayoutParams(
 				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
 			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
-			layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			if(!fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION)){
+				layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			}
 			v.setLayoutParams(layoutParams);
 			layout_txt.addView(v);
 		}
@@ -1802,7 +1805,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		isPost = (goodsDetail==null);
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
 
-		if(layout != null){
+		if(layout != null && !postBean.getName().equals(STRING_DETAIL_POSITION)){
 			ViewGroup.LayoutParams lp = layout.getLayoutParams();
 			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
 			layout.setLayoutParams(lp);
@@ -1926,7 +1929,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
-		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
+//		ViewGroup.LayoutParams ivParams = categoryItem.findViewById(R.id.post_next).getLayoutParams();
+//		if(ivParams == null){
+//			ivParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+//		}
+//		ivParams.height = ivParams.width = getResources().getDimensionPixelOffset(R.dimen.post_arrow_size);
+		
+//		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -2191,7 +2200,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				if(getView() != null && container != null){
 					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
 					if(iv != null){						
-						if(container != null && container.length > 0 && container[0].bitmapPath != null){
+						if(container != null 
+								&& container.length > 0
+								&& container[0].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal
+								&& container[0].bitmapPath != null){
 							Bitmap thumbnail = ImageSelectionDialog.getThumbnailWithPath(container[0].thumbnailPath);
 							if(iv != null && thumbnail != null){
 								iv.setImageBitmap(thumbnail);

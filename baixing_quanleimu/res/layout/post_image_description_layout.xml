@@ -43,7 +43,7 @@
             android:singleLine="false"
             android:textColor="@drawable/list_titleselector"
             android:textColorHint="#d1d0ca"
-            android:textSize="14dip" >
+            android:textSize="@dimen/font_medium" >
         </EditText>
 
         <ImageView
