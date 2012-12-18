@@ -622,7 +622,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void doPost(boolean registered, BXLocation location){
 		if(inPosting) return;
-		showSimpleProgress();
+//		showSimpleProgress();
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 		new Thread(new UpdateThread(registered, location)).start();		
 	}
 	private boolean usercheck() {
@@ -674,9 +675,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);	
-			ViewGroup.LayoutParams lp = ((ViewGroup)v).getLayoutParams();
-			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
-			v.setLayoutParams(lp);
 			((TextView)v.findViewById(R.id.postshow)).setText(fixedItemDisplayNames[i]);
 			EditText text = (EditText)v.findViewById(R.id.postinput);
 			final String fixedItemDisplayName = fixedItemDisplayNames[i];
@@ -724,6 +722,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				layoutParams = new LinearLayout.LayoutParams(
 				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
 			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
+			layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
 			v.setLayoutParams(layoutParams);
 			layout_txt.addView(v);
 		}
