@@ -218,6 +218,7 @@ public class CustomDialogBuilder {
 //											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
 												List<MultiLevelItem> secondLevelItems = new ArrayList<MultiLevelItem>();
 												if (bean.getLabels() != null) {
+													
 													MultiLevelItem tBack = new MultiLevelItem();
 													tBack.txt = "返回上一级";
 													tBack.id = null;
@@ -237,7 +238,15 @@ public class CustomDialogBuilder {
 													}
 												}
 												else {
-													//
+//													showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+//													CustomDialogBuilder.this.id = bean.get;
+//													String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+//													(new Thread(new GetMetaDataThread(id,txt))).start();
+													MultiLevelItem item = new MultiLevelItem();
+													item.txt = bean.getDisplayName();
+													item.id = bean.getName();
+													CustomDialogBuilder.this.lastChoise = item;
+													handleLastLevelChoice(cd);
 													return;
 												}
 //											}
