@@ -1229,20 +1229,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		
 		String area = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
 		String address = detail.getMetaValueByKey("具体地点");
-		if (address != null)
+		if (address != null && address.trim().length() > 0)
 		{
-			area += "  " + address;
+			area = address;
 		}
 		
-		if (area != null)
-		{
-			View areaV = createMetaView(inflater, "地区:", area, new View.OnClickListener() {
-				public void onClick(View v) {
-					showMap();
-				}
-			});
-			ll_meta.addView(areaV);
-		}
+		View areaV = createMetaView(inflater, "地区:", area, new View.OnClickListener() {
+			public void onClick(View v) {
+				showMap();
+			}
+		});
+		ll_meta.addView(areaV);
 	}
 	
 	
