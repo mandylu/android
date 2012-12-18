@@ -36,4 +36,6 @@
     
     <!-- post -->
     <dimen name="post_padding">12dp</dimen>
+    <dimen name="post_marginbottom">8dip</dimen>
+    <dimen name="post_item_height">48dip</dimen>
 </resources>

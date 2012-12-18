@@ -1,16 +1,17 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     android:id="@+id/post_select"
-    android:layout_width="fill_parent"
-    android:layout_height="wrap_content"
+    android:layout_width="292dip"
+    android:layout_height="48dip"
+    android:layout_marginBottom="8dip"
     android:background="@drawable/post_select_selector" >
 
     <ImageView
         android:id="@+id/post_next"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:layout_centerVertical="true"
+        android:layout_height="match_parent"
         android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
         android:layout_marginRight="8dp"
         android:src="@drawable/post_select_arrow" >
     </ImageView>
@@ -18,32 +19,29 @@
     <TextView
         android:id="@+id/postshow"
         android:layout_width="88dip"
-        android:layout_height="wrap_content"
+        android:layout_height="fill_parent"
         android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
         android:duplicateParentState="true"
-        android:gravity="left"
-        android:paddingLeft="10dip"
-        android:paddingBottom="10dip"
-        android:paddingTop="10dip"
+        android:gravity="left|center_vertical"
+        android:paddingLeft="8dip"
         android:singleLine="true"
         android:textColor="@drawable/list_textselector"
-        android:textSize="18dip" />
+        android:textSize="14dip" />
 
     <TextView
         android:id="@+id/posthint"
         android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
+        android:layout_height="match_parent"
         android:layout_centerVertical="true"
         android:layout_marginLeft="10dip"
         android:layout_marginRight="5dp"
         android:layout_toLeftOf="@id/post_next"
         android:layout_toRightOf="@id/postshow"
-        android:gravity="left"
-        android:paddingBottom="10dip"
-        android:paddingTop="10dip"
+        android:gravity="left|center_vertical"
         android:singleLine="true"
-        android:textColorHint="#d1d0ca"
         android:textColor="@drawable/list_titleselector"
-        android:textSize="18dip" />
+        android:textColorHint="#d1d0ca"
+        android:textSize="14dip" />
 
 </RelativeLayout>
