@@ -389,7 +389,12 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 						new Thread(new UpLoadThread(imgContainer[i].bitmapPath, i)).start();
 					}
 					imgs.add(iv);
-				}
+				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Failed){
+					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
+					iv.setImageResource(R.drawable.f);
+					iv.setVisibility(View.VISIBLE);
+					imgs.add(iv);
+				}				
 			}
 		}
 	}
@@ -884,7 +889,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 						}
 					});	     
 					return;
-				} 
+				} else{
+					imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
+				}
 			}else{
 				Log.d("bitmap", "bitmap is nullllllll");
 				-- uploadCount;
