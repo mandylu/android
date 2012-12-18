@@ -6,9 +6,8 @@ import java.util.Map.Entry;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.util.Log;
-
 import com.baixing.util.TrackConfig.TrackMobile.Key;
+import com.baixing.util.TrackConfig.TrackMobile.Value;
 /**
  * @author xuweiyan@baixing.com
  */
@@ -24,6 +23,11 @@ public class LogData {
 	
 	public HashMap<String, String> getMap() {
 		return map;
+	}
+	
+	public LogData append(Key key, Value value) {
+		this.map.put(key.getName(), value.getValue());
+		return this;
 	}
 	
 	public LogData append(Key key, int value)

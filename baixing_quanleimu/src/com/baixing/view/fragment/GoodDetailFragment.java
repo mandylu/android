@@ -66,6 +66,7 @@ import com.baixing.util.Tracker;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
@@ -227,12 +228,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				.setMessage(R.string.tip_add_fav)
 				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, "cancel").end();
+						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, Value.CANCEL).end();
 					}
 				})
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, "fav").end();
+						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, Value.FAV).end();
 						handleStoreBtnClicked();
 					}
 					
@@ -1801,12 +1802,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
-				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, "call").end();
+				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, Value.CALL).end();
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
-				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, "copy").end();
+				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, Value.COPY).end();
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
