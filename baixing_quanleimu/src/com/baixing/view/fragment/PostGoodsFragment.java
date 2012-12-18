@@ -197,7 +197,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
 				|| requestCode == PHOTORESOULT)){
 			imgSelDlg.setMsgOutHandler(handler);
-			imgSelBundle = new Bundle();
+			if(imgSelBundle == null){
+				imgSelBundle = new Bundle();
+			}
 			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
 			imgSelDlg.onActivityResult(requestCode, resultCode, data);
 //			imgSelDlg.show(getFragmentManager(), null);
