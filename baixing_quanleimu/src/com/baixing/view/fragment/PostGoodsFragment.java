@@ -674,8 +674,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			View v = fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);	
+			ViewGroup.LayoutParams lp = ((ViewGroup)v).getLayoutParams();
+			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			v.setLayoutParams(lp);
 			((TextView)v.findViewById(R.id.postshow)).setText(fixedItemDisplayNames[i]);
-
 			EditText text = (EditText)v.findViewById(R.id.postinput);
 			final String fixedItemDisplayName = fixedItemDisplayNames[i];
 			text.setOnTouchListener(new OnTouchListener() {
@@ -721,7 +723,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if (layoutParams == null)
 				layoutParams = new LinearLayout.LayoutParams(
 				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
 			v.setLayoutParams(layoutParams);
 			layout_txt.addView(v);
 		}
@@ -1800,6 +1802,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		Activity activity = getActivity();
 		isPost = (goodsDetail==null);
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
+
+		if(layout != null){
+			ViewGroup.LayoutParams lp = layout.getLayoutParams();
+			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			layout.setLayoutParams(lp);
+		}
+
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
 			layout.findViewById(R.id.location).setOnClickListener(this);
 //			if(inLocating){
@@ -1915,6 +1924,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+		
 		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
@@ -1935,7 +1945,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (layoutParams == null)
 			layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);		
+		layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
 		categoryItem.setLayoutParams(layoutParams);
 		
 		layout_txt.addView(categoryItem);
@@ -2508,7 +2519,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = postBean.getName().equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
-						inflater.inflate(R.layout.item_post_edit, null);	
+						inflater.inflate(R.layout.item_post_edit, null);
+
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
@@ -2694,7 +2706,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (layoutParams == null)
 			layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
 		layout.setLayoutParams(layoutParams);
 		
 		return layout;
