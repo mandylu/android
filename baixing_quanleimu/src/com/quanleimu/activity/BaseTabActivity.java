@@ -182,22 +182,22 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected void onPause() {
 		super.onPause();
-		if (!this.isChangingTab) {
-			Log.d("ddd","onpause");
-			
-			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
-		}
+//		if (!this.isChangingTab) {
+//			Log.d("ddd","onpause");
+//			
+//			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+//		}
 	}
 	
 	protected void onStop() {
 		super.onStop();
-		if (!this.isChangingTab) {
-			Log.d("ddd","onstop");
-			
-			Tracker.getInstance().event(BxEvent.APP_STOP).end();
-			Tracker.getInstance().save();
-			Sender.getInstance().notifySendMutex();
-		}
+//		if (!this.isChangingTab) {
+//			Log.d("ddd","onstop");
+//			
+//			Tracker.getInstance().event(BxEvent.APP_STOP).end();
+//			Tracker.getInstance().save();
+//			Sender.getInstance().notifySendMutex();
+//		}
 	}
 	
 	protected int getTabIndex()
