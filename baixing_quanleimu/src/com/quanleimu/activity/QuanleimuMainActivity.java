@@ -89,7 +89,11 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onPause() {
 
-		
+		if (!this.isChangingTab) {
+			Log.d("ddd","onpause");
+			
+			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+		}
 		unregisterMsgListener();
 		
 		super.onPause();
@@ -138,6 +142,13 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onStop() {
 		
+		if (!this.isChangingTab) {
+			Log.d("ddd","onstop");
+			
+			Tracker.getInstance().event(BxEvent.APP_STOP).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
+		}
 		
 		super.onStop();
 	}
