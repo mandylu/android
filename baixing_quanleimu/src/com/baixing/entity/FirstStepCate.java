@@ -5,10 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 public class FirstStepCate extends Object implements Serializable {
-	
-	/**
-	 * 
-	 */
 	private static final long serialVersionUID = 1L;
 	public String name;
 	public String englishName;

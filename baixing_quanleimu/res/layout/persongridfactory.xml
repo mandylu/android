@@ -13,12 +13,11 @@
         <RelativeLayout
             android:id="@+id/userInfoLayout"
             android:layout_width="fill_parent"
-            android:layout_height="92dp"
-            android:background="#fafafa"
+            android:layout_height="80dp"
             android:baselineAligned="true"
             android:clickable="true"
             android:orientation="horizontal"
-            android:visibility="gone" >
+            android:visibility="visible" >
 
             <RelativeLayout
                 android:layout_width="fill_parent"
@@ -27,13 +26,15 @@
                 android:layout_alignParentTop="false"
                 android:layout_centerVertical="true"
                 android:layout_gravity="center_vertical"
-                android:layout_marginLeft="20dp"
+                android:layout_marginLeft="8dp"
                 android:gravity="center_vertical" >
 
                 <LinearLayout
                     android:id="@+id/linearLayout"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+                   	android:layout_marginLeft="@dimen/list_margin_LF"
+					android:layout_marginRight="@dimen/list_margin_LF"
                     android:layout_alignParentBottom="true"
                     android:orientation="horizontal" >
 
@@ -60,6 +61,8 @@
                 <LinearLayout
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
+					android:layout_marginLeft="@dimen/list_margin_LF"
+					android:layout_marginRight="@dimen/list_margin_LF"
                     android:orientation="horizontal" >
 
                     <TextView
@@ -87,6 +90,8 @@
             <View
                 android:layout_width="fill_parent"
                 android:layout_height="5dp"
+				android:layout_marginLeft="@dimen/list_margin_LF"
+				android:layout_marginRight="@dimen/list_margin_LF"
                 android:layout_alignParentBottom="true"
                 android:background="@color/base_green" />
         </RelativeLayout>
@@ -96,11 +101,12 @@
                 android:id="@+id/rl_wosent"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-				android:layout_marginLeft="@dimen/list_margin_LF"
-                android:layout_marginRight="@dimen/list_margin_LF"
+				android:paddingLeft="8dp"
+				android:paddingTop="9dp"
+				android:paddingBottom="9dp"
                 android:background="@drawable/list_selector"
                 android:gravity="center_vertical"
-                android:padding="10dip" >
+                 >
 
                 <ImageView
                     android:id="@+id/senticon"
@@ -116,13 +122,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dip"
+                    android:layout_marginLeft="14dip"
                     android:layout_toRightOf="@id/senticon"
                     android:duplicateParentState="true"
                     android:gravity="center_vertical"
                     android:text="我的信息"
                     android:textColor="@color/common_button_text_color"
-                    android:textSize="20dip" >
+                    android:textSize="@dimen/font_medium" >
                 </TextView>
             </RelativeLayout>
 
@@ -138,12 +144,12 @@
                 android:id="@+id/rl_wofav"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-                android:layout_marginLeft="@dimen/list_margin_LF"
-                android:layout_marginRight="@dimen/list_margin_LF"
+				android:paddingLeft="8dp"
+				android:paddingTop="9dp"
+				android:paddingBottom="9dp"
                 android:background="@drawable/list_selector"
                 android:clickable="true"
-                android:gravity="center_vertical"
-                android:padding="10dip" >
+                android:gravity="center_vertical">
 
                 <ImageView
                     android:id="@+id/favicon"
@@ -159,13 +165,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dip"
+                    android:layout_marginLeft="14dip"
                     android:layout_toRightOf="@id/favicon"
                     android:duplicateParentState="true"
                     android:gravity="center_vertical"
                     android:text="收藏"
                     android:textColor="@color/common_button_text_color"
-                    android:textSize="20dip" >
+                    android:textSize="@dimen/font_medium" >
                 </TextView>
             </RelativeLayout>
            
@@ -181,12 +187,13 @@
                 android:id="@+id/rl_setting"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
-				android:layout_marginLeft="@dimen/list_margin_LF"
-                android:layout_marginRight="@dimen/list_margin_LF"
+				android:paddingLeft="8dp"
+				android:paddingTop="9dp"
+				android:paddingBottom="9dp"
                 android:background="@drawable/list_selector"
                 android:clickable="true"
                 android:gravity="center_vertical"
-                android:padding="10dip" >
+				>
 
                 <ImageView
                     android:id="@+id/setting_img"
@@ -202,13 +209,13 @@
                     android:layout_width="fill_parent"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
-                    android:layout_marginLeft="20dip"
+                    android:layout_marginLeft="14dip"
                     android:layout_toRightOf="@+id/setting_img"
                     android:duplicateParentState="true"
                     android:gravity="center_vertical"
                     android:text="设置"
                     android:textColor="@color/common_button_text_color"
-                    android:textSize="20dip" >
+                    android:textSize="@dimen/font_medium" >
                 </TextView>
             </RelativeLayout>
             <TextView

@@ -100,7 +100,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	public GoodsListAdapter findGoodListAdapter()
 	{
-		ListAdapter adapter = lvGoodsList.getAdapter();
+		ListAdapter adapter = lvGoodsList == null ? null : lvGoodsList.getAdapter();
 		if (adapter instanceof HeaderViewListAdapter)
 		{
 			HeaderViewListAdapter realAdapter = (HeaderViewListAdapter) adapter;
@@ -238,7 +238,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									+ categoryEnglishName
 									+ QuanleimuApplication.getApplication().cityEnglishName);
 			String json = pair.second;
-			if (json != null && json.length() > 0)
+			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
 			}
@@ -634,8 +634,11 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
 				GoodsListAdapter adapter = findGoodListAdapter();
-				updateData(adapter, goodsListLoader.getGoodsList().getData());
-				adapter.notifyDataSetChanged();		
+				if (adapter != null)
+				{
+					updateData(adapter, goodsListLoader.getGoodsList().getData());
+					adapter.notifyDataSetChanged();		
+				}
 				
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				goodsListLoader.setHasMore(true);

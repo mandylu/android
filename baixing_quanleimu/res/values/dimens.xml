@@ -7,14 +7,14 @@
     <dimen name="title_action_right_width">62dp</dimen>
     <dimen name="tab_height">48dp</dimen>
     <dimen name="tab_indicator_height">4dp</dimen>
-    <dimen name="tab_font_size">12sp</dimen>
+    <dimen name="tab_font_size">14sp</dimen>
     <dimen name="tab_gap_width">1dp</dimen>
     <dimen name="tab_gap_height">22dp</dimen>
     <dimen name="tab_icon_width">24dp</dimen>
     <dimen name="tab_icon_height">24dp</dimen>
     <dimen name="set_table_height">48dp</dimen>
     <dimen name="set_table_header_text_height">12dp</dimen><dimen name="set_table_item_text_height">16dp</dimen>
-    <dimen name="list_margin_LF">14dp</dimen>
+    <dimen name="list_margin_LF">16dp</dimen>
     <dimen name="vad_margin_LF">16dp</dimen>
     <dimen name="list_filter_more_item_width">54dp</dimen>
     <dimen name="vad_meta_item_height">40dp</dimen>
@@ -22,6 +22,7 @@
     <dimen name="vad_img_right_space">8dp</dimen>
     <dimen name="font_input_text">16sp</dimen>
     <dimen name="filter_gap">10dp</dimen>
+    <dimen name="line_space">6sp</dimen>
     
     <!-- personal center -->
     <dimen name="icon_width_small">30dp</dimen>
@@ -35,4 +36,7 @@
     
     <!-- post -->
     <dimen name="post_padding">12dp</dimen>
+    <dimen name="post_marginbottom">8dip</dimen>
+    <dimen name="post_item_height">48dip</dimen>
+    <dimen name="post_arrow_size">16dip</dimen>
 </resources>

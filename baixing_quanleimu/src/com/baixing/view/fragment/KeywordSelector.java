@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -143,6 +144,8 @@ public class KeywordSelector extends BaseFragment {
 
 				// 将搜索记录保存本地
 				Util.saveDataToLocate(getActivity(), "listRemark", listRemark);
+				
+				ViewUtil.postShortToastMessage(getView(), R.string.tip_history_cleared, 0);
 			}
 		});
 

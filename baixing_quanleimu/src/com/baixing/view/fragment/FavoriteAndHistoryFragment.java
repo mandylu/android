@@ -68,6 +68,21 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
     }
+    
+    private GoodsListLoader createGoodsListLoader()
+    {
+    	List<GoodsDetail> data = new ArrayList<GoodsDetail>();
+    	if (tempGoodsList != null && tempGoodsList.getData() != null)
+    	{
+    		data.addAll(tempGoodsList.getData());
+    	}
+    	GoodsList list = new GoodsList(data);
+    	
+    	GoodsListLoader loader = new GoodsListLoader(null, null, null, list);
+    	loader.setHasMore(false);
+    	
+    	return loader;
+    }
 
     @Override
 	public void onDestroy() {
@@ -92,7 +107,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 GoodDetailFragment f = new GoodDetailFragment();
                 f.setListHolder(FavoriteAndHistoryFragment.this);
                 Bundle bundle = createArguments(null, null);
-                bundle.putSerializable("loader", glLoader);
+                bundle.putSerializable("loader", createGoodsListLoader());
                 bundle.putInt("index", position);
 
                 buttonStatus = -1; //Reset button status when go to other screen.
@@ -241,28 +256,51 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
                     pullListView.onFail();
                 } else {
-                    List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+                	
+                	/* //该问题已经到了不用中文说不清楚的地步！(至少我说不清楚)
+                	 *  原则： 服务端返回的数据为准，但是顺序以本地为准。
+                	 *  
+                	 *  鉴于目前“收藏”这块的设计，下面的逻辑是处理服务器端有数据返回的情况；
+                	 *  1. 本地数据顺序不变
+                	 *  2. 如果服务端返回结果不包括本地已经存在的某条记录， 那么删除该记录
+                	 *  3. 如果本地没有任何数据，以服务端返回为准
+                	 */
+                    List<GoodsDetail> filterResult = new ArrayList<GoodsDetail>();
+                    List<GoodsDetail> oldList = new ArrayList<GoodsDetail>();
                     List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+                    List<GoodsDetail> newList = tempGoodsList.getData();
+                    if (newList == null)
+                    {
+                    	newList = new ArrayList<GoodsDetail>();
+                    }
+                    if (favList != null) {
+                    	oldList.addAll(favList);
+                    }
                     
-//                    if (tempGoodsList.getData().size() <= favList.size()) {//Got no idea what this block code want to do !
-//                        for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
-//                            boolean exist = false;
-//                            for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
-//                                if (favList.get(i).equals(tempGoodsList.getData().get(j))) {
-//                                    tmp.add(0, tempGoodsList.getData().get(j));
-//                                    favList.set(i, tempGoodsList.getData().get(j));
-//                                    exist = true;
-//                                    break;
-//                                }
-//                            }
-//                            if (!exist) {
-//                                favList.remove(i);
-//                            }
-//                        }
-//                    }
                     
-                    tmp.addAll(tempGoodsList.getData());
-                    favList = tmp;//tempGoodsList.getData();
+                    if (oldList.size() == 0) //If we have no local favorites, use server return list.
+                    {
+                    	filterResult.addAll(newList);
+                    }
+                    else
+                    {
+                    	for (GoodsDetail d : oldList)
+                    	{
+                    		final int index1 = newList.indexOf(d);
+                    		if (index1 != -1) //If server did not return this detail, means it's deleted by the owner of the ads.
+                    		{
+                    			GoodsDetail dd = newList.remove(index1);
+                    			filterResult.add(dd);
+                    		}
+                    	}
+                    	
+                    	filterResult.addAll(newList);
+                    }
+                    
+                    tempGoodsList.setData(filterResult);
+                    favList = filterResult;//tempGoodsList.getData();
+                    
+                    
 
                 	QuanleimuApplication.getApplication().updateFav(favList);
                 	Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);

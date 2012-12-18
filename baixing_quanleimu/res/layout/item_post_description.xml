@@ -15,7 +15,7 @@
         android:paddingLeft="10dip"
         android:textColor="#838383"
         android:text="AA"
-        android:textSize="18dip" />	
+        android:textSize="@dimen/font_medium" />	
 
 	<EditText
 	    android:id="@+id/postdescriptioninput"

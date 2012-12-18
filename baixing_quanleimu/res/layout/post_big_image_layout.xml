@@ -9,20 +9,21 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:background="@drawable/loading_210_black"
+        android:adjustViewBounds="true"
+        android:cropToPadding="true"
         android:maxWidth="280dip"
-        android:maxHeight="280dip"
-        android:scaleType="centerCrop" >
+        android:paddingBottom="53dp"
+        android:scaleType="centerInside"
+        android:src="@drawable/loading_210_black" >
     </ImageView>
 
     <Button
         android:id="@+id/btn_post_del_img"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
+        android:layout_alignBottom="@id/iv_post_big_img"
         android:layout_alignLeft="@id/iv_post_big_img"
         android:layout_alignRight="@id/iv_post_big_img"
-        android:layout_below="@id/iv_post_big_img"
-        android:layout_marginTop="5dip"
         android:background="@drawable/post_finish_btn"
         android:text="删除"
         android:textColor="#FFFFFF"

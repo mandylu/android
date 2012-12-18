@@ -19,6 +19,7 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
+import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
@@ -45,7 +46,7 @@ public class CustomDialogBuilder {
 	private boolean hasNextLevel = false;
 	private boolean isCategoryItem = false;
 	private List items = null;
-	private List<MultiLevelItem> secondLevelItems = null;
+//	private List<MultiLevelItem> secondLevelItems = null;
 	private String selectedValue = null;
 	private String id = null;
 	private String json = null;
@@ -65,9 +66,9 @@ public class CustomDialogBuilder {
 		this.requestCode = bundle.getInt(ARG_COMMON_REQ_CODE);
 		if (bundle.getInt(ARG_COMMON_REQ_CODE) == MSG_CATEGORY_SEL_BACK)
 			isCategoryItem = true;
-		if (bundle.containsKey("selectedValue"))
+		if (bundle.containsKey("selectedValue") && bundle.getString("selectedValue")!=null)
 		{
-			this.selectedValue = bundle.getString("selectedValue");
+			this.selectedValue = bundle.getString("selectedValue");//selectedValue
 		}
 //		if (bundle.containsKey("metaId"))
 //		{
@@ -84,8 +85,8 @@ public class CustomDialogBuilder {
 	
 	private void configCustomDialog(final CustomDialog cd) {
 		
-		final ListView lv = cd.getListView();
-		final List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
+		ListView lv = cd.getListView();
+		List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
 		if (isCategoryItem) {
 			cd.setTitle("请选择分类");
 			for (String item : (List<String>)items) {
@@ -98,113 +99,18 @@ public class CustomDialogBuilder {
 			for (MultiLevelItem item : (List<MultiLevelItem>)items) {
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("tv", item.toString());
+				map.put("id", item.id);
 				firstLevelList.add(map);
 			}
 		}
-		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
-				new String[]{"tv"}, new int[]{R.id.tv});
-		lv.setAdapter(simpleAdapter);
-		lv.setOnItemClickListener(new OnItemClickListener() {
-			@Override
-			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
-					long arg3) {
-				if (hasNextLevel) {
-					final List<Map<String,Object>> list = new ArrayList<Map<String,Object>>();
-					if (isCategoryItem) {
-						cd.setTitle("请选择分类");
-						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
-						if (allCates == null || allCates.size() <= pos)
-							return;
-						FirstStepCate selectedCate = null;
-						String selText = (String) firstLevelList.get(pos).get("tv");
-						for (int i=0; i< allCates.size(); i++) {
-							if (allCates.get(i).name.equals(selText)) {
-								selectedCate = allCates.get(i);
-								break;
-							}
-						}
-						
-						Map<String,Object> backMap = new HashMap<String,Object>();
-						backMap.put("tvCategoryName", "返回上一级");
-						backMap.put("tvCategoryEnglishName", "back");
-						list.add(backMap);
-						List<SecondStepCate> children = selectedCate.getChildren();
-						for (SecondStepCate cate : children) {
-							Map<String,Object> map = new HashMap<String,Object>();
-							map.put("tvCategoryName", cate.getName());
-							map.put("tvCategoryEnglishName", cate.getEnglishName());
-							list.add(map);
-						}
-						//configSecondLevel
-						configSecondLevel(cd, lv, list);
-					}//isCategoryItem over
-					else {//not category Item,need Thread & handler
-						handler = new Handler() {
-							@Override
-							public void handleMessage(Message msg) {
-								switch(msg.what) {
-									case MESSAGE_GET_METAOBJ:
-									hideProgress();
-									//json->list
-									if (json != null) {
-										LinkedHashMap<String,PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
-										if (beans != null) {
-											PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
-											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
-												CustomDialogBuilder.this.secondLevelItems = new ArrayList<MultiLevelItem>();
-												if (bean.getLabels() != null) {
-													MultiLevelItem tBack = new MultiLevelItem();
-													tBack.txt = "返回上一级";
-													tBack.id = null;
-													CustomDialogBuilder.this.secondLevelItems.add(tBack);
-													if (bean.getLabels().size() > 1) {
-														MultiLevelItem tAll = new MultiLevelItem();
-														MultiLevelItem selectedItem = (MultiLevelItem)msg.obj;
-														tAll.txt = selectedItem.toString();
-														tAll.id = selectedItem.id;
-														CustomDialogBuilder.this.secondLevelItems.add(tAll);
-													}
-													for (int i=0; i<bean.getLabels().size(); i++) {
-														MultiLevelItem t = new MultiLevelItem();
-														t.txt = bean.getLabels().get(i);
-														t.id = bean.getValues().get(i);
-														CustomDialogBuilder.this.secondLevelItems.add(t);
-													}
-												}
-												else {
-													//
-													return;
-												}
-											}
-											else {
-												
-											}
-											//secondLevelItems -> list
-											//List<MultiLevelItem> -> List<Map<String,Object>>
-											//configSecondLevel
-											configSecondLevel(cd, lv, CustomDialogBuilder.this.secondLevelItems);										}
-									}
-									
-									break;
-								}
-								
-							}//handleMessage
-							
-						};
-						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
-						CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
-						String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
-						(new Thread(new GetMetaDataThread(id,txt))).start();
-					}//not category over
-					
-				} else {
-					
-					MultiLevelItem item = (MultiLevelItem) items.get(pos);
-					CustomDialogBuilder.this.lastChoise = item;
-					handleLastLevelChoice(cd);
-				}
-			}
-		});
+		
+//		SimpleAdapter simpleAdapter = new SimpleAdapter(context, firstLevelList, R.layout.item_seccategory_simple2,
+//				new String[]{"tv"}, new int[]{R.id.tv});
+//		lv.setAdapter(simpleAdapter);
+		
+		configFirstLevel(cd, lv, firstLevelList);
+		
+		
 	}
 	
 	protected final void showProgress(int titleResid, int messageResid, boolean cancelable) {
@@ -243,6 +149,146 @@ public class CustomDialogBuilder {
 			
 			handler.sendMessage(message);
 		}
+	}
+	
+	private void configFirstLevel(final CustomDialog cd, final ListView lv, final List list) {
+		//adapter
+		FirstCateAdapter firstAdapter = new FirstCateAdapter(list);//List<Map<String,Object>> firstLevelList
+		lv.setAdapter(firstAdapter);
+		//lv set on item click listener
+		
+		lv.setOnItemClickListener(new OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
+					long arg3) {
+				System.out.println("onItemClick");
+				if (hasNextLevel) {
+					System.out.println("hasNextLevel true");
+					final List<Map<String,Object>> secondLevelList = new ArrayList<Map<String,Object>>();//
+					if (isCategoryItem) {//分类模块
+						System.out.println("isCategoryItem " + isCategoryItem);
+						cd.setTitle("请选择分类");
+						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+						if (allCates == null || allCates.size() <= pos)
+						{
+							System.out.println("Reload category");
+							QuanleimuApplication.getApplication().loadCategorySync();//reload
+							allCates = QuanleimuApplication.getApplication().getListFirst();//recheck
+							if(allCates == null || allCates.size() <= pos){
+								System.out.println("仁至义尽");
+								return;
+							}
+						}
+						FirstStepCate selectedCate = null;
+						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
+						for (int i=0; i< allCates.size(); i++) {
+							if (allCates.get(i).name.equals(selText)) {
+								selectedCate = allCates.get(i);
+								break;
+							}
+						}
+						
+						Map<String,Object> backMap = new HashMap<String,Object>();
+						backMap.put("tvCategoryName", "返回上一级");
+						backMap.put("tvCategoryEnglishName", "back");
+						secondLevelList.add(backMap);//
+						List<SecondStepCate> children = selectedCate.getChildren();
+						for (SecondStepCate cate : children) {
+							Map<String,Object> map = new HashMap<String,Object>();
+							map.put("tvCategoryName", cate.getName());
+							map.put("tvCategoryEnglishName", cate.getEnglishName());
+							secondLevelList.add(map);//
+						}
+						//configSecondLevel
+						configSecondLevel(cd, lv, secondLevelList);//
+					}//isCategoryItem over
+					else {//not category Item,need Thread & handler
+						handler = new Handler() {
+							@Override
+							public void handleMessage(Message msg) {
+								switch(msg.what) {
+									case MESSAGE_GET_METAOBJ:
+									hideProgress();
+									//json->list
+									if (json != null) {
+										LinkedHashMap<String,PostGoodsBean> beans = JsonUtil.getPostGoodsBean(json);
+										if (beans != null) {
+											PostGoodsBean bean = beans.get((String)beans.keySet().toArray()[0]);
+//											List<MultiLevelItem> secondLevelItems = null;
+//											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
+												List<MultiLevelItem> secondLevelItems = new ArrayList<MultiLevelItem>();
+												if (bean.getLabels() != null) {
+													
+													MultiLevelItem tBack = new MultiLevelItem();
+													tBack.txt = "返回上一级";
+													tBack.id = null;
+													secondLevelItems.add(tBack);
+													if (bean.getLabels().size() > 1) {
+														MultiLevelItem tAll = new MultiLevelItem();
+														MultiLevelItem selectedItem = (MultiLevelItem)msg.obj;
+														tAll.txt = selectedItem.toString();
+														tAll.id = selectedItem.id;
+														secondLevelItems.add(tAll);
+													}
+													for (int i=0; i<bean.getLabels().size(); i++) {
+														MultiLevelItem t = new MultiLevelItem();
+														t.txt = bean.getLabels().get(i);
+														t.id = bean.getValues().get(i);
+														secondLevelItems.add(t);
+													}
+												}
+												else {
+//													showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+//													CustomDialogBuilder.this.id = bean.get;
+//													String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+//													(new Thread(new GetMetaDataThread(id,txt))).start();
+													MultiLevelItem item = new MultiLevelItem();
+													item.txt = bean.getDisplayName();
+													item.id = bean.getName();
+													CustomDialogBuilder.this.lastChoise = item;
+													handleLastLevelChoice(cd);
+													return;
+												}
+//											}
+//											else {
+//												
+//											}
+											//secondLevelItems -> list
+											//List<MultiLevelItem> -> List<Map<String,Object>>
+											//configSecondLevel
+											configSecondLevel(cd, lv, secondLevelItems);										}
+									}
+									else
+										return;
+									
+									break;
+								}
+								
+							}//handleMessage
+							
+						};
+						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");
+						if (selText.equals("全部")) {
+							MultiLevelItem item = (MultiLevelItem) items.get(pos);
+							CustomDialogBuilder.this.lastChoise = item;
+							handleLastLevelChoice(cd);
+						} else {
+							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+							CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
+							String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+							(new Thread(new GetMetaDataThread(id,txt))).start();
+						}
+					}//not category over
+					
+				} else {
+					System.out.println("hasNextLevel false");
+					MultiLevelItem item = (MultiLevelItem) items.get(pos);
+					CustomDialogBuilder.this.lastChoise = item;
+					handleLastLevelChoice(cd);
+				}
+			}
+		});
+		
 	}
 	
 	private void configSecondLevel(final CustomDialog cd, ListView lv, final List list) {
@@ -321,7 +367,56 @@ public class CustomDialogBuilder {
 			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 		}
 	}
-	
+	class FirstCateAdapter extends BaseAdapter {
+		private List list = null;
+		public FirstCateAdapter(List list) {
+			this.list = list;
+		}
+
+		@Override
+		public int getCount() {
+			return list.size();
+		}
+
+		@Override
+		public Object getItem(int position) {
+			return list.get(position);
+		}
+
+		@Override
+		public long getItemId(int position) {
+			return position;
+		}
+
+		@Override
+		public View getView(int position, View convertView, ViewGroup parent) {
+			View v = convertView;
+			TextView tv = null;
+			ImageView img = null;
+			
+			v = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(
+					R.layout.item_seccategory_simple2, null);
+			
+			tv = (TextView) v.findViewById(R.id.tv);
+			img = (ImageView) v.findViewById(R.id.img);
+			
+			if (tv != null) {
+				String displayText = (String)((Map<String,Object>)(list.get(position))).get("tv");
+				tv.setText(displayText);
+			}
+			if (!isCategoryItem && img != null) {
+				if (((Map<String,Object>)list.get(position)).get("id").equals(CustomDialogBuilder.this.selectedValue)) {
+					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+				}
+			}
+			
+			return v;
+		}
+		class Holder {
+			public TextView tv;
+			
+		}
+	}
 	class SecondCateAdapter extends BaseAdapter {
 		private List list = null;
 		public SecondCateAdapter(List list) {
@@ -345,30 +440,9 @@ public class CustomDialogBuilder {
 
 		@Override
 		public View getView(int position, View convertView, ViewGroup parent) {
-			/*
-			if (convertView == null) {
-				Holder holder = new Holder();
-				if (position == 0) {
-					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(R.layout.item_seccategory_simple, null);
-					holder.tv = (TextView) convertView.findViewById(R.id.tv);
-					convertView.setTag(HOLDER_TAG, holder);
-				} else {
-					convertView = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(android.R.layout.simple_list_item_1, null);
-					holder.tv = (TextView) convertView.findViewById(android.R.id.text1);
-					convertView.setTag(HOLDER_TAG, holder);
-				}
-			}
-			Holder holder = (Holder) convertView.getTag(HOLDER_TAG);
-			if (holder != null && holder.tv != null) {
-				String displayText = isCategoryItem 
-						? (String)(((List<Map<String,Object>>)list).get(position).get("tvCategoryName")) 
-						: (String)(((List<MultiLevelItem>)list).get(position).toString());
-				holder.tv.setText(displayText);
-			}
-			return convertView;
-			*/
 			View v = convertView;
 			TextView tv = null;
+			ImageView img = null;
 			if (position == 0) {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple, null);
@@ -377,6 +451,7 @@ public class CustomDialogBuilder {
 				v = LayoutInflater.from(CustomDialogBuilder.this.context)
 						.inflate(R.layout.item_seccategory_simple2, null);
 				tv = (TextView) v.findViewById(R.id.tv);
+				img = (ImageView) v.findViewById(R.id.img);
 			}
 			
 			if (tv != null) {
@@ -385,6 +460,15 @@ public class CustomDialogBuilder {
 						: (String)(((List<MultiLevelItem>)list).get(position).toString());
 				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
+			}
+			if (img != null) {
+				if (!isCategoryItem) {
+					if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+						img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+					}
+				} else if (((List<Map<String,Object>>)list).get(position).get("tvCategoryName").equals(CustomDialogBuilder.this.selectedValue)) {
+					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+				}
 			}
 			return v;
 		}

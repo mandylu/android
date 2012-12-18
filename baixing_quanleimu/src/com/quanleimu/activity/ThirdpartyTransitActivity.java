@@ -73,7 +73,7 @@ public class ThirdpartyTransitActivity extends Activity{
 				goIntent = new Intent(Intent.ACTION_GET_CONTENT);
 				goIntent.addCategory(Intent.CATEGORY_OPENABLE);
 				goIntent.setType(IMAGEUNSPECIFIED);
-				goIntent = Intent.createChooser(goIntent, "选择图片");
+//				goIntent = Intent.createChooser(goIntent, "选择图片");
 			}
 			
 			if (goIntent != null)

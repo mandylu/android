@@ -159,13 +159,16 @@ public class DiskLruCache {
                 try {
                     final String file = createFilePath(mCacheDir, key);
                     if (writeBitmapToFile(data, file)) {
+                    	Log.d("bitmap", "bitmap, diskLruCache:put:  " + key);
                         put(key, file);
                         flushCache();
                     }
                 } catch (final FileNotFoundException e) {
                     Log.e(TAG, "Error in put: " + e.getMessage());
+                    Log.d("bitmap", "bitmap, diskLruCache:put:  error" + key + e.getMessage());
                 } catch (final IOException e) {
                     Log.e(TAG, "Error in put: " + e.getMessage());
+                    Log.d("bitmap", "bitmap, diskLruCache:put:  error io" + key + e.getMessage());
                 }
             }
         }

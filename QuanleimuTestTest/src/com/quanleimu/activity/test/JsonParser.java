@@ -3,6 +3,7 @@ package com.quanleimu.activity.test;
 import java.io.IOException;
 
 import android.test.AndroidTestCase;
+import android.util.Pair;
 
 import com.baixing.entity.GoodsDetail;
 import com.fasterxml.jackson.core.JsonProcessingException;
@@ -31,6 +32,18 @@ public class JsonParser extends AndroidTestCase {
 			e.printStackTrace();
 			fail();
 		}
+	}
+	
+	public void testPairEquals()
+	{
+		Pair<String, String> ss = new Pair<String, String>("aaaa", "bbbb");
+		Pair<String, String> s2 = new Pair<String, String>("aaaa", "bbbb");
+		
+		assertEquals(ss, s2);
+		
+		Pair<Integer, String> i1 = new Pair<Integer, String>(100, "bbbb");
+		Pair<Integer, String> i2 = new Pair<Integer, String>(100, "bbbb");
+		assertEquals(i1, i2);
 	}
 	
 }

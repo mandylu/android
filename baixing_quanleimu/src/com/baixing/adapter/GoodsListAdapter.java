@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Color;
 import android.os.Message;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -53,8 +54,8 @@ public class GoodsListAdapter extends BaseAdapter {
 	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
 	private List<GroupItem> groups  = new ArrayList<GoodsListAdapter.GroupItem>();
 	private boolean hasDelBtn = false;
-	private WeakReference<Bitmap> defaultBk2;
-	private WeakReference<Bitmap> downloadFailBk;
+	private Bitmap defaultBk2;
+	private Bitmap downloadFailBk;
 //	private AnimationDrawable loadingBK;
 	private Handler handler = null;
 	private int messageWhat = -1;
@@ -70,12 +71,16 @@ public class GoodsListAdapter extends BaseAdapter {
 //				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
 				try{
 					Thread.sleep(2000);
-					if(defaultBk2 != null && defaultBk2.get() != null){
-						defaultBk2.get().recycle();
+//					if(defaultBk2 != null && defaultBk2.get() != null){
+					if(defaultBk2 != null){
+//						defaultBk2.get().recycle();
+						defaultBk2.recycle();
 						defaultBk2 = null;
 					}
-					if(null != downloadFailBk && null != downloadFailBk.get()){
-						downloadFailBk.get().recycle();
+//					if(null != downloadFailBk && null != downloadFailBk.get()){
+					if(null != downloadFailBk){
+//						downloadFailBk.get().recycle();
+						downloadFailBk.recycle();
 						downloadFailBk = null;
 					}
 				}catch(Exception e){
@@ -299,13 +304,15 @@ public class GoodsListAdapter extends BaseAdapter {
 			if(null == defaultBk2){
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
-				defaultBk2 = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o));
+//				defaultBk2 = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o));
+		        defaultBk2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o);
 			}
 			
 			if(null == downloadFailBk){				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 		        o.inPurgeable = true;
-				downloadFailBk = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o));				
+//				downloadFailBk = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o));				
+		        downloadFailBk = BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o);
 			}
 			
 			holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -335,7 +342,8 @@ public class GoodsListAdapter extends BaseAdapter {
 					
 					if(strTag == null || strTag.length() > 0){
 						holder.ivInfo.setTag("");
-						holder.ivInfo.setImageBitmap(defaultBk2.get());	
+//						holder.ivInfo.setImageBitmap(defaultBk2.get());
+						holder.ivInfo.setImageBitmap(defaultBk2);
 					}
 				} else {
 						String b = (list.get(position).getImageList().getSquare());
@@ -352,7 +360,8 @@ public class GoodsListAdapter extends BaseAdapter {
 								
 								if(strTag == null || strTag.length() > 0){
 									holder.ivInfo.setTag("");
-									holder.ivInfo.setImageBitmap(defaultBk2.get());
+//									holder.ivInfo.setImageBitmap(defaultBk2.get());
+									holder.ivInfo.setImageBitmap(defaultBk2);
 		//							ivInfo.invalidate();
 								}
 							} else {
@@ -364,7 +373,9 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(c[0]);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
+//									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, 
+											new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 								}
 							}
@@ -376,7 +387,8 @@ public class GoodsListAdapter extends BaseAdapter {
 								
 								if(strTag == null || strTag.length() > 0){
 									holder.ivInfo.setTag("");
-									holder.ivInfo.setImageBitmap(defaultBk2.get());
+//									holder.ivInfo.setImageBitmap(defaultBk2.get());
+									holder.ivInfo.setImageBitmap(defaultBk2);
 								}
 							} else {
 								
@@ -387,7 +399,9 @@ public class GoodsListAdapter extends BaseAdapter {
 									holder.ivInfo.setTag(b);
 									holder.ivInfo.setVisibility(View.INVISIBLE);
 									holder.pbView.setVisibility(View.VISIBLE);
-									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
+//									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
+									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, 
+											new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 									//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 								}
 							}
@@ -406,11 +420,11 @@ public class GoodsListAdapter extends BaseAdapter {
 			}
 			
 			final GoodsDetail detailObj = list.get(position);
-			
+			final boolean isValidMessage = this.isValidMessage(detailObj);
 			if (hasDelBtn) {
 				holder.operateView.setVisibility(View.VISIBLE);
 				holder.actionLine.setVisibility(View.VISIBLE);
-				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(this.isValidMessage(detailObj) ? R.drawable.btn_circle_arrow : R.drawable.icon_warning);
+				holder.operateView.findViewById(R.id.btnListOperate).setBackgroundResource(isValidMessage ? R.drawable.btn_circle_arrow : R.drawable.icon_warning);
 			} 
 			else{
 				holder.operateView.setVisibility(View.GONE);
@@ -466,6 +480,23 @@ public class GoodsListAdapter extends BaseAdapter {
 			{
 				holder.tvDateAndAddress.setText("");
 			}
+			
+			
+			if (isValidMessage)
+			{
+				holder.tvPrice.setVisibility(View.VISIBLE);
+				holder.tvUpdateDate.setVisibility(View.VISIBLE);
+				holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
+			}
+			else
+			{
+				holder.tvPrice.setVisibility(View.GONE);
+				holder.tvUpdateDate.setVisibility(View.GONE);
+				holder.tvDateAndAddress.setText("审核未通过");
+				holder.tvDateAndAddress.setTextColor(Color.RED);
+			}
+			
+			
 	
 			holder.operateView.setOnClickListener(new View.OnClickListener() {
 				@Override
