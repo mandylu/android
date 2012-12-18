@@ -238,7 +238,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									+ categoryEnglishName
 									+ QuanleimuApplication.getApplication().cityEnglishName);
 			String json = pair.second;
-			if (json != null && json.length() > 0)
+			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
 			}
