@@ -82,6 +82,10 @@ public class LazyImageLoader
 		return bitmap;
 	}
 	
+	public void putImageToDisk(String url, Bitmap bmp){
+		imgManger.putImageToDisk(url, bmp);
+	}
+	
 	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback)
 	{
 		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
@@ -167,6 +171,23 @@ public class LazyImageLoader
 	    }
 
 		return (result != null);		
+	}
+	
+	public WeakReference<Bitmap> getWithImmediateIO(String url){
+		
+		WeakReference<Bitmap> result = null;
+		
+		if(imgManger.contains(url)){
+			Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " imgManager contains");
+			result = imgManger.getFromMemoryCache(url); 	
+			if(result != null && result.get() != null){
+				return result;
+			}
+		}		
+		Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " call safeGetFromFileCacheOrAssets");
+		result = imgManger.safeGetFromFileCacheOrAssets(url);
+
+		return result;		
 	}
 	
 	public WeakReference<Bitmap> getWithImmediateIO(String url,ImageLoaderCallback callback){

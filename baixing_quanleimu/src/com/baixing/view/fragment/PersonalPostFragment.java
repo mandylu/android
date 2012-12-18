@@ -13,11 +13,9 @@ import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,25 +26,23 @@ import android.widget.Toast;
 
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
 import com.baixing.util.LogData;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.view.fragment.GoodDetailFragment.REQUEST_TYPE;
-import com.baixing.view.fragment.GoodDetailFragment.RequestThread;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
@@ -196,7 +192,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(bundle != null){
 			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
 				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 3000);
+					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
 				}
 				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
 			}
@@ -566,6 +562,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         final GoodsDetail detail = glLoader.getGoodsList().getData().get(pos);        
         final String adId = detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
+        String tmpInsertedTime = detail.data.get("insertedTime");
+        long tmpPostedSeconds = -1;
+        if (tmpInsertedTime != null) {
+            long nowTime = new Date().getTime() / 1000;
+            tmpPostedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
+        }
+        final long postedSeconds = tmpPostedSeconds;
+        
         // 弹出 menu 确认操作
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle("操作");
@@ -575,21 +579,26 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         if (isValidMessage(detail))
         {
         	r_array_item_operate = R.array.item_operate_mypost;
-        	Tracker.getInstance().event(BxEvent.SENT_MANAGE).end();
+        	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+        	.append(Key.STATUS, "valid")
+            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.POSTEDSECONDS, postedSeconds)
+        	.end();
         }
         else
         {
             r_array_item_operate = R.array.item_operate_inverify;
 //            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+            Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+        	.append(Key.STATUS, "approving")
+            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.POSTEDSECONDS, postedSeconds)
+        	.end();
         }
         
-        String tmpInsertedTime = detail.data.get("insertedTime");
-        long tmpPostedSeconds = -1;
-        if (tmpInsertedTime != null) {
-            long nowTime = new Date().getTime() / 1000;
-            tmpPostedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
-        }
-        final long postedSeconds = tmpPostedSeconds;
+        
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
@@ -598,21 +607,29 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://刷新
                             doRefresh(0, adId);
                             Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                    .append(Key.STATUS, "valid")
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 1://修改
-
                             Bundle args = createArguments(null, null);
                             args.putSerializable("goodsDetail", detail);
                             args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
                             Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                    .append(Key.STATUS, "valid")
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 2://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                        			.append(Key.STATUS, "valid")
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
@@ -620,23 +637,23 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                 else {
                     switch (clickedIndex) {
                         case 0://申诉
+                        	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
+                            .append(Key.STATUS, "approving")
+                            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                            .append(Key.POSTEDSECONDS, postedSeconds)
+                            .end();
                             Bundle bundle = createArguments("申诉", null);
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
                             pushFragment(new FeedbackFragment(), bundle);
-//                            Tracker.getInstance().event(BxEvent.APPROVING_APPEAL)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
                             break;
                         case 1://删除
-//                            showSimpleProgress();
-//                            Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds)
-//                                    .end();
-//                            new Thread(new MyMessageDeleteThread(adId)).start();
-//                            postDelete(Tracker.getInstance().event(BxEvent.APPROVING_DELETE)
-//                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            
+                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                        			.append(Key.STATUS, "approving")
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                        			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
                 }

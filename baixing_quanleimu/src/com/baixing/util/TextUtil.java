@@ -143,5 +143,18 @@ public class TextUtil
         DecimalFormat decimal = new DecimalFormat("##.0");
         return decimal.format(data);
     }
+    
+    public static String filterXml(String message)
+    {
+    	String[] from = new String[] {"&amp;", "&lt;", "&gt;", "&quot;", "&apos;"};
+    	String[] to	= new String[] {  "&", 		"<", 	">",	"\"",	  "'"};
+    	String result = message;
+    	for (int i=0; i<from.length; i++)
+    	{
+    		result = result.replaceAll(from[i], to[i]);
+    	}
+    	
+    	return result;
+    }
 
 }

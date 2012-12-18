@@ -320,6 +320,9 @@ public abstract class BaseFragment extends Fragment {
 			menu.add(0, option, option, OPTION_TITLES[option]);
 		}
 		super.onPrepareOptionsMenu(menu);
+		Tracker.getInstance().event(BxEvent.MENU_SHOW)
+		.append(Key.FRAGMENT, this.getClass().toString())
+		.end();
 	}
 	
 	@Override
@@ -369,7 +372,9 @@ public abstract class BaseFragment extends Fragment {
 	                }).create().show();
 			break;
 		}
-		Tracker.getInstance().event(BxEvent.MENU_ACTION).append(Key.MENU_ACTION_TYPE, action).end(); 		
+		Tracker.getInstance().event(BxEvent.MENU_ACTION)
+		.append(Key.FRAGMENT, this.getClass().toString())
+		.append(Key.MENU_ACTION_TYPE, action).end(); 		
 		return super.onOptionsItemSelected(item);
 	}
 	
