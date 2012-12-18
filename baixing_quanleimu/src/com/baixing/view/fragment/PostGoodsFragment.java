@@ -390,6 +390,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
+		inreverse = false;
 		QuanleimuApplication.getApplication().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
