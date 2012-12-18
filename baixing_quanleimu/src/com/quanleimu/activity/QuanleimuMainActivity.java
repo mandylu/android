@@ -62,6 +62,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	private SplashJob splashJob;
 	private BroadcastReceiver msgListener;
 	
+	
 	public QuanleimuMainActivity(){
 		super();
 	}
@@ -88,7 +89,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onPause() {
 
-		Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+		
 		unregisterMsgListener();
 		
 		super.onPause();
@@ -101,7 +102,11 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onResume() {
-		Tracker.getInstance().event(BxEvent.APP_RESUME).end();
+		if (!this.isChangingTab) {
+			Log.d("ddd", "onresume");
+			
+			Tracker.getInstance().event(BxEvent.APP_RESUME).end();
+		}
 		
 //		Profiler.markStart("mainresume");
 		bundle.putString("backPageName", "");
@@ -132,9 +137,8 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onStop() {
-		Tracker.getInstance().event(BxEvent.APP_STOP).end();
-		Tracker.getInstance().save();
-		Sender.getInstance().notifySendMutex();
+		
+		
 		super.onStop();
 	}
 	
@@ -336,7 +340,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-
 		QuanleimuApplication.context = new WeakReference<Context>(this);
 		QuanleimuApplication.getApplication().setErrorHandler(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
@@ -382,9 +385,14 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onStart() {
-		Tracker.getInstance().event(BxEvent.APP_START).end();
-		Tracker.getInstance().save();
-		Sender.getInstance().notifySendMutex();
+		if (!this.isChangingTab) {
+			Log.d("ddd","onstart");
+			
+			Tracker.getInstance().event(BxEvent.APP_START).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
+		}
+
 		super.onStart();
 	}
 	
