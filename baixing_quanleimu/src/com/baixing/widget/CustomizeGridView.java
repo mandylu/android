@@ -1,10 +1,17 @@
 package com.baixing.widget;
 
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 
 import android.content.Context;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.util.AttributeSet;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
@@ -23,10 +30,11 @@ import com.quanleimu.activity.R;
 public class CustomizeGridView extends LinearLayout implements View.OnClickListener {
 
 	static public class GridInfo{
-		public int imgResourceId;
+		public Bitmap img;
 		public String text;
 		public int number = 0;
-		public boolean starred = false;
+//		public int resId;
+//		public boolean starred = false;
 	}
 	
 	static public interface ItemClickListener
@@ -37,7 +45,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     static private class GridHolder {  
         ImageButton imageBtn;  
         public TextView text;  
-        public View starIcon;
+//        public View starIcon;
         public GridInfo info;
         public int index;
     }  
@@ -58,8 +66,10 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 	{
 		gridItems.clear();
 		gridItems.addAll(items);
-		
+		long t1 = System.currentTimeMillis();
 		this.costruct();
+		long t2 = System.currentTimeMillis();
+		Log.d("time", "time:   " + (t2 - t1));
 	}
 	
 	public void setItemClickListener(ItemClickListener listener)
@@ -93,6 +103,20 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 			this.addView(line, params);
 		}
 	}
+		
+//	public void releaseResource(){
+//		Collection<Bitmap> bmps = images.values();
+//		if(bmps != null){
+//			Iterator<Bitmap> ite = bmps.iterator();
+//			while(ite.hasNext()){
+//				Bitmap bmp = ite.next();
+//				if(bmp != null){
+//					bmp.recycle();
+//				}
+//			}
+//		}
+//		images.clear();
+//	}
 	
 	public View getView(int index) {
 		LayoutInflater inflater = LayoutInflater.from(this.getContext());
@@ -103,7 +127,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
     	holder.imageBtn.setClickable(false);
     	holder.imageBtn.setFocusable(false);
     	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-    	holder.starIcon = convertView.findViewById(R.id.star);
+//    	holder.starIcon = convertView.findViewById(R.id.star);
         convertView.setTag(holder);
         convertView.setOnClickListener(this);
         holder.index = index;
@@ -117,13 +141,14 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageResource(info.imgResourceId);
-            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
+            holder.imageBtn.setImageBitmap(info.img);
+//            holder.imageBtn.setImageResource(info.resId);
+//            holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  
         else
         {
-        	holder.starIcon.setVisibility(View.GONE);
+//        	holder.starIcon.setVisibility(View.GONE);
         	convertView.setEnabled(false);
         }
         

@@ -136,7 +136,8 @@ public class LoginUtil implements View.OnClickListener{
 				QuanleimuApplication.getApplication()
 						.setMobile(user.getPhone());
 				Util.saveDataToLocate(view.getContext(), "user", user);
-				
+				Util.reloadUser();
+				QuanleimuApplication.getApplication().setPhoneNumber(user.getPhone());
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
 				
 				if(listener != null){

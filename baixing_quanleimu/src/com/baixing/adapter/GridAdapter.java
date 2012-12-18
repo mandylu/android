@@ -83,7 +83,7 @@ public class GridAdapter extends BaseAdapter {
         	holder.imageBtn.setClickable(false);
         	holder.imageBtn.setFocusable(false);
         	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
-        	holder.starIcon = convertView.findViewById(R.id.star);
+//        	holder.starIcon = convertView.findViewById(R.id.star);
             convertView.setTag(holder);
   
         }else{  

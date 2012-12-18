@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -18,7 +18,9 @@ import org.athrun.android.framework.viewelement.ScrollViewElement;
 import org.athrun.android.framework.viewelement.TextViewElement;
 import org.athrun.android.framework.viewelement.ViewElement;
 import org.athrun.android.framework.viewelement.ViewGroupElement;
+import org.athrun.android.framework.viewelement.ViewUtils;
 
+import android.graphics.Rect;
 import android.os.Build;
 import android.os.Environment;
 import android.util.Log;
@@ -94,7 +96,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	public static final String AD_BIG_IMAGE_VIEW_ID = "vfCoupon";
 	public static final String AD_BIG_IMAGE_SAVE_TEXT = "保存";
-	public static final String AD_BIG_IMAGE_SAVED_TEXT = "成功";
+	public static final String AD_BIG_IMAGE_SAVED_TEXT = "图片已保存到相册";
 	//public static final String AD_FAVORITE_BUTTON_ID = "btn_fav_unfav";
 	//public static final String AD_FAVORITE_ADD_IMG = "icon_fav";
 	//public static final String AD_FAVORITE_REMOVE_IMG = "icon_unfav";
@@ -114,14 +116,16 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String POST_META_EDITTEXT_ID = "postinput";
 	public static final String POST_META_EDIT_DISPLAY_ID = "postshow";
 	public static final String POST_META_EDIT_DISPLAY_DESC_ID = "postdescriptionshow";
-	public static final String POST_META_EDITTEXT_DESC_ID = "postdescriptioninput";
+	public static final String POST_META_EDITTEXT_DESC_ID = "description_input";
 	public static final String POST_META_EDIT_ITEM_ID = "postinputlayout";
 	public static final String POST_DONE = "完成";
-	public static final String POST_SEND = "完成";
+	public static final String POST_SEND = "立即免费发布";
 	public static final String POST_BACK_DIALOG_OK_BUTTON_ID = "是";
 	public static final String POST_META_IMAGEVIEW1_ID = "iv_1";
 	public static final String POST_META_IMAGEVIEW2_ID = "iv_2";
 	public static final String POST_META_IMAGEVIEW3_ID = "iv_3";
+	public static final String POST_META_DESC_IMAGEVIEW_ID = "myImg";
+	public static final String POST_CATEGORY_TEXT = "分类";
 	public static final String POST_CAMERA_PHOTO_TEXT = "拍照";
 	public static final String POST_GALLERY_PHOTO_TEXT = "相册";
 	
@@ -160,6 +164,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	public static final String MY_DETAILVIEW_MANAGE_BUTTON_ID = "managebtn";
 	public static final String MY_DETAILVIEW_DELETE_BUTTON_ID = "vad_btn_delete";
 	public static final String MY_VIEWLIST_DELXUPDATE_BUTTON_ID = "btnListOperate";
+	public static final String MY_VIEWLIST_SHENSU_BUTTON_TEXT = "申诉";
 	public static final String MY_VIEWLIST_DELETE_BUTTON_TEXT = "删除";
 	public static final String MSGBOX_CANCEL_TEXT = "取消";
 	public static final String MSGBOX_OPT_TITLE = "操作";
@@ -197,8 +202,8 @@ public class BxBaseTestCase extends AthrunTestCase {
 		}
 	}
 	//Test DATA
-	public static final String TEST_DATA_MOBILE = "13524495634";
-	public static final String TEST_DATA_PASSWORD = "123456";
+	public static final String TEST_DATA_MOBILE = "13917067724";
+	public static final String TEST_DATA_PASSWORD = "whonwyhw";
 	public static final String TEST_DATA_DEFAULT_CITYNAME = "上海";
 	public static final String TEST_DATA_CAT_WUPINJIAOYI = "物品交易";
 	
@@ -294,6 +299,10 @@ public class BxBaseTestCase extends AthrunTestCase {
 		assertNotNull(null, object);
 	}
 	
+	public static void assertNull(Object object) {
+		assertNull(null, object);
+	}
+	
 	public static void assertTrue(boolean condition) {
 		assertTrue(null, condition);
 	}
@@ -311,6 +320,11 @@ public class BxBaseTestCase extends AthrunTestCase {
 		AthrunTestCase.assertNotNull(message, object);
 	}
 	
+	public static void assertNull(String message, Object object) {
+		if (object == null) waitScreenSave();
+		AthrunTestCase.assertNull(message, object);
+	}
+	
 	public static void assertTrue(String message, boolean condition) {
 		if (condition == false) waitScreenSave();
 		AthrunTestCase.assertTrue(message, condition);
@@ -320,17 +334,66 @@ public class BxBaseTestCase extends AthrunTestCase {
 		AthrunTestCase.assertEquals(message, expected, actual);
 	}
 	
+	public void assertElementByText(String text) throws Exception {
+		assertElementByText(null, text);
+	}
+	
+	public void assertElementByText(String message, String text) throws Exception {
+		assertNotNull(message, findElementByText(text));
+	}
+	
+	public void assertNoElementByText(String text) throws Exception {
+		assertNoElementByText(null, text);
+	}
+	
+	public void assertNoElementByText(String message, String text) throws Exception {
+		assertNull(message, findElementByText(text));
+	}
+	
+	public void assertElementByTexts(String texts, boolean all) throws Exception {
+		String[] tt = texts.split("@");
+		boolean found = false;
+		for(int i = 0; i < tt.length; i ++) {
+			if (all) {
+				assertNotNull(findElementByText(tt[i]));
+			} else {
+				if (findElementByText(tt[i]) != null) {
+					found = true;
+					break;
+				}
+			}
+		}
+		assertTrue(found);
+	}
+	
+	public void assertElementById(String id) throws Exception {
+		assertElementById(null, id);
+	}
+	
+	public void assertElementById(String message, String id) throws Exception {
+		assertNotNull(message, findElementById(id));
+	}
+	
+	public void assertNoElementById(String id) throws Exception {
+		assertNoElementById(null, id);
+	}
+	
+	public void assertNoElementById(String message, String id) throws Exception {
+		assertNull(message, findElementById(id));
+	}
+	
 	private void startScreen() throws Exception {
 		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		sleep(5);
 		TextViewElement vm = findElementByText("以后再说");
 		if (vm != null) {
 			vm.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 		ViewElement v = findElementById(HOME_FIRST_RUN_ID);
 		if (v != null) {
 			v.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 	}
 	
@@ -344,7 +407,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			ViewElement c = findElementByText(TEST_DATA_DEFAULT_CITYNAME, 1, true);
 			assertNotNull(c);
 			c.doClick();
-			TimeUnit.SECONDS.sleep(10);
+			sleep(10);
 		}
 	}
 	
@@ -417,7 +480,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		while(v3 == null) {
 			if (scrollView != null) scrollView.scrollToNextScreen();
 			else listView.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			v3 = findElementByText(displayName, 0, true);
 			if (loop++ > 10) break;
 		}
@@ -456,7 +519,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			assertNotNull(v);
 		}
 		if (v != null) v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	public String getTextByElementId(String vId) throws Exception {
@@ -480,7 +543,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		ViewElement v = findElementByText(HOME_BACK_BUTTON_TEXT, 0, true);
 		if (v == null) return false;
 		v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		return true;
 	}
 	
@@ -502,8 +565,28 @@ public class BxBaseTestCase extends AthrunTestCase {
 				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
 			{
 				v.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 			}
+		}
+	}
+	
+	public void goToTab(String vId) throws Exception {
+		ViewGroupElement v = findElementById(vId, ViewGroupElement.class);
+		if (v != null) {
+			TextViewElement tv = v.findElementById(TAB_TEXT_ID, TextViewElement.class);
+			assertNotNull(tv);
+			if (tv == null) return;
+			if ((vId.equals(TAB_ID_HOME_V3) && tv.getText().equals(TAB_ID_HOME_TEXT))
+				|| (vId.equals(TAB_ID_MY_V3) && tv.getText().equals(TAB_ID_MY_TEXT))
+				|| (vId.equals(TAB_ID_POST) && tv.getText().equals(TAB_ID_POST_TEXT)))
+			{
+				v.doClick();
+				sleep(1);
+			}
+		}
+		else
+		{
+			throw new Exception("Tab not found for " + vId);
 		}
 	}
 	
@@ -545,25 +628,33 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return (T)textView;
 	}
 	
+	public boolean showNextView() throws Exception {
+		return showNextView(AD_DETAILVIEW_ID);
+	}
+	
 	public boolean showNextView(String viewId) throws Exception {
 		BXViewGroupElement bv = findElementById(viewId,
 				BXViewGroupElement.class);
 		if (bv != null) {
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			bv.doTouch(-bv.getWidth() + 20);
-			TimeUnit.SECONDS.sleep(3);
+			sleep(3);
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean showPrevView() throws Exception {
+		return showPrevView(AD_DETAILVIEW_ID);
 	}
 	
 	public boolean showPrevView(String viewId) throws Exception {
 		BXViewGroupElement bv = findElementById(viewId,
 				BXViewGroupElement.class);
 		if (bv != null) {
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			bv.doTouch(bv.getWidth() - 20);
-			TimeUnit.SECONDS.sleep(3);
+			sleep(3);
 			return true;
 		}
 		return false;
@@ -573,7 +664,87 @@ public class BxBaseTestCase extends AthrunTestCase {
 		ViewElement el = findElementById(itemId);
 		assertNotNull(el);
 		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
+	}
+	
+	public AbsListViewElement findListView() throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(false);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			try {
+				AbsListViewElement lv = findElementById(view.getId(), AbsListViewElement.class);
+				if (lv != null && lv.getChildCount() > 0) {
+					return lv;
+				}
+			} catch (IllegalArgumentException e) {}
+		}
+		return null;
+	}
+	
+	public TextViewElement findTextView() throws Exception {
+		String[] nots = {};
+		return findTextView(nots);
+	}
+	
+	public TextViewElement findTextView(String[] nots) throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(true);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			if (!isViewInScreen(view)) continue;
+			try {
+				TextViewElement tv = findElementById(view.getId(), TextViewElement.class);
+				if (tv != null && tv.getText().length() > 0) {
+					boolean found = false;
+					for (int i = 0; i < nots.length; i++) {
+						if (tv.getText().indexOf(nots[i]) != -1) {
+							found = true;
+							break;
+						}
+					}
+					if (!found) {
+						return tv;
+					}
+				}
+			} catch (IllegalArgumentException e) {}
+		}
+		return null;
+	}
+	
+	public BXImageViewElement findImageView(String imageNamed) throws Exception {
+		ArrayList<View> views = ViewUtils.getAllViews(true);
+		if (views.size() == 0) return null;
+		for (View view : views) {
+			if (!isViewInScreen(view)) continue;
+			try {
+				BXImageViewElement iv = findElementById(view.getId(), BXImageViewElement.class);
+				if (iv != null && (iv.checkImageByName(imageNamed) || iv.checkImageByName(imageNamed, false))) {
+					return iv;
+				}
+			} catch (IllegalArgumentException e) {
+			} catch (NullPointerException ex) {}
+		}
+		return null;
+	}
+	
+	public TextViewElement findTextView(String viewId) throws Exception {
+		ViewGroupElement gv = findElementById(viewId, ViewGroupElement.class);
+		return findTextView(gv);
+	}
+	
+	public TextViewElement findTextView(ViewGroupElement gv) throws Exception {
+		if (gv != null) {
+			int i = 0;
+			int c = gv.getChildCount();
+			while(i < c) {
+				try {
+					TextViewElement tv = gv.getChildByIndex(i++, TextViewElement.class);
+					if (tv != null && tv.getText().length() > 0) return tv;
+				} catch (IllegalArgumentException e) {
+					
+				}
+			}
+		}
+		return null;
 	}
 
 	public void goBack() throws Exception {
@@ -593,7 +764,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			getDevice().pressBack();
 		}
 
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	/*
@@ -606,7 +777,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 		for (int i = 0; i < (page > 0 ? page: 10); i++) {
 			lv.scrollToNextScreen();
 		}
-		TimeUnit.SECONDS.sleep(3);
+		sleep(3);
 		int lastIndex = lv.getLastVisiblePosition();
 		return lastIndex;
 	}
@@ -628,7 +799,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 			BXViewGroupElement bv = findElementById(viewId, BXViewGroupElement.class);
 			assertNotNull(bv);
 			bv.scrollByY(fromY, toY);
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 		}
 	}
 	
@@ -657,17 +828,21 @@ public class BxBaseTestCase extends AthrunTestCase {
 		return textViews.isEmpty() ? false : true;
 	}
 	
-	boolean waitForSubTexts(String texts, int timeout) {
+	public boolean waitForSubTexts(String texts, int timeout) {
 		ViewFinder viewFinder = new ViewFinder();
 		String[] tt = texts.split("@");
-		for(int i = 0; i < tt.length; i++) {
-			ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, timeout);
-			if (textViews != null && !textViews.isEmpty()) return true;
+		int tmpTimeout = 10;
+		int loop = (int)(timeout / tmpTimeout);
+		for (int j = 0; j < loop; j++) {
+			for(int i = 0; i < tt.length; i++) {
+				ArrayList<TextView> textViews = viewFinder.findViewsByText(tt[i], false, tmpTimeout);
+				if (textViews != null && !textViews.isEmpty()) return true;
+			}
 		}
 		return false;
 	}
 	
-	boolean waitForMsgBox(String msg, String btnText, int timeout) throws Exception {
+	public boolean waitForMsgBox(String msg, String btnText, int timeout) throws Exception {
 		if (waitForSubText(msg, timeout)) {
 			ViewElement v = findElementByText(btnText, 0, true);
 			if (v != null) {
@@ -677,6 +852,31 @@ public class BxBaseTestCase extends AthrunTestCase {
 			return true;
 		}
 		return false;
+	}
+	
+	public boolean isViewInScreen(View view) {
+		int maxX = getDevice().getScreenHeight();
+		int maxY = getDevice().getScreenWidth();
+		int[] location = new int[2];
+	    view.getLocationOnScreen(location);
+	    int x = location[0];
+	    int y = location[1];
+		if (x < 0 || x > maxX) return false;
+		if (y < 0 || y > maxY) return false;
+		view.getLocationInWindow(location);
+	    x = location[0];
+	    y = location[1];
+		if (x < 0 || x > maxX) return false;
+		if (y < 0 || y > maxY) return false;
+		return true;
+	}
+	
+	public int random(int max) {
+		return (int)(Math.random() * max);
+	}
+	
+	public void sleep(int second) throws Exception {
+		TimeUnit.SECONDS.sleep(second);
 	}
 	
 }

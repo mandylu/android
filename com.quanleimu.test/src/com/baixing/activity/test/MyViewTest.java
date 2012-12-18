@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -20,14 +20,14 @@ public class MyViewTest extends BaixingTestCase {
 		openTabbar(TAB_ID_HOME_V3);
 		logout();
 		//检查是否包含登录按钮
-		assertNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
+		assertNoElementById(MY_PROFILE_EDIT_BUTTON_ID);
 		//若包含登录按钮,则输入正确用户名，密码
 		//点击登录
 		//等待3s
 		logon();
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 		//检查是否包含登录按钮，确保登录成功
-		assertNotNull(findElementById(MY_PROFILE_EDIT_BUTTON_ID));
+		assertElementById(MY_PROFILE_EDIT_BUTTON_ID);
 		//点击编辑按钮进入个人资料
 		clickById(MY_PROFILE_EDIT_BUTTON_ID);
 	    //点击用户名，清空
@@ -37,12 +37,11 @@ public class MyViewTest extends BaixingTestCase {
 		//检查，确保用户名＝Null
 		assertEquals(tv.getText(), "");
 		//点击用户名，输入“tester”
-		int rand = (int)(Math.random() * 100000);
-		String tmpName = "tester" + String.valueOf(rand);
+		String tmpName = "tester" + String.valueOf(random(100000));
 		tv.inputText(tmpName);
 		//点击完成
 		clickByText(MY_PROFILE_EDIT_UPDATE_TEXT, true);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		//检查结果：用户名＝“tester”
 		assertEquals(findElementById(MY_PROFILE_USERNAME_ID, TextViewElement.class).getText(), tmpName);
 		

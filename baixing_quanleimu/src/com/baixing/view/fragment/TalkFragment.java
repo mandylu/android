@@ -261,8 +261,8 @@ public class TalkFragment extends BaseFragment {
 		{
 			super.onResume();
 			isAttachedToWindow = true;
-			this.pv = PV.BUZZ;
-			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
+//			this.pv = PV.BUZZ;
+//			Tracker.getInstance().pv(PV.BUZZ).append(Key.ADID, adId).end();
 			
 			//Load history or load msg from server.
 			if (sessionId == null)
@@ -776,7 +776,7 @@ public class TalkFragment extends BaseFragment {
 					String url = urlList[0];
 					
 					if (url != null && url.length() > 0)
-						SimpleImageLoader.showImg(ivInfo, url, null, getActivity(), R.drawable.home_bg_thumb_2x);	
+						SimpleImageLoader.showImg(ivInfo, url, null, getActivity(), null);//R.drawable.home_bg_thumb_2x);	
 				}
 				break;
 			}

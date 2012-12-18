@@ -1,20 +1,15 @@
 package com.quanleimu.activity;
 
-import java.util.ArrayList;
-import java.util.List;
-
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 import android.widget.Toast;
 
 import com.baixing.entity.AllCates;
-import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.baixing.util.Helper;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.Util;
@@ -59,11 +54,7 @@ public class SplashJob {
 			e.printStackTrace();
 		}
 		
-		MobileConfig.getInstance().syncMobileConfig();
-		
-		new Thread(new ReadCityListThread()).start();
-		new Thread(new ReadInfoThread()).start();
-		new Thread(new ReadCateListThread()).start();
+		new Thread(new LoadConfigTask()).start();
 	}
 	
 	
@@ -112,42 +103,37 @@ public class SplashJob {
 
 		@Override
 		public void run() {
-			Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(parentActivity, "saveFirstStepCate");
-			
-			if (pair.second == null || pair.second.length() == 0){
-				pair = Util.loadDataAndTimestampFromAssets(parentActivity, "cateJson.txt");
-			}
-			
-			String json = pair.second;
-			if (json != null && json.length() > 0) {
-				AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
-				QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
-			}
-			
+			QuanleimuApplication.getApplication().loadCategorySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
 		}
+	}
+	
+	class LoadConfigTask implements Runnable {
+
+		public void run() {
+			try
+			{
+				MobileConfig.getInstance().syncMobileConfig();
+			}
+			catch(Throwable t)
+			{
+				
+			}
+			finally
+			{
+				new Thread(new ReadCityListThread()).start();
+				new Thread(new ReadInfoThread()).start();
+				new Thread(new ReadCateListThread()).start();
+			}
+		}
+		
 	}
 	
 	class ReadCityListThread implements Runnable {
 		
 		@Override
 		public void run() {
-			CityList cityList = new CityList();
-			// 1. load from locate.
-			Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(parentActivity, "cityjson");
-			
-			// 2. load from asset
-			if (pair.second == null || pair.second.length() == 0)
-			{	
-				pair = Util.loadDataAndTimestampFromAssets(parentActivity, "cityjson.txt");
-			}
-			
-			if (pair.second == null || pair.second.length() == 0) {
-				cityList = null;
-			} else {
-				cityList = JsonUtil.parseCityListFromJson((pair.second));
-				QuanleimuApplication.getApplication().updateCityList(cityList);
-			}
+			QuanleimuApplication.getApplication().loadCitySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_CITY_LIST);
 		}
 	}
@@ -159,17 +145,7 @@ public class SplashJob {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() { 
-			// 获取搜索记录
-			String[] objRemark = (String[]) Util.loadDataFromLocate(parentActivity, "listRemark", String[].class);
-			QuanleimuApplication.getApplication().updateRemark(objRemark);
-
-			GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(parentActivity, "listMyStore", GoodsDetail[].class);
-			QuanleimuApplication.getApplication().updateFav(objStore);
-			
-			byte[] personalMark = Util.loadData(parentActivity, "personMark");//.loadDataFromLocate(parentActivity, "personMark");
-			if(personalMark != null){
-				QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
-			}
+			QuanleimuApplication.getApplication().loadPersonalSync();
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}
 

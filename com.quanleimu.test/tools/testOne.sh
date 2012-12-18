@@ -8,12 +8,12 @@ DIR="$(cd "$(dirname "$0")" && pwd)";
 # define usage function
 usage(){
 	echo "Usage: $0 (port|realDeviceName) \".class$function\" run_log [rebuild_baixing_pkg]"
-	echo "	sample1: testOne.sh 5580 \".KeepLiveTest#runPost\" run_post"
-	echo "	sample2: testOne.sh 5580 \".MainActivityTest\" run_main"
-	echo "	sample3: testOne.sh 5580 \"\" run_all"
-	echo "	sample4: testOne.sh 5580 \".KeepLiveTest#runPost\" run_post no"
-	echo "	sample5: testOne.sh 015d18844854041c \".KeepLiveTest#runPost\" run_post"
-	echo "  sample6: testOne.sh 015d1458a51c0c0e \".KeepLiveTest#runOnePost\" run_post"
+	echo "	sample1: $0 5580 \".KeepLiveTest#runPost\" run_post"
+	echo "	sample2: $0 5580 \".MainActivityTest\" run_main"
+	echo "	sample3: $0 5580 \"\" run_all"
+	echo "	sample4: $0 5580 \".KeepLiveTest#runPost\" run_post no"
+	echo "	sample5: $0 015d18844854041c \".KeepLiveTest#runPost\" run_post"
+	echo "  sample6: $0 015d1458a51c0c0e \".KeepLiveTest#runOnePost\" run_post"
 	exit 1
 }
 
@@ -38,7 +38,7 @@ install_pkg() {
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
 	adb -s emulator-$port uninstall com.quanleimu.activity;
 	adb -s emulator-$port install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-	adb -s emulator-$port install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+	adb -s emulator-$port install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
 	
 	adb -s emulator-$port shell logcat -d >> $LOGPATH/logcat_emulator-"$port"_$LOGNOW.log;
 	adb -s emulator-$port emu event send EV_KEY:KEY_SOFT1:1 EV_KEY:KEY_SOFT1:0;
@@ -54,10 +54,15 @@ run_test() {
 	local func="$2"
 	local prefix="$3"
 	echo "START test $func $NOW" >> $LOGPATH/"$prefix"_$LOGNOW.log
-	adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
-	echo "adb -s $emulator shell am instrument -w -e class $func com.quanleimu.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &"
+	
+	sh com.quanleimu.test/tools/run_screenshot.sh >> $LOGPATH/${prefix}_${LOGNOW}_screen.log
+	
+	adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &
+	echo "adb -s $emulator shell am instrument -w -e class $func com.baixing.activity.test/pl.polidea.instrumentation.PolideaInstrumentationTestRunner >> $LOGPATH/"$prefix"_$LOGNOW.log &"
 	echo "tail -f $LOGPATH/"$prefix"_$LOGNOW.log"
 	tail -f $LOGPATH/"$prefix"_$LOGNOW.log
+	
+	
 }
 
 # define build_pkg function
@@ -83,7 +88,16 @@ build_pkg() {
 			exit;
 		fi;
 		
-		cd ../com.quanleimu.test/;
+		cd ../
+		if [ ! -f com.quanleimu.screenshot/screenshot.jar ]; then
+			cd com.quanleimu.screenshot/;
+			ant
+			sleep 1;
+			cd ../com.quanleimu.test/;
+		else
+			cd com.quanleimu.test/;
+		fi
+		
 	else
 		cd com.quanleimu.test/;
 	fi
@@ -92,7 +106,7 @@ build_pkg() {
 	ant release;
 	sleep 1;
 	
-	if [ ! -f bin/com.quanleimu.test-release.apk ]; then
+	if [ ! -f bin/com.baixing.test-release.apk ]; then
 		echo "ANT build baixing test app error";
 		exit;
 	fi;
@@ -115,7 +129,7 @@ start_real_device() {
 		adb -s $emulator uninstall com.quanleimu.activity;
 		adb -s $emulator uninstall com.quanleimu.test;
 		adb -s $emulator install -r baixing_quanleimu/bin/Baixing_QuanLeiMu-release.apk;
-		adb -s $emulator install -r com.quanleimu.test/bin/com.quanleimu.test-release.apk ;
+		adb -s $emulator install -r com.quanleimu.test/bin/com.baixing.test-release.apk ;
 		
 		adb -s $emulator shell input keyevent 82
 		adb -s $emulator shell input keyevent 4
@@ -140,17 +154,17 @@ echo $LOGNAME;
 if [ "$PORTDEVICE" = "015d18844854041c" ]; then
 	start_real_device "$PORTDEVICE"
 	if [ "$REALDEVICE" = "1" ]; then
-		run_test "$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+		run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 	fi
 else
 	if [ "$PORTDEVICE" = "015d1458a51c0c0e" ]; then
 		start_real_device "$PORTDEVICE"
 		if [ "$REALDEVICE" = "1" ]; then
-			run_test "$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+			run_test "$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 		fi
 	else
 		install_pkg "$PORTDEVICE"
-		run_test "emulator-$PORTDEVICE" "com.quanleimu.activity.test$CLASS" "$LOGNAME"
+		run_test "emulator-$PORTDEVICE" "com.baixing.activity.test$CLASS" "$LOGNAME"
 	fi
 fi
 

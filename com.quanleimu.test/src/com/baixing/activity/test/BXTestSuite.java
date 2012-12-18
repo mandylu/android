@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import android.test.suitebuilder.TestSuiteBuilder;
 import junit.framework.Test;
@@ -14,7 +14,7 @@ public class BXTestSuite extends TestSuite {
 		addTestSuite(PostProcessTest.class);
 		//addTestSuite(PostViewTest.class);
 		addTest(createTest(PostViewTest.class, "testPostChecking"));
-		addTestSuite(MainActivityTest.class);
+		//addTestSuite(SampleTest.class);
 		//addTest(createTest(KeepLiveTest.class, "runPost"));
 	}
 	

@@ -5,6 +5,7 @@ import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.IOException;
 import java.io.InputStream;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -21,6 +22,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.support.v4.util.LruCache;
 import android.util.Log;
+import android.util.Pair;
 
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.DiskLruCache;
@@ -35,20 +37,20 @@ public class ImageManager
 
 	//private Map<String, SoftReference<Bitmap>> imgCache ;
 	
-	private List<Bitmap> trashList = new ArrayList<Bitmap>();
-	private LruCache<String, Bitmap> imageLruCache;
+	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
+	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
 	private DiskLruCache imageDiskLruCache = null;
 
 	
 	private Context context;	
 	
-	public static Bitmap userDefualtHead;
+//	public static Bitmap userDefualtHead;
 	
 	public ImageManager(Context context)
 	{
 		this.context = context;
 		//imgCache = new HashMap<String, SoftReference<Bitmap>>();
-		userDefualtHead =drawabltToBitmap(context.getResources().getDrawable(R.drawable.moren));
+//		userDefualtHead =drawabltToBitmap(context.getResources().getDrawable(R.drawable.moren));
 		
 	    // Get memory class of this device, exceeding this amount will throw an
 	    // OutOfMemory exception.
@@ -70,16 +72,19 @@ public class ImageManager
 	    // Use 1/8th of the available memory for this memory cache.
 	    final int cacheSize = 1024 * 1024 * memClass / 8;    
 	    
-	    imageLruCache = new LruCache<String, Bitmap>(cacheSize){
+	    
+	    imageLruCache = new LruCache<String, Pair<Integer, WeakReference<Bitmap>>>(cacheSize){
 	        @Override
-	        protected int sizeOf(String key, Bitmap bitmap) {
+	        protected int sizeOf(String key, Pair<Integer, WeakReference<Bitmap>> value) {
 	            // The cache size will be measured in bytes rather than number of items.
-	            int bytes = bitmap.getHeight()*bitmap.getRowBytes();
-	            return bytes;
+	        	if(value == null) return 0;
+	        	return value.first;
+//	            int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
+//	            return bytes;
 	        }
 	        
 	        @Override
-	        protected void entryRemoved(boolean evicted, String key, Bitmap oldValue, Bitmap newValue){
+	        protected void entryRemoved(boolean evicted, String key, Pair<Integer, WeakReference<Bitmap>> oldValue, Pair<Integer, WeakReference<Bitmap>> newValue){
 //	        	if(!evicted)
 //	        		oldValue.recycle();
 	        	
@@ -102,9 +107,9 @@ public class ImageManager
 		
 	}
 	
-	public Bitmap getFromMemoryCache(String url)
+	public WeakReference<Bitmap> getFromMemoryCache(String url)
 	{
-		Bitmap bitmap = null;
+		WeakReference<Bitmap> bitmap = null;
 		
 		bitmap = this.getFromMapCache(url);
 		
@@ -158,19 +163,19 @@ public class ImageManager
 	}
 */	
 	
-	public Bitmap getFromFileCache(String url)
+	public WeakReference<Bitmap> getFromFileCache(String url)
 	{
 		//Log.d("LruDiskCache", "get from filecache: "+url+";");
 		if(null != imageDiskLruCache){
-			return imageDiskLruCache.get(getMd5(url));
+			return new WeakReference<Bitmap>(imageDiskLruCache.get(getMd5(url)));
 		}
 		
 		return null;
 	}
 	
-	public Bitmap getFromMapCache(String url)
+	public WeakReference<Bitmap> getFromMapCache(String url)
 	{
-		Bitmap bitmap = null;
+		WeakReference<Bitmap> bitmap = null;
 		
 //		SoftReference<Bitmap> ref = null;
 //		
@@ -184,8 +189,14 @@ public class ImageManager
 //			
 //		}
 		
+		
+		
 		synchronized (this){
-			bitmap = imageLruCache.get(url);			
+			Pair<Integer, WeakReference<Bitmap>> p = imageLruCache.get(url);
+			if (p != null)
+			{
+				bitmap = p.second;			
+			}
 		}
 		return bitmap;
 	}
@@ -199,15 +210,21 @@ public class ImageManager
 //		}
 //		
 		if(url == null || url.equals(""))return;
-		Bitmap bitmap = null;
+		WeakReference<Bitmap> bitmap = null;
 		synchronized(this){
-			bitmap = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+			Pair<Integer, WeakReference<Bitmap>> p = imageLruCache.remove(url);//anyway ,remove it from cache//imageLruCache.get(url);
+			if (p != null)
+			{
+				bitmap = p.second;
+			}
 		}
 		if(bitmap != null){
 			Log.d("recycle", "hahaha remove unuesd bitmap~~~~~~~~~~~~~~~    " + url + ", recycle right now ? " + rightNow);
 			if (rightNow)
 			{
-				bitmap.recycle();
+				if(bitmap.get() != null){
+					bitmap.get().recycle();
+				}
 			}
 			else
 			{
@@ -235,9 +252,9 @@ public class ImageManager
 					@Override
 					public void run() {
 						
-						List<Bitmap> tmpList = null;
+						List<WeakReference<Bitmap> > tmpList = null;
 						synchronized (trashList) {
-							tmpList = new ArrayList<Bitmap>();
+							tmpList = new ArrayList<WeakReference<Bitmap> >();
 							tmpList.addAll(trashList);
 							trashList.clear();
 						}
@@ -252,10 +269,12 @@ public class ImageManager
 						}
 						
 						
-						for (Bitmap bp : tmpList)
+						for (WeakReference<Bitmap> bp : tmpList)
 						{
 							Log.d("recycle", "exe delay recycle bitmap " + bp);
-							bp.recycle();
+							if(bp.get() != null){
+								bp.get().recycle();
+							}
 						}
 						
 						System.gc(); //Force gc after bitmap recycle.
@@ -279,24 +298,29 @@ public class ImageManager
 //            }
 //        }
 //	  imgCache.clear();
-		
-		imageLruCache.evictAll();
+		synchronized (this) {
+			imageLruCache.evictAll();
+		}
 	}
 	
-	public Bitmap safeGetFromFileCacheOrAssets(String url)
+	public WeakReference<Bitmap> safeGetFromFileCacheOrAssets(String url)
 	{
 		String fileName = getMd5(url);
-		Bitmap bitmap = this.getFromFileCache(url);
-		
-		if(null == bitmap){
+		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
+		Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  " + url + "  md5:  " + fileName);
+		if(null == bitmap || bitmap.get() == null){
 			try{
+				Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap is null");
+				
 				FileInputStream is = context.getAssets().openFd(fileName).createInputStream();
 				BitmapFactory.Options o =  new BitmapFactory.Options();
 	            o.inPurgeable = true;
-	            bitmap = BitmapFactory.decodeStream(is, null, o);
-	            
-	            if(null != imageDiskLruCache){
-	            	imageDiskLruCache.put(fileName, bitmap);
+	            bitmap = new WeakReference<Bitmap>(BitmapFactory.decodeStream(is, null, o));
+	            Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap:  " + bitmap.toString());
+	            if(bitmap != null && bitmap.get() != null){
+		            if(null != imageDiskLruCache){
+		            	imageDiskLruCache.put(fileName, bitmap.get());
+		            }
 	            }
 	            
 			}catch(FileNotFoundException ee){
@@ -306,46 +330,53 @@ public class ImageManager
 			}
 		}
 		
-		if(null != bitmap)
-		{
-			synchronized (this)
-			{
-				//imgCache.put(url, new SoftReference<Bitmap>(bitmap));
-				
-				imageLruCache.put(url, bitmap);
-			}			
-		}
+		saveBitmapToCache(url, bitmap);
 		
 		return bitmap;
 	}
 	
 	
-	public Bitmap safeGetFromDiskCache(String url)
+	public WeakReference<Bitmap> safeGetFromDiskCache(String url)
 	{
-		Bitmap bitmap = this.getFromFileCache(url);
+		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
 
-		if(null != bitmap)
-		{
-			synchronized (this)
-			{
-				imageLruCache.put(url, bitmap);
-			}
-		}
+		saveBitmapToCache(url, bitmap);
+		
 		return bitmap;
 	}
 	
-	public Bitmap safeGetFromNetwork(String url) throws HttpException
+	private void saveBitmapToCache(String url, WeakReference<Bitmap> bitmap)
 	{
-		Bitmap bitmap = downloadImg(url);
-		
-		if(null != bitmap)
+		try
 		{
-			synchronized (this)
+			if(null != bitmap && bitmap.get() != null)
 			{
-				imageLruCache.put(url, bitmap);
+				synchronized (this)
+				{
+					int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
+					imageLruCache.put(url, new Pair(bytes, bitmap));
+				}
 			}
 		}
+		catch(Throwable t)
+		{
+			//Ignor runtime exception to make sure everything works.
+		}
+	}
+	
+	public WeakReference<Bitmap> safeGetFromNetwork(String url) throws HttpException
+	{
+		WeakReference<Bitmap> bitmap = new WeakReference<Bitmap>(downloadImg(url));
+		
+		saveBitmapToCache(url, bitmap);
+		
 		return bitmap;
+	}
+	
+	public void putImageToDisk(String url, Bitmap bmp){
+		String key = getMd5(url);
+		Log.d("bitmap", "bitmap, imagemanager:putImageToDisk:  " + url + "  md5:  " + key);
+		imageDiskLruCache.put(key, bmp);
 	}
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException
@@ -492,13 +523,13 @@ public class ImageManager
 	
 	
 	
-	private Bitmap drawabltToBitmap(Drawable drawable)
-	{
-		
-		BitmapDrawable tempDrawable = (BitmapDrawable)drawable;
-		return tempDrawable.getBitmap();
-		
-	}
+//	private Bitmap drawabltToBitmap(Drawable drawable)
+//	{
+//		
+//		BitmapDrawable tempDrawable = (BitmapDrawable)drawable;
+//		return tempDrawable.getBitmap();
+//		
+//	}
 
 	public String getFileInDiskCache(String url) {
 		if(null != imageDiskLruCache){

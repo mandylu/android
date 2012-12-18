@@ -2,6 +2,7 @@ package com.baixing.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -99,7 +100,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	public GoodsListAdapter findGoodListAdapter()
 	{
-		ListAdapter adapter = lvGoodsList.getAdapter();
+		ListAdapter adapter = lvGoodsList == null ? null : lvGoodsList.getAdapter();
 		if (adapter instanceof HeaderViewListAdapter)
 		{
 			HeaderViewListAdapter realAdapter = (HeaderViewListAdapter) adapter;
@@ -124,7 +125,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	public String getCategoryNames(){
 		String categoryName = getArguments().getString("categoryName");
-		return categoryEnglishName + "," + categoryName;
+		return categoryEnglishName + "," + categoryName;		
 	}
 	
 	@Override
@@ -213,15 +214,19 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
-				
-				@Override
-				public void onCancel(DialogInterface dialog) {
-					goodsListLoader.cancelFetching();
-					finishFragment();
-				}
-			});
-			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+//			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
+//				
+//				@Override
+//				public void onCancel(DialogInterface dialog) {
+//					goodsListLoader.cancelFetching();
+//					finishFragment();
+//				}
+//			});
+			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
+			lvGoodsList.setAdapter(adapter);
+//			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+			mRefreshUsingLocal = true;
+			lvGoodsList.fireRefresh();
 		}
 		
 		
@@ -233,7 +238,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									+ categoryEnglishName
 									+ QuanleimuApplication.getApplication().cityEnglishName);
 			String json = pair.second;
-			if (json != null && json.length() > 0)
+			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
 				listFilterss = JsonUtil.getFilters(json).getFilterssList();
 			}
@@ -294,8 +299,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private ArrayList<String> getSearchParams()
 	{
-		ArrayList basicParams = new ArrayList<String>();
+		ArrayList<String> basicParams = new ArrayList<String>();
 		basicParams.add("query=" + filterParamHolder.toUrlString());
+		// keyword 单独处理，放到ad_list的keyword参数里。
+		String keyword = filterParamHolder.getData("");
+		if (keyword != null && keyword.length() > 0)
+		{
+			basicParams.add("keyword=" + URLEncoder.encode(keyword));
+		}
+		
 		if (isSerchNearBy() && this.curLocation != null)
 		{
 			basicParams.add("lat="+curLocation.fLat);
@@ -402,14 +414,25 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	@Override
 	public void onClick(View v) {
-		GoodsListAdapter adapter = this.findGoodListAdapter();
-		switch(v.getId()){
-
-		}
 	}
 	
 	@Override
-	public void onDestroy(){		
+	public void onDestroy(){
+		final GoodsListAdapter adapter = findGoodListAdapter();
+		if(adapter != null){
+			Thread t = new Thread(new Runnable(){
+				public void run(){
+					try{
+						Thread.sleep(2000);
+						adapter.releaseResource();
+					}catch(Exception e){
+						e.printStackTrace();
+					}
+				}
+			});
+			t.start();
+
+		}
 		this.lvGoodsList = null;
 //		this.adapter = null;
 		GoodsList goodData = this.goodsListLoader.getGoodsList();
@@ -424,8 +447,8 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					 if(gd != null){
 						 ImageList il = gd.getImageList();
 						 if(il != null){
-							 if(il.getResize180() != null){
-								 String b = il.getResize180();
+							 if(il.getSquare() != null){
+								 String b = il.getSquare();
 								 if (b.contains(",")) {
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
@@ -611,8 +634,11 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
 				GoodsListAdapter adapter = findGoodListAdapter();
-				updateData(adapter, goodsListLoader.getGoodsList().getData());
-				adapter.notifyDataSetChanged();		
+				if (adapter != null)
+				{
+					updateData(adapter, goodsListLoader.getGoodsList().getData());
+					adapter.notifyDataSetChanged();		
+				}
 				
 				lvGoodsList.onGetMoreCompleted(PullToRefreshListView.E_GETMORE.E_GETMORE_OK);
 				goodsListLoader.setHasMore(true);
@@ -748,6 +774,12 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		singleFilter.setOnClickListener(listener);
 		moreItem.setOnClickListener(listener);
+		
+		View filterParent =getView() == null ? null : getView().findViewById(R.id.filter_bar_root);
+		if (filterParent != null)
+		{
+			filterParent.setVisibility(View.VISIBLE);
+		}
 		
 	}
 	

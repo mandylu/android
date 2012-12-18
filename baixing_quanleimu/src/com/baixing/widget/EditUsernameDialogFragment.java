@@ -75,6 +75,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
                 });
         final AlertDialog dialog = builder.create();
         // setOnShowListener 需要 2.2 之上版本，不过测试 2.1 也没有问题
+        //楼上的：你测试的应该是2.1 update1，而不是2.1 不过现在2.1的设备几乎可以忽略 
         dialog.setOnShowListener(new DialogInterface.OnShowListener() {
             @Override
             public void onShow(DialogInterface di) {
@@ -92,8 +93,8 @@ public class EditUsernameDialogFragment extends DialogFragment {
 
 
     private void updateUsername() {
-        EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
-        if (editUsernameEt.getText().toString().length() <= 0) {
+        final EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
+        if (editUsernameEt.getText().toString().trim().length() <= 0) {
             Toast.makeText(getActivity(), "请输入用户名", 1).show();
             return;
         }
@@ -120,7 +121,14 @@ public class EditUsernameDialogFragment extends DialogFragment {
                                 .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
                                 .end();
                     } else {
-                        Util.clearData(getActivity(), "userProfile");
+//                        Util.clearData(getActivity(), "userProfile");
+                    	userProfile.nickName = editUsernameEt.getText().toString();
+                    	Activity activity = getActivity();
+                    	if (activity != null)
+                    	{
+                    		Util.saveDataToLocate(activity, "userProfile", userProfile);
+                    	}
+                    
                         msg.what = PersonalInfoFragment.MSG_EDIT_USERNAME_SUCCESS;
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, true)

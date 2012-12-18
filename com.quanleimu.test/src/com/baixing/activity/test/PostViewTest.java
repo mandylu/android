@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -42,7 +42,7 @@ public class PostViewTest extends BaixingTestCase {
 		String title = doPostByData(postDataXuesheng);
 		//等待5s
 		//检查是否自动到“已发布的信息页面”（检查页面title文字为“已发布的信息”）
-		assertNotNull(findElementByText(MY_LISTING_TITLE_TEXT));
+		assertElementByText(MY_LISTING_TITLE_TEXT);
 		//点击第一个发布的信息进入
 		if (title.length() > 0) {
 			//检查该信息标题，确保标题＝简历标题
@@ -63,8 +63,8 @@ public class PostViewTest extends BaixingTestCase {
 		//点击类目“生活服务”>"摄影"
 		String title = postEnterData(postDataSheying);
 		//检查页面title为“发布”
-		assertNotNull(findElementByText(TEST_DATA_SHEYING));
-		assertNotNull(findElementByText(POST_SEND));
+		assertElementByText(TEST_DATA_SHEYING);
+		assertElementByText(POST_SEND);
 		//点击拍照按钮
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
@@ -72,13 +72,13 @@ public class PostViewTest extends BaixingTestCase {
 		clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
 		//检查拍照页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitClickCamera();
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
-		TimeUnit.SECONDS.sleep(1);
-		assertNotNull(findElementByText(TEST_DATA_SHEYING));
-		assertNotNull(findElementByText(POST_SEND));
+		sleep(1);
+		assertElementByText(TEST_DATA_SHEYING);
+		assertElementByText(POST_SEND);
 		//再次点击拍照按钮
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
@@ -86,20 +86,20 @@ public class PostViewTest extends BaixingTestCase {
 		clickByText(POST_GALLERY_PHOTO_TEXT);
 		//检查相册选择页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitSendKey(KeyEvent.KEYCODE_BACK);
 		//goBack(); //TODO AthrunDevice.pressBackAcrossApp();
 		//检查页面title文字，应为“发布”
-		assertNotNull(findElementByText(TEST_DATA_SHEYING));
-		assertNotNull(findElementByText(POST_SEND));
+		assertElementByText(TEST_DATA_SHEYING);
+		assertElementByText(POST_SEND);
 		//再次点击拍照按钮
 		doClickPostPhoto();
 		//检查弹出页，包含“相册”“拍照”“取消”
 		//选择取消button
 		clickByText(MSGBOX_CANCEL_TEXT);
 		//检查页面title文字，应为“发布”
-		assertNotNull(findElementByText(TEST_DATA_SHEYING));
-		assertNotNull(findElementByText(POST_SEND));
+		assertElementByText(TEST_DATA_SHEYING);
+		assertElementByText(POST_SEND);
 							
 	}
 }

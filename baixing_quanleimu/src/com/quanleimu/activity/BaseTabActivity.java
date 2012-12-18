@@ -1,6 +1,5 @@
 package com.quanleimu.activity;
 
-import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.List;
@@ -12,6 +11,8 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.os.Bundle;
+import android.support.v4.app.FragmentManager;
+import android.support.v4.app.FragmentTransaction;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -26,6 +27,7 @@ import com.baixing.entity.GoodsDetail;
 import com.baixing.util.LocationService;
 import com.baixing.util.Sender;
 import com.baixing.util.ShortcutUtil;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
@@ -41,6 +43,7 @@ import com.baixing.view.fragment.PostGoodsFragment;
  *
  */
 public class BaseTabActivity extends BaseActivity implements TabSelectListener {
+	
 	public static final String LIFE_TAG = "mainActivity";
 	public static final int TAB_INDEX_CAT = 0;
 	public static final int TAB_INDEX_POST = 1;
@@ -56,12 +59,16 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected static boolean isExitingApp = false;
 //	protected boolean skipReduceInstanceCount = false;
 	protected static Map<Integer, Boolean> instanceList = new HashMap<Integer, Boolean>();
+	protected int originalAppHash = 0;
+	protected boolean isChangingTab = false;
 	
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
-		// TODO Auto-generated method stub
 		super.onSaveInstanceState(savedInstanceState);
-		
+		if (originalAppHash != 0)
+		{
+			savedInstanceState.putInt("appHash", originalAppHash);
+		}
 		if (globalTabCtrl != null)
 		{
 			globalTabCtrl.setCurrentFocusIndex(getTabIndex()); //Always save current index to the fixed one.
@@ -72,13 +79,16 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onStart()
 	{
 		super.onStart();
-		if (instanceList.containsKey(this.hashCode()))
+		
+		if ((instanceList.containsKey(this.hashCode()) && instanceList.get(this.hashCode()).booleanValue()))
 		{
-			if (instanceList.get(this.hashCode()).booleanValue())
-			{
-				instanceList.remove(this.hashCode());
-				this.finish();
-			}
+			instanceList.remove(this.hashCode());
+			this.finish();
+		}
+		else if (originalAppHash != 0 && QuanleimuApplication.isAppDestroy(originalAppHash))
+		{
+			finish();
+			return;
 		}
 	}
 	
@@ -92,6 +102,16 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onCreate(Bundle savedInstanceState) {
 		Log.w(LIFE_TAG, this.hashCode() + " activity is created for class " + this.getClass().getName());
 		super.onCreate(savedInstanceState);
+		if (savedInstanceState != null)
+		{
+			originalAppHash = savedInstanceState.getInt("appHash", 0);
+		}
+		else
+		{
+			originalAppHash = QuanleimuApplication.getApplication().hashCode();
+		}
+		
+		
 //		ACTIVE_INSTANCE_COUNT++;
 //		Log.d(LIFE_TAG, this.hashCode() + " activity create with exiting app flag be " + isExitingApp + " and instace count is " + ACTIVE_INSTANCE_COUNT);
 		instanceList.put(this.hashCode(), Boolean.valueOf(false));
@@ -116,7 +136,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onNewIntent(Intent intent)
 	{
 		super.onNewIntent(intent);
-		
+		if (intent.getBooleanExtra("changeTab", false)) {
+			this.isChangingTab = true;
+		} else {
+			this.isChangingTab = false;
+		}
 		/**
 		 * Let sub class to handle the new intent, if sub class do not handle it, let current top fragment handle it.
 		 */
@@ -151,8 +175,29 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	protected void onResume()
 	{
 		super.onResume();
+		this.isChangingTab = false;
 		currentMainIndex = getTabIndex();
 		globalTabCtrl.showTab(getTabIndex());
+	}
+	
+	protected void onPause() {
+		super.onPause();
+//		if (!this.isChangingTab) {
+//			Log.d("ddd","onpause");
+//			
+//			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+//		}
+	}
+	
+	protected void onStop() {
+		super.onStop();
+//		if (!this.isChangingTab) {
+//			Log.d("ddd","onstop");
+//			
+//			Tracker.getInstance().event(BxEvent.APP_STOP).end();
+//			Tracker.getInstance().save();
+//			Sender.getInstance().notifySendMutex();
+//		}
 	}
 	
 	protected int getTabIndex()
@@ -314,10 +359,28 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	@Override
 	public void beforeChange(int currentIndex, int nextIndex) {
 	}
+	
+	public void deprecatSelect(int currentIndex)
+	{
+		FragmentManager fm =  getSupportFragmentManager();
+		int currentSize = fm.getBackStackEntryCount();
+		if (currentSize > 1)
+		{
+			FragmentTransaction ft = fm.beginTransaction();
+			if (firstFragmentId == INVALID_FIRSTFRAGMENT_ID)
+			{
+				fm.popBackStack();
+			}
+			else
+			{
+				fm.popBackStack(firstFragmentId, FragmentManager.POP_BACK_STACK_INCLUSIVE);
+			}
+			ft.commit();
+		}
+	}
 
 	@Override
 	public void afterChange(int newSelectIndex) {
-		
 		Intent intent = new Intent();
 		switch(newSelectIndex)
 		{
@@ -339,6 +402,8 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
 		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		intent.putExtra("changeTab", true);
+		this.isChangingTab = true;
 //		intent.addFlags(Intent.FLAG_ACTIVITY_RESET_TASK_IF_NEEDED);
 		this.startActivity(intent);
 //		BaseTabActivity.this.finish();
@@ -348,6 +413,8 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 //		gg.putExtra("intent", intent);
 //		this.startActivity(gg);
 	}
+	
+	
 	
 	protected void onStatckTop(BaseFragment f) {
 		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);

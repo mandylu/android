@@ -10,6 +10,7 @@ import java.util.Map;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -25,10 +26,11 @@ import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
+import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
@@ -65,6 +67,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	public String json = "";
 
 	private final int MSG_MULTISEL_BACK = 0;
+	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	
 	private PostParamsHolder parametersHolder;
 
@@ -113,6 +116,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	public void onResume()
 	{
 		super.onResume();
+		Log.d("xx","filter");
 		this.pv = PV.LISTINGFILTER;
 		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		
@@ -229,7 +233,11 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 //			}
 //		}
 //		else 
-			if(MSG_MULTISEL_BACK == message){
+		handleBackWithData(message, obj);
+	}
+	
+	private void handleBackWithData(int message, Object obj) {
+		if(MSG_MULTISEL_BACK == message){
 			if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
 				final String txt = ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt;
 				selector.get(temp).setText(txt);
@@ -249,7 +257,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			}
 		}
 	}
-	
 	
 	class GetGoodsListThread implements Runnable {
 		private boolean isUpdate;
@@ -309,7 +316,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 				View v = null;
 				TextView tvmetatxt = null;
 
-				final String paramsKey = listFilterss.get(i).getName();
+				final String paramsKey = listFilterss.get(i).getName();//手机型号_s
 				if (listFilterss.get(i).getControlType().equals("select")) {
 					v = inflater.inflate(R.layout.item_filter_select, null);
 					tvmetatxt = (TextView) v.findViewById(R.id.filter_label);
@@ -318,7 +325,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 					TextView tvmeta = (TextView) v.findViewById(R.id.filter_value);
 					tvmeta.setTag(paramsKey);
 					
-					if (parametersHolder.containsKey(paramsKey)) {
+					if (parametersHolder.containsKey(paramsKey)) {//contains 手机型号_s
 						String preValue = parametersHolder.getData(paramsKey); 
 						String preLabel= parametersHolder.getUiData(paramsKey); 
 						boolean valid = false;
@@ -344,7 +351,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 								tvmeta.setText("请选择");
 							}
 						}
-					} else {
+					} 
+					else {//not contains 手机型号_s
 						tvmeta.setText("请选择");
 					}
 					selector.put(i, tvmeta);
@@ -391,15 +399,15 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 								bundle.putSerializable("items", items);
 								bundle.putInt("maxLevel",
 										fss.getLevelCount() - 1);
-								((BaseActivity) getActivity())
-										.pushFragment(
-												new MultiLevelSelectionFragment(),
-												bundle, false);
+								
+								new CustomDialogBuilder(getActivity(), FilterFragment.this.getHandler(), bundle).start(); //alert方式
+//								((BaseActivity) getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false); //fragment方式
+								
 							}
 						}
-					});
+					});//v set onclick listener
 
-				}
+				}//if is select item
 				// else
 				// if(listFilterss.get(i).getControlType().equals(""))
 				else {
@@ -425,7 +433,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 //						valuemap.put(listFilterss.get(i).getName(),
 //								preValue);
 					}
-				}
+				}//not select
 //				TextView border = new TextView(
 //						rootView.getContext());
 				View border = new View(rootView.getContext());
@@ -435,7 +443,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 
 				ll_meta.addView(v);
 				ll_meta.addView(border);
-			}
+			}//for
 
 
 		}
@@ -471,7 +479,12 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			((TextView) rootView.findViewById(R.id.edsift))
 			.setText((String) msg.obj);
 			break;
+		case MSG_DIALOG_BACK_WITH_DATA:
+			Bundle bundle = (Bundle)msg.obj;
+			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
+			break;
 		}
+		
 
 	}
 

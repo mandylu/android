@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.util.concurrent.TimeUnit;
 
@@ -40,15 +40,15 @@ public class AdListingViewTest extends BaixingTestCase {
 		//向下滚动
 		ViewElement footer = scrollAdListViewToFooter(lv);
 		assertNotNull(footer);
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 		//试图点击（有可能已经自动加载了）
 		footer = findElementById(AD_VIEWLIST_MORE_ID);
 		if (footer != null) footer.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	    //向下拖动
 		footer = scrollAdListViewToFooter(lv);
 		//assertNotNull(footer);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		//页面展开后，点击最后一个信息进入
 		ViewGroupElement av = null;
 		for(int i = 8; i > 1; i--) {
@@ -56,7 +56,7 @@ public class AdListingViewTest extends BaixingTestCase {
 			if (av != null) break;
 		}
 		assertNotNull(av);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		//从viewad页面返回至listing页面
 		goBack(true);
 		//继续三次返回至一级类目
@@ -98,8 +98,7 @@ public class AdListingViewTest extends BaixingTestCase {
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
-		v = findElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
-		assertNull(v);
+		assertNoElementById(AD_VIEWLIST_ITEM_IMAGE_ID);
 		goBack();
 		goBack();
 		setAdListingViewType(MY_SETTING_VIETTYPE_PIC_TEXT);

@@ -1,4 +1,4 @@
-package com.quanleimu.activity.test;
+package com.baixing.activity.test;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -54,9 +54,9 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement el = findElementByText(MY_LOGOUT_BUTTON_TEXT);
 		if (el == null) return;
 		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		findElementByText(MY_LOGOUT_OK_BUTTON_TEXT, 0, true).doClick();
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 		goBack();
 	}
 	
@@ -69,7 +69,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			return;
 		}
 		v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		ViewElement loginBtn = findElementById(MY_LOGIN_BUTTON_ID);
 		if (loginBtn != null) {
 			TextViewElement etAccount = findElementById(MY_LOGIN_USER_TEXTVIEW_ID, TextViewElement.class);
@@ -93,8 +93,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openPostFirstCategory(int firstCatIndex) throws Exception {
-		ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
-		if (v != null) {
+		if (findElementById(POST_FORM_MARK_ID) != null) {
+			TextViewElement tv = findElementByText(POST_CATEGORY_TEXT, 0, true);
+			if (tv != null) {
+				tv.doClick();
+				sleep(1);
+			}
+		}
+		
+		/*ViewElement v = findElementById(POST_CATEGORY_LIST_ITEM_ID);
+		//if (v != null) {
 			AbsListViewElement lv = findElementById(POST_CATEGORY_GRIDVIEW_ID, AbsListViewElement.class);
 			ViewElement iv = lv.getChildByIndex(firstCatIndex);
 			if (iv != null) {
@@ -107,7 +115,30 @@ public class BaixingTestCase extends BxBaseTestCase {
 				catTextView.doClick();
 				waitForHideMsgbox(3000);
 			}
+		}*/
+		
+		AbsListViewElement lv = findListView();
+		if (lv != null) {
+			lv.getChildByIndex(firstCatIndex).doClick();
+			sleep(3);
 		}
+	}
+	
+	public TextViewElement openPostSecondCategory(int secondIndex) throws Exception {
+		AbsListViewElement lv = findListView();
+		if (lv != null) {
+			TextViewElement tv = lv.getChildByIndex(secondIndex + 1, TextViewElement.class);
+			if (tv == null) {
+				ViewGroupElement gv = lv.getChildByIndex(secondIndex + 1, ViewGroupElement.class);
+				gv.doClick();
+				tv = findTextView(gv);
+			}
+			//TextViewElement tv = findTextView(gv);
+			tv.doClick();
+			sleep(2);
+			if (tv != null) return tv;
+		}
+		return null;
 	}
 	
 	public void openPostItemByIndex(int index) throws Exception {
@@ -116,7 +147,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewGroupElement listView = findElementById(POST_META_ITEM_ID, index, ViewGroupElement.class);
 		assertNotNull(listView);
 		listView.doClick();
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 	}
 	
 	public void openPostItemByName(String displayName) throws Exception {
@@ -133,15 +164,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 				if (dv != null) {
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 					dv.doClick();
-					TimeUnit.SECONDS.sleep(2);
+					sleep(2);
 					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) != null) {
 						Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":ScrollNext");
 						ScrollViewElement scrollView = getPostScrollView();
 						scrollView.scrollToNextScreen();
 						if (scrolled == 0) scrolled = index - 1;
-						TimeUnit.SECONDS.sleep(2);
+						sleep(2);
 						dv.doClick();
-						TimeUnit.SECONDS.sleep(2);
+						sleep(2);
 					}
 					return;
 				}
@@ -152,7 +183,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":WScrollNext");
 				ScrollViewElement scrollView = getPostScrollView();
 				scrollView.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(2);
+				sleep(2);
 				scrolledNull = false;
 				index--;
 			}
@@ -166,7 +197,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//assertNotNull(tv);
 			if (tv != null) {
 				tv.setText(value);
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 			}
 			return tv;
 		} catch (IndexOutOfBoundsException ex) {
@@ -182,7 +213,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		assertNotNull(v3);
 		Log.i(LOG_TAG, "postshow:v3" + v3.getText());
 		v3.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	public TextViewElement findMetaByName(String listViewId, String displayName) throws Exception {
@@ -192,14 +223,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void setMetaByName (String displayName, String value) throws Exception {
 		ViewGroupElement postLayout = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
 		assertNotNull(postLayout);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		ScrollViewElement lv = getPostScrollView();
 		int loop = 0;
 		ViewElement v = setMetaValueByName(displayName, value);
 		while(v == null) {
 			Log.i(LOG_TAG, "setOtherMetaByName:setval" + displayName);
 			lv.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 			v = setMetaValueByName(displayName, value, 0);
 			if (loop++ > 5) break;
 		}
@@ -255,19 +286,18 @@ public class BaixingTestCase extends BxBaseTestCase {
 			String editDisplayId = POST_META_EDIT_DISPLAY_ID;
 			String editTextId = POST_META_EDITTEXT_ID;
 			TextViewElement nv = dv.findElementById(editDisplayId, TextViewElement.class);
+			BXTextViewElement tv = null;
 			if (nv == null) {
 				editDisplayId = POST_META_EDIT_DISPLAY_DESC_ID;
 				editTextId = POST_META_EDITTEXT_DESC_ID;
+				tv = dv.findElementById(editTextId, BXTextViewElement.class);
 				nv = dv.findElementById(editDisplayId, TextViewElement.class);
 			}
 			if (nv != null) Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + nv.getText());
-			if (nv != null) {
+			if (nv != null || tv != null) {
 				if (displayName != null && !nv.getText().equals(displayName)) return null;
 				Log.i(LOG_TAG, "setOtherMetaByName:" + index + editDisplayId + (displayName != null ? displayName : ""));
-				BXTextViewElement tv = null;
-				if (editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
-					tv = dv.findElementById(editTextId, BXTextViewElement.class);
-				} else {
+				if (!editTextId.equals(POST_META_EDITTEXT_DESC_ID)) {
 					for(int i = 1; i < dv.getChildCount(); i++) {
 						ViewGroupElement ddv = dv.getChildByIndex(i, ViewGroupElement.class);
 						tv = ddv.findElementById(editTextId, BXTextViewElement.class);
@@ -281,24 +311,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 							InputType.TYPE_CLASS_NUMBER 
 							| InputType.TYPE_NUMBER_FLAG_DECIMAL 
 							| InputType.TYPE_NUMBER_FLAG_SIGNED)) {
-						value = "" + (30 + (int)(Math.random() * 10));
+						value = "" + (30 + random(10));
 					} else {
-						int randLen = 8 + (int)(Math.random() * 12);
-						if (nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
-						if (nv.getText().equals("描述")) randLen = 8 + (int)(Math.random() * 7);//TODO 营业员 描述字数
-						if (nv.getText().equals("目的地")) randLen = 9;
-						value = "";
-						for(int l = 0; l < randLen; l++) {
-							class RandomHan {
-							    private Random ran = new Random();
-							    private final static int delta = 0x9fa5 - 0x4e00 + 1;
-							     
-							    public char getRandomHan() {
-							        return (char)(0x4e00 + ran.nextInt(delta)); 
-							    }
-							}
-							RandomHan han = new RandomHan();
-							value += han.getRandomHan();
+						int randLen = 8 + random(12);
+						if (nv != null && nv.getText().equals("姓名")) randLen = 3;//TODO 营业员 描述字数
+						if (nv != null && nv.getText().equals("描述")) randLen = 8 + random(7);//TODO 营业员 描述字数
+						if (nv != null && nv.getText().equals("目的地")) randLen = 9;
+						if (nv != null && nv.getText().equals("联系电话")) {
+							value = TEST_DATA_MOBILE;
+						} else {
+							value = (new RandomHan()).getRandomString(randLen);
 						}
 					}
 					tv.setText(value);
@@ -317,7 +339,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				TextViewElement tv = findTextMetaByIndex(index++, displayName);
 				if (tv != null) {
 					tv.setText(value);
-					TimeUnit.SECONDS.sleep(1);
+					sleep(1);
 					return tv;
 				}
 			} catch (IndexOutOfBoundsException e) {
@@ -360,24 +382,35 @@ public class BaixingTestCase extends BxBaseTestCase {
 				}
 			}
 		}*/
-		iv = findElementById(POST_META_IMAGEVIEW1_ID, BXImageViewElement.class);
+		/*iv = findElementById(POST_META_IMAGEVIEW1_ID, BXImageViewElement.class);
+		if (iv == null) {
+			iv = findElementById(POST_META_DESC_IMAGEVIEW_ID, BXImageViewElement.class);
+		}*/
+		iv = findImageView("btn_add_picture");
 		if (iv != null) {
 			iv.doClick();
-			SleepUtils.sleep(300);
+			sleep(1);
+			if (findElementByText("完成添加") != null) {
+				iv = findImageView("btn_add_picture");
+				if (iv != null) {
+					iv.doClick();
+					sleep(1);
+				}
+			}
 			ViewElement v = findElementByText(POST_CAMERA_PHOTO_TEXT, 0, true);
 			assertNotNull(v);
 			//v.doClick();
-			SleepUtils.sleep(300);
+			sleep(1);
 			//getActivity();
 			//Instrumentation inst = getInstrumentation();
 			//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_CENTER);
 			//inst.sendKeyDownUpSync(KeyEvent.KEYCODE_DPAD_CENTER);
-			//TimeUnit.SECONDS.sleep(10);
+			//sleep(10);
 			//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_LEFT);
 			//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_LEFT);
 			//this.getDevice().pressKeys(KeyEvent.KEYCODE_DPAD_CENTER);
 			//this.getDevice().pressBack();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 	}
 	
@@ -401,13 +434,33 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (asserted) assertNotNull(v);
 		if (v == null) return null;
 		v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		return v;
 	}
 	
 	public void selectAutoMeta() throws Exception {
-		int i = 2;
 		ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
+		if (lv == null) {
+			int loop = 10;
+			while (findElementById(POST_FORM_MARK_ID) == null) {
+				if (findElementByText("全部", 0, true) != null) {
+					findElementByText("全部", 0, true).doClick();
+					sleep(1);
+					return;
+				}
+				AbsListViewElement lv1 = findListView();
+				if (lv1 != null) {
+					int index = lv1.getChildCount() > 1 ? 1 : 0;
+					ViewElement gv = lv1.getChildByIndex(index, ViewElement.class);
+					gv.doClick();
+					sleep(1);
+				}
+				if (loop++ > 10) break;
+			}
+			//assertTrue("selectAutoMeta error", false);
+			return;
+		}
+		int i = 2;
 		while(i >= 0) {
 			ViewElement v = selectMetaByIndex(i--, false);
 			ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
@@ -422,7 +475,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement el = findElementByText(POST_DONE);
 		assertNotNull(el);
 		el.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 
 	public String doPostByData(String[][] postData) throws Exception {
@@ -454,8 +507,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			case TITLE:
 				String txtVal = postData[i][2];
 				if (type == METATYPE.TITLE) {
-					int rand = (int)(Math.random() * 1000000);
-					title = txtVal + String.valueOf(rand);
+					title = txtVal + String.valueOf(random(1000000));
 					setMetaByName(postData[i][1], title);
 				} else {
 					setMetaByName(postData[i][1], txtVal);
@@ -471,6 +523,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 		String value = "";
 		int loop = 0;
 		//String firstVal = null;
+		TextViewElement descV = findElementById(POST_META_EDITTEXT_DESC_ID, TextViewElement.class);
+		if (descV != null) {
+			descV.setText( (new RandomHan()).getRandomString(16));
+		}
 		while(index < 15) {
 			try {
 				BXTextViewElement tv = findTextMetaByIndex(index++, true);
@@ -480,7 +536,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 					//}
 					
 					//if (index == 1) firstVal = value;
-					TimeUnit.SECONDS.sleep(1);
+					sleep(1);
 				} else {
 					throw new IndexOutOfBoundsException("" + index);
 				}
@@ -491,7 +547,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 				index = 0;
 				ScrollViewElement lv = getPostScrollView();
 				lv.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
@@ -500,24 +556,32 @@ public class BaixingTestCase extends BxBaseTestCase {
 		index = 0;
 		loop = 0;
 		String firstTitle = null;
+		boolean categoryFound = false; //todo
 		while(index < 10) {
 			try {
 				ViewGroupElement dv = findSelectMetaByIndex(index++);
 				if (dv != null) {
+					TextViewElement tt = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
 					if (index == 1) {
-						TextViewElement tt = dv.findElementById(POST_META_ITEM_DISPLAY_ID, TextViewElement.class);
 						if (tt != null) {
 							if (firstTitle != null && firstTitle.equals(tt.getText())) break;
 							firstTitle = tt.getText();
 						}
 					}
+					if (tt != null && tt.getText().equals(POST_CATEGORY_TEXT)) {
+						if (!categoryFound) { //todo
+							categoryFound = true;
+							continue;
+						}
+					}
+					
 					Log.i(LOG_TAG, "setOtherMetaByName:openPostItemByName" + index + ":doClick");
 					dv.doClick();
-					TimeUnit.SECONDS.sleep(2);
+					sleep(2);
 					if (findElementById(POST_FORM_MARK_ID, ViewGroupElement.class) == null) {
 						ViewGroupElement lv = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 						selectAutoMeta();
-						TimeUnit.SECONDS.sleep(2);
+						sleep(2);
 						ViewGroupElement lv2 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 						if (lv2 != null) {
 							boolean done = false;
@@ -527,14 +591,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 							}
 							if (done) {
 								postOtherDone();
-								TimeUnit.SECONDS.sleep(1);
+								sleep(1);
 							} else {
 								ViewGroupElement lv3 = findElementById(POST_META_LISTVIEW_ID, ViewGroupElement.class);
 								selectAutoMeta();
 								if (lv3 != null && lv2.equals(lv3)) {
 									selectAutoMeta();
 								}
-								TimeUnit.SECONDS.sleep(2);
+								sleep(2);
 							}
 						}
 					}
@@ -545,9 +609,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 				Log.i(LOG_TAG, "findSelectMetaByIndex:IndexOutOfBoundsException" + index);
 				if (loop++ > 1) break;
 				index = 0;
-				ScrollViewElement lv = getPostScrollView();
-				lv.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(1);
+				//ScrollViewElement lv = getPostScrollView();
+				AbsListViewElement lv = findListView();
+				if (lv != null) {
+					lv.scrollToNextScreen();
+					sleep(1);
+				}
 				//this.scrollBottom(1, POST_SCROLLVIEW_PARENT_ID);
 			}
 		}
@@ -567,16 +634,32 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (eld == null) return false;
 		eld.doClick();
 		//waitForHideMsgbox(10 * 1000);
-		return waitForSubTexts("发布成功@重复", 5000);
+		return waitForSubTexts("发布成功@百姓网公约@重复@超限@失败", 5000);
 	}
 	
 	public boolean checkPostSuccess(boolean deleted) throws Exception {
-		if (checkPostSuccess(MY_LISTING_MYAD_TEXT, deleted)) return true;
-		return checkPostSuccess(MY_LISTING_MYAD_APPROVE_TEXT, deleted);
-	}
-	
-	public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
-		if (gridText != null) openMyGridByText(gridText);
+		//if (checkPostSuccess(MY_LISTING_MYAD_TEXT, deleted)) return true;
+		//return checkPostSuccess(MY_LISTING_MYAD_APPROVE_TEXT, deleted);
+	//}
+	//public boolean checkPostSuccess(String gridText, boolean deleted) throws Exception {
+		if (findElementById(POST_FORM_MARK_ID) != null) {
+			return false;
+		}
+		sleep(2);
+		ViewElement dt = findElementByText("是否用百姓网帐号");
+		if (dt != null) {
+			ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+			if (d != null) {
+				d.doClick();
+				sleep(1);
+			}
+		}
+		if (findElementByText("个人中心") != null && findElementByText("我的信息") != null) {
+			findElementByText("我的信息").doClick();
+			sleep(1);
+			
+		}
+		//if (gridText != null) openMyGridByText(gridText);
 		ViewGroupElement gv = openAdByItemIndex(0);
 		if (gv != null) {
 			if (deleted) {
@@ -587,7 +670,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 			return true;
 		}
-		return false;
+		return true;
 	}
 	
 	public boolean afterPostSend() throws Exception {
@@ -596,9 +679,17 @@ public class BaixingTestCase extends BxBaseTestCase {
 			goBack();
 			ViewElement dt = findElementByText("提示", 0, true);
 			if (dt != null) {
-				ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
-				if (d != null) {
-					d.doClick();
+				ViewElement dt2 = findElementByText("确认退出？", 0, true);
+				if (dt2 != null) {
+					ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
+					if (d != null) {
+						d.doClick();
+					}
+				} else {
+					ViewElement d = findElementByText(POST_BACK_DIALOG_OK_BUTTON_ID, 0, true);
+					if (d != null) {
+						d.doClick();
+					}
 				}
 			}
 			goBack();
@@ -621,7 +712,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		TextViewElement catTextView = getGridItemByIndex(index, CATEGORY_GRIDVIEW_ID);
 		if (catTextView != null) {
 			catTextView.doClick();
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 		}
 		
 	}
@@ -633,7 +724,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewGroupElement subCatView = subCatListView.getChildByIndex(index,
 				ViewGroupElement.class);
 		subCatView.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 		waitForHideMsgbox(10000);
 	}
@@ -644,9 +735,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openSecondCategoryByName(String name) throws Exception {
-		TextViewElement subCatView = findElementByViewId(CATEGORY_SECOND_GRIDVIEW_ID, name);
+		/*TextViewElement subCatView = findElementByViewId(CATEGORY_SECOND_GRIDVIEW_ID, name);
 		assertNotNull(subCatView);
-		subCatView.doClick();
+		subCatView.doClick();*/
+		if (findElementById(POST_FORM_MARK_ID) == null) {
+			AbsListViewElement lv = findListView();
+			if (lv != null) {
+				int loop = 0;
+				while(loop++ < 50) {
+					TextViewElement tv = findElementByText(name, 0, true);
+					if (tv != null) {
+						tv.doClick();
+						break;
+					}
+					lv.scrollToNextScreen();
+				}
+				sleep(2);
+			}
+		}
 		waitForHideMsgbox(10000);
 	}
 	
@@ -661,7 +767,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
 			if (v == null) return null;
 			avi.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 		return avi;
 	}
@@ -682,7 +788,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			ViewGroupElement _avi_ = avi.findElementById(AD_VIEWLIST_MARK_ID, ViewGroupElement.class);
 			if (_avi_ == null) {
 				avl.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				avi = avl.getChildByIndex(j, ViewGroupElement.class);
 				_avi_ = avi.findElementById(AD_VIEWLIST_MARK_ID, ViewGroupElement.class);
 				if (_avi_ == null) {
@@ -692,7 +798,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 			if (i++ == index) {
 				avi.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				break;
 			}
 			avi = avl.getChildByIndex(++j, ViewGroupElement.class);
@@ -704,7 +810,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (avl == null && viewListId != null) avl = findElementById(viewListId, AbsListViewElement.class);
 		while (i++ < pageSize) {
 			if (avl != null) avl.scrollToNextScreen();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 		ViewGroupElement avi = null;
 		int loop = index % indexSize;
@@ -716,17 +822,17 @@ public class BaixingTestCase extends BxBaseTestCase {
 					ViewElement v = avi.findElementById(AD_VIEWLIST_ITEM_TITLE_ID);
 					if (v == null) {
 						if (avl != null) avl.scrollToNextScreen();
-						TimeUnit.SECONDS.sleep(1);
+						sleep(1);
 						continue;
 					}
 					v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
 					if (v == null) {
 						if (avl != null) avl.scrollToNextScreen();
-						TimeUnit.SECONDS.sleep(1);
+						sleep(1);
 						continue;
 					}
 					avi.doClick();
-					TimeUnit.SECONDS.sleep(1);
+					sleep(1);
 					Log.i(LOG_TAG, "Start do Rand Ad.index openAdByIndex:" + loop + "pageSize:" + pageSize);
 					//avl = findElementById(viewListId, AbsListViewElement.class);
 					//if (avl == null) goBack();
@@ -742,7 +848,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		logon();
 		openTabbar(TAB_ID_HOME_V3);
 		openCategoryByIndex(firstCatIndex, secondCatIndex);
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		assertNotNull(openAdByIndex(index));
 		BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 				BXViewGroupElement.class);
@@ -754,7 +860,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		assertNotNull(avl);
 		/*for (int i = 0; i < 20; i++) {
 			assertNotNull(openAdByIndex(i));
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 			/ *ViewGroupElement ilv = findElementById(AD_DETAILVIEW_DESC_ID, ViewGroupElement.class);
 			ViewGroupElement v = ilv.findElementById(AD_IMAGES_VIEWLIST_ID, ViewGroupElement.class);
 			Log.i(LOG_TAG, "openAdWithPic:ilv" + v.getChildCount());
@@ -778,14 +884,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 					Log.i(LOG_TAG, "openAdWithPic:ilv v1");
 					if (v == null) {
 						avl.scrollToNextScreen();
-						TimeUnit.SECONDS.sleep(1);
+						sleep(1);
 						continue;
 					}
 					v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
 					Log.i(LOG_TAG, "openAdWithPic:ilv v2");
 					if (v == null) {
 						avl.scrollToNextScreen();
-						TimeUnit.SECONDS.sleep(1);
+						sleep(1);
 						continue;
 					}
 					Log.i(LOG_TAG, "openAdWithPic:ilv v3");
@@ -800,13 +906,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 					}
 					Log.i(LOG_TAG, "openAdWithPic:ilv v5");
 					avi.doClick();
-					TimeUnit.SECONDS.sleep(1);
+					sleep(1);
 					break;
 				}
 			} catch (IndexOutOfBoundsException ex) {
 				if (loop++ > 5) break;
 				avl.scrollToNextScreen();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				i = 0;
 			}
 		}
@@ -822,6 +928,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 		return null;
 	}
 	
+	public ViewElement scrollAdListViewToFooter() throws Exception {
+		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+		assertNotNull("adlisting ershoujiaoche listView not found", lv);
+		return scrollAdListViewToFooter(lv);
+	}
+	
 	public ViewElement scrollAdListViewToFooter(BXViewGroupElement lv) throws Exception {
 
 		//检查底部提示：点击载入下30条
@@ -829,10 +941,10 @@ public class BaixingTestCase extends BxBaseTestCase {
 		//向下浏览30个信息
 		int from = lv.getHeight() / 2 + lv.getHeight() /3;
 		for(int i = 0; i < 50; i++) {
-			lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
-			assertNotNull(lv);
-			lv.scrollByY(from, from - ((i < 14) ? 200 : 100));
-			if (i < 12) continue;
+			//lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+			//assertNotNull(lv);
+			lv.scrollByY(from, from - ((i < 14) ? 200 : 50));
+			//if (i < 8) continue;
 			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
 			if (v != null) {
 				//检查底部提示：点击载入下30条
@@ -857,7 +969,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			if (titleView != null && !titleView.getText().equals(findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText())) {
 				ilv.doTouch(200);
 			}
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			//查看第二个图片
 			if (showAdPic(1)) {
 				//Log.i(LOG_TAG, "pic:1");
@@ -869,12 +981,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 				if (titleView != null && !titleView.getText().equals(findElementById(AD_DETAILVIEW_TITLE_ID, TextViewElement.class).getText())) {
 					ilv.doTouch(-200);
 				}
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				//Log.i(LOG_TAG, "pic:touch0");
 				
 				//滚动大图
 				showAdPic(0);
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				showNextView(AD_BIG_IMAGE_VIEW_ID);
 				//Log.i(LOG_TAG, "pic:touch1");
 				goBack();
@@ -888,16 +1000,18 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement iv = ilv.getChildByIndex(index);
 		if (iv == null) return false;
 		iv.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		return (findElementById(AD_BIG_IMAGE_VIEW_ID) != null);
 	}
 	
 	public void openMyGridByText(String text) throws Exception {
 		openTabbar(TAB_ID_MY_V3);
-		TextViewElement textView = getGridItemByText(text, CATEGORY_GRIDVIEW_ID);
+		TextViewElement textView = null;
+		//textView = getGridItemByText(text, CATEGORY_GRIDVIEW_ID);
+		textView = findElementByText(text);
 		if (textView != null) {
 			textView.doClick();
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 		}
 	}
 	
@@ -905,7 +1019,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		TextViewElement textView = getGridItemByText(text, POST_CATEGORY_GRIDVIEW_ID);
 		if (textView != null) {
 			textView.doClick();
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 		}
 	}
 	
@@ -917,11 +1031,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void deleteAllAds(String gridText) throws Exception {
 		if (gridText != null) openMyGridByText(gridText);
 		
-		/*TimeUnit.SECONDS.sleep(1);
+		/*sleep(1);
 		ViewElement ele = findElementByText(MY_EDIT_BUTTON_ID);
 		if (ele == null) return;
 		ele.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		ViewElement eld = findElementByText(MY_DELETE_ALL_BUTTON_ID);
 		if (eld == null) return;
 		eld.doClick();*/
@@ -929,13 +1043,13 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewGroupElement gv = openAdByItemIndex(0);
 		while(gv != null) {
 			deleteAdOnView(false);
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 			gv = openAdByItemIndex(0);
 			if (maxLoop-- < 0) break;
 		}
 		
 		getDevice().pressBack();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 	}
 	
 	public void deleteAdByText(String keyword) throws Exception {
@@ -944,12 +1058,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 		if (d != null) {
 			d.doClick();
 		}
-		TimeUnit.SECONDS.sleep(2);
+		sleep(2);
 		ViewElement v = findElementByText(keyword, 0, true);
 		if (v == null) return;
 		
 		v.doClick();
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		deleteAdOnView(true);
 	}
 	
@@ -957,16 +1071,33 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement d = findElementByText(MY_BIND_DIALOG_NO_BUTTON_ID, 0, true);
 		if (d != null) {
 			d.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 		ViewGroupElement gv = openAdByItemIndex(index);
 		if (gv != null) {
+			sleep(1);
 			deleteAdOnView(false);
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		}
 	}
 	
 	public void deleteAdOnView(boolean force) throws Exception {
+		ViewElement mv = findElementByText(MSGBOX_TITLE_TEXT, 0, true);
+		if (mv != null) {
+			mv = findElementByText(MY_VIEWLIST_SHENSU_BUTTON_TEXT, 0, true);
+			if (mv != null) {
+				if (mv != null) {
+					mv = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
+					if (mv != null) {
+						if (force){
+							mv.doClick();
+							sleep(1);
+							return;
+						}
+					}
+				}
+			}
+		}
 		if (force) {
 			ViewElement vd = findElementById(MY_DETAILVIEW_DELETE_BUTTON_ID);
 			if (vd == null) {
@@ -974,23 +1105,35 @@ public class BaixingTestCase extends BxBaseTestCase {
 				return;
 			}
 			vd.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			findElementByText(DIALOG_OK_BUTTON_TEXT, 0, true).doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 			goBack();
 			//goBack();
 		} else {
 			goBack();
+			sleep(2);
 			//列表上的 DELETE UPDATE 小按钮
-			ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
-			delv.doClick();
-			TimeUnit.SECONDS.sleep(1);
+			int i = 0;
+			while(true) {
+				ViewElement delv = findElementById(MY_VIEWLIST_DELXUPDATE_BUTTON_ID);
+				if (delv != null) {
+					delv.doClick();
+					break;
+				}
+				sleep(1);
+				if (i == 5 && findElementByText(MSGBOX_TITLE_TEXT, 0, true) != null) {
+					goBack();
+				}
+				if (i++ > 20) break;
+			}
+			sleep(1);
 			ViewElement delButton = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
 			if (delButton != null) {
 				if (findElementByText(MSGBOX_CANCEL_TEXT, 0, true) != null 
 						&& findElementByText(MSGBOX_OPT_TITLE, 0, true) != null) {
 					delButton.doClick();
-					TimeUnit.SECONDS.sleep(1);
+					sleep(1);
 				}
 			}
 		}
@@ -999,12 +1142,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 	public void doSearch(String keyword) throws Exception {
 		if (findElementById(SEARCH_MARK_BUTTON_ID) != null) {
 			findElementById(SEARCH_MARK_BUTTON_ID).doClick();
-			TimeUnit.SECONDS.sleep(1);
+			sleep(1);
 		} else if (findElementById(AD_VIEWLIST_MARK_ID) != null && findElementById(SEARCH_BUTTON_ID) == null) {
 			ViewElement btnSearch = findElementByText(SEARCH_BUTTON_TEXT, 0, true);
 			if (btnSearch != null) {
 				btnSearch.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 			}
 		}
 		if (keyword.length() > 0) {
@@ -1017,7 +1160,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			getDevice().pressKeys(KeyEvent.KEYCODE_SEARCH);
 			getDevice().pressKeys(KeyEvent.KEYCODE_ENTER);
 			//etSearchText.inputText(KeyEvent.KEYCODE_ENTER);
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 			clickSearchCategoryList();
 		}
 	}
@@ -1027,7 +1170,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		ViewElement iv = findElementByText(keyword, 0, true);
 		if (iv != null) {
 			iv.doClick();
-			TimeUnit.SECONDS.sleep(2);
+			sleep(2);
 			clickSearchCategoryList();
 
 		}
@@ -1038,7 +1181,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			ViewGroupElement v = vl.getChildByIndex(0, ViewGroupElement.class);
 			if (v != null) {
 				v.doClick();
-				TimeUnit.SECONDS.sleep(1);
+				sleep(1);
 				waitForMsgBox(MSGBOX_SETTING_VIEWTYPE_NO_PIC_TEXT, MSGBOX_SETTING_VIEWTYPE_CANCEL_BUTTON_ID, 3000);
 			}
 		}
@@ -1067,14 +1210,18 @@ public class BaixingTestCase extends BxBaseTestCase {
 		clickByText(POST_CAMERA_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
 		//检查拍照页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		//waitClickCamera();
 		int x = 400, y = 710;
 		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
 			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
 			x= 250; y = 710;
 			if (Build.MODEL.equals("Nexus 7")) {
-				x = 550; y = 1810;
+				if (Build.VERSION.SDK_INT >= 17) {
+					x = 550; y = 1850;
+				} else {
+					x = 550; y = 1810;
+				}
 			}
 		}
 		waitClickXY(x, y);
@@ -1083,11 +1230,16 @@ public class BaixingTestCase extends BxBaseTestCase {
 			//Log.i(LOG_TAG, "waitClickCamera:device " + Build.MODEL);
 			x= 400; y = 710;
 			if (Build.MODEL.equals("Nexus 7")) {
-				x = 1200; y = 1810;
+				if (Build.VERSION.SDK_INT >= 17) {
+					x = 1100; y = 1850;
+				} else {
+					x = 1200; y = 1810;
+				}
 			}
 		}
 		waitClickXY(x, y);
-		TimeUnit.SECONDS.sleep(5);
+		sleep(5);
+		clickByText("完成添加");
 	}
 	
 	private void waitGallery() throws Exception {
@@ -1098,7 +1250,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 		clickByText(POST_GALLERY_PHOTO_TEXT);//TODO 手机没有自带返回键或无效
 		//检查拍照页面弹出
 		//点击手机自带的返回键
-		TimeUnit.SECONDS.sleep(1);
+		sleep(1);
 		//waitSendKey(KeyEvent.KEYCODE_BACK);
 		int x = 100, y = 110;
 		if (Build.VERSION.SDK_INT >= 11) { //Build.VERSION_CODES.HONEYCOMB
@@ -1108,14 +1260,14 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 		}
 		waitClickXY(x, y);
-		TimeUnit.SECONDS.sleep(5);
+		sleep(5);
 	}
 	
 	public TextViewElement savePhoto(int first, int second) throws Exception {
 		openTabbar(TAB_ID_HOME_V3);
 		openCategoryByIndex(first, second);
 
-		TimeUnit.SECONDS.sleep(3);
+		sleep(3);
 		//选择一个带图信息进入
 		openAdWithPic(true);
 		//点击图片
@@ -1129,7 +1281,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 		showAdPic(0);
 		//点击右上方按钮保存
 		if (v != null) v.doClick();
-		goBack();
 		return v;
 	}
 

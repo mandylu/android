@@ -1,8 +1,12 @@
 package com.baixing.util;
 
+import java.io.File;
 import java.util.HashMap;
 
+import org.json.JSONArray;
+
 import android.content.Context;
+import android.os.Environment;
 import android.util.Log;
 
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
@@ -20,13 +24,11 @@ import com.quanleimu.activity.QuanleimuApplication;
  */
 //singleton
 public class Tracker {
-	private static final String TRACKER_FILE = "bx_tracker.log";//saved file
 	private Context context = null;
-	private static final String TRACKER_DIR = "tracker_dir";
 
 	private int size;
 	private int threshold;
-	private String dataString = null;
+	private JSONArray dataArray = null;
 	private static Tracker instance = null;
 	public static Tracker getInstance()
 	{
@@ -40,10 +42,9 @@ public class Tracker {
 	private Tracker()
 	{
 		context = QuanleimuApplication.getApplication().getApplicationContext();
-		dataString = "";
+		dataArray = new JSONArray();
 		size = 0;
-		threshold = 100;
-		load();
+		threshold = 100;//5 for testing
 	}
 	
 	public LogData pv(PV url) {
@@ -66,43 +67,46 @@ public class Tracker {
 	
 	public void addLog(LogData log)
 	{
-		dataString += log.toJsonObj().toString() + ",";
-//		Util.saveDataToSdCard("baixing", "log", log.toJsonObj().toString()+"\n");
-		size++;
-		if (size > threshold) {//100 items,10 for testing
+		if (new File(Environment.getExternalStorageDirectory()
+				+ "/baixing_debug_log_crl.dat").exists()) {
 			try {
-				Log.d("sender", "try to addLog");
-				Sender.getInstance().addToQueue(dataString.substring(0, dataString.length()-1));//in case sender is null right now
+				if (log != null) {
+					synchronized(this) {
+
+						Util.saveDataToSdCard("baixing", "tracker_addlog", log.toJsonObj().toString()
+								+ "\n", true);
+					}
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+		}
+		
+		Log.d("sendlistfunction","tracker addLog");
+		dataArray.put(log.toJsonObj());
+		size++;
+		if (size > threshold) {
+			try {
+				Sender.getInstance().addToQueue(dataArray.toString());//in case sender is null right now
 				clear();
-			} catch (Exception e) {Log.d("sender", "sender is null when track.addLog");}
+			} catch (Exception e) {}
 		}
 	}
 	
 	public void save() {
-		if (context != null)
+		Log.d("sendlistfunction","tracker save");
+		if (context != null && dataArray.length() > 0) {
+			String fileName = "tracker" + System.currentTimeMillis() + Sender.SENDER_FILE_SUFFIX;
 			try {
-				Util.saveDataToFile(context, TRACKER_DIR, TRACKER_FILE, dataString.getBytes());
+				Util.saveDataToFile(context, Sender.SENDER_DIR, fileName, dataArray.toString().getBytes());
+				clear();
 			} catch (Exception e) {}
-	}
-	
-	private void load() {
-		if (context != null)
-			try {
-				String absolutePath = Util.listFiles(context, TRACKER_DIR).get(0);
-				String oldString = new String(Util.loadData(absolutePath));
-				if (oldString != null) {
-					if (dataString.length() == 0)
-						dataString = oldString;
-					else
-						dataString += "," + oldString;
-					Util.clearFile(absolutePath);
-				}
-			} catch (Exception e) {}
+		}
 	}
 	
 	public void clear()
 	{
-		dataString = "";
+		dataArray = new JSONArray();
 		size = 0;
 	}
 }

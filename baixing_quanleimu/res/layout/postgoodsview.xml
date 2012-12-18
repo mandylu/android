@@ -11,7 +11,9 @@
         android:layout_height="fill_parent"
         android:clickable="true"
         android:focusableInTouchMode="true"
-        android:padding="@dimen/post_padding"
+        android:paddingRight="@dimen/post_padding"
+        android:paddingLeft="@dimen/post_padding"
+        android:paddingBottom="@dimen/post_padding"
         android:scrollbars="none" >
 
         <LinearLayout

@@ -2,6 +2,8 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -17,10 +19,14 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 
 import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.broadcast.BXNotificationService;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsList;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.*;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
@@ -31,7 +37,7 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder {
+public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder, Observer {
     private boolean isFav = false;
     static final int MSG_UPDATEFAV = 1;
     static final int MSG_UPDATEHISTORY = 2;
@@ -45,7 +51,6 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     private GoodsListAdapter adapter = null;
     private PullToRefreshListView pullListView = null;
-    private Bundle bundle = null;
     private int buttonStatus = -1;//-1:edit 0:finish
     private GoodsListLoader glLoader = null;
     private GoodsList tempGoodsList = null;
@@ -59,9 +64,34 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         }
 
         glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
+        
+        BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
+        BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
+    }
+    
+    private GoodsListLoader createGoodsListLoader()
+    {
+    	List<GoodsDetail> data = new ArrayList<GoodsDetail>();
+    	if (tempGoodsList != null && tempGoodsList.getData() != null)
+    	{
+    		data.addAll(tempGoodsList.getData());
+    	}
+    	GoodsList list = new GoodsList(data);
+    	
+    	GoodsListLoader loader = new GoodsListLoader(null, null, null, list);
+    	loader.setHasMore(false);
+    	
+    	return loader;
     }
 
     @Override
+	public void onDestroy() {
+		super.onDestroy();
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+	}
+
+
+	@Override
     public View onCreateView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
@@ -77,7 +107,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 GoodDetailFragment f = new GoodDetailFragment();
                 f.setListHolder(FavoriteAndHistoryFragment.this);
                 Bundle bundle = createArguments(null, null);
-                bundle.putSerializable("loader", glLoader);
+                bundle.putSerializable("loader", createGoodsListLoader());
                 bundle.putInt("index", position);
 
                 buttonStatus = -1; //Reset button status when go to other screen.
@@ -113,8 +143,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public void onResume() {
         super.onResume();
-        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
-
+//        this.pv = isFav?PV.FAVADS:PV.HISTORYADS ;
+        this.pv = PV.FAVADS;
         int adsCount = 0; //恶心的判断，能否有办法去除？
         if (glLoader != null && glLoader.getGoodsList() != null && glLoader.getGoodsList().getData() != null) {
             adsCount = glLoader.getGoodsList().getData().size();
@@ -215,43 +245,69 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         switch (msg.what) {
             case MSG_UPDATEFAV:
                 hideProgress();
-                
-                tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+                String lastJson = glLoader.getLastJson();
+                final boolean noResult = lastJson == null || lastJson.trim().length() == 0; 
+                tempGoodsList = JsonUtil.getGoodsListFromJson(lastJson);
                 Log.d("fav","updatefav.size:"+tempGoodsList.getData().size());
-                if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
+                if (null == tempGoodsList || (0 == tempGoodsList.getData().size() && noResult)) {
                     Message msg2 = Message.obtain();
                     msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
                     QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
 
                     pullListView.onFail();
                 } else {
-                    List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+                	
+                	/* //该问题已经到了不用中文说不清楚的地步！(至少我说不清楚)
+                	 *  原则： 服务端返回的数据为准，但是顺序以本地为准。
+                	 *  
+                	 *  鉴于目前“收藏”这块的设计，下面的逻辑是处理服务器端有数据返回的情况；
+                	 *  1. 本地数据顺序不变
+                	 *  2. 如果服务端返回结果不包括本地已经存在的某条记录， 那么删除该记录
+                	 *  3. 如果本地没有任何数据，以服务端返回为准
+                	 */
+                    List<GoodsDetail> filterResult = new ArrayList<GoodsDetail>();
+                    List<GoodsDetail> oldList = new ArrayList<GoodsDetail>();
                     List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
-
-                    if (tempGoodsList.getData().size() <= favList.size()) {
-                        for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
-                            boolean exist = false;
-                            for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
-                                if (favList.get(i).equals(tempGoodsList.getData().get(j))) {
-                                    tmp.add(0, tempGoodsList.getData().get(j));
-                                    favList.set(i, tempGoodsList.getData().get(j));
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist) {
-                                favList.remove(i);
-                            }
-                        }
+                    List<GoodsDetail> newList = tempGoodsList.getData();
+                    if (newList == null)
+                    {
+                    	newList = new ArrayList<GoodsDetail>();
                     }
-                    tempGoodsList.setData(tmp);
+                    if (favList != null) {
+                    	oldList.addAll(favList);
+                    }
+                    
+                    
+                    if (oldList.size() == 0) //If we have no local favorites, use server return list.
+                    {
+                    	filterResult.addAll(newList);
+                    }
+                    else
+                    {
+                    	for (GoodsDetail d : oldList)
+                    	{
+                    		final int index1 = newList.indexOf(d);
+                    		if (index1 != -1) //If server did not return this detail, means it's deleted by the owner of the ads.
+                    		{
+                    			GoodsDetail dd = newList.remove(index1);
+                    			filterResult.add(dd);
+                    		}
+                    	}
+                    	
+                    	filterResult.addAll(newList);
+                    }
+                    
+                    tempGoodsList.setData(filterResult);
+                    favList = filterResult;//tempGoodsList.getData();
+                    
+                    
 
                 	QuanleimuApplication.getApplication().updateFav(favList);
                 	Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
                 	
                     adapter.setList(tempGoodsList.getData());
                     glLoader.setGoodsList(tempGoodsList);
-                    glLoader.setHasMore(tempGoodsList.getData().size() < favList.size());
+                    glLoader.setHasMore(tempGoodsList.getData().size() >= 30);
                 }
 
                 pullListView.onRefreshComplete();
@@ -306,10 +362,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 int pos = (Integer) msg.obj;
                 if (isFav) {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListMyStore();
-                    goodsList.remove(pos);
+                    GoodsDetail detail = goodsList.remove(pos);
                     if (goodsList != tempGoodsList.getData())
-                        tempGoodsList.getData().remove(pos);
+                        tempGoodsList.getData().remove(detail);
                     //QuanleimuApplication.getApplication().setListMyStore(goodsList);
+                    QuanleimuApplication.getApplication().removeFav(detail);
                     Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", goodsList);
                 } else {
                     List<GoodsDetail> goodsList = QuanleimuApplication.getApplication().getListLookHistory();
@@ -368,7 +425,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 if (isFav) {
                     Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
                 } else {
-                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
+//                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
                 }
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
@@ -382,7 +439,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                             if (isFav) {
                                                 Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
                                             } else {
-                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
+//                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
                                             }
                                         }
                                     }
@@ -571,6 +628,44 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
         return false;
     }
+
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification notification = (IBxNotification) data;
+			GoodsDetail detail = (GoodsDetail) notification.getObject();
+			boolean needUpdateAdapter = false;
+			if (IBxNotificationNames.NOTIFICATION_FAV_ADDED.equals(notification.getName()) && detail != null)
+			{
+				if (tempGoodsList != null && tempGoodsList.getData() != null && !tempGoodsList.getData().contains(detail))
+				{
+					tempGoodsList.getData().add(0, detail);
+					needUpdateAdapter = true;
+				}
+			}
+			else if (IBxNotificationNames.NOTIFICATION_FAV_REMOVE.equals(notification.getName()))
+			{
+				if (tempGoodsList != null && tempGoodsList.getData() != null && tempGoodsList.getData().contains(detail))
+				{
+					tempGoodsList.getData().remove(detail);
+					needUpdateAdapter = true;
+				}
+			}
+			
+			if (needUpdateAdapter && adapter != null)
+			{
+				adapter.setList(tempGoodsList.getData());
+				adapter.notifyDataSetChanged();
+				
+				if (pullListView != null)
+				{
+					pullListView.onRefreshComplete();
+				}
+			}
+		}
+	}
 
 
 }

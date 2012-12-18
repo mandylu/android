@@ -6,6 +6,7 @@
  */
 package com.baixing.imageCache;
 
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -46,14 +47,14 @@ public class SimpleImageLoader
 		return QuanleimuApplication.getImageLoader().getFileInDiskCache(url);
 	}
 
-	public static void showImg(final View view,final String url, final String preUrl, Context con, final int defaultResImgId)
+	public static void showImg(final View view,final String url, final String preUrl, Context con, WeakReference<Bitmap> bmp)//final int defaultResImgId)
 	{
 		view.setTag(url);	
-		Bitmap bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view,defaultResImgId));
+		WeakReference<Bitmap> bitmap = QuanleimuApplication.getImageLoader().get(url, getCallback(url,preUrl, view, bmp));//defaultResImgId));
 	
 //		Log.d("simple image loader: ", "url: "+url+"   => view: "+ view.toString() + "with tag " + view.getTag());
 		
-		if(bitmap==null){
+		if(bitmap==null || bitmap.get() == null){
 		    
 //		    BitmapFactory.Options o =  new BitmapFactory.Options();
 //            o.inPurgeable = true;
@@ -77,8 +78,8 @@ public class SimpleImageLoader
 //							Log.d("load image: ", "hahaha ln79  load url is: " + url + " and view:    " + view.hashCode() + "   "+ System.currentTimeMillis());
 							if(!bitmap_.isRecycled()){
 								if(!url.equals(preUrl)){
-									Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
-									if(bmp != null){
+									WeakReference<Bitmap> bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
+									if(bmp != null && bmp.get() != null){
 										Drawable curDrawable = 
 												view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
 										if(curDrawable != null && (curDrawable instanceof BitmapDrawable)){
@@ -110,13 +111,13 @@ public class SimpleImageLoader
 						}
 					}
 				}
-			}).execute(bitmap);			
+			}).execute(bitmap.get());			
 		}	
 	}
 	
 	public static void showImg(final View view,final String url, String preUrl, Context con)
 	{
-		showImg(view, url, preUrl, con, -1);
+		showImg(view, url, preUrl, con, null);
 	}
 	
 	static HashMap<Integer, ArrayList<Integer>> bmpReferenceMap = new HashMap<Integer, ArrayList<Integer>>();
@@ -152,20 +153,21 @@ public class SimpleImageLoader
 		}
 	}
 	
-	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final int defaultImgRes)
+	private static ImageLoaderCallback getCallback(final String url,final String preUrl, final View view, final WeakReference<Bitmap> defaultBmp)//final int defaultImgRes)
 	{		
 		return new ImageLoaderCallback()
 		{ 
 			private boolean inFailStatus = false;
 			public void refresh(String url, Bitmap bitmap)
 			{
+				if(bitmap == null) return;
 				synchronized(QuanleimuApplication.getImageLoader()){
 					if(url.equals(view.getTag().toString()))
 					{
 //						Log.d("load image: ", "hahaha ln107  load url is: " + url + "  and view:  " + view.hashCode() + "   "+ System.currentTimeMillis());
 						if(!bitmap.isRecycled()){
 							if(!url.equals(preUrl)){
-								Bitmap bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
+								WeakReference<Bitmap> bmp = QuanleimuApplication.getImageLoader().getBitmapInMemory(preUrl);
 								if(bmp != null){
 									Drawable curDrawable = 
 											view instanceof ImageView ? ((ImageView)view).getDrawable() : view.getBackground();
@@ -213,15 +215,16 @@ public class SimpleImageLoader
 
 			@Override
 			public void fail(String url) {
-				if(url.equals(view.getTag().toString()) && defaultImgRes != -1 && !inFailStatus)
+				if(url.equals(view.getTag().toString()) && defaultBmp != null && !inFailStatus)
 				{
 					//method #fail(String url) maybe not called on main thread(UI thread), we should make sure the UI update on main thread
 					view.postDelayed(new Runnable() {
 						public void run() {
 							if(view instanceof ImageView){
-								((ImageView)view).setImageResource(defaultImgRes);
+								((ImageView)view).setImageBitmap(defaultBmp.get());//(defaultImgRes);
 							}else{
-								view.setBackgroundResource(defaultImgRes);
+								BitmapDrawable bd = new BitmapDrawable(defaultBmp.get());
+								view.setBackgroundDrawable(bd);//setBackgroundResource(defaultImgRes);
 							}
 						}
 					}, 100);

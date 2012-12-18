@@ -23,6 +23,7 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
+import com.baixing.entity.AllCates;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
@@ -33,6 +34,7 @@ import com.baixing.entity.HotList;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.LazyImageLoader;
+import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -42,11 +44,9 @@ import com.baixing.util.ErrorHandler;
 import com.baixing.util.Helper;
 import com.baixing.util.LocationService;
 import com.baixing.util.Util;
-//import net.sourceforge.simcpux.Constants;
 public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer {
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
-//	public static String udid="";
 	public static String version="";
 	public static String channelId;
 	public static WeakReference<Context> context;	
@@ -57,6 +57,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	private static SharedPreferences preferences = null;
 	private static LinkedHashMap<String, String> cacheNetworkRequest = null;
 	private static BXDatabaseHelper dbManager = null;
+	private static QuanleimuApplication mDemoApp = null;
+	private static int lastDestoryInstanceHash = 0;
 	
     //为赌约而设
     public static int postEntryFlag = -1;
@@ -207,27 +209,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	{
 		return QuanleimuApplication.needNotifiySwitchMode;
 	}
-	
 	public static List<SecondStepCate> listUsualCates;
-	
-//	public List<Bitmap> listBigBm = new ArrayList<Bitmap>();
-//	
-//	public List<Bitmap> getListBigBm() {
-//		return listBigBm;
-//	}
-//	public void setListBigBm(List<Bitmap> listBigBm) {
-//		this.listBigBm = listBigBm;
-//	}
-	
-//	static public void setWeiboAccessToken(AccessToken token){
-//		accessToken = token;
-//	}
-//	
-//	static public AccessToken getWeiboAccessToken(){
-//		return accessToken;
-//	}
-
-
 
 	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
 	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
@@ -254,8 +236,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			this.listMyStore = new ArrayList<GoodsDetail>();
 		}
 		
-		this.listMyStore.add(detail);
-		
+		this.listMyStore.add(0, detail);
+		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_ADDED, detail);
 		return this.listMyStore;
 	}
 	
@@ -270,6 +252,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
 					.equals(listMyStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
 				listMyStore.remove(i);
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_REMOVE, detail);
 				break;
 			}
 		}
@@ -421,6 +404,25 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		}
 	}
 	
+	private String phoneNumber = "";
+	
+	public void setPhoneNumber(String number){
+		phoneNumber = number;
+	}
+	
+	public String getPhoneNumber(){
+		return phoneNumber;
+	}
+	
+	private String address = "";
+	
+	public void setAddress(String ad){
+		address = ad;
+	}
+	
+	public String getAddress(){
+		return address;
+	}	
 	
 	//热门城市列表
 	public List<CityDetail> listHotCity = new ArrayList<CityDetail>();
@@ -455,17 +457,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		this.listCityDetails = listCityDetails;
 	}
 
-	// 添加Activity类型到全局变量
-	//public String activity_type = "";
-	// 添加图片流文件名
-	//public List<String> listFileNames = new ArrayList<String>();
-	// 所有类目的集合
 	public List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
-//	// 二级类目集合
-//	public List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
-	// 数据集合
-	//public List<GoodsDetail> listGoods = new ArrayList<GoodsDetail>();
-
+	
 	// 筛选木板中的类型集合
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
@@ -475,59 +468,18 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public String getCityEnglishName() {
 		return cityEnglishName;
 	}
-
 	public void setCityEnglishName(String cityEnglishName) {
 		this.cityEnglishName = cityEnglishName;
 	}
-
-//	// 筛选条件
-//	public Map<Integer, String> savemap = new HashMap<Integer, String>();
-//
-//	public Map<Integer, String> getSavemap() {
-//		return savemap;
-//	}
-//
-//	public void setSavemap(Map<Integer, String> savemap) {
-//		this.savemap = savemap;
-//	}
-
-//	public List<Filterss> getListFilterss() {
-//		return listFilterss;
-//	}
-
-//	public void setListFilterss(List<Filterss> listFilterss) {
-//		this.listFilterss = listFilterss;
-//	}
-
-//	public List<GoodsDetail> getListGoods() {
-//		return listGoods;
-//	}
-//
-//	public void setListGoods(List<GoodsDetail> listGoods) {
-//		this.listGoods = listGoods;
-//	}
-
-//	public List<SecondStepCate> getListSecond() {
-//		return listSecond;
-//	}
-//
-//	public void setListSecond(List<SecondStepCate> listSecond) {
-//		this.listSecond = listSecond;
-//	}
-
 	public List<FirstStepCate> getListFirst() {
 		return listFirst;
 	}
-	
 	public String queryCategoryDisplayName(String englishName){
-		//this.getListFirst()
-		
 		for(int i = 0;i<this.listFirst.size();i++){
 			FirstStepCate cate = this.listFirst.get(i);
 			if(cate.englishName.equals(englishName)){
 				return cate.name;
 			}
-			
 			for(int j = 0; j< cate.children.size(); j++){
 				SecondStepCate s = cate.children.get(j);
 				if(s.englishName.equals(englishName)){
@@ -541,14 +493,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public void setListFirst(List<FirstStepCate> listFirst) {
 		this.listFirst = listFirst;
 	}
-
-//	public List<String> getListFileNames() {
-//		return listFileNames;
-//	}
-//
-//	public void setListFileNames(List<String> listFileNames) {
-//		this.listFileNames = listFileNames;
-//	}
 
 	BXLocation location = null;
 	boolean location_updated = false;
@@ -585,12 +529,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		
 		final BXLocation curLocation = getCurrentPosition(true);
 		if(null == curLocation){
-			//listener.onLocationFetched(null);
-//			Log.d("currentlocation", "xixi,  curLocation is null");
-//			locationFetchListeners.add(listener);
-//			
-//			LocationService.getInstance().addLocationListener(context.get(), this);
-			
 			return false;
 		}		
 
@@ -647,39 +585,24 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public void setCityName(String cityName) {
 		this.cityName = cityName;
 	}
-
-//	// 经纬度添加到全局变量
-//	public double lat = 0;
-//
-//	public double getLat() {
-//		return lat;
-//	}
-//
-//	public void setLat(double lat) {
-//		this.lat = lat;
-//	}
-//
-//	public double getLon() {
-//		return lon;
-//	}
-//
-//	public void setLon(double lon) {
-//		this.lon = lon;
-//	}
-//
-//	public double lon = 0;
-
-//	public String getActivity_type() {
-//		return activity_type;
-//	}
-//
-//	public void setActivity_type(String activity_type) {
-//		this.activity_type = activity_type;
-//	}
 	
 	static public void resetApplication()
 	{
+		if (mDemoApp != null)
+		{
+			lastDestoryInstanceHash = mDemoApp.hashCode();
+		}
 		QuanleimuApplication.mDemoApp = null;
+	}
+	
+	static void initStaticFields()
+	{
+		lastDestoryInstanceHash = 0;
+	}
+	
+	static public boolean isAppDestroy(int appHash)
+	{
+		return appHash !=0 && appHash == lastDestoryInstanceHash;
 	}
 
 	static public QuanleimuApplication getApplication(){
@@ -709,17 +632,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	private static QuanleimuApplication mDemoApp = null;
-
-	
-//	protected ViewStack viewStack;
-//	public ViewStack getViewStack(){
-//		if(null == viewStack){
-//			viewStack = new ViewStack(this.getApplicationContext());
-//		}
-//		
-//		return viewStack;
-//	}
 	
 	protected ErrorHandler handler;
 	public void setErrorHandler(Context context){
@@ -749,9 +661,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 				null : QuanleimuApplication.context.get();
 	}
 
-	// 百度MapAPI的管理类
-	//BMapManager mBMapMan = null;
-
 	// 授权Key
 	// TODO: 请输入您的Key,
 	// 申请地址：http://dev.baidu.com/wiki/static/imap/key/
@@ -779,56 +688,6 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		}
 
 	}
-//	static public com.tencent.mm.sdk.openapi.IWXAPI wxapi;
-
-//	@Override
-//	public void onCreate() {
-////		Profiler.markStart("appcreate");
-//		mDemoApp = this;
-//		
-////		mBMapMan = new BMapManager(this);
-////		mBMapMan.init(this.mStrKey, new MyGeneralListener());
-//
-//		context = this.getApplicationContext();
-////		ProfileUtil.markStart("imgLoaderCreate");
-////		lazyImageLoader = new LazyImageLoader();
-////		ProfileUtil.markEnd("imgLoaderCreate");
-//		
-//		dbManager = new BXDatabaseHelper(this, "network.db", null, 1);
-//		
-////		LocationService.getInstance().start(context, this);
-//
-//		try{
-//			PackageManager packageManager = QuanleimuApplication.getApplication().getPackageManager();
-//			ApplicationInfo ai = packageManager.getApplicationInfo(context.getPackageName(), PackageManager.GET_META_DATA);
-//			channelId = (String)ai.metaData.get("UMENG_CHANNEL");
-//		}catch(Exception e){
-//			e.printStackTrace();
-//		}		
-//		
-//		super.onCreate();
-////		Profiler.markEnd("appcreate");
-//	}
-	
-//	static public void sendWXRequest(WXMediaMessage msg){
-//		SendMessageToWX.Req req = new SendMessageToWX.Req();
-//		req.transaction = String.valueOf(System.currentTimeMillis());
-//		req.message = msg;
-////		boolean b = wxapi.sendReq(req);
-////		b = false;
-//	}
-
-//	@Override
-	// 建议在您app的退出之前调用mapadpi的destroy()函数，避免重复初始化带来的时间消耗
-//	public void onTerminate() {
-//		LocationService.getInstance().stop();
-//		
-////		if (mBMapMan != null) {
-////			mBMapMan.destroy();
-////			mBMapMan = null;
-////		}
-//		super.onTerminate();
-//	}
 
 	@Override
 	public void onLocationUpdated(Location location_) {
@@ -879,4 +738,55 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			}
 		}
 	}
+	
+	public void loadCategorySync(){
+		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getApplicationContext(), 
+				"saveFirstStepCate");
+		
+		if (pair.second == null || pair.second.length() == 0){
+			pair = Util.loadDataAndTimestampFromAssets(this.getApplicationContext(), "cateJson.txt");
+		}
+		
+		String json = pair.second;
+		if (json != null && json.length() > 0) {
+			AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
+			QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
+		}
+	
+	}
+	
+	public void loadCitySync(){
+		CityList cityList = new CityList();
+		// 1. load from locate.
+		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "cityjson");
+		
+		// 2. load from asset
+		if (pair.second == null || pair.second.length() == 0)
+		{	
+			pair = Util.loadDataAndTimestampFromAssets(getApplicationContext(), "cityjson.txt");
+		}
+		
+		if (pair.second == null || pair.second.length() == 0) {
+			cityList = null;
+		} else {
+			cityList = JsonUtil.parseCityListFromJson((pair.second));
+			QuanleimuApplication.getApplication().updateCityList(cityList);
+		}
+	}
+	
+	public void loadPersonalSync(){
+		// 获取搜索记录
+		String[] objRemark = (String[]) Util.loadDataFromLocate(getApplicationContext(), "listRemark", String[].class);
+		QuanleimuApplication.getApplication().updateRemark(objRemark);
+
+		GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", GoodsDetail[].class);
+		QuanleimuApplication.getApplication().updateFav(objStore);
+		
+		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
+		if(personalMark != null){
+			QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
+		}
+
+	}
+	
 }

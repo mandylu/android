@@ -1,9 +1,17 @@
 package com.baixing.util;
 
 import java.util.ArrayList;
+import java.util.Observable;
+import java.util.Observer;
 
-public class TrackConfig {
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 
+
+public class TrackConfig implements Observer {
+
+	private boolean logEnabled = true;
 	private static TrackConfig instance = null;
 	public static TrackConfig getInstance() {
 		if (instance==null) {
@@ -13,11 +21,11 @@ public class TrackConfig {
 	}
 	//constructor
 	private TrackConfig() {
-		
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE);
 	}
 
 	public boolean getLoggingFlag() {
-		return MobileConfig.getInstance().isEnableTracker();
+		return logEnabled;
 	}
 	
 	
@@ -74,9 +82,13 @@ public class TrackConfig {
 			FORGETPASSWORD_RESETPASSWORD_RESULT_FAIL_REASON("forgetPasswordResetPasswordResultFailReason","重设密码失败原因"),
 			MENU_SHOW_PAGEURL("menuShowInPageURL","菜单出现的页面URL"),
 			MENU_ACTION_TYPE("menuActionType","菜单动作类型"),
-			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市");
-			
-			
+			MENU_ACTION_TYPE_CHANGE_CITY("menuActionType_changeCity","菜单动作切换城市"),
+			FRAGMENT("fragment","fragment"),
+			//from3.1
+			RESULT("result","结果"),
+			ACTION("action","inputing动作"),
+			STATUS("status","信息状态"),
+			;
 			private String name;
 			private String description;
 			private Key(String keyName, String keyDescription) {
@@ -85,6 +97,35 @@ public class TrackConfig {
 			}
 			public String getName() {
 				return name;
+			}
+			public String getDescription() {
+				return description;
+			}
+			
+		}
+		
+		public static enum Value implements TrackMobile {//每条记录可能的key
+			VALID("1","正常"),
+			APPROVING("0","待定"),
+			
+			FAV("1","fav"),
+			CANCEL("0","cancel"),
+			
+			CALL("1","CALL"),
+			COPY("0","COPY"),
+			
+			YES("1","1"),
+			NO("0","0"),
+			;
+			private String value;
+			private String description;
+			
+			private Value(String valueName, String valueDescription) {
+				this.value = valueName;
+				this.description = valueDescription;
+			}
+			public String getValue() {
+				return value;
 			}
 			public String getDescription() {
 				return description;
@@ -105,20 +146,20 @@ public class TrackConfig {
 			LISTINGFILTER("/listingFilter","更多筛选页"),
 			VIEWAD("/viewAd","Viewad页"),
 			VIEWADMAP("/viewAdMap","Viewad地图页"),
-			BUZZ("/buzz","私信"),
+//			BUZZ("/buzz","私信"),
 			VIEWADPIC("/viewAdPic","图"),
-			POSTCATE1("/post/cate1","发布选择一级类目页"),
-			POSTCATE2("/post/cate2","发布选择二级类目页"),
+//			POSTCATE1("/post/cate1","发布选择一级类目页"),
+//			POSTCATE2("/post/cate2","发布选择二级类目页"),
 			POST("/post","发布界面"),
 			EDITPOST("/editPost","编辑界面"),
 			MY("/my","我的百姓网"),
 			MYADS_SENT("/myAds_sent","已发布信息"),
-			MYADS_APPROVING("/myAds_approving","审核未通过"),
-			MYADS_DELETED("/myAds_deleted","已删除"),
+//			MYADS_APPROVING("/myAds_approving","审核未通过"),
+//			MYADS_DELETED("/myAds_deleted","已删除"),
 			MYVIEWAD("/myViewad","自己查看的viewad"),
 			FAVADS("/favAds","收藏"),
-			BUZZLISTING("/buzzListing","私信列表页"),
-			HISTORYADS("/historyAds","最近浏览"),
+//			BUZZLISTING("/buzzListing","私信列表页"),
+//			HISTORYADS("/historyAds","最近浏览"),
 			SETTINGS("/settings","设置"),
 			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
@@ -144,51 +185,62 @@ public class TrackConfig {
 			CITY_SELECT("City_Select","City_Select"),
 			CITY_SEARCH("City_Search","City_Search"),
 			HEADERSEARCHRESULT("HeaderSearchResult","HeaderSearchResult"),
+			BROWSEMODENOIMAGE("BrowseModeNoImage","无图模式切换的结果"),
 			LISTING("Listing","Listing"),
 			LISTING_SELECTEDROWINDEX("Listing_SelectedRowIndex","Listing_SelectedRowIndex"),
 			LISTING_MORE("Listing_More","Listing_More"),
-			VIEWAD_MOBILENUMBERCLICK("Viewad_MobileNumberClick","点击电话号码"),
+//			VIEWAD_MOBILENUMBERCLICK("Viewad_MobileNumberClick","点击电话号码"),
 			VIEWAD_MOBILECALLCLICK("Viewad_MobileCallClick","点击拨打按钮"),
 			VIEWAD_FAV("Viewad_Fav","Viewad_Fav"),
 			VIEWAD_UNFAV("Viewad_Unfav","Viewad_Unfav"),
 			VIEWAD_SMS("Viewad_SMS","Viewad_SMS"),
-			VIEWAD_BUZZ("Viewad_Buzz","Viewad_Buzz"),
+//			VIEWAD_BUZZ("Viewad_Buzz","Viewad_Buzz"),
+			VIEWAD_HINTFAV("Viewad_HintFav","拨打后提示收藏"),
+			VIEWAD_HINTFAVRESULT("Viewad_HintFavResult","拨打后提示收藏的结果"),
+			VIEWAD_NOTCALLABLE("Viewad_NotCallable","点击非手机号按钮"),
+			VIEWAD_NOTCALLABLERESULT("Viewad_NotCallableResult","点击非手机号提示框的结果"),
 			BUZZLIST("BuzzList","BuzzList"),
-			POST_POSTBTNHEADERCLICKED("Post_PostBtnHeaderClicked","Post_PostBtnHeaderClicked"),
+			
+//			POST_POSTBTNHEADERCLICKED("Post_PostBtnHeaderClicked","Post_PostBtnHeaderClicked"),
 			POST_POSTBTNCONTENTCLICKED("Post_PostBtnContentClicked","Post_PostBtnContentClicked"),
 			POST_POSTWITHLOGIN("Post_PostWithLogin","Post_登录Post"),
 			POST_POSTWITHOUTLOGIN("Post_PostWithoutLogin","Post_未登录Post"),
 			POST_POSTRESULT("Post_PostResult","Post_PostResult"),
 			POST_GPSFAIL("Post_GpsFail","Post_GPS失败"),
-			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
+			POST_INPUTING("Post_Inputing","post页面编辑项目"),
+			
+//			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
 			EDITPOST_POSTBTNCONTENTCLICKED("EditPost_PostBtnContentClicked","EditPost_PostBtnContentClicked"),
 			EDITPOST_POSTWITHLOGIN("EditPost_PostWithLogin","EditPost_登录Post"),
 			EDITPOST_POSTWITHOUTLOGIN("EditPost_PostWithoutLogin","EditPost_未登录Post"),
 			EDITPOST_POSTRESULT("EditPost_PostResult","EditPost_PostResult"),
 			EDITPOST_GPSFAIL("EditPost_GpsFail","EditPost_GPS失败"),
+			EDITPOST_INPUTING("EditPost_Inputing","editpost页面编辑项目"),
+			
 			SENT_RESULT("Sent_Result","Sent_Result"),
 			SENT_MANAGE("Sent_Manage","Sent_Manage"),
 			SENT_REFRESH("Sent_Refresh","Sent_Refresh"),
 			SENT_EDIT("Sent_Edit","Sent_Edit"),
 			SENT_DELETE("Sent_Delete","Sent_Delete"),
-			APPROVING_RESULT("Approving_Result","Approving_Result"),
-			APPROVING_MANAGE("Approving_Manage","Approving_Manage"),
-			APPROVING_APPEAL("Approving_Appeal","Approving_Appeal"),
-            APPROVING_DELETE("Approving_Delete", "Approving_Delete"),
-			DELETED_RESULT("Deleted_Result","Deleted_Result"),
-			DELETED_MANAGE("Deleted_Manage","Deleted_Manage"),
-			DELETED_RECOVER("Deleted_Recover","Deleted_Recover"),
-			DELETED_DELETE("Deleted_Delete","Deleted_Delete"),
+			SENT_APPEAL("Sent_Appeal", "Sent_Appeal"),
+//			APPROVING_RESULT("Approving_Result","Approving_Result"),
+//			APPROVING_MANAGE("Approving_Manage","Approving_Manage"),
+//			APPROVING_APPEAL("Approving_Appeal","Approving_Appeal"),
+//          APPROVING_DELETE("Approving_Delete", "Approving_Delete"),
+//			DELETED_RESULT("Deleted_Result","Deleted_Result"),
+//			DELETED_MANAGE("Deleted_Manage","Deleted_Manage"),
+//			DELETED_RECOVER("Deleted_Recover","Deleted_Recover"),
+//			DELETED_DELETE("Deleted_Delete","Deleted_Delete"),
 			MYVIEWAD_EDIT("MyViewad_Edit","MyViewad_Edit"),
 			MYVIEWAD_REFRESH("MyViewad_Refresh","MyViewad_Refresh"),
 			MYVIEWAD_DELETE("MyViewad_Delete","MyViewad_Delete"),
 			MYVIEWAD_APPEAL("MyViewad_Appeal","MyViewad_Appeal"),
 			FAV_MANAGE("Fav_Manage","Fav_Manage"),
 			FAV_DELETE("Fav_Delete","Fav_Delete"),
-			BUZZLIST_MANAGE("BuzzList_Manage","BuzzList_Manage"),
-			BUZZLIST_DELETE("BuzzList_Delete","BuzzList_Delete"),
-			HISTORY_MANAGE("History_Manage","History_Manage"),
-			HISTORY_DELETE("History_Delete","History_Delete"),
+//			BUZZLIST_MANAGE("BuzzList_Manage","BuzzList_Manage"),
+//			BUZZLIST_DELETE("BuzzList_Delete","BuzzList_Delete"),
+//			HISTORY_MANAGE("History_Manage","History_Manage"),
+//			HISTORY_DELETE("History_Delete","History_Delete"),
 			SETTINGS_CHECKUPDATE("Settings_CheckUpdate","Settings_CheckUpdate"),
 			SETTINGS_ABOUT("Settings_About","Settings_About"),
 			SETTINGS_FEEDBACK("Settings_Feedback","Settings_Feedback"),
@@ -230,7 +282,18 @@ public class TrackConfig {
 			public String getDescription() {
 				return description;
 			}
-			
+		}
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		if (data instanceof IBxNotification)
+		{
+			IBxNotification notification = (IBxNotification) data;
+			if (notification.getName().equals(IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE));
+			{
+				this.logEnabled = MobileConfig.getInstance().isEnableTracker();
+			}
 		}
 	}
 }

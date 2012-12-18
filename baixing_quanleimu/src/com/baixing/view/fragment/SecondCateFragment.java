@@ -21,10 +21,12 @@ import android.widget.SimpleAdapter;
 import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.util.Communication;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.Tracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -75,8 +77,8 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 			this.pv = PV.CATEGORIES;
 			Tracker.getInstance().pv(PV.CATEGORIES).append(Key.FIRSTCATENAME, cate.getEnglishName()).end();
 		}else {
-			this.pv = PV.POSTCATE2;
-			Tracker.getInstance().pv(PV.POSTCATE2).end();
+//			this.pv = PV.POSTCATE2;
+//			Tracker.getInstance().pv(PV.POSTCATE2).end();
 		}
 //		getView().findViewById(R.id.gridSecCategory).requestFocus();
 	}
@@ -118,6 +120,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
 							QuanleimuApplication.setTextMode(false);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
@@ -126,6 +129,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
+							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
 							QuanleimuApplication.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);

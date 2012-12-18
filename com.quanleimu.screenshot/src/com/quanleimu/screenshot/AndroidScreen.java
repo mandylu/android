@@ -29,7 +29,7 @@ import org.slf4j.LoggerFactory;
 import java.lang.Throwable;
 
 public class AndroidScreen {
-    private final Logger logger = LoggerFactory.getLogger(AndroDemon.class);
+    private final Logger logger = LoggerFactory.getLogger(AndroidScreen.class);
     public static final int CONNECTING_PAUSE = 200;
     public static final int WAITING_PAUSE = 50;
 	private String sdkPath;

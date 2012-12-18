@@ -87,7 +87,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 	@Override
 	public void onResume() {
 		super.onResume();
-		this.pv = PV.BUZZLISTING;
+//		this.pv = PV.BUZZLISTING;
 //		ListView plv = (ListView)getView().findViewById(R.id.lv_sessionlist);
 //		plv.requestFocus();
 		
@@ -249,9 +249,9 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 							sb.append(session.getAdId()).append(',');
 						}
 						sb.deleteCharAt(sb.length()-1);
-						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).append(Key.ADID, sb.toString()).end();
+//						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, newSessions.size()).append(Key.ADID, sb.toString()).end();
 					}else{
-						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
+//						Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
 					}
 				}
 			}
@@ -261,7 +261,7 @@ public class SessionListFragment extends BaseFragment  implements View.OnClickLi
 				//Ignor this exception.
 				sendMessage(MSG_NEW_SESSION_FAIL, null);
 				//tracker
-				Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
+//				Tracker.getInstance().pv(PV.BUZZLISTING).append(Key.ADSCOUNT, "0").end();
 //				if (getActivity() != null)
 //				{
 //					findViewById(R.id.session_loading).setVisibility(View.GONE);

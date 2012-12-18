@@ -76,6 +76,10 @@ public abstract class BaseFragment extends Fragment {
 		//EBUTT_STYLE_FORWARD
 	};
 	
+	public Handler getHandler() {
+		return handler;
+	}
+
 	public final class TitleDef{	
 		private TitleDef() {}
 		public boolean m_visible = true;
@@ -113,7 +117,7 @@ public abstract class BaseFragment extends Fragment {
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
 	}
-
+	
 	protected void handleMessage(Message msg, Activity activity, View rootView)
 	{
 		//Override me to process you message.
@@ -316,6 +320,9 @@ public abstract class BaseFragment extends Fragment {
 			menu.add(0, option, option, OPTION_TITLES[option]);
 		}
 		super.onPrepareOptionsMenu(menu);
+		Tracker.getInstance().event(BxEvent.MENU_SHOW)
+		.append(Key.FRAGMENT, this.getClass().toString())
+		.end();
 	}
 	
 	@Override
@@ -332,11 +339,11 @@ public abstract class BaseFragment extends Fragment {
 			action = "setting";
 			break;
 		case OPTION_FEEDBACK:
-			this.pushFragment(new FeedbackFragment(), createArguments("反馈", ""));
+			this.pushFragment(new FeedbackFragment(), createArguments("反馈信息", ""));
 			action = "feedback";
 			break;
 		case OPTION_EXIT:
-			QuanleimuMainActivity mainActivity = (QuanleimuMainActivity) this.getActivity();
+			BaseTabActivity mainActivity = (BaseTabActivity) this.getActivity();
 			mainActivity.exitMainActivity();
 			action = "exit";
 			break;
@@ -365,7 +372,9 @@ public abstract class BaseFragment extends Fragment {
 	                }).create().show();
 			break;
 		}
-		Tracker.getInstance().event(BxEvent.MENU_ACTION).append(Key.MENU_ACTION_TYPE, action).end(); 		
+		Tracker.getInstance().event(BxEvent.MENU_ACTION)
+		.append(Key.FRAGMENT, this.getClass().toString())
+		.append(Key.MENU_ACTION_TYPE, action).end(); 		
 		return super.onOptionsItemSelected(item);
 	}
 	

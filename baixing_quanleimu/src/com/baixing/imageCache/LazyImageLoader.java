@@ -7,6 +7,7 @@
 package com.baixing.imageCache;
 
 import java.lang.Thread.State;
+import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.Vector;
@@ -56,9 +57,9 @@ public class LazyImageLoader
 		this.imgManger.enableSampleSize(false);
 	}
 	
-	public Bitmap get(String url,ImageLoaderCallback callback, final int defaultImgRes)
+	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback, final int defaultImgRes)
 	{
-		Bitmap bitmap = null;//ImageManager.userDefualtHead;
+		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
 		
 		//1. try to get from memory cache
 		if(imgManger.contains(url))
@@ -81,25 +82,26 @@ public class LazyImageLoader
 		return bitmap;
 	}
 	
-	public Bitmap get(String url,ImageLoaderCallback callback)
+	public void putImageToDisk(String url, Bitmap bmp){
+		imgManger.putImageToDisk(url, bmp);
+	}
+	
+	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback)
 	{
-		Bitmap bitmap = null;//ImageManager.userDefualtHead;
+		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
 		
 		//1. try to get from memory cache
 		if(imgManger.contains(url))
 		{
 			bitmap = imgManger.getFromMemoryCache(url);
-//			if(bitmap!=null && bitmap.isRecycled()){
-//				Log.d("imageCache", "bitmap in cache, but it is recycled and reclaimed, oOH...");
-//			}
 		}
 		
 		
-		if(bitmap!=null){//if found in memory cache, just return that to the caller
+		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
-		}else
-		{//else, try try to load from disk cache
+		}else{//else, try try to load from disk cache
 			callbackManager.put(url, callback);			
+			Log.d("set bmp", "bitmap, startFetchingTread: " + url);
 			startFetchingTread(url);
 	    }
 		
@@ -159,7 +161,7 @@ public class LazyImageLoader
 	
 	public boolean checkWithImmediateIO(String url){
 		
-		Bitmap result = null;
+		WeakReference<Bitmap> result = null;
 		
 		if(imgManger.contains(url)){
 			result = imgManger.getFromMemoryCache(url); 			
@@ -171,9 +173,26 @@ public class LazyImageLoader
 		return (result != null);		
 	}
 	
-	public Bitmap getWithImmediateIO(String url,ImageLoaderCallback callback){
+	public WeakReference<Bitmap> getWithImmediateIO(String url){
 		
-		Bitmap result = null;
+		WeakReference<Bitmap> result = null;
+		
+		if(imgManger.contains(url)){
+			Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " imgManager contains");
+			result = imgManger.getFromMemoryCache(url); 	
+			if(result != null && result.get() != null){
+				return result;
+			}
+		}		
+		Log.d("bitmap", "bitmap  lazyImg:getWithImmediateIO  " + url + " call safeGetFromFileCacheOrAssets");
+		result = imgManger.safeGetFromFileCacheOrAssets(url);
+
+		return result;		
+	}
+	
+	public WeakReference<Bitmap> getWithImmediateIO(String url,ImageLoaderCallback callback){
+		
+		WeakReference<Bitmap> result = null;
 		
 		if(imgManger.contains(url)){
 			result = imgManger.getFromMemoryCache(url); 			
@@ -313,24 +332,24 @@ public class LazyImageLoader
 			try
 			{
 				while(isRun && urlDequeDiskIO.size() > 0)
-				{
+				{					
 //					synchronized(mCurrentUrl){
 						mCurrentUrl = urlDequeDiskIO.remove(0);
 //					}
-					
+						
 					if(null == mCurrentUrl){
 						continue;
 					} 
 					
-					Bitmap bitmap=imgManger.safeGetFromDiskCache(mCurrentUrl);
-					if(bitmap==null){//if not in disk cache, put the url to download-deque for further downloading
+					WeakReference<Bitmap> bitmap = imgManger.safeGetFromDiskCache(mCurrentUrl);
+					if(bitmap==null || bitmap.get() == null){//if not in disk cache, put the url to download-deque for further downloading
 						putToDownloadDeque(mCurrentUrl);
 						startDownloadingTread();
 					}else{
 						Message msg=handler.obtainMessage(MESSAGE_ID);
 						Bundle bundle =msg.getData();
 						bundle.putSerializable(EXTRA_IMG_URL, mCurrentUrl);
-						bundle.putParcelable(EXTRA_IMG, bitmap);
+						bundle.putParcelable(EXTRA_IMG, bitmap.get());
 						handler.sendMessage(msg);
 					}
 				}
@@ -379,13 +398,13 @@ public class LazyImageLoader
 						continue;
 					} 
 					
-					Bitmap bitmap = imgManger.safeGetFromNetwork(url);
+					WeakReference<Bitmap> bitmap = imgManger.safeGetFromNetwork(url);
 					
-					if(null != bitmap){
+					if(null != bitmap && bitmap.get() != null){
 						Message msg=handler.obtainMessage(MESSAGE_ID);
 						Bundle bundle =msg.getData();
 						bundle.putSerializable(EXTRA_IMG_URL, url);
-						bundle.putParcelable(EXTRA_IMG, bitmap);
+						bundle.putParcelable(EXTRA_IMG, bitmap.get());
 						handler.sendMessage(msg);
 					}else{						
 						//Log.d("LazyImageLoader", "bitmap download failed for url: "+url+"  !!!");
@@ -413,7 +432,7 @@ public class LazyImageLoader
 		
 	}
 
-	public Bitmap getBitmapInMemory(String url){
+	public WeakReference<Bitmap> getBitmapInMemory(String url){
 		if(url == null || url.equals("")) return null;
 		return imgManger.getFromMemoryCache(url);
 	}

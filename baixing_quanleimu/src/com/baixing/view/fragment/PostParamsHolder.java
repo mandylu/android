@@ -36,6 +36,17 @@ public final class PostParamsHolder implements Serializable {
 		this.postValuemap.put(key, data);
 	}
 	
+	public void put(String key, String uiValue, String data, String uiKey)
+	{
+		this.uiMap.put(uiKey, uiValue);
+		this.postValuemap.put(key, data);
+	}
+	
+	public void remove(String key, String uiKey){
+		this.uiMap.remove(uiKey);
+		this.postValuemap.remove(key);
+	}
+	
 	public void remove(String key)
 	{
 		this.uiMap.remove(key);
@@ -96,15 +107,12 @@ public final class PostParamsHolder implements Serializable {
 				continue;
 			}
 			
+			// keyword 单独处理，放到ad_list的keyword参数里。
 			if (!"".equals(key))
 			{
 				result.append(" AND ")
 				.append(URLEncoder.encode(key)).append(":")
 				.append(URLEncoder.encode(postValuemap.get(key)));
-			}
-			else
-			{
-				result.append(" AND ").append(URLEncoder.encode(postValuemap.get(key)));
 			}
 		}
 		

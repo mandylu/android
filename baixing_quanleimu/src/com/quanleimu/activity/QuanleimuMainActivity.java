@@ -44,7 +44,6 @@ import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.GridCateFragment;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
-import com.baixing.view.fragment.PostGoodsFragment;
 import com.baixing.view.fragment.TalkFragment;
 import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
 import com.quanleimu.activity.SplashJob.JobDoneListener;
@@ -62,6 +61,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //	private boolean isRestoring;
 	private SplashJob splashJob;
 	private BroadcastReceiver msgListener;
+	
 	
 	public QuanleimuMainActivity(){
 		super();
@@ -89,7 +89,11 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	@Override
 	protected void onPause() {
 
-		Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+		if (!this.isChangingTab) {
+			Log.d("ddd","onpause");
+			
+			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
+		}
 		unregisterMsgListener();
 		
 		super.onPause();
@@ -102,7 +106,11 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onResume() {
-		Tracker.getInstance().event(BxEvent.APP_RESUME).end();
+		if (!this.isChangingTab) {
+			Log.d("ddd", "onresume");
+			
+			Tracker.getInstance().event(BxEvent.APP_RESUME).end();
+		}
 		
 //		Profiler.markStart("mainresume");
 		bundle.putString("backPageName", "");
@@ -118,7 +126,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		}
 		else
 		{
-			startTalking(getIntent());
 			responseOnResume();
 		}
 		
@@ -134,7 +141,15 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onStop() {
-		Tracker.getInstance().event(BxEvent.APP_STOP).end();
+		
+		if (!this.isChangingTab) {
+			Log.d("ddd","onstop");
+			
+			Tracker.getInstance().event(BxEvent.APP_STOP).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
+		}
+		
 		super.onStop();
 	}
 	
@@ -146,7 +161,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 
 	private void responseOnResume()
 	{
-		this.checkAndUpdateBadge(0);
 		registerMsgListener();
 	}
 	
@@ -250,7 +264,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		{
 			this.notifyStackTop();
 		}
-		findViewById(R.id.splash_cover).setVisibility(View.GONE);
+//		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 		
 //		findViewById(R.id.splash_cover).setVisibility(View.GONE);
 //		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
@@ -260,7 +274,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
 //		showDetailViewFromWX();
 		
-		startTalking(getIntent()); //Launch after splash job.
+//		startTalking(getIntent()); //Launch after splash job.
 		
 		responseOnResume();
 		
@@ -337,7 +351,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-
 		QuanleimuApplication.context = new WeakReference<Context>(this);
 		QuanleimuApplication.getApplication().setErrorHandler(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
@@ -383,7 +396,14 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	
 	@Override
 	protected void onStart() {
-		Tracker.getInstance().event(BxEvent.APP_START).end();
+		if (!this.isChangingTab) {
+			Log.d("ddd","onstart");
+			
+			Tracker.getInstance().event(BxEvent.APP_START).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
+		}
+
 		super.onStart();
 	}
 	
@@ -420,24 +440,24 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		}
 //	}
 	
-	private void startTalking(Intent intent)
-	{
-		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
-		{
-			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-			Bundle bundle = new Bundle();
-			bundle.putString("receiverId", msg.getFrom());
-			bundle.putString("adId", msg.getAdId());
-			bundle.putString("sessionId", msg.getSession());
-			bundle.putSerializable("message", msg);
-			pushFragment(new TalkFragment(), bundle, false);
-		}
-
-		if (intent.hasExtra("isTalking"))
-		{
-			intent.putExtra("isTalking", false);
-		}
-	}
+//	private void startTalking(Intent intent)
+//	{
+//		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
+//		{
+//			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
+//			Bundle bundle = new Bundle();
+//			bundle.putString("receiverId", msg.getFrom());
+//			bundle.putString("adId", msg.getAdId());
+//			bundle.putString("sessionId", msg.getSession());
+//			bundle.putSerializable("message", msg);
+//			pushFragment(new TalkFragment(), bundle, false);
+//		}
+//
+//		if (intent.hasExtra("isTalking"))
+//		{
+//			intent.putExtra("isTalking", false);
+//		}
+//	}
 
 //	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
 //	@Override
@@ -554,42 +574,4 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 			}
 		}
 	}
-//<<<<<<< HEAD
-//
-////	private int lastIndex;
-//	@Override
-//	public void beforeChange(int currentIndex, int nextIndex) {
-////		if (nextIndex != 1)
-////		{
-////			lastIndex = nextIndex;
-////		}
-//	}
-//
-//	/**
-//	 * This code only have short life and will be replaced with new logic after 3.0 release. So just ignor if you think it's ugly
-//	 */
-//	public void afterChange(int newSelectIndex) {
-//		switch(newSelectIndex)
-//		{
-//		case 0:
-//			this.pushFragment(new HomeFragment(), bundle, true);
-//			break;
-//		case 1:
-//            //发布赌约
-//            QuanleimuApplication.postEntryFlag = 0;
-////
-////			Bundle args = new Bundle(bundle);
-////			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_IN, 0);
-////			args.putInt(BaseFragment.ARG_COMMON_ANIMATION_EXIT, 0);
-////			pushFragment(new GridCateFragment(), args, true);
-//            pushFragment(new PostGoodsFragment(), new Bundle(bundle), false);
-//			break;
-//		case 2:
-//			this.pushFragment(new PersonalInfoFragment(), bundle, true);
-//			break;
-//		}
-//	}
-//	
-//=======
-//>>>>>>> f9aba27162b666117968449b15e2a9528d97e16c
 }
