@@ -464,7 +464,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View v = inflater.inflate(R.layout.postgoodsview, null);
+		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
 		
@@ -476,6 +476,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		else
 			button.setText("立即更新信息");
 		
+		WindowManager winMgr = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+		final int halfH = winMgr.getDefaultDisplay().getHeight()/2;
+		View blank = v.findViewById(R.id.padding_bottom);//new View(v.getContext());
+		blank.getLayoutParams().height = halfH;
+		blank.setEnabled(false);
 
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
