@@ -58,6 +58,7 @@ import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
+import android.widget.ImageView.ScaleType;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
@@ -197,7 +198,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
 				|| requestCode == PHOTORESOULT)){
 			imgSelDlg.setMsgOutHandler(handler);
-			imgSelBundle = new Bundle();
+			if(imgSelBundle == null){
+				imgSelBundle = new Bundle();
+			}
 			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
 			imgSelDlg.onActivityResult(requestCode, resultCode, data);
 //			imgSelDlg.show(getFragmentManager(), null);
@@ -387,6 +390,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
+		inreverse = false;
 		QuanleimuApplication.getApplication().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
@@ -620,7 +624,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	private void doPost(boolean registered, BXLocation location){
 		if(inPosting) return;
-		showSimpleProgress();
+//		showSimpleProgress();
+		showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 		new Thread(new UpdateThread(registered, location)).start();		
 	}
 	private boolean usercheck() {
@@ -642,7 +647,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
+							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);//648,1985
 							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 						}
 						return false;
@@ -673,7 +678,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(fixedItemDisplayNames[i]);
-
 			EditText text = (EditText)v.findViewById(R.id.postinput);
 			final String fixedItemDisplayName = fixedItemDisplayNames[i];
 			text.setOnTouchListener(new OnTouchListener() {
@@ -719,7 +723,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if (layoutParams == null)
 				layoutParams = new LinearLayout.LayoutParams(
 				     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+			layoutParams.bottomMargin = v.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
+			if(!fixedItemDisplayNames[i].equals(STRING_DETAIL_POSITION)){
+				layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			}
 			v.setLayoutParams(layoutParams);
 			layout_txt.addView(v);
 		}
@@ -829,6 +836,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					public void run(){
 						if (et != null)
 						{
+							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 							et.requestFocus();
 							InputMethodManager inputMgr = 
 									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -907,7 +915,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(!this.checkInputComplete()){
 			return;
 		}
-		if(this.detailLocation != null){
+		String detailLocationValue = params.getUiData(STRING_DETAIL_POSITION);
+		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
 			doPost(usercheck(), detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
@@ -1798,6 +1807,13 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		Activity activity = getActivity();
 		isPost = (goodsDetail==null);
 		ViewGroup layout = createItemByPostBean(postBean, this);//FIXME:
+
+		if(layout != null && !postBean.getName().equals(STRING_DETAIL_POSITION)){
+			ViewGroup.LayoutParams lp = layout.getLayoutParams();
+			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+			layout.setLayoutParams(lp);
+		}
+
 		if(postBean.getName().equals(STRING_DETAIL_POSITION)){
 			layout.findViewById(R.id.location).setOnClickListener(this);
 //			if(inLocating){
@@ -1913,9 +1929,16 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+		
 		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
-		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
+//		ViewGroup.LayoutParams ivParams = categoryItem.findViewById(R.id.post_next).getLayoutParams();
+//		if(ivParams == null){
+//			ivParams = new ViewGroup.LayoutParams(ViewGroup.LayoutParams.FILL_PARENT, ViewGroup.LayoutParams.FILL_PARENT);
+//		}
+//		ivParams.height = ivParams.width = getResources().getDimensionPixelOffset(R.dimen.post_arrow_size);
+		
+//		((ImageView)categoryItem.findViewById(R.id.post_next)).setImageResource(R.drawable.arrowdown);
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
@@ -1933,7 +1956,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (layoutParams == null)
 			layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);		
+		layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
 		categoryItem.setLayoutParams(layoutParams);
 		
 		layout_txt.addView(categoryItem);
@@ -2179,7 +2203,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				if(getView() != null && container != null){
 					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
 					if(iv != null){						
-						if(container != null && container.length > 0 && container[0].bitmapPath != null){
+						if(container != null 
+								&& container.length > 0
+								&& container[0].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal
+								&& container[0].bitmapPath != null){
 							Bitmap thumbnail = ImageSelectionDialog.getThumbnailWithPath(container[0].thumbnailPath);
 							if(iv != null && thumbnail != null){
 								iv.setImageBitmap(thumbnail);
@@ -2506,7 +2533,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			LayoutInflater inflater = LayoutInflater.from(activity);
 			View v = postBean.getName().equals(STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
-						inflater.inflate(R.layout.item_post_edit, null);	
+						inflater.inflate(R.layout.item_post_edit, null);
+
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
@@ -2692,7 +2720,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if (layoutParams == null)
 			layoutParams = new LinearLayout.LayoutParams(
 			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_padding);
+		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
 		layout.setLayoutParams(layoutParams);
 		
 		return layout;

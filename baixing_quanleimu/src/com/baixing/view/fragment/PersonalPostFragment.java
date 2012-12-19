@@ -41,6 +41,7 @@ import com.baixing.util.LogData;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
@@ -580,7 +581,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         {
         	r_array_item_operate = R.array.item_operate_mypost;
         	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
-        	.append(Key.STATUS, "valid")
+        	.append(Key.STATUS, Value.VALID)
             .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
             .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
             .append(Key.POSTEDSECONDS, postedSeconds)
@@ -591,7 +592,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             r_array_item_operate = R.array.item_operate_inverify;
 //            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
             Tracker.getInstance().event(BxEvent.SENT_MANAGE)
-        	.append(Key.STATUS, "approving")
+        	.append(Key.STATUS, Value.APPROVING)
             .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
             .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
             .append(Key.POSTEDSECONDS, postedSeconds)
@@ -607,7 +608,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://刷新
                             doRefresh(0, adId);
                             Tracker.getInstance().event(BxEvent.SENT_REFRESH)
-                                    .append(Key.STATUS, "valid")
+                                    .append(Key.STATUS, Value.VALID)
                                     .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
                                     .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
@@ -619,7 +620,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
                             Tracker.getInstance().event(BxEvent.SENT_EDIT)
-                                    .append(Key.STATUS, "valid")
+                                    .append(Key.STATUS, Value.VALID)
                                     .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
                                     .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
@@ -627,7 +628,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             break;
                         case 2://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, "valid")
+                        			.append(Key.STATUS, Value.VALID)
                         			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
                                     .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
@@ -638,11 +639,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                     switch (clickedIndex) {
                         case 0://申诉
                         	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
-                            .append(Key.STATUS, "approving")
+                            .append(Key.STATUS, Value.APPROVING)
                             .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
                             .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                             .append(Key.POSTEDSECONDS, postedSeconds)
                             .end();
+                        	
                             Bundle bundle = createArguments("申诉", null);
                             bundle.putInt("type", 1);
                             bundle.putString("adId", adId);
@@ -650,7 +652,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             break;
                         case 1://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, "approving")
+                        			.append(Key.STATUS, Value.APPROVING)
                         			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
                         			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);

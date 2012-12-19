@@ -260,6 +260,7 @@ public class BXNotificationService extends Service {
 
 	private boolean isInternetConnected() {
 		ConnectivityManager cm = (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+		if(cm == null) return false;
 		return cm.getActiveNetworkInfo() != null
 				&& cm.getActiveNetworkInfo().isAvailable()
 				&& cm.getActiveNetworkInfo().isConnected();

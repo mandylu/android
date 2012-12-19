@@ -540,8 +540,16 @@ public class Communication implements Comparator<String> {
 
 		httpClient.getConnectionManager().shutdown();
 		
-		QuanleimuApplication.putCacheNetworkRequest(
-				Util.extractUrlWithoutSecret(url), temp);
+		if (temp != null) //Simply validate json string.
+		{
+			temp = temp.trim();
+			if ((temp.startsWith("[") && temp.endsWith("]")) || 
+					(temp.startsWith("{") && temp.endsWith("}")))
+			{
+				QuanleimuApplication.putCacheNetworkRequest(
+						Util.extractUrlWithoutSecret(url), temp);
+			}
+		}
 
 		return temp;
 	}

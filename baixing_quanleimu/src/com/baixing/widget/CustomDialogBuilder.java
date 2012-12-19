@@ -165,7 +165,7 @@ public class CustomDialogBuilder {
 				if (hasNextLevel) {
 					System.out.println("hasNextLevel true");
 					final List<Map<String,Object>> secondLevelList = new ArrayList<Map<String,Object>>();//
-					if (isCategoryItem) {
+					if (isCategoryItem) {//分类模块
 						System.out.println("isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
 						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
@@ -218,6 +218,7 @@ public class CustomDialogBuilder {
 //											if (CustomDialogBuilder.this.secondLevelItems == null || CustomDialogBuilder.this.secondLevelItems.size() == 0) {
 												List<MultiLevelItem> secondLevelItems = new ArrayList<MultiLevelItem>();
 												if (bean.getLabels() != null) {
+													
 													MultiLevelItem tBack = new MultiLevelItem();
 													tBack.txt = "返回上一级";
 													tBack.id = null;
@@ -237,7 +238,15 @@ public class CustomDialogBuilder {
 													}
 												}
 												else {
-													//
+//													showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+//													CustomDialogBuilder.this.id = bean.get;
+//													String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+//													(new Thread(new GetMetaDataThread(id,txt))).start();
+													MultiLevelItem item = new MultiLevelItem();
+													item.txt = bean.getDisplayName();
+													item.id = bean.getName();
+													CustomDialogBuilder.this.lastChoise = item;
+													handleLastLevelChoice(cd);
 													return;
 												}
 //											}
@@ -452,8 +461,12 @@ public class CustomDialogBuilder {
 				if (!isCategoryItem && position == 1) displayText = "全部";
 				tv.setText(displayText);
 			}
-			if (!isCategoryItem && img != null) {
-				if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+			if (img != null) {
+				if (!isCategoryItem) {
+					if (((List<MultiLevelItem>)list).get(position).id.equals(CustomDialogBuilder.this.selectedValue)) {
+						img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
+					}
+				} else if (((List<Map<String,Object>>)list).get(position).get("tvCategoryName").equals(CustomDialogBuilder.this.selectedValue)) {
 					img.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.pic_radio_selected));
 				}
 			}

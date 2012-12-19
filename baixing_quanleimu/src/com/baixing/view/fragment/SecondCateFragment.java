@@ -26,6 +26,7 @@ import com.baixing.util.Tracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -119,7 +120,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, "no").end();
+							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
 							QuanleimuApplication.setTextMode(false);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
@@ -128,7 +129,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, "yes").end();
+							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
 							QuanleimuApplication.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);

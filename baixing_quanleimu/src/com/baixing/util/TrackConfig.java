@@ -104,6 +104,35 @@ public class TrackConfig implements Observer {
 			
 		}
 		
+		public static enum Value implements TrackMobile {//每条记录可能的key
+			VALID("1","正常"),
+			APPROVING("0","待定"),
+			
+			FAV("1","fav"),
+			CANCEL("0","cancel"),
+			
+			CALL("1","CALL"),
+			COPY("0","COPY"),
+			
+			YES("1","1"),
+			NO("0","0"),
+			;
+			private String value;
+			private String description;
+			
+			private Value(String valueName, String valueDescription) {
+				this.value = valueName;
+				this.description = valueDescription;
+			}
+			public String getValue() {
+				return value;
+			}
+			public String getDescription() {
+				return description;
+			}
+			
+		}
+		
 		public static enum PV implements TrackMobile {//pageview相关的value
 			BASE("/base", "没有定义pv的fragment走这里"),
 			//页面
@@ -253,7 +282,6 @@ public class TrackConfig implements Observer {
 			public String getDescription() {
 				return description;
 			}
-			
 		}
 	}
 
