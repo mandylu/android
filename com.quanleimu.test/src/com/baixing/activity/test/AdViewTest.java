@@ -63,16 +63,19 @@ public class AdViewTest extends BaixingTestCase {
 		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
 		if (tv != null) {
+			TextViewElement tv2 = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+			String adtitle = tv2.getText();
 			//点击地图查看
 			tv.doClick();
 			sleep(1);
-			assertElementByText(TEST_DATA_CATEGORY_QICHE);
+			assertNoElementByText(TEST_DATA_CATEGORY_QICHE);
 			//检查页面title包含当前地区地点文字“金桥”
 			String area = tv.getText();
 			tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 			assertNotNull(tv);
-			boolean found = false;
-			assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);
+			//boolean found = false;
+			//assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);
+			assertTrue(!adtitle.equals(area));
 		}
 		//点击返回
 		goBack();
