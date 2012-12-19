@@ -464,12 +464,19 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View v = inflater.inflate(R.layout.postgoodsview, null);
+		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
 		
 //		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
+
+		WindowManager winMgr = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+		final int halfH = winMgr.getDefaultDisplay().getHeight()/3;
+		View blank = v.findViewById(R.id.padding_bottom);//new View(v.getContext());
+		blank.getLayoutParams().height = halfH;
+		blank.setEnabled(false);
+		
 		button.setOnClickListener(this);
 		if (goodsDetail == null)
 			button.setText("立即免费发布");
