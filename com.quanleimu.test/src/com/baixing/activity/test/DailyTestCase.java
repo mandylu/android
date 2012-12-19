@@ -320,17 +320,21 @@ public class DailyTestCase extends BaixingTestCase {
 		//提取当前信息的地区地点信息，如“浦东金桥”
 		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
+		TextViewElement tv2 = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+		String adtitle = tv2.getText();
 		//点击地图查看
 		tv.doClick();
 		sleep(3);
 		assertNoElementByText("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
 				categoryName);
+		assertNoElementByText(AD_DETAIL_META_AREA_TEXT);
 		//检查页面title包含当前地区地点文字“金桥”
 		String area = tv.getText();
 		tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		assertNotNull(tv);
-		boolean found = false;
-		assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
+		assertTrue(!adtitle.equals(area));
+		//boolean found = false;
+		//assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
 		goBack();
 	}
 	
