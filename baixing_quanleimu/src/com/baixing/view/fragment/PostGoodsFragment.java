@@ -784,7 +784,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			postFinish();
 		}else if(v.getId() == R.id.location){
 			Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DETAIL_POSITION);
-			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
+			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING)
+			.append(Key.ACTION, STRING_DETAIL_POSITION)
+			.append(Key.STATUS, 1)
+			.end();
 			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
