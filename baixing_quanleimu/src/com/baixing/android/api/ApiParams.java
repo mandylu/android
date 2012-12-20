@@ -4,23 +4,20 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Map;
+import java.util.Set;
+import java.util.Map.Entry;
 
 public class ApiParams {
-	private String method;
-	private List<String> fields=new ArrayList<String>();
+	public static final String KEY_APIKEY = "api_key";
+	public static final String KEY_UDID = "udid";
+	public static final String KEY_VERSION = "version";
+	public static final String KEY_TIMESTAMP = "timestamp";
+	public static final String KEY_CHANNEL = "channel";
+	public static final String KEY_USERID = "userId";
+	public static final String KEY_CITY = "city";
+	public static final String KEY_ACCESSTOKEN = "access_token";
+	
 	private Map<String,String> params=new HashMap<String,String>();
-	/**
-	 * 添加返回数据字段
-	 * 
-	 * @param value
-	 */
-	public void addFields(String... value){
-		if(value!=null){
-			for(String v:value){
-				fields.add(v);
-			}
-		}
-	}
 	/**
 	 * 添加业务参数
 	 * @param key
@@ -45,27 +42,25 @@ public class ApiParams {
 		params.remove(key);
 	}
 	
-	public String getMethod() {
-		return method;
-	}
-	/**
-	 * 设置准备调用的api名字
-	 * @param method
-	 */
-	public void setMethod(String method) {
-		this.method = method;
-	}
-	public List<String> getFields() {
-		return fields;
-	}
-	public void setFields(List<String> fields) {
-		this.fields = fields;
-	}
 	public Map<String, String> getParams() {
 		return params;
 	}
 	public void setParams(Map<String, String> params) {
 		this.params = params;
+	}
+	
+	public String toString(){
+		StringBuffer sb = new StringBuffer();
+		Map<String, String> map = this.params;
+		if (map != null) {
+			Set<Entry<String, String>> set = map.entrySet();
+			for (Entry<String, String> entry : set) {
+				sb.append(entry.getKey() + ":" + entry.getValue());
+				sb.append('\n');
+			}
+		}
+		
+		return sb.toString();
 	}
 	
 
