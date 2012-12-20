@@ -5,6 +5,7 @@ import java.util.List;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
@@ -21,8 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.util.TrackConfig.TrackMobile.Key;
+import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -171,6 +176,7 @@ public class KeywordSelector extends BaseFragment {
 	}
 	
 	public void onStackTop(boolean isBack) {
+		Log.d("ooo","keywordselector->onstacktop");
 		this.showSearchHistory();
 		etSearch.postDelayed(new Runnable(){
 			@Override
@@ -199,7 +205,8 @@ public class KeywordSelector extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
+		Tracker.getInstance().pv(PV.SEARCH).end();
+		Log.d("ooo","keywordselector->onresume");
 		etSearch.postDelayed(new Runnable() {
 			@Override
 			public void run() {
@@ -209,11 +216,18 @@ public class KeywordSelector extends BaseFragment {
 	}
 	
 	private void doSearch() {
+		
+		Log.d("ooo","keywordselector->dosearch");
 		String searchContent = etSearch.getText().toString().trim();
+		Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
+		.append(Key.SEARCHKEYWORD, searchContent)
+		.end();
+		
 		if (searchContent.equals("")) {
 			Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT)
 					.show();
 		} else {
+			
 			addToListRemark(searchContent);
 			finishFragment(requestCode, searchContent);
 		}

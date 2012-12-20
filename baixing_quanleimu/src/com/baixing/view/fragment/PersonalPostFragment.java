@@ -16,6 +16,7 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -73,7 +74,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //	private String json;
 	UserBean user;
 	private boolean needReloadData = false;
-
+	private boolean isOnResume = false;
     /**
      * 用这几个 static value 区分不同类别“我的信息”
      */
@@ -237,6 +238,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.isOnResume = true;
+		Log.d("jjj","WWWW->onresume()");
 		this.rebuildPage(getView(), false);
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
@@ -265,11 +268,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
 
-        BxEvent bxEvent = BxEvent.SENT_RESULT;
-        int adsCountValue = 0;
 
 		if(TYPE_MYPOST == currentType){
-            bxEvent = BxEvent.SENT_RESULT;
+//            bxEvent = BxEvent.SENT_RESULT;
 
 			GoodsList gl = new GoodsList();
 			gl.setData(listMyPost);
@@ -277,13 +278,24 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			adapter.setList(listMyPost);
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
-            if (listMyPost != null) {
-                adsCountValue = listMyPost.size();
-            }
-
+//			Bundle bundle = this.getArguments();
+ 
+			if (this.isOnResume) {
+				if (listMyPost != null) {
+					Tracker.getInstance()
+					.pv(PV.MYADS_SENT)
+					.append(Key.ADSCOUNT, listMyPost.size())
+					.end();
+				} else {
+					Tracker.getInstance()
+					.pv(PV.MYADS_SENT)
+					.append(Key.ADSCOUNT, 0)
+					.end();
+				}
+				this.isOnResume = false;
+			}
 		}
 
-        Tracker.getInstance().event(bxEvent).append(Key.ADSCOUNT, adsCountValue).end();
 
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {			
 			@Override
@@ -319,17 +331,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			hideProgress();
 			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 //			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
-			this.pv = PV.MYADS_SENT;
+//			this.pv = PV.MYADS_SENT;
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
-				Tracker.getInstance()
-				.pv(this.pv)
-				.end();
+				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, 0).end();
 			} else {//ads count
-				Tracker.getInstance()
-				.pv(this.pv)
-				.append(Key.ADSCOUNT, gl.getData().size() + "")
-				.end();
+				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, gl.getData().size()).end();
 			}
 			
 			if (gl == null || gl.getData().size() == 0) {
@@ -430,9 +437,17 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			hideProgress();
 			//tracker
-			Tracker.getInstance()
-//			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
-			.pv(PV.MYADS_SENT)
+//			if (this.isOnResume) {
+//				Tracker.getInstance()
+////			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
+//				.pv(PV.MYADS_SENT)
+//				.append(Key.ADSCOUNT, 0)
+//				.end();
+//				this.isOnResume = false;
+//			}
+			
+			Tracker.getInstance().event(BxEvent.SENT_RESULT)
+			.append(Key.ADSCOUNT, 0)
 			.end();
 			
 			Message msg2 = Message.obtain();
