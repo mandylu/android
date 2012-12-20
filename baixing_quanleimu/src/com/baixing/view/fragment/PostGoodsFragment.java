@@ -471,11 +471,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		v.findViewById(R.id.image_layout).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 
-		WindowManager winMgr = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
-		final int halfH = winMgr.getDefaultDisplay().getHeight()/3;
-		View blank = v.findViewById(R.id.padding_bottom);//new View(v.getContext());
-		blank.getLayoutParams().height = halfH;
-		blank.setEnabled(false);
+//		WindowManager winMgr = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+//		final int halfH = winMgr.getDefaultDisplay().getHeight()/3;
+//		View blank = v.findViewById(R.id.padding_bottom);//new View(v.getContext());
+//		blank.getLayoutParams().height = halfH;
+//		blank.setEnabled(false);
 		
 		button.setOnClickListener(this);
 		if (goodsDetail == null)
@@ -484,8 +484,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			button.setText("立即更新信息");
 		
 
-		getActivity().getWindow().setSoftInputMode(
-				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
+//		getActivity().getWindow().setSoftInputMode(
+//				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
 		
 		return v;
 	}
