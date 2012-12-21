@@ -12,10 +12,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -45,7 +43,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
@@ -92,7 +89,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private String categoryName = "";
 	private String json = "";
 	private LinearLayout layout_txt;
-	private LinkedHashMap<String, PostGoodsBean> postList;		//发布模板每一项的集合
+	private LinkedHashMap<String, PostGoodsBean> postList;
 	private static final int NONE = 0;
 	private static final int PHOTORESOULT = 3;
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
@@ -298,9 +295,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					displayValue = displayValue.substring(0, pos);
 				}
 			}
-			return displayValue;
-		}
-		else if(bean.getControlType().equals("select") || bean.getControlType().equals("checkbox")){
+		}else if(bean.getControlType().equals("select") || bean.getControlType().equals("checkbox")){
 			List<String> beanVs = bean.getValues();
 			if(beanVs != null){
 				for(int t = 0; t < beanVs.size(); ++ t){
@@ -319,7 +314,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(displayValue.equals("")){
 				String _sValue = detail.getValueByKey(detailKey + "_s"); 
 				if(_sValue != null && !_sValue.equals("")){
-					return _sValue;
+					displayValue = _sValue;
 				}
 			}
 		}
@@ -354,10 +349,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}else if(control instanceof TextView){
 				((TextView)control).setText(displayValue);
 			}
-			this.params.put(bean.getDisplayName(), 
-					displayValue, 
-					detailValue,
-					bean.getName());			
+			this.params.put(bean.getName(), displayValue, detailValue);
 		
 			if(bean.getDisplayName().equals(STRING_AREA)){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
@@ -366,25 +358,21 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					if(control instanceof TextView){
 						((TextView)control).setText(areas[areas.length - 1]);
 					}
-					if(bean.getValues() != null && bean.getLabels() != null){
-						List<String> areaLabels = bean.getLabels();
-						for(int t = 0; t < areaLabels.size(); ++ t){
-							if(areaLabels.get(t).equals(areas[1])){
-//								postMap.put("地区", bean.getValues().get(t));
-								params.getData().put(STRING_AREA, bean.getValues().get(t));
-//								params.put("地区", areas[areas.length - 1], bean.getValues().get(t));
-								break;
-							}
-						}
-					}
+//					if(bean.getValues() != null && bean.getLabels() != null){
+//						List<String> areaLabels = bean.getLabels();
+//						for(int t = 0; t < areaLabels.size(); ++ t){
+//							if(areaLabels.get(t).equals(areas[1])){
+//								params.getData().put(STRING_AREA, bean.getValues().get(t));
+//								break;
+//							}
+//						}
+//					}
 				}
 			}
 		}
 
 		if (goodsDetail.getImageList() != null) {
 			String b = (goodsDetail.getImageList().getResize180());
-//					.substring(1, (goodsDetail.getImageList()
-//							.getResize180()).length() - 1);
 			if(b == null || b.equals("")) return;
 			b = Communication.replace(b);
 			if (b.contains(",")) {
@@ -653,33 +641,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void setPhoneAndAddress(){
-		String contactDisplayName = "";
-		String addressDisplayName = "";
-		if(postList != null){
-			Collection<PostGoodsBean> beans = postList.values();
-			if(beans != null){
-				Iterator<PostGoodsBean> ite = beans.iterator();
-				while(ite.hasNext()){
-					PostGoodsBean bean = ite.next();
-					if(bean.getName().equals("contact")){
-						contactDisplayName = bean.getDisplayName();
-						if(addressDisplayName.length() > 0){
-							break;
-						}
-					}else if(bean.getName().equals(STRING_DETAIL_POSITION)){
-						addressDisplayName = bean.getDisplayName();
-						if(contactDisplayName.length() > 0){
-							break;
-						}
-					}
-				}
-			}
-		}
-		String phone = params.getData(contactDisplayName);
+		String phone = params.getData("contact");
 		if(phone != null && phone.length() > 0 && goodsDetail == null){
 			QuanleimuApplication.getApplication().setPhoneNumber(phone);
 		}
-		String address = params.getData(addressDisplayName);
+		String address = params.getData(STRING_DETAIL_POSITION);
 		if(address != null && address.length() > 0){
 			QuanleimuApplication.getApplication().setAddress(address);
 		}
@@ -718,12 +684,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					|| postGoodsBean.getControlType().equals("textarea")) {
 				EditText et = (EditText)vg.getChildAt(i).getTag(HASH_CONTROL);
 				if(et != null){
-//					String displayValue = et.getText().toString();
-//					displayValue = displayValue.endsWith(postGoodsBean.getUnit()) ? 
-					params.put(postGoodsBean.getDisplayName(),  
-							et.getText().toString(), 
-							et.getText().toString(),
-							postGoodsBean.getName());
+					params.put(postGoodsBean.getName(),  et.getText().toString(), et.getText().toString());
 				}
 			}
 			else if(postGoodsBean.getControlType().equals("checkbox")){
@@ -731,13 +692,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
 					if(box != null){
 						if(box.isChecked()){
-							params.put(postGoodsBean.getDisplayName(),//key 
-									postGoodsBean.getValues().get(0), //uivalue
-									postGoodsBean.getValues().get(0),
-									postGoodsBean.getName());//key for ui value
+							params.put(postGoodsBean.getName(), postGoodsBean.getValues().get(0),postGoodsBean.getValues().get(0));
 						}
 						else{
-							params.remove(postGoodsBean.getDisplayName(),postGoodsBean.getName());
+							params.remove(postGoodsBean.getName());
 						}
 					}
 				}
@@ -752,15 +710,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			return false;
 		}
 		
-		LinkedHashMap<String, String> postMap = params.getData();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getName().equals(STRING_DESCRIPTION) || 
 					(postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean) && !postGoodsBean.getName().equals(STRING_AREA))) {
-				if(!postMap.containsKey(postGoodsBean.getDisplayName()) 
-						|| postMap.get(postGoodsBean.getDisplayName()).equals("")
-						|| (postGoodsBean.getUnit() != null && postMap.get(postGoodsBean.getDisplayName()).equals(postGoodsBean.getUnit()))){
+				if(!params.containsKey(postGoodsBean.getName()) 
+						|| params.getData(postGoodsBean.getName()).equals("")
+						|| (postGoodsBean.getUnit() != null && params.getData(postGoodsBean.getName()).equals(postGoodsBean.getUnit()))){
 					if(postGoodsBean.getName().equals("images"))continue;
 					postResultFail("please entering " + postGoodsBean.getDisplayName() + "!");
 					Toast.makeText(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
@@ -848,26 +805,25 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			list.add("lat=" + coorGoogle.first);
 			list.add("lng=" + coorGoogle.second);
 			
-			LinkedHashMap<String, String> postMap = params.getData();
-			//发布发布集合
-			for (int i = 0; i < postMap.size(); i++) {
-				String key = (String) postMap.keySet().toArray()[i];
-				String values = postMap.get(key);
-				
-				if (values != null && values.length() > 0 && postList.get(key) != null) {
+			Iterator<String> keyIte = params.keyIterator();
+			while(keyIte.hasNext()){
+				String key = keyIte.next();
+				String value = params.getData(key);
+				if (value != null && value.length() > 0 && postList.get(key) != null) {
 					try{
 						list.add(URLEncoder.encode(postList.get(key).getName(), "UTF-8")
-								+ "=" + URLEncoder.encode(values, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
+								+ "=" + URLEncoder.encode(value, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
 						if(postList.get(key).getName().equals(STRING_DESCRIPTION)){//generate title from description
 							list.add("title"
-									+ "=" + URLEncoder.encode(values.substring(0, Math.min(25, values.length())), "UTF-8").replaceAll("%7E", "~"));
+									+ "=" + URLEncoder.encode(value.substring(0, Math.min(25, value.length())), "UTF-8").replaceAll("%7E", "~"));
 						}
 					}catch(UnsupportedEncodingException e){
 						e.printStackTrace();
 					}
 				}
+				
 			}
-			//发布图片
+
 			String images = "";
 			for (int i = 0; i < bmpUrls.size(); i++) {				
 				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
@@ -1042,12 +998,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 	private void loadCachedData()
 	{
-		LinkedHashMap<String, String> uiMap = params.getUiData();
-		if (uiMap == null)
-		{
-			return;
-		}
-		Iterator<String> it = uiMap.keySet().iterator();
+		if(params.size() == 0) return;
+
+		Iterator<String> it = params.keyIterator();
 		while (it.hasNext()){
 			String name = it.next();
 			for (int i=0; i<layout_txt.getChildCount(); i++)
@@ -1058,7 +1011,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						!bean.getName().equals(name)//check display name 
 						) continue;
 				View control = (View)v.getTag(HASH_CONTROL);
-				String displayValue = uiMap.get(name);
+				String displayValue = params.getUiData(name);
 				
 				if(control instanceof CheckBox){
 					if(displayValue.contains(((CheckBox)control).getText())){
@@ -1093,7 +1046,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, txtValue, bean.getName());
+					params.put(bean.getName(), txt, txtValue);
 				}
 				else if(obj instanceof String){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
@@ -1117,19 +1070,15 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						tv.setText(txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), txt, value,bean.getName());
+					params.put(bean.getName(), txt, value);
 				}
 				else if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
 					TextView tv = (TextView)v.getTag(HASH_CONTROL);
 					if(tv != null){
-//						tv.setWidth(vg.getWidth() * 2 / 3);
 						tv.setText(((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
 					}
 					match = true;
-					params.put(bean.getDisplayName(), 
-							((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, 
-							((MultiLevelSelectionFragment.MultiLevelItem)obj).id,
-							bean.getName());
+					params.put(bean.getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
 				}
 			}
 		}
@@ -1147,19 +1096,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void clearCategoryParameters(){//keep fixed(common) parameters there
-		LinkedHashMap<String, String> uiData = params.getUiData();
-		LinkedHashMap<String, String> data = params.getData();
-		Object [] uikeys = uiData.keySet().toArray();
-		Object [] datakeys = data.keySet().toArray();
-		
-	    	for(int i = 0; i < uikeys.length; i++)
-	    	{
-	    		String uikey = uikeys[i].toString();
-	    		String datakey = datakeys[i].toString();
-	    		if(!inArray(uikey, this.fixedItemNames) ){
-	    			params.remove(datakey,uikey);
-	    		}
-	    	}
+		Iterator<String> ite = params.keyIterator();
+		while(ite.hasNext()){
+			String key = ite.next();
+			if(!inArray(key, this.fixedItemNames)){
+				params.remove(key);
+				ite = params.keyIterator();
+			}
+		}
 	}
 	
 	private void resetData(boolean clearImgs){
@@ -1184,8 +1128,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 				
-				params.remove("描述", STRING_DESCRIPTION);
-				params.remove("价格", "价格");
+				params.remove(STRING_DESCRIPTION);
+				params.remove("价格");
 			}
 		}
 	}
@@ -1410,6 +1354,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		for(int i = 0; i < fixedItemNames.length; ++ i){
 			if(pm.containsKey(fixedItemNames[i]) && !fixedItemNames[i].equals(STRING_DESCRIPTION)){
 				this.appendBeanToLayout(pm.get(fixedItemNames[i]));
+			}else if(!pm.containsKey(fixedItemNames[i])){
+				params.remove(fixedItemNames[i]);
 			}
 		}
 	}
@@ -1436,15 +1382,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					String defaultValue = bean.getDefaultValue();
 					if (defaultValue != null && defaultValue.length() > 0) {
 						//String key, String uiValue, String data
-						this.params.put(bean.getDisplayName(), 
-								defaultValue,
-								defaultValue,
-								bean.getName());
+						this.params.put(bean.getName(), defaultValue, defaultValue);
 					} else {
-						this.params.put(bean.getDisplayName(), 
-								bean.getLabels().get(0), 
-								bean.getValues().get(0),
-								bean.getName());
+						this.params.put(bean.getName(), bean.getLabels().get(0), bean.getValues().get(0));
 					}
 					break;
 				}
@@ -1475,29 +1415,26 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(postList == null || postList.size() == 0){
 			postList = JsonUtil.getPostGoodsBean(json);
 		}
-		buildFixedPostLayout();//添加固定item的layout
-		addHiddenItemsToParams();//params中加入隐藏元素的default值
+		buildFixedPostLayout();
+		addHiddenItemsToParams();
 		
 		Object[] postListKeySetArray = postList.keySet().toArray();
 		for (int i = 0; i < postList.size(); i++) {
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = postList.get(key);
 			
-			if(isFixedItem(postBean) || isHiddenItem(postBean))//排除固定和隐藏元素
+			if(isFixedItem(postBean) || isHiddenItem(postBean))
 				continue;
 			
 			if(postBean.getName().equals(STRING_AREA)){
-//				this.appendBeanToLayout(postBean);
 				continue;
 			}
-			this.appendBeanToLayout(postBean);//加入元素
+			this.appendBeanToLayout(postBean);
 		}
 		editpostUI();
 		originParams.merge(params);
 		extractInputData(layout_txt, originParams);	
-	}//buildPostLayout
-	
-
+	}
 
 	@Override
 	protected void handleMessage(Message msg, final Activity activity, View rootView) {
@@ -1517,7 +1454,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(imgSelBundle != null){
 				ImageSelectionDialog.ImageContainer[] container = 
 						(ImageSelectionDialog.ImageContainer[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
-//				ArrayList<Bitmap> bps = (ArrayList<Bitmap>)imgSelBundle.getSerializable(ImageSelectionDialog.KEY_CACHED_BPS);
 				if(getView() != null && container != null){
 					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
 					if(iv != null){						
@@ -1732,8 +1668,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(bean == null) continue;
 			View control = (View)v.getTag(HASH_CONTROL);
 			if(control != null && control instanceof TextView){
-				if(params != null && params.containsKey(bean.getDisplayName())){
-					String value = params.getUiData(bean.getDisplayName());
+				if(params != null && params.containsKey(bean.getName())){
+					String value = params.getUiData(bean.getName());
 					if(value == null){
 						value = params.getUiData(bean.getName());
 					}
@@ -1884,11 +1820,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									if (fragment instanceof PostGoodsFragment)
 									{
 										PostGoodsFragment postGoodsFragment = (PostGoodsFragment) fragment;
-										selectedValue = postGoodsFragment.params.getData(postBean.getDisplayName());
+										selectedValue = postGoodsFragment.params.getData(postBean.getName());
 									}else if (fragment instanceof FillMoreDetailFragment)
 									{
 										FillMoreDetailFragment fillMoreDetailFragment = (FillMoreDetailFragment) fragment;
-										selectedValue = fillMoreDetailFragment.params.getData(postBean.getDisplayName());
+										selectedValue = fillMoreDetailFragment.params.getData(postBean.getName());
 									}
 									
 									if (selectedValue != null)
@@ -1985,15 +1921,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					if(bean.getLabels() != null){
 						for(int t = 0; t < bean.getLabels().size(); ++ t){
 							if(location.subCityName.contains(bean.getLabels().get(t))){
-//								((TextView)districtView.findViewById(R.id.posthint)).setText(bean.getLabels().get(t));
-								params.put(bean.getDisplayName(), 
-										bean.getLabels().get(t), 
-										bean.getValues().get(t),
-										bean.getName());
-								originParams.put(bean.getDisplayName(), 
-										bean.getLabels().get(t), 
-										bean.getValues().get(t),
-										bean.getName());
+								params.put(bean.getName(), bean.getLabels().get(t), bean.getValues().get(t));
+								originParams.put(bean.getName(), bean.getLabels().get(t), bean.getValues().get(t));
 								return;
 							}
 						}

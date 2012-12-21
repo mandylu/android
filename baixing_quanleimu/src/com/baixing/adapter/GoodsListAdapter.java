@@ -483,9 +483,10 @@ public class GoodsListAdapter extends BaseAdapter {
 			}
 			
 			
-			if (isValidMessage)
-			{
-				holder.tvPrice.setVisibility(View.VISIBLE);
+			if (isValidMessage){
+				if(price != null && price.length() > 0){
+					holder.tvPrice.setVisibility(View.VISIBLE);
+				}
 				holder.tvUpdateDate.setVisibility(View.VISIBLE);
 				holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
 			}
