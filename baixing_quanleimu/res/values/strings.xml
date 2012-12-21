@@ -1,7 +1,7 @@
 <?xml version="1.0" encoding="utf-8"?>
 <resources>
 
-    <string name="app_name">百姓网</string>
+    <string name="app_name"> 百姓网</string>
     <string name="weiboinfo">weiboinfo</string>
     <string name="pull_to_refresh_tap_label">点击这里刷新…</string>
     <string name="pull_to_refresh_pull_label">向下拉刷新…</string>
