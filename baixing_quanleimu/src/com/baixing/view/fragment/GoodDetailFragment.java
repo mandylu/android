@@ -1681,12 +1681,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
-	
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
     {

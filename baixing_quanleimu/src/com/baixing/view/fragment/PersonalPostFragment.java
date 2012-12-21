@@ -798,12 +798,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 		title.m_visible = true;
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
-	}
 
 	@Override
 	public void onRefresh() {

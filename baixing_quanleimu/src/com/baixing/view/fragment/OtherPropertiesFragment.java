@@ -108,13 +108,4 @@ public class OtherPropertiesFragment extends BaseFragment {
 		}
 	}
 	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
-	
-	
-	
 }

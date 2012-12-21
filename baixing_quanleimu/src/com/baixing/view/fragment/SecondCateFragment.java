@@ -176,12 +176,6 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	}
 	
 	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
-	@Override
 	public void handleSearch() {
 		Bundle bundle = new Bundle();
 		bundle.putString("categoryEnglishName", this.cate.getEnglishName());

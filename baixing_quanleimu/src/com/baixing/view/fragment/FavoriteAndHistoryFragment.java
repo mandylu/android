@@ -234,12 +234,6 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     }
 
     @Override
-    public void initTab(TabDef tab) {
-        tab.m_visible = false;
-    }
-
-
-    @Override
     protected void handleMessage(Message msg, Activity activity, View rootView) {
     	Log.d("fav","handleMessage");
         switch (msg.what) {

@@ -96,13 +96,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
         onRegisterClicked();
     }
 
-    @Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
-	
-
 	@Override
 	public void onResume() {
 		super.onResume();

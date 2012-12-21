@@ -335,12 +335,6 @@ public class TalkFragment extends BaseFragment {
 			title.m_leftActionHint = "返回";
 		}
 		
-		@Override
-		public void initTab(TabDef tab){
-			tab.m_visible = false;
-		}	
-		
-		
 		private ChatMessageAdapter getAdapter(View currentRoot)
 		{
 			return (ChatMessageAdapter)((HeaderViewListAdapter) ((ListView) currentRoot.findViewById(R.id.char_history_p)).getAdapter()).getWrappedAdapter();

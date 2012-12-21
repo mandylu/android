@@ -83,13 +83,6 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	}
 	
 	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-
-
-	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int index, long arg3) {
 		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 				.getListFirst();

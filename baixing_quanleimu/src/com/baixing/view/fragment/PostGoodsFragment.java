@@ -2507,12 +2507,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 //		}
 	}
 	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-//		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
 	static public void popupSelection(BaseFragment fragment, View v, PostGoodsBean bean){
 		if(bean.getLabels() == null || bean.getLabels().size() <= 0) return;
 		AlertDialog.Builder builder = new AlertDialog.Builder(fragment.getActivity());

@@ -143,11 +143,6 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
     }
 
     @Override
-    public void initTab(TabDef tab) {
-        tab.m_visible = false;
-    }
-    
-    @Override
     public int[] excludedOptionMenus() {
     	return new int[]{OPTION_SETTING};
     }

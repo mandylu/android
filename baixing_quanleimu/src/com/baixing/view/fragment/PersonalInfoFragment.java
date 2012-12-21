@@ -98,14 +98,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 
 	@Override
-	public void initTab(TabDef tab) {
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
-	}
-	
-	
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.bundle = this.getArguments();

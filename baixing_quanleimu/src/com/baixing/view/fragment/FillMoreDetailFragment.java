@@ -57,11 +57,6 @@ public class FillMoreDetailFragment extends BaseFragment {
 	}
 	
 	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}	
-	
-	@Override
 	public void onResume(){
 		super.onResume();
 		setEditTextValue();
