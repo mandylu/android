@@ -54,10 +54,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	private Bundle bundle = null;
 	private UserBean user = null;
-	private String json = null;
-//	private String upJson = null;
-//	private String locationJson = null;
-	private String sessionsJson = null;
 	static final int MSG_GETPERSONALADS = 1;
 	public static final int MSG_GETPERSONALPROFILE = 2;
 	static final int MSG_GETPERSONALLOCATION = 3;
@@ -234,7 +230,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 			}
 			String url = Communication.getApiUrl(apiName, list);
 			try {
-				json = Communication.getDataByUrl(url, false);
+				Communication.getDataByUrl(url, false);
 				sendMessage(MSG_GETPERSONALADS, null);
 				return;
 			} catch (UnsupportedEncodingException e) {

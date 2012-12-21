@@ -21,7 +21,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
 
 import com.baixing.adapter.GoodsListAdapter;
@@ -263,7 +262,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(glLoader != null){
 			glLoader.setHandler(handler);
 		}
-		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
+		rootView.findViewById(R.id.linearListView);
 
         BxEvent bxEvent = BxEvent.SENT_RESULT;
         int adsCountValue = 0;
@@ -457,14 +456,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		bundle.putInt("defaultPageIndex", 1);
 		((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
 		return true;
-	}
-	
-	private boolean isEditPost() {
-		Bundle bundle = this.getArguments();
-		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_IS_EDITPOST)){
-			return bundle.getBoolean(PostGoodsFragment.KEY_IS_EDITPOST);
-		}
-		return false;
 	}
 	
 	private String getPostCateEnglishName() {
@@ -672,7 +663,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
     }
 
     private void doRefresh(int pay, final String adId){
-        String tmpjson = null;
         ArrayList<String> requests = new ArrayList<String>();
 
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
