@@ -28,7 +28,6 @@ import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.text.InputType;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -70,35 +69,24 @@ import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener{
-	
-	
-	
-	
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
-	
-	
 	private static final int VALUE_LOGIN_SUCCEEDED = 9;
-	
 	private static final int MSG_GEOCODING_FETCHED = 0x00010010;
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
-	
 	static final int HASH_POST_BEAN = "postBean".hashCode();
 	static final int HASH_CONTROL = "control".hashCode();
 	static final private int MSG_MORE_DETAIL_BACK = 0xF0000001;
-	
 	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final String KEY_IS_EDITPOST = "isEditPost"; 
 	static final String KEY_CATE_ENGLISHNAME = "cateEnglishName";
-	
 	static final private String KEY_IMG_BUNDLE = "key_image_bundle";
-	
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_AREA = "地区";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final private String STRING_DESCRIPTION = "description";
-	
 	static final int MSG_POST_SUCCEED = 0xF0000010; 
+
 	private String categoryEnglishName = "";
 	private String categoryName = "";
 	private String json = "";
@@ -106,14 +94,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private LinkedHashMap<String, PostGoodsBean> postList;		//发布模板每一项的集合
 	private static final int NONE = 0;
 	private static final int PHOTORESOULT = 3;
-	
-	
-	
-	
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
-	
-
 	private PostParamsHolder params;
 	private PostParamsHolder originParams;
 	private String mobile, password;
@@ -122,16 +104,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private static boolean isPost = true;
 	private ArrayList<String> listUrl;
 	private Bundle imgSelBundle = null;
-	private ImageSelectionDialog imgSelDlg = null;
-	
+	private ImageSelectionDialog imgSelDlg = null;	
 	private View locationView = null;
-//	private View districtView = null;
-	
 	private BXLocation detailLocation = null;
     private BXLocation cacheLocation = null;
-    
     private List<String> bmpUrls = new ArrayList<String>();
-    
     private EditText etDescription = null;
     private EditText etContact = null;
     
@@ -463,7 +440,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);//648,1985
 							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 						}
 						return false;
@@ -501,7 +477,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction()==MotionEvent.ACTION_DOWN) {
 						//goodsDetail==null decide post or editpost
-						Log.d("xx","action:" + fixedItemDisplayName);
 						Tracker.getInstance().event(goodsDetail==null?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, fixedItemDisplayName).end();
 					}
 					return false;
@@ -592,7 +567,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
-			Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DETAIL_POSITION);
 			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
 			
 			if(this.detailLocation != null && locationView != null){
@@ -601,9 +575,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
 			}
 		}else if(v.getId() == R.id.myImg){
-			
-			//记录ima框点击事件
-			Log.d("xx","isPost:"+(goodsDetail==null)+",action:image");
 			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 			if(goodsDetail != null){
@@ -663,8 +634,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void postFinish() {
-		Log.d("postgoods",goodsDetail==null?"POST_POSTBTNCONTENTCLICKED":"EDITPOST_POSTBTNCONTENTCLICKED");
-		//tracker
 		Tracker.getInstance()
 		.event(goodsDetail==null?BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
@@ -819,7 +788,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 
 	private boolean retreiveLocation(){
-		Log.d("location", "location   retreive location");
 		String city = QuanleimuApplication.getApplication().cityName;
 		String addr = getFilledLocation();
 
@@ -857,7 +825,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		public void run() {
 			inPosting = true;
-			Log.d("location", "location, in UpdateThread::run");
 			String apiName = "ad_add";
 			ArrayList<String> list = new ArrayList<String>();
 
@@ -1135,9 +1102,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					String txt = "";
 					for(int t = 0; t < checks.length; ++ t){
 						if(checks[t].equals(""))continue;
-//						if(bean.getLabels().size() <= Integer.parseInt(checks[t])){
-//							Log.d("outofbounds", "hahaha:   out of bound:   " + bean.getLabels().size() + "   " + checks[t]);
-//						}
 		 				txt += "," + bean.getLabels().get(Integer.parseInt(checks[t]));
 						value += "," + bean.getValues().get(Integer.parseInt(checks[t]));
 					}
@@ -1191,7 +1155,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	    	{
 	    		String uikey = uikeys[i].toString();
 	    		String datakey = datakeys[i].toString();
-	    		Log.d("clearCategoryParameters", "uikey = " + uikey + " ; datakey = " + datakey);
 	    		if(!inArray(uikey, this.fixedItemNames) ){
 	    			params.remove(datakey,uikey);
 	    		}
@@ -1353,7 +1316,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
 			public void onClick(View v) {
-				Log.d("xx","action:类目");
 				Tracker.getInstance().event(BxEvent.POST_INPUTING).append(Key.ACTION, "类目").end();
 				popupCategorySelectionDialog();
 			}				
@@ -1405,7 +1367,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DESCRIPTION);
 							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 						}
 						return false;
@@ -1509,12 +1470,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		this.getView().findViewById(R.id.networkErrorView).setVisibility(View.GONE);
 		this.reCreateTitle();
 		this.refreshHeader();
-		Log.d(TAG, "start to build layout");
-//		otherProperties.clear();
-		
-//		final Activity activity = getActivity();
-		
-		//根据模板显示
 		if(null == json || json.equals("")) return;
 		if(postList == null || postList.size() == 0){
 			postList = JsonUtil.getPostGoodsBean(json);
@@ -1911,7 +1866,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			final String actionName = ((PostGoodsBean)layout.getTag(HASH_POST_BEAN)).getDisplayName();
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					Log.d("xx","isPost:"+isPost+",action:"+actionName);
 					Tracker.getInstance().event(isPost?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 
 					PostGoodsBean postBean = (PostGoodsBean) v.getTag(HASH_POST_BEAN);
@@ -1995,7 +1949,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						Log.d("xx","isPost:"+isPost+",action:"+actionName);
 						Tracker.getInstance().event(isPost?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 					}
 					return false;
@@ -2093,15 +2046,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 	@Override
 	public void onRgcUpdated(BXLocation location) {
-		Log.d("location", "location   onRgcUpdate");
 		if(!this.gettingLocationFromBaidu) return;
 		// TODO Auto-generated method stub
 		if(!inreverse && location != null && (location.subCityName == null || location.subCityName.equals(""))){
-			Log.d("location", "location   call reverseGeocode");
 			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
 			inreverse = true;
 		}else{
-			Log.d("location", "location   MSG_GEOCODING_FETCHED");
 			sendMessage(MSG_GEOCODING_FETCHED, location);
 		}
 	}
