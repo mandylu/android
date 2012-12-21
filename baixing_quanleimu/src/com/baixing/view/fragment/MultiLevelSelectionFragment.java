@@ -18,6 +18,9 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.BaseFragment.TabDef;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
@@ -26,9 +29,6 @@ import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class MultiLevelSelectionFragment extends BaseFragment {

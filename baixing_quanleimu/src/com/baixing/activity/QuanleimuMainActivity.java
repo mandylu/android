@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -23,6 +23,8 @@ import android.view.View;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
+import com.baixing.activity.BaseFragment.ETAB_TYPE;
+import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.database.ChatMessageDatabase;
@@ -46,8 +48,9 @@ import com.baixing.view.fragment.GridCateFragment;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
 import com.baixing.view.fragment.TalkFragment;
-import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
-import com.quanleimu.activity.SplashJob.JobDoneListener;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 import com.umeng.update.UmengUpdateAgent;
 
 //import com.tencent.mm.sdk.openapi.BaseReq;

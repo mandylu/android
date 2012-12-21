@@ -18,6 +18,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
@@ -27,7 +28,6 @@ import com.baixing.util.Communication;
 import com.baixing.util.ParameterHolder;
 import com.baixing.util.TraceUtil;
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
 import android.util.Log;
 
 /**

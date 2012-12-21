@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -37,6 +37,11 @@ import com.baixing.view.CustomizeTabHost.TabIconRes;
 import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.GetGoodFragment;
 import com.baixing.view.fragment.PostGoodsFragment;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
+import com.quanleimu.activity.R.string;
 
 /**
  * 

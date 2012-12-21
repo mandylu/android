@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -35,6 +35,9 @@ import com.baixing.util.Sender;
 import com.baixing.util.TrackConfig;
 import com.baixing.util.Tracker;
 import com.baixing.view.fragment.FirstRunFragment;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.string;
 import com.umeng.analytics.MobclickAgent;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**

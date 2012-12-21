@@ -15,6 +15,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.FirstStepCate;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Tracker;
@@ -22,8 +24,6 @@ import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
 import com.baixing.widget.CustomizeGridView.GridInfo;
 import com.baixing.widget.CustomizeGridView.ItemClickListener;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class HomeFragment extends BaseFragment implements ItemClickListener{

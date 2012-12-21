@@ -10,10 +10,10 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.BaseFragment.TabDef;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class AboutUsFragment extends BaseFragment {

@@ -18,6 +18,7 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
 import android.widget.ListView;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.SessionListAdapter;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
@@ -32,7 +33,6 @@ import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.PullToRefreshListView;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 
 public class SessionListFragment extends BaseFragment  implements View.OnClickListener, PullToRefreshListView.OnRefreshListener, OnItemClickListener{

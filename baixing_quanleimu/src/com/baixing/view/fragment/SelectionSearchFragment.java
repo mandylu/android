@@ -19,15 +19,15 @@ import android.widget.EditText;
 import android.widget.ListView;
 import android.widget.AdapterView.OnItemClickListener;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.BaseFragment.TabDef;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.adapter.BXAlphabetSortableAdapter;
 import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class SelectionSearchFragment extends BaseFragment implements View.OnClickListener{

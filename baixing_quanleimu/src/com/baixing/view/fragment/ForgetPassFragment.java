@@ -19,13 +19,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.util.Communication;
 import com.baixing.util.ParameterHolder;
 import com.baixing.util.Tracker;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 
 

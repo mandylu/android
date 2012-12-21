@@ -61,6 +61,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -71,7 +72,6 @@ import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
-import com.quanleimu.activity.QuanleimuApplication;
 public class Util {
 	
 	public static final String TAG = "QLM";

@@ -9,10 +9,10 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.QuanleimuApplication;
 /**
  * @author xuweiyan@baixing.com
  *Tracker的使用

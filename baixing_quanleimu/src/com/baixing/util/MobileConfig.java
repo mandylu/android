@@ -11,10 +11,10 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Pair;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication.BXHttpException;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class MobileConfig {
 	private JSONObject json = null;

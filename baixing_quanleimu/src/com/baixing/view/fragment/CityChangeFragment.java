@@ -24,6 +24,8 @@ import android.widget.RelativeLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.jsonutil.LocateJsonData;
@@ -33,8 +35,6 @@ import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {

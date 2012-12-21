@@ -22,10 +22,10 @@ import android.content.Intent;
 import android.os.Handler;
 import android.util.Log;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.util.TraceUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class XMPPManager {
 	

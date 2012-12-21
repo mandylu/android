@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.ChatMessageAdapter;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.database.ChatMessageDatabase;
@@ -52,7 +53,6 @@ import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 
 public class TalkFragment extends BaseFragment {

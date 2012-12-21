@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -36,6 +36,11 @@ import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.view.fragment.LoginFragment;
 import com.baixing.view.fragment.SetMainFragment;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.anim;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.string;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 

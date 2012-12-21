@@ -3,7 +3,7 @@ package com.baixing.widget;
 import android.widget.Spinner;
 import java.util.ArrayList;  
 
-import com.quanleimu.activity.BaseActivity;
+import com.baixing.activity.BaseActivity;
 import com.quanleimu.activity.R;
 
 import android.app.AlertDialog;

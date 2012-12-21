@@ -8,11 +8,11 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.BaseFragment.TabDef;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.util.Util;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class MarkLableFragment extends BaseFragment {

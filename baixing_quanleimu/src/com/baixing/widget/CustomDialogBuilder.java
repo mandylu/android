@@ -24,13 +24,13 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class CustomDialogBuilder {

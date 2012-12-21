@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.quanleimu.activity.QuanleimuMainActivity;
+import com.baixing.activity.QuanleimuMainActivity;
 
 
 /**

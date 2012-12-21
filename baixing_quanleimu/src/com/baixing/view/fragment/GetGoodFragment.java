@@ -27,6 +27,8 @@ import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
@@ -50,8 +52,6 @@ import com.baixing.view.FilterUtil.FilterSelectListener;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 

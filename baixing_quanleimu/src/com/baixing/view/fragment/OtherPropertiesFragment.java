@@ -11,11 +11,11 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.BaseFragment.TabDef;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class OtherPropertiesFragment extends BaseFragment {

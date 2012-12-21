@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.net.URLEncoder;
 import java.util.ArrayList;
@@ -17,6 +17,9 @@ import com.baixing.view.fragment.GoodDetailFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
 import com.baixing.view.fragment.PersonalPostFragment;
 import com.baixing.view.fragment.PostGoodsFragment;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
 
 public class PersonalActivity extends BaseTabActivity {
 

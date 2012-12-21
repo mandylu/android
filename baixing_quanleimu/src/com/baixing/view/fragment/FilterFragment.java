@@ -22,6 +22,9 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
@@ -31,9 +34,6 @@ import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class FilterFragment extends BaseFragment implements View.OnClickListener{
