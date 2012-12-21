@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.database;
 
 import android.util.Log;

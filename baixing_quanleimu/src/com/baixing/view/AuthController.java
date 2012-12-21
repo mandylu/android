@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view;
 
 import com.baixing.entity.UserBean;

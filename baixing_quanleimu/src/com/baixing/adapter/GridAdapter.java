@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.adapter;  
   
 import java.util.List;  
