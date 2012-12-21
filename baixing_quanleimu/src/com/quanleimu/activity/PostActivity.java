@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.quanleimu.activity;
 
 import android.content.BroadcastReceiver;
