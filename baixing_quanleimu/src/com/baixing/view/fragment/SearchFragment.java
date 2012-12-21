@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,36 +13,28 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.adapter.CommonItemAdapter;
-import com.baixing.entity.FirstStepCate;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.baixing.util.Helper;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.util.Tracker;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 public class SearchFragment extends BaseFragment {
@@ -99,11 +90,6 @@ public class SearchFragment extends BaseFragment {
 		Bundle args = createArguments(null, null);
 		args.putInt(ARG_COMMON_REQ_CODE, REQ_GETKEYWORD);
 		pushFragment(new KeywordSelector(), args);
-	}
-
-
-	public void initTab(TabDef tab) {
-		tab.m_visible = false;
 	}
 
 	@Override

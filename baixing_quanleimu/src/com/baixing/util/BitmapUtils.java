@@ -36,7 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
 
 /**
  * Class containing some static utility methods.

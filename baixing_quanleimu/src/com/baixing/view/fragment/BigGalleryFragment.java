@@ -32,15 +32,15 @@ import android.widget.Gallery;
 import android.widget.ImageView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
 import com.baixing.widget.ViewFlow;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
@@ -146,9 +146,6 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 		title.m_leftActionHint = "返回";
 		
 		title.m_rightActionHint = "保存";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	@Override

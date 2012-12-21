@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -7,47 +7,32 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.app.AlertDialog;
 import android.content.BroadcastReceiver;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
-import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
 
+import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
-import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityList;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
+import com.baixing.util.Communication.BXHttpException;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.Sender;
-import com.baixing.util.ShortcutUtil;
+import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.Communication.BXHttpException;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.view.AdViewHistory;
-import com.baixing.view.CustomizeTabHost;
-import com.baixing.view.CustomizeTabHost.TabIconRes;
-import com.baixing.view.CustomizeTabHost.TabSelectListener;
-import com.baixing.view.fragment.GridCateFragment;
 import com.baixing.view.fragment.HomeFragment;
-import com.baixing.view.fragment.PersonalInfoFragment;
-import com.baixing.view.fragment.TalkFragment;
-import com.quanleimu.activity.BaseFragment.ETAB_TYPE;
-import com.quanleimu.activity.SplashJob.JobDoneListener;
+import com.quanleimu.activity.R;
 import com.umeng.update.UmengUpdateAgent;
 
 //import com.tencent.mm.sdk.openapi.BaseReq;

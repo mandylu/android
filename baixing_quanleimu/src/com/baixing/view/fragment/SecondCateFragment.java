@@ -18,6 +18,8 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.util.Communication;
@@ -27,8 +29,6 @@ import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.TrackConfig.TrackMobile.Value;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
@@ -173,12 +173,6 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 //			title.m_rightActionHint = "发布";
 //			title.m_rightActionBg = R.drawable.bg_post_selector;
 		}
-	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
 	}
 	
 	@Override

@@ -20,14 +20,13 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.Helper;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
 
@@ -49,10 +48,6 @@ public class FeedbackFragment extends BaseFragment {
 		title.m_rightActionHint = "确定";
 		title.m_title = getArguments() != null && getArguments().containsKey(ARG_COMMON_TITLE) ? getArguments().getString(ARG_COMMON_TITLE) : "反馈信息";
 	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 	@Override
 	public int[] excludedOptionMenus() {
 		return new int[]{OPTION_FEEDBACK};

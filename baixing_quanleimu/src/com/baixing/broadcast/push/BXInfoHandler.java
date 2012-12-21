@@ -3,12 +3,12 @@ package com.baixing.broadcast.push;
 
 import org.json.JSONObject;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.BXNotificationService;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.QuanleimuApplication;
 import android.util.Log;
 
 import android.content.Context;

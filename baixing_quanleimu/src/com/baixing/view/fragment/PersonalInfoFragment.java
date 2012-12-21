@@ -16,6 +16,8 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
@@ -27,8 +29,6 @@ import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.baixing.widget.EditUsernameDialogFragment;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, Observer {
@@ -77,14 +77,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	{
 		return true;
 	}
-
-	@Override
-	public void initTab(TabDef tab) {
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
-	}
-	
-	
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {

@@ -20,7 +20,8 @@ import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.ProgressBar;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
+
 import android.util.Log;
 
 

@@ -12,7 +12,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
 
 //singleton
 public class Sender implements Runnable{

@@ -21,6 +21,9 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
@@ -42,9 +45,6 @@ import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
@@ -724,12 +724,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			title.m_title = "我的信息";
 		}
 		title.m_visible = true;
-	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
 	}
 
 	@Override

@@ -11,8 +11,9 @@ import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.Toast;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
+
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import org.json.JSONException;
 import org.json.JSONObject;

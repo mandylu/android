@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
@@ -9,7 +9,6 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.app.Application;
 import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
@@ -18,7 +17,6 @@ import android.database.Cursor;
 import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.location.Location;
-import android.util.Log;
 import android.util.Pair;
 import android.widget.Toast;
 
@@ -31,18 +29,15 @@ import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.HotList;
 import com.baixing.entity.SecondStepCate;
-import com.baixing.entity.UserBean;
 import com.baixing.imageCache.LazyImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.BXDatabaseHelper;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.Helper;
 import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer {

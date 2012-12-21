@@ -31,6 +31,7 @@ import android.os.Handler;
 import android.graphics.Typeface;
 import android.database.DataSetObserver;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
@@ -39,7 +40,6 @@ import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.widget.AnimatingImageView;
 import com.baixing.widget.ContextMenuItem;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 

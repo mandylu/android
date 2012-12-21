@@ -52,6 +52,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaiduMapActivity;
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
@@ -73,10 +77,6 @@ import com.baixing.view.AdViewHistory;
 import com.baixing.view.AuthController;
 import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
-import com.quanleimu.activity.BaiduMapActivity;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 
@@ -1680,12 +1680,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			viewTimes.setText(detail.getValueByKey("count") + "次查看");
 		}
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 	
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)

@@ -9,12 +9,13 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuMainActivity;
 import com.baixing.entity.UserBean;
 import com.baixing.util.*;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
@@ -111,11 +112,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
     }
 
-    @Override
-    public void initTab(TabDef tab) {
-        tab.m_visible = false;
-    }
-    
     @Override
     public int[] excludedOptionMenus() {
     	return new int[]{OPTION_SETTING};

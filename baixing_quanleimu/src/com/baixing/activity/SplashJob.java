@@ -1,16 +1,10 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import android.os.Handler;
 import android.os.Message;
-import android.util.Pair;
 import android.widget.Toast;
 
-import com.baixing.entity.AllCates;
-import com.baixing.entity.CityList;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.jsonutil.JsonUtil;
-import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.Util;

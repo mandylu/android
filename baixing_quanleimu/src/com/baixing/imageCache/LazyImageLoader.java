@@ -14,7 +14,7 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpException;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;

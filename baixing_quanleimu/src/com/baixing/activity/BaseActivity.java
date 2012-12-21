@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import java.util.ArrayList;
 import java.util.List;
@@ -25,16 +25,13 @@ import android.view.MenuItem;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
 import com.baixing.entity.CityDetail;
 import com.baixing.util.LocationService;
-import com.baixing.util.Sender;
-import com.baixing.util.TrackConfig;
-import com.baixing.util.Tracker;
 import com.baixing.view.fragment.FirstRunFragment;
+import com.quanleimu.activity.R;
 import com.umeng.analytics.MobclickAgent;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
@@ -54,11 +51,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
-//	protected QuanleimuApplication myApp; 
-//	protected ImageView ivHomePage,ivPostGoods,ivMyCenter;
 	protected View v = null; 
 	protected ProgressDialog pd;
-	//public LoadImage LoadImage;
 	
 	private int stackSize;
 	
@@ -100,8 +94,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     @Override
     public void onRestoreInstanceState(Bundle savedInstanceState) {
     	savedInstance = false;
-    	Log.d("baseactivity", "restore");
-//    	Log.w(TAG, "start restore instance for activity " + this.getClass().getName());
     	super.onRestoreInstanceState(savedInstanceState);
     	QuanleimuApplication.getApplication().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
     	QuanleimuApplication.getApplication().setCityName(savedInstanceState.getString("cityName"));
@@ -251,14 +243,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 				notifyStackTop();
 			}});
 		
-		if (savedInstanceState  != null)
-		{
-			Log.w(TAG, "recreate activity from saved instance" + this.hashCode());
-		}
-//		v =findViewById(R.id.linearBottom);
 		MobclickAgent.onError(this);
-//		myApp = (QuanleimuApplication) getApplication();
-		//LoadImage = new LoadImage();
 		//判断Intent和Bundle
 		intent = getIntent();
 		if(intent == null)
@@ -376,7 +361,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		return popSucceed;
 	}
 	
-	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
 		// TODO Auto-generated method stub
@@ -389,36 +373,5 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		FragmentManager fm = this.getSupportFragmentManager();
 //		
 		return (BaseFragment) fm.findFragmentById(R.id.contentLayout);
-	}
-
-//	public static String cn2Spell(String chinese) {
-//		StringBuffer pybf = new StringBuffer();
-//		char[] arr = chinese.toCharArray();
-//		HanyuPinyinOutputFormat defaultFormat = new HanyuPinyinOutputFormat();
-//		defaultFormat.setCaseType(HanyuPinyinCaseType.LOWERCASE);
-//		defaultFormat.setToneType(HanyuPinyinToneType.WITHOUT_TONE);
-//		for (int i = 0; i < arr.length; i++) {
-//			if (arr[i] > 128) {
-//				try {
-//					pybf.append(PinyinHelper.toHanyuPinyinStringArray(arr[i],
-//							defaultFormat)[0]);
-//				} catch (BadHanyuPinyinOutputFormatCombination e) {
-//					e.printStackTrace();
-//				}
-//			} else {
-//				pybf.append(arr[i]);
-//			}
-//		}
-//		return pybf.toString();
-//	}
-	
-	/**
-	 * This is used to append the Fragment which is recorved by auto save.
-	 * @param f
-	 */
-	void restoreFragment(BaseFragment f)
-	{
-		Log.d("baseactivity", "restoreFragment");
-		Log.d(TAG, "append fragment from restore : " + f.getClass().getName());
 	}
 }

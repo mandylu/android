@@ -45,6 +45,10 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.GoodsDetail;
@@ -63,9 +67,6 @@ import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.ImageSelectionDialog;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener{
@@ -1777,11 +1778,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(this.goodsDetail != null){
 			title.m_leftActionHint = "返回";
 		}
-	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	static ViewGroup createItemByPostBean(PostGoodsBean postBean, final BaseFragment fragment){

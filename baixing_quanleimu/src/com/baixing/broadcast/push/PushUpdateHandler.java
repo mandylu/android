@@ -9,14 +9,14 @@ import android.os.Bundle;
 import android.support.v4.app.NotificationCompat;
 import android.support.v4.app.TaskStackBuilder;
 
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuMainActivity;
 import com.baixing.broadcast.BXStartupIntentReceiver;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.util.Util;
 import com.baixing.util.Version;
 import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 import org.json.JSONObject;
 
