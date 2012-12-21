@@ -181,6 +181,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
     }
     
+	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

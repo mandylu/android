@@ -34,7 +34,7 @@ import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.view.fragment.LoginFragment;
-import com.baixing.view.fragment.SetMainFragment;
+import com.baixing.view.fragment.SettingFragment;
 //import com.tencent.mm.sdk.platformtools.Log;
 /**
  * 
@@ -335,7 +335,7 @@ public abstract class BaseFragment extends Fragment {
 			action = "changecity";
 			break;
 		case OPTION_SETTING:
-			this.pushFragment(new SetMainFragment(), createArguments("设置", ""));
+			this.pushFragment(new SettingFragment(), createArguments("设置", ""));
 			action = "setting";
 			break;
 		case OPTION_FEEDBACK:
