@@ -1,57 +1,28 @@
 package com.baixing.view.fragment;
 
-import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.Dialog;
-import android.app.ProgressDialog;
-import android.content.ComponentName;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
-import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
-
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuMainActivity;
 import com.baixing.entity.UserBean;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.*;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
-
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
-import org.json.JSONException;
-import org.json.JSONObject;
 
-
-
-//import com.baixing.entity.AuthDialogListener;
-//import com.baixing.entity.WeiboAccessTokenWrapper;
-//import com.weibo.net.AccessToken;
-//import com.weibo.net.Oauth2AccessTokenHeader;
-//import com.weibo.net.Utility;
-//import com.weibo.net.Weibo;
-//import com.weibo.net.WeiboParameters;
-
-public class SetMainFragment extends BaseFragment implements View.OnClickListener {
-
-
-
-    private ProgressDialog pd;
-
-    private String serverVersion = "";
-
-    // 定义控件
-    public Dialog changePhoneDialog;
+public class SettingFragment extends BaseFragment implements View.OnClickListener {
     private UserBean user;
 
     @Override
@@ -142,11 +113,6 @@ public class SetMainFragment extends BaseFragment implements View.OnClickListene
         title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
     }
 
-    @Override
-    public void initTab(TabDef tab) {
-        tab.m_visible = false;
-    }
-    
     @Override
     public int[] excludedOptionMenus() {
     	return new int[]{OPTION_SETTING};

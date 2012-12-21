@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.entity.compare;
 
 import java.util.Comparator;

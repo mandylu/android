@@ -9,11 +9,11 @@ import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class SaveLoadFileTest extends AndroidTestCase {
 	public void setUp()

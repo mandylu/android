@@ -1,7 +1,6 @@
 package com.baixing.util;
 
 import android.app.*;
-import android.app.Service;
 import android.content.Context;
 import android.content.Intent;
 import android.net.Uri;
@@ -9,8 +8,9 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
-import com.quanleimu.activity.QuanleimuApplication;
-import com.quanleimu.activity.QuanleimuMainActivity;
+
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 
 import java.io.File;

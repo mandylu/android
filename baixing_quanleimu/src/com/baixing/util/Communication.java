@@ -30,10 +30,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class Communication implements Comparator<String> {
 

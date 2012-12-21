@@ -16,12 +16,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.entity.UserProfile;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.util.Communication;
 import com.baixing.util.ParameterHolder;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.view.fragment.PersonalInfoFragment;
 import com.quanleimu.activity.R;
 

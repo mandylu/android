@@ -1,4 +1,5 @@
-package com.quanleimu.activity;
+//liuchong@baixing.com
+package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 

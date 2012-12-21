@@ -6,9 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -18,17 +16,15 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.baixing.adapter.CheckableAdapter;
-import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
+import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
+import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class MultiLevelSelectionFragment extends BaseFragment {
@@ -63,13 +59,6 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		title.m_title = this.title;
 		title.m_leftActionHint = "返回";
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
 	
 	@Override
 	public void onPause() {

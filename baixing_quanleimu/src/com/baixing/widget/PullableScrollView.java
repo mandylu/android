@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.widget;
 
 import android.content.Context;

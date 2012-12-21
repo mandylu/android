@@ -35,6 +35,7 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.TextView.OnEditorActionListener;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.ChatMessageAdapter;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.database.ChatMessageDatabase;
@@ -46,13 +47,12 @@ import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.compare.MsgTimeComparator;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.GoodsListLoader;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 
 public class TalkFragment extends BaseFragment {
@@ -334,12 +334,6 @@ public class TalkFragment extends BaseFragment {
 			
 			title.m_leftActionHint = "返回";
 		}
-		
-		@Override
-		public void initTab(TabDef tab){
-			tab.m_visible = false;
-		}	
-		
 		
 		private ChatMessageAdapter getAdapter(View currentRoot)
 		{

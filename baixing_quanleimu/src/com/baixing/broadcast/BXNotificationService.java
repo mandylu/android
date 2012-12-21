@@ -19,11 +19,11 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 import android.net.ConnectivityManager;
@@ -59,7 +59,7 @@ public class BXNotificationService extends Service {
 
 		// Notification的Intent，即点击后转向的Activity
 		Intent notificationIntent = new Intent(this,
-				com.quanleimu.activity.QuanleimuMainActivity.class);
+				com.baixing.activity.QuanleimuMainActivity.class);
 		notificationIntent.putExtra("fromNotification", true);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

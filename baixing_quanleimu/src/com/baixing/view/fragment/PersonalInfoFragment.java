@@ -1,9 +1,6 @@
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
@@ -19,54 +16,38 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.Communication;
-import com.baixing.util.ErrorHandler;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.baixing.widget.EditUsernameDialogFragment;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, Observer {
 
-	public static final int REQ_EDIT_PROFILE = 1;
-	public static final int REQ_REGISTER = 2;
-	
-	public int postNum = 0;
-	public int limitedNum = 0;
-	public int deletedNum = 0;
-	public int favoriteNum = 0;
-	public int unreadMessageNum = 0;
-	public int historyNum = 0;
-	
-//    private UserProfile userProfile;
-    
+	private static final int REQ_EDIT_PROFILE = 1;
+	private static final int REQ_REGISTER = 2;
+  
     private EditUsernameDialogFragment editUserDlg;
 	
-	private Bundle bundle = null;
 	private UserBean user = null;
-	private String json = null;
-//	private String upJson = null;
-//	private String locationJson = null;
-	private String sessionsJson = null;
-	static final int MSG_GETPERSONALADS = 1;
-	public static final int MSG_GETPERSONALPROFILE = 2;
-	static final int MSG_GETPERSONALLOCATION = 3;
-	static final int MSG_GETPERSONALSESSIONS = 4;
-	static final int MSG_LOGINSUCCESS = 5;
-	static final int MSG_LOGINFAIL = 6;
-	static final int MSG_NEWREGISTERVIEW = 7;
-	static final int MSG_FORGETPASSWORDVIEW = 8;
-	static final int MSG_ANONYMOUS_USER = 9;
+	private static final int MSG_GETPERSONALADS = 1;
+	private static final int MSG_GETPERSONALPROFILE = 2;
+	private static final int MSG_GETPERSONALLOCATION = 3;
+	private static final int MSG_GETPERSONALSESSIONS = 4;
+	private static final int MSG_LOGINSUCCESS = 5;
+	private static final int MSG_LOGINFAIL = 6;
+	private static final int MSG_NEWREGISTERVIEW = 7;
+	private static final int MSG_FORGETPASSWORDVIEW = 8;
+	private static final int MSG_ANONYMOUS_USER = 9;
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
@@ -98,17 +79,9 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	}
 
 	@Override
-	public void initTab(TabDef tab) {
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
-	}
-	
-	
-
-	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.bundle = this.getArguments();
+		this.getArguments();
 		user = Util.getCurrentUser();
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
@@ -214,48 +187,6 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 		new Thread(new GetPersonalProfileThread()).start();
 	}
 
-
-
-
-	class GetPersonalAdsThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "ad_list";
-			ArrayList<String> list = new ArrayList<String>();
-			 
-			list.add("query=userId:" + user.getId() + " AND status:0");
-			list.add("activeOnly=0");
-			list.add("start=0");
-			list.add("rt=1");
-			list.add("rows=1000");
-			
-			if(bundle != null && bundle.getString("lastPost") != null){
-				list.add("newAdIds=" + bundle.getString("lastPost"));
-			}
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, false);
-				sendMessage(MSG_GETPERSONALADS, null);
-				return;
-			} catch (UnsupportedEncodingException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (IOException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			} catch (Communication.BXHttpException e) {
-				Message msg2 = Message.obtain();
-				msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
-			}
-			
-			hideProgress();
-		}
-	}
-	
-
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
@@ -310,7 +241,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	}
 
-	class GetPersonalProfileThread implements Runnable {
+	private class GetPersonalProfileThread implements Runnable {
 		@Override
 		public void run() {
 			if (user == null)
@@ -388,7 +319,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 				pushFragment(new FavoriteAndHistoryFragment(), bundle);		
             	break;
             case R.id.rl_setting:
-            	pushFragment(new SetMainFragment(), null);
+            	pushFragment(new SettingFragment(), null);
             	break;
 
             default:

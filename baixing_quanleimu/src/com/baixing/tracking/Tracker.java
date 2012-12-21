@@ -1,4 +1,5 @@
-package com.baixing.util;
+//xuweiyan@baixing.com
+package com.baixing.tracking;
 
 import java.io.File;
 import java.util.HashMap;
@@ -9,10 +10,14 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.tracking.TrackConfig.TrackMobile;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Communication;
+import com.baixing.util.LogData;
+import com.baixing.util.Util;
 /**
  * @author xuweiyan@baixing.com
  *Tracker的使用

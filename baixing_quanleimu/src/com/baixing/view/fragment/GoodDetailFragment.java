@@ -52,31 +52,31 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaiduMapActivity;
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
 import com.baixing.util.TextUtil;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.AuthController;
 import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
-import com.quanleimu.activity.BaiduMapActivity;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 
@@ -1680,12 +1680,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			viewTimes.setText(detail.getValueByKey("count") + "次查看");
 		}
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 	
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)

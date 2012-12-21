@@ -1,4 +1,5 @@
-package com.quanleimu.activity;
+//liuchong@baixing.com
+package com.baixing.activity;
 
 import java.util.Set;
 import java.util.TreeSet;
@@ -8,7 +9,6 @@ import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.DialogInterface;
-import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Handler;
@@ -26,16 +26,16 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.util.Tracker;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.view.fragment.LoginFragment;
-import com.baixing.view.fragment.SetMainFragment;
-//import com.tencent.mm.sdk.platformtools.Log;
+import com.baixing.view.fragment.SettingFragment;
+import com.quanleimu.activity.R;
 /**
  * 
  * @author liuchong
@@ -44,7 +44,7 @@ import com.baixing.view.fragment.SetMainFragment;
 public abstract class BaseFragment extends Fragment {
 
 	public static final String TAG = "QLM";//"BaseFragment";
-	public PV pv = PV.BASE; 
+	protected PV pv = PV.BASE; 
 
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;
@@ -65,7 +65,6 @@ public abstract class BaseFragment extends Fragment {
 	private ProgressDialog pd;
 	
 	private TitleDef titleDef;
-	private TabDef tabDef;
 	
 	protected Handler handler;
 	
@@ -96,21 +95,6 @@ public abstract class BaseFragment extends Fragment {
 		public int rightCustomResourceId = -1;
 		
 		public boolean hasGlobalSearch = false; //Disable search by default
-	};
-	
-	public enum ETAB_TYPE{
-		ETAB_TYPE_PREV,
-		ETAB_TYPE_MAINPAGE,
-		ETAB_TYPE_CATEGORY,
-		ETAB_TYPE_PUBLISH,
-		ETAB_TYPE_MINE,
-		ETAB_TYPE_SETTING
-	};
-	
-	public class TabDef{
-		private TabDef() {}
-		public boolean m_visible = true;
-		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_PREV;
 	};
 	
 	@Override
@@ -223,19 +207,6 @@ public abstract class BaseFragment extends Fragment {
 		//Do nothing
 	}
 	
-	public final TabDef getTabDef() {
-		if (tabDef == null)
-		{
-			tabDef = new TabDef();
-			initTab(tabDef);
-		}
-		
-		return tabDef;
-	}
-	
-	protected void initTab(TabDef tab) {
-	}
-	
 	@Override
 	public void onStart() {
 		super.onStart();
@@ -335,7 +306,7 @@ public abstract class BaseFragment extends Fragment {
 			action = "changecity";
 			break;
 		case OPTION_SETTING:
-			this.pushFragment(new SetMainFragment(), createArguments("设置", ""));
+			this.pushFragment(new SettingFragment(), createArguments("设置", ""));
 			action = "setting";
 			break;
 		case OPTION_FEEDBACK:
@@ -386,7 +357,6 @@ public abstract class BaseFragment extends Fragment {
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
 		refreshHeader();
-		refreshFooter();
 	}
 	
 	public final void notifyOnStackTop(boolean isBack)
@@ -542,11 +512,6 @@ public abstract class BaseFragment extends Fragment {
 	public void handleRightAction()
 	{
 		
-	}
-	
-	protected void refreshFooter()
-	{
-
 	}
 	
 	public void handleSearch()
@@ -705,11 +670,6 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final Context getAppContext()
 	{
-//		Activity activity = this.getActivity();
-//		if (activity != null )
-//		{
-//			return activity;
-//		}
 		return QuanleimuApplication.getApplication().getApplicationContext();
 	}
 	
@@ -722,7 +682,6 @@ public abstract class BaseFragment extends Fragment {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 		return super.onContextItemSelected(item);
 	}
 

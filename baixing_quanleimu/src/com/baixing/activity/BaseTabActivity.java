@@ -1,4 +1,5 @@
-package com.quanleimu.activity;
+//liuchong@baixing.com
+package com.baixing.activity;
 
 import java.util.HashMap;
 import java.util.Iterator;
@@ -24,11 +25,11 @@ import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.GoodsDetail;
+import com.baixing.tracking.Sender;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.LocationService;
-import com.baixing.util.Sender;
 import com.baixing.util.ShortcutUtil;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.CustomizeTabHost;
@@ -36,6 +37,11 @@ import com.baixing.view.CustomizeTabHost.TabIconRes;
 import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.GetGoodFragment;
 import com.baixing.view.fragment.PostGoodsFragment;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
+import com.quanleimu.activity.R.string;
 
 /**
  * 

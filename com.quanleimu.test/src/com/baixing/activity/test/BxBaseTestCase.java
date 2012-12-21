@@ -379,24 +379,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	public <T> T castObject(ViewElement v, Class<T> returnType) {
-		Constructor<?>[] constructors = returnType.getDeclaredConstructors();
-		Object obj = null;
-		try {
-			constructors[0].setAccessible(true);
-			obj = constructors[0].newInstance(getInstrumentation(), v.getView());
-
-		} catch (IllegalArgumentException e) {
-			e.printStackTrace();
-		} catch (InstantiationException e) {
-			e.printStackTrace();
-		} catch (IllegalAccessException e) {
-			e.printStackTrace();
-		} catch (InvocationTargetException e) {
-			e.printStackTrace();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return returnType.cast(obj);
+		return castObject(v.getView(), returnType);
 	}
 	
 	public <T> T castObject(View view, Class<T> returnType) {

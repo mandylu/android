@@ -81,7 +81,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			
 			loginBtn.doClick();
 			try {
-				assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 5000));
+				assertEquals(true, waitForText(MY_LOGOUT_BUTTON_TEXT, 5000));
 			} catch (Exception ex) {
 				assertTrue("登录出现错误", false);
 			}

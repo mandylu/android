@@ -47,6 +47,13 @@
                 android:textSize="18dp"
                 android:textStyle="bold" >
             </Button>
+            
+		<View
+        android:id="@+id/padding_bottom"
+        android:layout_width="match_parent"
+        android:layout_height="0dp"
+        android:visibility="invisible" />
+            
         </LinearLayout>
     </ScrollView>
 
@@ -72,5 +79,6 @@
             android:textColor="@color/common_info"
             android:textSize="18dp" />
     </LinearLayout>
+    
 
 </RelativeLayout>

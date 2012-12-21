@@ -1,15 +1,16 @@
+//liuchong@baixing.com
 package com.baixing.broadcast.push;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import com.baixing.activity.QuanleimuMainActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.ChatMessage;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.TalkFragment;
-import com.quanleimu.activity.QuanleimuMainActivity;
 
 import android.content.Context;
 import android.content.Intent;

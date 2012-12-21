@@ -1,3 +1,4 @@
+//xuweiyan@baixing.com
 package com.baixing.widget;
 
 import android.app.Dialog;
