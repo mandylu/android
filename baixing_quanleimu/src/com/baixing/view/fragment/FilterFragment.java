@@ -22,7 +22,6 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.Filterss;
@@ -154,9 +153,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		title.m_title = "更多筛选";
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	public void onPause()

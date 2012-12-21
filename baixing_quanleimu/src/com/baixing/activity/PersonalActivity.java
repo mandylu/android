@@ -1,25 +1,13 @@
 //liuchong@baixing.com
 package com.baixing.activity;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
-
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
-import com.baixing.jsonutil.JsonUtil;
-import com.baixing.util.Communication;
-import com.baixing.util.GoodsListLoader;
-import com.baixing.view.fragment.GoodDetailFragment;
 import com.baixing.view.fragment.PersonalInfoFragment;
 import com.baixing.view.fragment.PersonalPostFragment;
-import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 
 public class PersonalActivity extends BaseTabActivity {
 

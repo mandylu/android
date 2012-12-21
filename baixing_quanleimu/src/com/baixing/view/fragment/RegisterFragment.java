@@ -9,7 +9,6 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -23,11 +22,11 @@ import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
 public class RegisterFragment extends BaseFragment {
@@ -73,11 +72,6 @@ public class RegisterFragment extends BaseFragment {
 		title.m_leftActionHint = "登录";
 	}
 	
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-
-
 	private boolean check() {
 		if (accoutnEt.getText().toString().trim().equals("")) {
 			Tracker.getInstance()

@@ -51,11 +51,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	//定义Intent和Bundle
 	protected Intent intent = null;
 	protected Bundle bundle = null;
-//	protected QuanleimuApplication myApp; 
-//	protected ImageView ivHomePage,ivPostGoods,ivMyCenter;
 	protected View v = null; 
 	protected ProgressDialog pd;
-	//public LoadImage LoadImage;
 	
 	private int stackSize;
 	

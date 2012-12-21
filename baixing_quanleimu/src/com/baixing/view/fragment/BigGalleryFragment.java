@@ -24,14 +24,12 @@ import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
@@ -39,9 +37,9 @@ import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
 import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.R;
 
@@ -148,9 +146,6 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		title.m_leftActionHint = "返回";
 		
 		title.m_rightActionHint = "保存";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	@Override

@@ -97,21 +97,6 @@ public abstract class BaseFragment extends Fragment {
 		public boolean hasGlobalSearch = false; //Disable search by default
 	};
 	
-	public enum ETAB_TYPE{
-		ETAB_TYPE_PREV,
-		ETAB_TYPE_MAINPAGE,
-		ETAB_TYPE_CATEGORY,
-		ETAB_TYPE_PUBLISH,
-		ETAB_TYPE_MINE,
-		ETAB_TYPE_SETTING
-	};
-	
-	public class TabDef{
-		private TabDef() {}
-		public boolean m_visible = true;
-		public ETAB_TYPE m_tabSelected = ETAB_TYPE.ETAB_TYPE_PREV;
-	};
-	
 	@Override
 	public void onAttach(Activity activity) {
 		super.onAttach(activity);
@@ -685,11 +670,6 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final Context getAppContext()
 	{
-//		Activity activity = this.getActivity();
-//		if (activity != null )
-//		{
-//			return activity;
-//		}
 		return QuanleimuApplication.getApplication().getApplicationContext();
 	}
 	
@@ -702,7 +682,6 @@ public abstract class BaseFragment extends Fragment {
 	
 	@Override
 	public boolean onContextItemSelected(MenuItem item) {
-		// TODO Auto-generated method stub
 		return super.onContextItemSelected(item);
 	}
 

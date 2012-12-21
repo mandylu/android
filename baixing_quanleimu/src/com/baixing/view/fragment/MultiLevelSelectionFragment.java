@@ -6,9 +6,7 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -19,13 +17,11 @@ import android.widget.ListAdapter;
 import android.widget.ListView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.BaseFragment.TabDef;
-import com.baixing.activity.BaseFragment.TitleDef;
-import com.baixing.adapter.CheckableAdapter;
-import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
+import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
+import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;

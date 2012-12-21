@@ -74,11 +74,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		}
 	}
 
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
-	}
-
 	@Override
 	public int[] includedOptionMenus() {
 		return new int[]{OPTION_CHANGE_CITY};

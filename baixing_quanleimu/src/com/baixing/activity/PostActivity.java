@@ -12,8 +12,6 @@ import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
 
 public class PostActivity extends BaseTabActivity {
 	

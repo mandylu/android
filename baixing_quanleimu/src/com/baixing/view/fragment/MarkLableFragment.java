@@ -6,12 +6,9 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
-import com.baixing.activity.BaseFragment.TabDef;
-import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
@@ -73,9 +70,6 @@ public class MarkLableFragment extends BaseFragment {
 		title.m_rightActionHint = "修改";
 		title.m_title = "签名档";
 		title.m_leftActionHint = "返回";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	

@@ -65,9 +65,6 @@ public class ForgetPassFragment extends BaseFragment {
 		title.m_title = "找回密码";
 		title.m_leftActionHint = "返回";
 	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {

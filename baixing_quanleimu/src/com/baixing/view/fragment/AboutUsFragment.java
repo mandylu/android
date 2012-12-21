@@ -12,8 +12,6 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
-import com.baixing.activity.BaseFragment.TabDef;
-import com.baixing.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class AboutUsFragment extends BaseFragment {

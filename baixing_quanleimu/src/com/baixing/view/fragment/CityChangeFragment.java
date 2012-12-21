@@ -11,7 +11,6 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -29,12 +28,11 @@ import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.jsonutil.LocateJsonData;
-import com.baixing.util.Helper;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
+import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
 public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {
@@ -71,10 +69,6 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		if (cityName != null && cityName.length() > 0)
 			title.m_leftActionHint = "返回";
 		title.m_title = "选择城市";		
-	}
-	
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	@Override
