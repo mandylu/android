@@ -26,10 +26,10 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;

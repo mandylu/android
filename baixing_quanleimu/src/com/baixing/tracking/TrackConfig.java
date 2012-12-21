@@ -1,4 +1,5 @@
-package com.baixing.util;
+//xuweiyan@baixing.com
+package com.baixing.tracking;
 
 import java.util.ArrayList;
 import java.util.Observable;
@@ -7,6 +8,7 @@ import java.util.Observer;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.util.MobileConfig;
 
 
 public class TrackConfig implements Observer {

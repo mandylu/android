@@ -28,10 +28,10 @@ import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.jsonutil.LocateJsonData;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 

@@ -8,8 +8,8 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.baixing.util.Sender;
-import com.baixing.util.TrackConfig;
+import com.baixing.tracking.Sender;
+import com.baixing.tracking.TrackConfig;
 
 public class NetworkConnectivityReceiver extends BroadcastReceiver {
 	public static final String TAG = "receiver.network";

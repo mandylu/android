@@ -36,10 +36,10 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
 import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.R;
 
