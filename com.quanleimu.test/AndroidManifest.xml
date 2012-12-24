@@ -8,7 +8,7 @@
 
         <instrumentation
         android:name="pl.polidea.instrumentation.PolideaInstrumentationTestRunner"
-        android:targetPackage="com.baixing.activity" />
+        android:targetPackage="com.quanleimu.activity" />
         <uses-permission android:name="android.permission.DISABLE_KEYGUARD"/>
         <uses-permission android:name="android.permission.INTERNET"/>
         <uses-permission android:name="android.permission.WRITE_EXTERNAL_STORAGE"/>
