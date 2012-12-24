@@ -19,7 +19,7 @@ import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
 
 public class GoodsListLoader implements Serializable{
 	

@@ -42,7 +42,7 @@ public abstract class WebUtils {
 	public static final String DEFAULT_CHARSET = "UTF-8";
 	public static final String METHOD_POST = "POST";
 	public static final String METHOD_GET = "GET";
-	private static final String USER_AGENT = "TopAndroidSDK";
+	private static final String USER_AGENT = "BaixingMobileApi";
 
 	private WebUtils() {
 

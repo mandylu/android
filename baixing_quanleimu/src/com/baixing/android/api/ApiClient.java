@@ -13,7 +13,6 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
 import android.content.Context;
 import android.text.TextUtils;
 import android.util.Log;

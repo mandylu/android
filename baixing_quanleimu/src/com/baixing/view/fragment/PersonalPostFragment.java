@@ -46,6 +46,8 @@ import com.baixing.util.LogData;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
+import com.baixing.android.api.ApiParams;
+
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
 	private final int MSG_MYPOST = 1;
@@ -728,16 +730,16 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 	@Override
 	public void onRefresh() {
-		List<String> params = new ArrayList<String>();
+		ApiParams params = new ApiParams();
 		if(user != null){
-			params.add("userId=" + user.getId());
+			params.addParam("userId", user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
 			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
-				params.add("newAdIds=" + bundle.getString("lastPost"));
+				params.addParam("newAdIds", bundle.getString("lastPost"));
 			}
-			params.add("status=3");
+			params.addParam("status","3");
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
