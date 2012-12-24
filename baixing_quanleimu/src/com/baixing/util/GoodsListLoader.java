@@ -204,12 +204,13 @@ public class GoodsListLoader implements Serializable{
 		
 		private void initApi(){
 			String udid = Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext());
-			
+			//FIXME: move following code to app entry
 			ApiClient.getInstance().init(QuanleimuApplication.getApplication().getApplicationContext(),
 					udid, 
 					QuanleimuApplication.version, 
 					QuanleimuApplication.channelId,
-					QuanleimuApplication.getApplication().cityEnglishName);
+					QuanleimuApplication.getApplication().cityEnglishName,
+					QuanleimuApplication.getApplication());
 		}
 		
 		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
@@ -251,13 +252,14 @@ public class GoodsListLoader implements Serializable{
 		@Override
 		public void run() {
 			
-			
-			
 			if(mCancel) {
 				exit();
 				return;
 			}
 			ApiParams list = new ApiParams();
+			if(this.dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL){
+				list.useCache = true;
+			}
 			if(params != null){
 				list.setParams(params.getParams());
 			}

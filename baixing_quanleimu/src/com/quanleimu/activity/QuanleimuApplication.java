@@ -1,6 +1,7 @@
 package com.quanleimu.activity;
 
 import java.lang.ref.WeakReference;
+
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
@@ -44,7 +45,10 @@ import com.baixing.util.ErrorHandler;
 import com.baixing.util.Helper;
 import com.baixing.util.LocationService;
 import com.baixing.util.Util;
-public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer {
+
+import com.baixing.android.api.ApiClient;
+
+public class QuanleimuApplication implements LocationService.BXLocationServiceListener, Observer, ApiClient.CacheProxy {
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String version="";
@@ -117,6 +121,8 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
     
 
 	public static String getCacheNetworkRequest(String request){
+		
+		request = Util.extractUrlWithoutSecret(request);
 		synchronized(dbManager){
 			String response = null;
 			SQLiteDatabase db = null;
@@ -163,6 +169,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	}
 
 	public static void putCacheNetworkRequest(String request, String result){
+		request = Util.extractUrlWithoutSecret(request);
 		synchronized (storeList) {
 			storeList.add(Pair.create(request, result));
 			storeList.notifyAll();
@@ -787,6 +794,13 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 			QuanleimuApplication.getApplication().setPersonMark(new String(personalMark));
 		}
 
+	}
+	//from ApiClient.CacheProxy
+	public void onSave(String url, String jsonStr){
+		this.putCacheNetworkRequest(url, jsonStr);
+	}
+	public String onLoad(String url){
+		return this.getCacheNetworkRequest(url);		
 	}
 	
 }

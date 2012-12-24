@@ -19,6 +19,8 @@ public class ApiParams {
 	public static final String KEY_ACCESSTOKEN = "access_token";
 	
 	private Map<String,String> params=new HashMap<String,String>();
+	public boolean useCache = false;
+	
 	/**
 	 * 添加业务参数
 	 * @param key

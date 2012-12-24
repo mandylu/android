@@ -48,6 +48,15 @@ public abstract class WebUtils {
 
 	}
 
+	
+	public static String getFullUrl(String url, ApiParams params){
+		try{
+			String query = WebUtils.buildQuery(params.getParams(), DEFAULT_CHARSET);
+			return url + query;
+		}catch(Exception e){
+			return null;
+		}
+	}
 	/**
 	 * 执行HTTP POST请求。
 	 * 

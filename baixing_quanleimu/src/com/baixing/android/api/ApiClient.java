@@ -2,9 +2,12 @@
 package com.baixing.android.api;
 
 import java.security.MessageDigest;
+
+import java.util.HashMap;
 import java.util.Map;
 import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Vector;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -25,6 +28,8 @@ public class ApiClient {
 	private Context context = null;
 	private int connectTimeout = 10000;// 10秒
 	private int readTimeout = 30000;// 30秒
+	private Vector pendingListeners = new Vector();
+	private CacheProxy cache = null;
 	
 	protected ApiClient(){
 		
@@ -37,17 +42,20 @@ public class ApiClient {
 		return _instance;
 	}
 	
+	
 	//init with mandatory parameters
-	public void init(Context context, String udid, String version, String channel, String city){
+	public void init(Context context, String udid, String version, String channel, String city, CacheProxy cache){
 		this.context = context;
 		commonParams.addParam(ApiParams.KEY_UDID, udid);
 		commonParams.addParam(ApiParams.KEY_VERSION, version);
 		commonParams.addParam(ApiParams.KEY_CHANNEL, channel);
 		commonParams.addParam(ApiParams.KEY_CITY, city);
 		commonParams.addParam(ApiParams.KEY_APIKEY, ApiClient.apiKey);
+		
+		this.cache = cache;
 	}
 	
-	public boolean isMandatoryReady(){
+	private boolean isMandatoryReady(){
 		return (commonParams.getParam(ApiParams.KEY_UDID) != null 
 				&& commonParams.getParam(ApiParams.KEY_VERSION) != null
 				&& commonParams.getParam(ApiParams.KEY_CHANNEL) != null
@@ -66,8 +74,32 @@ public class ApiClient {
 	public void removeCommonParam(String key){
 		commonParams.removeParam(key);
 	}
+	
+	public void cancel(final ApiListener listener){
+		unregisterListener(listener);
+	}
+	
+	public void cancelAll(){
+		pendingListeners.clear();
+	}
+	
+	private void unregisterListener(final ApiListener listener){
+		if(pendingListeners.contains(listener)){
+			pendingListeners.remove(listener);
+		}
+	}
+	
+	private void registerListener(final ApiListener listener){
+		if(!pendingListeners.contains(listener)){
+			pendingListeners.add(listener);
+		}
+	}
+	
+	private boolean onPending(final ApiListener listener){
+		return pendingListeners.contains(listener);
+	}
 	/*
-	 * asynchronized remote method invoke by method specific params
+	 * asynchronized remote method invoked by method specific params
 	 */
 	public void remoteCall(final String method, final ApiParams params, final ApiListener listener){
 		if (method == null) {
@@ -83,6 +115,8 @@ public class ApiClient {
 		if(!isMandatoryReady()){
 			throw new IllegalArgumentException("invoke init before remote call");
 		}
+		
+		this.registerListener(listener);
 		
 		new Thread() {
 			@Override
@@ -112,6 +146,21 @@ public class ApiClient {
 		return null;
 	}
 	
+	private String loadCache(String fullUrl){
+		Log.d("loadCache", fullUrl);
+		if(this.cache != null){
+			return this.cache.onLoad(fullUrl);
+		}
+		return null;
+	}
+	
+	private void saveCache(String fullUrl, String jsonStr){
+		Log.d("saveCache", fullUrl);
+		if(this.cache != null){
+			this.cache.onSave(fullUrl, jsonStr);
+		}
+	}
+	
 	private void invokeApi(final String method, final ApiParams params, final ApiListener listener){
 		//insert common params
 		Map<String, String> map = this.commonParams.getParams();
@@ -130,15 +179,34 @@ public class ApiClient {
 		Log.d("invokeApi", params.toString());
 		//start url
 		try {
-			String jsonStr = WebUtils.doPost(context, this.apiUrl + method + "/",
+			String url = this.apiUrl + method + "/";
+			String jsonStr = null; 
+			String fullUrl = WebUtils.getFullUrl(url,params);
+			if(params.useCache){
+				//fetch data from database directly
+				jsonStr = loadCache(fullUrl);
+			}
+			
+			if(jsonStr == null){//no hit from cache or cache not enabled
+				jsonStr = WebUtils.doPost(context, url,
 					params.getParams(),
 					null,//no header specified
 					null,//no file item
 					connectTimeout, readTimeout);
+			}
 			Log.d(LOG_TAG, jsonStr);
+			
+			//if(params.useCache){ //anyway, save it to cache
+				this.saveCache(fullUrl, jsonStr);
+			//}
 			handleApiResponse(listener, jsonStr);
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage(), e);
+			
+			if(!this.onPending(listener)){
+				return;
+			}
+			this.unregisterListener(listener);
 			listener.onException(e);
 		}
 	}
@@ -147,6 +215,12 @@ public class ApiClient {
 	private void handleApiResponse(ApiListener listener, String jsonStr)
 			throws JSONException {
 		Log.d("handleApiResponse", jsonStr);
+		
+		if(!this.onPending(listener)){
+			return;
+		}
+		this.unregisterListener(listener);
+		
 		JSONObject json = new JSONObject(jsonStr);
 		ApiError error = this.parseError(json);
 		if (error != null) {// failed
@@ -180,5 +254,10 @@ public class ApiClient {
 		*/
 	}
 
+	
+	public interface CacheProxy{
+		public void onSave(String url, String jsonStr);
+		public String onLoad(String url);
+	}
 		
 }

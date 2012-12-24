@@ -41,8 +41,9 @@ public class ApiClientTest extends AndroidTestCase implements ApiListener {
 	}
 	
 	
-	public void onComplete(JSONObject json){
+	public void onComplete(JSONObject json, String rawData){
 		Log.d("onComplete", json.toString());
+		Log.d("onComplete", "rawData == " + rawData);
 		synchronized(this){
 			this.notifyAll();
 		}
