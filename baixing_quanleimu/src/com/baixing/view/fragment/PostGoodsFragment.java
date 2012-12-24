@@ -24,7 +24,6 @@ import android.os.Message;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
-import android.text.InputType;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -58,20 +57,18 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.LocationService;
-import com.baixing.util.LocationService.BXRgcListener;
+import com.baixing.util.PostLocationService;
+import com.baixing.util.PostUtil;
 import com.baixing.widget.ImageSelectionDialog;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
-public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, QuanleimuApplication.onLocationFetchedListener{
+public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	private static final int VALUE_LOGIN_SUCCEEDED = 9;
-	private static final int MSG_GEOCODING_FETCHED = 0x00010010;
+	
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
-	static final int HASH_POST_BEAN = "postBean".hashCode();
-	static final int HASH_CONTROL = "control".hashCode();
 	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final String KEY_IS_EDITPOST = "isEditPost"; 
@@ -105,6 +102,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
     private List<String> bmpUrls = new ArrayList<String>();
     private EditText etDescription = null;
     private EditText etContact = null;
+    private PostLocationService postLBS;
     
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -185,12 +183,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(goodsDetail == null && (appPhone == null || appPhone.length() == 0)){
 			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
 		}
+		
+		this.postLBS = new PostLocationService(this.handler);
 	}
 		
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		extractInputData(layout_txt, params);
+		PostUtil.extractInputData(layout_txt, params);
 		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
 		outState.putSerializable("listUrl", listUrl);
@@ -210,8 +210,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	@Override
 	public void onResume() {
 		super.onResume();
-		inreverse = false;
-		QuanleimuApplication.getApplication().addLocationListener(this);
+		postLBS.start();
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
 			Tracker.getInstance()
@@ -231,8 +230,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	
 	@Override
 	public void onPause() {
-		QuanleimuApplication.getApplication().removeLocationListener(this);		
-		extractInputData(layout_txt, params);
+		postLBS.stop();
+		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		super.onPause();
 	}
@@ -270,44 +269,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return v;
 	}
 	
-	private static String getDisplayValue(PostGoodsBean bean, GoodsDetail detail, String detailKey){
-		if(bean == null || detail == null || detailKey == null || detailKey.equals(""))return "";
-		String value = detail.getValueByKey(detailKey);
-		String displayValue = "";
-		if(bean.getControlType().equals("input") || bean.getControlType().equals("textarea")){
-			displayValue = detail.getValueByKey(detailKey);
-			if(displayValue != null && !bean.getUnit().equals("")){
-				int pos = displayValue.lastIndexOf(bean.getUnit());
-				if(pos != -1){
-					displayValue = displayValue.substring(0, pos);
-				}
-			}
-		}else if(bean.getControlType().equals("select") || bean.getControlType().equals("checkbox")){
-			List<String> beanVs = bean.getValues();
-			if(beanVs != null){
-				for(int t = 0; t < beanVs.size(); ++ t){
-					if(bean.getControlType().equals("checkbox") && bean.getLabels() != null && bean.getLabels().size() > 1){
-						if(value.contains(beanVs.get(t))){
-							displayValue += (displayValue.equals("") ? "" : ",") + bean.getLabels().get(t);
-							continue;
-						}
-					}
-					if(beanVs.get(t).equals(value)){
-						displayValue = bean.getLabels().get(t);
-						break;
-					}
-				}
-			}
-			if(displayValue.equals("")){
-				String _sValue = detail.getValueByKey(detailKey + "_s"); 
-				if(_sValue != null && !_sValue.equals("")){
-					displayValue = _sValue;
-				}
-			}
-		}
-		return displayValue;
-	}
-	
 	private void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
 		if(container != null){
 			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
@@ -320,12 +281,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(goodsDetail == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
 			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
 			if(bean == null) continue;
 			String detailValue = goodsDetail.getValueByKey(bean.getName());
 			if(detailValue == null || detailValue.equals(""))continue;
-			String displayValue = getDisplayValue(bean, goodsDetail, bean.getName());
-			View control = (View)v.getTag(HASH_CONTROL);
+			String displayValue = PostUtil.getDisplayValue(bean, goodsDetail, bean.getName());
+			View control = (View)v.getTag(PostUtil.HASH_CONTROL);
 			if(control instanceof CheckBox){
 				if(displayValue.contains(((CheckBox)control).getText())){
 					((CheckBox)control).setChecked(true);
@@ -519,8 +480,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				et.postDelayed(new Runnable(){
 					@Override
 					public void run(){
-						if (et != null)
-						{
+						if (et != null){
 							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 							et.requestFocus();
 							InputMethodManager inputMgr = 
@@ -541,8 +501,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		this.postAction();
 	}
-	
-	private boolean gettingLocationFromBaidu = false;
 
 	private void setPhoneAndAddress(){
 		String phone = params.getData("contact");
@@ -556,7 +514,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private void postAction() {
-		extractInputData(layout_txt, params);
+		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		if(!this.checkInputComplete()){
 			return;
@@ -566,36 +524,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			doPost(usercheck(), detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
-			retreiveLocation();
-		}
-	}
-	
-	static void extractInputData(ViewGroup vg, PostParamsHolder params){
-		if(vg == null) return;
-		for(int i = 0; i < vg.getChildCount(); ++ i){
-			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(HASH_POST_BEAN);
-			if(postGoodsBean == null) continue;
-			
-			if (postGoodsBean.getControlType().equals("input") 
-					|| postGoodsBean.getControlType().equals("textarea")) {
-				EditText et = (EditText)vg.getChildAt(i).getTag(HASH_CONTROL);
-				if(et != null){
-					params.put(postGoodsBean.getName(),  et.getText().toString(), et.getText().toString());
-				}
-			}
-			else if(postGoodsBean.getControlType().equals("checkbox")){
-				if(postGoodsBean.getValues().size() == 1){
-					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
-					if(box != null){
-						if(box.isChecked()){
-							params.put(postGoodsBean.getName(), postGoodsBean.getValues().get(0),postGoodsBean.getValues().get(0));
-						}
-						else{
-							params.remove(postGoodsBean.getName());
-						}
-					}
-				}
-			}
+			this.showSimpleProgress();
+			postLBS.retreiveLocation(QuanleimuApplication.getApplication().cityName, getFilledLocation());			
 		}
 	}
 
@@ -610,7 +540,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			String key = (String) postList.keySet().toArray()[i];
 			PostGoodsBean postGoodsBean = postList.get(key);
 			if (postGoodsBean.getName().equals(STRING_DESCRIPTION) || 
-					(postGoodsBean.getRequired().endsWith("required") && ! this.isHiddenItem(postGoodsBean) && !postGoodsBean.getName().equals(STRING_AREA))) {
+					(postGoodsBean.getRequired().endsWith("required") && !PostUtil.inArray(postGoodsBean.getName(), hiddenItemNames) && !postGoodsBean.getName().equals("title") && !postGoodsBean.getName().equals(STRING_AREA))) {
 				if(!params.containsKey(postGoodsBean.getName()) 
 						|| params.getData(postGoodsBean.getName()).equals("")
 						|| (postGoodsBean.getUnit() != null && params.getData(postGoodsBean.getName()).equals(postGoodsBean.getUnit()))){
@@ -628,10 +558,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		String toRet = "";
 		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
 			View v = layout_txt.getChildAt(m);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
 			if(bean == null) continue;
 			if(bean.getName().equals(STRING_DETAIL_POSITION)){
-				TextView tv = (TextView)v.getTag(HASH_CONTROL);
+				TextView tv = (TextView)v.getTag(PostUtil.HASH_CONTROL);
 				if(tv != null && !tv.getText().toString().equals("")){
 					toRet = tv.getText().toString();
 				}
@@ -639,35 +569,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 		}
 		return toRet;
-	}
-
-	private boolean retreiveLocation(){
-		String city = QuanleimuApplication.getApplication().cityName;
-		String addr = getFilledLocation();
-
-		this.showSimpleProgress();
-		this.gettingLocationFromBaidu = true;
-		return LocationService.getInstance().geocode(addr, city, this);
-	}
-	
-	private Pair<Double, Double> retreiveCoorFromGoogle(){
-		String city = getFilledLocation();
-		if(city == null || city.equals("")){
-			return new Pair<Double, Double>((double)0, (double)0);
-		}
-		String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-		try{
-			String googleJsn = Communication.getDataByUrlGet(googleUrl);
-			String[] info = googleJsn.split(",");
-			if(info != null && info.length == 4){
-				return new Pair<Double, Double>(Double.parseDouble(info[2]), Double.parseDouble(info[3]));
-			}
-		}catch(UnsupportedEncodingException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return new Pair<Double, Double>((double)0, (double)0);
 	}
 
 	private class UpdateThread implements Runnable {
@@ -694,9 +595,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 				apiName = "ad_update";
 			}
-						
 			setDistrictByLocation(location);			
-			Pair<Double, Double> coorGoogle = retreiveCoorFromGoogle();
+			Pair<Double, Double> coorGoogle = postLBS.retreiveCoorFromGoogle(getFilledLocation());
 			list.add("lat=" + coorGoogle.first);
 			list.add("lng=" + coorGoogle.second);
 			
@@ -895,11 +795,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			for (int i=0; i<layout_txt.getChildCount(); i++)
 			{
 				View v = layout_txt.getChildAt(i);
-				PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+				PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
 				if(bean == null || 
 						!bean.getName().equals(name)//check display name 
 						) continue;
-				View control = (View)v.getTag(HASH_CONTROL);
+				View control = (View)v.getTag(PostUtil.HASH_CONTROL);
 				String displayValue = params.getUiData(name);
 				
 				if(control instanceof CheckBox){
@@ -916,76 +816,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}	
 	}
 	
-	static boolean fetchResultFromViewBack(int message, Object obj, ViewGroup vg, PostParamsHolder params){//??
-		if(vg == null) return false;
-		
-		boolean match = false;
-		for(int i = 0; i < vg.getChildCount(); ++ i){
-			View v = vg.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
-			if(bean == null) continue;
-			if(bean.getName().hashCode() == message){
-				TextView tv = (TextView)v.getTag(HASH_CONTROL);
-				if(obj instanceof Integer){					
-					String txt = bean.getLabels().get((Integer)obj);
-					String txtValue = bean.getValues().get((Integer)obj);
-//					postMap.put(bean.getDisplayName(), txtValue);
-					if(tv != null){
-						tv.setText(txt);
-					}
-					match = true;
-					params.put(bean.getName(), txt, txtValue);
-				}
-				else if(obj instanceof String){
-					String check = (String)obj;
-					String[] checks = check.split(",");
-					String value = "";
-					String txt = "";
-					for(int t = 0; t < checks.length; ++ t){
-						if(checks[t].equals(""))continue;
-		 				txt += "," + bean.getLabels().get(Integer.parseInt(checks[t]));
-						value += "," + bean.getValues().get(Integer.parseInt(checks[t]));
-					}
-					if(txt.length() > 0){
-						txt = txt.substring(1);
-					}
-					if(value.length() > 0){
-						value = value.substring(1);
-					}
-					if(tv != null){
-//						tv.setWidth(vg.getWidth() * 2 / 3);
-						tv.setText(txt);
-					}
-					match = true;
-					params.put(bean.getName(), txt, value);
-				}
-				else if(obj instanceof MultiLevelSelectionFragment.MultiLevelItem){
-					if(tv != null){
-						tv.setText(((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
-					}
-					match = true;
-					params.put(bean.getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
-				}
-			}
-		}
-		
-		return match;
-	}
-	
-	private boolean inArray(String item, String [] array){
-		for(int i = 0;i<array.length;i++){
-			if(item.equals(array[i])){
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private void clearCategoryParameters(){//keep fixed(common) parameters there
 		Iterator<String> ite = params.keyIterator();
 		while(ite.hasNext()){
 			String key = ite.next();
-			if(!inArray(key, this.fixedItemNames)){
+			if(!PostUtil.inArray(key, this.fixedItemNames)){
 				params.remove(key);
 				ite = params.keyIterator();
 			}
@@ -1008,7 +843,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
-		//					imgSelDlg = null;
 				}
 				this.imgSelBundle.clear();// = null;
 				
@@ -1021,7 +855,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 
 	private void handleBackWithData(int message, Object obj) {
-
 		if(message == PostGoodsFragment.VALUE_LOGIN_SUCCEEDED){
 			postAction();
 			return;
@@ -1045,7 +878,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
 		}
-		fetchResultFromViewBack(message, obj, layout_txt, params);
+		PostUtil.fetchResultFromViewBack(message, obj, layout_txt, params);
 	}
 	
 	@Override
@@ -1081,7 +914,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				((TextView)layout.findViewById(R.id.postinput)).setText(address);
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
-			etContact = ((EditText)layout.getTag(HASH_CONTROL));
+			etContact = ((EditText)layout.getTag(PostUtil.HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
 			if(this.goodsDetail != null){
@@ -1092,7 +925,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}
 			}
 		}else if (postBean.getName().equals(STRING_DESCRIPTION) && layout != null){
-			etDescription = (EditText) layout.getTag(HASH_CONTROL);
+			etDescription = (EditText) layout.getTag(PostUtil.HASH_CONTROL);
 		}
 		
 		if(layout != null){
@@ -1108,7 +941,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
 			bundle.putString("selectedValue", categoryName);
 		}
-		extractInputData(layout_txt, params);
+		PostUtil.extractInputData(layout_txt, params);
 		CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
 		cdb.start();
 	}
@@ -1122,7 +955,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
 		
-		categoryItem.setTag(HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
+		categoryItem.setTag(PostUtil.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
@@ -1184,8 +1017,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				});
 
 				text.setHint("请输入" + bean.getDisplayName());
-				v.setTag(HASH_POST_BEAN, bean);
-				v.setTag(HASH_CONTROL, text);
+				v.setTag(PostUtil.HASH_POST_BEAN, bean);
+				v.setTag(PostUtil.HASH_CONTROL, text);
 				v.setOnClickListener(this);
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
@@ -1221,13 +1054,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
-	private boolean isFixedItem(PostGoodsBean bean){
-		for(int i = 0; i < fixedItemNames.length; ++ i){
-			if(bean.getName().equals(fixedItemNames[i])) return true;
-		}
-		return false;
-	}
-	
 	private void addHiddenItemsToParams(){
 		if (postList == null || postList.isEmpty())
 			return ;
@@ -1251,17 +1077,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	
-	private boolean isHiddenItem(PostGoodsBean bean){
-		for (int i = 0; i < hiddenItemNames.length; ++i){
-			if (bean.getName().equals(hiddenItemNames[i])){
-				return true;
-			}else if(bean.getName().equals("title")){
-				return true;
-			}
-		}
-		return false;
-	}
-	
 	private void buildPostLayout(HashMap<String, PostGoodsBean> pl){
 		this.getView().findViewById(R.id.goodscontent).setVisibility(View.VISIBLE);
 		this.getView().findViewById(R.id.networkErrorView).setVisibility(View.GONE);
@@ -1278,7 +1093,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			String key = (String) postListKeySetArray[i];
 			PostGoodsBean postBean = pl.get(key);
 			
-			if(isFixedItem(postBean) || isHiddenItem(postBean))
+			if(PostUtil.inArray(postBean.getName(), fixedItemNames) || postBean.getName().equals("title") || PostUtil.inArray(postBean.getName(), hiddenItemNames))
 				continue;
 			
 			if(postBean.getName().equals(STRING_AREA)){
@@ -1288,7 +1103,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		editpostUI();
 		originParams.merge(params);
-		extractInputData(layout_txt, originParams);	
+		PostUtil.extractInputData(layout_txt, originParams);	
 	}
 
 	@Override
@@ -1471,12 +1286,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
-		case MSG_GEOCODING_FETCHED:			
-			if(gettingLocationFromBaidu){
+		case PostLocationService.MSG_GEOCODING_FETCHED:			
 				showSimpleProgress();
 				(new Thread(new UpdateThread(usercheck(), msg.obj == null ? null : (BXLocation)msg.obj))).start();
-				gettingLocationFromBaidu = false;
-			}
+			break;
+		case PostLocationService.MSG_GPS_LOC_FETCHED:
+			detailLocation = (BXLocation)msg.obj;
 			break;
 		}
 	}
@@ -1504,9 +1319,9 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		if(layout_txt == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
 			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
 			if(bean == null) continue;
-			View control = (View)v.getTag(HASH_CONTROL);
+			View control = (View)v.getTag(PostUtil.HASH_CONTROL);
 			if(control != null && control instanceof TextView){
 				if(params != null && params.containsKey(bean.getName())){
 					String value = params.getUiData(bean.getName());
@@ -1557,90 +1372,19 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
-		ViewGroup layout = null;
-//		if (goodsDetail==null) return true;
 		Activity activity = getActivity();
-		if (postBean.getControlType().equals("input")) {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = postBean.getName().equals(STRING_DETAIL_POSITION) ? 
-					inflater.inflate(R.layout.item_post_location, null) : 
-						inflater.inflate(R.layout.item_post_edit, null);
+		ViewGroup layout = PostUtil.createItemByPostBean(postBean, activity);
 
-			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-
-			EditText text = (EditText)v.findViewById(R.id.postinput);
-			v.setTag(HASH_POST_BEAN, postBean);
-			v.setTag(HASH_CONTROL, text);
-			if(postBean.getNumeric() != 0){
-				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
-			}
-			
-			if (postBean.getName().equals("contact")) {
-				text.setInputType(InputType.TYPE_CLASS_PHONE);
-			}
-			
-			if (!postBean.getUnit().equals("")) {
-				((TextView)v.findViewById(R.id.postunit)).setText(postBean.getUnit());
-			}
-			layout = (ViewGroup)v;
-		} else if (postBean.getControlType().equals("select")) {//select的设置
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = inflater.inflate(R.layout.item_post_select, null);	
-			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-			v.setTag(HASH_POST_BEAN, postBean);
-			v.setTag(HASH_CONTROL, v.findViewById(R.id.posthint));
-			layout = (ViewGroup)v;
-		}
-		else if (postBean.getControlType().equals("checkbox")) {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-
-			if(postBean.getLabels().size() > 1){
-				View v = inflater.inflate(R.layout.item_post_select, null);
-				((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-				v.setTag(HASH_POST_BEAN, postBean);
-				v.setTag(HASH_CONTROL, v.findViewById(R.id.posthint));
-				layout = (ViewGroup)v;
-			}
-			else{
-				View v = inflater.inflate(R.layout.item_text_checkbox, null);
-				v.findViewById(R.id.divider).setVisibility(View.GONE);
-				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
-				v.findViewById(R.id.checkitem).setTag(postBean.getDisplayName());
-				v.setTag(HASH_POST_BEAN, postBean);
-				v.setTag(HASH_CONTROL, v.findViewById(R.id.checkitem));	
-				layout = (ViewGroup)v;				
-			}
-		} else if (postBean.getControlType().equals("textarea")) {
-			LayoutInflater inflater = LayoutInflater.from(activity);
-			View v = inflater.inflate(R.layout.item_post_description, null);
-			((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
-
-			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
-
-			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
-			{
-				String personalMark = QuanleimuApplication.getApplication().getPersonMark();
-				if(personalMark != null && personalMark.length() > 0){
-					personalMark = "\n\n" + personalMark;
-					descriptionEt.setText(personalMark);
-				}
-			}
-			
-			v.setTag(HASH_POST_BEAN, postBean);
-			v.setTag(HASH_CONTROL, descriptionEt);
-			layout = (ViewGroup)v;
-		}//获取到item的layout
-		
 		if (layout == null)
 			return null;
 
 		if(postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")){
-			final String actionName = ((PostGoodsBean)layout.getTag(HASH_POST_BEAN)).getDisplayName();
+			final String actionName = ((PostGoodsBean)layout.getTag(PostUtil.HASH_POST_BEAN)).getDisplayName();
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					Tracker.getInstance().event((goodsDetail == null) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 
-					PostGoodsBean postBean = (PostGoodsBean) v.getTag(HASH_POST_BEAN);
+					PostGoodsBean postBean = (PostGoodsBean) v.getTag(PostUtil.HASH_POST_BEAN);
 
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
 							if(postBean.getLevelCount() > 0){
@@ -1662,7 +1406,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 									if (selectedValue != null)
 										bundle.putString("selectedValue", selectedValue);
 
-									extractInputData(layout_txt, params);
+									PostUtil.extractInputData(layout_txt, params);
 									CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), getHandler(), bundle);
 									cdb.start();
 							}else{
@@ -1670,7 +1414,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 								bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 								bundle.putBoolean("singleSelection", false);
 								bundle.putSerializable("properties",(ArrayList<String>) postBean.getLabels());
-								TextView txview = (TextView)v.getTag(HASH_CONTROL);
+								TextView txview = (TextView)v.getTag(PostUtil.HASH_CONTROL);
 								if (txview !=  null)
 								{
 									bundle.putString("selected", txview.getText().toString());
@@ -1683,7 +1427,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 							bundle.putBoolean("singleSelection", false);
 							bundle.putSerializable("properties",(ArrayList<String>) postBean.getLabels());
-							TextView txview = (TextView)v.getTag(HASH_CONTROL);
+							TextView txview = (TextView)v.getTag(PostUtil.HASH_CONTROL);
 							if (txview !=  null)
 							{
 								bundle.putString("selected", txview.getText().toString());
@@ -1700,8 +1444,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				}
 			});//layout.setOnClickListener:select or checkbox
 		} else {//not select or checkbox
-			final String actionName = ((PostGoodsBean)layout.getTag(HASH_POST_BEAN)).getDisplayName();
-			((View)layout.getTag(HASH_CONTROL)).setOnTouchListener(new OnTouchListener() {
+			final String actionName = ((PostGoodsBean)layout.getTag(PostUtil.HASH_POST_BEAN)).getDisplayName();
+			((View)layout.getTag(PostUtil.HASH_CONTROL)).setOnTouchListener(new OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -1715,7 +1459,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				
 				@Override
 				public void onClick(View v) {
-					View ctrl = (View) v.getTag(HASH_CONTROL);
+					View ctrl = (View) v.getTag(PostUtil.HASH_CONTROL);
 					ctrl.requestFocus();
 					InputMethodManager inputMgr = 
 							(InputMethodManager) ctrl.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -1772,34 +1516,5 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
             }
 			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}		
-	}
-	
-	@Override
-	public void onLocationFetched(BXLocation location) {
-		// TODO Auto-generated method stub
-	}
-	
-	@Override
-	public void onGeocodedLocationFetched(BXLocation location) {
-		// TODO Auto-generated method stub
-		if(location == null) return;
-		if(handler != null){
-			handler.removeMessages(MSG_GETLOCATION_TIMEOUT);
-		}
-		detailLocation = location;
-	}
-
-	private boolean inreverse = false;
-
-	@Override
-	public void onRgcUpdated(BXLocation location) {
-		if(!this.gettingLocationFromBaidu) return;
-		// TODO Auto-generated method stub
-		if(!inreverse && location != null && (location.subCityName == null || location.subCityName.equals(""))){
-			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
-			inreverse = true;
-		}else{
-			sendMessage(MSG_GEOCODING_FETCHED, location);
-		}
 	}
 }
