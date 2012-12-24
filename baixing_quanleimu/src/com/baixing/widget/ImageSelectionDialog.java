@@ -34,11 +34,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;
+import com.baixing.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener{
@@ -177,6 +177,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     		}
     	}
     	imgs.get(i).setImageResource(R.drawable.btn_add_picture);
+    	imgs.get(i).setClickable(true);
     	for(int j = i + 1; j < imgs.size(); ++ j){
     		imgs.get(j).setVisibility(View.INVISIBLE);
     	}
@@ -318,6 +319,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			Log.d("index", "bitmap:   onsave: " + String.valueOf(currentImgView));
 			outState.putBundle(KEY_BUNDLE, bundle);
 			outState.putSerializable(KEY_IMG_CONTAINER, imgContainer);
+			if(this.bundle != null){
+				bundle.putSerializable(KEY_IMG_CONTAINER, imgContainer);
+			}
 		}
 	}
 
