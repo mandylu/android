@@ -177,6 +177,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     		}
     	}
     	imgs.get(i).setImageResource(R.drawable.btn_add_picture);
+    	imgs.get(i).setClickable(true);
     	for(int j = i + 1; j < imgs.size(); ++ j){
     		imgs.get(j).setVisibility(View.INVISIBLE);
     	}
