@@ -16,7 +16,6 @@ public class PushDispatcher {
 	{
 		this.context = context;
 		handlers = new PushHandler[] {
-				new ChatMessageHandler(context),
 				new BXInfoHandler(context),
                 new PushUpdateHandler(context)
 		};

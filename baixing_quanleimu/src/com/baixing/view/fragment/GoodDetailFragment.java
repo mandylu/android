@@ -995,33 +995,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		return description;
 	}
 	
-	private void startChat()
-	{
-		//tracker
-//		Tracker.getInstance()
-//		.event(BxEvent.VIEWAD_BUZZ)
-//		.end();
-		if (this.fromChat)
-		{
-			this.finishFragment();
-			return;
-		}
-		
-		if (/*m_viewInfoListener != null &&*/ this.detail != null)
-		{
-			Bundle bundle = new Bundle();
-//			bundle.putString("senderId", myUserId);
-			bundle.putString("receiverId", detail.getValueByKey("userId"));
-			bundle.putString("adId", detail.getValueByKey("id"));
-			bundle.putString("adTitle", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
-			bundle.putBoolean("fromAd", true);
-			pushFragment(new TalkFragment(), bundle);
-		}
-	}
-	
-	
-//	private int btnStatus = -1;//-1:strCollect, 0: strCancelCollect, 1:strManager
-	
 	private boolean handleRightBtnIfInVerify(){
 		if(!detail.getValueByKey("status").equals("0")){
 			showSimpleProgress();

@@ -21,7 +21,7 @@ public class ApiClientTest extends AndroidTestCase implements ApiListener {
 			e.printStackTrace();
 		}
 		
-		ApiClient.getInstance().init(getContext(), "udid_for_test", "3.2", "unittest", "shanghai");
+		ApiClient.getInstance().init(getContext(), "udid_for_test", "3.2", "unittest", "shanghai", null);
 		
 	}
 	
