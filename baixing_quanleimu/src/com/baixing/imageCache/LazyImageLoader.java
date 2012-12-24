@@ -86,6 +86,10 @@ public class LazyImageLoader
 		imgManger.putImageToDisk(url, bmp);
 	}
 	
+	public void putImageToCache(String url, Bitmap bmp){
+		imgManger.saveBitmapToCache(url, new WeakReference<Bitmap>(bmp));
+	}
+	
 	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback)
 	{
 		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
