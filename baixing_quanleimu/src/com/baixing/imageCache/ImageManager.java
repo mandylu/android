@@ -345,7 +345,7 @@ public class ImageManager
 		return bitmap;
 	}
 	
-	private void saveBitmapToCache(String url, WeakReference<Bitmap> bitmap)
+	public void saveBitmapToCache(String url, WeakReference<Bitmap> bitmap)
 	{
 		try
 		{
@@ -354,7 +354,7 @@ public class ImageManager
 				synchronized (this)
 				{
 					int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
-					imageLruCache.put(url, new Pair(bytes, bitmap));
+					imageLruCache.put(url, new Pair<Integer, WeakReference<Bitmap>>(bytes, bitmap));
 				}
 			}
 		}
@@ -377,6 +377,9 @@ public class ImageManager
 		String key = getMd5(url);
 		Log.d("bitmap", "bitmap, imagemanager:putImageToDisk:  " + url + "  md5:  " + key);
 		imageDiskLruCache.put(key, bmp);
+
+//		int bytes = bmp.getHeight() * bmp.getRowBytes();
+//		imageLruCache.put(url, new Pair<Integer, WeakReference<Bitmap> >(bytes, new WeakReference<Bitmap>(bmp)));
 	}
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException
