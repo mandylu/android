@@ -552,8 +552,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		String address = params.getData(STRING_DETAIL_POSITION);
 		if(address != null && address.length() > 0){
 			QuanleimuApplication.getApplication().setAddress(address);
-		}
-		
+		}		
 	}
 	
 	private void postAction() {
@@ -914,8 +913,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					((TextView)control).setText(displayValue);
 				}
 			}
-		}
-		
+		}	
 	}
 	
 	static boolean fetchResultFromViewBack(int message, Object obj, ViewGroup vg, PostParamsHolder params){//??
@@ -1202,8 +1200,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 							((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
 							int count = 0;
 							for(int i = 0; i < container.length; ++ i){
-								if(((ImageSelectionDialog.ImageContainer)container[i]).status
-										== ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
+								if(((ImageSelectionDialog.ImageContainer)container[i]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
 									break;
 								}
 								++ count;
@@ -1231,8 +1228,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return false;
 	}
 	
-	private void addHiddenItemsToParams()
-	{
+	private void addHiddenItemsToParams(){
 		if (postList == null || postList.isEmpty())
 			return ;
 		Set<String> keySet = postList.keySet();
