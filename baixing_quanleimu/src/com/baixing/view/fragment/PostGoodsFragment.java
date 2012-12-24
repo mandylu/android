@@ -763,12 +763,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		json = pair.second;
-		if (json != null && json.length() > 0) {
-			addCategoryItem();
+		if (json != null && json.length() > 0) {			
 			if (pair.first + (24 * 3600) < System.currentTimeMillis()/1000) {
 				showSimpleProgress();
 				new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
 			} else {
+				addCategoryItem();
 				buildPostLayout();
 				loadCachedData();
 			}
