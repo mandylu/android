@@ -1,4 +1,4 @@
-package com.quanleimu.activity;
+package com.baixing.activity;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -26,11 +26,16 @@ import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
+import com.quanleimu.activity.R;
+import com.quanleimu.activity.R.drawable;
+import com.quanleimu.activity.R.id;
+import com.quanleimu.activity.R.layout;
+import com.quanleimu.activity.R.style;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;

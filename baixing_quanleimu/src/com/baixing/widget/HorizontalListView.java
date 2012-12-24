@@ -1,4 +1,6 @@
+//liuchong@baixing.com
 /*
+
  * HorizontalListView.java v1.5
  *
  * 

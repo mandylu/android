@@ -18,6 +18,8 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ImageView;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.broadcast.BXNotificationService;
 import com.baixing.entity.GoodsDetail;
@@ -27,14 +29,13 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.*;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
@@ -233,12 +234,6 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         title.m_title = isFav ? "收藏的信息" : "浏览历史";
 //		title.m_rightActionHint = "编辑";
     }
-
-    @Override
-    public void initTab(TabDef tab) {
-        tab.m_visible = false;
-    }
-
 
     @Override
     protected void handleMessage(Message msg, Activity activity, View rootView) {

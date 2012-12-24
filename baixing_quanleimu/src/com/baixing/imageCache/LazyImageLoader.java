@@ -14,7 +14,7 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpException;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.activity.QuanleimuApplication;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -84,6 +84,10 @@ public class LazyImageLoader
 	
 	public void putImageToDisk(String url, Bitmap bmp){
 		imgManger.putImageToDisk(url, bmp);
+	}
+	
+	public void putImageToCache(String url, Bitmap bmp){
+		imgManger.saveBitmapToCache(url, new WeakReference<Bitmap>(bmp));
 	}
 	
 	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback)

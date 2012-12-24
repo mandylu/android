@@ -8,7 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Pair;
@@ -27,6 +26,8 @@ import android.widget.ListAdapter;
 import android.widget.ProgressBar;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
@@ -35,14 +36,14 @@ import com.baixing.entity.GoodsList;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
 import com.baixing.view.FilterUtil.CustomizeItem;
@@ -50,8 +51,6 @@ import com.baixing.view.FilterUtil.FilterSelectListener;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 import com.baixing.android.api.ApiParams;
@@ -93,10 +92,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
 //		title.m_rightActionHint = "发布";
 //		title.m_rightActionBg = R.drawable.bg_post_selector;
-	}
-	
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	public GoodsListAdapter findGoodListAdapter()

@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.widget;
 
 import java.io.File;
@@ -11,11 +12,11 @@ import android.net.Uri;
 import android.provider.MediaStore;
 import android.widget.ImageView;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.UploadImageCommand;
 import com.baixing.util.UploadImageCommand.ProgressListener;
-import com.quanleimu.activity.BaseActivity;
 import com.quanleimu.activity.R;
 
 public class StateImage implements Serializable{

@@ -20,11 +20,11 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class KeywordSelector extends BaseFragment {

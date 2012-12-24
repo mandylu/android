@@ -22,18 +22,17 @@ import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class FilterFragment extends BaseFragment implements View.OnClickListener{
@@ -154,9 +153,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		title.m_title = "更多筛选";
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "确定";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	public void onPause()

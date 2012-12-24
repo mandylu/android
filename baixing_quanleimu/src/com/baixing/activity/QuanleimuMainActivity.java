@@ -1,4 +1,5 @@
-package com.quanleimu.activity;
+//liuchong@baixing.com
+package com.baixing.activity;
 
 import java.io.IOException;
 import java.lang.ref.WeakReference;
@@ -6,35 +7,32 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-
 import android.content.BroadcastReceiver;
 import android.content.Context;
-
 import android.content.Intent;
 import android.content.IntentFilter;
-
 import android.os.Bundle;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
-
 import android.view.View;
 
+import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityList;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Sender;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.Communication;
+import com.baixing.util.Communication.BXHttpException;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
-import com.baixing.util.Sender;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.Communication.BXHttpException;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.view.fragment.HomeFragment;
-import com.quanleimu.activity.SplashJob.JobDoneListener;
+import com.quanleimu.activity.R;
 import com.umeng.update.UmengUpdateAgent;
 
 //import com.tencent.mm.sdk.openapi.BaseReq;

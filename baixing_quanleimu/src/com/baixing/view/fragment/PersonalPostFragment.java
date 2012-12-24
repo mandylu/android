@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 package com.baixing.view.fragment;
 
 import java.io.IOException;
@@ -7,10 +8,8 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
-
 import org.json.JSONException;
 import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,9 +20,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.LinearLayout;
 import android.widget.Toast;
-
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
@@ -34,23 +34,18 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
 import com.baixing.util.LogData;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.TrackConfig.TrackMobile.Value;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
-
-import com.baixing.android.api.ApiParams;
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
 	private final int MSG_MYPOST = 1;
@@ -64,34 +59,20 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
     private final int MSG_ITEM_OPERATE = 10;
     private final int MSG_SHOW_BIND_DIALOG = 11;
 
-	public PullToRefreshListView lvGoodsList;
+	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = null;
-//	private List<GoodsDetail> listInVerify = null;
-//	private List<GoodsDetail> listDeleted = null;
-	
-	public GoodsListAdapter adapter = null;
-//	private String json;
-	UserBean user;
+	private GoodsListAdapter adapter = null;
+	private UserBean user;
 	private boolean needReloadData = false;
 
-    /**
-     * 用这几个 static value 区分不同类别“我的信息”
-     */
-    public final static String TYPE_KEY = "PersonalPostFragment_type_key";
-    public final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
-//    public final static int TYPE_INVERIFY = 1;
-//    public final static int TYPE_DELETED = 2;
-
+    final static String TYPE_KEY = "PersonalPostFragment_type_key";
+    final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     private int currentType = TYPE_MYPOST;
-
-	private GoodsListLoader glLoader = null;
-	
+	private GoodsListLoader glLoader = null;	
 	private String json = "";
 
-	
-	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
@@ -101,7 +82,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             this.currentType = arguments.getInt(PersonalPostFragment.TYPE_KEY,
                     PersonalPostFragment.TYPE_MYPOST);
         }
-
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
@@ -116,8 +96,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		super.onDestroy();
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
-
-
 
 	private  void filterOutAd(List<GoodsDetail> list, UserBean user)
 	{
@@ -165,17 +143,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
-
-//		ivMyads = (ImageView) v.findViewById(R.id.ivMyads);
-//		ivMyfav = (ImageView) v.findViewById(R.id.ivMyfav);
-//		ivMyhistory = (ImageView) v.findViewById(R.id.ivMyhistory);
-//
-//		ivMyads.setOnClickListener(this);
-//		ivMyfav.setOnClickListener(this);
-//		ivMyhistory.setOnClickListener(this);
-//		if (currentType == TYPE_MYPOST)
-//			listMyPost = QuanleimuApplication.getApplication().getListMyPost();
-		
 		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost, null);
         adapter.setHasDelBtn(true);
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
@@ -209,8 +176,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		return v;
 	}
-	
-	
 	
 	@Override
 	public void onPause() {
@@ -258,14 +223,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
 
-
-
-	private void rebuildPage(View rootView, boolean onResult){
-		
+	private void rebuildPage(View rootView, boolean onResult){		
 		if(glLoader != null){
 			glLoader.setHandler(handler);
 		}
-		LinearLayout lView = (LinearLayout)rootView.findViewById(R.id.linearListView);
+		rootView.findViewById(R.id.linearListView);
 
         BxEvent bxEvent = BxEvent.SENT_RESULT;
         int adsCountValue = 0;
@@ -461,14 +423,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		return true;
 	}
 	
-	private boolean isEditPost() {
-		Bundle bundle = this.getArguments();
-		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_IS_EDITPOST)){
-			return bundle.getBoolean(PostGoodsFragment.KEY_IS_EDITPOST);
-		}
-		return false;
-	}
-	
 	private String getPostCateEnglishName() {
 		Bundle bundle = this.getArguments();
 		if(bundle != null && bundle.containsKey(PostGoodsFragment.KEY_IS_EDITPOST)){
@@ -478,30 +432,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	}
 	
 	private void showBindDialog(){
-//		String[] items = {"绑定百姓网帐号，网站手机统一管理", "继续发布信息"};
 		new AlertDialog.Builder(this.getActivity())
 		.setMessage(R.string.personalpost_bind_baixing_account)
-//		.setItems(items, new DialogInterface.OnClickListener() {
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				if(0 == which){
-//					BaseActivity activity = (BaseActivity)getActivity();
-////					finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-//					if(activity != null){
-//						activity.pushFragment(new LoginFragment(), PersonalPostFragment.createArguments(null, null), false);
-//					}
-//				}
-//				else{
-//					PersonalPostFragment.this.finishFragment();
-//				}
-//			}
-//		})
 		.setPositiveButton("是", new DialogInterface.OnClickListener() {
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-//				Log.d("person","isEditPost:"+isEditPost()+",cateName:"+getPostCateEnglishName());
-				//tracker
 				Tracker.getInstance()
 				.event(BxEvent.POST_POSTWITHLOGIN)
 				.append(Key.SECONDCATENAME, getPostCateEnglishName())
@@ -556,10 +492,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	     .show();
 	}
 
-    /**
-     *
-     * @param msg 根据 msg.arg2 定位 ad
-     */
     private void showItemOperateMenu(final Message msg) {
         final int pos = msg.arg2;
         final GoodsDetail detail = glLoader.getGoodsList().getData().get(pos);        
@@ -599,9 +531,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
             .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
             .append(Key.POSTEDSECONDS, postedSeconds)
         	.end();
-        }
-        
-        
+        }        
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
@@ -674,7 +604,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
     }
 
     private void doRefresh(int pay, final String adId){
-        String tmpjson = null;
         ArrayList<String> requests = new ArrayList<String>();
 
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -740,15 +669,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
     }
 
-
-    /**
-     * 删除 ad
-     */
-	class MyMessageDeleteThread implements Runnable {
+	private class MyMessageDeleteThread implements Runnable {
 		private String id;
 		private int currentType = TYPE_MYPOST;
 
-		public MyMessageDeleteThread(String id){
+		private MyMessageDeleteThread(String id){
 			this.id = id;
 			this.currentType = PersonalPostFragment.this.currentType;
 		}
@@ -800,25 +725,19 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 		title.m_visible = true;
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MINE;
-	}
 
 	@Override
 	public void onRefresh() {
-		ApiParams params = new ApiParams();
+		List<String> params = new ArrayList<String>();
 		if(user != null){
-			params.addParam("userId", user.getId());
+			params.add("userId=" + user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
 			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
-				params.addParam("newAdIds", bundle.getString("lastPost"));
+				params.add("newAdIds=" + bundle.getString("lastPost"));
 			}
-			params.addParam("status", "3");
+			params.add("status=3");
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
@@ -883,7 +802,6 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					adapter.notifyDataSetChanged();
 				}
 			}
-		}
-		
+		}		
 	}
 }

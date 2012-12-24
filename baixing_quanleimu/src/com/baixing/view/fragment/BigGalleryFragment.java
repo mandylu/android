@@ -24,37 +24,35 @@ import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.ViewFlow;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
+class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	
-	public static final int MSG_HIDE_TITLE = 1;
-	public static final int MSG_SHOW_TITLE = 2;
+	private static final int MSG_HIDE_TITLE = 1;
+	private static final int MSG_SHOW_TITLE = 2;
 	
 	//int index = 0;
-	public static int MSG_GALLERY_BACK = 0xFFFF0001;
+	static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
-	public GoodsDetail goodsDetail;
-	public List<String> listUrl = new ArrayList<String>();
+	private GoodsDetail goodsDetail;
+	private List<String> listUrl = new ArrayList<String>();
 	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
 	private boolean exit = false;
@@ -148,9 +146,6 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		title.m_leftActionHint = "返回";
 		
 		title.m_rightActionHint = "保存";
-	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
 	}
 	
 	@Override
@@ -250,9 +245,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 			}
 	    }
 	    
-	    public void onStackTop()
-	    {
-	    }
+	    
 	    
 	    @Override
 	    public void handleRightAction(){
@@ -345,19 +338,16 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	        
 	    }
 
-	    class GalleryImageAdapter extends BaseAdapter implements ViewFlow.ViewLazyInitializeListener
+	    private class GalleryImageAdapter extends BaseAdapter implements ViewFlow.ViewLazyInitializeListener
 	    {
-	        private Context context;
-
 	        private List<String> imageUrls;
 
 	        private int position = 0;
 
 	 //       private final ExecutorService pool;
 
-	        public GalleryImageAdapter(Context c, List<String> imageUrls)
+	        private GalleryImageAdapter(Context c, List<String> imageUrls)
 	        {
-	            this.context = c;
 	            this.imageUrls = imageUrls;
 
 	        }

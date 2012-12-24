@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.io.IOException;
@@ -39,11 +40,8 @@ import android.view.View;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewParent;
-import android.view.animation.Animation;
-import android.view.animation.Animation.AnimationListener;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
@@ -52,35 +50,34 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaiduMapActivity;
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.QuanleimuApplication;
+import com.baixing.adapter.VadImageAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.TrackConfig.TrackMobile.Value;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.GoodsListLoader;
 import com.baixing.util.TextUtil;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
-import com.baixing.view.AuthController;
 import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
-import com.quanleimu.activity.BaiduMapActivity;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-
-public class GoodDetailFragment extends BaseFragment implements AnimationListener, View.OnTouchListener,View.OnClickListener, OnItemSelectedListener/*, PullableScrollView.PullNotifier, View.OnTouchListener*/, GoodsListLoader.HasMoreListener{
+public class GoodDetailFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, GoodsListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
 
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -88,43 +85,27 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	};
 	
 	
-//	final private String strCollect = "收藏";
-//	final private String strCancelCollect = "取消收藏";
-	final private int msgRefresh = 5;
-	final private int msgUpdate = 6;
-	final private int msgDelete = 7;
+	final private int MSG_REFRESH = 5;
+	final private int MSG_UPDATE = 6;
+	final private int MSG_DELETE = 7;
 	
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
 	public GoodsDetail detail = new GoodsDetail();
 	private boolean called = false;
-//	private View titleControlView = null;
-	private AuthController authCtrl;
 	private UserBean user = null;
 	private String json = "";
 	
-//	private Bundle mBundle;
-	
 	private WeakReference<Bitmap> mb_loading = null;
-	
-//	private int type = 240;//width of screen
-//	private int paddingLeftMetaPixel = 16;//meta, right part, value
 	
 	private boolean keepSilent = false;
 	
 	private GoodsListLoader mListLoader;
-//	private int mCurIndex = 0;
 	
 	private IListHolder mHolder = null;
 	
-//	private Dialog manageDlg = null;
-	
 	private WeakReference<View> loadingMorePage;
-	
-//	private boolean initCalled = false;
-	
-	private boolean fromChat = false;
 	
 	List<View> pages = new ArrayList<View>();
 	
@@ -143,14 +124,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public void onDestroy(){
 		this.keepSilent = true;
 		
-//		if(null != listUrl && listUrl.size() > 0)
-//			SimpleImageLoader.Cancel(listUrl);
-//		this.mListLoader = null;
-		
-		//View history is disabled from version 3.1
 		Thread t = new Thread(new Runnable(){
 			public void run(){
-//				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
 				try{
 					Thread.sleep(2000);
 					if(mb_loading != null && mb_loading.get() != null){
@@ -181,18 +156,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		this.keepSilent = true;
 		super.onPause();
 		pages.clear();
-//		Gallery glDetail = (Gallery) getView().findViewById(R.id.glDetail);
-//		if(glDetail != null){
-////			glDetail.getc
-//		}
-//		glDetail = null;
-		
 	}
 	
 	@Override
 	public void onResume(){
-		updateButtonStatus();
-		if (isMyAd() || !isValidMessage())
+		if (isMyAd() || !detail.isValidMessage())
 		{
 			if (user==null)
 				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -213,7 +181,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			.end();
 		}	
 			
-		//		QuanleimuApplication.addViewCounter(this.detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		this.keepSilent = false;
 		super.onResume();
 		
@@ -242,21 +209,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		}
 	}
 	
-	private void updateButtonStatus()
-	{
-//		if(isMyAd()){
-//			btnStatus = 1;
-//		}
-//		else{
-//			if(isInMyStore()){
-//				btnStatus = 0;
-//			}
-//			else{
-//				btnStatus = -1;
-//			}
-//		}
-	}
-	
 	private boolean isMyAd(){
 		if(detail == null) return false;
 		return QuanleimuApplication.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
@@ -264,31 +216,10 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
-		if(myStore == null) return false;
-		for(int i = 0; i < myStore.size(); ++ i){
-			if(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
-				return true;
-			}
-		}
-		return false;		
+		return QuanleimuApplication.getApplication().isFav(detail);
 	}
 //	
-//	private int mLastY = 0;
-//	private int mLastExceedingY = 0;
 	public boolean onTouch (View v, MotionEvent event){
-//		if(!keepSilent){
-//			switch(event.getAction()){
-//			case MotionEvent.ACTION_MOVE:
-//				
-//				break;
-//			case MotionEvent.ACTION_CANCEL:
-//			case MotionEvent.ACTION_UP:
-//				//mLastExceedingY = 0;
-//				break;
-//			}
-//		}		
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_DOWN:
 	    case MotionEvent.ACTION_MOVE: 
@@ -298,7 +229,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	        break;
 	    case MotionEvent.ACTION_OUTSIDE:
 	    case MotionEvent.ACTION_UP:
-//	    case MotionEvent.ACTION_CANCEL:
 	    	if(getView() != null && getView().findViewById(R.id.svDetail) != null){
 	    		((ViewPager)getView().findViewById(R.id.svDetail)).requestDisallowInterceptTouchEvent(false);
 	    	}
@@ -325,7 +255,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			this.mListLoader.setHasMoreListener(this);
 		}
 		
-		this.fromChat = this.getArguments().getBoolean("fromChat");
 	}
 	
 	private View getPage(int index){
@@ -457,7 +386,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				currentPage = pos;
 				keepSilent = false;//magic flag to refuse unexpected touch event
 				//tracker
-				if (isMyAd() || !isValidMessage())
+				if (isMyAd() || !detail.isValidMessage())
 				{
 					GoodDetailFragment.this.pv = PV.MYVIEWAD;
 					Tracker.getInstance()
@@ -539,7 +468,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 								adapter.notifyDataSetChanged();
 							}
 						}else{
-							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage));
+							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, GoodDetailFragment.this));
 						}
 	//					
 						glDetail.setOnTouchListener(GoodDetailFragment.this);
@@ -564,19 +493,8 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
        
         vp.setOnTouchListener(new OnTouchListener(){
-
 			@Override
 			public boolean onTouch(View arg0, MotionEvent event) {
-//				 View g = vp.findViewById(R.id.glDetail);
-//				 Rect rect = new Rect();  
-//	                g.getLocalVisibleRect(rect);  
-//	                                                                   
-//	                if(rect.contains((int)event.getX(), (int)event.getY()))  
-//	                {  
-//	                	Log.e("POINTER", "dispatch touch event to gallery view");
-//	                        g.dispatchTouchEvent(event);  
-//	                        return true;
-//	                }  
 	                return false;  
 			}
         	
@@ -694,11 +612,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
         return v;
 	}
 	
-	private boolean isValidMessage()
-	{
-		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
-	}
-	
 	private void notifyPageDataChange(boolean hasMore)
 	{
 		if(keepSilent) return;
@@ -763,7 +676,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
 				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex));
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, GoodDetailFragment.this));
 					glDetail.setOnTouchListener(this);
 					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	
@@ -821,7 +734,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	{
 		AdViewHistory.getInstance().markRead(detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 		
-		if (!isValidMessage() && !forceHide)
+		if (!detail.isValidMessage() && !forceHide)
 		{
 			String tips = detail.getValueByKey("tips"); 
 			if(tips == null || tips.equals("")){
@@ -866,7 +779,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			rl_phone.setVisibility(View.GONE);
 			return;
 		}
-		else if (isMyAd() || !isValidMessage())
+		else if (isMyAd() || !detail.isValidMessage())
 		{
 			rootView.findViewById(R.id.phone_parent).setVisibility(View.GONE);
 			rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.VISIBLE);
@@ -876,7 +789,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			rootView.findViewById(R.id.vad_btn_refresh).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_delete).setOnClickListener(this);
 			
-			if (!isValidMessage())
+			if (!detail.isValidMessage())
 			{
 				rootView.findViewById(R.id.vad_btn_edit).setVisibility(View.GONE);
 				rootView.findViewById(R.id.vad_btn_refresh).setVisibility(View.GONE);
@@ -930,19 +843,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		txtCall.setTextColor(getResources().getColor(callEnable ? R.color.vad_call_btn_text : R.color.common_button_disable));
 		
 	}
-	
-//	private boolean isCurrentAdFromMobile()
-//	{
-//		if (detail == null)
-//		{
-//			return false;
-//		}
-//		
-//		String postFrom = detail.getValueByKey("postMethod");
-//		Log.d("postMethod", postFrom);
-//		return "api_mobile_android".equals(postFrom) || "baixing_ios".equalsIgnoreCase(postFrom) || "api_wap".equalsIgnoreCase(postFrom);
-//	}
-	
 	
 	private String appendExtralMetaInfo(GoodsDetail detail, String description)
 	{
@@ -1015,8 +915,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		.append(Key.ADID, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
 		.end();
 		
-		if(/*-1 == btnStatus*/!isInMyStore()){			
-//			btnStatus = 0;
+		if(!isInMyStore()){			
 			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().addFav(detail); 
 			
 			if (myStore != null)
@@ -1027,9 +926,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			updateTitleBar(getTitleDef());
 			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "收藏成功", 3).show();
 		}
-		else /*if (0 == btnStatus)*/ {
-//			btnStatus = -1;
-			
+		else  {
 			List<GoodsDetail> favList = QuanleimuApplication.getApplication().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
@@ -1063,21 +960,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLE).end();
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
-//			else if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea)) {
-//				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//				builder.setTitle(R.string.dialog_title_warning)
-//				.setMessage(R.string.warning_danger_mobile)
-//				.setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-//					public void onClick(DialogInterface dialog, int which) {
-//					}
-//				})
-//				.setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-//					public void onClick(DialogInterface dialog, int which) {
-//						startContact(false);
-//					}
-//					
-//				}).create().show();
-//			}
 			else
 			{
 				startContact(false);
@@ -1245,30 +1127,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		return v;
 	}
 	
-	
-	@Override
-	public void onAnimationEnd(Animation animation) {
-		// TODO Auto-generated method stub
-	}
-
-	@Override
-	public void onAnimationRepeat(Animation animation) {
-		// TODO Auto-generated method stub
-		
-	}
-
-	@Override
-	public void onAnimationStart(Animation animation) {
-		// TODO Auto-generated method stub
-		
-	}
-	
-
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
-		case msgRefresh:
+		case MSG_REFRESH:
 			if(json == null){
 				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
 				break;
@@ -1311,7 +1174,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				e.printStackTrace();
 			}
 			break;			
-		case msgUpdate:
+		case MSG_UPDATE:
 			hideProgress();
 			GoodsList goods = JsonUtil.getGoodsListFromJson(json);
 			List<GoodsDetail> goodsDetails = goods.getData();
@@ -1338,7 +1201,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 
 //			setMetaObject(); FIXME: should update current UI.
 			break;
-		case msgDelete:
+		case MSG_DELETE:
 			hideProgress();
 			try {
 				JSONObject jb = new JSONObject(json);
@@ -1399,17 +1262,17 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 				if(REQUEST_TYPE.REQUEST_TYPE_DELETE == type){
 					requests = doDelete();
 					apiName = "ad_delete";
-					msgToSend = msgDelete;
+					msgToSend = MSG_DELETE;
 				}
 				else if(REQUEST_TYPE.REQUEST_TYPE_REFRESH == type){
 					requests = doRefresh(this.pay);
 					apiName = "ad_refresh";
-					msgToSend = msgRefresh;
+					msgToSend = MSG_REFRESH;
 				}
 				else if(REQUEST_TYPE.REQUEST_TYPE_UPDATE == type){
 					requests = doUpdate();
 					apiName = "ad_list";
-					msgToSend = msgUpdate;
+					msgToSend = MSG_UPDATE;
 				}
 				if(requests != null){
 					String url = Communication.getApiUrl(apiName, requests);
@@ -1476,7 +1339,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	}
 	
 	private ArrayList<String> doDelete(){
-		// TODO Auto-generated method stub
 		json = "";
 		ArrayList<String> list = new ArrayList<String>();
 
@@ -1499,7 +1361,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private HashMap<String, List<Integer> > imageMap = new HashMap<String, List<Integer> >();
 	private void increaseImageCount(String url, int pos){
 		if(url == null) return;
-//		Log.d("imagecount", "imagecount, increase:  " + url);
 		if(imageMap.containsKey(url)){
 			List<Integer> values = imageMap.get(url);
 			for(int i = 0; i < values.size(); ++ i){
@@ -1518,7 +1379,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	
 	private void decreaseImageCount(String url, int pos){
 		if(url == null) return;
-//		Log.d("imagecount", "imagecount, decrease:  " + url);
 		if(imageMap.containsKey(url)){
 			List<Integer> values = imageMap.get(url);
 			for(int i = 0; i < values.size(); ++ i){
@@ -1530,74 +1390,11 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			if(values.size() == 0){
 				QuanleimuApplication.getImageLoader().forceRecycle(url);
 				imageMap.remove(url);
-//				Log.d("remove", "imagecount    do remove");
 			}else{
 				imageMap.put(url, values);
-//				Log.d("0, remove", "imagecount not 0, no remove~~~~:   " + values.size());
 			}
 		}
 	}	
-
-	class VadImageAdapter extends BaseAdapter {
-
-
-		Context context;
-		List<String> listUrl;
-		private int position;
-		public VadImageAdapter(Context context, List<String> listUrl, int detailPostion) {
-			this.context = context;
-			this.listUrl = listUrl;
-			position = detailPostion;
-		}
-		
-		public void setContent(List<String> listUrl){
-			this.listUrl = listUrl;
-		}
-
-		@Override
-		public int getCount() {
-			return listUrl.size();
-		}
-		
-		public List<String> getImages()
-		{
-			return listUrl;
-		}
-
-		@Override
-		public Object getItem(int arg0) {
-			return listUrl.get(arg0);
-		}
-
-		@Override
-		public long getItemId(int position) {
-			return position;
-		}
-
-		@Override
-		public View getView(int position, View convertView, ViewGroup parent) {
-			View root = convertView;
-			if (root == null)
-			{
-				root = LayoutInflater.from(context).inflate(R.layout.item_detailview, null);
-			}
-			ImageView iv = (ImageView) root.findViewById(R.id.ivGoods);
-			iv.setImageBitmap(mb_loading.get());
-			
-			if (listUrl.size() != 0 && listUrl.get(position) != null && !listUrl.get(position).equals("")) {
-				String prevTag = (String)iv.getTag();
-				iv.setTag(listUrl.get(position));
-				SimpleImageLoader.showImg(iv, listUrl.get(position), prevTag, context);
-				increaseImageCount(listUrl.get(position), this.position);
-			}
-			
-			//Log.d("GoodDetailView: ", "getView for position-" + position);
-			
-			return root;
-		}
-
-
-	}
 
 	
 	@Override
@@ -1619,7 +1416,7 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void updateTitleBar(TitleDef title)
 	{
 		
-		if(isMyAd() || !isValidMessage()){
+		if(isMyAd() || !detail.isValidMessage()){
 			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
 		}
 		else{
@@ -1631,7 +1428,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 		if (favBtn != null)
 		{
 			favBtn.setText(isInMyStore() ? "取消收藏" : "收藏");
-//			favBtn.setImageResource(isInMyStore() ? R.drawable.icon_unfav : R.drawable.icon_fav);
 		}
 		
 		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);
@@ -1653,12 +1449,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 			viewTimes.setText(detail.getValueByKey("count") + "次查看");
 		}
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 	
     @Override
     public void onItemSelected(AdapterView<?> parent, View view, int position, long id)
@@ -1767,8 +1557,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	@Override
 	public boolean onContextItemSelected(MenuItem menuItem) {
 		
-		View v = getView();
-//		Log.d("goodetail","itemselect:"+menuItem.getItemId());
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
@@ -1792,7 +1580,6 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
-			Log.d("tracker","VIEWAD_SMS");
 			Tracker.getInstance()
 			.event(BxEvent.VIEWAD_SMS)
 			.end();
@@ -1853,6 +1640,12 @@ public class GoodDetailFragment extends BaseFragment implements AnimationListene
 	public boolean hasGlobalTab()
 	{
 		return false;
+	}
+
+	@Override
+	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
+		SimpleImageLoader.showImg(imageView, url, previousUrl, getActivity());
+		increaseImageCount(url, index);
 	}
 	
 }

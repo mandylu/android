@@ -34,11 +34,11 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
+import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener{
@@ -856,6 +856,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				String thumbnailPath = "";
 				if(thumbnailBmp != null){
 					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					QuanleimuApplication.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
 //					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
 					thumbnailPath = "thumbnail_" + path;
 					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
