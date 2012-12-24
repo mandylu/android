@@ -22,14 +22,12 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
-import com.baixing.entity.AllCates;
 import com.baixing.entity.BXLocation;
+import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.imageCache.LazyImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -205,8 +203,7 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	{
 		return QuanleimuApplication.needNotifiySwitchMode;
 	}
-	public static List<SecondStepCate> listUsualCates;
-
+	
 	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
 	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
 	public List<GoodsDetail> getListLookHistory() {
@@ -466,7 +463,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		this.listCityDetails = listCityDetails;
 	}
 
-	public List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
+//	public List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
+	
+	private Category allCategory = new Category();
 	
 	// 筛选木板中的类型集合
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
@@ -480,28 +479,36 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 	public void setCityEnglishName(String cityEnglishName) {
 		this.cityEnglishName = cityEnglishName;
 	}
-	public List<FirstStepCate> getListFirst() {
-		return listFirst;
-	}
+//	public List<FirstStepCate> getListFirst() {
+//		return listFirst;
+//	}
 	public String queryCategoryDisplayName(String englishName){
-		for(int i = 0;i<this.listFirst.size();i++){
-			FirstStepCate cate = this.listFirst.get(i);
-			if(cate.englishName.equals(englishName)){
-				return cate.name;
-			}
-			for(int j = 0; j< cate.children.size(); j++){
-				SecondStepCate s = cate.children.get(j);
-				if(s.englishName.equals(englishName)){
-					return s.name;
-				}
-			}
-		}
-		return englishName;
+//		for(int i = 0;i<this.listFirst.size();i++){
+//			FirstStepCate cate = this.listFirst.get(i);
+//			if(cate.englishName.equals(englishName)){
+//				return cate.name;
+//			}
+//			for(int j = 0; j< cate.children.size(); j++){
+//				SecondStepCate s = cate.children.get(j);
+//				if(s.englishName.equals(englishName)){
+//					return s.name;
+//				}
+//			}
+//		}
+		
+		Category cat = allCategory.findCategoryByEnglishName(englishName);
+		
+		return cat == null ? englishName : cat.getName();
 	}
 
-	public void setListFirst(List<FirstStepCate> listFirst) {
-		this.listFirst = listFirst;
+//	public void setListFirst(List<FirstStepCate> listFirst) {
+//		this.listFirst = listFirst;
+//	}
+	
+	public List<Category> getFirstLevelCategory() {
+		return allCategory.getChildren();
 	}
+	
 
 	BXLocation location = null;
 	boolean location_updated = false;
@@ -758,8 +765,9 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		
 		String json = pair.second;
 		if (json != null && json.length() > 0) {
-			AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));
-			QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
+//			AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));//TODO:
+//			QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
+			this.allCategory = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
 		}
 	
 	}

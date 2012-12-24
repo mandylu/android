@@ -12,15 +12,12 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.GridView;
 import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.FirstStepCate;
-import com.baixing.tracking.Tracker;
-import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.entity.Category;
 import com.quanleimu.activity.R;
 
 public class GridCateFragment extends BaseFragment implements OnItemClickListener {
@@ -84,15 +81,16 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	
 	@Override
 	public void onItemClick(AdapterView<?> adapterView, View view, int index, long arg3) {
-		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
-				.getListFirst();
+//		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
+//				.getListFirst();
+		List<Category> allCates = QuanleimuApplication.getApplication().getFirstLevelCategory();
 		if (allCates == null || allCates.size() <= index)
 			return;
 		
-		FirstStepCate selectedCate = null;
+		Category selectedCate = null;
 		String selText = texts[index];
 		for (int i = 0; i < allCates.size(); ++i) {
-			if (allCates.get(i).name.equals(selText)){
+			if (allCates.get(i).getName().equals(selText)){
 				selectedCate = allCates.get(i);
 				break;
 			}
