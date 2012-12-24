@@ -205,7 +205,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	@SuppressWarnings("unchecked")
 	public BxBaseTestCase() throws Exception {
-		super("com.quanleimu.activity", "com.quanleimu.activity.QuanleimuMainActivity");
+		super("com.quanleimu.activity", "com.baixing.activity.QuanleimuMainActivity");
 		AthrunTestCase.setMaxTimeToFindView(3000);
 	}
 	
