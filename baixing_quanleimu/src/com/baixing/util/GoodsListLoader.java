@@ -9,12 +9,17 @@ import java.util.ArrayList;
 import java.util.List;
 
 import org.apache.http.client.HttpClient;
+import org.json.JSONObject;
 
 import android.os.Handler;
 import android.util.Log;
 
 import com.baixing.entity.GoodsList;
-
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiListener;
+import com.baixing.android.api.ApiParams;
+import com.baixing.activity.QuanleimuApplication;
 
 public class GoodsListLoader implements Serializable{
 	
@@ -28,7 +33,7 @@ public class GoodsListLoader implements Serializable{
 	};
 	
 	private GoodsList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
-	private List<String> params = null;
+	private ApiParams params = null;
 	private String mFields = "";
 	private boolean mIsFirst = true;
 	private boolean mHasMore = true;
@@ -66,7 +71,7 @@ public class GoodsListLoader implements Serializable{
 		this.mHandler = null;
 	}
 	
-	public GoodsListLoader(List<String> params, Handler handler, String fields, GoodsList goodsList){
+	public GoodsListLoader(ApiParams params, Handler handler, String fields, GoodsList goodsList){
 		this.params = params;
 		
 		mHandler = handler;
@@ -80,7 +85,7 @@ public class GoodsListLoader implements Serializable{
 		}
 	}
 	
-	public void setParams(List<String> params){
+	public void setParams(ApiParams params){
 		this.params = params;
 	}
 	
@@ -187,7 +192,7 @@ public class GoodsListLoader implements Serializable{
 		this.isUserList = isUserList;
 	}
 	
-	class GetGoodsListThread implements Runnable {
+	class GetGoodsListThread implements Runnable, ApiListener {
 		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
@@ -198,10 +203,23 @@ public class GoodsListLoader implements Serializable{
 		private boolean isNearby = false;
 		private boolean isUserList = false;
 		
+		private void initApi(){
+			String udid = Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext());
+			//FIXME: move following code to app entry
+			ApiClient.getInstance().init(QuanleimuApplication.getApplication().getApplicationContext(),
+					udid, 
+					QuanleimuApplication.version, 
+					QuanleimuApplication.channelId,
+					QuanleimuApplication.getApplication().cityEnglishName,
+					QuanleimuApplication.getApplication());
+		}
+		
 		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
+			
+			initApi();
 		}
 		
 		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
@@ -211,58 +229,54 @@ public class GoodsListLoader implements Serializable{
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
+			
+			initApi();
 		}
 		
 		public void cancel(){
 			mCancel = true;
-			
-			if(null != mHttpClient){
-				mHttpClient.getConnectionManager().shutdown();
-			}
-			
-			//Log.d("GoodsListLoader", "http connection has been shutdown!!");
 		}
 		
 		private void exit(){
 			GoodsListLoader.this.mCurThread = null;
 		}
 		
-		private boolean wantedExists(ArrayList<String> list){
+		private boolean wantedExists(ApiParams list){
 			Log.d("wantedExist", list.toString());
-			for(String item : list){
-				if(item.contains("wanted:")){
-					return true;
-				}
-			}
-			return false;
+			return (list.getParam("wanted") != null);
+		}
+		
+		public void start(){
+			run();
 		}
 		
 		@Override
 		public void run() {
+			
 			if(mCancel) {
 				exit();
 				return;
 			}
-			
-			ArrayList<String> list = new ArrayList<String>();
-
-			if(null != mFields && mFields.length() > 0)
-				list.add("fields=" + URLEncoder.encode(mFields));
-			
+			ApiParams list = new ApiParams();
+			if(this.dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL){
+				list.useCache = true;
+			}
 			if(params != null){
-				list.addAll(params);
+				list.setParams(params.getParams());
 			}
 			
-			list.add("start=" + (mIsFirst ? 0 : mGoodsList.getData().size()));
+			if(null != mFields && mFields.length() > 0)
+				list.addParam("fields",mFields);
+			list.addParam("start",  "" + (mIsFirst ? 0 : mGoodsList.getData().size()));
 			if(mRt){
-				list.add("rt=1");
+				list.addParam("rt","1");
 			}
 			if(mRows > 0)
-				list.add("rows=" + mRows);
+				list.addParam("rows", "" + mRows);
 			
 			
 			if(!this.wantedExists(list)){//如果没有显式的制定wanted，那么默认wanted＝0, 只显示 “转让信息”
-				list.add("wanted=0");
+				list.addParam("wanted","0");
 			}
 			
 			if(mCancel) {
@@ -270,76 +284,53 @@ public class GoodsListLoader implements Serializable{
 				return;
 			}
 			
-			String url = Communication.getApiUrl(this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName), list);
-//			Log.d("url", "urllll   " + url);
-//			if(Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL != dataPolicy){
-//				Log.d("ListViewUrl", url);
-//			}
-			
-			mHttpClient = NetworkProtocols.getInstance().getHttpClient();
-			
-			try {
-				if(mCancel) {
-					exit();
-					return;
-				}
-				
-				mLastJson = Communication.getDataByUrl(mHttpClient, url, dataPolicy);
-
-				if(mCancel) {
-					exit();
-					return;
-				}
-				
-				if (mLastJson != null && !mLastJson.equals("")) {
-					if (!mIsFirst) {
-						if(mHandler != null){
-							mHandler.sendEmptyMessage(msgMore);
-						}
-					} else {
-						mIsFirst = false;
-						if(mHandler != null){
-							mHandler.sendEmptyMessage(msgFirst);
-						}
-					}
-					
-					//only when data is valid, do we need to updata listdata status
-					GoodsListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
-															E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
-															E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	GoodsListLoader.this.mStatusListdataExisting;
-				} else {
-					if(!mIsFirst){
-						if(mHandler != null){
-							mHandler.sendEmptyMessage(msgNoMore);
-						}
-					}else{
-						if(mHandler != null){
-							mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
-						}
-					}
-				}
-				
-				exit();
-				return;
-			} catch (UnsupportedEncodingException e) {
-			} catch (IOException e) {
-				if(!mCancel){
+			String method = this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName);
+			ApiClient.getInstance().remoteCall(method, list, this);
+		}
+		
+		
+		public void onComplete(JSONObject json, String rawData){
+			mLastJson = rawData;
+			if (mLastJson != null && !mLastJson.equals("")) {
+				if (!mIsFirst) {
 					if(mHandler != null){
-						mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						mHandler.sendEmptyMessage(msgMore);
+					}
+				} else {
+					mIsFirst = false;
+					if(mHandler != null){
+						mHandler.sendEmptyMessage(msgFirst);
 					}
 				}
-				exit();
-				return;
-			} catch (Communication.BXHttpException e){
 				
+				//only when data is valid, do we need to update listdata status
+				GoodsListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
+														E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
+														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	GoodsListLoader.this.mStatusListdataExisting;
+			} else {
+				if(!mIsFirst){
+					if(mHandler != null){
+						mHandler.sendEmptyMessage(msgNoMore);
+					}
+				}else{
+					if(mHandler != null){
+						mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
+					}
+				}
 			}
 			
+		}
+		public void onError(ApiError error){
+			
+		}
+		public void onException(Exception e){
 			if(!mCancel){
 				if(mHandler != null){
-					mHandler.sendEmptyMessage(MSG_EXCEPTION);
+					mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				}
 			}
-			exit();
 		}
 	}
+	
+	
 }
