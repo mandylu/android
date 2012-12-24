@@ -153,12 +153,14 @@ public class ApiClient {
 			Log.e(LOG_TAG, jsonStr);
 			listener.onError(error);
 		} else {
-			listener.onComplete(json);
+			listener.onComplete(json,jsonStr);
 		}
 	}
 
 	private ApiError parseError(JSONObject json) throws JSONException {
-		JSONObject resp = json.optJSONObject("error_response");
+		
+		return null;//for now error definition not unified, disable the feature
+		/*JSONObject resp = json.optJSONObject("error_response");
 		if (resp == null) {
 			return null;
 		}
@@ -175,6 +177,7 @@ public class ApiClient {
 			error.setSubMsg(sub_msg);
 		}
 		return error;
+		*/
 	}
 
 		

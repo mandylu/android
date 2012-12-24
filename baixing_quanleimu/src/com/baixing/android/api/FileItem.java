@@ -1,3 +1,4 @@
+//liuweili@baixing.com
 package com.baixing.android.api;
 import java.io.ByteArrayOutputStream;
 import java.io.File;

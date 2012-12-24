@@ -36,6 +36,7 @@ import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
+import com.baixing.android.api.ApiParams;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder, Observer {
     private boolean isFav = false;
@@ -463,7 +464,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     public void updateAdsThread(boolean isFav, boolean isGetMore) {
 
-        ArrayList<String> list = new ArrayList<String>();
+        ApiParams list = new ApiParams();
         List<GoodsDetail> details = isFav ? QuanleimuApplication.getApplication().getListMyStore() :
                 QuanleimuApplication.getApplication().getListLookHistory();
 
@@ -477,10 +478,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             for (int i = startIndex + 1; i < details.size() && i < startIndex + ITEMS_PER_REQUEST; ++i) {
                 ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
             }
-            list.add("query=(" + ids + ")");
+            list.addParam("query", "(" + ids + ")");
         }
 
-        list.add("rt=1");
+        list.addParam("rt", "1");
 
         int msgGotFirst = (isFav ? MSG_UPDATEFAV : MSG_UPDATEHISTORY);
         int msgGotMore = (isFav ? MSG_GOTMOREFAV : MSG_GOTMOREHISTORY);

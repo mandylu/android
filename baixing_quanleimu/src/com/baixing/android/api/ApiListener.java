@@ -1,3 +1,4 @@
+//liuweili@baixing.com
 package com.baixing.android.api;
 
 import org.json.JSONObject;
@@ -7,7 +8,7 @@ public interface ApiListener {
 	 * API调用成功后返回值以json对象方式通知监听器
 	 * @param json
 	 */
-	void onComplete(JSONObject json);
+	void onComplete(JSONObject json, String rawData);
 	/**
 	 * 出现业务错误时通知监听器错误码及字错误码等信息
 	 * @param error

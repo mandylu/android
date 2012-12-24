@@ -54,6 +54,7 @@ import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
+import com.baixing.android.api.ApiParams;
 
 public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
@@ -297,21 +298,21 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 	}
 	
-	private ArrayList<String> getSearchParams()
+	private ApiParams getSearchParams()
 	{
-		ArrayList<String> basicParams = new ArrayList<String>();
-		basicParams.add("query=" + filterParamHolder.toUrlString());
+		ApiParams basicParams = new ApiParams();
+		basicParams.addParam("query", filterParamHolder.toUrlString());
 		// keyword 单独处理，放到ad_list的keyword参数里。
 		String keyword = filterParamHolder.getData("");
 		if (keyword != null && keyword.length() > 0)
 		{
-			basicParams.add("keyword=" + URLEncoder.encode(keyword));
+			basicParams.addParam("keyword", keyword);
 		}
 		
 		if (isSerchNearBy() && this.curLocation != null)
 		{
-			basicParams.add("lat="+curLocation.fLat);
-			basicParams.add("lng="+curLocation.fLon);	
+			basicParams.addParam("lat" , "" + curLocation.fLat);
+			basicParams.addParam("lng" , "" + curLocation.fLon);	
 		}
 		
 		return basicParams;

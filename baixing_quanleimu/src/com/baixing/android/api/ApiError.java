@@ -1,3 +1,4 @@
+//liuweili@baixing.com
 package com.baixing.android.api;
 
 public class ApiError {

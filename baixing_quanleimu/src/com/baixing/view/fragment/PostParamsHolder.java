@@ -1,7 +1,6 @@
 package com.baixing.view.fragment;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -111,14 +110,14 @@ public final class PostParamsHolder implements Serializable {
 			if (!"".equals(key))
 			{
 				result.append(" AND ")
-				.append(URLEncoder.encode(key)).append(":")
-				.append(URLEncoder.encode(postValuemap.get(key)));
+				.append(key).append(":")
+				.append(postValuemap.get(key));
 			}
 		}
 		
-		if (result.length() > 4)
+		if (result.length() > 5)
 		{
-			result.replace(0, 4, "");
+			result.replace(0, 5, "");
 		}
 		return result.toString();
 		
