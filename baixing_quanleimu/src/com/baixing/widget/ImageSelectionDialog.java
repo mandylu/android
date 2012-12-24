@@ -319,6 +319,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			Log.d("index", "bitmap:   onsave: " + String.valueOf(currentImgView));
 			outState.putBundle(KEY_BUNDLE, bundle);
 			outState.putSerializable(KEY_IMG_CONTAINER, imgContainer);
+			if(this.bundle != null){
+				bundle.putSerializable(KEY_IMG_CONTAINER, imgContainer);
+			}
 		}
 	}
 
