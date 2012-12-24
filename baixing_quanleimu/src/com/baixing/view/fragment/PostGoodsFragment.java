@@ -53,13 +53,13 @@ import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
-import com.baixing.util.Tracker;
 import com.baixing.util.LocationService.BXRgcListener;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.ImageSelectionDialog;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
@@ -444,8 +444,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		json = pair.second;
-		if (json != null && json.length() > 0) {
-			addCategoryItem();
+		if (json != null && json.length() > 0) {			
 			if (pair.first + (24 * 3600) < System.currentTimeMillis()/1000) {
 				showSimpleProgress();
 				new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
@@ -453,6 +452,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				if(postList == null || postList.size() == 0){
 					postList = JsonUtil.getPostGoodsBean(json);
 				}
+				addCategoryItem();
 				buildPostLayout(postList);
 				loadCachedData();
 			}

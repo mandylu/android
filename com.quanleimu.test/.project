@@ -3,7 +3,7 @@
 	<name>com.quanleimu.test</name>
 	<comment></comment>
 	<projects>
-		<project>com.quanleimu.activity.QuanleimuMainActivity</project>
+		<project>android_baixing</project>
 	</projects>
 	<buildSpec>
 		<buildCommand>

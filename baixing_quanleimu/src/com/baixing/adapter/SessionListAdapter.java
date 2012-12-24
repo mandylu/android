@@ -22,10 +22,10 @@ import android.widget.TextView;
 
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.ChatSession;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.quanleimu.activity.R;
 
 public class SessionListAdapter extends BaseAdapter {

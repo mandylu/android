@@ -19,8 +19,8 @@ import android.widget.SimpleAdapter;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.FirstStepCate;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.quanleimu.activity.R;
 
 public class GridCateFragment extends BaseFragment implements OnItemClickListener {

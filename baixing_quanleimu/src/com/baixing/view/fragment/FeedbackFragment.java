@@ -23,9 +23,9 @@ import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
 import com.baixing.entity.UserBean;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 

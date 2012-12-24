@@ -1,4 +1,5 @@
-package com.baixing.util;
+//xuweiyan@baixing.com
+package com.baixing.tracking;
 
 import java.io.File;
 import java.util.ArrayList;
@@ -13,6 +14,9 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.baixing.activity.QuanleimuApplication;
+import com.baixing.util.Communication;
+import com.baixing.util.GzipUtil;
+import com.baixing.util.Util;
 
 //singleton
 public class Sender implements Runnable{
