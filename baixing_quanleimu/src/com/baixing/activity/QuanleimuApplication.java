@@ -237,6 +237,19 @@ public class QuanleimuApplication implements LocationService.BXLocationServiceLi
 		return this.listMyStore;
 	}
 	
+	public boolean isFav(GoodsDetail detail) {
+		if(detail == null) return false;
+		List<GoodsDetail> myStore = QuanleimuApplication.getApplication().getListMyStore();
+		if(myStore == null) return false;
+		for(int i = 0; i < myStore.size(); ++ i){
+			if(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+				return true;
+			}
+		}
+		return false;
+	}
+	
 	public List<GoodsDetail> removeFav(GoodsDetail detail)
 	{
 		if (this.listMyStore == null || detail == null)

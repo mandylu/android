@@ -1,37 +1,23 @@
 //liuchong@baixing.com
 package com.baixing.util;
 
-import java.io.File;
-
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.broadcast.NotificationIds;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
-import com.baixing.view.fragment.LoginFragment;
-import com.quanleimu.activity.R;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.baixing.broadcast.NotificationIds;
+import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.quanleimu.activity.R;
 
 /**
  * 

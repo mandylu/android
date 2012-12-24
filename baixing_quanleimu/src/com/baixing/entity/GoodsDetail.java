@@ -190,4 +190,8 @@ public class GoodsDetail implements Serializable{
 		return false;
 	}
 	
+	public boolean isValidMessage() {
+		return !this.getValueByKey("status").equals("4") && !this.getValueByKey("status").equals("20");
+	}
+	
 }
