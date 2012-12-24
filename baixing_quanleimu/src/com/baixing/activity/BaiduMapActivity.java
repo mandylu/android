@@ -120,8 +120,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			Thread getCoordinate = new Thread(new Runnable(){
 	            @Override
 	            public void run() {
-	            	if(QuanleimuApplication.getApplication().getApplicationContext() == null) return;
-					String city = QuanleimuApplication.getApplication().cityName;
+	            	if(GlobalDataManager.getApplication().getApplicationContext() == null) return;
+					String city = GlobalDataManager.getApplication().cityName;
 					if(!city.equals("")){
 						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
 						try{
@@ -231,8 +231,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		this.setTheme(R.style.lightTheme);
 		super.onCreate(savedInstanceState);
-		if(QuanleimuApplication.context == null){
-			QuanleimuApplication.context = new WeakReference<Context>(this);
+		if(GlobalDataManager.context == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
 		this.setContentView(R.layout.baidumaplayout);
 		findViewById(R.id.search_action).setVisibility(View.GONE);
@@ -245,8 +245,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		
 		if (mBMapMan == null) 
 		{
-			mBMapMan = new BMapManager(QuanleimuApplication.getApplication().getApplicationContext());
-			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
+			mBMapMan = new BMapManager(GlobalDataManager.getApplication().getApplicationContext());
+			mBMapMan.init(GlobalDataManager.getApplication().mStrKey, new GlobalDataManager.MyGeneralListener());
 		}
 		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {
 			

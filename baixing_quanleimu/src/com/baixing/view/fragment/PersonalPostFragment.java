@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
@@ -86,7 +86,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
-		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+		listMyPost = GlobalDataManager.getApplication().getListMyPost();
 		filterOutAd(listMyPost, user);
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
@@ -137,7 +137,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		try {
 			if (!Communication.isNetworkActive()) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -323,7 +323,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				}
 			}
 			if(msg.what == MSG_MYPOST){
-				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				GlobalDataManager.getApplication().setListMyPost(listMyPost);
 			}
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
@@ -374,7 +374,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 						}
 					}
 					if(msg.arg1 == -1){
-						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+						GlobalDataManager.getApplication().setListMyPost(listMyPost);
 					}
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
@@ -403,7 +403,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			
 			Message msg2 = Message.obtain();
 			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
 			lvGoodsList.onRefreshComplete();
 			lvGoodsList.onFail();
 			
@@ -622,9 +622,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         try {
             json = Communication.getDataByUrl(url, true);
         } catch (UnsupportedEncodingException e) {
-            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
         } catch (IOException e) {
-            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
         } catch (Communication.BXHttpException e){
 
         }finally {
@@ -706,9 +706,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				return;
 
 			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 			} catch (Communication.BXHttpException e){
 				
 			}
@@ -771,12 +771,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			if(glLoader.getGoodsList() != null 
 					&& glLoader.getGoodsList().getData() != null 
 					&& glLoader.getGoodsList().getData().size() > 0){
-				if(QuanleimuApplication.getApplication().getListMyPost() == null ||
-						QuanleimuApplication.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
+				if(GlobalDataManager.getApplication().getListMyPost() == null ||
+						GlobalDataManager.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
 					GoodsList gl = new GoodsList();
-					gl.setData(QuanleimuApplication.getApplication().getListMyPost());
+					gl.setData(GlobalDataManager.getApplication().getListMyPost());
 					glLoader.setGoodsList(gl);
-					adapter.setList(QuanleimuApplication.getApplication().getListMyPost());
+					adapter.setList(GlobalDataManager.getApplication().getListMyPost());
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
 				}

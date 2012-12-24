@@ -30,7 +30,7 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -54,7 +54,7 @@ public class Communication implements Comparator<String> {
 	 
 	 public static boolean isWifiConnection() {
 		ConnectivityManager connectivityManager = 
-				(ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+				(ConnectivityManager) GlobalDataManager.getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null
 				&& activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -64,7 +64,7 @@ public class Communication implements Comparator<String> {
 	}
 
 	public static boolean isNetworkActive() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext()
+		ConnectivityManager connectivityManager = (ConnectivityManager) GlobalDataManager.getApplication().getApplicationContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null) {
@@ -89,14 +89,14 @@ public class Communication implements Comparator<String> {
 		 * if(MyApplication.udid.equals("") ||
 		 * MyApplication.version.equals("")){ getudid(); getversion(); }
 		 */
-		list.add("udid=" + Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext()));
-		list.add("version=" + Util.getVersion(QuanleimuApplication.getApplication().getApplicationContext()));
+		list.add("udid=" + Util.getDeviceUdid(GlobalDataManager.getApplication().getApplicationContext()));
+		list.add("version=" + Util.getVersion(GlobalDataManager.getApplication().getApplicationContext()));
 		list.add("api_key=" + apiKey);
-		list.add("channel=" + QuanleimuApplication.channelId);
+		list.add("channel=" + GlobalDataManager.channelId);
 		list.add("timestamp=" + getTimeStamp());
-		list.add("userId=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
-		if(QuanleimuApplication.getApplication() != null){
-			list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
+		list.add("userId=" + Util.getMyId(GlobalDataManager.getApplication().getApplicationContext()) );
+		if(GlobalDataManager.getApplication() != null){
+			list.add("city=" + GlobalDataManager.getApplication().getCityEnglishName());
 		}
 		
 		Collections.sort(list, COMPARATOR);
@@ -328,11 +328,11 @@ public class Communication implements Comparator<String> {
 	}
 	
 	private static void registerDevice(HttpClient httpClient){
-		UserBean currentUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
+		UserBean currentUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", UserBean.class);
 		if(currentUser == null){
-			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
+			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
 			if(anonymousUser != null){
-				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+				Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", anonymousUser);
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, anonymousUser);
 				return;
 			}
@@ -368,8 +368,8 @@ public class Communication implements Comparator<String> {
 //					user.
 //					user.setPhone(userObj.getString("mobile"));
 					
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", user);
+					Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", user);
+					Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "anonymousUser", user);
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, user);
 				} 
 				return;
@@ -435,7 +435,7 @@ public class Communication implements Comparator<String> {
 		if(shutdown){
 //			Profiler.markStart("REQ_STORE");
 			httpClient.getConnectionManager().shutdown();
-			QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
+			GlobalDataManager.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
 //			Profiler.markEnd("REQ_STORE");
 		}
 		return result;
@@ -466,7 +466,7 @@ public class Communication implements Comparator<String> {
 
 	public static String getCacheRequestIfExist(String url) {
 		String extractedUrl = Util.extractUrlWithoutSecret(url);
-		String result = QuanleimuApplication
+		String result = GlobalDataManager
 				.getCacheNetworkRequest(extractedUrl);
 		if (result != null && !result.equals("")) {
 			return result;
@@ -546,7 +546,7 @@ public class Communication implements Comparator<String> {
 			if ((temp.startsWith("[") && temp.endsWith("]")) || 
 					(temp.startsWith("{") && temp.endsWith("}")))
 			{
-				QuanleimuApplication.putCacheNetworkRequest(
+				GlobalDataManager.putCacheNetworkRequest(
 						Util.extractUrlWithoutSecret(url), temp);
 			}
 		}

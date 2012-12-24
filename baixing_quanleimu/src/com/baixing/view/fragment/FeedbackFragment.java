@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
@@ -188,11 +188,11 @@ public class FeedbackFragment extends BaseFragment {
 					sendMessage(1, null);
 				}
 			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				hideProgress();
 				
 			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

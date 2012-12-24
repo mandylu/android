@@ -15,7 +15,7 @@ public class EntryApplication extends Application {
 	public void onCreate() {
 		super.onCreate();
 		
-		QuanleimuApplication.context = new WeakReference<Context>(getApplicationContext());
+		GlobalDataManager.context = new WeakReference<Context>(getApplicationContext());
 	}
 
 	/* (non-Javadoc)

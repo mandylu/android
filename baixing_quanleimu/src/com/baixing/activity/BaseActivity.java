@@ -70,12 +70,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     public void onSaveInstanceState(Bundle savedInstanceState) {
 		Log.d("baseactivity", "save");
 		LocationService.getInstance().stop();
-		savedInstanceState.putString("cityEnglishName", QuanleimuApplication.getApplication().getCityEnglishName());
-		savedInstanceState.putString("cityName", QuanleimuApplication.getApplication().getCityName());
+		savedInstanceState.putString("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName());
+		savedInstanceState.putString("cityName", GlobalDataManager.getApplication().getCityName());
 		
 		ArrayList<String>strDetails = new ArrayList<String>();
-		for(int i = 0; i < QuanleimuApplication.getApplication().getListCityDetails().size(); ++ i){
-			CityDetail detail = QuanleimuApplication.getApplication().getListCityDetails().get(i);
+		for(int i = 0; i < GlobalDataManager.getApplication().getListCityDetails().size(); ++ i){
+			CityDetail detail = GlobalDataManager.getApplication().getListCityDetails().get(i);
 			String tstrDetail = "englishName=" + detail.getEnglishName()
 					+ ",id=" + detail.getId()
 					+ ",name=" + detail.getName()
@@ -95,8 +95,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     public void onRestoreInstanceState(Bundle savedInstanceState) {
     	savedInstance = false;
     	super.onRestoreInstanceState(savedInstanceState);
-    	QuanleimuApplication.getApplication().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
-    	QuanleimuApplication.getApplication().setCityName(savedInstanceState.getString("cityName"));
+    	GlobalDataManager.getApplication().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
+    	GlobalDataManager.getApplication().setCityName(savedInstanceState.getString("cityName"));
 		
 		ArrayList<String>listDetails = savedInstanceState.getStringArrayList("cityDetails");
 		
@@ -122,7 +122,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			}
 			cityDetails.add(detail);
 		}
-		QuanleimuApplication.getApplication().setListCityDetails(cityDetails);
+		GlobalDataManager.getApplication().setListCityDetails(cityDetails);
 		firstFragmentId = savedInstanceState.getInt(BUNDLE_KEYS.KEY_FIRST_FRAGMENT_ID, INVALID_FIRSTFRAGMENT_ID);
     }
 	
@@ -202,7 +202,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		{
 			return; //No need first run.
 		}
-		String key = f.getClass().getName() + QuanleimuApplication.version;
+		String key = f.getClass().getName() + GlobalDataManager.version;
 		SharedPreferences share = this.getSharedPreferences(PREF_FIRSTRUN, MODE_PRIVATE);
 		boolean shown = share.getBoolean(key, false);
 		if (!shown)

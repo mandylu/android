@@ -19,7 +19,7 @@ import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 
 public class GoodsListLoader implements Serializable{
 	
@@ -204,14 +204,14 @@ public class GoodsListLoader implements Serializable{
 		private boolean isUserList = false;
 		
 		private void initApi(){
-			String udid = Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext());
+			String udid = Util.getDeviceUdid(GlobalDataManager.getApplication().getApplicationContext());
 			//FIXME: move following code to app entry
-			ApiClient.getInstance().init(QuanleimuApplication.getApplication().getApplicationContext(),
+			ApiClient.getInstance().init(GlobalDataManager.getApplication().getApplicationContext(),
 					udid, 
-					QuanleimuApplication.version, 
-					QuanleimuApplication.channelId,
-					QuanleimuApplication.getApplication().cityEnglishName,
-					QuanleimuApplication.getApplication());
+					GlobalDataManager.version, 
+					GlobalDataManager.channelId,
+					GlobalDataManager.getApplication().cityEnglishName,
+					GlobalDataManager.getApplication());
 		}
 		
 		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){

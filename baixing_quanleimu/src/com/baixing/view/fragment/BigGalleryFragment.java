@@ -33,7 +33,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.tracking.Tracker;
@@ -90,7 +90,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
-		QuanleimuApplication.getImageLoader().enableSampleSize();
+		GlobalDataManager.getImageLoader().enableSampleSize();
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
@@ -155,14 +155,14 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
-        QuanleimuApplication.getImageLoader().disableSampleSize();
+        GlobalDataManager.getImageLoader().disableSampleSize();
   		SimpleImageLoader.Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
 //  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+  					GlobalDataManager.getImageLoader().forceRecycle(url);
 //  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
@@ -237,7 +237,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    	this.pv = PV.VIEWADPIC;
 	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
-	    	QuanleimuApplication.getImageLoader().enableSampleSize();
+	    	GlobalDataManager.getImageLoader().enableSampleSize();
 			if (null == mb || mb.get() == null) {
 				BitmapFactory.Options o = new BitmapFactory.Options();
 				o.inPurgeable = true;

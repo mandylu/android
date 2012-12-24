@@ -9,7 +9,7 @@ import android.os.Handler;
 import android.os.IBinder;
 import android.os.Message;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.activity.QuanleimuMainActivity;
 import com.quanleimu.activity.R;
 

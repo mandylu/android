@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -128,7 +128,7 @@ public class SearchFragment extends BaseFragment {
 				bundle.putString("categoryEnglishName", cate.getEnglishName());
 				
 				
-				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)
@@ -137,7 +137,7 @@ public class SearchFragment extends BaseFragment {
 						
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							QuanleimuApplication.setTextMode(false);
+							GlobalDataManager.setTextMode(false);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
 					})
@@ -145,7 +145,7 @@ public class SearchFragment extends BaseFragment {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							QuanleimuApplication.setTextMode(true);
+							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
@@ -289,7 +289,7 @@ public class SearchFragment extends BaseFragment {
 			List<String> parameters = new ArrayList<String>();
 			parameters.add("query="
 					+ URLEncoder.encode(SearchFragment.this.searchContent));
-		    parameters.add("cityEnglishName=" + URLEncoder.encode(QuanleimuApplication.getApplication().getCityEnglishName()));
+		    parameters.add("cityEnglishName=" + URLEncoder.encode(GlobalDataManager.getApplication().getCityEnglishName()));
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
 				String json = Communication.getDataByUrl(apiUrl, true);

@@ -16,7 +16,7 @@ import android.widget.ListView;
 import android.widget.SimpleAdapter;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.quanleimu.activity.R;
 
@@ -83,7 +83,7 @@ public class GridCateFragment extends BaseFragment implements OnItemClickListene
 	public void onItemClick(AdapterView<?> adapterView, View view, int index, long arg3) {
 //		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 //				.getListFirst();
-		List<Category> allCates = QuanleimuApplication.getApplication().getFirstLevelCategory();
+		List<Category> allCates = GlobalDataManager.getApplication().getFirstLevelCategory();
 		if (allCates == null || allCates.size() <= index)
 			return;
 		

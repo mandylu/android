@@ -27,7 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.GoodsListAdapter;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
@@ -110,7 +110,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	public void handleRightAction(){
         //发布赌约
-        QuanleimuApplication.postEntryFlag = 1;
+        GlobalDataManager.postEntryFlag = 1;
 
 		String categoryName = getArguments().getString("categoryName");
 		categoryName = categoryEnglishName + "," + categoryName;
@@ -155,7 +155,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		{
 			filterParamHolder = new PostParamsHolder();
 			getArguments().putSerializable("filterResult", filterParamHolder);
-			filterParamHolder.put("cityEnglishName", QuanleimuApplication.getApplication().getCityEnglishName(), QuanleimuApplication.getApplication().getCityEnglishName());
+			filterParamHolder.put("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName(), GlobalDataManager.getApplication().getCityEnglishName());
 			filterParamHolder.put("categoryEnglishName", categoryEnglishName, categoryEnglishName);
 			filterParamHolder.put("status", "" + 0, "" + 0);
 			if (searchContent != null)
@@ -232,7 +232,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									getActivity(),
 									"saveFilterss"
 									+ categoryEnglishName
-									+ QuanleimuApplication.getApplication().cityEnglishName);
+									+ GlobalDataManager.getApplication().cityEnglishName);
 			String json = pair.second;
 			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
@@ -263,14 +263,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, 
+							"saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, 
 							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();
@@ -348,7 +348,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		lvGoodsList.setOnScrollListener(this);
 
 	
-		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
+		curLocation = GlobalDataManager.getApplication().getCurrentPosition(true);
 //		List<String> addParams = new ArrayList<String>(basicParams);
 		if(curLocation == null && isSerchNearBy()/* || searchType == 0*/){
 //			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
@@ -397,7 +397,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		String categoryName = getArguments().getString("categoryName");
 		if(categoryName == null || categoryName.equals("")){
 			if(categoryEnglishName != null){
-				categoryName = QuanleimuApplication.getApplication().queryCategoryDisplayName(categoryEnglishName);
+				categoryName = GlobalDataManager.getApplication().queryCategoryDisplayName(categoryEnglishName);
 				if(categoryName != null) getArguments().putString("categoryName", categoryName);
 			}
 		}
@@ -449,7 +449,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
 //										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										QuanleimuApplication.getImageLoader().prepareRecycle(c[0]);
+										GlobalDataManager.getImageLoader().prepareRecycle(c[0]);
 //										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
 									}
 								 }
@@ -460,7 +460,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			 }
 		}
 
-		QuanleimuApplication.getImageLoader().startRecycle();
+		GlobalDataManager.getImageLoader().startRecycle();
 		System.gc();
 		super.onDestroy();
 	}
@@ -549,7 +549,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				Bundle bundle = new Bundle();
 				bundle.putString("popup_message", "没有符合的结果，请更改条件并重试！");
 				msg1.setData(bundle);
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+				GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg1);
 
 				GoodsListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
@@ -660,7 +660,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 			Message msg2 = Message.obtain();
 			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
 			
 			lvGoodsList.onFail();
 			

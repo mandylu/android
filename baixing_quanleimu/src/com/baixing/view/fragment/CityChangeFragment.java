@@ -24,7 +24,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.jsonutil.LocateJsonData;
@@ -35,7 +35,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
-public class CityChangeFragment extends BaseFragment  implements QuanleimuApplication.onLocationFetchedListener, View.OnClickListener {
+public class CityChangeFragment extends BaseFragment  implements GlobalDataManager.onLocationFetchedListener, View.OnClickListener {
 	// 定义控件名
 	public ScrollView parentView;
 	
@@ -65,7 +65,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		String cityName = QuanleimuApplication.getApplication().cityName;
+		String cityName = GlobalDataManager.getApplication().cityName;
 		if (cityName != null && cityName.length() > 0)
 			title.m_leftActionHint = "返回";
 		title.m_title = "选择城市";		
@@ -131,9 +131,9 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		rootView.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 		// 获取热门城市列表数据
 		listHotCity = LocateJsonData.hotCityList();
-		QuanleimuApplication.getApplication().setListHotCity(listHotCity);
+		GlobalDataManager.getApplication().setListHotCity(listHotCity);
  
-		cityName = QuanleimuApplication.getApplication().getCityName();
+		cityName = GlobalDataManager.getApplication().getCityName();
 		
 		// 通过或ID获取控件
 		parentView = (ScrollView)rootView.findViewById(R.id.llParentView);
@@ -206,7 +206,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 				
 					initShengMap();
 					
-					HashMap<String,  List<CityDetail>> shengMap = QuanleimuApplication.getApplication().getShengMap();
+					HashMap<String,  List<CityDetail>> shengMap = GlobalDataManager.getApplication().getShengMap();
 					String[] shengArray= shengMap.keySet().toArray(new String[0]);
 					for (int i = 0; i < shengMap.size(); i++) {
 						// 添加新的视图，循环添加到ScrollView中
@@ -245,7 +245,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 								LinearLayout linearCities = (LinearLayout)relativeCitys.findViewById(R.id.llcitylist);
 																
 								String province = v.getTag().toString();
-								final List<CityDetail> list2Sheng = QuanleimuApplication.getApplication().getShengMap().get(province);
+								final List<CityDetail> list2Sheng = GlobalDataManager.getApplication().getShengMap().get(province);
 								for (int i = 0; i < list2Sheng.size(); i++) {
 									CityDetail city = list2Sheng.get(i);
 									// 添加新的视图，循环添加到ScrollView中
@@ -342,7 +342,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		QuanleimuApplication.getApplication().addLocationListener(this);
+		GlobalDataManager.getApplication().addLocationListener(this);
 	}
 	
 	@Override
@@ -354,7 +354,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 
 	@Override
 	public void onPause() {
-		QuanleimuApplication.getApplication().removeLocationListener(this);
+		GlobalDataManager.getApplication().removeLocationListener(this);
 		super.onPause();
 	}
 	
@@ -389,7 +389,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 			String subCity = "";
 			String cityName = "";
 			CityDetail cityDetail = null;
-			for(CityDetail city : QuanleimuApplication.getApplication().getListCityDetails()){
+			for(CityDetail city : GlobalDataManager.getApplication().getListCityDetails()){
 				if(city.getName() == null) continue;
 				if (location.cityName.contains(city.getName())) {
 					cityName = city.getName();//location.cityName;
@@ -444,12 +444,12 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	 * 
 	 */
 	private static void initShengMap() {
-		if(null == QuanleimuApplication.getApplication().getShengMap() ||
-				QuanleimuApplication.getApplication().getShengMap().size() == 0){
+		if(null == GlobalDataManager.getApplication().getShengMap() ||
+				GlobalDataManager.getApplication().getShengMap().size() == 0){
 			List<String> listShengName = new ArrayList<String>();
 			HashMap<String, List<CityDetail>> shengMap = new HashMap<String, List<CityDetail>>();
 			
-			List<CityDetail> cityDetails = QuanleimuApplication.getApplication().getListCityDetails();
+			List<CityDetail> cityDetails = GlobalDataManager.getApplication().getListCityDetails();
 			// 获取所有省份列表
 			for (int i = 0; i < cityDetails.size(); i++) {
 				String sheng = cityDetails.get(i).getSheng();
@@ -476,7 +476,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 				shengMap.put(listShengName.get(j), listCD);
 			}
 	
-			QuanleimuApplication.getApplication().setShengMap(shengMap);
+			GlobalDataManager.getApplication().setShengMap(shengMap);
 		}
 	}
 	
@@ -496,7 +496,7 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 	
 	private List<CityDetail> getFilteredCityDetails (String filterKeyword)
 	{
-		List<CityDetail> allCities = QuanleimuApplication.getApplication().getListCityDetails();
+		List<CityDetail> allCities = GlobalDataManager.getApplication().getListCityDetails();
 		List<CityDetail> filteredCities = new ArrayList<CityDetail>(16);
 		List<CityDetail> shortFilteredCities = new ArrayList<CityDetail>(8);
 		for (CityDetail city : allCities)
@@ -528,8 +528,8 @@ public class CityChangeFragment extends BaseFragment  implements QuanleimuApplic
 		String block = pair.second;
 		if (city.getClass().equals(CityDetail.class))
 		{
-			QuanleimuApplication.getApplication().setCityEnglishName(city.getEnglishName());
-			QuanleimuApplication.getApplication().setCityName(city.getName());		
+			GlobalDataManager.getApplication().setCityEnglishName(city.getEnglishName());
+			GlobalDataManager.getApplication().setCityName(city.getName());		
 //			Helper.saveDataToLocate(getActivity(), "cityName", city.getName());
 			Util.saveDataToFile(getActivity(),null, "cityName", city.getName().getBytes());
 

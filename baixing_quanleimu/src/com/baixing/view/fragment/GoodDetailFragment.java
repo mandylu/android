@@ -53,7 +53,7 @@ import android.widget.Toast;
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadImageAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
@@ -211,12 +211,12 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 	
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		return QuanleimuApplication.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
+		return GlobalDataManager.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
 	}
 	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		return QuanleimuApplication.getApplication().isFav(detail);
+		return GlobalDataManager.getApplication().isFav(detail);
 	}
 //	
 	public boolean onTouch (View v, MotionEvent event){
@@ -525,7 +525,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 								Bundle bundle = new Bundle();
 								bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
 								msg1.setData(bundle);
-								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+								GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg1);
 							} else {
 								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
@@ -547,7 +547,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 								Bundle bundle1 = new Bundle();
 								bundle1.putString("popup_message", "后面没有啦！");
 								msg2.setData(bundle1);
-								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+								GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
 								
 								onNoMore();
 								
@@ -569,7 +569,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 						case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 							Message msg2 = Message.obtain();
 							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+							GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
 							
 							onLoadMoreFailed();
 							
@@ -827,7 +827,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
 		String text = "立即拨打" + contactS;
-		if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea))
+		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getApplication().getCityName().equals(mobileArea))
 		{
 //			text = contactS + "(" + mobileArea + ")";
 		}
@@ -916,18 +916,18 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		.end();
 		
 		if(!isInMyStore()){			
-			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().addFav(detail); 
+			List<GoodsDetail> myStore = GlobalDataManager.getApplication().addFav(detail); 
 			
 			if (myStore != null)
 			{
-				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", myStore);
+				Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", myStore);
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "收藏成功", 3).show();
+			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else  {
-			List<GoodsDetail> favList = QuanleimuApplication.getApplication().removeFav(detail);
+			List<GoodsDetail> favList = GlobalDataManager.getApplication().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
@@ -1186,7 +1186,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 						break;
 					}
 				}
-				List<GoodsDetail>listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+				List<GoodsDetail>listMyPost = GlobalDataManager.getApplication().getListMyPost();
 				if(listMyPost != null){
 					for(int i = 0; i < listMyPost.size(); ++ i){
 						if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -1210,7 +1210,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				int code = js.getInt("code");
 				if (code == 0) {
 					if(detail.getValueByKey("status").equals("0")){
-						List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+						List<GoodsDetail> listMyPost = GlobalDataManager.getApplication().getListMyPost();
 						if(null != listMyPost){
 							for(int i = 0; i < listMyPost.size(); ++ i){
 								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -1279,10 +1279,10 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 					try {
 						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
-						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 						hideProgress();
 					} catch (IOException e) {
-						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 						hideProgress();
 					} catch (Communication.BXHttpException e){
 						
@@ -1388,7 +1388,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				}
 			}
 			if(values.size() == 0){
-				QuanleimuApplication.getImageLoader().forceRecycle(url);
+				GlobalDataManager.getImageLoader().forceRecycle(url);
 				imageMap.remove(url);
 			}else{
 				imageMap.put(url, values);

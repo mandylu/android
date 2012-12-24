@@ -19,7 +19,7 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
@@ -198,7 +198,7 @@ public class BXNotificationService extends Service {
 						}
 						if(!Util.isPushAlreadyThere(BXNotificationService.this, time)){
 							Log.d("task", "task  increase get_notification");
-							QuanleimuApplication.version = Util.getVersion(BXNotificationService.this);
+							GlobalDataManager.version = Util.getVersion(BXNotificationService.this);
 							BXNotificationService.this.showNotification(ticket, title, content);
 //							Util.saveDataToLocate(BXNotificationService.this, "pushCode", time);
 							Util.saveDataToFile(BXNotificationService.this, null, "pushCode", time.getBytes());
@@ -222,8 +222,8 @@ public class BXNotificationService extends Service {
 	@Override
 	public void onCreate() {
 		super.onCreate();
-		if(QuanleimuApplication.context == null){
-			QuanleimuApplication.context = new WeakReference<Context>(this);
+		if(GlobalDataManager.context == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
 		networkStateReceiver = new BroadcastReceiver() {
 

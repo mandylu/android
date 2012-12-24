@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
@@ -95,13 +95,13 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		String cityName = QuanleimuApplication.getApplication().getCityName();
+		String cityName = GlobalDataManager.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{
 			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
-			titleLabel.setText(QuanleimuApplication.getApplication().getCityName());			
+			titleLabel.setText(GlobalDataManager.getApplication().getCityName());			
 		}
 	}
 	@Override

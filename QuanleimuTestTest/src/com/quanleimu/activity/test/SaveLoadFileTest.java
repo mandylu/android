@@ -9,7 +9,7 @@ import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.UserBean;
@@ -138,7 +138,7 @@ public class SaveLoadFileTest extends AndroidTestCase {
 	
 	public void testSaveAndLoadFav()
 	{
-		QuanleimuApplication.context = new WeakReference<Context>(getContext());
+		GlobalDataManager.context = new WeakReference<Context>(getContext());
 		
 		final String fileName = System.currentTimeMillis()+ "";
 		
@@ -148,10 +148,10 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		{
 			detail[i] = new GoodsDetail();
 			detail[i].setDistance(i);
-			QuanleimuApplication.getApplication().addFav(detail[i]);
+			GlobalDataManager.getApplication().addFav(detail[i]);
 		}
 
-		List<GoodsDetail> list = QuanleimuApplication.getApplication().getListMyStore();
+		List<GoodsDetail> list = GlobalDataManager.getApplication().getListMyStore();
 		assertEquals(count, list.size());
 		Util.saveDataToLocate(getContext(), fileName, list);
 		

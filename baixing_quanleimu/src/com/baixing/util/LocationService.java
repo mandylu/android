@@ -15,7 +15,7 @@ import android.os.Bundle;
 */
 
 import com.baidu.mapapi.*;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;

@@ -8,7 +8,7 @@ import android.view.ViewGroup;
 import android.widget.EditText;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
@@ -28,7 +28,7 @@ public class MarkLableFragment extends BaseFragment {
 		etMark.findFocus();
 		
 		//键盘弹出
-		personMark = QuanleimuApplication.getApplication().getPersonMark();
+		personMark = GlobalDataManager.getApplication().getPersonMark();
 		if(personMark != null && !personMark.equals(""))
 		{
 			etMark.setText(personMark);
@@ -46,7 +46,7 @@ public class MarkLableFragment extends BaseFragment {
 //		else
 //		{
 			personMark = etMark.getText().toString();
-			QuanleimuApplication.getApplication().setPersonMark(personMark);
+			GlobalDataManager.getApplication().setPersonMark(personMark);
 			(new AsyncTask<Boolean, Boolean, Boolean>() { 
 				protected Boolean doInBackground(Boolean... bs) {   
 //					Util.saveDataToLocate(getActivity(), "personMark", personMark);

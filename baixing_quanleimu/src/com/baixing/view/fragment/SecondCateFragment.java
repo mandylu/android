@@ -18,7 +18,7 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -109,7 +109,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 				finishFragment(requestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
-				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)
@@ -119,7 +119,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
-							QuanleimuApplication.setTextMode(false);
+							GlobalDataManager.setTextMode(false);
 							pushFragment(new GetGoodFragment(), bundle);
 						}
 					})
@@ -128,7 +128,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
-							QuanleimuApplication.setTextMode(true);
+							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
 							pushFragment(new GetGoodFragment(), bundle);
 						}

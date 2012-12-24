@@ -3,7 +3,7 @@ package com.baixing.broadcast.push;
 
 import org.json.JSONObject;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.BXNotificationService;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
@@ -47,7 +47,7 @@ public class BXInfoHandler extends PushHandler {
 				pushCode = data.getString("pushCode");
 			}
 			if(!Util.isPushAlreadyThere(cxt, pushCode)){
-				QuanleimuApplication.version = Util.getVersion(cxt);
+				GlobalDataManager.version = Util.getVersion(cxt);
 				ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_BXINFO, 
 						CommonIntentAction.ACTION_NOTIFICATION_BXINFO, title, content, null, false);
 //				Util.saveDataToLocate(cxt, "pushCode", pushCode);

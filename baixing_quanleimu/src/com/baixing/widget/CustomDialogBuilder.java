@@ -23,7 +23,7 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
@@ -167,12 +167,12 @@ public class CustomDialogBuilder {
 						System.out.println("isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
 //						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
-						List<Category> allCates = QuanleimuApplication.getApplication().getFirstLevelCategory();
+						List<Category> allCates = GlobalDataManager.getApplication().getFirstLevelCategory();
 						if (allCates == null || allCates.size() <= pos)
 						{
 							System.out.println("Reload category");
-							QuanleimuApplication.getApplication().loadCategorySync();//reload
-							allCates = QuanleimuApplication.getApplication().getFirstLevelCategory();//.getListFirst();//recheck
+							GlobalDataManager.getApplication().loadCategorySync();//reload
+							allCates = GlobalDataManager.getApplication().getFirstLevelCategory();//.getListFirst();//recheck
 							if(allCates == null || allCates.size() <= pos){
 								System.out.println("仁至义尽");
 								return;

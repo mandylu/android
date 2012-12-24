@@ -31,7 +31,7 @@ import android.os.Handler;
 import android.graphics.Typeface;
 import android.database.DataSetObserver;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
@@ -139,7 +139,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
-		showImage = !QuanleimuApplication.isTextMode() || Communication.isWifiConnection();
+		showImage = !GlobalDataManager.isTextMode() || Communication.isWifiConnection();
 		vadHistory = adViewHistory;
 	}
 	

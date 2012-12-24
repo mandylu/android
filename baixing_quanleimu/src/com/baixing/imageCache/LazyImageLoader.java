@@ -14,7 +14,7 @@ import java.util.Vector;
 
 import org.apache.commons.httpclient.HttpException;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 
 import android.graphics.Bitmap;
 import android.os.Bundle;
@@ -34,7 +34,7 @@ public class LazyImageLoader
 	
 	
 	
-	private ImageManager imgManger = new ImageManager(QuanleimuApplication.getApplication().getApplicationContext());
+	private ImageManager imgManger = new ImageManager(GlobalDataManager.getApplication().getApplicationContext());
 	
 	private Vector<String> urlDequeDiskIO = new Vector<String>();
 	private DiskIOImageThread diskIOImgThread = new DiskIOImageThread();

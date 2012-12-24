@@ -9,7 +9,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.util.Version;
@@ -52,7 +52,7 @@ public class PushUpdateHandler extends PushHandler {
                 return;
             }
 
-            if (Version.compare(serverVersion, QuanleimuApplication.version) == 1) {
+            if (Version.compare(serverVersion, GlobalDataManager.version) == 1) {
             	String title = "百姓网有新版本啦~";
     			if (data.has("title")) {
     				title = data.getString("title");

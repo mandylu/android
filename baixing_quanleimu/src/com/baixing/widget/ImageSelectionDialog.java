@@ -34,7 +34,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
@@ -158,7 +158,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     static public Bitmap getThumbnailWithPath(String path){
     	if(path == null || path.length() <= 0) return null;
-    	WeakReference<Bitmap> thumbnail = QuanleimuApplication.getImageLoader().getWithImmediateIO(path);
+    	WeakReference<Bitmap> thumbnail = GlobalDataManager.getImageLoader().getWithImmediateIO(path);
     	if(thumbnail == null) return null;
     	return thumbnail.get();
     }
@@ -855,8 +855,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
 				String thumbnailPath = "";
 				if(thumbnailBmp != null){
-					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
-					QuanleimuApplication.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
+					GlobalDataManager.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					GlobalDataManager.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
 //					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
 					thumbnailPath = "thumbnail_" + path;
 					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
