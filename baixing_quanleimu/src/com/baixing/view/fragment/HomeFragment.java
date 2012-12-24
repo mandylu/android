@@ -17,9 +17,9 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.FirstStepCate;
-import com.baixing.tracking.Tracker;
+import com.baixing.entity.Category;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
 import com.baixing.widget.CustomizeGridView.GridInfo;
@@ -230,14 +230,16 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 
 	@Override
 	public void onItemClick(GridInfo info, int index) {	
-		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
-				.getListFirst();
+//		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
+//				.getListFirst();
+		List<Category> allCates = QuanleimuApplication.getApplication().getFirstLevelCategory();
 		if (allCates == null || allCates.size() == 0)
 			return;
 		if (info == null)
 			return;
 		
-		FirstStepCate cate = allCates.get(index);
+//		FirstStepCate cate = allCates.get(index);
+		Category cate = allCates.get(index);
 		Bundle bundle = new Bundle();
 		bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
 		bundle.putSerializable("cates", cate);

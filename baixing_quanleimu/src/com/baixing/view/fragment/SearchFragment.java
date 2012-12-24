@@ -27,12 +27,12 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.SecondStepCate;
+import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
@@ -71,7 +71,7 @@ public class SearchFragment extends BaseFragment {
 
 	public String searchContent = "";
 
-	List<Pair<SecondStepCate, Integer>> categoryResultCountList;
+	List<Pair<Category, Integer>> categoryResultCountList;
 
 //	private List<String> listRemark = new ArrayList<String>();
 
@@ -119,7 +119,7 @@ public class SearchFragment extends BaseFragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				SecondStepCate cate = (SecondStepCate) arg1.getTag();
+				Category cate = (Category) arg1.getTag();
 
 				final Bundle bundle = new Bundle();
 				bundle.putString("searchContent", searchContent);
@@ -262,7 +262,7 @@ public class SearchFragment extends BaseFragment {
 				lvSearchResultList.setAdapter(adapter);
 				
 				resultCatesCount = categoryResultCountList.size();
-				for (Pair<SecondStepCate, Integer> pair : categoryResultCountList)
+				for (Pair<Category, Integer> pair : categoryResultCountList)
 				{
 					totalAdsCount += pair.second;
 					maxAdsCount = Math.max(maxAdsCount, pair.second);
@@ -311,11 +311,11 @@ public class SearchFragment extends BaseFragment {
 		}
 	}
 
-	class ResultListAdapter extends ArrayAdapter<Pair<SecondStepCate, Integer>> {
-		List<Pair<SecondStepCate, Integer>> objects;
+	class ResultListAdapter extends ArrayAdapter<Pair<Category, Integer>> {
+		List<Pair<Category, Integer>> objects;
 
 		public ResultListAdapter(Context context, int textViewResourceId,
-				List<Pair<SecondStepCate, Integer>> objects) {
+				List<Pair<Category, Integer>> objects) {
 			super(context, textViewResourceId, objects);
 			this.objects = objects;
 		}
@@ -332,7 +332,7 @@ public class SearchFragment extends BaseFragment {
 					.findViewById(R.id.tvCategoryName);
 			TextView tvCategoryCount = (TextView) convertView
 					.findViewById(R.id.tvCategoryCount);
-			Pair<SecondStepCate, Integer> pair = objects.get(position);
+			Pair<Category, Integer> pair = objects.get(position);
 			convertView.setTag(pair.first);
 			tvCategoryName.setText(pair.first.getName());
 			tvCategoryCount.setText(String.format("(%d)",
