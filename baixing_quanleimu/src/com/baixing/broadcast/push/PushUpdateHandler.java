@@ -77,7 +77,7 @@ public class PushUpdateHandler extends PushHandler {
 //// mId allows you to update the notification later on.
 //                mNotificationManager.notify(0, mBuilder.getNotification());
                 
-    			String title = "百姓网客户端新版本啦~";
+    			String title = "百姓网客户端有新版本啦~";
     			if (data.has("title")) {
     				title = data.getString("title");
     			}
