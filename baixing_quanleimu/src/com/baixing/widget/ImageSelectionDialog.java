@@ -856,6 +856,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				String thumbnailPath = "";
 				if(thumbnailBmp != null){
 					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					QuanleimuApplication.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
 //					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
 					thumbnailPath = "thumbnail_" + path;
 					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
