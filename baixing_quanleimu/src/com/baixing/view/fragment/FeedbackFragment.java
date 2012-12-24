@@ -188,11 +188,11 @@ public class FeedbackFragment extends BaseFragment {
 					sendMessage(1, null);
 				}
 			} catch (UnsupportedEncodingException e) {
-				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 				
 			} catch (IOException e) {
-				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

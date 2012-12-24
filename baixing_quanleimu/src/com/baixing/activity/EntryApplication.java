@@ -3,6 +3,8 @@ package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 
+import com.baixing.util.ErrorHandler;
+
 import android.app.Application;
 import android.content.Context;
 
@@ -16,6 +18,7 @@ public class EntryApplication extends Application {
 		super.onCreate();
 		
 		GlobalDataManager.context = new WeakReference<Context>(getApplicationContext());
+		ErrorHandler.getInstance().initContext(getApplicationContext());
 	}
 
 	/* (non-Javadoc)

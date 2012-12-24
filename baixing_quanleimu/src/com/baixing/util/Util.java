@@ -727,17 +727,11 @@ public class Util {
 		try {
 			return Communication.getDataByUrl(url, true);
 		} catch (UnsupportedEncodingException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
 		} catch (IOException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 		} catch (Communication.BXHttpException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 		}
 		return null;
 	}

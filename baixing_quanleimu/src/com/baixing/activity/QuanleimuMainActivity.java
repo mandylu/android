@@ -338,7 +338,6 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
 		GlobalDataManager.context = new WeakReference<Context>(this);
-		GlobalDataManager.getApplication().setErrorHandler(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);
 		

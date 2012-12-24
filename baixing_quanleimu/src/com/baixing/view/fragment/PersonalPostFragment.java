@@ -137,7 +137,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		try {
 			if (!Communication.isNetworkActive()) {
-				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -402,8 +402,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			.end();
 			
 			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			lvGoodsList.onRefreshComplete();
 			lvGoodsList.onFail();
 			
@@ -622,9 +621,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         try {
             json = Communication.getDataByUrl(url, true);
         } catch (UnsupportedEncodingException e) {
-            GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
         } catch (IOException e) {
-            GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+        	ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
         } catch (Communication.BXHttpException e){
 
         }finally {
@@ -706,9 +705,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				return;
 
 			} catch (UnsupportedEncodingException e) {
-				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			} catch (IOException e) {
-				GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			} catch (Communication.BXHttpException e){
 				
 			}

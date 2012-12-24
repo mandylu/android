@@ -520,12 +520,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 							GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							mListLoader.setGoodsList(goodsList);
 							if (goodsList == null || goodsList.getData().size() == 0) {
-								Message msg1 = Message.obtain();
-								msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-								Bundle bundle = new Bundle();
-								bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
-								msg1.setData(bundle);
-								GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg1);
+								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请稍后并重试！");
 							} else {
 								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
@@ -542,12 +537,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 						case GoodsListLoader.MSG_FINISH_GET_MORE:	
 							GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							if (goodsList1 == null || goodsList1.getData().size() == 0) {
-								Message msg2 = Message.obtain();
-								msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
-								Bundle bundle1 = new Bundle();
-								bundle1.putString("popup_message", "后面没有啦！");
-								msg2.setData(bundle1);
-								GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_WARNING, "后面没有啦！");
 								
 								onNoMore();
 								
@@ -567,9 +557,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 							}
 							break;
 						case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-							Message msg2 = Message.obtain();
-							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-							GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+							ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 							
 							onLoadMoreFailed();
 							
@@ -1279,10 +1267,10 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 					try {
 						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
-						GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 						hideProgress();
 					} catch (IOException e) {
-						GlobalDataManager.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 						hideProgress();
 					} catch (Communication.BXHttpException e){
 						

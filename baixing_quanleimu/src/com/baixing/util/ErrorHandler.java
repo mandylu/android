@@ -1,7 +1,9 @@
+//liuchong@baixing.com
 package com.baixing.util;
 
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
@@ -10,34 +12,41 @@ public class ErrorHandler extends Handler{
 
 	/*definition of error code*/
 	public final static int ERROR_OK = 0;
-
 	public final static int ERROR_COMMON_WARNING = -2;
 	public final static int ERROR_COMMON_FAILURE = -3;
-	
 	public final static int ERROR_SERVICE_UNAVAILABLE = -9;
 	public final static int ERROR_NETWORK_UNAVAILABLE = -10;
 	
-//	
-//	protected static ErrorHandler m_instance = null;
-//	
-//
-//	public static ErrorHandler instance(){
-//		if(m_instance == null){
-//			m_instance = new ErrorHandler();
-//		}
-//		
-//		return m_instance;
-//	}
-//	
+	private final String MSG_KEY = "popup_message";
+	
+	private static ErrorHandler m_instance = null;
 	private Context context = null;
-	public ErrorHandler(Context context_){
+	
+	public static ErrorHandler getInstance(){
+		if(m_instance == null){
+			m_instance = new ErrorHandler();
+		}
+		
+		return m_instance;
+	}
+	
+	public void initContext(Context context_) {
 		this.context = context_;
 	}
 	
-
-	//0: OK
-	//-1: 
+	public void handleError(int errorCode, String msgContent) {
+		Message msg = this.obtainMessage(errorCode);
+		if (msgContent != null) {
+			Bundle bundle = new Bundle();
+			bundle.putString(MSG_KEY, msgContent);
+			msg.setData(bundle);
+		}
+		
+		this.sendMessage(msg);
+	}
 	
+	
+
 	@Override
 	public void handleMessage(Message msg) {
 		
@@ -48,8 +57,8 @@ public class ErrorHandler extends Handler{
 		}
 		
 		String strToast = null;
-		if(null != msg.getData() && null != msg.getData().getString("popup_message")){
-			strToast = msg.getData().getString("popup_message");
+		if(null != msg.getData() && null != msg.getData().getString(MSG_KEY)){
+			strToast = msg.getData().getString(MSG_KEY);
 		}
 		
 		if(null == strToast){

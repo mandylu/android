@@ -246,9 +246,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 tempGoodsList = JsonUtil.getGoodsListFromJson(lastJson);
                 Log.d("fav","updatefav.size:"+tempGoodsList.getData().size());
                 if (null == tempGoodsList || (0 == tempGoodsList.getData().size() && noResult)) {
-                    Message msg2 = Message.obtain();
-                    msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-                    GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+                    ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
 
                     pullListView.onFail();
                 } else {
@@ -315,10 +313,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
                 Log.d("fav","updatehistory.size:"+tempGoodsList.getData().size());
                 if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
-                    Message msg2 = Message.obtain();
-                    msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-                    GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
-
+                    ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+                    
                     pullListView.onFail();
                 } else {
                     List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
@@ -611,9 +607,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
             return false;
         } else if (msg == ErrorHandler.ERROR_NETWORK_UNAVAILABLE) {
-            Message msg2 = Message.obtain();
-            msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-            GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+            ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 
             pullListView.onFail();
             return false;

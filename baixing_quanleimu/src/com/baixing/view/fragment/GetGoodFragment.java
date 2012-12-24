@@ -544,12 +544,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			goodsListLoader.setGoodsList(goodsList);
 
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
-				Message msg1 = Message.obtain();
-				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-				Bundle bundle = new Bundle();
-				bundle.putString("popup_message", "没有符合的结果，请更改条件并重试！");
-				msg1.setData(bundle);
-				GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg1);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请更改条件并重试！");
 
 				GoodsListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
@@ -658,9 +653,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			GlobalDataManager.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			
 			lvGoodsList.onFail();
 			

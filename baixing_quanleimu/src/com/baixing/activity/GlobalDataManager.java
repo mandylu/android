@@ -654,13 +654,13 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
 	
-	protected ErrorHandler handler;
-	public void setErrorHandler(Context context){
-		handler = new ErrorHandler(context);
-	}
-	public ErrorHandler getErrorHandler(){
-		return handler;
-	}
+//	protected ErrorHandler handler;
+//	public void setErrorHandler(Context context){
+//		handler = new ErrorHandler(context);
+//	}
+//	public ErrorHandler getErrorHandler(){
+//		return handler;
+//	}
 	
 	
 	public void ClearCache(){
