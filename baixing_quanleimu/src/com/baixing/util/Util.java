@@ -676,21 +676,6 @@ public class Util {
 		}
 	}
 	
-	//����vkey1
-	public static String getStr(){
-		String vkey  = "";
-		//vkey = "api_key=" + Const.API_KEY;
-		for(int i=0;i<keys.length;i++){
-			vkey =vkey + "&" + keys[i] +"="+ values[i];
-		}
-		vkey = vkey.substring(1);
-		String vkey1 = vkey;
-		vkey = vkey + Const.API_SECRET;
-		vkey1 = vkey1 + "&access_token=" + MD5(vkey);
-		
-		return vkey1;	
-	}
-
 	//MD5加密
 	public  static String MD5(String inStr) {
 		MessageDigest md5 = null;

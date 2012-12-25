@@ -1,34 +1,32 @@
 package com.baixing.util;
 
-import java.io.BufferedReader;
-import java.io.IOException;
-import java.io.InputStreamReader;
-import java.net.MalformedURLException;
-import java.net.URL;
-import java.net.URLConnection;
 import java.util.ArrayList;
 import java.util.List;
 
+import android.content.Context;
+import android.location.Location;
+import android.util.Log;
+
+import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.GeoPoint;
+import com.baidu.mapapi.MKAddrInfo;
+import com.baidu.mapapi.MKBusLineResult;
+import com.baidu.mapapi.MKDrivingRouteResult;
+import com.baidu.mapapi.MKLocationManager;
+import com.baidu.mapapi.MKPoiResult;
+import com.baidu.mapapi.MKSearch;
+import com.baidu.mapapi.MKSearchListener;
+import com.baidu.mapapi.MKSuggestionResult;
+import com.baidu.mapapi.MKTransitRouteResult;
+import com.baidu.mapapi.MKWalkingRouteResult;
+import com.baixing.entity.BXLocation;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.Tracker;
 /*
 import android.location.*;
 import android.os.Bundle;
 */
-
-import com.baidu.mapapi.*;
-import com.baixing.activity.GlobalDataManager;
-import com.baixing.entity.BXLocation;
-import com.baixing.tracking.Tracker;
-import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-
-import android.location.Location;
-import android.util.Log;
-
-
-import org.json.JSONException;
-import org.json.JSONObject;
-import org.json.JSONArray;
-import android.content.Context;
 
 public class LocationService{
 	private BMapManager bMapManager;

@@ -11,12 +11,10 @@ import android.os.Environment;
 import android.util.Log;
 
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.tracking.TrackConfig.TrackMobile;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.LogData;
 import com.baixing.util.Util;
 /**
  * @author xuweiyan@baixing.com

@@ -35,7 +35,6 @@ import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.BXDatabaseHelper;
 import com.baixing.util.Communication;
-import com.baixing.util.ErrorHandler;
 import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 
