@@ -138,7 +138,7 @@ public class SearchFragment extends BaseFragment {
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							GlobalDataManager.setTextMode(false);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 					})
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -147,14 +147,14 @@ public class SearchFragment extends BaseFragment {
 						public void onClick(DialogInterface dialog, int which) {
 							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 						
 					}).create().show();
 				}
 				else
 				{
-					pushFragment(new GetGoodFragment(), bundle);
+					pushFragment(new ListingFragment(), bundle);
 				}
 				
 			}

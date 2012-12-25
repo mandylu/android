@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.io.IOException;
@@ -55,12 +56,8 @@ import com.quanleimu.activity.R;
 
 import com.baixing.android.api.ApiParams;
 
-public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
+public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
-//	public static final int SEARCH_NEARBY = 1;
-//	public static final int SEARCH_RECENT = 0;
-	
-	
 	public static final int MSG_UPDATE_FILTER = 1000;
 	
 	
@@ -68,11 +65,9 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private PullToRefreshListView lvGoodsList;
 	private ProgressBar progressBar;
-//	private int searchType = 0;
 	private String actType = null;
 	private String categoryEnglishName = "";
 	private String searchContent = "";
-//	private String siftResult = "";
 	private PostParamsHolder filterParamHolder;
 	
 //	private List<String> basicParams = null;
@@ -90,8 +85,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
-//		title.m_rightActionHint = "发布";
-//		title.m_rightActionBg = R.drawable.bg_post_selector;
 	}
 	
 	public GoodsListAdapter findGoodListAdapter()
@@ -109,9 +102,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	}
 	
 	public void handleRightAction(){
-        //发布赌约
-        GlobalDataManager.postEntryFlag = 1;
-
 		String categoryName = getArguments().getString("categoryName");
 		categoryName = categoryEnglishName + "," + categoryName;
 		Bundle bundle = createArguments(null, null);
@@ -130,8 +120,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		{
 			this.filterParamHolder.clear(); //Replace old params with new.
 			this.filterParamHolder.merge((PostParamsHolder) result);
-//			this.updateSearchParams();
-//			searchType = PostParamsHolder.INVALID_VALUE.equals(filterParamHolder.getData("地区_s")) ? SEARCH_NEARBY : SEARCH_RECENT;
 			this.showFilterBar(getView(), listFilterss);
 			this.resetSearch(this.curLocation);
 			
@@ -146,10 +134,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		this.categoryEnglishName = getArguments().getString("categoryEnglishName");
 		this.searchContent = getArguments().getString("searchContent");
 		this.actType = getArguments().getString("actType");
-//		if (getArguments().containsKey("siftresult")) //FIXME:CHONG siftresult is removed by chong.
-//		{
-//			this.siftResult = getArguments().getString("siftresult");
-//		}
+		
 		filterParamHolder = (PostParamsHolder)getArguments().getSerializable("filterResult");
 		if (filterParamHolder == null)
 		{
@@ -163,16 +148,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				filterParamHolder.put("", searchContent, searchContent);
 			}
 		}
-		
-//		updateSearchParams();
-		
-//		if (siftResult != null && !siftResult.equals("")) {
-//		} else {
-//			basicParams.add("query="
-//					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-//					+ categoryEnglishName + " AND status:0");
-//		}
-		
 		
 		goodsListLoader = new GoodsListLoader(getSearchParams(), handler, null, new GoodsList());
 	}
@@ -210,14 +185,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-//			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
-//				
-//				@Override
-//				public void onCancel(DialogInterface dialog) {
-//					goodsListLoader.cancelFetching();
-//					finishFragment();
-//				}
-//			});
 			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
@@ -325,11 +292,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		View v = inflater.inflate(R.layout.goodslist, null);
 		
-//		View titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
-//		titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
-//		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
-//		this.getTitleDef().m_titleControls = titleControl;
-		
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
 		lvGoodsList.setOnRefreshListener(this);
 		lvGoodsList.setOnGetMoreListener(this);
@@ -349,21 +311,9 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	
 		curLocation = GlobalDataManager.getApplication().getCurrentPosition(true);
-//		List<String> addParams = new ArrayList<String>(basicParams);
-		if(curLocation == null && isSerchNearBy()/* || searchType == 0*/){
-//			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
-//			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
-//			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-//			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
-//			this.searchType = SEARCH_RECENT;
+		if(curLocation == null && isSerchNearBy()){
 			filterParamHolder.remove("地区_s");
 		}
-//		else{
-////			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-////			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
-//			addParams.add("lat="+curLocation.fLat);
-//			addParams.add("lng="+curLocation.fLon);			
-//		}
 
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
@@ -391,9 +341,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			}
 		});
 		
-//		((TextView)v.findViewById(R.id.tvSubCateName)).setText(getArguments().getString("name"));
-		
-		
 		String categoryName = getArguments().getString("categoryName");
 		if(categoryName == null || categoryName.equals("")){
 			if(categoryEnglishName != null){
@@ -404,12 +351,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		
 		return v;
 	
-	}
-
-
-
-	@Override
-	public void onClick(View v) {
 	}
 	
 	@Override
@@ -800,16 +741,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-//			goodsListLoader.cancelFetching();
-			
-//			List<String> params = new ArrayList<String>();
-//			params.addAll(getS);
-//			params.add("nearby=true");
 			goodsListLoader.setNearby(true);
-//			curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
-			//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
-//			params.add("lat="+location.fLat);
-//			params.add("lng="+location.fLon);
 			goodsListLoader.setParams(getSearchParams());
 			goodsListLoader.setRuntime(false);
 		}

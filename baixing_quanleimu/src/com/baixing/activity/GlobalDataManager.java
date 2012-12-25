@@ -56,9 +56,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	private static GlobalDataManager mDemoApp = null;
 	private static int lastDestoryInstanceHash = 0;
 	
-    //为赌约而设
-    public static int postEntryFlag = -1;
-	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
     

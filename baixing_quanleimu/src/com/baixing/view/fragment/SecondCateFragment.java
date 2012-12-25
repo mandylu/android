@@ -120,7 +120,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
 							GlobalDataManager.setTextMode(false);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 					})
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -130,14 +130,14 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
 							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 						
 					}).create().show();
 				}
 				else
 				{
-					pushFragment(new GetGoodFragment(), bundle);
+					pushFragment(new ListingFragment(), bundle);
 				}
 			}
 		} else {

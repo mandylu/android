@@ -965,7 +965,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
 		.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
-        .append(Key.POSTENTRY, GlobalDataManager.postEntryFlag)
 		.end();
 	}
 	
@@ -980,7 +979,6 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 				.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
 				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
-                .append(Key.POSTENTRY, GlobalDataManager.postEntryFlag)
 				.end();
 	}
 	
