@@ -27,6 +27,7 @@ import android.util.Pair;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.DiskLruCache;
 import com.baixing.util.NetworkProtocols;
+import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
@@ -520,7 +521,7 @@ public class ImageManager
 	
 	private String getMd5(String src)
 	{
-		return Util.MD5(src);
+		return TextUtil.getMD5(src);
 	}
 	
 	
