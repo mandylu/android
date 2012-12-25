@@ -1,12 +1,7 @@
 //liuchong@baixing.com
 package com.baixing.util;
 
-import java.io.IOException;
 import java.io.Serializable;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-import java.util.List;
 
 import org.apache.http.client.HttpClient;
 import org.json.JSONObject;
@@ -14,14 +9,14 @@ import org.json.JSONObject;
 import android.os.Handler;
 import android.util.Log;
 
-import com.baixing.entity.GoodsList;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.entity.GoodsList;
 
-public class GoodsListLoader implements Serializable{
+public class VadListLoader implements Serializable{
 	
 	/**
 	 * 
@@ -71,7 +66,7 @@ public class GoodsListLoader implements Serializable{
 		this.mHandler = null;
 	}
 	
-	public GoodsListLoader(ApiParams params, Handler handler, String fields, GoodsList goodsList){
+	public VadListLoader(ApiParams params, Handler handler, String fields, GoodsList goodsList){
 		this.params = params;
 		
 		mHandler = handler;
@@ -193,9 +188,9 @@ public class GoodsListLoader implements Serializable{
 	}
 	
 	class GetGoodsListThread implements Runnable, ApiListener {
-		private int msgFirst = GoodsListLoader.MSG_FINISH_GET_FIRST;
-		private int msgMore = GoodsListLoader.MSG_FINISH_GET_MORE;
-		private int msgNoMore = GoodsListLoader.MSG_NO_MORE;
+		private int msgFirst = VadListLoader.MSG_FINISH_GET_FIRST;
+		private int msgMore = VadListLoader.MSG_FINISH_GET_MORE;
+		private int msgNoMore = VadListLoader.MSG_NO_MORE;
 		private Communication.E_DATA_POLICY dataPolicy = Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL;
 		
 		private boolean mCancel = false;
@@ -238,7 +233,7 @@ public class GoodsListLoader implements Serializable{
 		}
 		
 		private void exit(){
-			GoodsListLoader.this.mCurThread = null;
+			VadListLoader.this.mCurThread = null;
 		}
 		
 		private boolean wantedExists(ApiParams list){
@@ -304,9 +299,9 @@ public class GoodsListLoader implements Serializable{
 				}
 				
 				//only when data is valid, do we need to update listdata status
-				GoodsListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
+				VadListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
 														E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
-														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	GoodsListLoader.this.mStatusListdataExisting;
+														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	VadListLoader.this.mStatusListdataExisting;
 			} else {
 				if(!mIsFirst){
 					if(mHandler != null){

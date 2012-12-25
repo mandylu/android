@@ -68,7 +68,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
@@ -77,11 +77,11 @@ import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, GoodsListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
 
 	public interface IListHolder{
 		public void startFecthingMore();
-		public boolean onResult(int msg, GoodsListLoader loader);//return true if getMore succeeded, else otherwise
+		public boolean onResult(int msg, VadListLoader loader);//return true if getMore succeeded, else otherwise
 	};
 	
 	
@@ -101,7 +101,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private boolean keepSilent = false;
 	
-	private GoodsListLoader mListLoader;
+	private VadListLoader mListLoader;
 	
 	private IListHolder mHolder = null;
 	
@@ -240,7 +240,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.mListLoader = (GoodsListLoader) getArguments().getSerializable("loader");
+		this.mListLoader = (VadListLoader) getArguments().getSerializable("loader");
 		int index = getArguments().getInt("index", 0);
 		if(mListLoader == null 
 				|| mListLoader.getGoodsList() == null 
@@ -516,7 +516,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						}
 					}else{
 						switch (msg.what) {
-						case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
+						case VadListLoader.MSG_FINISH_GET_FIRST:				 
 							GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							mListLoader.setGoodsList(goodsList);
 							if (goodsList == null || goodsList.getData().size() == 0) {
@@ -527,14 +527,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 							mListLoader.setHasMore(true);
 							notifyPageDataChange(true);
 							break;
-						case GoodsListLoader.MSG_NO_MORE:					
+						case VadListLoader.MSG_NO_MORE:					
 							onNoMore();
 							
 							mListLoader.setHasMore(false);
 							notifyPageDataChange(false);
 							
 							break;
-						case GoodsListLoader.MSG_FINISH_GET_MORE:	
+						case VadListLoader.MSG_FINISH_GET_MORE:	
 							GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							if (goodsList1 == null || goodsList1.getData().size() == 0) {
 								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_WARNING, "后面没有啦！");
@@ -1505,7 +1505,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			mListLoader
 					.startFetching(
 							false,
-							((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
+							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
 									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
 									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 		}

@@ -27,7 +27,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.util.Communication;
 import com.quanleimu.activity.R;
 

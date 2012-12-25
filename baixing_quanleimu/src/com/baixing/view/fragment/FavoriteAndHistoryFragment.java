@@ -20,7 +20,7 @@ import android.widget.ImageView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.broadcast.BXNotificationService;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsList;
@@ -51,10 +51,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     static final int MSG_NOMOREHISTORY = 8;
     private final int MSG_ITEM_OPERATE = 9;
 
-    private GoodsListAdapter adapter = null;
+    private VadListAdapter adapter = null;
     private PullToRefreshListView pullListView = null;
     private int buttonStatus = -1;//-1:edit 0:finish
-    private GoodsListLoader glLoader = null;
+    private VadListLoader glLoader = null;
     private GoodsList tempGoodsList = null;
 
     @Override
@@ -65,13 +65,13 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             isFav = getArguments().getBoolean("isFav", false);
         }
 
-        glLoader = new GoodsListLoader(null, handler, null, tempGoodsList);
+        glLoader = new VadListLoader(null, handler, null, tempGoodsList);
         
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
     }
     
-    private GoodsListLoader createGoodsListLoader()
+    private VadListLoader createGoodsListLoader()
     {
     	List<GoodsDetail> data = new ArrayList<GoodsDetail>();
     	if (tempGoodsList != null && tempGoodsList.getData() != null)
@@ -80,7 +80,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     	}
     	GoodsList list = new GoodsList(data);
     	
-    	GoodsListLoader loader = new GoodsListLoader(null, null, null, list);
+    	VadListLoader loader = new VadListLoader(null, null, null, list);
     	loader.setHasMore(false);
     	
     	return loader;
@@ -132,7 +132,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         }
         glLoader.setHasMore(false);
 
-        adapter = new GoodsListAdapter(this.getActivity(), tempGoodsList.getData(), null);
+        adapter = new VadListAdapter(this.getActivity(), tempGoodsList.getData(), null);
         adapter.setHasDelBtn(true);
         adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 //		adapter.setList(tempGoodsList.getData());		
@@ -520,7 +520,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     }
 
     @Override
-    public boolean onResult(int msg, GoodsListLoader loader) {
+    public boolean onResult(int msg, VadListLoader loader) {
         if (msg == MSG_GOTMOREFAV || msg == MSG_GOTMOREHISTORY) {
             GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
             if (isFav) {

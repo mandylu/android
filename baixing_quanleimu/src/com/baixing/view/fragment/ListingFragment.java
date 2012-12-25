@@ -29,7 +29,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.GoodsDetail;
@@ -43,7 +43,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
@@ -72,7 +72,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	
 //	private List<String> basicParams = null;
 	
-	private GoodsListLoader goodsListLoader = null;
+	private VadListLoader goodsListLoader = null;
 	
 	private boolean mRefreshUsingLocal = false;
 	private BXLocation curLocation = null;
@@ -87,17 +87,17 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
 	}
 	
-	public GoodsListAdapter findGoodListAdapter()
+	public VadListAdapter findGoodListAdapter()
 	{
 		ListAdapter adapter = lvGoodsList == null ? null : lvGoodsList.getAdapter();
 		if (adapter instanceof HeaderViewListAdapter)
 		{
 			HeaderViewListAdapter realAdapter = (HeaderViewListAdapter) adapter;
-			return (GoodsListAdapter) realAdapter.getWrappedAdapter();
+			return (VadListAdapter) realAdapter.getWrappedAdapter();
 		}
 		else
 		{
-			return (GoodsListAdapter) adapter;
+			return (VadListAdapter) adapter;
 		}
 	}
 	
@@ -149,7 +149,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			}
 		}
 		
-		goodsListLoader = new GoodsListLoader(getSearchParams(), handler, null, new GoodsList());
+		goodsListLoader = new VadListLoader(getSearchParams(), handler, null, new GoodsList());
 	}
 	
 	@Override
@@ -178,14 +178,14 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		super.onStackTop(isBack);
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
-			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
+			VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
 		}
 		else
 		{
-			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
+			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 			mRefreshUsingLocal = true;
@@ -355,7 +355,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	
 	@Override
 	public void onDestroy(){
-		final GoodsListAdapter adapter = findGoodListAdapter();
+		final VadListAdapter adapter = findGoodListAdapter();
 		if(adapter != null){
 			Thread t = new Thread(new Runnable(){
 				public void run(){
@@ -449,7 +449,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	@Override
 	public void onGetMore() {
-		goodsListLoader.startFetching(false, ((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
+		goodsListLoader.startFetching(false, ((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
 												Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
 												Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 	}
@@ -460,7 +460,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		mRefreshUsingLocal = false;
 	}
 
-	private void updateData(GoodsListAdapter adapter, List<GoodsDetail> data)
+	private void updateData(VadListAdapter adapter, List<GoodsDetail> data)
 	{
 		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(data, this.curLocation, new int[] {500, 1500}) : 
 			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
@@ -470,16 +470,16 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
-		case GoodsListLoader.MSG_FIRST_FAIL:
+		case VadListLoader.MSG_FIRST_FAIL:
 			if(goodsListLoader == null) break;
-			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
+			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
 				goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 			else{
 				Toast.makeText(getActivity(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 				hideProgress();
 			}
 			break;
-		case GoodsListLoader.MSG_FINISH_GET_FIRST:
+		case VadListLoader.MSG_FINISH_GET_FIRST:
 			if(goodsListLoader == null) break;
 			GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			goodsListLoader.setGoodsList(goodsList);
@@ -487,7 +487,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
 				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请更改条件并重试！");
 
-				GoodsListAdapter adapter = findGoodListAdapter();
+				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
 				{
 					adapter.setList(new ArrayList<GoodsDetail>());
@@ -496,7 +496,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				}
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
-				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
+				VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 				updateData(adapter, goodsListLoader.getGoodsList().getData());
 				lvGoodsList.setAdapter(adapter);
 				goodsListLoader.setHasMore(true);
@@ -505,7 +505,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			lvGoodsList.onRefreshComplete();
 			
 			//if currently using offline data, start fetching online data
-			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
+			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
                 lvGoodsList.fireRefresh();
             } else { //非缓存情况下才加此 log
                 HashMap tmpMap = (HashMap)filterParamHolder.getData().clone(); //筛选关键字重设 key
@@ -526,7 +526,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			hideProgress();
 
 			break;
-		case GoodsListLoader.MSG_NO_MORE:
+		case VadListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 			
@@ -542,7 +542,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			
 			hideProgress();			
 			break;
-		case GoodsListLoader.MSG_FINISH_GET_MORE:
+		case VadListLoader.MSG_FINISH_GET_MORE:
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 			
@@ -565,7 +565,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				}
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
-				GoodsListAdapter adapter = findGoodListAdapter();
+				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
 				{
 					updateData(adapter, goodsListLoader.getGoodsList().getData());

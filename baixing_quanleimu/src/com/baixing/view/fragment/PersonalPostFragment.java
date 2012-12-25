@@ -24,7 +24,7 @@ import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
@@ -42,7 +42,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
@@ -65,14 +65,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = null;
-	private GoodsListAdapter adapter = null;
+	private VadListAdapter adapter = null;
 	private UserBean user;
 	private boolean needReloadData = false;
 
     final static String TYPE_KEY = "PersonalPostFragment_type_key";
     final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     private int currentType = TYPE_MYPOST;
-	private GoodsListLoader glLoader = null;	
+	private VadListLoader glLoader = null;	
 	private String json = "";
 
 	@Override
@@ -145,7 +145,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
-		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost, null);
+		adapter = new VadListAdapter(this.getActivity(), this.listMyPost, null);
         adapter.setHasDelBtn(true);
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
@@ -153,7 +153,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		GoodsList gl = new GoodsList();
 		gl.setData(listMyPost == null ? new ArrayList<GoodsDetail>() : listMyPost);
 	
-		glLoader = new GoodsListLoader(null, handler, null, null);
+		glLoader = new VadListLoader(null, handler, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 		glLoader.setSearchUserList(true);
@@ -328,8 +328,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			break;
-		case GoodsListLoader.MSG_FIRST_FAIL:
-		case GoodsListLoader.MSG_EXCEPTION:{
+		case VadListLoader.MSG_FIRST_FAIL:
+		case VadListLoader.MSG_EXCEPTION:{
 			hideProgress();
 			lvGoodsList.onRefreshComplete();
 			break;
