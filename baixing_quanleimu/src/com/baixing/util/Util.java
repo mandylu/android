@@ -84,27 +84,6 @@ public class Util {
 	
 //	private static String currentUserId;
 	private static UserBean currentUser;
-	/**
-	 * 
-	 * @author henry_young
-	 * @throws IOException
-	 * 
-	 * @保存方式：Stream 数据流方式
-	 * 
-	 * writeUTF(String str); 但是用Data包装后就会支持。
-	 * 
-	 * @操作模式: Context.MODE_PRIVATE：新内容覆盖原内容
-	 * 
-	 *        Context.MODE_APPEND：新内容追加到原内容后
-	 * 
-	 *        Context.MODE_WORLD_READABLE：允许其他应用程序读取
-	 * 
-	 *        Context.MODE_WORLD_WRITEABLE：允许其他应用程序写入，会覆盖原数据。
-	 */
-	//TODO
-	public static List<String> getFileList() {
-		return new ArrayList<String>();
-	}
 	
 	//数据保存SD卡
 	public static String saveDataToSdCard(String path, String file,
@@ -1441,23 +1420,5 @@ public class Util {
     		String password1 = Communication.getMD5(password.trim());
 		password1 += Communication.apiSecret;
 		return Communication.getMD5(password1);
-    }
-    
-    public static ArrayList<WeakReference<Bitmap> > wrapBitmapWithWeakRef(List<Bitmap> bmps){
-    	if(bmps == null) return null;
-    	ArrayList<WeakReference<Bitmap> > wraps = new ArrayList<WeakReference<Bitmap> >();
-    	for(int i = 0; i < bmps.size(); ++ i){
-    		wraps.add(new WeakReference<Bitmap>(bmps.get(i)));
-    	}
-    	return wraps;
-    }
-    
-    public static ArrayList<Bitmap> discardWrappedWeakRef(List<WeakReference<Bitmap> > bmps){
-    	if(bmps == null) return null;
-    	ArrayList<Bitmap> ret = new ArrayList<Bitmap>();
-    	for(int i = 0; i < bmps.size(); ++ i){
-    		ret.add(bmps.get(i).get());
-    	}
-    	return ret;
     }
 }
