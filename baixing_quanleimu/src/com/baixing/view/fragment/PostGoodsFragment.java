@@ -75,31 +75,31 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	static final String KEY_CATE_ENGLISHNAME = "cateEnglishName";
 	static final private String KEY_IMG_BUNDLE = "key_image_bundle";
 	static final private String STRING_DETAIL_POSITION = "具体地点";
-	static final private String STRING_AREA = "地区";
+	protected static final String STRING_AREA = "地区";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final private String STRING_DESCRIPTION = "description";
 	static final int MSG_POST_SUCCEED = 0xF0000010; 
 
-	private String categoryEnglishName = "";
+	protected String categoryEnglishName = "";
 	private String categoryName = "";
 	private String json = "";
-	private LinearLayout layout_txt;
+	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
 	private static final int NONE = 0;
 	private static final int PHOTORESOULT = 3;
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
-	private PostParamsHolder params = new PostParamsHolder();
+	protected PostParamsHolder params = new PostParamsHolder();
 	private PostParamsHolder originParams = new PostParamsHolder();
 	private String mobile, password;
 	private UserBean user;
-	private GoodsDetail goodsDetail;
-	private ArrayList<String> listUrl = new ArrayList<String>();
-	private Bundle imgSelBundle = null;
+	protected boolean editMode = false;
+	protected ArrayList<String> listUrl = new ArrayList<String>();
+	protected Bundle imgSelBundle = null;
 	private ImageSelectionDialog imgSelDlg = null;	
 	private View locationView = null;
 	private BXLocation detailLocation = null;
-    private List<String> bmpUrls = new ArrayList<String>();
+    protected List<String> bmpUrls = new ArrayList<String>();
     private EditText etDescription = null;
     private EditText etContact = null;
     private PostLocationService postLBS;
@@ -156,7 +156,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
 				
-		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
 		if (savedInstanceState != null){
 			postList.putAll( (HashMap<String, PostGoodsBean>)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
@@ -180,7 +179,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			password = user.getPassword();
 		}
 		String appPhone = QuanleimuApplication.getApplication().getPhoneNumber();
-		if(goodsDetail == null && (appPhone == null || appPhone.length() == 0)){
+		if(!editMode && (appPhone == null || appPhone.length() == 0)){
 			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
 		}
 		
@@ -211,15 +210,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void onResume() {
 		super.onResume();
 		postLBS.start();
-		if (goodsDetail!=null) {//edit
-			this.pv = PV.EDITPOST;
-			Tracker.getInstance()
-			.pv(this.pv)
-			.append(Key.SECONDCATENAME, categoryEnglishName)
-			.append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
-			.end();
-		}
-		else {//new post
+		if(!editMode) {
 			this.pv = PV.POST;
 			Tracker.getInstance()
 			.pv(this.pv)
@@ -262,14 +253,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);		
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
-		if (goodsDetail == null)
+		if (!editMode)
 			button.setText("立即免费发布");
 		else
 			button.setText("立即更新信息");
 		return v;
 	}
 	
-	private void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
+	protected void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
 		if(container != null){
 			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
 		}
@@ -277,79 +268,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		imgSelDlg.show(getFragmentManager(), null);
 	}
 	
-	private void editpostUI() {
-		if(goodsDetail == null) return;
-		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
-			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
-			if(bean == null) continue;
-			String detailValue = goodsDetail.getValueByKey(bean.getName());
-			if(detailValue == null || detailValue.equals(""))continue;
-			String displayValue = PostUtil.getDisplayValue(bean, goodsDetail, bean.getName());
-			View control = (View)v.getTag(PostUtil.HASH_CONTROL);
-			if(control instanceof CheckBox){
-				if(displayValue.contains(((CheckBox)control).getText())){
-					((CheckBox)control).setChecked(true);
-				}
-				else{
-					((CheckBox)control).setChecked(false);
-				}
-			}else if(control instanceof TextView){
-				((TextView)control).setText(displayValue);
-			}
-			this.params.put(bean.getName(), displayValue, detailValue);
-		
-			if(bean.getDisplayName().equals(STRING_AREA)){
-				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
-				String[] areas = strArea.split(",");
-				if(areas.length >= 2){
-					if(control instanceof TextView){
-						((TextView)control).setText(areas[areas.length - 1]);
-					}
-//					if(bean.getValues() != null && bean.getLabels() != null){
-//						List<String> areaLabels = bean.getLabels();
-//						for(int t = 0; t < areaLabels.size(); ++ t){
-//							if(areaLabels.get(t).equals(areas[1])){
-//								params.getData().put(STRING_AREA, bean.getValues().get(t));
-//								break;
-//							}
-//						}
-//					}
-				}
-			}
-		}
-
-		if (goodsDetail.getImageList() != null) {
-			String b = (goodsDetail.getImageList().getResize180());
-			if(b == null || b.equals("")) return;
-			b = Communication.replace(b);
-			if (b.contains(",")) {
-				String[] c = b.split(",");
-				for (int k = 0; k < c.length; k++) {
-					listUrl.add(c[k]);
-				}
-			}else{
-				listUrl.add(b);
-			}
-			
-			if(listUrl.size() > 0){
-				SimpleImageLoader.showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
-				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
-			}else{
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
-			}
-			
-			String big = (goodsDetail.getImageList().getBig());
-			if(big != null && big.length() > 0){
-				big = Communication.replace(big);
-				String[] cbig = big.split(",");
-				for(int i = 0; i < cbig.length; ++ i){
-					this.bmpUrls.add(cbig[i]);
-				}
-			}
-		}
-	}
+	
 	
 	private boolean inPosting = false;
 	
@@ -392,16 +311,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		this.showPost();
 	}
 	
+	protected String getCityEnglishName(){
+		return QuanleimuApplication.getApplication().cityEnglishName;
+	}
+	
 	private void showPost(){
 		if(this.categoryEnglishName == null || categoryEnglishName.length() == 0){
 			deployDefaultLayout();
 			return;
 		}
 
-		String cityEnglishName = QuanleimuApplication.getApplication().cityEnglishName;
-		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
-			cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
-		}
+		String cityEnglishName = getCityEnglishName();
 		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		json = pair.second;
@@ -428,7 +348,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if(v.getId() == R.id.iv_post_finish){
 			postFinish();
 		}else if(v.getId() == R.id.location){
-			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
+			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
 			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
@@ -436,42 +356,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
 			}
 		}else if(v.getId() == R.id.myImg){
-			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
+			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
-			if(goodsDetail != null){
-				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_IMG_CONTAINER)){
-					startImgSelDlg(null);
-				}else{					
-					ArrayList<String> smalls = new ArrayList<String>();
-					ArrayList<String> bigs = new ArrayList<String>();
-					String big = (goodsDetail.getImageList().getBig());
-					if(big != null && big.length() > 0){
-						big = Communication.replace(big);
-						String[] cbig = big.split(",");
-						for (int j = 0; j < listUrl.size(); j++) {
-							String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-							smalls.add(listUrl.get(j));
-							bigs.add(bigUrl);
-						}
-					}
-					if(bigs != null){
-						List<ImageSelectionDialog.ImageContainer> container = new ArrayList<ImageSelectionDialog.ImageContainer>();
-						for(int i = 0; i < bigs.size(); ++ i){
-							ImageSelectionDialog.ImageContainer ic = new ImageSelectionDialog.ImageContainer();
-							ic.bitmapUrl = bigs.get(i);
-							ic.status = ImageSelectionDialog.ImageStatus.ImageStatus_Normal;
-							ic.thumbnailPath = smalls.get(i);
-							container.add(ic);
-						}
-						ImageSelectionDialog.ImageContainer[] ic = new ImageSelectionDialog.ImageContainer[container.size()];
-						for(int i = 0; i < container.size(); ++ i){
-							ic[i] = new ImageSelectionDialog.ImageContainer();
-							ic[i].set(container.get(i));
-						}
-						startImgSelDlg(ic);
-					}
-				}							
-			}else{
+			if(!editMode){
 				startImgSelDlg(null);
 			}
 		}else if(v.getId() == R.id.img_description){
@@ -481,7 +368,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					@Override
 					public void run(){
 						if (et != null){
-							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
+							Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 							et.requestFocus();
 							InputMethodManager inputMgr = 
 									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
@@ -495,7 +382,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void postFinish() {
 		Tracker.getInstance()
-		.event(goodsDetail==null?BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
+		.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
 		.end();
 		
@@ -504,7 +391,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 	private void setPhoneAndAddress(){
 		String phone = params.getData("contact");
-		if(phone != null && phone.length() > 0 && goodsDetail == null){
+		if(phone != null && phone.length() > 0 && !editMode){
 			QuanleimuApplication.getApplication().setPhoneNumber(phone);
 		}
 		String address = params.getData(STRING_DETAIL_POSITION);
@@ -570,6 +457,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 		return toRet;
 	}
+	
+	protected void mergeParams(List<String> list){
+		
+	}
 
 	private class UpdateThread implements Runnable {
 		private boolean registered = false;
@@ -591,8 +482,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
 			list.add("rt=1");
-			if (goodsDetail != null) {
-				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+			mergeParams(list);
+			if(editMode){
 				apiName = "ad_update";
 			}
 			setDistrictByLocation(location);			
@@ -706,7 +597,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	private void postResultSuccess() {
-		BxEvent event = goodsDetail != null ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
+		BxEvent event = editMode ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
 
 		Tracker.getInstance().event(event)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
@@ -721,7 +612,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	private void postResultFail(String errorMsg) {
-		BxEvent event = goodsDetail != null ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
+		BxEvent event = editMode ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
 		Tracker.getInstance().event(event)
 				.append(Key.SECONDCATENAME, categoryEnglishName)
 				.append(Key.POSTSTATUS, 0)
@@ -885,6 +776,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void onFragmentBackWithData(int message, Object obj){	
 		handleBackWithData(message, obj);
 	}
+	
+	protected String getAdContact(){
+		return "";
+	}
 
 	private void appendBeanToLayout(PostGoodsBean postBean){
 		if (postBean.getName().equals("contact") &&
@@ -917,8 +812,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			etContact = ((EditText)layout.getTag(PostUtil.HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
-			if(this.goodsDetail != null){
-				etContact.setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+			if(editMode){
+				etContact.setText(getAdContact());
 			}else{
 				if(phone != null && phone.length() > 0){
 					etContact.setText(phone);
@@ -948,7 +843,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
-		if(this.goodsDetail != null)return;
+		if(editMode)return;
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
@@ -1010,7 +905,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
+							Tracker.getInstance().event((editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DESCRIPTION).end();
 						}
 						return false;
 					}
@@ -1077,6 +972,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 	}
 	
+	protected void editPostUI(){
+		
+	}
+	
 	private void buildPostLayout(HashMap<String, PostGoodsBean> pl){
 		this.getView().findViewById(R.id.goodscontent).setVisibility(View.VISIBLE);
 		this.getView().findViewById(R.id.networkErrorView).setVisibility(View.GONE);
@@ -1101,7 +1000,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 			this.appendBeanToLayout(postBean);
 		}
-		editpostUI();
+		if(editMode){
+			editPostUI();
+		}
 		originParams.merge(params);
 		PostUtil.extractInputData(layout_txt, originParams);	
 	}
@@ -1218,8 +1119,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					Toast.makeText(activity, message, 0).show();
 					final Bundle args = createArguments(null, null);
 					args.putInt("forceUpdate", 1);
-					resetData(goodsDetail == null);
-					if(goodsDetail == null){
+					resetData(!editMode);
+					if(!editMode){
 						showPost();
 						String lp = getArguments().getString("lastPost");
 						if(lp != null && !lp.equals("")){
@@ -1230,7 +1131,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						args.putString("lastPost", lp);
 						
 						args.putString("cateEnglishName", categoryEnglishName);
-						args.putBoolean(KEY_IS_EDITPOST, goodsDetail!=null);
+						args.putBoolean(KEY_IS_EDITPOST, editMode);
 						
 						args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
 //						PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
@@ -1329,17 +1230,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						value = params.getUiData(bean.getName());
 					}
 					if(bean.getName().equals("contact")){
-						if(this.goodsDetail != null){
-							((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+						if(editMode){
+							((TextView)control).setText(getAdContact());
 						}else{
 							String phone = QuanleimuApplication.getApplication().getPhoneNumber();
-							if(this.goodsDetail != null){
-								((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
-							}else{
-								if(phone != null && phone.length() > 0){
-									((TextView)control).setText(phone);
-									continue;
-								}
+							if(phone != null && phone.length() > 0){
+								((TextView)control).setText(phone);
+								continue;
 							}
 						}
 					}
@@ -1366,9 +1263,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
-		if(this.goodsDetail != null){
-			title.m_leftActionHint = "返回";
-		}
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
@@ -1382,7 +1276,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			final String actionName = ((PostGoodsBean)layout.getTag(PostUtil.HASH_POST_BEAN)).getDisplayName();
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
-					Tracker.getInstance().event((goodsDetail == null) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
+					Tracker.getInstance().event((!editMode) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 
 					PostGoodsBean postBean = (PostGoodsBean) v.getTag(PostUtil.HASH_POST_BEAN);
 
@@ -1449,7 +1343,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
-						Tracker.getInstance().event((goodsDetail == null) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
+						Tracker.getInstance().event((!editMode) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 					}
 					return false;
 				}

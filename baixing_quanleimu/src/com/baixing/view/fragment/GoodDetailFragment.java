@@ -985,7 +985,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
 			args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-			pushFragment(new PostGoodsFragment(), args);
+			pushFragment(new EditAdFragment(), args);
             trackerLogEvent(BxEvent.MYVIEWAD_EDIT);
 			break;
 		}
