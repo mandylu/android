@@ -2,8 +2,6 @@
 package com.baixing.util;
 
 import java.io.BufferedReader;
-import java.io.ByteArrayOutputStream;
-import java.io.DataInputStream;
 import java.io.File;
 import java.io.FileInputStream;
 import java.io.FileNotFoundException;
@@ -15,7 +13,6 @@ import java.io.ObjectInputStream;
 import java.io.ObjectOutputStream;
 import java.io.Serializable;
 import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
 import java.net.MalformedURLException;
 import java.net.SocketTimeoutException;
 import java.net.URL;
@@ -23,7 +20,6 @@ import java.net.URLConnection;
 import java.net.UnknownHostException;
 import java.security.MessageDigest;
 import java.util.ArrayList;
-import java.util.Date;
 import java.util.List;
 import java.util.UUID;
 
@@ -31,10 +27,6 @@ import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
 import org.apache.http.entity.ByteArrayEntity;
-import org.apache.http.entity.StringEntity;
-import org.json.JSONArray;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
@@ -44,17 +36,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.PackageManager.NameNotFoundException;
 import android.graphics.Bitmap;
 import android.graphics.Bitmap.CompressFormat;
-import android.graphics.Bitmap.Config;
-import android.graphics.BitmapFactory;
-import android.graphics.Canvas;
-import android.graphics.Matrix;
-import android.graphics.Paint;
-import android.graphics.Point;
-import android.graphics.Rect;
-import android.net.ConnectivityManager;
-import android.net.NetworkInfo.State;
 import android.os.Environment;
-import android.os.Message;
 import android.provider.Settings.Secure;
 import android.telephony.TelephonyManager;
 import android.util.Log;
@@ -63,12 +45,8 @@ import android.view.Display;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
-import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.fasterxml.jackson.core.JsonFactory;
-import com.fasterxml.jackson.core.JsonParser;
-import com.fasterxml.jackson.core.type.TypeReference;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
@@ -706,9 +684,6 @@ public class Util {
 	}
 	
 	
-	
-	
-	
 	public static String getJsonDataFromURLByPost(String path,String params) throws SocketTimeoutException, UnknownHostException {
 		//����һ��URL����
 //		HttpURLConnection urlCon = null;
@@ -763,40 +738,15 @@ public class Util {
 		return str;
 	}
 	
-	//post�ύ����
-	public static String sendString(String str, String urlString) throws IOException{
-		DataInputStream dis = null;
-		String readUrl = "";
-		try {
-			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
-            
-            HttpPost httpPost = new HttpPost(urlString); 
-            
-            StringEntity stringEntity = new StringEntity(str, "UTF-8");
-            httpPost.setEntity(stringEntity);
-            
-            HttpResponse response = httpClient.execute(httpPost);
-            
-			dis = new DataInputStream(response.getEntity().getContent());
-			readUrl = dis.readLine();
-			dis.close();
-//			os.close();
-			
-			httpClient.getConnectionManager().shutdown();
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		}
-		return readUrl;
-	} 
-	
 	public static String saveBitmapToSdCard(String path,String name,Bitmap bitmap) {
 		String res = null;
 		FileOutputStream fos = null; 
 		if (Environment.getExternalStorageState() != null) {
 			try {
-				File p = new File("/sdcard/" + "quanleimu"); // 创建目录
-				File s = new File("/sdcard/" + "quanleimu" + "/" + path); // 创建目录
-				File f = new File("/sdcard/" + "quanleimu" + "/" + path + "/" + name + ".png"); // 创建文件
+				String sdRoot = getSdCardRoot();
+				File p = new File(sdRoot + "quanleimu"); // 创建目录
+				File s = new File(sdRoot + "quanleimu" + "/" + path); // 创建目录
+				File f = new File(sdRoot + "quanleimu" + "/" + path + "/" + name + ".png"); // 创建文件
 				if (!p.exists()) {
 					p.mkdir();
 				}
@@ -824,134 +774,6 @@ public class Util {
 		return res;
 	}
 	
-	public static List<Bitmap> loadBitmapFromSdCard(String path,String name) {
-		List<Bitmap> b = new ArrayList<Bitmap>();
-		File file = new File("/sdcard/"+"quanleimu/"+path);
-		if (file != null) {
-			File[] files = file.listFiles();
-			if (files != null) {
-				for (File f : files) {
-					if(f.getAbsolutePath().contains(name)){
-					    BitmapFactory.Options o =  new BitmapFactory.Options();
-	                    o.inPurgeable = true;
-						b.add(BitmapFactory.decodeFile(f.getPath(), o));
-					}
-				}
-			}
-		}
-		b = replaceList(b);
-		return b;
-	}
-	
-	public static List<Bitmap> replaceList(List<Bitmap> bit) {
-		List<Bitmap> b = new ArrayList<Bitmap>();
-		for (int i = bit.size() - 1; i > -1; i--) {
-			b.add(bit.get(i));
-		}
-		return b;
-	}
-	
-	//下载图片
-	public static Bitmap getImage(String strURL)throws OutOfMemoryError{	
-		//Log.d("img", strURL);
-				Bitmap img = null;
-				URLConnection conn = null;
-				try {
-					URL url = new URL(strURL);
-					conn = (URLConnection) url.openConnection();
-					BitmapFactory.Options o =  new BitmapFactory.Options();
-					o.inPurgeable = true;
-					//Log.e("o", o.toString());
-					img = BitmapFactory.decodeStream(conn.getInputStream(), null, o);
-				}
-				catch (Exception e) { 
-					img = null;
-					e.printStackTrace();
-					//conn.disconnect();
-				}
-		return img;
-	}
-	
-	//将bitmap转成流存到file里面
-	public static void saveImage2File(Context context,Bitmap bmp,String fileName)
-	{
-		ByteArrayOutputStream bos = new ByteArrayOutputStream();
-		bmp.compress(Bitmap.CompressFormat.JPEG, 100, bos);
-		byte[] file = bos.toByteArray();
-		FileOutputStream fos = null;
-		try {
-			fos = context.openFileOutput(fileName, Activity.MODE_PRIVATE);
-			fos.write(file);
-			fos.close();
-		} catch (FileNotFoundException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-	}
-	
-	//将流转成bitmap里面
-	public static Bitmap getBitmapFromInputstream(Context context,String fileName)
-	{
-		Bitmap bmp = null;
-		FileInputStream fis = null;
-		byte[] aa = null;
-		try {
-			fis = context.openFileInput(fileName);
-			
-			aa = new byte[fis.available()];
-			fis.read(aa);
-		} catch (FileNotFoundException e) {
-			fis = null;
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		}
-		if(fis == null)
-		{
-			bmp = null;
-		}
-		else
-		{
-		    BitmapFactory.Options o =  new BitmapFactory.Options();
-            o.inPurgeable = true;
-			bmp = BitmapFactory.decodeByteArray(aa, 0, aa.length, o);
-		}
-		return bmp;
-	}
-	
-	
-	//手机分辨率宽
-	public static int getWidth(Activity activity){
-		Display display = activity.getWindowManager().getDefaultDisplay();
-		int width = display.getWidth();
-		int a = 0;
-		if(width == 240)
-		{
-			a = 1;
-		}
-		else if(width == 320)
-		{
-			a = 2;
-		}
-		else if(width == 480)
-		{
-			a = 3;
-		}
-		else if(width == 540)
-		{
-			a = 4;
-		}
-		else if(width == 640)
-		{
-			a = 5;
-		}else{
-			a = 5;
-		}
-		
-		return a;
-	}
-	
 	public static int getWidthByContext(Context context){
 		Display display = ((Activity) context).getWindowManager().getDefaultDisplay();
 		int width = display.getWidth();
@@ -963,97 +785,6 @@ public class Util {
 		int height = display.getHeight();
 		return height;
 	}
-	
-
-	//获得手机屏幕焦点
-	public static Point getSrccenPoint(Activity activity){
-		Display display = activity.getWindowManager().getDefaultDisplay();
-		return new Point(display.getWidth(), display.getHeight());
-	}
-	
-    public static Bitmap newBitmap(Bitmap b, int w, int h)
-    {
-        float scaleWidth = 0;
-        float scaleHeight = h;
-        int width = b.getWidth();
-        int height = b.getHeight();
-        
-        if (w == h)
-        {
-            int minValue = Math.min(b.getWidth(), b.getHeight());
-            if (minValue >= w)
-            {
-                float ratio = (float) w / (float) minValue;
-                scaleWidth = ratio;
-                scaleHeight = ratio;
-            }
-            else
-            {
-                minValue = Math.max(b.getWidth(), b.getHeight());
-                float ratio = (float) w / (float) minValue;
-                scaleWidth = ratio;
-                scaleHeight = ratio;
-            }
-        }
-        else
-        {
-            scaleWidth = ((float) w) / width;
-            scaleHeight = ((float) h) / height;
-        }
-        
-        Matrix matrix = new Matrix();
-        matrix.postScale(scaleWidth, scaleHeight);// ����
-        return Bitmap.createBitmap(b, 0, 0, width, height, matrix, true);
-    }
-	
-	//图片旋转
-	public static Bitmap rotate(Bitmap b, int degrees) {
-		if (degrees != 0 && b != null) {
-			Matrix m = new Matrix();
-			m.setRotate(degrees);
-			try {
-				Bitmap b2 = Bitmap.createBitmap(b, 0, 0, b.getWidth(), b
-						.getHeight(), m, true);
-				if (b != b2) {
-					b = b2;
-				}
-			} catch (OutOfMemoryError ex) {
-				ex.printStackTrace();
-			}
-		}
-		return b;
-	}
-	
-	//һ����ת
-	public static List<Bitmap> rotateList(List<Bitmap> bitmaps) {
-		List<Bitmap> bits = new ArrayList<Bitmap>();
-		for(Bitmap b : bitmaps){
-			bits.add(Util.rotate(b, -90));
-		}
-		return bits;
-	}
-	public static List<Bitmap> newBitmapList(List<Bitmap> bitmaps,Activity activity) {
-		List<Bitmap> bits = new ArrayList<Bitmap>();
-		for(Bitmap b : bitmaps){
-			if(Util.getWidth(activity)==1){
-				bits.add(Util.newBitmap(b, 90, 90));
-			}else if(Util.getWidth(activity)== 2){
-				bits.add(Util.newBitmap(b, 135, 135));
-			}
-			else if(Util.getWidth(activity)== 3){
-				bits.add(Util.newBitmap(b, 60, 60));
-			}
-			else if(Util.getWidth(activity)== 4){
-				bits.add(Util.newBitmap(b, 160, 160));
-			}
-			else if(Util.getWidth(activity)== 5){
-				bits.add(Util.newBitmap(b, 180, 180));
-			}
-			
-		}
-		return bits;
-	}
-	
 	
 	//根据经纬度获取地址
 	public static String GetAddr(double latitude, double longitude) {  
