@@ -39,7 +39,7 @@ import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
-public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, GoodDetailFragment.IListHolder, Observer {
+public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadFragment.IListHolder, Observer {
     private boolean isFav = false;
     static final int MSG_UPDATEFAV = 1;
     static final int MSG_UPDATEHISTORY = 2;
@@ -106,7 +106,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 position = position - pullListView.getHeaderViewsCount();
                 if (position < 0 || tempGoodsList == null || tempGoodsList.getData() == null || position >= tempGoodsList.getData().size()) return;
 
-                GoodDetailFragment f = new GoodDetailFragment();
+                VadFragment f = new VadFragment();
                 f.setListHolder(FavoriteAndHistoryFragment.this);
                 Bundle bundle = createArguments(null, null);
                 bundle.putSerializable("loader", createGoodsListLoader());

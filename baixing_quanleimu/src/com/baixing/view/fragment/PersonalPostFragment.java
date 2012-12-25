@@ -263,7 +263,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
-					pushFragment(new GoodDetailFragment(), bundle);
+					pushFragment(new VadFragment(), bundle);
 					
 				}
 			}
@@ -748,7 +748,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj){
-		if(GoodDetailFragment.MSG_ADINVERIFY_DELETED == message){
+		if(VadFragment.MSG_ADINVERIFY_DELETED == message){
 			if(obj != null){
 				if(this.listMyPost != null){
 					boolean updateUi = false;
@@ -766,7 +766,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					}
 				}
 			}
-		}else if(GoodDetailFragment.MSG_MYPOST_DELETED == message){
+		}else if(VadFragment.MSG_MYPOST_DELETED == message){
 			if(glLoader.getGoodsList() != null 
 					&& glLoader.getGoodsList().getData() != null 
 					&& glLoader.getGoodsList().getData().size() > 0){

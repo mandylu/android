@@ -77,7 +77,7 @@ import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
-public class GoodDetailFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, GoodsListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, GoodsListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
 
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -388,7 +388,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				//tracker
 				if (isMyAd() || !detail.isValidMessage())
 				{
-					GoodDetailFragment.this.pv = PV.MYVIEWAD;
+					VadFragment.this.pv = PV.MYVIEWAD;
 					Tracker.getInstance()
 					.pv(PV.MYVIEWAD)
 					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
@@ -397,9 +397,9 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 					.append(Key.ADSTATUS, detail.getValueByKey("status"))
 					.end();
 				} else {
-					GoodDetailFragment.this.pv = PV.VIEWAD;
+					VadFragment.this.pv = PV.VIEWAD;
 					Tracker.getInstance()
-					.pv(GoodDetailFragment.this.pv)
+					.pv(VadFragment.this.pv)
 					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
 					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 					.end();
@@ -468,10 +468,10 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 								adapter.notifyDataSetChanged();
 							}
 						}else{
-							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, GoodDetailFragment.this));
+							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, VadFragment.this));
 						}
 	//					
-						glDetail.setOnTouchListener(GoodDetailFragment.this);
+						glDetail.setOnTouchListener(VadFragment.this);
 						
 						glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 		
@@ -664,7 +664,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
 				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, GoodDetailFragment.this));
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, VadFragment.this));
 					glDetail.setOnTouchListener(this);
 					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	
@@ -1243,7 +1243,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		}
 		@Override
 		public void run(){
-			synchronized(GoodDetailFragment.this){
+			synchronized(VadFragment.this){
 				ArrayList<String> requests = null;
 				String apiName = null;
 				int msgToSend = -1;
@@ -1475,7 +1475,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
 		if (page != null)
 		{
-			page.findViewById(R.id.retry_load_more).setOnClickListener(GoodDetailFragment.this);
+			page.findViewById(R.id.retry_load_more).setOnClickListener(VadFragment.this);
 			page.postDelayed(new Runnable() {
 				@Override
 				public void run() {

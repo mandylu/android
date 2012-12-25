@@ -27,7 +27,7 @@ import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
-public class KeywordSelector extends BaseFragment {
+public class KeywordSelectFragment extends BaseFragment {
 	private EditText etSearch;
 	private List<String> listRemark = new ArrayList<String>();
 	private TextView tvClear;

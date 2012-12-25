@@ -89,7 +89,7 @@ public class SearchFragment extends BaseFragment {
 	public void handleSearch() {
 		Bundle args = createArguments(null, null);
 		args.putInt(ARG_COMMON_REQ_CODE, REQ_GETKEYWORD);
-		pushFragment(new KeywordSelector(), args);
+		pushFragment(new KeywordSelectFragment(), args);
 	}
 
 	@Override

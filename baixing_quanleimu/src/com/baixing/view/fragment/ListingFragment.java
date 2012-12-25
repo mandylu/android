@@ -336,7 +336,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", goodsListLoader);
 					bundle.putInt("index", index);
-					pushFragment(new GoodDetailFragment(), bundle);
+					pushFragment(new VadFragment(), bundle);
 //				}				
 			}
 		});

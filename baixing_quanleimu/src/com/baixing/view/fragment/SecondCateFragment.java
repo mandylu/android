@@ -180,15 +180,5 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		bundle.putString("categoryName", this.cate.getName());
 		this.pushFragment(new SearchFragment(), bundle);
 	}
-	
-	@Override
-	public void handleRightAction() {
-		this.pushFragment(new GridCateFragment(), this.getArguments());
-//		
-//		Bundle bundle = new Bundle();
-//		bundle.putSerializable("cates", cate);
-//		bundle.putBoolean("isPost", true);
-//		this.pushFragment(new SecondCateFragment(), bundle);
-	}
 
 }

@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.lang.ref.WeakReference;
@@ -77,11 +78,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	@Override
 	public int[] includedOptionMenus() {
 		return new int[]{OPTION_CHANGE_CITY};
-	}
-	
-	@Override
-	public void handleRightAction(){
-		this.pushFragment(new GridCateFragment(), this.getArguments());
 	}
 	
 	@Override
@@ -189,11 +185,9 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		super.onDestroy();
 	}
 	
-	private boolean isActivated = true;
 	@Override
 	public void onResume(){
 		super.onResume();
-//		isActivated = true;
 		synchronized(HomeFragment.this){
 			setViewContent();
 		}
@@ -202,30 +196,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	
 	@Override
 	public void onPause(){
-//		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
-//		isActivated = false;
-//		final List<Bitmap> tmp = new ArrayList<Bitmap>();
-//		tmp.addAll(bmpCaches);
-//		bmpCaches.clear();
-//		if(this.getView() != null){
-//			getView().postDelayed(new Runnable(){
-//				@Override
-//				public void run(){
-//					synchronized(HomeFragment.this){
-////						if(!isActivated){
-//							for(int i = 0; i < tmp.size(); ++ i){
-//								tmp.get(i).recycle();
-//							}
-//							tmp.clear();
-////						}
-//					}
-//				}
-//			}, 2000);
-//		}
-//		if(glDetail != null){
-//			glDetail.setAdapter(null);
-//		}
 	}
 
 	@Override
