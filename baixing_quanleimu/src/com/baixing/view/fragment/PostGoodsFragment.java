@@ -43,7 +43,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.GoodsDetail;
@@ -178,9 +178,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			mobile = user.getPhone();
 			password = user.getPassword();
 		}
-		String appPhone = QuanleimuApplication.getApplication().getPhoneNumber();
+		String appPhone = GlobalDataManager.getApplication().getPhoneNumber();
 		if(!editMode && (appPhone == null || appPhone.length() == 0)){
-			QuanleimuApplication.getApplication().setPhoneNumber(mobile);
+			GlobalDataManager.getApplication().setPhoneNumber(mobile);
 		}
 		
 		this.postLBS = new PostLocationService(this.handler);
@@ -312,7 +312,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	protected String getCityEnglishName(){
-		return QuanleimuApplication.getApplication().cityEnglishName;
+		return GlobalDataManager.getApplication().cityEnglishName;
 	}
 	
 	private void showPost(){
@@ -392,11 +392,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private void setPhoneAndAddress(){
 		String phone = params.getData("contact");
 		if(phone != null && phone.length() > 0 && !editMode){
-			QuanleimuApplication.getApplication().setPhoneNumber(phone);
+			GlobalDataManager.getApplication().setPhoneNumber(phone);
 		}
 		String address = params.getData(STRING_DETAIL_POSITION);
 		if(address != null && address.length() > 0){
-			QuanleimuApplication.getApplication().setAddress(address);
+			GlobalDataManager.getApplication().setAddress(address);
 		}		
 	}
 	
@@ -412,7 +412,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 			this.showSimpleProgress();
-			postLBS.retreiveLocation(QuanleimuApplication.getApplication().cityName, getFilledLocation());			
+			postLBS.retreiveLocation(GlobalDataManager.getApplication().cityName, getFilledLocation());			
 		}
 	}
 
@@ -480,7 +480,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 			
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
 			list.add("rt=1");
 			mergeParams(list);
 			if(editMode){
@@ -607,7 +607,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
 		.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
-        .append(Key.POSTENTRY, QuanleimuApplication.postEntryFlag)
 		.end();
 	}
 	
@@ -622,7 +621,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
 				.append(Key.POSTDETAILPOSITIONAUTO, autoLocated)
-                .append(Key.POSTENTRY, QuanleimuApplication.postEntryFlag)
 				.end();
 	}
 	
@@ -641,7 +639,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 			String apiName = "category_meta_post";
 			ArrayList<String> list = new ArrayList<String>();
-			this.cityEnglishName = (this.cityEnglishName == null ? QuanleimuApplication.getApplication().cityEnglishName : this.cityEnglishName);
+			this.cityEnglishName = (this.cityEnglishName == null ? GlobalDataManager.getApplication().cityEnglishName : this.cityEnglishName);
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + this.cityEnglishName);
 
@@ -804,14 +802,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
 			locationView = layout;
 			
-			String address = QuanleimuApplication.getApplication().getAddress();
+			String address = GlobalDataManager.getApplication().getAddress();
 			if(address != null && address.length() > 0){
 				((TextView)layout.findViewById(R.id.postinput)).setText(address);
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(PostUtil.HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-			String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+			String phone = GlobalDataManager.getApplication().getPhoneNumber();
 			if(editMode){
 				etContact.setText(getAdContact());
 			}else{
@@ -1233,7 +1231,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						if(editMode){
 							((TextView)control).setText(getAdContact());
 						}else{
-							String phone = QuanleimuApplication.getApplication().getPhoneNumber();
+							String phone = GlobalDataManager.getApplication().getPhoneNumber();
 							if(phone != null && phone.length() > 0){
 								((TextView)control).setText(phone);
 								continue;

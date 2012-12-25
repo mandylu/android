@@ -53,7 +53,7 @@ import android.widget.Toast;
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadImageAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
@@ -68,7 +68,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
@@ -77,11 +77,11 @@ import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
-public class GoodDetailFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, GoodsListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
 
 	public interface IListHolder{
 		public void startFecthingMore();
-		public boolean onResult(int msg, GoodsListLoader loader);//return true if getMore succeeded, else otherwise
+		public boolean onResult(int msg, VadListLoader loader);//return true if getMore succeeded, else otherwise
 	};
 	
 	
@@ -101,7 +101,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 	
 	private boolean keepSilent = false;
 	
-	private GoodsListLoader mListLoader;
+	private VadListLoader mListLoader;
 	
 	private IListHolder mHolder = null;
 	
@@ -211,12 +211,12 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 	
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		return QuanleimuApplication.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
+		return GlobalDataManager.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
 	}
 	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		return QuanleimuApplication.getApplication().isFav(detail);
+		return GlobalDataManager.getApplication().isFav(detail);
 	}
 //	
 	public boolean onTouch (View v, MotionEvent event){
@@ -240,7 +240,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		this.mListLoader = (GoodsListLoader) getArguments().getSerializable("loader");
+		this.mListLoader = (VadListLoader) getArguments().getSerializable("loader");
 		int index = getArguments().getInt("index", 0);
 		if(mListLoader == null 
 				|| mListLoader.getGoodsList() == null 
@@ -388,7 +388,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				//tracker
 				if (isMyAd() || !detail.isValidMessage())
 				{
-					GoodDetailFragment.this.pv = PV.MYVIEWAD;
+					VadFragment.this.pv = PV.MYVIEWAD;
 					Tracker.getInstance()
 					.pv(PV.MYVIEWAD)
 					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
@@ -397,9 +397,9 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 					.append(Key.ADSTATUS, detail.getValueByKey("status"))
 					.end();
 				} else {
-					GoodDetailFragment.this.pv = PV.VIEWAD;
+					VadFragment.this.pv = PV.VIEWAD;
 					Tracker.getInstance()
-					.pv(GoodDetailFragment.this.pv)
+					.pv(VadFragment.this.pv)
 					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
 					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
 					.end();
@@ -468,10 +468,10 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 								adapter.notifyDataSetChanged();
 							}
 						}else{
-							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, GoodDetailFragment.this));
+							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, VadFragment.this));
 						}
 	//					
-						glDetail.setOnTouchListener(GoodDetailFragment.this);
+						glDetail.setOnTouchListener(VadFragment.this);
 						
 						glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 		
@@ -516,38 +516,28 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 						}
 					}else{
 						switch (msg.what) {
-						case GoodsListLoader.MSG_FINISH_GET_FIRST:				 
+						case VadListLoader.MSG_FINISH_GET_FIRST:				 
 							GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							mListLoader.setGoodsList(goodsList);
 							if (goodsList == null || goodsList.getData().size() == 0) {
-								Message msg1 = Message.obtain();
-								msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-								Bundle bundle = new Bundle();
-								bundle.putString("popup_message", "没有符合的结果，请稍后并重试！");
-								msg1.setData(bundle);
-								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请稍后并重试！");
 							} else {
 								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
 							}
 							mListLoader.setHasMore(true);
 							notifyPageDataChange(true);
 							break;
-						case GoodsListLoader.MSG_NO_MORE:					
+						case VadListLoader.MSG_NO_MORE:					
 							onNoMore();
 							
 							mListLoader.setHasMore(false);
 							notifyPageDataChange(false);
 							
 							break;
-						case GoodsListLoader.MSG_FINISH_GET_MORE:	
+						case VadListLoader.MSG_FINISH_GET_MORE:	
 							GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
 							if (goodsList1 == null || goodsList1.getData().size() == 0) {
-								Message msg2 = Message.obtain();
-								msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
-								Bundle bundle1 = new Bundle();
-								bundle1.putString("popup_message", "后面没有啦！");
-								msg2.setData(bundle1);
-								QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_WARNING, "后面没有啦！");
 								
 								onNoMore();
 								
@@ -567,9 +557,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 							}
 							break;
 						case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-							Message msg2 = Message.obtain();
-							msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-							QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+							ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 							
 							onLoadMoreFailed();
 							
@@ -676,7 +664,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
 				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, GoodDetailFragment.this));
+					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, VadFragment.this));
 					glDetail.setOnTouchListener(this);
 					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
 	
@@ -827,7 +815,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
 		String text = "立即拨打" + contactS;
-		if (mobileArea != null && mobileArea.length() > 0 && !QuanleimuApplication.getApplication().getCityName().equals(mobileArea))
+		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getApplication().getCityName().equals(mobileArea))
 		{
 //			text = contactS + "(" + mobileArea + ")";
 		}
@@ -916,18 +904,18 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		.end();
 		
 		if(!isInMyStore()){			
-			List<GoodsDetail> myStore = QuanleimuApplication.getApplication().addFav(detail); 
+			List<GoodsDetail> myStore = GlobalDataManager.getApplication().addFav(detail); 
 			
 			if (myStore != null)
 			{
-				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", myStore);
+				Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", myStore);
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(QuanleimuApplication.getApplication().getApplicationContext(), "收藏成功", 3).show();
+			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else  {
-			List<GoodsDetail> favList = QuanleimuApplication.getApplication().removeFav(detail);
+			List<GoodsDetail> favList = GlobalDataManager.getApplication().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
@@ -1186,7 +1174,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 						break;
 					}
 				}
-				List<GoodsDetail>listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+				List<GoodsDetail>listMyPost = GlobalDataManager.getApplication().getListMyPost();
 				if(listMyPost != null){
 					for(int i = 0; i < listMyPost.size(); ++ i){
 						if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -1210,7 +1198,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				int code = js.getInt("code");
 				if (code == 0) {
 					if(detail.getValueByKey("status").equals("0")){
-						List<GoodsDetail> listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+						List<GoodsDetail> listMyPost = GlobalDataManager.getApplication().getListMyPost();
 						if(null != listMyPost){
 							for(int i = 0; i < listMyPost.size(); ++ i){
 								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
@@ -1255,7 +1243,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		}
 		@Override
 		public void run(){
-			synchronized(GoodDetailFragment.this){
+			synchronized(VadFragment.this){
 				ArrayList<String> requests = null;
 				String apiName = null;
 				int msgToSend = -1;
@@ -1279,10 +1267,10 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 					try {
 						json = Communication.getDataByUrl(url, true);
 					} catch (UnsupportedEncodingException e) {
-						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 						hideProgress();
 					} catch (IOException e) {
-						QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 						hideProgress();
 					} catch (Communication.BXHttpException e){
 						
@@ -1388,7 +1376,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 				}
 			}
 			if(values.size() == 0){
-				QuanleimuApplication.getImageLoader().forceRecycle(url);
+				GlobalDataManager.getImageLoader().forceRecycle(url);
 				imageMap.remove(url);
 			}else{
 				imageMap.put(url, values);
@@ -1487,7 +1475,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
 		if (page != null)
 		{
-			page.findViewById(R.id.retry_load_more).setOnClickListener(GoodDetailFragment.this);
+			page.findViewById(R.id.retry_load_more).setOnClickListener(VadFragment.this);
 			page.postDelayed(new Runnable() {
 				@Override
 				public void run() {
@@ -1517,7 +1505,7 @@ public class GoodDetailFragment extends BaseFragment implements View.OnTouchList
 			mListLoader
 					.startFetching(
 							false,
-							((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
+							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
 									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
 									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 		}

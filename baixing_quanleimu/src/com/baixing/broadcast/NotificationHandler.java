@@ -5,7 +5,7 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.activity.MainActivity;
 
 
 /**
@@ -31,7 +31,7 @@ public class NotificationHandler extends BroadcastReceiver {
     
     private void startApp(Context context, Intent outerIntent)
     {
-		Intent goMain = new Intent(context, QuanleimuMainActivity.class);
+		Intent goMain = new Intent(context, MainActivity.class);
 		goMain.putExtras(outerIntent);
 		goMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_HISTORY);
 		goMain.putExtras(outerIntent);

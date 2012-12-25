@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.io.IOException;
@@ -23,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
@@ -37,36 +38,23 @@ import com.quanleimu.activity.R;
 
 public class FilterFragment extends BaseFragment implements View.OnClickListener{
 	
+	private static final int MSG_MULTISEL_BACK = 0;
+	private static final int MSG_LOAD_DATA_SUCCED = 1;
+	private static final int MSG_LOAD_DATA_FAILD = 2;
 	private static final int MSG_UPDATE_KEYWORD = 3;
-	
-	public List<String> listsize = new ArrayList<String>();
-
-	
+	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	
 	// 定义变量
-	public String backPageName = "";
 	private EditText ed_sift;
-
-	public int temp;
-	public String res = "";
-	public String value_resl = "";
-	public int idselected;
-//	TextView tvmeta = null;
+	public int temp;//What's this?
 
 	private Map<Integer, TextView> selector = new HashMap<Integer, TextView>();
 	private Map<String, EditText> editors = new HashMap<String, EditText>();
 
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
-//	private Map<String, String> labelmap = new HashMap<String, String>();
-//
-//	public Map<String, String> valuemap = new HashMap<String, String>();
-
 	public String categoryEnglishName = "";
 	public String json = "";
-
-	private final int MSG_MULTISEL_BACK = 0;
-	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	
 	private PostParamsHolder parametersHolder;
 
@@ -80,7 +68,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		super.onCreate(savedInstanceState);
 		Bundle bundle = getArguments();
 		categoryEnglishName = bundle.getString("categoryEnglishName");
-		backPageName = bundle.getString(ARG_COMMON_BACK_HINT);
 		
 		PostParamsHolder params = (PostParamsHolder) getArguments().getSerializable("filterResult");
 		getArguments().remove("filterResult");
@@ -115,7 +102,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	public void onResume()
 	{
 		super.onResume();
-		Log.d("xx","filter");
 		this.pv = PV.LISTINGFILTER;
 		Tracker.getInstance().pv(this.pv).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		
@@ -125,7 +111,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 						getActivity(),
 						"saveFilterss"
 								+ categoryEnglishName
-								+ QuanleimuApplication.getApplication().cityEnglishName);
+								+ GlobalDataManager.getApplication().cityEnglishName);
 		json = pair.second;
 		long time = pair.first;
 		if (json == null || json.length() == 0) {
@@ -133,7 +119,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			new Thread(new GetGoodsListThread(true)).start();
 		} else {
 			if (time + 24 * 3600 < System.currentTimeMillis()/1000) {
-				sendMessage(1, null);
+				sendMessage(MSG_LOAD_DATA_SUCCED, null);
 				showSimpleProgress();
 				
 				new Thread(new GetGoodsListThread(false)).start();
@@ -162,19 +148,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		collectValue(getArguments());
 	}
 	
-	
-	
-	@Override
-	public void onSaveInstanceState(Bundle outState) {
-		// TODO Auto-generated method stub
-		super.onSaveInstanceState(outState);
-	}
-
 	private void collectValue(Bundle bundle)
 	{
-//		String result = "";
-//		String resultLabel = "";
-
 		String str = ed_sift.getText().toString().trim();
 
 		
@@ -206,29 +181,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj) {
-//		if (message == 1234) {
-//			Bundle data = (Bundle)obj;
-//			
-//			String s = data.getString("all"); 
-//			if(s==null || s.equals("")){
-//				res = data.getString("label");
-//				value_resl = data.getString("value");
-//				
-//				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-//					valuemap.put(listFilterss.get(temp).getName(), value_resl);
-//				}
-//				selector.get(temp).setText(res);
-//			}else{
-//				//res = datas.getString("label");
-//				//value_resl = datas.getString("value");
-//				
-//				if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-//					valuemap.remove(listFilterss.get(temp).getName());
-//				}
-//				selector.get(temp).setText(s);
-//			}
-//		}
-//		else 
 		handleBackWithData(message, obj);
 	}
 	
@@ -240,13 +192,9 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 				if(((MultiLevelSelectionFragment.MultiLevelItem)obj).id != null 
 						&&!((MultiLevelSelectionFragment.MultiLevelItem)obj).id.equals("")){
 					parametersHolder.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt, ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);
-//					labelmap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).txt);
-//					valuemap.put(listFilterss.get(temp).getName(), ((MultiLevelSelectionFragment.MultiLevelItem)obj).id);					
 				}
 				else{
 					if(temp < listFilterss.size() && listFilterss.get(temp).toString().length() > 0){
-//						valuemap.remove(listFilterss.get(temp).getName());
-//						labelmap.remove(listFilterss.get(temp).getName());
 						parametersHolder.remove(listFilterss.get(temp).getName());
 					}					
 				}
@@ -265,18 +213,18 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
-					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, json, System.currentTimeMillis()/1000);
+					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, json, System.currentTimeMillis()/1000);
 					if(isUpdate){
-						sendMessage(1, null);
+						sendMessage(MSG_LOAD_DATA_SUCCED, null);
 					}
 				} else {
-					sendMessage(2, null);
+					sendMessage(MSG_LOAD_DATA_FAILD, null);
 				}
 			} catch (UnsupportedEncodingException e) {
 				e.printStackTrace();
@@ -430,12 +378,9 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 //								preValue);
 					}
 				}//not select
-//				TextView border = new TextView(
-//						rootView.getContext());
 				View border = new View(rootView.getContext());
 				border.setLayoutParams(new LayoutParams(
 						LayoutParams.FILL_PARENT, getResources().getDimensionPixelSize(R.dimen.filter_gap), 1));
-//				border.setBackgroundResource(R.drawable.list_divider);
 
 				ll_meta.addView(v);
 				ll_meta.addView(border);
@@ -446,8 +391,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		
 		String keyWords = parametersHolder.getData("");
 		if (keyWords != null) {
-//				((TextView) SiftFragment.this.findViewById(R.id.edsift))
-//						.setText(keyWords);
 			sendMessage(MSG_UPDATE_KEYWORD, keyWords);
 		}
 	}
@@ -457,7 +400,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
-		case 1:
+		case MSG_LOAD_DATA_SUCCED:
 			hideProgress();
 			
 			if (rootView != null)
@@ -466,7 +409,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			}
 
 			break;
-		case 2:
+		case MSG_LOAD_DATA_FAILD:
 			hideProgress();
 			
 			Toast.makeText(activity, "服务当前不可用，请稍后重试！", Toast.LENGTH_SHORT).show();

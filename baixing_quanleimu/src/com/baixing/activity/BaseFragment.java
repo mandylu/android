@@ -670,7 +670,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final Context getAppContext()
 	{
-		return QuanleimuApplication.getApplication().getApplicationContext();
+		return GlobalDataManager.getApplication().getApplicationContext();
 	}
 	
 	protected void logCreateView(Bundle bundle)

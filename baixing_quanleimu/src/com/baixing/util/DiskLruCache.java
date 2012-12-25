@@ -49,7 +49,7 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.Timer;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 
 /**
  * A simple disk LRU bitmap cache to illustrate how a disk cache would be used for bitmap caching. A

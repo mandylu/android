@@ -18,7 +18,7 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
@@ -86,8 +86,8 @@ public class PushMessageService extends Service implements Observer
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		
-		if(QuanleimuApplication.context == null){
-			QuanleimuApplication.context = new WeakReference<Context>(this);
+		if(GlobalDataManager.context == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
 		HandlerThread thread = new HandlerThread(SERVICE_THREAD_NAME);
 		thread.start();

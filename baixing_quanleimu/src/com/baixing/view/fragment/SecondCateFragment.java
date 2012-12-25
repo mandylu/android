@@ -8,7 +8,6 @@ import java.util.Map;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,14 +18,13 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.FirstStepCate;
-import com.baixing.entity.SecondStepCate;
-import com.baixing.tracking.Tracker;
+import com.baixing.activity.GlobalDataManager;
+import com.baixing.entity.Category;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
@@ -34,14 +32,14 @@ import com.quanleimu.activity.R;
 public class SecondCateFragment extends BaseFragment implements OnItemClickListener{
 	
 	private boolean isPost = false;
-	private FirstStepCate cate = null;
+	private Category cate = null;
 	
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
 		isPost = getArguments().getBoolean("isPost", false);
-		cate = (FirstStepCate) getArguments().getSerializable("cates");
+		cate = (Category) getArguments().getSerializable("cates");
 	}
 	
 	
@@ -54,8 +52,8 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		
 		GridView gridView = (GridView) v.findViewById(R.id.gridSecCategory);
 		List<Map<String, Object>> list = new ArrayList<Map<String, Object>>();
-		List<SecondStepCate> children = cate.getChildren();
-		for (SecondStepCate cate : children)
+		List<Category> children = cate.getChildren();
+		for (Category cate : children)
 		{
 			Map<String, Object> map = new HashMap<String, Object>();
 			map.put("tvCategoryName", cate.getName());
@@ -101,17 +99,17 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		if (cate == null || cate.getChildren() == null
 				|| cate.getChildren().size() <= arg2)
 			return;
-		SecondStepCate secCate = cate.getChildren().get(arg2);
+		Category secCate = cate.getChildren().get(arg2);
 		if (!isPost) {
 			final Bundle bundle = createArguments(secCate.getName(), "返回");
 			bundle.putString("categoryEnglishName", secCate.getEnglishName());
 			bundle.putString("siftresult", "");
 			if (requestCode != INVALID_REQUEST_CODE) {
-				String toRet = secCate.englishName + "," + secCate.name;
+				String toRet = secCate.getEnglishName() + "," + secCate.getName();
 				finishFragment(requestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
-				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)
@@ -121,8 +119,8 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
-							QuanleimuApplication.setTextMode(false);
-							pushFragment(new GetGoodFragment(), bundle);
+							GlobalDataManager.setTextMode(false);
+							pushFragment(new ListingFragment(), bundle);
 						}
 					})
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -130,20 +128,20 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
-							QuanleimuApplication.setTextMode(true);
+							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 						
 					}).create().show();
 				}
 				else
 				{
-					pushFragment(new GetGoodFragment(), bundle);
+					pushFragment(new ListingFragment(), bundle);
 				}
 			}
 		} else {
-			String names = secCate.englishName + "," + secCate.name;
+			String names = secCate.getEnglishName() + "," + secCate.getName();
 			if (requestCode != INVALID_REQUEST_CODE) {
 				finishFragment(requestCode, names);
 			} else {
@@ -181,16 +179,6 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		bundle.putString("categoryEnglishName", this.cate.getEnglishName());
 		bundle.putString("categoryName", this.cate.getName());
 		this.pushFragment(new SearchFragment(), bundle);
-	}
-	
-	@Override
-	public void handleRightAction() {
-		this.pushFragment(new GridCateFragment(), this.getArguments());
-//		
-//		Bundle bundle = new Bundle();
-//		bundle.putSerializable("cates", cate);
-//		bundle.putBoolean("isPost", true);
-//		this.pushFragment(new SecondCateFragment(), bundle);
 	}
 
 }

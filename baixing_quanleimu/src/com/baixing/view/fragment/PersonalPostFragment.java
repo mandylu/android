@@ -23,8 +23,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.activity.GlobalDataManager;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.GoodsDetail.EDATAKEYS;
 import com.baixing.entity.GoodsList;
@@ -34,6 +34,7 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.tracking.LogData;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -41,11 +42,12 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
-import com.baixing.util.LogData;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
+import com.baixing.android.api.ApiParams;
+
 
 public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
 	private final int MSG_MYPOST = 1;
@@ -63,14 +65,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
 	private List<GoodsDetail> listMyPost = null;
-	private GoodsListAdapter adapter = null;
+	private VadListAdapter adapter = null;
 	private UserBean user;
 	private boolean needReloadData = false;
 
     final static String TYPE_KEY = "PersonalPostFragment_type_key";
     final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     private int currentType = TYPE_MYPOST;
-	private GoodsListLoader glLoader = null;	
+	private VadListLoader glLoader = null;	
 	private String json = "";
 
 	@Override
@@ -84,7 +86,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
-		listMyPost = QuanleimuApplication.getApplication().getListMyPost();
+		listMyPost = GlobalDataManager.getApplication().getListMyPost();
 		filterOutAd(listMyPost, user);
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
@@ -135,7 +137,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 		try {
 			if (!Communication.isNetworkActive()) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -143,7 +145,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
-		adapter = new GoodsListAdapter(this.getActivity(), this.listMyPost, null);
+		adapter = new VadListAdapter(this.getActivity(), this.listMyPost, null);
         adapter.setHasDelBtn(true);
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
@@ -151,7 +153,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		GoodsList gl = new GoodsList();
 		gl.setData(listMyPost == null ? new ArrayList<GoodsDetail>() : listMyPost);
 	
-		glLoader = new GoodsListLoader(null, handler, null, null);
+		glLoader = new VadListLoader(null, handler, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 		glLoader.setSearchUserList(true);
@@ -261,7 +263,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
-					pushFragment(new GoodDetailFragment(), bundle);
+					pushFragment(new VadFragment(), bundle);
 					
 				}
 			}
@@ -321,13 +323,13 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				}
 			}
 			if(msg.what == MSG_MYPOST){
-				QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+				GlobalDataManager.getApplication().setListMyPost(listMyPost);
 			}
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			break;
-		case GoodsListLoader.MSG_FIRST_FAIL:
-		case GoodsListLoader.MSG_EXCEPTION:{
+		case VadListLoader.MSG_FIRST_FAIL:
+		case VadListLoader.MSG_EXCEPTION:{
 			hideProgress();
 			lvGoodsList.onRefreshComplete();
 			break;
@@ -372,7 +374,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 						}
 					}
 					if(msg.arg1 == -1){
-						QuanleimuApplication.getApplication().setListMyPost(listMyPost);
+						GlobalDataManager.getApplication().setListMyPost(listMyPost);
 					}
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
@@ -400,8 +402,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			.end();
 			
 			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			lvGoodsList.onRefreshComplete();
 			lvGoodsList.onFail();
 			
@@ -620,9 +621,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         try {
             json = Communication.getDataByUrl(url, true);
         } catch (UnsupportedEncodingException e) {
-            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+            ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
         } catch (IOException e) {
-            QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+        	ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
         } catch (Communication.BXHttpException e){
 
         }finally {
@@ -704,9 +705,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				return;
 
 			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			} catch (Communication.BXHttpException e){
 				
 			}
@@ -728,16 +729,16 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 	@Override
 	public void onRefresh() {
-		List<String> params = new ArrayList<String>();
+		ApiParams params = new ApiParams();
 		if(user != null){
-			params.add("userId=" + user.getId());
+			params.addParam("userId", user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
 			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
-				params.add("newAdIds=" + bundle.getString("lastPost"));
+				params.addParam("newAdIds", bundle.getString("lastPost"));
 			}
-			params.add("status=3");
+			params.addParam("status","3");
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
@@ -747,7 +748,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	
 	@Override
 	public void onFragmentBackWithData(int message, Object obj){
-		if(GoodDetailFragment.MSG_ADINVERIFY_DELETED == message){
+		if(VadFragment.MSG_ADINVERIFY_DELETED == message){
 			if(obj != null){
 				if(this.listMyPost != null){
 					boolean updateUi = false;
@@ -765,16 +766,16 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					}
 				}
 			}
-		}else if(GoodDetailFragment.MSG_MYPOST_DELETED == message){
+		}else if(VadFragment.MSG_MYPOST_DELETED == message){
 			if(glLoader.getGoodsList() != null 
 					&& glLoader.getGoodsList().getData() != null 
 					&& glLoader.getGoodsList().getData().size() > 0){
-				if(QuanleimuApplication.getApplication().getListMyPost() == null ||
-						QuanleimuApplication.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
+				if(GlobalDataManager.getApplication().getListMyPost() == null ||
+						GlobalDataManager.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
 					GoodsList gl = new GoodsList();
-					gl.setData(QuanleimuApplication.getApplication().getListMyPost());
+					gl.setData(GlobalDataManager.getApplication().getListMyPost());
 					glLoader.setGoodsList(gl);
-					adapter.setList(QuanleimuApplication.getApplication().getListMyPost());
+					adapter.setList(GlobalDataManager.getApplication().getListMyPost());
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
 				}

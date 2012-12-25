@@ -61,7 +61,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -676,21 +676,6 @@ public class Util {
 		}
 	}
 	
-	//����vkey1
-	public static String getStr(){
-		String vkey  = "";
-		//vkey = "api_key=" + Const.API_KEY;
-		for(int i=0;i<keys.length;i++){
-			vkey =vkey + "&" + keys[i] +"="+ values[i];
-		}
-		vkey = vkey.substring(1);
-		String vkey1 = vkey;
-		vkey = vkey + Const.API_SECRET;
-		vkey1 = vkey1 + "&access_token=" + MD5(vkey);
-		
-		return vkey1;	
-	}
-
 	//MD5加密
 	public  static String MD5(String inStr) {
 		MessageDigest md5 = null;
@@ -727,17 +712,11 @@ public class Util {
 		try {
 			return Communication.getDataByUrl(url, true);
 		} catch (UnsupportedEncodingException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_SERVICE_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
 		} catch (IOException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 		} catch (Communication.BXHttpException e) {
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 		}
 		return null;
 	}
@@ -1297,24 +1276,24 @@ public class Util {
      */
     public static void logout()
 	{
-        Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "user");
-        Util.clearData(QuanleimuApplication.getApplication().getApplicationContext(), "userProfile");
+        Util.clearData(GlobalDataManager.getApplication().getApplicationContext(), "user");
+        Util.clearData(GlobalDataManager.getApplication().getApplicationContext(), "userProfile");
 //		currentUserId = null;
         currentUser = null;
 		
-		UserBean anonymousUser = (UserBean) loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
+		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
 		if(anonymousUser != null){
-			saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+			saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", anonymousUser);
 			currentUser = anonymousUser;
 		}
 		
-		QuanleimuApplication.getApplication().setPhoneNumber("");
+		GlobalDataManager.getApplication().setPhoneNumber("");
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
 
     public static UserBean reloadUser(){
-    		UserBean user = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
+    		UserBean user = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", UserBean.class);
         return user;
     }
     

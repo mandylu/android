@@ -9,7 +9,7 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.GoodsDetail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.view.fragment.MultiLevelSelectionFragment;
@@ -205,7 +205,7 @@ public class PostUtil{
 
 			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
 			{
-				String personalMark = QuanleimuApplication.getApplication().getPersonMark();
+				String personalMark = GlobalDataManager.getApplication().getPersonMark();
 				if(personalMark != null && personalMark.length() > 0){
 					personalMark = "\n\n" + personalMark;
 					descriptionEt.setText(personalMark);

@@ -1,4 +1,4 @@
-package com.baixing.util;
+package com.baixing.tracking;
 
 import java.util.HashMap;
 import java.util.Map.Entry;
@@ -6,9 +6,10 @@ import java.util.Map.Entry;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
+
+
 /**
  * @author xuweiyan@baixing.com
  */

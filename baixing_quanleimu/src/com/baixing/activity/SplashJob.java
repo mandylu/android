@@ -37,8 +37,8 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		LocationService.getInstance().start(parentActivity, QuanleimuApplication.getApplication());
-		QuanleimuApplication.version = Util.getVersion(parentActivity);
+		LocationService.getInstance().start(parentActivity, GlobalDataManager.getApplication());
+		GlobalDataManager.version = Util.getVersion(parentActivity);
 
 		try {
 			if (parentActivity.checkConnection() == false) {
@@ -83,7 +83,7 @@ public class SplashJob {
 			
 			if(1 == record1 && 1 == record2 && 1 == record3){
 				isJobDone = true;
-				QuanleimuApplication.getImageLoader();// = new LazyImageLoader();
+				GlobalDataManager.getImageLoader();// = new LazyImageLoader();
 				jobListener.onJobDone();
 			}
 		}
@@ -98,7 +98,7 @@ public class SplashJob {
 
 		@Override
 		public void run() {
-			QuanleimuApplication.getApplication().loadCategorySync();
+			GlobalDataManager.getApplication().loadCategorySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
 		}
 	}
@@ -128,7 +128,7 @@ public class SplashJob {
 		
 		@Override
 		public void run() {
-			QuanleimuApplication.getApplication().loadCitySync();
+			GlobalDataManager.getApplication().loadCitySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_CITY_LIST);
 		}
 	}
@@ -140,7 +140,7 @@ public class SplashJob {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() { 
-			QuanleimuApplication.getApplication().loadPersonalSync();
+			GlobalDataManager.getApplication().loadPersonalSync();
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}
 

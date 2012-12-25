@@ -18,17 +18,14 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
 
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.FirstStepCate;
+import com.baixing.activity.GlobalDataManager;
+import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
@@ -169,21 +166,22 @@ public class CustomDialogBuilder {
 					if (isCategoryItem) {//分类模块
 						System.out.println("isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
-						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+//						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+						List<Category> allCates = GlobalDataManager.getApplication().getFirstLevelCategory();
 						if (allCates == null || allCates.size() <= pos)
 						{
 							System.out.println("Reload category");
-							QuanleimuApplication.getApplication().loadCategorySync();//reload
-							allCates = QuanleimuApplication.getApplication().getListFirst();//recheck
+							GlobalDataManager.getApplication().loadCategorySync();//reload
+							allCates = GlobalDataManager.getApplication().getFirstLevelCategory();//.getListFirst();//recheck
 							if(allCates == null || allCates.size() <= pos){
 								System.out.println("仁至义尽");
 								return;
 							}
 						}
-						FirstStepCate selectedCate = null;
+						Category selectedCate = null;
 						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
 						for (int i=0; i< allCates.size(); i++) {
-							if (allCates.get(i).name.equals(selText)) {
+							if (allCates.get(i).getName().equals(selText)) {
 								selectedCate = allCates.get(i);
 								break;
 							}
@@ -193,8 +191,8 @@ public class CustomDialogBuilder {
 						backMap.put("tvCategoryName", "返回上一级");
 						backMap.put("tvCategoryEnglishName", "back");
 						secondLevelList.add(backMap);//
-						List<SecondStepCate> children = selectedCate.getChildren();
-						for (SecondStepCate cate : children) {
+						List<Category> children = selectedCate.getChildren();
+						for (Category cate : children) {
 							Map<String,Object> map = new HashMap<String,Object>();
 							map.put("tvCategoryName", cate.getName());
 							map.put("tvCategoryEnglishName", cate.getEnglishName());

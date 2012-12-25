@@ -13,7 +13,7 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.util.Communication;
 import com.baixing.util.GzipUtil;
 import com.baixing.util.Util;
@@ -39,7 +39,7 @@ public class Sender implements Runnable{
 	//constructor
 	private Sender() {
 		dataSize = 0;
-		context = QuanleimuApplication.getApplication().getApplicationContext();
+		context = GlobalDataManager.getApplication().getApplicationContext();
 		queue = new ArrayList<String>();
 		startThread();
 	}

@@ -10,13 +10,11 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.tracking.TrackConfig.TrackMobile;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.LogData;
 import com.baixing.util.Util;
 /**
  * @author xuweiyan@baixing.com
@@ -46,7 +44,7 @@ public class Tracker {
 	//constructor
 	private Tracker()
 	{
-		context = QuanleimuApplication.getApplication().getApplicationContext();
+		context = GlobalDataManager.getApplication().getApplicationContext();
 		dataArray = new JSONArray();
 		size = 0;
 		threshold = 100;//5 for testing

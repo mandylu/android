@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.io.IOException;
@@ -28,8 +29,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.activity.GlobalDataManager;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.GoodsDetail;
@@ -43,7 +44,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.GoodsListLoader;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
@@ -54,13 +55,10 @@ import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
 
+import com.baixing.android.api.ApiParams;
 
-public class GetGoodFragment extends BaseFragment implements View.OnClickListener, OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
+public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
 
-//	public static final int SEARCH_NEARBY = 1;
-//	public static final int SEARCH_RECENT = 0;
-	
-	
 	public static final int MSG_UPDATE_FILTER = 1000;
 	
 	
@@ -68,16 +66,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	
 	private PullToRefreshListView lvGoodsList;
 	private ProgressBar progressBar;
-//	private int searchType = 0;
 	private String actType = null;
 	private String categoryEnglishName = "";
 	private String searchContent = "";
-//	private String siftResult = "";
 	private PostParamsHolder filterParamHolder;
 	
 //	private List<String> basicParams = null;
 	
-	private GoodsListLoader goodsListLoader = null;
+	private VadListLoader goodsListLoader = null;
 	
 	private boolean mRefreshUsingLocal = false;
 	private BXLocation curLocation = null;
@@ -90,28 +86,23 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
-//		title.m_rightActionHint = "发布";
-//		title.m_rightActionBg = R.drawable.bg_post_selector;
 	}
 	
-	public GoodsListAdapter findGoodListAdapter()
+	public VadListAdapter findGoodListAdapter()
 	{
 		ListAdapter adapter = lvGoodsList == null ? null : lvGoodsList.getAdapter();
 		if (adapter instanceof HeaderViewListAdapter)
 		{
 			HeaderViewListAdapter realAdapter = (HeaderViewListAdapter) adapter;
-			return (GoodsListAdapter) realAdapter.getWrappedAdapter();
+			return (VadListAdapter) realAdapter.getWrappedAdapter();
 		}
 		else
 		{
-			return (GoodsListAdapter) adapter;
+			return (VadListAdapter) adapter;
 		}
 	}
 	
 	public void handleRightAction(){
-        //发布赌约
-        QuanleimuApplication.postEntryFlag = 1;
-
 		String categoryName = getArguments().getString("categoryName");
 		categoryName = categoryEnglishName + "," + categoryName;
 		Bundle bundle = createArguments(null, null);
@@ -130,8 +121,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		{
 			this.filterParamHolder.clear(); //Replace old params with new.
 			this.filterParamHolder.merge((PostParamsHolder) result);
-//			this.updateSearchParams();
-//			searchType = PostParamsHolder.INVALID_VALUE.equals(filterParamHolder.getData("地区_s")) ? SEARCH_NEARBY : SEARCH_RECENT;
 			this.showFilterBar(getView(), listFilterss);
 			this.resetSearch(this.curLocation);
 			
@@ -146,16 +135,13 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		this.categoryEnglishName = getArguments().getString("categoryEnglishName");
 		this.searchContent = getArguments().getString("searchContent");
 		this.actType = getArguments().getString("actType");
-//		if (getArguments().containsKey("siftresult")) //FIXME:CHONG siftresult is removed by chong.
-//		{
-//			this.siftResult = getArguments().getString("siftresult");
-//		}
+		
 		filterParamHolder = (PostParamsHolder)getArguments().getSerializable("filterResult");
 		if (filterParamHolder == null)
 		{
 			filterParamHolder = new PostParamsHolder();
 			getArguments().putSerializable("filterResult", filterParamHolder);
-			filterParamHolder.put("cityEnglishName", QuanleimuApplication.getApplication().getCityEnglishName(), QuanleimuApplication.getApplication().getCityEnglishName());
+			filterParamHolder.put("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName(), GlobalDataManager.getApplication().getCityEnglishName());
 			filterParamHolder.put("categoryEnglishName", categoryEnglishName, categoryEnglishName);
 			filterParamHolder.put("status", "" + 0, "" + 0);
 			if (searchContent != null)
@@ -164,17 +150,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			}
 		}
 		
-//		updateSearchParams();
-		
-//		if (siftResult != null && !siftResult.equals("")) {
-//		} else {
-//			basicParams.add("query="
-//					+ "cityEnglishName:"+QuanleimuApplication.getApplication().getCityEnglishName()+" AND categoryEnglishName:"
-//					+ categoryEnglishName + " AND status:0");
-//		}
-		
-		
-		goodsListLoader = new GoodsListLoader(getSearchParams(), handler, null, new GoodsList());
+		goodsListLoader = new VadListLoader(getSearchParams(), handler, null, new GoodsList());
 	}
 	
 	@Override
@@ -203,22 +179,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		super.onStackTop(isBack);
 		if (goodsListLoader.getGoodsList().getData() != null && goodsListLoader.getGoodsList().getData().size() > 0)
 		{
-			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
+			VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 			updateData(adapter, goodsListLoader.getGoodsList().getData());
 			lvGoodsList.setSelectionFromHeader(goodsListLoader.getSelection());
 		}
 		else
 		{
-//			showProgress(getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting), new DialogInterface.OnCancelListener() {
-//				
-//				@Override
-//				public void onCancel(DialogInterface dialog) {
-//					goodsListLoader.cancelFetching();
-//					finishFragment();
-//				}
-//			});
-			GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
+			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 			mRefreshUsingLocal = true;
@@ -232,7 +200,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									getActivity(),
 									"saveFilterss"
 									+ categoryEnglishName
-									+ QuanleimuApplication.getApplication().cityEnglishName);
+									+ GlobalDataManager.getApplication().cityEnglishName);
 			String json = pair.second;
 			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
@@ -263,14 +231,14 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + QuanleimuApplication.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+QuanleimuApplication.getApplication().cityEnglishName, 
+							"saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, 
 							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();
@@ -293,21 +261,21 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 	}
 	
-	private ArrayList<String> getSearchParams()
+	private ApiParams getSearchParams()
 	{
-		ArrayList<String> basicParams = new ArrayList<String>();
-		basicParams.add("query=" + filterParamHolder.toUrlString());
+		ApiParams basicParams = new ApiParams();
+		basicParams.addParam("query", filterParamHolder.toUrlString());
 		// keyword 单独处理，放到ad_list的keyword参数里。
 		String keyword = filterParamHolder.getData("");
 		if (keyword != null && keyword.length() > 0)
 		{
-			basicParams.add("keyword=" + URLEncoder.encode(keyword));
+			basicParams.addParam("keyword", keyword);
 		}
 		
 		if (isSerchNearBy() && this.curLocation != null)
 		{
-			basicParams.add("lat="+curLocation.fLat);
-			basicParams.add("lng="+curLocation.fLon);	
+			basicParams.addParam("lat" , "" + curLocation.fLat);
+			basicParams.addParam("lng" , "" + curLocation.fLon);	
 		}
 		
 		return basicParams;
@@ -324,11 +292,6 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		logCreateView(savedInstanceState);
 		
 		View v = inflater.inflate(R.layout.goodslist, null);
-		
-//		View titleControl = inflater.inflate(R.layout.recent_or_nearby, null);
-//		titleControl.findViewById(R.id.btnNearby).setOnClickListener(this);
-//		titleControl.findViewById(R.id.btnRecent).setOnClickListener(this);
-//		this.getTitleDef().m_titleControls = titleControl;
 		
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
 		lvGoodsList.setOnRefreshListener(this);
@@ -348,22 +311,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		lvGoodsList.setOnScrollListener(this);
 
 	
-		curLocation = QuanleimuApplication.getApplication().getCurrentPosition(true);
-//		List<String> addParams = new ArrayList<String>(basicParams);
-		if(curLocation == null && isSerchNearBy()/* || searchType == 0*/){
-//			((Button)titleControl.findViewById(R.id.btnNearby)).setBackgroundResource(R.drawable.bg_nav_seg_left_normal);
-//			((Button)titleControl.findViewById(R.id.btnRecent)).setBackgroundResource(R.drawable.bg_nav_seg_right_pressed);
-//			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-//			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("小时");
-//			this.searchType = SEARCH_RECENT;
+		curLocation = GlobalDataManager.getApplication().getCurrentPosition(true);
+		if(curLocation == null && isSerchNearBy()){
 			filterParamHolder.remove("地区_s");
 		}
-//		else{
-////			((TextView)v.findViewById(R.id.tvSpaceOrTimeNumber)).setText("0");
-////			((TextView)v.findViewById(R.id.tvSpaceOrTimeUnit)).setText("公里");
-//			addParams.add("lat="+curLocation.fLat);
-//			addParams.add("lng="+curLocation.fLon);			
-//		}
 
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
@@ -386,18 +337,15 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", goodsListLoader);
 					bundle.putInt("index", index);
-					pushFragment(new GoodDetailFragment(), bundle);
+					pushFragment(new VadFragment(), bundle);
 //				}				
 			}
 		});
 		
-//		((TextView)v.findViewById(R.id.tvSubCateName)).setText(getArguments().getString("name"));
-		
-		
 		String categoryName = getArguments().getString("categoryName");
 		if(categoryName == null || categoryName.equals("")){
 			if(categoryEnglishName != null){
-				categoryName = QuanleimuApplication.getApplication().queryCategoryDisplayName(categoryEnglishName);
+				categoryName = GlobalDataManager.getApplication().queryCategoryDisplayName(categoryEnglishName);
 				if(categoryName != null) getArguments().putString("categoryName", categoryName);
 			}
 		}
@@ -405,16 +353,10 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		return v;
 	
 	}
-
-
-
-	@Override
-	public void onClick(View v) {
-	}
 	
 	@Override
 	public void onDestroy(){
-		final GoodsListAdapter adapter = findGoodListAdapter();
+		final VadListAdapter adapter = findGoodListAdapter();
 		if(adapter != null){
 			Thread t = new Thread(new Runnable(){
 				public void run(){
@@ -449,7 +391,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
 //										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										QuanleimuApplication.getImageLoader().prepareRecycle(c[0]);
+										GlobalDataManager.getImageLoader().prepareRecycle(c[0]);
 //										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
 									}
 								 }
@@ -460,7 +402,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			 }
 		}
 
-		QuanleimuApplication.getImageLoader().startRecycle();
+		GlobalDataManager.getImageLoader().startRecycle();
 		System.gc();
 		super.onDestroy();
 	}
@@ -508,7 +450,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 
 	@Override
 	public void onGetMore() {
-		goodsListLoader.startFetching(false, ((GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
+		goodsListLoader.startFetching(false, ((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
 												Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
 												Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
 	}
@@ -519,7 +461,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		mRefreshUsingLocal = false;
 	}
 
-	private void updateData(GoodsListAdapter adapter, List<GoodsDetail> data)
+	private void updateData(VadListAdapter adapter, List<GoodsDetail> data)
 	{
 		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(data, this.curLocation, new int[] {500, 1500}) : 
 			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
@@ -529,29 +471,24 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
-		case GoodsListLoader.MSG_FIRST_FAIL:
+		case VadListLoader.MSG_FIRST_FAIL:
 			if(goodsListLoader == null) break;
-			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
+			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
 				goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 			else{
 				Toast.makeText(getActivity(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 				hideProgress();
 			}
 			break;
-		case GoodsListLoader.MSG_FINISH_GET_FIRST:
+		case VadListLoader.MSG_FINISH_GET_FIRST:
 			if(goodsListLoader == null) break;
 			GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			goodsListLoader.setGoodsList(goodsList);
 
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
-				Message msg1 = Message.obtain();
-				msg1.what = ErrorHandler.ERROR_COMMON_FAILURE;
-				Bundle bundle = new Bundle();
-				bundle.putString("popup_message", "没有符合的结果，请更改条件并重试！");
-				msg1.setData(bundle);
-				QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg1);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请更改条件并重试！");
 
-				GoodsListAdapter adapter = findGoodListAdapter();
+				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
 				{
 					adapter.setList(new ArrayList<GoodsDetail>());
@@ -560,7 +497,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				}
 			} else {
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
-				GoodsListAdapter adapter = new GoodsListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
+				VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
 				updateData(adapter, goodsListLoader.getGoodsList().getData());
 				lvGoodsList.setAdapter(adapter);
 				goodsListLoader.setHasMore(true);
@@ -569,7 +506,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			lvGoodsList.onRefreshComplete();
 			
 			//if currently using offline data, start fetching online data
-			if(GoodsListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
+			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus()) {
                 lvGoodsList.fireRefresh();
             } else { //非缓存情况下才加此 log
     			HashMap<String, String> tmp = new HashMap<String, String>();
@@ -595,7 +532,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			hideProgress();
 
 			break;
-		case GoodsListLoader.MSG_NO_MORE:
+		case VadListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 			
@@ -611,7 +548,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			
 			hideProgress();			
 			break;
-		case GoodsListLoader.MSG_FINISH_GET_MORE:
+		case VadListLoader.MSG_FINISH_GET_MORE:
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 			
@@ -634,7 +571,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 				}
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
-				GoodsListAdapter adapter = findGoodListAdapter();
+				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
 				{
 					updateData(adapter, goodsListLoader.getGoodsList().getData());
@@ -668,9 +605,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 
-			Message msg2 = Message.obtain();
-			msg2.what = ErrorHandler.ERROR_NETWORK_UNAVAILABLE;
-			QuanleimuApplication.getApplication().getErrorHandler().sendMessage(msg2);
+			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			
 			lvGoodsList.onFail();
 			
@@ -817,16 +752,7 @@ public class GetGoodFragment extends BaseFragment implements View.OnClickListene
 		}
 		else
 		{
-//			goodsListLoader.cancelFetching();
-			
-//			List<String> params = new ArrayList<String>();
-//			params.addAll(getS);
-//			params.add("nearby=true");
 			goodsListLoader.setNearby(true);
-//			curLocation = QuanleimuApplication.getApplication().getCurrentPosition(false);
-			//Log.d("kkkkkk", "get goods nearby: ("+curLocation.fLat+", "+curLocation.fLon+") !!");
-//			params.add("lat="+location.fLat);
-//			params.add("lng="+location.fLon);
 			goodsListLoader.setParams(getSearchParams());
 			goodsListLoader.setRuntime(false);
 		}

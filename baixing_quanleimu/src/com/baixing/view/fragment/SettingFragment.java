@@ -10,8 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.activity.GlobalDataManager;
+import com.baixing.activity.MainActivity;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -91,7 +91,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }
 
         TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
-        String res = getResources().getStringArray(R.array.item_flow_optimize)[QuanleimuApplication.isTextMode() ? 1 : 0];;
+        String res = getResources().getStringArray(R.array.item_flow_optimize)[GlobalDataManager.isTextMode() ? 1 : 0];;
         flowOptimizeTw.setText(res);
 
     }
@@ -163,7 +163,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 //                updateIntent.putExtra("apkUrl", "3");
 //                getAppContext().startService(updateIntent);
 //                UpdateHelper.getInstance().checkNewVersion(getActivity());
-                UmengUpdateAgent.update(QuanleimuApplication.getApplication().getApplicationContext());
+                UmengUpdateAgent.update(GlobalDataManager.getApplication().getApplicationContext());
                 UmengUpdateAgent.setUpdateAutoPopup(false);
                 UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
                     @Override
@@ -289,13 +289,13 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
      * 省流量设置
      */
     private void showFlowOptimizeDialog() {
-        int checkedIdx = QuanleimuApplication.isTextMode() ? 1 : 0;
+        int checkedIdx = GlobalDataManager.isTextMode() ? 1 : 0;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.label_flow_optimize)
                 .setSingleChoiceItems(R.array.item_flow_optimize, checkedIdx, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-                        QuanleimuApplication.setTextMode(i == 1);
+                        GlobalDataManager.setTextMode(i == 1);
                         refreshUI(getView());
                         dialog.dismiss();
                         String tip =getResources().getStringArray(R.array.item_flow_optimize)[i];

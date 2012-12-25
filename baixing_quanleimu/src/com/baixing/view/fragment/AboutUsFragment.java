@@ -11,7 +11,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.quanleimu.activity.R;
 
 public class AboutUsFragment extends BaseFragment {
@@ -34,7 +34,7 @@ public class AboutUsFragment extends BaseFragment {
 //		SimpleDateFormat sDateFormat = new SimpleDateFormat("yyyy-MM-dd hh:mm:ss");
 		rlVersion = (TextView) relAbout.findViewById(R.id.rlVersion);
 		try {
-			PackageManager packageManager = QuanleimuApplication.getApplication().getApplicationContext().getPackageManager();
+			PackageManager packageManager = GlobalDataManager.getApplication().getApplicationContext().getPackageManager();
 			ApplicationInfo ai = packageManager.getApplicationInfo(getActivity().getPackageName(), PackageManager.GET_META_DATA);
 			String pt = (String)ai.metaData.get("publishTime");
 			rlVersion.setText("版本信息：v" + this.getVersionName() + (pt == null ? "" : (" " + pt)));
@@ -49,11 +49,11 @@ public class AboutUsFragment extends BaseFragment {
 	
 	private String getVersionName() throws Exception {
 		// 获取PackageManager的实例
-		PackageManager packageManager = QuanleimuApplication.getApplication().getApplicationContext()
+		PackageManager packageManager = GlobalDataManager.getApplication().getApplicationContext()
 				.getPackageManager();
 		// getPackageName()是你当前类的包名，0代表是获取版本信息
 		PackageInfo packInfo = packageManager.getPackageInfo(
-				QuanleimuApplication.getApplication().getApplicationContext().getPackageName(), 0);
+				GlobalDataManager.getApplication().getApplicationContext().getPackageName(), 0);
 		String version = packInfo.versionName;
 		return version;
 	}

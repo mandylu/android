@@ -1,5 +1,5 @@
 package com.baixing.util.post;
-
-public class PostNetworkService{
-	
-}
+//
+//public class PostNetworkService{
+//	public
+//}

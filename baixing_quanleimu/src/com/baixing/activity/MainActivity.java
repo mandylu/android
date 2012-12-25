@@ -38,7 +38,7 @@ import com.umeng.update.UmengUpdateAgent;
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
+public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
 	
 	public static boolean isInActiveStack;
 	
@@ -49,7 +49,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	private BroadcastReceiver msgListener;
 	
 	
-	public QuanleimuMainActivity(){
+	public MainActivity(){
 		super();
 	}
 	
@@ -237,8 +237,8 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		//Update UI after splash.
 		initTitleAction();
 		
-		if(!QuanleimuApplication.update){
-			QuanleimuApplication.update = true;
+		if(!GlobalDataManager.update){
+			GlobalDataManager.update = true;
             //去掉幽梦旧sdk 更新调用
 		}
 		
@@ -296,7 +296,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 						{
 							CityList cityList = JsonUtil.parseCityListFromJson(content);
 							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "cityjson", content, updateTimestamp);							
-							QuanleimuApplication.getApplication().updateCityList(cityList);
+							GlobalDataManager.getApplication().updateCityList(cityList);
 						}
 					}
 		
@@ -315,7 +315,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 				if (timestamp < updateTimestamp || categoryContent == null || categoryContent.length() == 0) {
 					String apiName = "category_list";
 					ArrayList<String> list = new ArrayList<String>();
-					list.add("cityEnglishName="+QuanleimuApplication.getApplication().cityEnglishName);
+					list.add("cityEnglishName="+GlobalDataManager.getApplication().cityEnglishName);
 					String url = Communication.getApiUrl(apiName, list);
 					try {
 						String json = Communication.getDataByUrl(url, true);
@@ -337,8 +337,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
-		QuanleimuApplication.context = new WeakReference<Context>(this);
-		QuanleimuApplication.getApplication().setErrorHandler(this);
+		GlobalDataManager.context = new WeakReference<Context>(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);
 		
@@ -360,7 +359,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 		Intent intent = this.getIntent();
 		if(intent != null){
 			if(intent.getBooleanExtra("fromNotification", false)){
-				QuanleimuApplication.version = Util.getVersion(this);
+				GlobalDataManager.version = Util.getVersion(this);
 			}
 		}
 //		Profiler.markEnd("maincreate");
@@ -537,7 +536,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (msg.getTo().equals(Util.getMyId(QuanleimuMainActivity.this)))
+						if (msg.getTo().equals(Util.getMyId(MainActivity.this)))
 						{
 							checkAndUpdateBadge(50);
 						}

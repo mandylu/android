@@ -6,13 +6,13 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.activity.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
 import com.baixing.util.LocationService.BXRgcListener;
 
-public class PostLocationService implements BXRgcListener, QuanleimuApplication.onLocationFetchedListener {
+public class PostLocationService implements BXRgcListener, GlobalDataManager.onLocationFetchedListener {
 	private boolean gettingLocationFromBaidu = false;
 	private boolean inreverse = false;
 	public static final int MSG_GEOCODING_FETCHED = 0x00010010;
@@ -25,11 +25,11 @@ public class PostLocationService implements BXRgcListener, QuanleimuApplication.
 	
 	public void start(){
 		inreverse = false;
-		QuanleimuApplication.getApplication().addLocationListener(this);
+		GlobalDataManager.getApplication().addLocationListener(this);
 	}
 	
 	public void stop(){
-		QuanleimuApplication.getApplication().removeLocationListener(this);
+		GlobalDataManager.getApplication().removeLocationListener(this);
 	}
 	
 	public boolean retreiveLocation(String city, String addr){
