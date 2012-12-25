@@ -22,8 +22,8 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.broadcast.BXNotificationService;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -39,7 +39,7 @@ import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
-public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadFragment.IListHolder, Observer {
+public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadFragment.IListHolder, VadListLoader.Callback, Observer {
     private boolean isFav = false;
     static final int MSG_UPDATEFAV = 1;
     static final int MSG_UPDATEHISTORY = 2;
@@ -55,7 +55,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     private PullToRefreshListView pullListView = null;
     private int buttonStatus = -1;//-1:edit 0:finish
     private VadListLoader glLoader = null;
-    private GoodsList tempGoodsList = null;
+    private AdList tempGoodsList = null;
 
     @Override
     public void onCreate(Bundle savedInstanceState) {
@@ -65,7 +65,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             isFav = getArguments().getBoolean("isFav", false);
         }
 
-        glLoader = new VadListLoader(null, handler, null, tempGoodsList);
+        glLoader = new VadListLoader(null, this, null, tempGoodsList);
         
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_ADDED);
         BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_FAV_REMOVE);
@@ -73,12 +73,12 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     
     private VadListLoader createGoodsListLoader()
     {
-    	List<GoodsDetail> data = new ArrayList<GoodsDetail>();
+    	List<Ad> data = new ArrayList<Ad>();
     	if (tempGoodsList != null && tempGoodsList.getData() != null)
     	{
     		data.addAll(tempGoodsList.getData());
     	}
-    	GoodsList list = new GoodsList(data);
+    	AdList list = new AdList(data);
     	
     	VadListLoader loader = new VadListLoader(null, null, null, list);
     	loader.setHasMore(false);
@@ -121,10 +121,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         });
 
         
-        tempGoodsList = new GoodsList(isFav ? GlobalDataManager.getApplication().getListMyStore() : 
+        tempGoodsList = new AdList(isFav ? GlobalDataManager.getApplication().getListMyStore() : 
         											GlobalDataManager.getApplication().getListLookHistory());
         if(isFav){
-        		GoodsList list = (GoodsList)(tempGoodsList.clone()); 
+        		AdList list = (AdList)(tempGoodsList.clone()); 
         		glLoader.setGoodsList(list);
         		tempGoodsList = list;//dirty fix
         }else{
@@ -164,7 +164,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         }
 
         glLoader.setHasMoreListener(null);
-        glLoader.setHandler(handler);
+        glLoader.setCallback(this);
         adapter.setList(glLoader.getGoodsList().getData());
         pullListView.setSelectionFromHeader(glLoader.getSelection());
     }
@@ -259,13 +259,13 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 	 *  2. 如果服务端返回结果不包括本地已经存在的某条记录， 那么删除该记录
                 	 *  3. 如果本地没有任何数据，以服务端返回为准
                 	 */
-                    List<GoodsDetail> filterResult = new ArrayList<GoodsDetail>();
-                    List<GoodsDetail> oldList = new ArrayList<GoodsDetail>();
-                    List<GoodsDetail> favList = GlobalDataManager.getApplication().getListMyStore();
-                    List<GoodsDetail> newList = tempGoodsList.getData();
+                    List<Ad> filterResult = new ArrayList<Ad>();
+                    List<Ad> oldList = new ArrayList<Ad>();
+                    List<Ad> favList = GlobalDataManager.getApplication().getListMyStore();
+                    List<Ad> newList = tempGoodsList.getData();
                     if (newList == null)
                     {
-                    	newList = new ArrayList<GoodsDetail>();
+                    	newList = new ArrayList<Ad>();
                     }
                     if (favList != null) {
                     	oldList.addAll(favList);
@@ -278,12 +278,12 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     }
                     else
                     {
-                    	for (GoodsDetail d : oldList)
+                    	for (Ad d : oldList)
                     	{
                     		final int index1 = newList.indexOf(d);
                     		if (index1 != -1) //If server did not return this detail, means it's deleted by the owner of the ads.
                     		{
-                    			GoodsDetail dd = newList.remove(index1);
+                    			Ad dd = newList.remove(index1);
                     			filterResult.add(dd);
                     		}
                     	}
@@ -317,8 +317,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     
                     pullListView.onFail();
                 } else {
-                    List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
-                    List<GoodsDetail> historyList = GlobalDataManager.getApplication().getListLookHistory();
+                    List<Ad> tmp = new ArrayList<Ad>();
+                    List<Ad> historyList = GlobalDataManager.getApplication().getListLookHistory();
 
                     if (tempGoodsList.getData().size() <= historyList.size()) {
                         for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
@@ -353,15 +353,15 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             	Log.d("fav","deleteAd");
                 int pos = (Integer) msg.obj;
                 if (isFav) {
-                    List<GoodsDetail> goodsList = GlobalDataManager.getApplication().getListMyStore();
-                    GoodsDetail detail = goodsList.remove(pos);
+                    List<Ad> goodsList = GlobalDataManager.getApplication().getListMyStore();
+                    Ad detail = goodsList.remove(pos);
                     if (goodsList != tempGoodsList.getData())
                         tempGoodsList.getData().remove(detail);
                     //QuanleimuApplication.getApplication().setListMyStore(goodsList);
                     GlobalDataManager.getApplication().removeFav(detail);
                     Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", goodsList);
                 } else {
-                    List<GoodsDetail> goodsList = GlobalDataManager.getApplication().getListLookHistory();
+                    List<Ad> goodsList = GlobalDataManager.getApplication().getListLookHistory();
                     goodsList.remove(pos);
                     if (goodsList != tempGoodsList.getData())
                         tempGoodsList.getData().remove(pos);
@@ -376,10 +376,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 break;
             case MSG_DELETEALL:
             	Log.d("fav","deleteAll");
-                List<GoodsDetail> goodsList = new ArrayList<GoodsDetail>();
+                List<Ad> goodsList = new ArrayList<Ad>();
                 if (isFav) {
                     GlobalDataManager.getApplication().clearMyStore();//setListMyStore(new ArrayList<GoodsDetail>(goodsList));
-                    Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", new ArrayList<GoodsDetail>(goodsList));
+                    Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", new ArrayList<Ad>(goodsList));
                 } 
 //                else {
 //                    QuanleimuApplication.getApplication().setListLookHistory(goodsList);
@@ -456,7 +456,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     public void updateAdsThread(boolean isFav, boolean isGetMore) {
 
         ApiParams list = new ApiParams();
-        List<GoodsDetail> details = isFav ? GlobalDataManager.getApplication().getListMyStore() :
+        List<Ad> details = isFav ? GlobalDataManager.getApplication().getListMyStore() :
                 GlobalDataManager.getApplication().getListLookHistory();
 
         int startIndex = 0;
@@ -465,9 +465,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         }
         //list.add("start=0");//this param is controled by param0 of startFetching()
         if (details != null && details.size() > startIndex) {
-            String ids = "id:" + details.get(startIndex).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
+            String ids = "id:" + details.get(startIndex).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID);
             for (int i = startIndex + 1; i < details.size() && i < startIndex + ITEMS_PER_REQUEST; ++i) {
-                ids += " OR " + "id:" + details.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID);
+                ids += " OR " + "id:" + details.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID);
             }
             list.addParam("query", "(" + ids + ")");
         }
@@ -522,7 +522,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     @Override
     public boolean onResult(int msg, VadListLoader loader) {
         if (msg == MSG_GOTMOREFAV || msg == MSG_GOTMOREHISTORY) {
-            GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
+            AdList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
             if (isFav) {
                 if (null == moreGoodsList || 0 == moreGoodsList.getData().size()) {
 
@@ -530,9 +530,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     glLoader.setHasMore(false);
                     return false;
                 } else {
-                    List<GoodsDetail> favList = GlobalDataManager.getApplication().getListMyStore();
+                    List<Ad> favList = GlobalDataManager.getApplication().getListMyStore();
                     if (tempGoodsList.getData().size() < favList.size()) {
-                        List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+                        List<Ad> tmp = new ArrayList<Ad>();
 
                         for (int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); --i) {
                             boolean exist = false;
@@ -548,7 +548,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                 favList.remove(i);
                             }
                         }
-                        List<GoodsDetail> prev = tempGoodsList.getData();
+                        List<Ad> prev = tempGoodsList.getData();
                         prev.addAll(tmp);
                         tempGoodsList.setData(prev);
                     }
@@ -570,9 +570,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     glLoader.setHasMore(false);
                     return false;
                 } else {
-                    List<GoodsDetail> historyList = GlobalDataManager.getApplication().getListLookHistory();
+                    List<Ad> historyList = GlobalDataManager.getApplication().getListLookHistory();
                     if (tempGoodsList.getData().size() < historyList.size()) {
-                        List<GoodsDetail> tmp = new ArrayList<GoodsDetail>();
+                        List<Ad> tmp = new ArrayList<Ad>();
                         for (int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); --i) {
                             boolean exist = false;
                             for (int j = 0; j < moreGoodsList.getData().size(); ++j) {
@@ -587,7 +587,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                 historyList.remove(i);
                             }
                         }
-                        List<GoodsDetail> prev = tempGoodsList.getData();
+                        List<Ad> prev = tempGoodsList.getData();
                         prev.addAll(tmp);
                         tempGoodsList.setData(prev);
                     }
@@ -625,7 +625,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 		if (data instanceof IBxNotification)
 		{
 			IBxNotification notification = (IBxNotification) data;
-			GoodsDetail detail = (GoodsDetail) notification.getObject();
+			Ad detail = (Ad) notification.getObject();
 			boolean needUpdateAdapter = false;
 			if (IBxNotificationNames.NOTIFICATION_FAV_ADDED.equals(notification.getName()) && detail != null)
 			{
@@ -655,6 +655,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 				}
 			}
 		}
+	}
+
+	@Override
+	public void onRequestComplete(int respCode, Object data) {
+		this.sendMessage(respCode, data); //FIXME: should move code from "handleMessage()" here.
 	}
 
 

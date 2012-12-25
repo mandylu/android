@@ -15,8 +15,8 @@ import android.view.View;
 import android.widget.Toast;
 
 import com.baixing.broadcast.NotificationIds;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.quanleimu.activity.R;
 
 /**
@@ -116,9 +116,9 @@ public class ViewUtil {
 		mNotificationManager.notify(notificationId, notification);
 	}
 	
-	public static void startMapForAds(Context context, GoodsDetail ad) {
-		final String latV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		final String lonV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+	public static void startMapForAds(Context context, Ad ad) {
+		final String latV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+		final String lonV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
 		String query = null;
 		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
 		{

@@ -25,9 +25,9 @@ import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadListAdapter;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
-import com.baixing.entity.GoodsList;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
@@ -49,7 +49,7 @@ import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
 
-public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, Observer{
+public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, VadListLoader.Callback, Observer{
 	private final int MSG_MYPOST = 1;
 //	private final int MSG_INVERIFY = 2;
 //	private final int MSG_DELETED = 3;
@@ -64,7 +64,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
-	private List<GoodsDetail> listMyPost = null;
+	private List<Ad> listMyPost = null;
 	private VadListAdapter adapter = null;
 	private UserBean user;
 	private boolean needReloadData = false;
@@ -99,14 +99,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
 
-	private  void filterOutAd(List<GoodsDetail> list, UserBean user)
+	private  void filterOutAd(List<Ad> list, UserBean user)
 	{
 		if (list != null && user != null)
 		{
 			int i=0;
 			while (i<listMyPost.size())
 			{
-				GoodsDetail detail = list.get(i);
+				Ad detail = list.get(i);
 				if (!detail.getValueByKey("userId").equals(user.getId()))
 				{
 					list.remove(i);
@@ -150,10 +150,10 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
 
-		GoodsList gl = new GoodsList();
-		gl.setData(listMyPost == null ? new ArrayList<GoodsDetail>() : listMyPost);
+		AdList gl = new AdList();
+		gl.setData(listMyPost == null ? new ArrayList<Ad>() : listMyPost);
 	
-		glLoader = new VadListLoader(null, handler, null, null);
+		glLoader = new VadListLoader(null, this, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 		glLoader.setSearchUserList(true);
@@ -220,14 +220,14 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		}
 		
 		glLoader.setHasMoreListener(null);
-		glLoader.setHandler(handler);
+		glLoader.setCallback(this);
 		adapter.setList(glLoader.getGoodsList().getData());
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
 
 	private void rebuildPage(View rootView, boolean onResult){		
 		if(glLoader != null){
-			glLoader.setHandler(handler);
+			glLoader.setCallback(this);
 		}
 		rootView.findViewById(R.id.linearListView);
 
@@ -237,7 +237,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		if(TYPE_MYPOST == currentType){
             bxEvent = BxEvent.SENT_RESULT;
 
-			GoodsList gl = new GoodsList();
+			AdList gl = new AdList();
 			gl.setData(listMyPost);
 			glLoader.setGoodsList(gl);
 			adapter.setList(listMyPost);
@@ -283,7 +283,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //		case MSG_INVERIFY:
 //		case MSG_DELETED:
 			hideProgress();
-			GoodsList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
+			AdList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 //			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
 			this.pv = PV.MYADS_SENT;
 			//tracker
@@ -303,7 +303,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 					if(null != listMyPost) listMyPost.clear();
 				}
-				glLoader.setGoodsList(new GoodsList());
+				glLoader.setGoodsList(new AdList());
 			}
 			else{
 				if(msg.what == MSG_MYPOST){
@@ -317,7 +317,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 							}
 						}
 					}
-					GoodsList gl2 = new GoodsList();
+					AdList gl2 = new AdList();
 					gl2.setData(listMyPost);
 					glLoader.setGoodsList(gl2);
 				}
@@ -355,7 +355,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				JSONObject js = jb.getJSONObject("error");
 				String message = js.getString("message");
 				int code = js.getInt("code");
-				List<GoodsDetail> refList = null;
+				List<Ad> refList = null;
 				if(msg.arg1 == TYPE_MYPOST){
 					refList = listMyPost;
 				}
@@ -466,7 +466,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		
 	}
 	
-	private boolean isValidMessage(GoodsDetail detail)
+	private boolean isValidMessage(Ad detail)
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}
@@ -495,7 +495,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
     private void showItemOperateMenu(final Message msg) {
         final int pos = msg.arg2;
-        final GoodsDetail detail = glLoader.getGoodsList().getData().get(pos);        
+        final Ad detail = glLoader.getGoodsList().getData().get(pos);        
         final String adId = detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 
         String tmpInsertedTime = detail.data.get("insertedTime");
@@ -517,8 +517,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         	r_array_item_operate = R.array.item_operate_mypost;
         	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
         	.append(Key.STATUS, Value.VALID)
-            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
             .append(Key.POSTEDSECONDS, postedSeconds)
         	.end();
         }
@@ -528,8 +528,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 //            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
             Tracker.getInstance().event(BxEvent.SENT_MANAGE)
         	.append(Key.STATUS, Value.APPROVING)
-            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
             .append(Key.POSTEDSECONDS, postedSeconds)
         	.end();
         }        
@@ -542,28 +542,28 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             doRefresh(0, adId);
                             Tracker.getInstance().event(BxEvent.SENT_REFRESH)
                                     .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 1://修改
                             Bundle args = createArguments(null, null);
                             args.putSerializable("goodsDetail", detail);
-                            args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+                            args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
                             pushFragment(new PostGoodsFragment(), args);
                             Tracker.getInstance().event(BxEvent.SENT_EDIT)
                                     .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds)
                                     .end();
                             break;
                         case 2://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
                         			.append(Key.STATUS, Value.VALID)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
@@ -573,8 +573,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 0://申诉
                         	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
                             .append(Key.STATUS, Value.APPROVING)
-                            .append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                            .append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
                             .append(Key.POSTEDSECONDS, postedSeconds)
                             .end();
                         	
@@ -586,8 +586,8 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                         case 1://删除
                         	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
                         			.append(Key.STATUS, Value.APPROVING)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                        			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                        			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
                                     .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
                             break;
                     }
@@ -772,7 +772,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 					&& glLoader.getGoodsList().getData().size() > 0){
 				if(GlobalDataManager.getApplication().getListMyPost() == null ||
 						GlobalDataManager.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
-					GoodsList gl = new GoodsList();
+					AdList gl = new AdList();
 					gl.setData(GlobalDataManager.getApplication().getListMyPost());
 					glLoader.setGoodsList(gl);
 					adapter.setList(GlobalDataManager.getApplication().getListMyPost());
@@ -804,5 +804,11 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				}
 			}
 		}		
+	}
+
+
+	@Override
+	public void onRequestComplete(int respCode, Object data) {
+		this.sendMessage(respCode, data);
 	}
 }

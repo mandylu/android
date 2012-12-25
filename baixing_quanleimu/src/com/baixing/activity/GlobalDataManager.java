@@ -27,7 +27,7 @@ import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.imageCache.LazyImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -206,12 +206,12 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	}
 	
 	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
-	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
-	public List<GoodsDetail> getListLookHistory() {
+	public List<Ad> listLookHistory = new ArrayList<Ad>();
+	public List<Ad> getListLookHistory() {
 		return listLookHistory;
 	}
 
-	public List<GoodsDetail> getListMyStore() {
+	public List<Ad> getListMyStore() {
 		return listMyStore;
 	}
 	
@@ -223,11 +223,11 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 	}
 	
-	public List<GoodsDetail> addFav(GoodsDetail detail)
+	public List<Ad> addFav(Ad detail)
 	{
 		if (this.listMyStore == null)
 		{
-			this.listMyStore = new ArrayList<GoodsDetail>();
+			this.listMyStore = new ArrayList<Ad>();
 		}
 		
 		this.listMyStore.add(0, detail);
@@ -235,20 +235,20 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return this.listMyStore;
 	}
 	
-	public boolean isFav(GoodsDetail detail) {
+	public boolean isFav(Ad detail) {
 		if(detail == null) return false;
-		List<GoodsDetail> myStore = GlobalDataManager.getApplication().getListMyStore();
+		List<Ad> myStore = GlobalDataManager.getApplication().getListMyStore();
 		if(myStore == null) return false;
 		for(int i = 0; i < myStore.size(); ++ i){
-			if(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+			if(myStore.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+					.equals(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public List<GoodsDetail> removeFav(GoodsDetail detail)
+	public List<Ad> removeFav(Ad detail)
 	{
 		if (this.listMyStore == null || detail == null)
 		{
@@ -256,8 +256,8 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 		
 		for (int i = 0; i < listMyStore.size(); i++) {
-			if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(listMyStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
+			if (detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+					.equals(listMyStore.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))) {
 				listMyStore.remove(i);
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_REMOVE, detail);
 				break;
@@ -267,9 +267,9 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return this.listMyStore;
 	}
 	
-	public void updateFav(List<GoodsDetail> favs)
+	public void updateFav(List<Ad> favs)
 	{
-		this.listMyStore = new ArrayList<GoodsDetail>();
+		this.listMyStore = new ArrayList<Ad>();
 		
 		if (favs != null)
 		{
@@ -280,13 +280,13 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 	}
 
-	private void updateFav(GoodsDetail[] list) {
-		this.listMyStore = new ArrayList<GoodsDetail>();
+	private void updateFav(Ad[] list) {
+		this.listMyStore = new ArrayList<Ad>();
 
 		if (list != null)
 		{
 			int i=0;
-			for (GoodsDetail item : list)
+			for (Ad item : list)
 			{
 				this.listMyStore.add(item);
 				i++;
@@ -300,16 +300,16 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	}
 
 	//我的发布信息
-	public List<GoodsDetail> listMyPost = null;
+	public List<Ad> listMyPost = null;
 	
-	public List<GoodsDetail> getListMyPost() {
+	public List<Ad> getListMyPost() {
 		return listMyPost;
 	}
 	
 	public boolean isMyAd(String adId) {
 		if(null != listMyPost && null != adId){
 			for(int i = 0; i < listMyPost.size(); ++ i){
-				if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+				if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
 						.equals(adId)){
 					return true;
 				}
@@ -318,12 +318,12 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return false;
 	}
 
-	public void setListMyPost(List<GoodsDetail> listMyPost) {
+	public void setListMyPost(List<Ad> listMyPost) {
 		this.listMyPost = listMyPost;
 	}
 
 	//我的收藏数据集合
-	private List<GoodsDetail> listMyStore = new ArrayList<GoodsDetail>();
+	private List<Ad> listMyStore = new ArrayList<Ad>();
 	
 
 	//搜索记录
@@ -797,7 +797,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		String[] objRemark = (String[]) Util.loadDataFromLocate(getApplicationContext(), "listRemark", String[].class);
 		GlobalDataManager.getApplication().updateRemark(objRemark);
 
-		GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", GoodsDetail[].class);
+		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
 		GlobalDataManager.getApplication().updateFav(objStore);
 		
 		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");

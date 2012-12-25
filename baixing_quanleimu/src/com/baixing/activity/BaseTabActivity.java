@@ -24,7 +24,7 @@ import android.widget.CheckBox;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.database.ChatMessageDatabase;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -340,7 +340,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
-		    	List<GoodsDetail> favList = GlobalDataManager.getApplication().getListMyStore();
+		    	List<Ad> favList = GlobalDataManager.getApplication().getListMyStore();
 		    	if (favList != null)
 		    	{
 		    		Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", favList);

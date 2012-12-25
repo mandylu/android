@@ -51,8 +51,8 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
@@ -101,7 +101,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	private PostParamsHolder originParams;
 	private String mobile, password;
 	private UserBean user;
-	private GoodsDetail goodsDetail;
+	private Ad goodsDetail;
 	private static boolean isPost = true;
 	private ArrayList<String> listUrl;
 	private Bundle imgSelBundle = null;
@@ -167,7 +167,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
 				
-		this.goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
+		this.goodsDetail = (Ad) getArguments().getSerializable("goodsDetail");
 		postList = new LinkedHashMap<String, PostGoodsBean>();		
 		params = new PostParamsHolder();
 		originParams = new PostParamsHolder();		
@@ -234,7 +234,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			Tracker.getInstance()
 			.pv(this.pv)
 			.append(Key.SECONDCATENAME, categoryEnglishName)
-			.append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
 			.end();
 		}
 		else {//new post
@@ -286,7 +286,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		return v;
 	}
 	
-	private static String getDisplayValue(PostGoodsBean bean, GoodsDetail detail, String detailKey){
+	private static String getDisplayValue(PostGoodsBean bean, Ad detail, String detailKey){
 		if(bean == null || detail == null || detailKey == null || detailKey.equals(""))return "";
 		String value = detail.getValueByKey(detailKey);
 		String displayValue = "";
@@ -360,7 +360,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 					bean.getName());			
 		
 			if(bean.getDisplayName().equals(STRING_AREA)){
-				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				String strArea = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){
 					if(control instanceof TextView){
@@ -542,8 +542,8 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 
 		String cityEnglishName = GlobalDataManager.getApplication().cityEnglishName;
-		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
-			cityEnglishName = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
+		if(goodsDetail != null && goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
+			cityEnglishName = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 		}
 		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
@@ -839,7 +839,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			list.add("rt=1");
 			//根据goodsDetail判断是发布还是修改发布
 			if (goodsDetail != null) {
-				list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+				list.add("adId=" + goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 				apiName = "ad_update";
 			}
 						

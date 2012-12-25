@@ -24,8 +24,8 @@ import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -65,9 +65,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	    super.onPause();
 	}
 	
-	private void setTargetCoordinate(final GoodsDetail detail){
-		final String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		final String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+	private void setTargetCoordinate(final Ad detail){
+		final String latV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+		final String lonV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
 		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
 		{
 //			final double lat = Double.valueOf(latV);
@@ -209,7 +209,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 
         Bundle bundle = this.getIntent().getExtras();
         if(bundle != null){
-	        GoodsDetail position = (GoodsDetail)bundle.getSerializable("detail");
+	        Ad position = (Ad)bundle.getSerializable("detail");
 	        if(position == null) return;
 			String areaname = position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
 			if(areaname != null){
