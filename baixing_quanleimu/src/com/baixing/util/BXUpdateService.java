@@ -10,7 +10,7 @@ import android.os.IBinder;
 import android.os.Message;
 
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.activity.MainActivity;
 import com.quanleimu.activity.R;
 
 import java.io.File;
@@ -76,7 +76,7 @@ public class BXUpdateService extends Service {
         this.updateNotification = new Notification();
 
         //设置下载过程中，点击通知栏，回到主界面
-        updateIntent = new Intent(this, QuanleimuMainActivity.class);
+        updateIntent = new Intent(this, MainActivity.class);
         updatePendingIntent = PendingIntent.getActivity(this, 0, updateIntent, 0);
         //设置通知栏显示内容
         updateNotification.icon = R.drawable.app_icon;

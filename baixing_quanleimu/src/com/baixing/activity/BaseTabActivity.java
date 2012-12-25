@@ -391,7 +391,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		switch(newSelectIndex)
 		{
 		case TAB_INDEX_CAT:
-			intent.setClass(this, QuanleimuMainActivity.class);
+			intent.setClass(this, MainActivity.class);
 			break;
 		case TAB_INDEX_POST:
 			BaseFragment bf = this.getCurrentFragment();

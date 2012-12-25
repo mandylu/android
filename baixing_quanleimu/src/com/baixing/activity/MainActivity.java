@@ -38,7 +38,7 @@ import com.umeng.update.UmengUpdateAgent;
 //import com.tencent.mm.sdk.openapi.BaseReq;
 //import com.tencent.mm.sdk.openapi.BaseResp;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
+public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
 	
 	public static boolean isInActiveStack;
 	
@@ -49,7 +49,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 	private BroadcastReceiver msgListener;
 	
 	
-	public QuanleimuMainActivity(){
+	public MainActivity(){
 		super();
 	}
 	
@@ -536,7 +536,7 @@ public class QuanleimuMainActivity extends BaseTabActivity implements /*IWXAPIEv
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (msg.getTo().equals(Util.getMyId(QuanleimuMainActivity.this)))
+						if (msg.getTo().equals(Util.getMyId(MainActivity.this)))
 						{
 							checkAndUpdateBadge(50);
 						}

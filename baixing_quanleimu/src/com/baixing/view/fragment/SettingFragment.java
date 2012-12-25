@@ -11,7 +11,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.GlobalDataManager;
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.activity.MainActivity;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;

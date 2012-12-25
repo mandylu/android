@@ -59,7 +59,7 @@ public class BXNotificationService extends Service {
 
 		// Notification的Intent，即点击后转向的Activity
 		Intent notificationIntent = new Intent(this,
-				com.baixing.activity.QuanleimuMainActivity.class);
+				com.baixing.activity.MainActivity.class);
 		notificationIntent.putExtra("fromNotification", true);
 		notificationIntent.addFlags(Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getActivity(this, 0,

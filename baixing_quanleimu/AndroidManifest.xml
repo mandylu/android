@@ -76,7 +76,7 @@
             </intent-filter>
         </activity>
         
-        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="com.baixing.activity.QuanleimuMainActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance"
+        <activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="com.baixing.activity.MainActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleInstance"
             android:windowSoftInputMode="adjustPan">
            <intent-filter>
                 <action android:name="android.intent.action.MAIN" />
