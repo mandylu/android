@@ -15,8 +15,6 @@ import com.baixing.util.LocationService.BXRgcListener;
 public class PostLocationService implements BXRgcListener, GlobalDataManager.onLocationFetchedListener {
 	private boolean gettingLocationFromBaidu = false;
 	private boolean inreverse = false;
-	public static final int MSG_GEOCODING_FETCHED = 0x00010010;
-	public static final int MSG_GPS_LOC_FETCHED = 0x00010210;
 	private Handler handler;
 	
 	public PostLocationService(Handler handler){
@@ -37,7 +35,7 @@ public class PostLocationService implements BXRgcListener, GlobalDataManager.onL
 		return LocationService.getInstance().geocode(addr, city, this);
 	}
 	
-	public Pair<Double, Double> retreiveCoorFromGoogle(String addr){
+	static public Pair<Double, Double> retreiveCoorFromGoogle(String addr){
 		if(addr == null || addr.equals("")){
 			return new Pair<Double, Double>((double)0, (double)0);
 		}
@@ -66,7 +64,7 @@ public class PostLocationService implements BXRgcListener, GlobalDataManager.onL
 			inreverse = true;
 		}else{
 			Message msg = Message.obtain();
-			msg.what = MSG_GEOCODING_FETCHED;
+			msg.what = PostCommonValues.MSG_GEOCODING_FETCHED;
 			msg.obj = location;
 			handler.sendMessage(msg);
 		}		
@@ -83,7 +81,7 @@ public class PostLocationService implements BXRgcListener, GlobalDataManager.onL
 		// TODO Auto-generated method stub
 		if(location == null) return;
 		Message msg = Message.obtain();
-		msg.what = MSG_GPS_LOC_FETCHED;
+		msg.what = PostCommonValues.MSG_GPS_LOC_FETCHED;
 		msg.obj = location;
 		handler.sendMessage(msg);
 	}

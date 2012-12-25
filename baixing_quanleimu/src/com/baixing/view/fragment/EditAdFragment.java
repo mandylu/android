@@ -1,6 +1,7 @@
 package com.baixing.view.fragment;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 import java.util.List;
 import android.os.Bundle;
 import android.view.View;
@@ -15,6 +16,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.PostUtil;
+import com.baixing.util.post.PostCommonValues;
 import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
 
@@ -89,10 +91,11 @@ class EditAdFragment extends PostGoodsFragment{
 	}
 	
 	@Override
-	protected void mergeParams(List<String> list){
+	protected void mergeParams(HashMap<String, String> list){
 		if (goodsDetail != null) {
-			list.add("adId=" + goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+			list.put("adId", goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
 		}
+		super.mergeParams(list);
 	}
 	
 	@Override
@@ -108,7 +111,12 @@ class EditAdFragment extends PostGoodsFragment{
 	}
 	
 	@Override
-	protected void editPostUI() {
+	protected void buildPostLayout(HashMap<String, PostGoodsBean> pl){
+		super.buildPostLayout(pl);
+		editPostUI();
+	}
+	
+	private void editPostUI() {
 		if(goodsDetail == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
 			View v = layout_txt.getChildAt(i);
@@ -130,7 +138,7 @@ class EditAdFragment extends PostGoodsFragment{
 			}
 			this.params.put(bean.getName(), displayValue, detailValue);
 		
-			if(bean.getDisplayName().equals(STRING_AREA)){
+			if(bean.getDisplayName().equals(PostCommonValues.STRING_AREA)){
 				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){

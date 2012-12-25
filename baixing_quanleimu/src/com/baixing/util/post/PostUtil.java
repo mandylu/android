@@ -17,10 +17,6 @@ import com.baixing.view.fragment.PostParamsHolder;
 import com.quanleimu.activity.R;
 
 public class PostUtil{
-	public static final int HASH_POST_BEAN = "postBean".hashCode();
-	public static final int HASH_CONTROL = "control".hashCode();
-	static final private String STRING_DETAIL_POSITION = "具体地点";
-	static final private String STRING_DESCRIPTION = "description";
 	public static String getDisplayValue(PostGoodsBean bean, GoodsDetail detail, String detailKey){
 		if(bean == null || detail == null || detailKey == null || detailKey.equals(""))return "";
 		String value = detail.getValueByKey(detailKey);
@@ -62,19 +58,19 @@ public class PostUtil{
 	static public void extractInputData(ViewGroup vg, PostParamsHolder params){
 		if(vg == null) return;
 		for(int i = 0; i < vg.getChildCount(); ++ i){
-			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(HASH_POST_BEAN);
+			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(PostCommonValues.HASH_POST_BEAN);
 			if(postGoodsBean == null) continue;
 			
 			if (postGoodsBean.getControlType().equals("input") 
 					|| postGoodsBean.getControlType().equals("textarea")) {
-				EditText et = (EditText)vg.getChildAt(i).getTag(HASH_CONTROL);
+				EditText et = (EditText)vg.getChildAt(i).getTag(PostCommonValues.HASH_CONTROL);
 				if(et != null){
 					params.put(postGoodsBean.getName(),  et.getText().toString(), et.getText().toString());
 				}
 			}
 			else if(postGoodsBean.getControlType().equals("checkbox")){
 				if(postGoodsBean.getValues().size() == 1){
-					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(HASH_CONTROL);
+					CheckBox box = (CheckBox)vg.getChildAt(i).getTag(PostCommonValues.HASH_CONTROL);
 					if(box != null){
 						if(box.isChecked()){
 							params.put(postGoodsBean.getName(), postGoodsBean.getValues().get(0),postGoodsBean.getValues().get(0));
@@ -94,10 +90,10 @@ public class PostUtil{
 		boolean match = false;
 		for(int i = 0; i < vg.getChildCount(); ++ i){
 			View v = vg.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
 			if(bean == null) continue;
 			if(bean.getName().hashCode() == message){
-				TextView tv = (TextView)v.getTag(PostUtil.HASH_CONTROL);
+				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
 				if(obj instanceof Integer){					
 					String txt = bean.getLabels().get((Integer)obj);
 					String txtValue = bean.getValues().get((Integer)obj);
@@ -148,15 +144,15 @@ public class PostUtil{
 		ViewGroup layout = null;
 		if (postBean.getControlType().equals("input")) {
 			LayoutInflater inflater = LayoutInflater.from(context);
-			View v = postBean.getName().equals(STRING_DETAIL_POSITION) ? 
+			View v = postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION) ? 
 					inflater.inflate(R.layout.item_post_location, null) : 
 						inflater.inflate(R.layout.item_post_edit, null);
 
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
-			v.setTag(PostUtil.HASH_POST_BEAN, postBean);
-			v.setTag(PostUtil.HASH_CONTROL, text);
+			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
+			v.setTag(PostCommonValues.HASH_CONTROL, text);
 			if(postBean.getNumeric() != 0){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}
@@ -173,8 +169,8 @@ public class PostUtil{
 			LayoutInflater inflater = LayoutInflater.from(context);
 			View v = inflater.inflate(R.layout.item_post_select, null);	
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-			v.setTag(PostUtil.HASH_POST_BEAN, postBean);
-			v.setTag(PostUtil.HASH_CONTROL, v.findViewById(R.id.posthint));
+			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
+			v.setTag(PostCommonValues.HASH_CONTROL, v.findViewById(R.id.posthint));
 			layout = (ViewGroup)v;
 		}
 		else if (postBean.getControlType().equals("checkbox")) {
@@ -183,8 +179,8 @@ public class PostUtil{
 			if(postBean.getLabels().size() > 1){
 				View v = inflater.inflate(R.layout.item_post_select, null);
 				((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
-				v.setTag(PostUtil.HASH_POST_BEAN, postBean);
-				v.setTag(PostUtil.HASH_CONTROL, v.findViewById(R.id.posthint));
+				v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
+				v.setTag(PostCommonValues.HASH_CONTROL, v.findViewById(R.id.posthint));
 				layout = (ViewGroup)v;
 			}
 			else{
@@ -192,8 +188,8 @@ public class PostUtil{
 				v.findViewById(R.id.divider).setVisibility(View.GONE);
 				((TextView)v.findViewById(R.id.checktext)).setText(postBean.getDisplayName());
 				v.findViewById(R.id.checkitem).setTag(postBean.getDisplayName());
-				v.setTag(PostUtil.HASH_POST_BEAN, postBean);
-				v.setTag(PostUtil.HASH_CONTROL, v.findViewById(R.id.checkitem));	
+				v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
+				v.setTag(PostCommonValues.HASH_CONTROL, v.findViewById(R.id.checkitem));	
 				layout = (ViewGroup)v;				
 			}
 		} else if (postBean.getControlType().equals("textarea")) {
@@ -203,7 +199,7 @@ public class PostUtil{
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
 
-			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
+			if(postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION))//description is builtin keyword
 			{
 				String personalMark = GlobalDataManager.getApplication().getPersonMark();
 				if(personalMark != null && personalMark.length() > 0){
@@ -212,8 +208,8 @@ public class PostUtil{
 				}
 			}
 			
-			v.setTag(PostUtil.HASH_POST_BEAN, postBean);
-			v.setTag(PostUtil.HASH_CONTROL, descriptionEt);
+			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
+			v.setTag(PostCommonValues.HASH_CONTROL, descriptionEt);
 			layout = (ViewGroup)v;
 		}//获取到item的layout
 		
