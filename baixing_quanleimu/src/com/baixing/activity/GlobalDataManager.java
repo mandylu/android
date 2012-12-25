@@ -280,7 +280,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 	}
 
-	public void updateFav(GoodsDetail[] list) {
+	private void updateFav(GoodsDetail[] list) {
 		this.listMyStore = new ArrayList<GoodsDetail>();
 
 		if (list != null)

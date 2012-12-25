@@ -1,7 +1,6 @@
 package com.baixing.view.fragment;
 
 import java.io.Serializable;
-import java.net.URLEncoder;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 
@@ -15,87 +14,94 @@ public final class PostParamsHolder implements Serializable {
 	 * 
 	 */
 	private static final long serialVersionUID = 2515425925056832882L;
-	static class ValuePair implements Serializable{
-		/**
-		 * 
-		 */
-		private static final long serialVersionUID = -6486097669248525239L;
-		String uiValue;
-		String value;
-		ValuePair(String ui, String v){
-			uiValue = ui;
-			value = v;
-		}
-	}
-	private LinkedHashMap<String, ValuePair> map;
+	private LinkedHashMap<String, String> uiMap;
+	private LinkedHashMap<String, String> postValuemap;		
 	
-	public int size(){
-		return map.size();
+	public PostParamsHolder()
+	{
+		postValuemap = new LinkedHashMap<String, String>();
+		uiMap = new LinkedHashMap<String, String>();
 	}
 	
-	public PostParamsHolder(){
-		map = new LinkedHashMap<String, ValuePair>();
+	public void clear()
+	{
+		this.uiMap.clear();
+		this.postValuemap.clear();
 	}
 	
-	public void clear(){
-		map.clear();
+	public void put(String key, String uiValue, String data)
+	{
+		this.uiMap.put(key, uiValue);
+		this.postValuemap.put(key, data);
 	}
 	
-	public void put(String key, String uiValue, String data){
-		map.put(key, new ValuePair(uiValue, data));
+	public void put(String key, String uiValue, String data, String uiKey)
+	{
+		this.uiMap.put(uiKey, uiValue);
+		this.postValuemap.put(key, data);
 	}
 	
-	public void remove(String key){
-		map.remove(key);
+	public void remove(String key, String uiKey){
+		this.uiMap.remove(uiKey);
+		this.postValuemap.remove(key);
 	}
 	
-//	public LinkedHashMap<String, String> getData()
-//	{
-//		return this.postValuemap;
-//	}
-//	
-//	public LinkedHashMap<String, String> getUiData()
-//	{
-//		return this.uiMap;
-//	}
-	
-	public boolean containsKey(String key){
-		return map.containsKey(key);
+	public void remove(String key)
+	{
+		this.uiMap.remove(key);
+		this.postValuemap.remove(key);
 	}
 	
-	public Iterator<String> keyIterator(){
-		return map.keySet().iterator();
+	public LinkedHashMap<String, String> getData()
+	{
+		return this.postValuemap;
 	}
 	
-	public String getData(String key){
-		if(map.containsKey(key)){
-			return map.get(key).value;
-		}
-		return null;
+	public LinkedHashMap<String, String> getUiData()
+	{
+		return this.uiMap;
 	}
 	
-	public String getUiData(String key){
-		if(map.containsKey(key)){
-			return map.get(key).uiValue;
-		}
-		return null;
+	public boolean containsKey(String key)
+	{
+		return postValuemap.containsKey(key);
 	}
 	
-	public void merge(PostParamsHolder params){
+	public Iterator keyIterator()
+	{
+		return postValuemap.keySet().iterator();
+	}
+	
+	public String getData(String key)
+	{
+		return postValuemap.get(key);
+	}
+	
+	public String getUiData(String key)
+	{
+		return uiMap.get(key);
+	}
+	
+	public void merge(PostParamsHolder params)
+	{
 		if (params == null || params == this)
 		{
 			return;
 		}
-		map.putAll(params.map);
+		
+		this.uiMap.putAll(params.uiMap);
+		this.postValuemap.putAll(params.postValuemap);
+		
 	}
 	
-	public String toUrlString(){
+	public String toUrlString()
+	{
 		StringBuffer result = new StringBuffer();
-		Iterator<String> keys = map.keySet().iterator();
+		Iterator<String> keys = postValuemap.keySet().iterator();
 		while(keys.hasNext())
 		{
 			String key = keys.next();
-			if (INVALID_VALUE.equals(map.get(key)))
+			if (INVALID_VALUE.equals(postValuemap.get(key)))
 			{
 				continue;
 			}
@@ -104,14 +110,14 @@ public final class PostParamsHolder implements Serializable {
 			if (!"".equals(key))
 			{
 				result.append(" AND ")
-				.append(URLEncoder.encode(key)).append(":")
-				.append(URLEncoder.encode(map.get(key).value));
+				.append(key).append(":")
+				.append(postValuemap.get(key));
 			}
 		}
 		
-		if (result.length() > 4)
+		if (result.length() > 5)
 		{
-			result.replace(0, 4, "");
+			result.replace(0, 5, "");
 		}
 		return result.toString();
 		
