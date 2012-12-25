@@ -24,7 +24,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
@@ -111,7 +111,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 						getActivity(),
 						"saveFilterss"
 								+ categoryEnglishName
-								+ GlobalDataManager.getApplication().cityEnglishName);
+								+ GlobalDataManager.getInstance().cityEnglishName);
 		json = pair.second;
 		long time = pair.first;
 		if (json == null || json.length() == 0) {
@@ -213,13 +213,13 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getInstance().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				json = Communication.getDataByUrl(url, false);
 				if (json != null) {
-					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, json, System.currentTimeMillis()/1000);
+					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().cityEnglishName, json, System.currentTimeMillis()/1000);
 					if(isUpdate){
 						sendMessage(MSG_LOAD_DATA_SUCCED, null);
 					}

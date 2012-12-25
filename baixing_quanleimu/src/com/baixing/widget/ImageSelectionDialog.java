@@ -34,8 +34,8 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;

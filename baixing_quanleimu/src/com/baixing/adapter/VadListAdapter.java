@@ -21,7 +21,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.TextView;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;

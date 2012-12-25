@@ -24,6 +24,7 @@ import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.tracking.Tracker;
@@ -120,8 +121,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			Thread getCoordinate = new Thread(new Runnable(){
 	            @Override
 	            public void run() {
-	            	if(GlobalDataManager.getApplication().getApplicationContext() == null) return;
-					String city = GlobalDataManager.getApplication().cityName;
+	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
+					String city = GlobalDataManager.getInstance().cityName;
 					if(!city.equals("")){
 						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
 						try{
@@ -245,8 +246,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		
 		if (mBMapMan == null) 
 		{
-			mBMapMan = new BMapManager(GlobalDataManager.getApplication().getApplicationContext());
-			mBMapMan.init(GlobalDataManager.getApplication().mStrKey, new GlobalDataManager.MyGeneralListener());
+			mBMapMan = new BMapManager(GlobalDataManager.getInstance().getApplicationContext());
+			mBMapMan.init(GlobalDataManager.getInstance().mStrKey, new GlobalDataManager.MyGeneralListener());
 		}
 		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {
 			

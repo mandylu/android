@@ -9,7 +9,7 @@ import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Ad;
 import com.baixing.entity.UserBean;
@@ -148,10 +148,10 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		{
 			detail[i] = new Ad();
 			detail[i].setDistance(i);
-			GlobalDataManager.getApplication().addFav(detail[i]);
+			GlobalDataManager.getInstance().addFav(detail[i]);
 		}
 
-		List<Ad> list = GlobalDataManager.getApplication().getListMyStore();
+		List<Ad> list = GlobalDataManager.getInstance().getListMyStore();
 		assertEquals(count, list.size());
 		Util.saveDataToLocate(getContext(), fileName, list);
 		

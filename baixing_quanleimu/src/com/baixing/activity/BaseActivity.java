@@ -28,6 +28,7 @@ import android.widget.LinearLayout;
 import android.widget.ProgressBar;
 import android.widget.TextView;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.CityDetail;
 import com.baixing.util.LocationService;
 import com.baixing.view.fragment.FirstRunFragment;
@@ -70,12 +71,12 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     public void onSaveInstanceState(Bundle savedInstanceState) {
 		Log.d("baseactivity", "save");
 		LocationService.getInstance().stop();
-		savedInstanceState.putString("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName());
-		savedInstanceState.putString("cityName", GlobalDataManager.getApplication().getCityName());
+		savedInstanceState.putString("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		savedInstanceState.putString("cityName", GlobalDataManager.getInstance().getCityName());
 		
 		ArrayList<String>strDetails = new ArrayList<String>();
-		for(int i = 0; i < GlobalDataManager.getApplication().getListCityDetails().size(); ++ i){
-			CityDetail detail = GlobalDataManager.getApplication().getListCityDetails().get(i);
+		for(int i = 0; i < GlobalDataManager.getInstance().getListCityDetails().size(); ++ i){
+			CityDetail detail = GlobalDataManager.getInstance().getListCityDetails().get(i);
 			String tstrDetail = "englishName=" + detail.getEnglishName()
 					+ ",id=" + detail.getId()
 					+ ",name=" + detail.getName()
@@ -95,8 +96,8 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
     public void onRestoreInstanceState(Bundle savedInstanceState) {
     	savedInstance = false;
     	super.onRestoreInstanceState(savedInstanceState);
-    	GlobalDataManager.getApplication().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
-    	GlobalDataManager.getApplication().setCityName(savedInstanceState.getString("cityName"));
+    	GlobalDataManager.getInstance().setCityEnglishName(savedInstanceState.getString("cityEnglishName"));
+    	GlobalDataManager.getInstance().setCityName(savedInstanceState.getString("cityName"));
 		
 		ArrayList<String>listDetails = savedInstanceState.getStringArrayList("cityDetails");
 		
@@ -122,7 +123,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			}
 			cityDetails.add(detail);
 		}
-		GlobalDataManager.getApplication().setListCityDetails(cityDetails);
+		GlobalDataManager.getInstance().setListCityDetails(cityDetails);
 		firstFragmentId = savedInstanceState.getInt(BUNDLE_KEYS.KEY_FIRST_FRAGMENT_ID, INVALID_FIRSTFRAGMENT_ID);
     }
 	

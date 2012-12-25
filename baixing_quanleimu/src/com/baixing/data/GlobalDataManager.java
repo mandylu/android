@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.baixing.activity;
+package com.baixing.data;
 
 import java.lang.ref.WeakReference;
 
@@ -52,11 +52,13 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	private static boolean needNotifiySwitchMode = true;
 	private static SharedPreferences preferences = null;
 	private static BXDatabaseHelper dbManager = null;
-	private static GlobalDataManager mDemoApp = null;
+	private static GlobalDataManager instance = null;
 	private static int lastDestoryInstanceHash = 0;
 	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
+    
+    private AccountManager accountManager;
     
     protected static final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
     
@@ -237,7 +239,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	
 	public boolean isFav(Ad detail) {
 		if(detail == null) return false;
-		List<Ad> myStore = GlobalDataManager.getApplication().getListMyStore();
+		List<Ad> myStore = GlobalDataManager.getInstance().getListMyStore();
 		if(myStore == null) return false;
 		for(int i = 0; i < myStore.size(); ++ i){
 			if(myStore.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
@@ -383,29 +385,29 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		if (cityList == null || cityList.getListDetails() == null
 				|| cityList.getListDetails().size() == 0) {
 		} else {
-			GlobalDataManager.getApplication().setListCityDetails(cityList.getListDetails());
+			GlobalDataManager.getInstance().setListCityDetails(cityList.getListDetails());
 			
 			//update current city name
 			byte[] cityData = Util.loadData(getApplicationContext(), "cityName");
 			String cityName = cityData == null ? null : new String(cityData); //(String) Util.loadDataFromLocate(getApplicationContext(), "cityName", String.class);
 			if (cityName == null || cityName.equals("")) {
 			} else {
-				List<CityDetail> cityDetails = GlobalDataManager.getApplication().getListCityDetails();
+				List<CityDetail> cityDetails = GlobalDataManager.getInstance().getListCityDetails();
 				boolean exist = false;
 				for(int i = 0;i< cityDetails.size();i++)
 				{
 					if(cityName.equals(cityDetails.get(i).getName()))
 					{
 						String englishCityName = cityDetails.get(i).getEnglishName();
-						GlobalDataManager.getApplication().setCityEnglishName(englishCityName);
-						GlobalDataManager.getApplication().setCityName(cityName);
+						GlobalDataManager.getInstance().setCityEnglishName(englishCityName);
+						GlobalDataManager.getInstance().setCityName(cityName);
 						exist = true;
 						break;
 					}
 				}
 				if (!exist) { // FIXME: @zhongjiawu
-					GlobalDataManager.getApplication().setCityEnglishName("shanghai");
-					GlobalDataManager.getApplication().setCityName("上海");
+					GlobalDataManager.getInstance().setCityEnglishName("shanghai");
+					GlobalDataManager.getInstance().setCityName("上海");
 				}
 			}
 		}
@@ -605,11 +607,11 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	
 	static public void resetApplication()
 	{
-		if (mDemoApp != null)
+		if (instance != null)
 		{
-			lastDestoryInstanceHash = mDemoApp.hashCode();
+			lastDestoryInstanceHash = instance.hashCode();
 		}
-		GlobalDataManager.mDemoApp = null;
+		GlobalDataManager.instance = null;
 	}
 	
 	static void initStaticFields()
@@ -622,19 +624,19 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return appHash !=0 && appHash == lastDestoryInstanceHash;
 	}
 
-	static public GlobalDataManager getApplication(){
+	static public GlobalDataManager getInstance(){
 		if(null == preferences){
 			preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
 			textMode = preferences.getBoolean("isTextMode", false);
 			needNotifiySwitchMode = preferences.getBoolean("needNotifyUser", true);
 		}
 		
-		if(mDemoApp == null){
-			mDemoApp = new GlobalDataManager();
+		if(instance == null){
+			instance = new GlobalDataManager();
 			if(context != null && context.get() != null){
 				dbManager = new BXDatabaseHelper(context.get(), "network.db", null, 1);
 				try{
-					PackageManager packageManager = GlobalDataManager.getApplication().getApplicationContext().getPackageManager();
+					PackageManager packageManager = GlobalDataManager.getInstance().getApplicationContext().getPackageManager();
 					ApplicationInfo ai = packageManager.getApplicationInfo(context.get().getPackageName(), PackageManager.GET_META_DATA);
 					channelId = (String)ai.metaData.get("UMENG_CHANNEL");
 				}catch(Exception e){
@@ -642,22 +644,18 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 				}
 			}
 		}
-		return mDemoApp;
+		return instance;
 	}
 	
-	public GlobalDataManager(){
+	public AccountManager getAccountManager() {
+		return this.accountManager;
+	}
+	
+	private GlobalDataManager(){
+		this.accountManager = new AccountManager();
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	
-//	protected ErrorHandler handler;
-//	public void setErrorHandler(Context context){
-//		handler = new ErrorHandler(context);
-//	}
-//	public ErrorHandler getErrorHandler(){
-//		return handler;
-//	}
-	
 	
 	public void ClearCache(){
 		SQLiteDatabase db = dbManager.getWritableDatabase();
@@ -689,7 +687,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	public static class MyGeneralListener implements MKGeneralListener {
 		@Override
 		public void onGetNetworkState(int iError) {
-			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(),
+			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(),
 					"您的网络出错啦！", Toast.LENGTH_LONG).show();
 		}
 
@@ -697,10 +695,10 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		public void onGetPermissionState(int iError) {
 			if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
 				// 授权Key错误：
-				Toast.makeText(GlobalDataManager.mDemoApp.getApplicationContext(),
+				Toast.makeText(GlobalDataManager.instance.getApplicationContext(),
 						"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
 						.show();
-				GlobalDataManager.mDemoApp.m_bKeyRight = false;
+				GlobalDataManager.instance.m_bKeyRight = false;
 			}
 		}
 
@@ -750,7 +748,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 				Context cxt = context.get();
 				if (cxt != null)
 				{
-					Util.refreshAndGetMyId(cxt);
+					accountManager.refreshAndGetMyId(cxt);
 				}
 			}
 		}
@@ -788,21 +786,21 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 			cityList = null;
 		} else {
 			cityList = JsonUtil.parseCityListFromJson((pair.second));
-			GlobalDataManager.getApplication().updateCityList(cityList);
+			GlobalDataManager.getInstance().updateCityList(cityList);
 		}
 	}
 	
 	public void loadPersonalSync(){
 		// 获取搜索记录
 		String[] objRemark = (String[]) Util.loadDataFromLocate(getApplicationContext(), "listRemark", String[].class);
-		GlobalDataManager.getApplication().updateRemark(objRemark);
+		GlobalDataManager.getInstance().updateRemark(objRemark);
 
 		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
-		GlobalDataManager.getApplication().updateFav(objStore);
+		GlobalDataManager.getInstance().updateFav(objStore);
 		
 		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
 		if(personalMark != null){
-			GlobalDataManager.getApplication().setPersonMark(new String(personalMark));
+			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
 		}
 
 	}

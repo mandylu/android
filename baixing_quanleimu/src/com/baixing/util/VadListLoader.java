@@ -7,11 +7,11 @@ import org.json.JSONObject;
 
 import android.util.Log;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 
 public class VadListLoader implements Serializable{
@@ -197,14 +197,14 @@ public class VadListLoader implements Serializable{
 		private boolean isUserList = false;
 		
 		private void initApi(){
-			String udid = Util.getDeviceUdid(GlobalDataManager.getApplication().getApplicationContext());
+			String udid = Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext());
 			//FIXME: move following code to app entry
-			ApiClient.getInstance().init(GlobalDataManager.getApplication().getApplicationContext(),
+			ApiClient.getInstance().init(GlobalDataManager.getInstance().getApplicationContext(),
 					udid, 
 					GlobalDataManager.version, 
 					GlobalDataManager.channelId,
-					GlobalDataManager.getApplication().cityEnglishName,
-					GlobalDataManager.getApplication());
+					GlobalDataManager.getInstance().cityEnglishName,
+					GlobalDataManager.getInstance());
 		}
 		
 		GetListCommand(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){

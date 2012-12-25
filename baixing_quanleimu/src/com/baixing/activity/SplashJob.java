@@ -5,6 +5,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.Util;
@@ -37,7 +38,7 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		LocationService.getInstance().start(parentActivity, GlobalDataManager.getApplication());
+		LocationService.getInstance().start(parentActivity, GlobalDataManager.getInstance());
 		GlobalDataManager.version = Util.getVersion(parentActivity);
 
 		try {
@@ -98,7 +99,7 @@ public class SplashJob {
 
 		@Override
 		public void run() {
-			GlobalDataManager.getApplication().loadCategorySync();
+			GlobalDataManager.getInstance().loadCategorySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
 		}
 	}
@@ -128,7 +129,7 @@ public class SplashJob {
 		
 		@Override
 		public void run() {
-			GlobalDataManager.getApplication().loadCitySync();
+			GlobalDataManager.getInstance().loadCitySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_CITY_LIST);
 		}
 	}
@@ -140,7 +141,7 @@ public class SplashJob {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() { 
-			GlobalDataManager.getApplication().loadPersonalSync();
+			GlobalDataManager.getInstance().loadPersonalSync();
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
 		}
 

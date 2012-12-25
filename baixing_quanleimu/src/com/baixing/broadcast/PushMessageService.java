@@ -18,8 +18,8 @@ import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.push.PushDispatcher;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -284,7 +284,7 @@ public class PushMessageService extends Service implements Observer
     {
 		RegisterCommandListener cmdListener = new RegisterCommandListener();
 		ParameterHolder parameters = new ParameterHolder();
-		String userId = userBean == null ? Util.getMyId(this) : userBean.getId();
+		String userId = userBean == null ? GlobalDataManager.getInstance().getAccountManager().getMyId(this) : userBean.getId();
 		if (userId != null) {
 			parameters.addParameter("userId", userId);
 		}

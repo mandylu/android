@@ -23,6 +23,7 @@ import android.widget.CheckBox;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.Ad;
 import com.baixing.tracking.Sender;
@@ -114,7 +115,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		}
 		else
 		{
-			originalAppHash = GlobalDataManager.getApplication().hashCode();
+			originalAppHash = GlobalDataManager.getInstance().hashCode();
 		}
 		
 		
@@ -340,10 +341,10 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
-		    	List<Ad> favList = GlobalDataManager.getApplication().getListMyStore();
+		    	List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
 		    	if (favList != null)
 		    	{
-		    		Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", favList);
+		    		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", favList);
 		    	}
 		    	
 		    	Iterator<Integer> keys =  instanceList.keySet().iterator();

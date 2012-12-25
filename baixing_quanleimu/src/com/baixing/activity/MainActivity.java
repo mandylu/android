@@ -20,6 +20,7 @@ import android.view.View;
 import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityList;
 import com.baixing.jsonutil.JsonUtil;
@@ -296,7 +297,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 						{
 							CityList cityList = JsonUtil.parseCityListFromJson(content);
 							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "cityjson", content, updateTimestamp);							
-							GlobalDataManager.getApplication().updateCityList(cityList);
+							GlobalDataManager.getInstance().updateCityList(cityList);
 						}
 					}
 		
@@ -315,7 +316,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 				if (timestamp < updateTimestamp || categoryContent == null || categoryContent.length() == 0) {
 					String apiName = "category_list";
 					ArrayList<String> list = new ArrayList<String>();
-					list.add("cityEnglishName="+GlobalDataManager.getApplication().cityEnglishName);
+					list.add("cityEnglishName="+GlobalDataManager.getInstance().cityEnglishName);
 					String url = Communication.getApiUrl(apiName, list);
 					try {
 						String json = Communication.getDataByUrl(url, true);
@@ -536,7 +537,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
 					{
 						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (msg.getTo().equals(Util.getMyId(MainActivity.this)))
+						if (msg.getTo().equals(GlobalDataManager.getInstance().getAccountManager().getMyId(MainActivity.this)))
 						{
 							checkAndUpdateBadge(50);
 						}

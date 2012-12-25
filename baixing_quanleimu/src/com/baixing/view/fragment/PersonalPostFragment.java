@@ -23,8 +23,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
@@ -86,7 +86,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
-		listMyPost = GlobalDataManager.getApplication().getListMyPost();
+		listMyPost = GlobalDataManager.getInstance().getListMyPost();
 		filterOutAd(listMyPost, user);
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
@@ -323,7 +323,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				}
 			}
 			if(msg.what == MSG_MYPOST){
-				GlobalDataManager.getApplication().setListMyPost(listMyPost);
+				GlobalDataManager.getInstance().setListMyPost(listMyPost);
 			}
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
@@ -374,7 +374,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 						}
 					}
 					if(msg.arg1 == -1){
-						GlobalDataManager.getApplication().setListMyPost(listMyPost);
+						GlobalDataManager.getInstance().setListMyPost(listMyPost);
 					}
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
@@ -770,12 +770,12 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 			if(glLoader.getGoodsList() != null 
 					&& glLoader.getGoodsList().getData() != null 
 					&& glLoader.getGoodsList().getData().size() > 0){
-				if(GlobalDataManager.getApplication().getListMyPost() == null ||
-						GlobalDataManager.getApplication().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
+				if(GlobalDataManager.getInstance().getListMyPost() == null ||
+						GlobalDataManager.getInstance().getListMyPost().size() != glLoader.getGoodsList().getData().size()){
 					AdList gl = new AdList();
-					gl.setData(GlobalDataManager.getApplication().getListMyPost());
+					gl.setData(GlobalDataManager.getInstance().getListMyPost());
 					glLoader.setGoodsList(gl);
-					adapter.setList(GlobalDataManager.getApplication().getListMyPost());
+					adapter.setList(GlobalDataManager.getInstance().getListMyPost());
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
 				}

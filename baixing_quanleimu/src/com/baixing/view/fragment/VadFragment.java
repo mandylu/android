@@ -53,8 +53,8 @@ import android.widget.Toast;
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadImageAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
@@ -160,7 +160,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			.pv(PV.MYVIEWAD)
 			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
 			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-			.append(Key.ADSENDERID, Util.getMyId(getAppContext()))
+			.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getAppContext()))
 			.append(Key.ADSTATUS, detail.getValueByKey("status"))
 			.end();
 		} else {
@@ -202,12 +202,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		return GlobalDataManager.getApplication().isMyAd(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));		
+		return GlobalDataManager.getInstance().isMyAd(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));		
 	}
 	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		return GlobalDataManager.getApplication().isFav(detail);
+		return GlobalDataManager.getInstance().isFav(detail);
 	}
 //	
 	public boolean onTouch (View v, MotionEvent event){
@@ -379,7 +379,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					.pv(PV.MYVIEWAD)
 					.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
 					.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-					.append(Key.ADSENDERID, Util.getMyId(getActivity()))
+					.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getActivity()))
 					.append(Key.ADSTATUS, detail.getValueByKey("status"))
 					.end();
 				} else {
@@ -707,7 +707,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
 		String text = "立即拨打" + contactS;
-		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getApplication().getCityName().equals(mobileArea))
+		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getInstance().getCityName().equals(mobileArea))
 		{
 //			text = contactS + "(" + mobileArea + ")";
 		}
@@ -796,18 +796,18 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		.end();
 		
 		if(!isInMyStore()){			
-			List<Ad> myStore = GlobalDataManager.getApplication().addFav(detail); 
+			List<Ad> myStore = GlobalDataManager.getInstance().addFav(detail); 
 			
 			if (myStore != null)
 			{
-				Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", myStore);
+				Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", myStore);
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(), "收藏成功", 3).show();
+			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else  {
-			List<Ad> favList = GlobalDataManager.getApplication().removeFav(detail);
+			List<Ad> favList = GlobalDataManager.getInstance().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
@@ -1066,7 +1066,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						break;
 					}
 				}
-				List<Ad>listMyPost = GlobalDataManager.getApplication().getListMyPost();
+				List<Ad>listMyPost = GlobalDataManager.getInstance().getListMyPost();
 				if(listMyPost != null){
 					for(int i = 0; i < listMyPost.size(); ++ i){
 						if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
@@ -1090,7 +1090,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				int code = js.getInt("code");
 				if (code == 0) {
 					if(detail.getValueByKey("status").equals("0")){
-						List<Ad> listMyPost = GlobalDataManager.getApplication().getListMyPost();
+						List<Ad> listMyPost = GlobalDataManager.getInstance().getListMyPost();
 						if(null != listMyPost){
 							for(int i = 0; i < listMyPost.size(); ++ i){
 								if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)

@@ -33,7 +33,7 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.tracking.Tracker;

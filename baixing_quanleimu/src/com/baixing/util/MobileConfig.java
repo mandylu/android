@@ -11,7 +11,7 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.util.Pair;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication.BXHttpException;
@@ -28,7 +28,7 @@ public class MobileConfig {
 	}
 	
 	private MobileConfig() {
-		Context context = GlobalDataManager.getApplication().getApplicationContext();
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
 		Pair<Long, String> p = Util.loadJsonAndTimestampFromLocate(context, "mobile_config");
 		String jsonString = p.second;
 		if (jsonString == null || jsonString.length() == 0) {
@@ -102,7 +102,7 @@ public class MobileConfig {
 			String apiName = "mobile_config";
 
 			Pair<Long, String> p = 
-					Util.loadJsonAndTimestampFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "mobile_config");
+					Util.loadJsonAndTimestampFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config");
 			if (System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
 				return;
 			}
@@ -112,7 +112,7 @@ public class MobileConfig {
 				String content = Communication.getDataByUrl(url, true);
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
-					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getApplication().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
+					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
 					
 //			        if (MobileConfig.this.hasNewVersion()) {			        	
 //			            UpdateHelper.getInstance().checkNewVersion(QuanleimuApplication.getApplication().getApplicationContext());

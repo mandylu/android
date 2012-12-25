@@ -12,7 +12,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.quanleimu.activity.R;
 
 /**

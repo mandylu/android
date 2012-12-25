@@ -48,8 +48,8 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -191,14 +191,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			imgSelDlg.setMsgOutHandler(handler);
 		}
 		
-		user = Util.getCurrentUser();//(UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
+		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();//(UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 			mobile = user.getPhone();
 			password = user.getPassword();
 		}
-		String appPhone = GlobalDataManager.getApplication().getPhoneNumber();
+		String appPhone = GlobalDataManager.getInstance().getPhoneNumber();
 		if(goodsDetail == null && (appPhone == null || appPhone.length() == 0)){
-			GlobalDataManager.getApplication().setPhoneNumber(mobile);
+			GlobalDataManager.getInstance().setPhoneNumber(mobile);
 		}
 	}
 		
@@ -228,7 +228,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onResume() {
 		super.onResume();
 		inreverse = false;
-		GlobalDataManager.getApplication().addLocationListener(this);
+		GlobalDataManager.getInstance().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
 			Tracker.getInstance()
@@ -247,7 +247,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	public void onPause() {
-		GlobalDataManager.getApplication().removeLocationListener(this);		
+		GlobalDataManager.getInstance().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		super.onPause();
@@ -495,7 +495,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			if(fixedItemNames[i].equals("价格")){
 				text.setInputType(InputType.TYPE_CLASS_NUMBER | InputType.TYPE_NUMBER_FLAG_DECIMAL | InputType.TYPE_NUMBER_FLAG_SIGNED);
 			}else if(fixedItemNames[i].equals("contact")) {
-				String phone = GlobalDataManager.getApplication().getPhoneNumber();
+				String phone = GlobalDataManager.getInstance().getPhoneNumber();
 				text.setInputType(InputType.TYPE_CLASS_PHONE);
 				text.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 				if(this.goodsDetail != null){
@@ -541,7 +541,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			return;
 		}
 
-		String cityEnglishName = GlobalDataManager.getApplication().cityEnglishName;
+		String cityEnglishName = GlobalDataManager.getInstance().cityEnglishName;
 		if(goodsDetail != null && goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
 			cityEnglishName = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 		}
@@ -677,11 +677,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 		String phone = params.getData(contactDisplayName);
 		if(phone != null && phone.length() > 0 && goodsDetail == null){
-			GlobalDataManager.getApplication().setPhoneNumber(phone);
+			GlobalDataManager.getInstance().setPhoneNumber(phone);
 		}
 		String address = params.getData(addressDisplayName);
 		if(address != null && address.length() > 0){
-			GlobalDataManager.getApplication().setAddress(address);
+			GlobalDataManager.getInstance().setAddress(address);
 		}
 		
 	}
@@ -789,7 +789,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 
 	private boolean retreiveLocation(){
-		String city = GlobalDataManager.getApplication().cityName;
+		String city = GlobalDataManager.getInstance().cityName;
 		String addr = getFilledLocation();
 
 		this.showSimpleProgress();
@@ -835,7 +835,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			}
 			
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getInstance().cityEnglishName);
 			list.add("rt=1");
 			//根据goodsDetail判断是发布还是修改发布
 			if (goodsDetail != null) {
@@ -997,7 +997,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			String apiName = "category_meta_post";
 			ArrayList<String> list = new ArrayList<String>();
-			this.cityEnglishName = (this.cityEnglishName == null ? GlobalDataManager.getApplication().cityEnglishName : this.cityEnglishName);
+			this.cityEnglishName = (this.cityEnglishName == null ? GlobalDataManager.getInstance().cityEnglishName : this.cityEnglishName);
 			list.add("categoryEnglishName=" + categoryEnglishName);
 			list.add("cityEnglishName=" + this.cityEnglishName);
 
@@ -1260,14 +1260,14 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
 			locationView = layout;
 			
-			String address = GlobalDataManager.getApplication().getAddress();
+			String address = GlobalDataManager.getInstance().getAddress();
 			if(address != null && address.length() > 0){
 				((TextView)layout.findViewById(R.id.postinput)).setText(address);
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-			String phone = GlobalDataManager.getApplication().getPhoneNumber();
+			String phone = GlobalDataManager.getInstance().getPhoneNumber();
 			if(this.goodsDetail != null){
 				etContact.setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
 			}else{
@@ -1739,7 +1739,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 						if(this.goodsDetail != null){
 							((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
 						}else{
-							String phone = GlobalDataManager.getApplication().getPhoneNumber();
+							String phone = GlobalDataManager.getInstance().getPhoneNumber();
 							if(this.goodsDetail != null){
 								((TextView)control).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
 							}else{
@@ -1756,10 +1756,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		}
 	}
 	private void updateUserData(){
-		user = Util.getCurrentUser();
+		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if(user != null){
-			this.mobile = Util.getCurrentUser().getPhone();
-			this.password = Util.getCurrentUser().getPassword();
+			this.mobile = user.getPhone();
+			this.password = user.getPassword();
 		}
 	}
 	@Override
@@ -1841,7 +1841,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 
 			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
 			{
-				String personalMark = GlobalDataManager.getApplication().getPersonMark();
+				String personalMark = GlobalDataManager.getInstance().getPersonMark();
 				if(personalMark != null && personalMark.length() > 0){
 					personalMark = "\n\n" + personalMark;
 					descriptionEt.setText(personalMark);

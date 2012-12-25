@@ -10,8 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.activity.MainActivity;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -81,7 +81,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     private void refreshUI(View rootView) {
     	if(rootView == null) return;
-        user = Util.getCurrentUser();
+        user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 
         TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
         if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
@@ -163,7 +163,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 //                updateIntent.putExtra("apkUrl", "3");
 //                getAppContext().startService(updateIntent);
 //                UpdateHelper.getInstance().checkNewVersion(getActivity());
-                UmengUpdateAgent.update(GlobalDataManager.getApplication().getApplicationContext());
+                UmengUpdateAgent.update(GlobalDataManager.getInstance().getApplicationContext());
                 UmengUpdateAgent.setUpdateAutoPopup(false);
                 UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
                     @Override

@@ -61,7 +61,7 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.Display;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -83,7 +83,11 @@ public class Util {
 	public static String qq_access_secret="";
 	
 //	private static String currentUserId;
-	private static UserBean currentUser;
+
+	private static String getSdCardRoot() {
+		String path = Environment.getExternalStorageDirectory().getAbsolutePath();
+		return path.endsWith("/") ? path : path + "/";
+	}
 	
 	//数据保存SD卡
 	public static String saveDataToSdCard(String path, String file,
@@ -93,8 +97,9 @@ public class Util {
 		ObjectOutputStream oos = null;
 		if (Environment.getExternalStorageState() != null) {
 			try {
-				File p = new File("/sdcard/" + path); // 创建目录
-				File f = new File("/sdcard/" + path + "/" + file + ".txt"); // 创建文件
+				String sdcardRoot = getSdCardRoot();
+				File p = new File(sdcardRoot + path); // 创建目录
+				File f = new File(sdcardRoot + path + "/" + file + ".txt"); // 创建文件
 				if (!p.exists()) {
 					p.mkdir();
 				}
@@ -135,7 +140,7 @@ public class Util {
 		ObjectInputStream ois = null;
 		if (Environment.getExternalStorageState() != null) {
 			try {
-				fis = new FileInputStream("/sdcard/" + path + "/" + file
+				fis = new FileInputStream(getSdCardRoot() + path + "/" + file
 						+ ".txt");
 				ois = new ObjectInputStream(fis);
 				obj = ois.readObject();
@@ -1049,138 +1054,6 @@ public class Util {
 		return bits;
 	}
 	
-	public static Bitmap scaleBitmap(Bitmap src, int outputX, int outputY, int leftMask, int topMask, int rightMask, int bottomMask){
-		Bitmap toRet = null;
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-		o.inPurgeable = true;
-		if(src.getWidth() > outputX){
-			Bitmap scaledBmp = newBitmap(src, outputX, (int)((((float)outputX) / src.getWidth()) * src.getHeight()));
-			if(outputY <= scaledBmp.getHeight()) return scaledBmp;
-	
-		Bitmap lineBk = Bitmap.createBitmap(outputX, 1, Config.ARGB_4444);
-			Canvas canvas = new Canvas(lineBk);
-			Rect srcRc = new Rect();
-			srcRc.left = 0;
-			srcRc.top = topMask;
-			srcRc.right = outputX;
-			srcRc.bottom = topMask + 1;
-			
-			Rect destRc = new Rect();
-			destRc.left = 0;
-			destRc.top = 0;
-			destRc.right = outputX;
-			destRc.bottom = 1;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			
-		toRet = Bitmap.createBitmap(outputX, outputY, Config.ARGB_4444);
-			canvas = new Canvas(toRet);
-			srcRc.left = 0;
-			srcRc.top = 0;
-			srcRc.right = outputX;
-			srcRc.bottom = topMask;
-			
-			destRc.left = srcRc.left;
-			destRc.right = srcRc.right;
-			destRc.top = srcRc.top;
-			destRc.bottom = srcRc.bottom;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			srcRc.top = topMask;
-			srcRc.bottom = topMask + 1;
-			for(int i = 0; i < outputY - topMask - bottomMask; ++ i){
-				destRc.top = i + topMask;
-				destRc.bottom = i + topMask + 1;
-				canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			}
-			srcRc.top = scaledBmp.getHeight() - bottomMask;
-			srcRc.bottom = scaledBmp.getHeight();
-			destRc.top = outputY - bottomMask;
-			destRc.bottom = outputY;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			lineBk.recycle();
-			scaledBmp.recycle();
-		}
-		else
-		{
-			Bitmap scaledBmp = newBitmap(src, (int)((((float)outputY) / src.getHeight()) * src.getWidth()), outputY);
-	
-			Bitmap lineBk = Bitmap.createBitmap(1, outputY, Config.ARGB_4444);
-			Canvas canvas = new Canvas(lineBk);
-			Rect srcRc = new Rect();
-			srcRc.left = leftMask;
-			srcRc.top = 0;
-			srcRc.right = leftMask + 1;
-			srcRc.bottom = scaledBmp.getHeight();
-			
-			Rect destRc = new Rect();
-			destRc.left = 0;
-			destRc.top = 0;
-			destRc.right = 1;
-			destRc.bottom = outputY;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			
-			toRet = Bitmap.createBitmap(outputX, outputY, Config.ARGB_4444);
-			canvas = new Canvas(toRet);
-			srcRc.left = 0;
-			srcRc.top = 0;
-			srcRc.right = leftMask;
-			srcRc.bottom = scaledBmp.getHeight();
-			
-			destRc.left = 0;
-			destRc.right = leftMask;
-			destRc.top = 0;
-			destRc.bottom = outputY;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			srcRc.left = leftMask;
-			srcRc.right = leftMask + 1;
-			for(int i = 0; i < outputX - leftMask - rightMask; ++ i){
-				destRc.left = i + leftMask;
-				destRc.right = i + leftMask + 1;
-				canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			}
-			srcRc.left = scaledBmp.getWidth() - bottomMask;
-			srcRc.right = scaledBmp.getWidth();
-			destRc.left = outputX - rightMask;
-			destRc.right = outputX;
-			canvas.drawBitmap(scaledBmp, srcRc, destRc, new Paint());
-			lineBk.recycle();
-			scaledBmp.recycle();
-		}
-		return toRet;
-	}
-	
-	//保存数据手机内存
-	public static void saveToData(Context ctx , String title,String key,String value){
-		SharedPreferences.Editor se = ctx.getSharedPreferences(title, Context.MODE_WORLD_WRITEABLE).edit();
-		se.putString(key, value);
-		se.commit();
-	}
-	
-	//获取数据从手机内从
-	public static String getFromData(Context ctx , String title,String key){
-		SharedPreferences se = ctx.getSharedPreferences(title, Context.MODE_WORLD_READABLE);
-		if(se==null){
-			return null;
-		}
-		String value = se.getString(key, "");
-		if(value.equals("")){
-			return null;
-		}else{
-			return value;
-		}
-	}
-	
-	
-	/**
-	 * recycle all the bitmaps in the list
-	 * @param listBm
-	 */
-	public static void recycle(List<Bitmap> listBm){
-		for(int i=0;i<listBm.size();i++){
-			if(listBm!=null&&listBm.get(i)!=null&&!listBm.get(i).isRecycled()){
-				listBm.get(i).recycle();
-			}
-		}
-	}
 	
 	//根据经纬度获取地址
 	public static String GetAddr(double latitude, double longitude) {  
@@ -1255,65 +1128,17 @@ public class Util {
      */
     public static void logout()
 	{
-        Util.clearData(GlobalDataManager.getApplication().getApplicationContext(), "user");
-        Util.clearData(GlobalDataManager.getApplication().getApplicationContext(), "userProfile");
-//		currentUserId = null;
-        currentUser = null;
+        Util.clearData(GlobalDataManager.getInstance().getApplicationContext(), "user");
+        Util.clearData(GlobalDataManager.getInstance().getApplicationContext(), "userProfile");
+        
+		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
+        GlobalDataManager.getInstance().getAccountManager().logout();
 		
-		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
-		if(anonymousUser != null){
-			saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", anonymousUser);
-			currentUser = anonymousUser;
-		}
-		
-		GlobalDataManager.getApplication().setPhoneNumber("");
+		GlobalDataManager.getInstance().setPhoneNumber("");
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
 
-    public static UserBean reloadUser(){
-    		UserBean user = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getApplication().getApplicationContext(), "user", UserBean.class);
-        return user;
-    }
-    
-    /**
-     *
-     * @return 返回当前 UserBean user，未登录情况下返回 null
-     */
-    public static UserBean getCurrentUser() {
-	    	if (currentUser != null)
-	    	{
-	    		return currentUser;
-	    	}
-	    	currentUser = reloadUser(); 
-    	    return currentUser;
-    }
-    
-    public static boolean isUserLogin()
-    {
-	    	UserBean user = getCurrentUser();
-	    	return user != null && user.getPhone() != null && user.getPhone().length() > 0;
-    }
-
-	public static String getMyId(Context context)
-	{
-		if (currentUser != null)
-		{
-			return currentUser.getId();
-		}
-		
-		currentUser = Util.getCurrentUser();
-		
-		return currentUser == null ? null : currentUser.getId();
-	}
-	
-	public static String refreshAndGetMyId(Context context) {
-		currentUser = null;
-		currentUser = Util.getCurrentUser();
-		
-		return currentUser == null ? null : currentUser.getId();
-	}
-	
 	public static boolean isPushAlreadyThere(Context ctx, String pushCode){
 		if(ctx == null) return true;
 		if(pushCode == null || pushCode.equals("")) return false;

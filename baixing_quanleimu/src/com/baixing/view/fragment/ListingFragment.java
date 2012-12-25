@@ -28,8 +28,8 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.Ad;
@@ -140,7 +140,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		{
 			filterParamHolder = new PostParamsHolder();
 			getArguments().putSerializable("filterResult", filterParamHolder);
-			filterParamHolder.put("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName(), GlobalDataManager.getApplication().getCityEnglishName());
+			filterParamHolder.put("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName(), GlobalDataManager.getInstance().getCityEnglishName());
 			filterParamHolder.put("categoryEnglishName", categoryEnglishName, categoryEnglishName);
 			filterParamHolder.put("status", "" + 0, "" + 0);
 			if (searchContent != null)
@@ -199,7 +199,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 									getActivity(),
 									"saveFilterss"
 									+ categoryEnglishName
-									+ GlobalDataManager.getApplication().cityEnglishName);
+									+ GlobalDataManager.getInstance().cityEnglishName);
 			String json = pair.second;
 			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
@@ -230,14 +230,14 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getInstance().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, 
+							"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().cityEnglishName, 
 							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();
@@ -310,7 +310,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		lvGoodsList.setOnScrollListener(this);
 
 	
-		curLocation = GlobalDataManager.getApplication().getCurrentPosition(true);
+		curLocation = GlobalDataManager.getInstance().getCurrentPosition(true);
 		if(curLocation == null && isSerchNearBy()){
 			filterParamHolder.remove("地区_s");
 		}
@@ -344,7 +344,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		String categoryName = getArguments().getString("categoryName");
 		if(categoryName == null || categoryName.equals("")){
 			if(categoryEnglishName != null){
-				categoryName = GlobalDataManager.getApplication().queryCategoryDisplayName(categoryEnglishName);
+				categoryName = GlobalDataManager.getInstance().queryCategoryDisplayName(categoryEnglishName);
 				if(categoryName != null) getArguments().putString("categoryName", categoryName);
 			}
 		}
