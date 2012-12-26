@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 package com.baixing.jsonutil;
 
 import java.io.IOException;

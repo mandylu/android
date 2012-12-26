@@ -31,7 +31,7 @@ import com.baixing.util.Util;
 import com.baixing.widget.EditUsernameDialogFragment;
 import com.quanleimu.activity.R;
 
-public class PersonalInfoFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, Observer {
+public class PersonalProfileFragment extends BaseFragment implements View.OnClickListener, LoginUtil.LoginListener, Observer {
 
 	private static final int REQ_EDIT_PROFILE = 1;
 	private static final int REQ_REGISTER = 2;
@@ -298,8 +298,8 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	
 	private void pushPersonalPostFragment(int type) {
 		Bundle bundle = createArguments(null, null);
-		bundle.putInt(PersonalPostFragment.TYPE_KEY, type);
-		pushFragment(new PersonalPostFragment(), bundle);
+		bundle.putInt(MyAdFragment.TYPE_KEY, type);
+		pushFragment(new MyAdFragment(), bundle);
 	}
     
     @Override
@@ -311,7 +311,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
                 editUserDlg.show(getFragmentManager(), null);
                 break;
             case R.id.rl_wosent:
-            	pushPersonalPostFragment(PersonalPostFragment.TYPE_MYPOST);	
+            	pushPersonalPostFragment(MyAdFragment.TYPE_MYPOST);	
             	break;
             case R.id.rl_wofav:
             	Bundle bundle = createArguments(null, null);

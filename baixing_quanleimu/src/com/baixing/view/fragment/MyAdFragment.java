@@ -49,7 +49,7 @@ import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
 
-public class PersonalPostFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, VadListLoader.Callback, Observer{
+public class MyAdFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, VadListLoader.Callback, Observer{
 	private final int MSG_MYPOST = 1;
 //	private final int MSG_INVERIFY = 2;
 //	private final int MSG_DELETED = 3;
@@ -80,9 +80,9 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 		super.onCreate(savedInstanceState);
 
         final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(PersonalPostFragment.TYPE_KEY)) {
-            this.currentType = arguments.getInt(PersonalPostFragment.TYPE_KEY,
-                    PersonalPostFragment.TYPE_MYPOST);
+        if (arguments != null && arguments.containsKey(MyAdFragment.TYPE_KEY)) {
+            this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY,
+            		MyAdFragment.TYPE_MYPOST);
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -420,7 +420,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 	public boolean handleBack(){
 		Bundle bundle = createArguments(null, null);
 //		bundle.putInt("defaultPageIndex", 1);
-		((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
+		((BaseActivity)this.getActivity()).pushFragment(new PersonalProfileFragment(), bundle, true);
 		return true;
 	}
 	
@@ -447,7 +447,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 				dialog.dismiss();
 				BaseActivity activity = (BaseActivity)getActivity();
 				if(activity != null){
-					activity.pushFragment(new LoginFragment(), PersonalPostFragment.createArguments(null, null), false);
+					activity.pushFragment(new LoginFragment(), MyAdFragment.createArguments(null, null), false);
 				}				
 			}
 		})
@@ -676,7 +676,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
 
 		private MyMessageDeleteThread(String id){
 			this.id = id;
-			this.currentType = PersonalPostFragment.this.currentType;
+			this.currentType = MyAdFragment.this.currentType;
 		}
 
 		@Override
