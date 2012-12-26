@@ -59,7 +59,8 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -341,7 +342,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 //                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
                 	List<String> listUrl = getImageUrls(mListLoader.getGoodsList().getData().get(pos));
                 	if(null != listUrl && listUrl.size() > 0){
-                		SimpleImageLoader.Cancel(listUrl);
+                		ImageLoaderManager.getInstance().Cancel(listUrl);
 	            		for(int i = 0; i < listUrl.size(); ++ i){
 	            			decreaseImageCount(listUrl.get(i), pos);
 	//            			QuanleimuApplication.getImageLoader().forceRecycle(listUrl.get(i));
@@ -1268,7 +1269,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				}
 			}
 			if(values.size() == 0){
-				GlobalDataManager.getImageLoader().forceRecycle(url);
+				ImageCacheManager.getInstance().forceRecycle(url, true);
 				imageMap.remove(url);
 			}else{
 				imageMap.put(url, values);
@@ -1347,7 +1348,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
     			if(position - index >= 0)
     				urls.add(listUrl.get(position-index));				
     		}
-    		SimpleImageLoader.AdjustPriority(urls);
+    		ImageLoaderManager.getInstance().AdjustPriority(urls);
     	}
     }
 
@@ -1524,7 +1525,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
-		SimpleImageLoader.showImg(imageView, url, previousUrl, getActivity());
+		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, getActivity());
 		increaseImageCount(url, index);
 	}
 
