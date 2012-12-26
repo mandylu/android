@@ -9,7 +9,10 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.LinearLayout;
 import android.widget.TextView;
+import android.widget.LinearLayout.LayoutParams;
+
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
@@ -224,5 +227,15 @@ public class PostUtil{
 			}
 		}
 		return false;
+	}
+	
+	static public void adjustMarginBottomAndHeight(View view){
+		LinearLayout.LayoutParams layoutParams = (LayoutParams) view.getLayoutParams();
+		if (layoutParams == null){
+			layoutParams = new LinearLayout.LayoutParams(LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
+		}
+		layoutParams.bottomMargin = view.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);		
+		layoutParams.height = view.getResources().getDimensionPixelOffset(R.dimen.post_item_height);
+		view.setLayoutParams(layoutParams);
 	}
 }

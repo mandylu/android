@@ -33,11 +33,9 @@ import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
-
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
@@ -51,8 +49,8 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.PostLocationService;
-import com.baixing.util.PostUtil;
+import com.baixing.util.post.PostLocationService;
+import com.baixing.util.post.PostUtil;
 import com.baixing.util.Util;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostNetworkService;
@@ -232,8 +230,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {		
+	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);		
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
@@ -253,11 +250,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		imgSelDlg.show(getFragmentManager(), null);
 	}
 
-	private void doPost(BXLocation location){
-		showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-		postAd(location);
-	}
-	
 	private void deployDefaultLayout(){
 		addCategoryItem();
 		HashMap<String, PostGoodsBean> pl = new HashMap<String, PostGoodsBean>();
@@ -298,35 +290,33 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			return;
 		}
 
-		String cityEnglishName = getCityEnglishName();
-		
+		String cityEnglishName = getCityEnglishName();		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		String json = pair.second;
 		if (json != null && json.length() > 0) {			
-			if (pair.first + (24 * 3600) < System.currentTimeMillis()/1000) {
-				showSimpleProgress();
-				postNS.retreiveMetaAsync(cityEnglishName, categoryEnglishName);
-			} else {
+			if (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000) {
 				if(postList == null || postList.size() == 0){
 					postList = JsonUtil.getPostGoodsBean(json);
 				}
 				addCategoryItem();
 				buildPostLayout(postList);
 				loadCachedData();
+				return;
 			}
-		} else {
-			showSimpleProgress();
-			postNS.retreiveMetaAsync(cityEnglishName, categoryEnglishName);
 		}
+		showSimpleProgress();
+		postNS.retreiveMetaAsync(cityEnglishName, categoryEnglishName);
 	}
 	
 	@Override
 	public void onClick(View v) {
 		if(v.getId() == R.id.iv_post_finish){
-			postFinish();
+			Tracker.getInstance()
+			.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
+			.append(Key.SECONDCATENAME, categoryEnglishName).end();			
+			this.postAction();
 		}else if(v.getId() == R.id.location){
-			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();
-			
+			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
 			}else if(detailLocation == null){
@@ -347,8 +337,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						if (et != null){
 							Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DESCRIPTION).end();
 							et.requestFocus();
-							InputMethodManager inputMgr = 
-									(InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+							InputMethodManager inputMgr = (InputMethodManager) et.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 							inputMgr.showSoftInput(et, InputMethodManager.SHOW_IMPLICIT);
 						}
 					}			
@@ -357,15 +346,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 	}
 	
-	private void postFinish() {
-		Tracker.getInstance()
-		.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
-		.append(Key.SECONDCATENAME, categoryEnglishName)
-		.end();
-		
-		this.postAction();
-	}
-
 	private void setPhoneAndAddress(){
 		String phone = params.getData("contact");
 		if(phone != null && phone.length() > 0 && !editMode){
@@ -385,7 +365,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 		String detailLocationValue = params.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
-			doPost(detailLocation);
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+			postAd(detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 			this.showSimpleProgress();
@@ -422,10 +403,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		String toRet = "";
 		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
 			View v = layout_txt.getChildAt(m);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
 			if(bean == null) continue;
 			if(bean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-				TextView tv = (TextView)v.getTag(PostUtil.HASH_CONTROL);
+				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
 				if(tv != null && !tv.getText().toString().equals("")){
 					toRet = tv.getText().toString();
 				}
@@ -435,9 +416,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		return toRet;
 	}
 	
-	protected void mergeParams(HashMap<String, String> list){
-
-	}
+	protected void mergeParams(HashMap<String, String> list){}
 	
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
@@ -479,28 +458,25 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void postResultSuccess() {
 		BxEvent event = editMode ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
-
 		Tracker.getInstance().event(event)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
 		.append(Key.POSTSTATUS, 1)
 		.append(Key.POSTPICSCOUNT, getImgCount())
 		.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
 		.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
-		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
-		.end();
+		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength()).end();
 	}
 	
 	private void postResultFail(String errorMsg) {
 		BxEvent event = editMode ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
 		Tracker.getInstance().event(event)
-				.append(Key.SECONDCATENAME, categoryEnglishName)
-				.append(Key.POSTSTATUS, 0)
-				.append(Key.POSTFAILREASON, errorMsg)
-				.append(Key.POSTPICSCOUNT, getImgCount())
-				.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
-				.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
-				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
-				.end();
+			.append(Key.SECONDCATENAME, categoryEnglishName)
+			.append(Key.POSTSTATUS, 0)
+			.append(Key.POSTFAILREASON, errorMsg)
+			.append(Key.POSTPICSCOUNT, getImgCount())
+			.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
+			.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
+			.append(Key.POSTCONTACTTEXTCOUNT, getContactLength()).end();
 	}
 	
 	private void loadCachedData(){
@@ -512,11 +488,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			for (int i=0; i<layout_txt.getChildCount(); i++)
 			{
 				View v = layout_txt.getChildAt(i);
-				PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
+				PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
 				if(bean == null || 
 						!bean.getName().equals(name)//check display name 
 						) continue;
-				View control = (View)v.getTag(PostUtil.HASH_CONTROL);
+				View control = (View)v.getTag(PostCommonValues.HASH_CONTROL);
 				String displayValue = params.getUiData(name);
 				
 				if(control instanceof CheckBox){
@@ -632,7 +608,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				((TextView)layout.findViewById(R.id.postinput)).setText(address);
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
-			etContact = ((EditText)layout.getTag(PostUtil.HASH_CONTROL));
+			etContact = ((EditText)layout.getTag(PostCommonValues.HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = GlobalDataManager.getInstance().getPhoneNumber();
 			if(editMode){
@@ -643,7 +619,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				}
 			}
 		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
-			etDescription = (EditText) layout.getTag(PostUtil.HASH_CONTROL);
+			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}
 		
 		if(layout != null){
@@ -673,7 +649,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		LayoutInflater inflater = LayoutInflater.from(activity);
 		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
 		
-		categoryItem.setTag(PostUtil.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
+		categoryItem.setTag(PostCommonValues.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
 			@Override
@@ -686,15 +662,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
 			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
 		}
-		
-		LinearLayout.LayoutParams layoutParams = (LayoutParams) categoryItem.getLayoutParams();
-		if (layoutParams == null)
-			layoutParams = new LinearLayout.LayoutParams(
-			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = categoryItem.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);		
-		layoutParams.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
-		categoryItem.setLayoutParams(layoutParams);
-		
+		PostUtil.adjustMarginBottomAndHeight(categoryItem);
 		layout_txt.addView(categoryItem);
 	}
 	
@@ -730,8 +698,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				});
 
 				text.setHint("请输入" + bean.getDisplayName());
-				v.setTag(PostUtil.HASH_POST_BEAN, bean);
-				v.setTag(PostUtil.HASH_CONTROL, text);
+				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
+				v.setTag(PostCommonValues.HASH_CONTROL, text);
 				v.setOnClickListener(this);
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
@@ -777,7 +745,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				if (bean.getName().equals(PostCommonValues.hiddenItemNames[i])){
 					String defaultValue = bean.getDefaultValue();
 					if (defaultValue != null && defaultValue.length() > 0) {
-						//String key, String uiValue, String data
 						this.params.put(bean.getName(), defaultValue, defaultValue);
 					} else {
 						this.params.put(bean.getName(), bean.getLabels().get(0), bean.getValues().get(0));
@@ -970,11 +937,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
-		case PostLocationService.MSG_GEOCODING_FETCHED:			
-				showSimpleProgress();
-				postAd(msg.obj == null ? null : (BXLocation)msg.obj);
+		case PostCommonValues.MSG_GEOCODING_FETCHED:			
+			showSimpleProgress();
+			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
 			break;
-		case PostLocationService.MSG_GPS_LOC_FETCHED:
+		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation)msg.obj;
 			break;
 		}
@@ -987,9 +954,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if(layout_txt == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
 			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
 			if(bean == null) continue;
-			View control = (View)v.getTag(PostUtil.HASH_CONTROL);
+			View control = (View)v.getTag(PostCommonValues.HASH_CONTROL);
 			if(control != null && control instanceof TextView){
 				if(params != null && params.containsKey(bean.getName())){
 					String value = params.getUiData(bean.getName());
@@ -1033,12 +1000,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			return null;
 
 		if(postBean.getControlType().equals("select") || postBean.getControlType().equals("checkbox")){
-			final String actionName = ((PostGoodsBean)layout.getTag(PostUtil.HASH_POST_BEAN)).getDisplayName();
+			final String actionName = ((PostGoodsBean)layout.getTag(PostCommonValues.HASH_POST_BEAN)).getDisplayName();
 			layout.setOnClickListener(new OnClickListener() {
 				public void onClick(View v) {
 					Tracker.getInstance().event((!editMode) ? BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, actionName).end();
 
-					PostGoodsBean postBean = (PostGoodsBean) v.getTag(PostUtil.HASH_POST_BEAN);
+					PostGoodsBean postBean = (PostGoodsBean) v.getTag(PostCommonValues.HASH_POST_BEAN);
 
 					if (postBean.getControlType().equals("select") || postBean.getControlType().equals("tableSelect")) {
 							if(postBean.getLevelCount() > 0){
@@ -1068,7 +1035,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 								bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 								bundle.putBoolean("singleSelection", false);
 								bundle.putSerializable("properties",(ArrayList<String>) postBean.getLabels());
-								TextView txview = (TextView)v.getTag(PostUtil.HASH_CONTROL);
+								TextView txview = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
 								if (txview !=  null)
 								{
 									bundle.putString("selected", txview.getText().toString());
@@ -1081,9 +1048,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 							bundle.putInt(ARG_COMMON_REQ_CODE, postBean.getName().hashCode());
 							bundle.putBoolean("singleSelection", false);
 							bundle.putSerializable("properties",(ArrayList<String>) postBean.getLabels());
-							TextView txview = (TextView)v.getTag(PostUtil.HASH_CONTROL);
-							if (txview !=  null)
-							{
+							TextView txview = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
+							if (txview !=  null){
 								bundle.putString("selected", txview.getText().toString());
 							}
 							((BaseActivity)getActivity()).pushFragment(new OtherPropertiesFragment(), bundle, false);
@@ -1098,8 +1064,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				}
 			});//layout.setOnClickListener:select or checkbox
 		} else {//not select or checkbox
-			final String actionName = ((PostGoodsBean)layout.getTag(PostUtil.HASH_POST_BEAN)).getDisplayName();
-			((View)layout.getTag(PostUtil.HASH_CONTROL)).setOnTouchListener(new OnTouchListener() {
+			final String actionName = ((PostGoodsBean)layout.getTag(PostCommonValues.HASH_POST_BEAN)).getDisplayName();
+			((View)layout.getTag(PostCommonValues.HASH_CONTROL)).setOnTouchListener(new OnTouchListener() {
 				@Override
 				public boolean onTouch(View v, MotionEvent event) {
 					if (event.getAction() == MotionEvent.ACTION_DOWN) {
@@ -1113,21 +1079,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				
 				@Override
 				public void onClick(View v) {
-					View ctrl = (View) v.getTag(PostUtil.HASH_CONTROL);
+					View ctrl = (View) v.getTag(PostCommonValues.HASH_CONTROL);
 					ctrl.requestFocus();
-					InputMethodManager inputMgr = 
-							(InputMethodManager) ctrl.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+					InputMethodManager inputMgr = (InputMethodManager) ctrl.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 					inputMgr.showSoftInput(ctrl, InputMethodManager.SHOW_IMPLICIT);
 				}
 			});			
-		}
-
-		LinearLayout.LayoutParams layoutParams = (LayoutParams) layout.getLayoutParams();
-		if (layoutParams == null)
-			layoutParams = new LinearLayout.LayoutParams(
-			     LinearLayout.LayoutParams.FILL_PARENT, LinearLayout.LayoutParams.FILL_PARENT);
-		layoutParams.bottomMargin = layout.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);
-		layout.setLayoutParams(layoutParams);
+		}		
+		PostUtil.adjustMarginBottomAndHeight(layout);
 		
 		return layout;
 	}

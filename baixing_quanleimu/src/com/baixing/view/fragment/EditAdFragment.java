@@ -16,7 +16,7 @@ import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.PostUtil;
+import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
@@ -121,12 +121,12 @@ class EditAdFragment extends PostGoodsFragment{
 		if(goodsDetail == null) return;
 		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
 			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostUtil.HASH_POST_BEAN);
+			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
 			if(bean == null) continue;
 			String detailValue = goodsDetail.getValueByKey(bean.getName());
 			if(detailValue == null || detailValue.equals(""))continue;
 			String displayValue = PostUtil.getDisplayValue(bean, goodsDetail, bean.getName());
-			View control = (View)v.getTag(PostUtil.HASH_CONTROL);
+			View control = (View)v.getTag(PostCommonValues.HASH_CONTROL);
 			if(control instanceof CheckBox){
 				if(displayValue.contains(((CheckBox)control).getText())){
 					((CheckBox)control).setChecked(true);
