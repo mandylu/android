@@ -5,7 +5,7 @@ import java.io.IOException;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.fasterxml.jackson.core.JsonProcessingException;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
@@ -19,7 +19,7 @@ public class JsonParser extends AndroidTestCase {
 	public void testParseGoodDetail()
 	{
 		ObjectMapper mapper = new ObjectMapper();
-		ObjectReader reader = mapper.reader(GoodsDetail.class);
+		ObjectReader reader = mapper.reader(Ad.class);
 		try {
 			Object obj = reader.readValue(s);
 			assertTrue(true);

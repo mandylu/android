@@ -33,8 +33,8 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -51,7 +51,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	//int index = 0;
 	static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
-	private GoodsDetail goodsDetail;
+	private Ad goodsDetail;
 	private List<String> listUrl = new ArrayList<String>();
 	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
@@ -74,7 +74,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 		super.onCreate(savedInstanceState);
 		Bundle bundle = getArguments();
 		postIndex = bundle.getInt("postIndex");
-		goodsDetail = (GoodsDetail) bundle.getSerializable("goodsDetail");
+		goodsDetail = (Ad) bundle.getSerializable("goodsDetail");
 	}
 
 
@@ -235,7 +235,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    {
 	    	super.onResume();
 	    	this.pv = PV.VIEWADPIC;
-	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
+	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
 	    	GlobalDataManager.getImageLoader().enableSampleSize();
 			if (null == mb || mb.get() == null) {
@@ -262,7 +262,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    	String filePath = SimpleImageLoader.getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
-	    	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
+	    	String title = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
 
 	        int index = filePath.lastIndexOf("/");
 	        String fileName = filePath.substring(index+1)+".png";

@@ -18,7 +18,7 @@ import android.widget.GridView;
 import android.widget.SimpleAdapter;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;

@@ -5,11 +5,11 @@ import java.util.Collections;
 import java.util.List;
 import java.util.ArrayList;
 
-public class GoodsList implements Serializable {
+public class AdList implements Serializable {
 	private static final long serialVersionUID = -2158869923050057462L;
 	private int count = 0;
-	public GoodsList(){}
-	public GoodsList(List<GoodsDetail> data__){
+	public AdList(){}
+	public AdList(List<Ad> data__){
 		data = data__;
 		if(null != data)
 			count = data.size();
@@ -20,17 +20,17 @@ public class GoodsList implements Serializable {
 	public void setCount(int count) {
 		this.count = count;
 	}
-	public List<GoodsDetail> getData() {
+	public List<Ad> getData() {
 		return data;
 	}
-	public void setData(List<GoodsDetail> data) {
+	public void setData(List<Ad> data) {
 		this.data = data;
 	}
-	private List<GoodsDetail> data;
+	private List<Ad> data;
 	
 	public Object clone(){
-		List<GoodsDetail> temp = new ArrayList<GoodsDetail>();
+		List<Ad> temp = new ArrayList<Ad>();
 		temp.addAll(data);
-		return new GoodsList(temp);
+		return new AdList(temp);
 	}
 }

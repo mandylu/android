@@ -8,9 +8,9 @@ import android.os.Bundle;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -22,13 +22,13 @@ import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
 
 class EditAdFragment extends PostGoodsFragment{
-	private GoodsDetail goodsDetail;
+	private Ad goodsDetail;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		editMode = true;
 		super.onCreate(savedInstanceState);				
-		goodsDetail = (GoodsDetail) getArguments().getSerializable("goodsDetail");
+		goodsDetail = (Ad) getArguments().getSerializable("goodsDetail");
 	}
 	
 	@Override
@@ -37,14 +37,14 @@ class EditAdFragment extends PostGoodsFragment{
 		Tracker.getInstance()
 		.pv(this.pv)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
-		.append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+		.append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
 		.end();
 		super.onResume();
 	}
 	
 	protected String getCityEnglishName(){
-		if(goodsDetail != null && goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
-			return goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
+		if(goodsDetail != null && goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME).length() > 0){
+			return goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CITYENGLISHNAME);
 		}
 		return super.getCityEnglishName();
 	}
@@ -94,7 +94,7 @@ class EditAdFragment extends PostGoodsFragment{
 	@Override
 	protected void mergeParams(HashMap<String, String> list){
 		if (goodsDetail != null) {
-			list.put("adId", goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+			list.put("adId", goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		}
 		super.mergeParams(list);
 	}
@@ -140,7 +140,7 @@ class EditAdFragment extends PostGoodsFragment{
 			this.params.put(bean.getName(), displayValue, detailValue);
 		
 			if(bean.getDisplayName().equals(PostCommonValues.STRING_AREA)){
-				String strArea = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+				String strArea = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
 				String[] areas = strArea.split(",");
 				if(areas.length >= 2){
 					if(control instanceof TextView){

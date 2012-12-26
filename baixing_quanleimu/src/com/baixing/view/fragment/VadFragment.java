@@ -53,11 +53,11 @@ import android.widget.Toast;
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadImageAdapter;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
-import com.baixing.entity.GoodsList;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
@@ -77,7 +77,7 @@ import com.baixing.widget.ContextMenuItem;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadImageAdapter.IImageProvider {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadImageAdapter.IImageProvider, VadListLoader.Callback {
 
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -88,13 +88,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	final private int MSG_REFRESH = 5;
 	final private int MSG_UPDATE = 6;
 	final private int MSG_DELETE = 7;
-	
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
-	public GoodsDetail detail = new GoodsDetail();
+	public Ad detail = new Ad();
 	private boolean called = false;
-	private UserBean user = null;
 	private String json = "";
 	
 	private WeakReference<Bitmap> mb_loading = null;
@@ -115,11 +113,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		REQUEST_TYPE_DELETE
 	}
 	
-	@Override
-	public void onStackTop(boolean isBack) {
-		super.onStackTop(isBack);
-	}
-
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
@@ -162,22 +155,20 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void onResume(){
 		if (isMyAd() || !detail.isValidMessage())
 		{
-			if (user==null)
-				user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 			this.pv = PV.MYVIEWAD;
 			Tracker.getInstance()
 			.pv(PV.MYVIEWAD)
-			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
-			.append(Key.ADSENDERID, user!=null? user.getId() : null)
+			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+			.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getAppContext()))
 			.append(Key.ADSTATUS, detail.getValueByKey("status"))
 			.end();
 		} else {
 			this.pv = PV.VIEWAD;
 			Tracker.getInstance()
 			.pv(this.pv)
-			.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-			.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
 			.end();
 		}	
 			
@@ -211,12 +202,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		return GlobalDataManager.getApplication().isMyAd(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));		
+		return GlobalDataManager.getInstance().isMyAd(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));		
 	}
 	
 	private boolean isInMyStore(){
 		if(detail == null) return false;
-		return GlobalDataManager.getApplication().isFav(detail);
+		return GlobalDataManager.getInstance().isFav(detail);
 	}
 //	
 	public boolean onTouch (View v, MotionEvent event){
@@ -303,11 +294,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	@Override
-	public void onDestroyView(){
-		super.onDestroyView();
-	}
-
-	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if(detail == null || mListLoader == null) return null;
@@ -339,7 +325,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				}
 				else
 				{
-					GoodsDetail detaiObj = mListLoader.getGoodsList().getData().get(position);
+					Ad detaiObj = mListLoader.getGoodsList().getData().get(position);
 					initContent(detail, detaiObj, position, ((ViewPager) arg0), false);
 				}
 				return detail;
@@ -391,17 +377,17 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					VadFragment.this.pv = PV.MYVIEWAD;
 					Tracker.getInstance()
 					.pv(PV.MYVIEWAD)
-					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
-					.append(Key.ADSENDERID, user!=null? user.getId() : null)
+					.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+					.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+					.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getActivity()))
 					.append(Key.ADSTATUS, detail.getValueByKey("status"))
 					.end();
 				} else {
 					VadFragment.this.pv = PV.VIEWAD;
 					Tracker.getInstance()
 					.pv(VadFragment.this.pv)
-					.append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-					.append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))
+					.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+					.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
 					.end();
 				}
 				
@@ -501,101 +487,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
         } );
         
         mListLoader.setSelection(mCurIndex);
-        mListLoader.setHandler(new Handler(){
-				@Override
-				public void handleMessage(Message msg) {
-					if(null != mHolder){
-						if(mHolder.onResult(msg.what, mListLoader)){
-							onGotMore();
-						}else{
-							onNoMore();
-						}
-						
-						if(msg.what == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
-							onLoadMoreFailed();
-						}
-					}else{
-						switch (msg.what) {
-						case VadListLoader.MSG_FINISH_GET_FIRST:				 
-							GoodsList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
-							mListLoader.setGoodsList(goodsList);
-							if (goodsList == null || goodsList.getData().size() == 0) {
-								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请稍后并重试！");
-							} else {
-								//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
-							}
-							mListLoader.setHasMore(true);
-							notifyPageDataChange(true);
-							break;
-						case VadListLoader.MSG_NO_MORE:					
-							onNoMore();
-							
-							mListLoader.setHasMore(false);
-							notifyPageDataChange(false);
-							
-							break;
-						case VadListLoader.MSG_FINISH_GET_MORE:	
-							GoodsList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
-							if (goodsList1 == null || goodsList1.getData().size() == 0) {
-								ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_WARNING, "后面没有啦！");
-								
-								onNoMore();
-								
-								mListLoader.setHasMore(false);
-								notifyPageDataChange(false);
-							} else {
-								List<GoodsDetail> listCommonGoods =  goodsList1.getData();
-								for(int i=0;i<listCommonGoods.size();i++)
-								{
-									mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
-								}
-								//QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
-								
-								mListLoader.setHasMore(true);
-								notifyPageDataChange(true);
-								onGotMore();
-							}
-							break;
-						case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
-							ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-							
-							onLoadMoreFailed();
-							
-							break;
-						}
-					}
-					
-					super.handleMessage(msg);
-				}
-
-				private void onGotMore() {
-					final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
-					if (page != null)
-					{
-						page.postDelayed(new Runnable() {
-
-							@Override
-							public void run() {
-								page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
-								page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
-								final Integer tag = (Integer)page.getTag();
-								if(tag != null){
-									initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
-								}
-							}
-							
-						}, 10);
-					}
-				}
-
-				private void onNoMore() {
-					View root = getView();
-					if (root != null)
-					{
-						ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
-					}
-				}
-			});        
+        mListLoader.setCallback(this);       
         
         return v;
 	}
@@ -634,7 +526,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return vp == null ? null : vp.getAdapter();
 	}
 	
-	private void initContent(View contentView, final GoodsDetail detail, final int pageIndex, ViewPager pager, boolean useRoot)
+	private void initContent(View contentView, final Ad detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
 		
 		if(this.getView() == null) return;
@@ -662,7 +554,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
 //				int cur = pager != null ? pager.getCurrentItem() : -1;
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
-				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
+				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
 					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, VadFragment.this));
 					glDetail.setOnTouchListener(this);
@@ -694,8 +586,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 		this.setMetaObject(contentView, detail);
 		
-		String title = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
-		String description = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DESCRIPTION);
+		String title = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE);
+		String description = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION);
 
 		if ((title == null || title.length() == 0) && description != null)
 		{
@@ -789,8 +681,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		rootView.findViewById(R.id.phone_parent).setVisibility(View.VISIBLE);
 		rootView.findViewById(R.id.vad_tool_bar).setVisibility(View.GONE);
 
-		final String contactS = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CONTACT);
-		final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
+		final String contactS = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CONTACT);
+		final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
 		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
 		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
@@ -815,7 +707,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		callImg.setBackgroundResource(callEnable ? R.drawable.icon_call : R.drawable.icon_call_disable);
 		TextView txtCall = (TextView) rootView.findViewById(R.id.txt_call);
 		String text = "立即拨打" + contactS;
-		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getApplication().getCityName().equals(mobileArea))
+		if (mobileArea != null && mobileArea.length() > 0 && !GlobalDataManager.getInstance().getCityName().equals(mobileArea))
 		{
 //			text = contactS + "(" + mobileArea + ")";
 		}
@@ -832,7 +724,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
-	private String appendExtralMetaInfo(GoodsDetail detail, String description)
+	private String appendExtralMetaInfo(Ad detail, String description)
 	{
 		if (detail == null)
 		{
@@ -863,7 +755,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return description;
 	}
 	
-	private String appendPostFromInfo(GoodsDetail detail, String description)
+	private String appendPostFromInfo(Ad detail, String description)
 	{
 		if (detail == null)
 		{
@@ -904,18 +796,18 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		.end();
 		
 		if(!isInMyStore()){			
-			List<GoodsDetail> myStore = GlobalDataManager.getApplication().addFav(detail); 
+			List<Ad> myStore = GlobalDataManager.getInstance().addFav(detail); 
 			
 			if (myStore != null)
 			{
-				Util.saveDataToLocate(GlobalDataManager.getApplication().getApplicationContext(), "listMyStore", myStore);
+				Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", myStore);
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(), "收藏成功", 3).show();
+			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(), "收藏成功", 3).show();
 		}
 		else  {
-			List<GoodsDetail> favList = GlobalDataManager.getApplication().removeFav(detail);
+			List<Ad> favList = GlobalDataManager.getInstance().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
 			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
@@ -942,7 +834,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			.event(BxEvent.VIEWAD_MOBILECALLCLICK)
 			.end();
 			
-			final String mobileArea = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
+			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
 				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLE).end();
@@ -972,7 +864,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			
 			Bundle args = createArguments(null, null);
 			args.putSerializable("goodsDetail", detail);
-			args.putString("cateNames", detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+			args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
 			pushFragment(new EditAdFragment(), args);
             trackerLogEvent(BxEvent.MYVIEWAD_EDIT);
 			break;
@@ -1053,7 +945,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 
 	
-	private void setMetaObject(View currentPage, GoodsDetail detail){
+	private void setMetaObject(View currentPage, Ad detail){
 		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
 		if(ll_meta == null) return;
 		ll_meta.removeAllViews();
@@ -1164,21 +1056,21 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;			
 		case MSG_UPDATE:
 			hideProgress();
-			GoodsList goods = JsonUtil.getGoodsListFromJson(json);
-			List<GoodsDetail> goodsDetails = goods.getData();
+			AdList goods = JsonUtil.getGoodsListFromJson(json);
+			List<Ad> goodsDetails = goods.getData();
 			if(goodsDetails != null && goodsDetails.size() > 0){
 				for(int i = 0; i < goodsDetails.size(); ++ i){
-					if(goodsDetails.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-							.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+					if(goodsDetails.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+							.equals(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))){
 						detail = goodsDetails.get(i);
 						break;
 					}
 				}
-				List<GoodsDetail>listMyPost = GlobalDataManager.getApplication().getListMyPost();
+				List<Ad>listMyPost = GlobalDataManager.getInstance().getListMyPost();
 				if(listMyPost != null){
 					for(int i = 0; i < listMyPost.size(); ++ i){
-						if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-								.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+						if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+								.equals(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))){
 							listMyPost.set(i, detail);
 							break;
 						}
@@ -1198,11 +1090,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				int code = js.getInt("code");
 				if (code == 0) {
 					if(detail.getValueByKey("status").equals("0")){
-						List<GoodsDetail> listMyPost = GlobalDataManager.getApplication().getListMyPost();
+						List<Ad> listMyPost = GlobalDataManager.getInstance().getListMyPost();
 						if(null != listMyPost){
 							for(int i = 0; i < listMyPost.size(); ++ i){
-								if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-										.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+								if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+										.equals(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))){
 									listMyPost.remove(i);
 									break;
 								}
@@ -1297,7 +1189,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 		}
-		list.add("adId=" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+		list.add("adId=" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		if(pay != 0){
 			list.add("pay=1");
@@ -1321,7 +1213,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 		}
-		list.add("query=id:" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+		list.add("query=id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		return list;		
 	}
@@ -1340,7 +1232,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			String userToken = Communication.getMD5(password1);
 			list.add("userToken=" + userToken);
 		}
-		list.add("adId=" + detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID));
+		list.add("adId=" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		list.add("rt=1");
 		
 		return list;		
@@ -1522,7 +1414,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		this.mHolder = holder;
 	}
 	
-	private static List<String> getImageUrls(GoodsDetail goodDetail)
+	private static List<String> getImageUrls(Ad goodDetail)
 	{
 		List<String> listUrl = null;
 		
@@ -1619,7 +1511,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
 				baseActivity.startActivity(baseActivity.getIntent());
 			}
-			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).end();
+			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).end();
 		} else {
             Toast.makeText(getActivity(), "显示地图失败", 1).show();
         }
@@ -1634,6 +1526,99 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
 		SimpleImageLoader.showImg(imageView, url, previousUrl, getActivity());
 		increaseImageCount(url, index);
+	}
+
+	@Override
+	public void onRequestComplete(int respCode, Object data) {
+
+		if(null != mHolder){
+			if(mHolder.onResult(respCode, mListLoader)){
+				onGotMore();
+			}else{
+				onNoMore();
+			}
+			
+			if(respCode == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
+				onLoadMoreFailed();
+			}
+		}else{
+			switch (respCode) {
+			case VadListLoader.MSG_FINISH_GET_FIRST:				 
+				AdList goodsList = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+				mListLoader.setGoodsList(goodsList);
+				if (goodsList == null || goodsList.getData().size() == 0) {
+					ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请稍后并重试！");
+				} else {
+					//QuanleimuApplication.getApplication().setListGoods(goodsList.getData());
+				}
+				mListLoader.setHasMore(true);
+				notifyPageDataChange(true);
+				break;
+			case VadListLoader.MSG_NO_MORE:					
+				onNoMore();
+				
+				mListLoader.setHasMore(false);
+				notifyPageDataChange(false);
+				
+				break;
+			case VadListLoader.MSG_FINISH_GET_MORE:	
+				AdList goodsList1 = JsonUtil.getGoodsListFromJson(mListLoader.getLastJson());
+				if (goodsList1 == null || goodsList1.getData().size() == 0) {
+					ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_WARNING, "后面没有啦！");
+					
+					onNoMore();
+					
+					mListLoader.setHasMore(false);
+					notifyPageDataChange(false);
+				} else {
+					List<Ad> listCommonGoods =  goodsList1.getData();
+					for(int i=0;i<listCommonGoods.size();i++)
+					{
+						mListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
+					}
+					//QuanleimuApplication.getApplication().setListGoods(mListLoader.getGoodsList().getData());	
+					
+					mListLoader.setHasMore(true);
+					notifyPageDataChange(true);
+					onGotMore();
+				}
+				break;
+			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+				
+				onLoadMoreFailed();
+				
+				break;
+			}
+		}
+	}
+	
+	private void onGotMore() {
+		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
+		if (page != null)
+		{
+			page.postDelayed(new Runnable() {
+
+				@Override
+				public void run() {
+					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
+					page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
+					final Integer tag = (Integer)page.getTag();
+					if(tag != null){
+						initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
+					}
+				}
+				
+			}, 10);
+		}
+	}
+
+	private void onNoMore() {
+		View root = getView();
+		if (root != null)
+		{
+			ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
+		}
 	}
 	
 }

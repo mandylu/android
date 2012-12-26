@@ -7,7 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
@@ -24,11 +24,11 @@ public class PostLocationService implements BXRgcListener, GlobalDataManager.onL
 	
 	public void start(){
 		inreverse = false;
-		GlobalDataManager.getApplication().addLocationListener(this);
+		GlobalDataManager.getInstance().addLocationListener(this);
 	}
 	
 	public void stop(){
-		GlobalDataManager.getApplication().removeLocationListener(this);
+		GlobalDataManager.getInstance().removeLocationListener(this);
 	}
 	
 	public boolean retreiveLocation(String city, String addr){

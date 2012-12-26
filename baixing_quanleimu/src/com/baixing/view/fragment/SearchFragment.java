@@ -26,7 +26,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -289,7 +289,7 @@ public class SearchFragment extends BaseFragment {
 			List<String> parameters = new ArrayList<String>();
 			parameters.add("query="
 					+ URLEncoder.encode(SearchFragment.this.searchContent));
-		    parameters.add("cityEnglishName=" + URLEncoder.encode(GlobalDataManager.getApplication().getCityEnglishName()));
+		    parameters.add("cityEnglishName=" + URLEncoder.encode(GlobalDataManager.getInstance().getCityEnglishName()));
 			String apiUrl = Communication.getApiUrl(apiName, parameters);
 			try {
 				String json = Communication.getDataByUrl(apiUrl, true);

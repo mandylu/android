@@ -10,7 +10,7 @@ import java.util.List;
 import java.util.Set;
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
@@ -39,12 +39,12 @@ public class PostNetworkService implements ApiListener{
 	
 	public PostNetworkService(Handler handler){
 		this.handler = handler;
-		ApiClient.getInstance().init(GlobalDataManager.getApplication().getApplicationContext(),
-				Util.getDeviceUdid(GlobalDataManager.getApplication().getApplicationContext()), 
+		ApiClient.getInstance().init(GlobalDataManager.getInstance().getApplicationContext(),
+				Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), 
 				GlobalDataManager.version, 
 				GlobalDataManager.channelId,
-				GlobalDataManager.getApplication().cityEnglishName,
-				GlobalDataManager.getApplication());
+				GlobalDataManager.getInstance().cityEnglishName,
+				GlobalDataManager.getInstance().getNetworkCacheManager());
 	}
 	
 	public void retreiveMetaAsync(String cityEnglishName, String categoryEnglishName){
@@ -53,7 +53,7 @@ public class PostNetworkService implements ApiListener{
 		category = categoryEnglishName;
 		ApiParams param = new ApiParams();
 		param.addParam("categoryEnglishName", categoryEnglishName);
-		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getApplication().cityEnglishName : cityEnglishName));
+		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().cityEnglishName : cityEnglishName));
 		ApiClient.getInstance().remoteCall(apiName, param, this);
 	}
 	
@@ -69,7 +69,7 @@ public class PostNetworkService implements ApiListener{
 		}
 
 		String apiName = editMode ? "ad_update" : "ad_add";
-		UserBean user = Util.getCurrentUser();
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		boolean registered = (user != null && user.getPhone() != null && !user.getPhone().equals(""));
 		ApiParams apiParam = new ApiParams();
 		if(mustParams != null){
@@ -205,7 +205,7 @@ public class PostNetworkService implements ApiListener{
 				sendMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				return;
 			}
-			Util.saveJsonAndTimestampToLocate(GlobalDataManager.getApplication().getApplicationContext(), 
+			Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), 
 					category + city, rawData, System.currentTimeMillis()/1000);
 			sendMessage(PostCommonValues.MSG_GET_META_SUCCEED, pl);
 		} else {

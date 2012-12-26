@@ -19,7 +19,7 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;

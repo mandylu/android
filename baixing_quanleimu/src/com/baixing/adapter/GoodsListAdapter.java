@@ -31,8 +31,8 @@ import android.os.Handler;
 import android.graphics.Typeface;
 import android.database.DataSetObserver;
 
-import com.baixing.activity.GlobalDataManager;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
@@ -52,7 +52,7 @@ public class GoodsListAdapter extends BaseAdapter {
 	}
 	
 	private Context context;
-	private List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+	private List<Ad> list = new ArrayList<Ad>();
 	private List<GroupItem> groups  = new ArrayList<GoodsListAdapter.GroupItem>();
 	private boolean hasDelBtn = false;
 	private Bitmap defaultBk2;
@@ -113,11 +113,11 @@ public class GoodsListAdapter extends BaseAdapter {
 		hasDelBtn = has;
 	}
 
-	public List<GoodsDetail> getList() {
+	public List<Ad> getList() {
 		return list;
 	}
 
-	public void setList(List<GoodsDetail> list) {
+	public void setList(List<Ad> list) {
 		this.list = list;
 	}
 	
@@ -130,12 +130,12 @@ public class GoodsListAdapter extends BaseAdapter {
 		}
 	}
 	
-	public void setList(List<GoodsDetail> list, List<GroupItem> outerGroup) {
+	public void setList(List<Ad> list, List<GroupItem> outerGroup) {
 		this.list = list;
 		updateGroups(outerGroup);
 	}
 
-	public GoodsListAdapter(Context context, List<GoodsDetail> list, AdViewHistory adViewHistory) {
+	public GoodsListAdapter(Context context, List<Ad> list, AdViewHistory adViewHistory) {
 		super();
 		this.context = context;
 		this.list = list;
@@ -420,7 +420,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				}
 			}
 			
-			final GoodsDetail detailObj = list.get(position);
+			final Ad detailObj = list.get(position);
 			final boolean isValidMessage = this.isValidMessage(detailObj);
 			if (hasDelBtn) {
 				holder.operateView.setVisibility(View.VISIBLE);
@@ -446,10 +446,10 @@ public class GoodsListAdapter extends BaseAdapter {
 //			if(chars < title.length()){
 //				title = title.substring(0, chars);
 //			}
-			holder.tvDes.setText(detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE));
+			holder.tvDes.setText(detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE));
 //			holder.tvDes.setText(title);
 			holder.tvDes.setTypeface(null, Typeface.BOLD);
-			if (vadHistory != null && vadHistory.isReaded(detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)))
+			if (vadHistory != null && vadHistory.isReaded(detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)))
 			{
 				holder.tvDes.setTextColor(context.getResources().getColor(R.color.vad_meta_label));
 			}	
@@ -458,7 +458,7 @@ public class GoodsListAdapter extends BaseAdapter {
 				holder.tvDes.setTextColor(context.getResources().getColor(R.color.common_black));
 			}
 			
-			String dateV = detailObj.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_DATE);
+			String dateV = detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DATE);
 			if(dateV != null && !dateV.equals(""))
 			{
 				Date date = new Date(Long.parseLong(dateV) * 1000);
@@ -472,7 +472,7 @@ public class GoodsListAdapter extends BaseAdapter {
 			}
 			
 			
-			String areaV = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_AREANAME);
+			String areaV = list.get(position).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
 			if(areaV != null && !areaV.equals(""))
 			{
 				holder.tvDateAndAddress.setText(areaV);
@@ -514,7 +514,7 @@ public class GoodsListAdapter extends BaseAdapter {
 		
 	}
 	
-	private boolean isValidMessage(GoodsDetail detail)
+	private boolean isValidMessage(Ad detail)
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
 	}

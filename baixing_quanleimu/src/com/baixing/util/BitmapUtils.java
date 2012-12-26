@@ -36,7 +36,7 @@ import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
 import java.io.InputStream;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 
 /**
  * Class containing some static utility methods.
@@ -198,7 +198,7 @@ public class BitmapUtils {
 			rc.width = 200;
 			rc.height = 200;
 			WindowManager wm = 
-					(WindowManager)GlobalDataManager.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			
@@ -227,7 +227,7 @@ public class BitmapUtils {
 			rc.width = 200;
 			rc.height = 200;
 			WindowManager wm = 
-					(WindowManager)GlobalDataManager.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
 			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			

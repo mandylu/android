@@ -18,9 +18,9 @@ import com.baixing.adapter.VadListAdapter;
 import com.baixing.adapter.VadListAdapter.GroupItem;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.entity.values;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.view.fragment.MultiLevelSelectionFragment;
 import com.baixing.view.fragment.PostParamsHolder;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
@@ -44,7 +44,7 @@ public class FilterUtil {
 		
 	}
 	
-	public static List<VadListAdapter.GroupItem> createFilterGroup(List<Filterss> fss, PostParamsHolder paramsHolder, List<GoodsDetail> list)
+	public static List<VadListAdapter.GroupItem> createFilterGroup(List<Filterss> fss, PostParamsHolder paramsHolder, List<Ad> list)
 	{
 		final int skipCount = 3;//FIXME: define a field..
 		if (list == null || list.size() == 0 || fss == null)
@@ -94,9 +94,9 @@ public class FilterUtil {
 		return groups;
 	}
 	
-	public static List<VadListAdapter.GroupItem> createDistanceGroup(List<GoodsDetail> ls, BXLocation currentLocation, int[] conditions)
+	public static List<VadListAdapter.GroupItem> createDistanceGroup(List<Ad> ls, BXLocation currentLocation, int[] conditions)
 	{
-		List<GoodsDetail> detailList = new ArrayList<GoodsDetail>();
+		List<Ad> detailList = new ArrayList<Ad>();
 		detailList.addAll(ls);
 		List<VadListAdapter.GroupItem> groups = new ArrayList<VadListAdapter.GroupItem>();
 		
@@ -106,8 +106,8 @@ public class FilterUtil {
 			for (int j=0; j<detailList.size();)
 			{
 				float results[] = {0.0f, 0.0f, 0.0f};
-				String lat = detailList.get(j).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-				String lon = detailList.get(j).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+				String lat = detailList.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+				String lon = detailList.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
 				
 				double latD = 0;
 				double lonD = 0;

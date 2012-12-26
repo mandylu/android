@@ -26,6 +26,7 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -256,7 +257,7 @@ public abstract class BaseFragment extends Fragment {
 			options.remove(excludeMenus[i]);
 		}
 				
-		if (Util.isUserLogin())
+		if (GlobalDataManager.getInstance().getAccountManager().isUserLogin())
 		{
 			if (options.remove(OPTION_LOGIN))
 			{
@@ -670,7 +671,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final Context getAppContext()
 	{
-		return GlobalDataManager.getApplication().getApplicationContext();
+		return GlobalDataManager.getInstance().getApplicationContext();
 	}
 	
 	protected void logCreateView(Bundle bundle)

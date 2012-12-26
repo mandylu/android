@@ -9,8 +9,8 @@ import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.TextView;
-import com.baixing.activity.GlobalDataManager;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.view.fragment.MultiLevelSelectionFragment;
 import com.baixing.view.fragment.PostParamsHolder;
@@ -21,7 +21,7 @@ public class PostUtil{
 	public static final int HASH_CONTROL = "control".hashCode();
 	static final private String STRING_DETAIL_POSITION = "具体地点";
 	static final private String STRING_DESCRIPTION = "description";
-	public static String getDisplayValue(PostGoodsBean bean, GoodsDetail detail, String detailKey){
+	public static String getDisplayValue(PostGoodsBean bean, Ad detail, String detailKey){
 		if(bean == null || detail == null || detailKey == null || detailKey.equals(""))return "";
 		String value = detail.getValueByKey(detailKey);
 		String displayValue = "";
@@ -205,7 +205,7 @@ public class PostUtil{
 
 			if(postBean.getName().equals(STRING_DESCRIPTION))//description is builtin keyword
 			{
-				String personalMark = GlobalDataManager.getApplication().getPersonMark();
+				String personalMark = GlobalDataManager.getInstance().getPersonMark();
 				if(personalMark != null && personalMark.length() > 0){
 					personalMark = "\n\n" + personalMark;
 					descriptionEt.setText(personalMark);

@@ -18,8 +18,8 @@ import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filters;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.entity.HotData;
 import com.baixing.entity.HotList;
 import com.baixing.entity.ImageList;
@@ -255,10 +255,10 @@ public class JsonUtil {
 		return listHot;
 	}
 
-	public static GoodsList getGoodsListFromJsonByJackson(String jsonData){
+	public static AdList getGoodsListFromJsonByJackson(String jsonData){
 		JsonFactory factory = new JsonFactory();
-		GoodsList goodsList = new GoodsList();
-		List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+		AdList goodsList = new AdList();
+		List<Ad> list = new ArrayList<Ad>();
 		try{
 			JsonParser parser = factory.createJsonParser(jsonData);
 			while (parser.nextToken() != JsonToken.END_OBJECT) {
@@ -270,7 +270,7 @@ public class JsonUtil {
 					while(jt != JsonToken.END_ARRAY){
 						jt = parser.nextToken();///start_object
 						
-						GoodsDetail detail = new GoodsDetail();
+						Ad detail = new Ad();
 						while(jt != JsonToken.END_OBJECT){
 							String fname = parser.getCurrentName();
 							if(fname == null){
@@ -386,7 +386,7 @@ public class JsonUtil {
 	}
 
 	// 获取附近的Goods信息
-	public static GoodsList getGoodsListFromJson(String jsonData) {
+	public static AdList getGoodsListFromJson(String jsonData) {
 		return getGoodsListFromJsonByJackson(jsonData);
 	}
 

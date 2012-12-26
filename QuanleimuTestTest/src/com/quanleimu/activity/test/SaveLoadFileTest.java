@@ -9,9 +9,9 @@ import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Util;
 
@@ -143,19 +143,19 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		final String fileName = System.currentTimeMillis()+ "";
 		
 		final int count = 5;
-		GoodsDetail[] detail = new GoodsDetail[count];
+		Ad[] detail = new Ad[count];
 		for (int i=0; i<count; i++)
 		{
-			detail[i] = new GoodsDetail();
+			detail[i] = new Ad();
 			detail[i].setDistance(i);
-			GlobalDataManager.getApplication().addFav(detail[i]);
+			GlobalDataManager.getInstance().addFav(detail[i]);
 		}
 
-		List<GoodsDetail> list = GlobalDataManager.getApplication().getListMyStore();
+		List<Ad> list = GlobalDataManager.getInstance().getListMyStore();
 		assertEquals(count, list.size());
 		Util.saveDataToLocate(getContext(), fileName, list);
 		
-		GoodsDetail[] result = (GoodsDetail[]) Util.loadDataFromLocate(getContext(), fileName, GoodsDetail[].class);
+		Ad[] result = (Ad[]) Util.loadDataFromLocate(getContext(), fileName, Ad[].class);
 		assertEquals(count, result.length);
 		for (int i=0; i<count;i++)
 		{

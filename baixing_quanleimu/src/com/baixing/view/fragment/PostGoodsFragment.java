@@ -8,6 +8,8 @@ import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+
+import android.accounts.AccountManager;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
@@ -38,7 +40,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
@@ -156,12 +158,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			imgSelDlg.setMsgOutHandler(handler);
 		}
 		
-		String appPhone = GlobalDataManager.getApplication().getPhoneNumber();
+		String appPhone = GlobalDataManager.getInstance().getPhoneNumber();
 		if(!editMode && (appPhone == null || appPhone.length() == 0)){
-			UserBean user = Util.getCurrentUser();
+			UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
 				String mobile = user.getPhone();
-				GlobalDataManager.getApplication().setPhoneNumber(mobile);
+				GlobalDataManager.getInstance().setPhoneNumber(mobile);
 			}
 		}
 		
@@ -287,7 +289,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	protected String getCityEnglishName(){
-		return GlobalDataManager.getApplication().cityEnglishName;
+		return GlobalDataManager.getInstance().cityEnglishName;
 	}
 	
 	private void showPost(){
@@ -367,11 +369,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private void setPhoneAndAddress(){
 		String phone = params.getData("contact");
 		if(phone != null && phone.length() > 0 && !editMode){
-			GlobalDataManager.getApplication().setPhoneNumber(phone);
+			GlobalDataManager.getInstance().setPhoneNumber(phone);
 		}
 		String address = params.getData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(address != null && address.length() > 0){
-			GlobalDataManager.getApplication().setAddress(address);
+			GlobalDataManager.getInstance().setAddress(address);
 		}		
 	}
 	
@@ -387,7 +389,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 			this.showSimpleProgress();
-			postLBS.retreiveLocation(GlobalDataManager.getApplication().cityName, getFilledLocation());			
+			postLBS.retreiveLocation(GlobalDataManager.getInstance().cityName, getFilledLocation());			
 		}
 	}
 
@@ -440,7 +442,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", GlobalDataManager.getApplication().cityEnglishName);
+		list.put("cityEnglishName", GlobalDataManager.getInstance().cityEnglishName);
 		
 		HashMap<String, String> mapParams = new HashMap<String, String>();
 		Iterator<String> ite = params.keyIterator();
@@ -602,7 +604,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 
 	private void appendBeanToLayout(PostGoodsBean postBean){
-		UserBean user = Util.getCurrentUser();
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if (postBean.getName().equals("contact") &&
 			(postBean.getValues() == null || postBean.getValues().isEmpty()) &&
 			(user != null && user.getPhone() != null && user.getPhone().length() > 0)){
@@ -625,14 +627,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
 			locationView = layout;
 			
-			String address = GlobalDataManager.getApplication().getAddress();
+			String address = GlobalDataManager.getInstance().getAddress();
 			if(address != null && address.length() > 0){
 				((TextView)layout.findViewById(R.id.postinput)).setText(address);
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(PostUtil.HASH_CONTROL));
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-			String phone = GlobalDataManager.getApplication().getPhoneNumber();
+			String phone = GlobalDataManager.getInstance().getPhoneNumber();
 			if(editMode){
 				etContact.setText(getAdContact());
 			}else{
@@ -998,7 +1000,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						if(editMode){
 							((TextView)control).setText(getAdContact());
 						}else{
-							String phone = GlobalDataManager.getApplication().getPhoneNumber();
+							String phone = GlobalDataManager.getInstance().getPhoneNumber();
 							if(phone != null && phone.length() > 0){
 								((TextView)control).setText(phone);
 								continue;

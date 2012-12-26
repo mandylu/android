@@ -29,12 +29,12 @@ import android.widget.ProgressBar;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
@@ -57,7 +57,7 @@ import com.quanleimu.activity.R;
 
 import com.baixing.android.api.ApiParams;
 
-public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener {
+public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadListLoader.Callback {
 
 	public static final int MSG_UPDATE_FILTER = 1000;
 	
@@ -141,7 +141,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		{
 			filterParamHolder = new PostParamsHolder();
 			getArguments().putSerializable("filterResult", filterParamHolder);
-			filterParamHolder.put("cityEnglishName", GlobalDataManager.getApplication().getCityEnglishName(), GlobalDataManager.getApplication().getCityEnglishName());
+			filterParamHolder.put("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName(), GlobalDataManager.getInstance().getCityEnglishName());
 			filterParamHolder.put("categoryEnglishName", categoryEnglishName, categoryEnglishName);
 			filterParamHolder.put("status", "" + 0, "" + 0);
 			if (searchContent != null)
@@ -150,7 +150,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			}
 		}
 		
-		goodsListLoader = new VadListLoader(getSearchParams(), handler, null, new GoodsList());
+		goodsListLoader = new VadListLoader(getSearchParams(), this, null, new AdList());
 	}
 	
 	@Override
@@ -171,7 +171,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.end();
 		}
-		goodsListLoader.setHandler(handler);
+		goodsListLoader.setCallback(this);
 	}
 	
 	@Override
@@ -186,7 +186,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 		else
 		{
-			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<GoodsDetail>(), AdViewHistory.getInstance());
+			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<Ad>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 			mRefreshUsingLocal = true;
@@ -200,7 +200,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 									getActivity(),
 									"saveFilterss"
 									+ categoryEnglishName
-									+ GlobalDataManager.getApplication().cityEnglishName);
+									+ GlobalDataManager.getInstance().cityEnglishName);
 			String json = pair.second;
 			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
@@ -231,14 +231,14 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getApplication().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getInstance().cityEnglishName);
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+GlobalDataManager.getApplication().cityEnglishName, 
+							"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().cityEnglishName, 
 							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();
@@ -311,7 +311,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		lvGoodsList.setOnScrollListener(this);
 
 	
-		curLocation = GlobalDataManager.getApplication().getCurrentPosition(true);
+		curLocation = GlobalDataManager.getInstance().getCurrentPosition(true);
 		if(curLocation == null && isSerchNearBy()){
 			filterParamHolder.remove("地区_s");
 		}
@@ -345,7 +345,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		String categoryName = getArguments().getString("categoryName");
 		if(categoryName == null || categoryName.equals("")){
 			if(categoryEnglishName != null){
-				categoryName = GlobalDataManager.getApplication().queryCategoryDisplayName(categoryEnglishName);
+				categoryName = GlobalDataManager.getInstance().queryCategoryDisplayName(categoryEnglishName);
 				if(categoryName != null) getArguments().putString("categoryName", categoryName);
 			}
 		}
@@ -373,15 +373,15 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 		this.lvGoodsList = null;
 //		this.adapter = null;
-		GoodsList goodData = this.goodsListLoader.getGoodsList();
+		AdList goodData = this.goodsListLoader.getGoodsList();
 		this.goodsListLoader.reset();
 		this.goodsListLoader = null;
 		
 		if(goodData != null){
-			 List<GoodsDetail> list = goodData.getData();
+			 List<Ad> list = goodData.getData();
 			 if(list != null){
 				 for(int i = 0; i < list.size(); ++ i){
-					 GoodsDetail gd = list.get(i);
+					 Ad gd = list.get(i);
 					 if(gd != null){
 						 ImageList il = gd.getImageList();
 						 if(il != null){
@@ -461,7 +461,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		mRefreshUsingLocal = false;
 	}
 
-	private void updateData(VadListAdapter adapter, List<GoodsDetail> data)
+	private void updateData(VadListAdapter adapter, List<Ad> data)
 	{
 		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(data, this.curLocation, new int[] {500, 1500}) : 
 			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
@@ -482,7 +482,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			break;
 		case VadListLoader.MSG_FINISH_GET_FIRST:
 			if(goodsListLoader == null) break;
-			GoodsList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
+			AdList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			goodsListLoader.setGoodsList(goodsList);
 
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
@@ -491,7 +491,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
 				{
-					adapter.setList(new ArrayList<GoodsDetail>());
+					adapter.setList(new ArrayList<Ad>());
 					adapter.updateGroups(null);
 					adapter.notifyDataSetChanged();
 				}
@@ -552,7 +552,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 			
-			GoodsList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
+			AdList moreGoodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			if (moreGoodsList == null || moreGoodsList.getData() == null || moreGoodsList.getData().size() == 0) {
 //				Message msg2 = Message.obtain();
 //				msg2.what = ErrorHandler.ERROR_COMMON_WARNING;
@@ -564,7 +564,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				lvGoodsList.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
 				goodsListLoader.setHasMore(false);
 			} else {
-				List<GoodsDetail> listCommonGoods =  moreGoodsList.getData();
+				List<Ad> listCommonGoods =  moreGoodsList.getData();
 				for(int i=0;i<listCommonGoods.size();i++)
 				{
 					goodsListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
@@ -756,6 +756,11 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			goodsListLoader.setParams(getSearchParams());
 			goodsListLoader.setRuntime(false);
 		}
+	}
+
+	@Override
+	public void onRequestComplete(int respCode, Object data) {
+		this.sendMessage(respCode, data);
 	}
 
 }

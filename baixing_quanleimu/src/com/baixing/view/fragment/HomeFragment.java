@@ -17,7 +17,7 @@ import android.view.ViewGroup;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
@@ -146,13 +146,13 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 //		TrackConfig.getInstance().getConfig();//获取config
 		Tracker.getInstance().pv(this.pv).end();
 		
-		String cityName = GlobalDataManager.getApplication().getCityName();
+		String cityName = GlobalDataManager.getInstance().getCityName();
 		if (null == cityName || "".equals(cityName)) {
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{
 			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
-			titleLabel.setText(GlobalDataManager.getApplication().getCityName());			
+			titleLabel.setText(GlobalDataManager.getInstance().getCityName());			
 		}
 	}
 	@Override
@@ -203,7 +203,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	public void onItemClick(GridInfo info, int index) {	
 //		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 //				.getListFirst();
-		List<Category> allCates = GlobalDataManager.getApplication().getFirstLevelCategory();
+		List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
 		if (allCates == null || allCates.size() == 0)
 			return;
 		if (info == null)

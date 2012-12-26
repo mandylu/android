@@ -1,13 +1,13 @@
+//liuchong@baixing.com
 package com.baixing.entity;
 
 import java.io.Serializable;
-import java.net.URLDecoder;
 import java.util.Set;
 import java.util.ArrayList;
 import java.util.HashMap;
 
 import com.fasterxml.jackson.annotation.JsonIgnore;
-public class GoodsDetail implements Serializable{
+public class Ad implements Serializable{
 	
 	/**
 	 * 序列化
@@ -179,9 +179,9 @@ public class GoodsDetail implements Serializable{
 	
 	@Override
 	public boolean equals (Object o){
-		if(o instanceof GoodsDetail){
+		if(o instanceof Ad){
 			String idOfthis = getValueByKey(EDATAKEYS.EDATAKEYS_ID);
-			String idOfo = ((GoodsDetail)o).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+			String idOfo = ((Ad)o).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 			boolean bRet = idOfthis.equals(idOfo);
 			
 			return bRet;

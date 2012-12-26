@@ -17,7 +17,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
@@ -82,7 +82,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		this.getArguments();
-		user = Util.getCurrentUser();
+		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		if (savedInstanceState != null)
@@ -95,13 +95,13 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 
 	@Override
 	public void onStackTop(boolean isBack) {
-		String cityName = GlobalDataManager.getApplication().getCityName();
+		String cityName = GlobalDataManager.getInstance().getCityName();
 		if (null == cityName || "".equals(cityName)) {
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{
 			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
-			titleLabel.setText(GlobalDataManager.getApplication().getCityName());			
+			titleLabel.setText(GlobalDataManager.getInstance().getCityName());			
 		}
 	}
 	@Override
@@ -163,7 +163,7 @@ public class PersonalInfoFragment extends BaseFragment implements View.OnClickLi
 	public void onResume() {
 		super.onResume();
 		this.pv = PV.MY;
-		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, Util.isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
+		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, GlobalDataManager.getInstance().getAccountManager().isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
 	}
 	
 	

@@ -3,10 +3,10 @@ package com.baixing.broadcast.push;
 
 import org.json.JSONObject;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.BXNotificationService;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import android.util.Log;

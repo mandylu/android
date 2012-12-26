@@ -1,5 +1,5 @@
 //liuchong@baixing.com
-package com.baixing.activity;
+package com.baixing.data;
 
 import java.lang.ref.WeakReference;
 
@@ -27,7 +27,7 @@ import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.imageCache.LazyImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
@@ -40,7 +40,7 @@ import com.baixing.util.Util;
 
 import com.baixing.android.api.ApiClient;
 
-public class GlobalDataManager implements LocationService.BXLocationServiceListener, Observer, ApiClient.CacheProxy {
+public class GlobalDataManager implements LocationService.BXLocationServiceListener, Observer{
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String version="";
@@ -51,50 +51,14 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	private static boolean textMode = false;
 	private static boolean needNotifiySwitchMode = true;
 	private static SharedPreferences preferences = null;
-	private static BXDatabaseHelper dbManager = null;
-	private static GlobalDataManager mDemoApp = null;
+	private static GlobalDataManager instance = null;
 	private static int lastDestoryInstanceHash = 0;
 	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
     
-    protected static final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
-    
-    static {
-    	/**
-    	 * do IO on network request will prolong user's time waiting network. This thread do simple IO work on a separate thread.
-    	 */
-    	Thread t = new Thread(new Runnable() {
-			
-			public void run() {
-				while(true) {
-					Pair<String, String> item = null;
-					synchronized (storeList) {
-						if (storeList.size() > 0)
-						{
-							item = storeList.remove(0);
-						}
-						else
-						{
-							try {
-								storeList.wait(5 * 60 * 1000);
-//								Log.d("QLMAPP", "wakeup to handle store");
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-					if (item != null)
-					{
-//						Log.d("QLMAPP", "oh yeah, store it.");
-						storeCacheNetworkRequest(item.first, item.second);
-					}
-				}
-			}
-		});
-    	t.start();
-    }
+    private AccountManager accountManager;
+    private NetworkCacheManager networkCache;
     
     public static final LazyImageLoader getImageLoader()
     {
@@ -106,80 +70,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
     	return lazyImageLoader;
     }
     
-    
 
-	public static String getCacheNetworkRequest(String request){
-		
-		request = Util.extractUrlWithoutSecret(request);
-		synchronized(dbManager){
-			String response = null;
-			SQLiteDatabase db = null;
-			try{
-				db = dbManager.getReadableDatabase();
-				
-				Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
-				
-				while(c.moveToNext()){
-					int index = c.getColumnIndex("response");
-					if(index >= 0){
-						response = c.getString(index);
-						break;
-					}
-				}
-				c.close();
-			}catch(SQLException e){
-				e.printStackTrace();
-			}catch(Throwable e){
-				e.printStackTrace();
-			}
-			if(db != null){
-				db.close();
-			}
-			return response;
-		}
-		
-	}
-	
-	public static void deleteOldRecorders(int intervalInSec){
-		SQLiteDatabase db = null;
-		try{
-			db = dbManager.getWritableDatabase();
-			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME + " WHERE timestamp<?", new String[]{String.valueOf(System.currentTimeMillis()/1000 - intervalInSec)});
-			
-		}catch(SQLException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		if(db != null){
-			db.close();
-		}
-	}
-
-	public static void putCacheNetworkRequest(String request, String result){
-		request = Util.extractUrlWithoutSecret(request);
-		synchronized (storeList) {
-			storeList.add(Pair.create(request, result));
-			storeList.notifyAll();
-		}
-	}
-	
-	private static void storeCacheNetworkRequest(String request, String result){
-		synchronized(dbManager){
-			SQLiteDatabase db = null; 
-			try{
-				db = dbManager.getWritableDatabase();
-				String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-				db.execSQL("insert into " + BXDatabaseHelper.TABLENAME + "(url, response, timestamp) values(?,?,?)", new String[]{request, result, timestamp});
-			}catch(SQLException e){
-				e.printStackTrace();
-			}
-			if(db != null){
-				db.close();
-			}
-		}
-	}
-	
 	public static void setTextMode(boolean tMode){
 		GlobalDataManager.textMode = tMode;
 		GlobalDataManager.needNotifiySwitchMode = false;
@@ -206,12 +97,12 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	}
 	
 	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
-	public List<GoodsDetail> listLookHistory = new ArrayList<GoodsDetail>();
-	public List<GoodsDetail> getListLookHistory() {
+	public List<Ad> listLookHistory = new ArrayList<Ad>();
+	public List<Ad> getListLookHistory() {
 		return listLookHistory;
 	}
 
-	public List<GoodsDetail> getListMyStore() {
+	public List<Ad> getListMyStore() {
 		return listMyStore;
 	}
 	
@@ -223,11 +114,11 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 	}
 	
-	public List<GoodsDetail> addFav(GoodsDetail detail)
+	public List<Ad> addFav(Ad detail)
 	{
 		if (this.listMyStore == null)
 		{
-			this.listMyStore = new ArrayList<GoodsDetail>();
+			this.listMyStore = new ArrayList<Ad>();
 		}
 		
 		this.listMyStore.add(0, detail);
@@ -235,20 +126,20 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return this.listMyStore;
 	}
 	
-	public boolean isFav(GoodsDetail detail) {
+	public boolean isFav(Ad detail) {
 		if(detail == null) return false;
-		List<GoodsDetail> myStore = GlobalDataManager.getApplication().getListMyStore();
+		List<Ad> myStore = GlobalDataManager.getInstance().getListMyStore();
 		if(myStore == null) return false;
 		for(int i = 0; i < myStore.size(); ++ i){
-			if(myStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))){
+			if(myStore.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+					.equals(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))){
 				return true;
 			}
 		}
 		return false;
 	}
 	
-	public List<GoodsDetail> removeFav(GoodsDetail detail)
+	public List<Ad> removeFav(Ad detail)
 	{
 		if (this.listMyStore == null || detail == null)
 		{
@@ -256,8 +147,8 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 		
 		for (int i = 0; i < listMyStore.size(); i++) {
-			if (detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
-					.equals(listMyStore.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID))) {
+			if (detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+					.equals(listMyStore.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))) {
 				listMyStore.remove(i);
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_REMOVE, detail);
 				break;
@@ -267,9 +158,9 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return this.listMyStore;
 	}
 	
-	public void updateFav(List<GoodsDetail> favs)
+	public void updateFav(List<Ad> favs)
 	{
-		this.listMyStore = new ArrayList<GoodsDetail>();
+		this.listMyStore = new ArrayList<Ad>();
 		
 		if (favs != null)
 		{
@@ -280,13 +171,13 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 	}
 
-	private void updateFav(GoodsDetail[] list) {
-		this.listMyStore = new ArrayList<GoodsDetail>();
+	private void updateFav(Ad[] list) {
+		this.listMyStore = new ArrayList<Ad>();
 
 		if (list != null)
 		{
 			int i=0;
-			for (GoodsDetail item : list)
+			for (Ad item : list)
 			{
 				this.listMyStore.add(item);
 				i++;
@@ -300,16 +191,16 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	}
 
 	//我的发布信息
-	public List<GoodsDetail> listMyPost = null;
+	public List<Ad> listMyPost = null;
 	
-	public List<GoodsDetail> getListMyPost() {
+	public List<Ad> getListMyPost() {
 		return listMyPost;
 	}
 	
 	public boolean isMyAd(String adId) {
 		if(null != listMyPost && null != adId){
 			for(int i = 0; i < listMyPost.size(); ++ i){
-				if(listMyPost.get(i).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)
+				if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
 						.equals(adId)){
 					return true;
 				}
@@ -318,12 +209,12 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return false;
 	}
 
-	public void setListMyPost(List<GoodsDetail> listMyPost) {
+	public void setListMyPost(List<Ad> listMyPost) {
 		this.listMyPost = listMyPost;
 	}
 
 	//我的收藏数据集合
-	private List<GoodsDetail> listMyStore = new ArrayList<GoodsDetail>();
+	private List<Ad> listMyStore = new ArrayList<Ad>();
 	
 
 	//搜索记录
@@ -383,29 +274,29 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		if (cityList == null || cityList.getListDetails() == null
 				|| cityList.getListDetails().size() == 0) {
 		} else {
-			GlobalDataManager.getApplication().setListCityDetails(cityList.getListDetails());
+			GlobalDataManager.getInstance().setListCityDetails(cityList.getListDetails());
 			
 			//update current city name
 			byte[] cityData = Util.loadData(getApplicationContext(), "cityName");
 			String cityName = cityData == null ? null : new String(cityData); //(String) Util.loadDataFromLocate(getApplicationContext(), "cityName", String.class);
 			if (cityName == null || cityName.equals("")) {
 			} else {
-				List<CityDetail> cityDetails = GlobalDataManager.getApplication().getListCityDetails();
+				List<CityDetail> cityDetails = GlobalDataManager.getInstance().getListCityDetails();
 				boolean exist = false;
 				for(int i = 0;i< cityDetails.size();i++)
 				{
 					if(cityName.equals(cityDetails.get(i).getName()))
 					{
 						String englishCityName = cityDetails.get(i).getEnglishName();
-						GlobalDataManager.getApplication().setCityEnglishName(englishCityName);
-						GlobalDataManager.getApplication().setCityName(cityName);
+						GlobalDataManager.getInstance().setCityEnglishName(englishCityName);
+						GlobalDataManager.getInstance().setCityName(cityName);
 						exist = true;
 						break;
 					}
 				}
 				if (!exist) { // FIXME: @zhongjiawu
-					GlobalDataManager.getApplication().setCityEnglishName("shanghai");
-					GlobalDataManager.getApplication().setCityName("上海");
+					GlobalDataManager.getInstance().setCityEnglishName("shanghai");
+					GlobalDataManager.getInstance().setCityName("上海");
 				}
 			}
 		}
@@ -605,11 +496,11 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	
 	static public void resetApplication()
 	{
-		if (mDemoApp != null)
+		if (instance != null)
 		{
-			lastDestoryInstanceHash = mDemoApp.hashCode();
+			lastDestoryInstanceHash = instance.hashCode();
 		}
-		GlobalDataManager.mDemoApp = null;
+		GlobalDataManager.instance = null;
 	}
 	
 	static void initStaticFields()
@@ -622,19 +513,18 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return appHash !=0 && appHash == lastDestoryInstanceHash;
 	}
 
-	static public GlobalDataManager getApplication(){
+	static public GlobalDataManager getInstance(){
 		if(null == preferences){
 			preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
 			textMode = preferences.getBoolean("isTextMode", false);
 			needNotifiySwitchMode = preferences.getBoolean("needNotifyUser", true);
 		}
 		
-		if(mDemoApp == null){
-			mDemoApp = new GlobalDataManager();
+		if(instance == null){
+			instance = new GlobalDataManager();
 			if(context != null && context.get() != null){
-				dbManager = new BXDatabaseHelper(context.get(), "network.db", null, 1);
 				try{
-					PackageManager packageManager = GlobalDataManager.getApplication().getApplicationContext().getPackageManager();
+					PackageManager packageManager = GlobalDataManager.getInstance().getApplicationContext().getPackageManager();
 					ApplicationInfo ai = packageManager.getApplicationInfo(context.get().getPackageName(), PackageManager.GET_META_DATA);
 					channelId = (String)ai.metaData.get("UMENG_CHANNEL");
 				}catch(Exception e){
@@ -642,36 +532,24 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 				}
 			}
 		}
-		return mDemoApp;
+		return instance;
 	}
 	
-	public GlobalDataManager(){
+	public AccountManager getAccountManager() {
+		return this.accountManager;
+	}
+	
+	public NetworkCacheManager getNetworkCacheManager() {
+		return this.networkCache;
+	}
+	
+	private GlobalDataManager(){
+		this.accountManager = new AccountManager();
+		this.networkCache = NetworkCacheManager.createInstance(context.get());
+		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	
-//	protected ErrorHandler handler;
-//	public void setErrorHandler(Context context){
-//		handler = new ErrorHandler(context);
-//	}
-//	public ErrorHandler getErrorHandler(){
-//		return handler;
-//	}
-	
-	
-	public void ClearCache(){
-		SQLiteDatabase db = dbManager.getWritableDatabase();
-		try{
-			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME, new String[]{});
-			
-		}catch(SQLException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		db.close();		
-	}
-	
 	
 	public Context getApplicationContext(){
 		return (GlobalDataManager.context == null || GlobalDataManager.context.get() == null) ? 
@@ -689,7 +567,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	public static class MyGeneralListener implements MKGeneralListener {
 		@Override
 		public void onGetNetworkState(int iError) {
-			Toast.makeText(GlobalDataManager.getApplication().getApplicationContext(),
+			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(),
 					"您的网络出错啦！", Toast.LENGTH_LONG).show();
 		}
 
@@ -697,10 +575,10 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		public void onGetPermissionState(int iError) {
 			if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
 				// 授权Key错误：
-				Toast.makeText(GlobalDataManager.mDemoApp.getApplicationContext(),
+				Toast.makeText(GlobalDataManager.instance.getApplicationContext(),
 						"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
 						.show();
-				GlobalDataManager.mDemoApp.m_bKeyRight = false;
+				GlobalDataManager.instance.m_bKeyRight = false;
 			}
 		}
 
@@ -750,7 +628,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 				Context cxt = context.get();
 				if (cxt != null)
 				{
-					Util.refreshAndGetMyId(cxt);
+					accountManager.refreshAndGetMyId(cxt);
 				}
 			}
 		}
@@ -788,30 +666,22 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 			cityList = null;
 		} else {
 			cityList = JsonUtil.parseCityListFromJson((pair.second));
-			GlobalDataManager.getApplication().updateCityList(cityList);
+			GlobalDataManager.getInstance().updateCityList(cityList);
 		}
 	}
 	
 	public void loadPersonalSync(){
 		// 获取搜索记录
 		String[] objRemark = (String[]) Util.loadDataFromLocate(getApplicationContext(), "listRemark", String[].class);
-		GlobalDataManager.getApplication().updateRemark(objRemark);
+		GlobalDataManager.getInstance().updateRemark(objRemark);
 
-		GoodsDetail[] objStore = (GoodsDetail[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", GoodsDetail[].class);
-		GlobalDataManager.getApplication().updateFav(objStore);
+		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
+		GlobalDataManager.getInstance().updateFav(objStore);
 		
 		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
 		if(personalMark != null){
-			GlobalDataManager.getApplication().setPersonMark(new String(personalMark));
+			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
 		}
 
 	}
-	//from ApiClient.CacheProxy
-	public void onSave(String url, String jsonStr){
-		this.putCacheNetworkRequest(url, jsonStr);
-	}
-	public String onLoad(String url){
-		return this.getCacheNetworkRequest(url);		
-	}
-	
 }

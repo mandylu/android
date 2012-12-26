@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -171,7 +171,7 @@ public class RegisterFragment extends BaseFragment {
 					user.setId(usrId);
 					user.setPhone(accoutnEt.getText().toString());
 					user.setPassword(passwordEt.getText().toString());
-					GlobalDataManager.getApplication().setMobile(user.getPhone());
+					GlobalDataManager.getInstance().setMobile(user.getPhone());
 					Util.saveDataToLocate(activity, "user", user);
 					
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);

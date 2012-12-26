@@ -3,6 +3,7 @@ package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.ErrorHandler;
 
 import android.app.Application;

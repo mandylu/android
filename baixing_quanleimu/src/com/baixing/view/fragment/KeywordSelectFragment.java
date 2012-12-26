@@ -21,8 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
@@ -35,7 +35,7 @@ public class KeywordSelectFragment extends BaseFragment {
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		listRemark = GlobalDataManager.getApplication().getListRemark();
+		listRemark = GlobalDataManager.getInstance().getListRemark();
 	}
 
 	protected void initTitle(TitleDef title) {
@@ -126,7 +126,7 @@ public class KeywordSelectFragment extends BaseFragment {
 					finishFragment(requestCode, searchContent);
 				} else {
 					listRemark.clear();
-					GlobalDataManager.getApplication().updateRemark((String[])null);
+					GlobalDataManager.getInstance().updateRemark((String[])null);
 					lvSearchHistory.setVisibility(View.GONE);
 					tvClear.setVisibility(View.GONE);
 				}
@@ -138,7 +138,7 @@ public class KeywordSelectFragment extends BaseFragment {
 			@Override
 			public void onClick(View v) {
 				listRemark.clear();
-				GlobalDataManager.getApplication().updateRemark(listRemark.toArray(new String[listRemark.size()]));
+				GlobalDataManager.getInstance().updateRemark(listRemark.toArray(new String[listRemark.size()]));
 				lvSearchHistory.setVisibility(View.GONE);
 				v.setVisibility(View.GONE);
 
@@ -149,7 +149,7 @@ public class KeywordSelectFragment extends BaseFragment {
 			}
 		});
 
-		listRemark = GlobalDataManager.getApplication().getListRemark();
+		listRemark = GlobalDataManager.getInstance().getListRemark();
 		return rootV;
 	}
 	
@@ -234,7 +234,7 @@ public class KeywordSelectFragment extends BaseFragment {
 		}
 		listRemark.remove(searchContent);
 		listRemark.add(0, searchContent);
-		GlobalDataManager.getApplication().updateRemark(listRemark);
+		GlobalDataManager.getInstance().updateRemark(listRemark);
 		// 将搜索记录保存本地
 		Util.saveDataToLocate(getActivity(), "listRemark", listRemark);
 	}

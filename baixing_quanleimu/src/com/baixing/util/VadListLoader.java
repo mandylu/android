@@ -3,18 +3,16 @@ package com.baixing.util;
 
 import java.io.Serializable;
 
-import org.apache.http.client.HttpClient;
 import org.json.JSONObject;
 
-import android.os.Handler;
 import android.util.Log;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
-import com.baixing.entity.GoodsList;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.AdList;
 
 public class VadListLoader implements Serializable{
 	
@@ -27,21 +25,22 @@ public class VadListLoader implements Serializable{
 		public void onHasMoreStatusChanged();
 	};
 	
-	private GoodsList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
+	private AdList mGoodsList = null;//only an outlet here: set yours (if not set, we'll create one empty for you), and pass it out to others
 	private ApiParams params = null;
 	private String mFields = "";
 	private boolean mIsFirst = true;
 	private boolean mHasMore = true;
 	private int mCurIndex = 0;
 	private int mRows = 30;
-	private transient Handler mHandler = new Handler();
+//	private transient Handler mHandler = new Handler();
+	private transient Callback callback;
 	
 	private static String mApiName = "ad_list";
 	private static String mNearbyApiName = "ad_nearby";
 	
-	private static String mLastJson = null;
+	private String mLastJson = null; //Should this be static?
 	
-	private transient GetGoodsListThread mCurThread = null;
+	private transient GetListCommand currentCommand = null;
 	
 	private transient HasMoreListener hasMoreListener = null;
 	
@@ -60,16 +59,20 @@ public class VadListLoader implements Serializable{
 	public final static int MSG_EXCEPTION = 0xFFFFFFFF;
 	private boolean mRt = true;
 	
+	public static interface Callback {
+		public void onRequestComplete(final int respCode, Object data);
+	}
+	
 	public void reset(){
 		mGoodsList = null;
 		this.mLastJson = null;
-		this.mHandler = null;
+		this.callback = null;
 	}
 	
-	public VadListLoader(ApiParams params, Handler handler, String fields, GoodsList goodsList){
+	public VadListLoader(ApiParams params, Callback callback, String fields, AdList goodsList){
 		this.params = params;
-		
-		mHandler = handler;
+
+		this.callback = callback;
 		
 		if(null != fields){
 			mFields = fields;
@@ -80,17 +83,14 @@ public class VadListLoader implements Serializable{
 		}
 	}
 	
+	public void setCallback(Callback callback) {
+		this.callback = callback;
+	}
+	
 	public void setParams(ApiParams params){
 		this.params = params;
 	}
 	
-	public void setHandler(Handler handler){
-		if(mHandler != handler){
-			cancelFetching();
-			mHandler = handler;
-		}
-	}
-
 	public void setRows(int rows){
 		mRows = rows;
 	}
@@ -99,13 +99,13 @@ public class VadListLoader implements Serializable{
 		return mLastJson;
 	}
 	
-	public void setGoodsList(GoodsList list){
+	public void setGoodsList(AdList list){
 		mGoodsList = list;
 	}
 	
-	public GoodsList getGoodsList(){
+	public AdList getGoodsList(){
 		if(null ==  mGoodsList){
-			mGoodsList = new GoodsList();
+			mGoodsList = new AdList();
 		}
 		
 		return mGoodsList;
@@ -133,8 +133,8 @@ public class VadListLoader implements Serializable{
 	}
 	
 	public void cancelFetching(){
-		if(null != mCurThread){
-			mCurThread.cancel();
+		if(null != currentCommand){
+			currentCommand.cancel();
 		}
 	}
 	
@@ -162,8 +162,8 @@ public class VadListLoader implements Serializable{
 		
 		mIsFirst = isFirst;
 
-		mCurThread = new GetGoodsListThread(dataPolicy_, isNearby, isUserList);		
-		new Thread(mCurThread).start();	
+		currentCommand = new GetListCommand(dataPolicy_, isNearby, isUserList);		
+		currentCommand.run();
 	}	
 	
 	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, Communication.E_DATA_POLICY dataPolicy_){
@@ -172,9 +172,8 @@ public class VadListLoader implements Serializable{
 		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
-		mCurThread = new GetGoodsListThread(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby, isUserList);		
-		
-		new Thread(mCurThread).start();	
+		currentCommand = new GetListCommand(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby, isUserList);		
+		currentCommand.run();
 	}
 	
 	public void setRuntime(boolean rt){
@@ -187,29 +186,28 @@ public class VadListLoader implements Serializable{
 		this.isUserList = isUserList;
 	}
 	
-	class GetGoodsListThread implements Runnable, ApiListener {
+	class GetListCommand implements Runnable, ApiListener {
 		private int msgFirst = VadListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = VadListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = VadListLoader.MSG_NO_MORE;
 		private Communication.E_DATA_POLICY dataPolicy = Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL;
 		
 		private boolean mCancel = false;
-		private HttpClient mHttpClient = null;
 		private boolean isNearby = false;
 		private boolean isUserList = false;
 		
 		private void initApi(){
-			String udid = Util.getDeviceUdid(GlobalDataManager.getApplication().getApplicationContext());
+			String udid = Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext());
 			//FIXME: move following code to app entry
-			ApiClient.getInstance().init(GlobalDataManager.getApplication().getApplicationContext(),
+			ApiClient.getInstance().init(GlobalDataManager.getInstance().getApplicationContext(),
 					udid, 
 					GlobalDataManager.version, 
 					GlobalDataManager.channelId,
-					GlobalDataManager.getApplication().cityEnglishName,
-					GlobalDataManager.getApplication());
+					GlobalDataManager.getInstance().cityEnglishName,
+					GlobalDataManager.getInstance().getNetworkCacheManager());
 		}
 		
-		GetGoodsListThread(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
+		GetListCommand(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
@@ -217,7 +215,7 @@ public class VadListLoader implements Serializable{
 			initApi();
 		}
 		
-		GetGoodsListThread(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
+		GetListCommand(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
@@ -233,7 +231,7 @@ public class VadListLoader implements Serializable{
 		}
 		
 		private void exit(){
-			VadListLoader.this.mCurThread = null;
+			VadListLoader.this.currentCommand = null;
 		}
 		
 		private boolean wantedExists(ApiParams list){
@@ -288,13 +286,14 @@ public class VadListLoader implements Serializable{
 			mLastJson = rawData;
 			if (mLastJson != null && !mLastJson.equals("")) {
 				if (!mIsFirst) {
-					if(mHandler != null){
-						mHandler.sendEmptyMessage(msgMore);
+					if(callback != null){
+						callback.onRequestComplete(msgMore, mLastJson);
 					}
 				} else {
 					mIsFirst = false;
-					if(mHandler != null){
-						mHandler.sendEmptyMessage(msgFirst);
+					if(callback != null){
+//						mHandler.sendEmptyMessage(msgFirst);
+						callback.onRequestComplete(msgFirst, mLastJson);
 					}
 				}
 				
@@ -304,12 +303,12 @@ public class VadListLoader implements Serializable{
 														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	VadListLoader.this.mStatusListdataExisting;
 			} else {
 				if(!mIsFirst){
-					if(mHandler != null){
-						mHandler.sendEmptyMessage(msgNoMore);
+					if(callback != null){
+						callback.onRequestComplete(msgNoMore, null);
 					}
 				}else{
-					if(mHandler != null){
-						mHandler.sendEmptyMessage(MSG_FIRST_FAIL);
+					if(callback != null){
+						callback.onRequestComplete(MSG_FIRST_FAIL, null);
 					}
 				}
 			}
@@ -320,12 +319,11 @@ public class VadListLoader implements Serializable{
 		}
 		public void onException(Exception e){
 			if(!mCancel){
-				if(mHandler != null){
-					mHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				if(callback != null){
+					callback.onRequestComplete(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				}
 			}
 		}
 	}
-	
 	
 }

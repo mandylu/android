@@ -9,9 +9,9 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.os.Bundle;
 
-import com.baixing.activity.GlobalDataManager;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Version;
 import com.baixing.util.ViewUtil;
 
