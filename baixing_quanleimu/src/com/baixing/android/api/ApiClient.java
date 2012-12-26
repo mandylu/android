@@ -220,8 +220,14 @@ public class ApiClient {
 		}
 		this.unregisterListener(listener);
 		
-		JSONObject json = new JSONObject(jsonStr);
-		ApiError error = this.parseError(json);
+		JSONObject json = null;
+		ApiError error = null;
+		try{
+			json = new JSONObject(jsonStr);
+			error = this.parseError(json);
+		}catch(JSONException e){
+			
+		}
 		if (error != null) {// failed
 			Log.e(LOG_TAG, jsonStr);
 			listener.onError(error);

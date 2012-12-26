@@ -34,6 +34,10 @@ public class ApiParams implements Serializable {
 	public void addParam(String key,String value){
 		params.put(key, value);
 	}
+	
+	public void addAll(Map<String, String> all){
+		params.putAll(all);
+	}
 	/**
 	 * 获取已添加的业务参数
 	 * @param key

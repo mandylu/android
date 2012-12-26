@@ -551,7 +551,7 @@ public class PersonalPostFragment extends BaseFragment  implements PullToRefresh
                             Bundle args = createArguments(null, null);
                             args.putSerializable("goodsDetail", detail);
                             args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-                            pushFragment(new PostGoodsFragment(), args);
+							pushFragment(new EditAdFragment(), args);
                             Tracker.getInstance().event(BxEvent.SENT_EDIT)
                                     .append(Key.STATUS, Value.VALID)
                                     .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
