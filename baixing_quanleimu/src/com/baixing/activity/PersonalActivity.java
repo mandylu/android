@@ -5,8 +5,8 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.view.fragment.PersonalInfoFragment;
-import com.baixing.view.fragment.PersonalPostFragment;
+import com.baixing.view.fragment.MyAdFragment;
+import com.baixing.view.fragment.PersonalProfileFragment;
 import com.quanleimu.activity.R;
 
 public class PersonalActivity extends BaseTabActivity {
@@ -22,10 +22,10 @@ public class PersonalActivity extends BaseTabActivity {
 			Bundle extras = intent.getExtras();
 			if(extras != null){
 				if(this.getSupportFragmentManager().getBackStackEntryCount() > 1 
-						&& !(getCurrentFragment() instanceof PersonalPostFragment)){
-					pushFragment(new PersonalInfoFragment(), bundle, true);
+						&& !(getCurrentFragment() instanceof MyAdFragment)){
+					pushFragment(new PersonalProfileFragment(), bundle, true);
 				}
-				pushFragment(new PersonalPostFragment(), extras, false);
+				pushFragment(new MyAdFragment(), extras, false);
 			}		
 		}
 	}
@@ -36,7 +36,7 @@ public class PersonalActivity extends BaseTabActivity {
 		this.setContentView(R.layout.main_post);
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0){
-			pushFragment(new PersonalInfoFragment(), bundle, true);
+			pushFragment(new PersonalProfileFragment(), bundle, true);
 		}
 		Intent intent = getIntent();
 		

@@ -920,7 +920,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					
 					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
 					if(activity != null){							
-						args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+						args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
 						
 						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 						intent.putExtras(args);
@@ -943,7 +943,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	        							resetData(true);
 	        							showPost();
 	        							Bundle args = createArguments(null, null);
-	        							args.putInt(PersonalPostFragment.TYPE_KEY, PersonalPostFragment.TYPE_MYPOST);
+	        							args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
 	        							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 	        							intent.putExtras(args);
 	        							activity.sendBroadcast(intent);							

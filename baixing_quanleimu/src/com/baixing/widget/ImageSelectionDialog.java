@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 package com.baixing.widget;
 
 import java.io.File;
@@ -185,7 +186,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("index", "bitmap, onActivityResult");
 		pickDlgShown = false;
 		
 		if (resultCode == NONE) {
@@ -254,7 +254,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		
 		if(savedInstanceState != null){
 			currentImgView = savedInstanceState.getInt(KEY_CURRENT_IMGVIEW);
-    		Log.d("index", "bitmap:   onCreate: " + String.valueOf(currentImgView));
     		bundle = savedInstanceState.getBundle(KEY_BUNDLE);
     		Object[] container = (Object[])savedInstanceState.getSerializable(KEY_IMG_CONTAINER);
     		if(container != null){
@@ -281,10 +280,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public void onSaveInstanceState(Bundle outState){
 		super.onSaveInstanceState(outState);
 		if(outState != null){
-//			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
-//			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
 			outState.putInt(KEY_CURRENT_IMGVIEW, currentImgView);
-			Log.d("index", "bitmap:   onsave: " + String.valueOf(currentImgView));
 			outState.putBundle(KEY_BUNDLE, bundle);
 			outState.putSerializable(KEY_IMG_CONTAINER, imgContainer);
 		}
@@ -325,7 +321,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 	
 	private void setImageViews(View parent, boolean reUploadBitmap){
-		Log.d("index", "bitmap, setImageViews");
 		imgs = new ArrayList<ImageView>();
 		if(imgContainer.length == 0){
 	        ImageView iv = (ImageView)parent.findViewById(imgIds[0]);
@@ -371,7 +366,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 //   		imgs = new ArrayList<ImageView>(imgIds.length);
-		Log.d("index", "bitmap, onCreateDialog");
         Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_image_selection, null);
@@ -380,15 +374,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	v.findViewById(imgIds[i]).setOnClickListener(this);
         }
         v.findViewById(R.id.btn_finish_sel).setOnClickListener(this);
-        Log.d("index", "index, before setimageview, container count is:   " + imgContainer.length);
-        
-        for(int i = 0; i < imgContainer.length; ++ i){
-        	Log.d("bitmap", "bitmap container content:  " + imgContainer[i].status + "index:  " + i);
-        }
-        
         setImageViews(v, true);
-        Log.d("index", "index, after setimageview, count is:   " + imgs.size());
-        
         adjustImageLines();
         
         v.setOnClickListener(this);
@@ -623,7 +609,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			switch(msg.what){
 			case MSG_START_UPLOAD:{
-				Log.d("bitmap", "bitmap MSG_START_UPLOAD got");
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
 					imgs.get(index.intValue()).setImageResource(R.drawable.icon_post_loading);
@@ -635,7 +620,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				break;		
 			}
 			case MSG_FAIL_UPLOAD:{
-				Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got");
 				if (imgs != null){			
 					Integer index = (Integer) msg.obj;
 					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
@@ -643,7 +627,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 //					imgs.get(index.intValue()).setImageResource(R.drawable.f);
 					imgs.get(index).setClickable(true);
 					imgs.get(index.intValue()).invalidate();	
-					Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got, and invalidate");
 				}
 				break;			
 			}
@@ -654,8 +637,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				if (imgs != null){
 //					imgs.get(index).setImageBitmap(cachedBps.get(index));
 					Bitmap bmp = getThumbnailWithPath(imgContainer[index].thumbnailPath);
-					Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got, thumbnailpath:  " + imgContainer[index].thumbnailPath
-							+ "bitmap:   " + (bmp == null ? "" : bmp.toString()));
 					imgs.get(index).setImageBitmap(bmp);
 					imgs.get(index).setClickable(true);
 					imgs.get(index).invalidate();
@@ -798,9 +779,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					GlobalDataManager.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
 					GlobalDataManager.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
 					thumbnailPath = "thumbnail_" + path;
-					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
-				}else{
-					Log.d("bitmap", "bitmap  thumbnail is nullllllll");
 				}
 				currentIndex = adjustImgContainerAfterUpload(path, currentIndex, result, thumbnailPath);
 				if(currentIndex < 0) return;
@@ -810,10 +788,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	
 				if (result != null) {
 					if(handler == null) {
-						Log.d("bitmap", "bitmap, handler is nullllll");
 						return;
 					}
-					Log.d("index", "bitmap, handler is NOTTTT nullllll  " + handler.toString());
 					Message msg = Message.obtain();
 					msg.what = MSG_SUCCEED_UPLOAD;
 					msg.obj = currentIndex;
@@ -831,7 +807,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
 				}
 			}else{
-				Log.d("bitmap", "bitmap is nullllllll");
 				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
 			}
 			
@@ -840,7 +815,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			msg.what = MSG_FAIL_UPLOAD;
 			msg.obj = currentIndex;
 			handler.sendMessage(msg);
-			Log.d("bitmap", "bitmap send Mesage");
 		}
 	}
 }
