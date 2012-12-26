@@ -435,7 +435,7 @@ public class Communication implements Comparator<String> {
 		if(shutdown){
 //			Profiler.markStart("REQ_STORE");
 			httpClient.getConnectionManager().shutdown();
-			GlobalDataManager.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
+			GlobalDataManager.getInstance().getNetworkCacheManager().putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
 //			Profiler.markEnd("REQ_STORE");
 		}
 		return result;
@@ -467,7 +467,7 @@ public class Communication implements Comparator<String> {
 	public static String getCacheRequestIfExist(String url) {
 		String extractedUrl = Util.extractUrlWithoutSecret(url);
 		String result = GlobalDataManager
-				.getCacheNetworkRequest(extractedUrl);
+				.getInstance().getNetworkCacheManager().getCacheNetworkRequest(extractedUrl);
 		if (result != null && !result.equals("")) {
 			return result;
 		}
@@ -546,7 +546,7 @@ public class Communication implements Comparator<String> {
 			if ((temp.startsWith("[") && temp.endsWith("]")) || 
 					(temp.startsWith("{") && temp.endsWith("}")))
 			{
-				GlobalDataManager.putCacheNetworkRequest(
+				GlobalDataManager.getInstance().getNetworkCacheManager().putCacheNetworkRequest(
 						Util.extractUrlWithoutSecret(url), temp);
 			}
 		}

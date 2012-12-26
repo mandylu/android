@@ -40,7 +40,7 @@ import com.baixing.util.Util;
 
 import com.baixing.android.api.ApiClient;
 
-public class GlobalDataManager implements LocationService.BXLocationServiceListener, Observer, ApiClient.CacheProxy {
+public class GlobalDataManager implements LocationService.BXLocationServiceListener, Observer{
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String version="";
@@ -51,7 +51,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	private static boolean textMode = false;
 	private static boolean needNotifiySwitchMode = true;
 	private static SharedPreferences preferences = null;
-	private static BXDatabaseHelper dbManager = null;
 	private static GlobalDataManager instance = null;
 	private static int lastDestoryInstanceHash = 0;
 	
@@ -59,44 +58,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
     protected static final String PREFS_DEVICE_ID = "device_id";
     
     private AccountManager accountManager;
-    
-    protected static final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
-    
-    static {
-    	/**
-    	 * do IO on network request will prolong user's time waiting network. This thread do simple IO work on a separate thread.
-    	 */
-    	Thread t = new Thread(new Runnable() {
-			
-			public void run() {
-				while(true) {
-					Pair<String, String> item = null;
-					synchronized (storeList) {
-						if (storeList.size() > 0)
-						{
-							item = storeList.remove(0);
-						}
-						else
-						{
-							try {
-								storeList.wait(5 * 60 * 1000);
-//								Log.d("QLMAPP", "wakeup to handle store");
-							} catch (InterruptedException e) {
-								e.printStackTrace();
-							}
-						}
-					}
-					
-					if (item != null)
-					{
-//						Log.d("QLMAPP", "oh yeah, store it.");
-						storeCacheNetworkRequest(item.first, item.second);
-					}
-				}
-			}
-		});
-    	t.start();
-    }
+    private NetworkCacheManager networkCache;
     
     public static final LazyImageLoader getImageLoader()
     {
@@ -108,80 +70,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
     	return lazyImageLoader;
     }
     
-    
 
-	public static String getCacheNetworkRequest(String request){
-		
-		request = Util.extractUrlWithoutSecret(request);
-		synchronized(dbManager){
-			String response = null;
-			SQLiteDatabase db = null;
-			try{
-				db = dbManager.getReadableDatabase();
-				
-				Cursor c = db.rawQuery("SELECT * from " + BXDatabaseHelper.TABLENAME + " WHERE url=?", new String[]{request});
-				
-				while(c.moveToNext()){
-					int index = c.getColumnIndex("response");
-					if(index >= 0){
-						response = c.getString(index);
-						break;
-					}
-				}
-				c.close();
-			}catch(SQLException e){
-				e.printStackTrace();
-			}catch(Throwable e){
-				e.printStackTrace();
-			}
-			if(db != null){
-				db.close();
-			}
-			return response;
-		}
-		
-	}
-	
-	public static void deleteOldRecorders(int intervalInSec){
-		SQLiteDatabase db = null;
-		try{
-			db = dbManager.getWritableDatabase();
-			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME + " WHERE timestamp<?", new String[]{String.valueOf(System.currentTimeMillis()/1000 - intervalInSec)});
-			
-		}catch(SQLException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		if(db != null){
-			db.close();
-		}
-	}
-
-	public static void putCacheNetworkRequest(String request, String result){
-		request = Util.extractUrlWithoutSecret(request);
-		synchronized (storeList) {
-			storeList.add(Pair.create(request, result));
-			storeList.notifyAll();
-		}
-	}
-	
-	private static void storeCacheNetworkRequest(String request, String result){
-		synchronized(dbManager){
-			SQLiteDatabase db = null; 
-			try{
-				db = dbManager.getWritableDatabase();
-				String timestamp = String.valueOf(System.currentTimeMillis()/1000);
-				db.execSQL("insert into " + BXDatabaseHelper.TABLENAME + "(url, response, timestamp) values(?,?,?)", new String[]{request, result, timestamp});
-			}catch(SQLException e){
-				e.printStackTrace();
-			}
-			if(db != null){
-				db.close();
-			}
-		}
-	}
-	
 	public static void setTextMode(boolean tMode){
 		GlobalDataManager.textMode = tMode;
 		GlobalDataManager.needNotifiySwitchMode = false;
@@ -634,7 +523,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		if(instance == null){
 			instance = new GlobalDataManager();
 			if(context != null && context.get() != null){
-				dbManager = new BXDatabaseHelper(context.get(), "network.db", null, 1);
 				try{
 					PackageManager packageManager = GlobalDataManager.getInstance().getApplicationContext().getPackageManager();
 					ApplicationInfo ai = packageManager.getApplicationInfo(context.get().getPackageName(), PackageManager.GET_META_DATA);
@@ -651,25 +539,17 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return this.accountManager;
 	}
 	
+	public NetworkCacheManager getNetworkCacheManager() {
+		return this.networkCache;
+	}
+	
 	private GlobalDataManager(){
 		this.accountManager = new AccountManager();
+		this.networkCache = NetworkCacheManager.createInstance(context.get());
+		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	
-	public void ClearCache(){
-		SQLiteDatabase db = dbManager.getWritableDatabase();
-		try{
-			db.execSQL("DELETE from " + BXDatabaseHelper.TABLENAME, new String[]{});
-			
-		}catch(SQLException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		db.close();		
-	}
-	
 	
 	public Context getApplicationContext(){
 		return (GlobalDataManager.context == null || GlobalDataManager.context.get() == null) ? 
@@ -804,12 +684,4 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		}
 
 	}
-	//from ApiClient.CacheProxy
-	public void onSave(String url, String jsonStr){
-		this.putCacheNetworkRequest(url, jsonStr);
-	}
-	public String onLoad(String url){
-		return this.getCacheNetworkRequest(url);		
-	}
-	
 }

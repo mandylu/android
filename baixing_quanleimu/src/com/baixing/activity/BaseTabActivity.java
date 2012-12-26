@@ -325,7 +325,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 				startPush.putExtra("updateToken", true);
 				BaseTabActivity.this.startService(startPush);
 				
-				GlobalDataManager.deleteOldRecorders(3600 * 24 * 3);
+				GlobalDataManager.getInstance().getNetworkCacheManager().deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
 //				isInActiveStack = false;
 				

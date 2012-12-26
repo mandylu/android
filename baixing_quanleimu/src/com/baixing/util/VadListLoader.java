@@ -204,7 +204,7 @@ public class VadListLoader implements Serializable{
 					GlobalDataManager.version, 
 					GlobalDataManager.channelId,
 					GlobalDataManager.getInstance().cityEnglishName,
-					GlobalDataManager.getInstance());
+					GlobalDataManager.getInstance().getNetworkCacheManager());
 		}
 		
 		GetListCommand(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
