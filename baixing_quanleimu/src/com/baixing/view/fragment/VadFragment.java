@@ -46,7 +46,7 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -804,7 +804,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
     			if(position - index >= 0)
     				urls.add(listUrl.get(position-index));				
     		}
-    		SimpleImageLoader.AdjustPriority(urls);
+    		ImageLoaderManager.getInstance().AdjustPriority(urls);
     	}
     }
 

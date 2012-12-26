@@ -22,7 +22,7 @@ import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
-import com.baixing.imageCache.LazyImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -36,7 +36,7 @@ public class GlobalDataManager implements Observer{
 	public static String version="";
 	public static String channelId;
 	public static WeakReference<Context> context;	
-	private static LazyImageLoader lazyImageLoader;
+	
 	public static boolean update = false;
 	private static boolean textMode = false;
 	private static boolean needNotifiySwitchMode = true;
@@ -51,14 +51,8 @@ public class GlobalDataManager implements Observer{
     private NetworkCacheManager networkCache;
     private LocationManager locationManager;
     
-    public static final LazyImageLoader getImageLoader()
-    {
-    	if (lazyImageLoader == null)
-    	{
-    		lazyImageLoader = new LazyImageLoader();
-    	}
-    	
-    	return lazyImageLoader;
+    public final ImageCacheManager getImageManager(){
+    	return ImageCacheManager.getInstance();
     }
     
 

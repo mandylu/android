@@ -36,7 +36,8 @@ import com.baixing.entity.Filterss;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
 import com.baixing.entity.ImageList;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -391,7 +392,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 									String[] c = b.split(",");
 									if (c[0] != null && !c[0].equals("")) {
 //										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										GlobalDataManager.getImageLoader().prepareRecycle(c[0]);
+										ImageCacheManager.getInstance().forceRecycle(c[0], false);
 //										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
 									}
 								 }
@@ -402,7 +403,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			 }
 		}
 
-		GlobalDataManager.getImageLoader().startRecycle();
+		ImageCacheManager.getInstance().postRecycle();
 		System.gc();
 		super.onDestroy();
 	}
@@ -420,7 +421,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				if(null != imageView.getTag() && imageView.getTag().toString().length() > 0
 				/*&& null != imageView.getDrawable()
 				&& imageView.getDrawable() instanceof AnimationDrawable*/){
-					SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+					ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
 				}
 			}
 		}		
@@ -444,7 +445,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				}			
 			}
 			
-			SimpleImageLoader.AdjustPriority(urls);			
+			ImageLoaderManager.getInstance().AdjustPriority(urls);			
 		}		
 	}
 

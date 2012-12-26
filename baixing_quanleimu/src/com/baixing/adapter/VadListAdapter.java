@@ -23,7 +23,7 @@ import android.widget.TextView;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
 import com.baixing.view.AdViewHistory;
@@ -351,7 +351,7 @@ public class VadListAdapter extends BaseAdapter {
 								holder.ivInfo.setVisibility(View.INVISIBLE);
 								holder.pbView.setVisibility(View.VISIBLE);
 //									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
-								SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, 
+								ImageLoaderManager.getInstance().showImg(holder.ivInfo, c[0], strTag, this.context, 
 										new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 								//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 							}
@@ -377,7 +377,7 @@ public class VadListAdapter extends BaseAdapter {
 								holder.ivInfo.setVisibility(View.INVISIBLE);
 								holder.pbView.setVisibility(View.VISIBLE);
 //									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
-								SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, 
+								ImageLoaderManager.getInstance().showImg(holder.ivInfo, b, strTag, this.context, 
 										new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 								//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 							}
@@ -391,7 +391,7 @@ public class VadListAdapter extends BaseAdapter {
 				for(String url : listUrlsToCancel){
 					//Log.d("GoodsListAdapter canceled image", "canceled: "+url);
 					
-					SimpleImageLoader.Cancel(url, holder.ivInfo);
+					ImageLoaderManager.getInstance().Cancel(url, holder.ivInfo);
 				}
 			}
 		}

@@ -15,7 +15,7 @@
 // * refer to http://code.google.com/p/android/issues/detail?id=29400
 // */
 
-package com.baixing.util;
+package com.baixing.imageCache;
 
 import android.content.Context;
 import android.graphics.Bitmap;
@@ -50,6 +50,7 @@ import java.util.Map.Entry;
 import java.util.Timer;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.util.BitmapUtils;
 
 /**
  * A simple disk LRU bitmap cache to illustrate how a disk cache would be used for bitmap caching. A
@@ -57,7 +58,7 @@ import com.baixing.data.GlobalDataManager;
  * (libcore/luni/src/main/java/libcore/io/DiskLruCache.java) and is preferable to this simple
  * implementation.
  */
-public class DiskLruCache {
+class DiskLruCache {
     private static final String TAG = "DiskLruCache";
     private static final String CACHE_FILENAME_PREFIX = "__cache_";
     private static final int MAX_REMOVALS = 256;

@@ -11,7 +11,7 @@ import android.widget.TextView;
 import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.Ad.EDATAKEYS;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -164,7 +164,7 @@ class EditAdFragment extends PostGoodsFragment{
 			}
 			
 			if(listUrl.size() > 0){
-				SimpleImageLoader.showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
+				ImageLoaderManager.getInstance().showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
 				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
 			}else{

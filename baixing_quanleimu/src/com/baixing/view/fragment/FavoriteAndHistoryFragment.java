@@ -24,7 +24,7 @@ import com.baixing.broadcast.BXNotificationService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -159,7 +159,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             if (null != imageView
                     && null != imageView.getTag() && imageView.getTag().toString().length() > 0                    /*&& null != imageView.getDrawable()
                     && imageView.getDrawable() instanceof AnimationDrawable*/) {
-                SimpleImageLoader.showImg(imageView, imageView.getTag().toString(), null, getActivity());
+            	ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
             }
         }
 
@@ -180,7 +180,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     && null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/) {
-                SimpleImageLoader.Cancel(imageView.getTag().toString(), imageView);
+            	ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
             }
         }
     }
