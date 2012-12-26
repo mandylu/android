@@ -5,8 +5,6 @@ import java.io.IOException;
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
-import java.util.Date;
-import java.util.HashMap;
 import java.util.List;
 
 import org.json.JSONException;
@@ -24,34 +22,23 @@ import android.content.pm.ResolveInfo;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
-import android.os.Build;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
-import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
-import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.ClipboardManager;
-import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
 import android.view.View;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
-import android.view.ViewParent;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.LinearLayout.LayoutParams;
-import android.widget.RelativeLayout;
-import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.activity.BaiduMapActivity;
-import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
 import com.baixing.data.GlobalDataManager;
@@ -63,31 +50,31 @@ import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
-import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.VadListLoader;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
+import com.baixing.view.vad.VadLogger;
+import com.baixing.view.vad.VadPageController;
+import com.baixing.view.vad.VadPageController.ActionCallback;
 import com.baixing.widget.ContextMenuItem;
-import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadImageAdapter.IImageProvider, VadListLoader.Callback {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback {
 
 	public interface IListHolder{
 		public void startFecthingMore();
 		public boolean onResult(int msg, VadListLoader loader);//return true if getMore succeeded, else otherwise
 	};
 	
-	
 	final private int MSG_REFRESH = 5;
 	final private int MSG_UPDATE = 6;
 	final private int MSG_DELETE = 7;
+	final private int MSG_LOAD_AD_EVENT = 8;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
@@ -103,7 +90,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private IListHolder mHolder = null;
 	
-	private WeakReference<View> loadingMorePage;
+	private VadPageController pageController;
 	
 	List<View> pages = new ArrayList<View>();
 	
@@ -142,8 +129,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return false;
 	}
 	
-	
-	
 	@Override
 	public void onPause() {
 		this.keepSilent = true;
@@ -153,25 +138,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	@Override
 	public void onResume(){
-		if (isMyAd() || !detail.isValidMessage())
-		{
-			this.pv = PV.MYVIEWAD;
-			Tracker.getInstance()
-			.pv(PV.MYVIEWAD)
-			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-			.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getAppContext()))
-			.append(Key.ADSTATUS, detail.getValueByKey("status"))
-			.end();
-		} else {
-			this.pv = PV.VIEWAD;
-			Tracker.getInstance()
-			.pv(this.pv)
-			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-			.end();
-		}	
-			
+		
+		VadLogger.trackPageView(detail, getAppContext());
+		
 		this.keepSilent = false;
 		super.onResume();
 		
@@ -180,18 +149,18 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			called = false;
 			if (!isInMyStore())
 			{
-				Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAV).end();
+				VadLogger.event(BxEvent.VIEWAD_HINTFAV, null, null);
 				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 				builder.setTitle(R.string.dialog_title_info)
 				.setMessage(R.string.tip_add_fav)
 				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, Value.CANCEL).end();
+						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.CANCEL);
 					}
 				})
 				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 					public void onClick(DialogInterface dialog, int which) {
-						Tracker.getInstance().event(BxEvent.VIEWAD_HINTFAVRESULT).append(Key.RESULT, Value.FAV).end();
+						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.FAV);
 						handleStoreBtnClicked();
 					}
 					
@@ -248,245 +217,22 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
-	private View getPage(int index){
-		for(int i = 0; i < pages.size(); ++ i){
-			if(pages.get(i).getTag() != null && (Integer)pages.get(i).getTag() == index){
-				return pages.get(i);
-			}
-		}
-		return null;
-	}
-	
-	private View getNewPage(int index){
-		for(int i = 0; i < pages.size(); ++ i){
-			if(pages.get(i).getTag() == null){
-				pages.get(i).setTag(index);
-				ViewParent parent = pages.get(i).getParent();
-				if(parent != null){
-					if(parent instanceof ViewGroup){
-						((ViewGroup)parent).removeView(pages.get(i));
-					}else{
-						break;
-					}
-					Log.d("has a parent", "has parent************************************************************************");
-				}
-				return pages.get(i);
-			}
-		}
-		View detail = LayoutInflater.from(this.getAppContext()).inflate(R.layout.gooddetailcontent, null);
-		detail.setTag(index);
-		pages.add(detail);
-		return detail;
-	}
-	
-	private void removePage(int index){
-		for(int i = 0; i < pages.size(); ++ i){
-			if(pages.get(i) != null && pages.get(i).getTag() != null && (Integer)pages.get(i).getTag() == index){
-				HorizontalListView glDetail = (HorizontalListView) pages.get(i).findViewById(R.id.glDetail);
-//				glDetail.setVisibility(View.GONE);
-				glDetail.setAdapter(null);
-				pages.get(i).setTag(null);
-				if(pages.get(i) instanceof ScrollView){
-					((ScrollView)pages.get(i)).scrollTo(0, 0);
-				}
-			}
-		}
-	}
-	
 	@Override
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if(detail == null || mListLoader == null) return null;
-		final int mCurIndex = getArguments().getInt("index", 0);
+		final int originalSelect = getArguments().getInt("index", 0);
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
+		
+		pageController = new VadPageController(v, detail, this, originalSelect);
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
         mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
         
-        final ViewPager vp = (ViewPager) v.findViewById(R.id.svDetail);
-        vp.setAdapter(new PagerAdapter() {
-			
-			public Object instantiateItem(View arg0, int position) 
-			{
-				Log.d("instantiateItem", "instantiateItem:    " + position);
-				View detail = getNewPage(position);//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
-				
-				
-				detail.setTag(R.id.accountEt, detail);
-				((ViewPager) arg0).addView(detail, 0);
-				if (position == mListLoader.getGoodsList().getData().size())
-				{
-					detail.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
-					detail.findViewById(R.id.llDetail).setVisibility(View.GONE);
-					loadMore(detail);
-				}
-				else
-				{
-					Ad detaiObj = mListLoader.getGoodsList().getData().get(position);
-					initContent(detail, detaiObj, position, ((ViewPager) arg0), false);
-				}
-				return detail;
-			}
-			
-            public void destroyItem(View arg0, int index, Object arg2)
-            {
-                ((ViewPager) arg0).removeView((View) arg2);
-                
-                final Integer pos = (Integer) ((View) arg2).getTag();
-                if (pos < mListLoader.getGoodsList().getData().size())
-                {
-//                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
-                	List<String> listUrl = getImageUrls(mListLoader.getGoodsList().getData().get(pos));
-                	if(null != listUrl && listUrl.size() > 0){
-                		SimpleImageLoader.Cancel(listUrl);
-	            		for(int i = 0; i < listUrl.size(); ++ i){
-	            			decreaseImageCount(listUrl.get(i), pos);
-	//            			QuanleimuApplication.getImageLoader().forceRecycle(listUrl.get(i));
-	            		}
-                	}
-                }
-                removePage(pos);
-                
-                
-            }
-
-			public boolean isViewFromObject(View arg0, Object arg1) {
-				return arg0 == arg1;
-			}
-			
-			public int getCount() {
-				if(mListLoader == null || mListLoader.getGoodsList() == null || mListLoader.getGoodsList().getData() == null){
-					return 0;
-				}
-				return mListLoader.getGoodsList().getData().size() + (mListLoader.hasMore() ? 1 : 0);
-			}
-		});
-//        if(mCurIndex == 0) return v;
-        vp.setCurrentItem(mCurIndex);
-        vp.setOnPageChangeListener(new OnPageChangeListener() {
-			private int currentPage = 0;
-			public void onPageSelected(int pos) {
-				currentPage = pos;
-				keepSilent = false;//magic flag to refuse unexpected touch event
-				//tracker
-				if (isMyAd() || !detail.isValidMessage())
-				{
-					VadFragment.this.pv = PV.MYVIEWAD;
-					Tracker.getInstance()
-					.pv(PV.MYVIEWAD)
-					.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-					.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-					.append(Key.ADSENDERID, GlobalDataManager.getInstance().getAccountManager().getMyId(getActivity()))
-					.append(Key.ADSTATUS, detail.getValueByKey("status"))
-					.end();
-				} else {
-					VadFragment.this.pv = PV.VIEWAD;
-					Tracker.getInstance()
-					.pv(VadFragment.this.pv)
-					.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-					.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-					.end();
-				}
-				
-				if (pos != mListLoader.getGoodsList().getData().size())
-				{
-					detail = mListLoader.getGoodsList().getData().get(pos);
-					mListLoader.setSelection(pos);
-					updateTitleBar(getTitleDef());
-					updateContactBar(v.getRootView(), false);
-				}
-				else
-				{
-					updateTitleBar(getTitleDef());
-					updateContactBar(v.getRootView(), true);
-				}
-			}
-			
-			public void onPageScrolled(int arg0, float arg1, int arg2) {
-				currentPage = arg0;
-			}
-			
-			public void onPageScrollStateChanged(int arg0) {
-				if(arg0 != ViewPager.SCROLL_STATE_IDLE) return;
-				
-				List<String>listUrl = getImageUrls(detail);
-				if(listUrl == null || listUrl.size() == 0){
-					ViewGroup currentVG = (ViewGroup)getPage(currentPage);
-					if(currentVG != null){
-						View noimage = currentVG.findViewById(R.id.vad_no_img_tip);
-						if(noimage != null){
-							noimage.setVisibility(View.VISIBLE);
-						}
-						View detail = currentVG.findViewById(R.id.glDetail);
-						if(detail != null){
-							detail.setVisibility(View.GONE);
-						}
-					}
-				}
-//				if(listUrl != null && listUrl.size() > 0){
-				else{
-					ViewGroup currentVG = (ViewGroup)getPage(currentPage);
-					if(currentVG != null){
-						HorizontalListView glDetail = (HorizontalListView) currentVG.findViewById(R.id.glDetail);
-						VadImageAdapter adapter = (VadImageAdapter)glDetail.getAdapter();
-						if(adapter != null){
-							List<String> curLists = adapter.getImages();
-							boolean sameList = true;
-							if(curLists != null && curLists.size() == listUrl.size()){
-								for(int i = 0; i < curLists.size(); ++ i){
-									String cstr = curLists.get(i);
-									String lstr = listUrl.get(i);
-									if(cstr != null && cstr.length() > 0 && lstr != null && lstr.length() > 0){
-										if(!cstr.equals(lstr)){
-											sameList = false;
-											break;
-										}
-									}
-								}
-							}else{
-								sameList = false;
-							}
-							if(!sameList){
-								adapter.setContent(listUrl);
-								adapter.notifyDataSetChanged();
-							}
-						}else{
-							glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, currentPage, VadFragment.this));
-						}
-	//					
-						glDetail.setOnTouchListener(VadFragment.this);
-						
-						glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-		
-							@Override
-							public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-								if(galleryReturned){
-									Bundle bundle = createArguments(null, null);
-									bundle.putInt("postIndex", arg2);
-									bundle.putSerializable("goodsDetail", detail);
-									galleryReturned = false;
-									pushFragment(new BigGalleryFragment(), bundle);		
-								}
-							}
-						});
-					}
-				}				
-			}
-		});
-
-       
-        vp.setOnTouchListener(new OnTouchListener(){
-			@Override
-			public boolean onTouch(View arg0, MotionEvent event) {
-	                return false;  
-			}
-        	
-        } );
-        
-        mListLoader.setSelection(mCurIndex);
+        mListLoader.setSelection(originalSelect);
         mListLoader.setCallback(this);       
         
         return v;
@@ -495,119 +241,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private void notifyPageDataChange(boolean hasMore)
 	{
 		if(keepSilent) return;
-		PagerAdapter adapter = getContentPageAdapter();
-		if (adapter != null)
-		{
-			adapter.notifyDataSetChanged();
-		}
-		View rootView = getView();
-		if (rootView == null)
-		{
-			return;
-		}
-		
-		View page = loadingMorePage == null ? null : loadingMorePage.get();
-		final ViewPager vp = (ViewPager) rootView.findViewById(R.id.svDetail);
-		if (!hasMore && page != null && vp != null)
-		{
-			vp.removeView(page);
-		}
-	}
-	
-	private PagerAdapter getContentPageAdapter()
-	{
-		View root = getView(); 
-		if (root == null)
-		{
-			return null;
-		}
-		
-		final ViewPager vp = (ViewPager) root.findViewById(R.id.svDetail);
-		return vp == null ? null : vp.getAdapter();
-	}
-	
-	private void initContent(View contentView, final Ad detail, final int pageIndex, ViewPager pager, boolean useRoot)
-	{
-		
-		if(this.getView() == null) return;
-		if(useRoot)
-			contentView = contentView.getRootView();
-		
-		RelativeLayout llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-		
-//		if(detail.getImageList() != null){
-			List<String>listUrl = getImageUrls(detail);
-			
-			llgl = (RelativeLayout) contentView.findViewById(R.id.llgl);
-			int cur = pager != null ? pager.getCurrentItem() : -1;
-			if(listUrl == null || listUrl.size() == 0){
-//				llgl.setVisibility(View.GONE);
-				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
-					llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.VISIBLE);
-				}else{
-					llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
-				}
-				llgl.findViewById(R.id.glDetail).setVisibility(View.GONE);
-				
-			}else{
-				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
-				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
-//				int cur = pager != null ? pager.getCurrentItem() : -1;
-				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
-				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
-				if(pageIndex == getArguments().getInt("index", 0) || pageIndex == cur){
-					glDetail.setAdapter(new VadImageAdapter(getActivity(), listUrl, pageIndex, VadFragment.this));
-					glDetail.setOnTouchListener(this);
-					glDetail.setOnItemClickListener(new AdapterView.OnItemClickListener() {
-	
-						@Override
-						public void onItemClick(AdapterView<?> arg0, View arg1, int arg2, long arg3) {
-							if(galleryReturned){
-								Bundle bundle = createArguments(null, null);
-								bundle.putInt("postIndex", arg2);
-								bundle.putSerializable("goodsDetail", detail);
-								galleryReturned = false;
-	//							Log.d("haha", "hahaha, new big gallery");
-								pushFragment(new BigGalleryFragment(), bundle);		
-							}else{
-	//							Log.d("hhah", "hahaha, it workssssssssssss");
-							}
-						}
-					});
-				}
-			}
-
-		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
-		TextView txt_message1 = (TextView) contentView.findViewById(R.id.sendmess1);
-//		rl_address.setOnTouchListener(this);
-
-		LinearLayout ll_meta = (LinearLayout) contentView.findViewById(R.id.meta);
-		
-
-		this.setMetaObject(contentView, detail);
-		
-		String title = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE);
-		String description = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION);
-
-		if ((title == null || title.length() == 0) && description != null)
-		{
-			title = description.length() > 40 ? description.substring(0, 40) : description;
-		}
-		
-		description += "\n打电话给我时，请一定说明在百姓网看到的，谢谢！";
-		description = appendPostFromInfo(detail, description);
-		description = appendExtralMetaInfo(detail, description);
-		
-		txt_message1.setText(description);
-		txt_tittle.setText(title);
-
-		final ViewPager vp = pager != null ? pager : (ViewPager) getActivity().findViewById(R.id.svDetail);
-		if (vp != null && pageIndex == vp.getCurrentItem())
-		{
-			updateTitleBar(getTitleDef());
-			updateContactBar(vp.getRootView(), false);
-		}
-		
+		pageController.resetLoadingPage(hasMore);
 	}
 	
 	private void updateContactBar(View rootView, boolean forceHide)
@@ -637,7 +271,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			})
 			.setPositiveButton(R.string.appeal, new DialogInterface.OnClickListener() {
 				public void onClick(DialogInterface dialog, int which) {
-					trackerLogEvent(BxEvent.MYVIEWAD_APPEAL);
+					VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_APPEAL);
 					Bundle bundle = createArguments("申诉", null);
 					bundle.putInt("type", 1);
 					bundle.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
@@ -724,56 +358,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
-	private String appendExtralMetaInfo(Ad detail, String description)
-	{
-		if (detail == null)
-		{
-			return description;
-		}
-		
-		StringBuffer extralInfo = new StringBuffer();
-		ArrayList<String> allMeta = detail.getMetaData();
-		for (String meta : allMeta)
-		{
-			if (!meta.startsWith("价格") && !meta.startsWith("地点") &&
-					!meta.startsWith("地区") && !meta.startsWith("查看") && !meta.startsWith("来自") && !meta.startsWith("具体地点") && !meta.startsWith("分类"))
-			{
-				final int splitIndex = meta.indexOf(" ");
-				if (splitIndex != -1)
-				{
-					extralInfo.append(meta.substring(splitIndex).trim()).append("，");
-				}
-			}
-		}
-		
-		if (extralInfo.length() > 0)
-		{
-			extralInfo.deleteCharAt(extralInfo.length() -1 );
-			return extralInfo.append("\n\n").append(description).toString(); 
-		}
-		
-		return description;
-	}
-	
-	private String appendPostFromInfo(Ad detail, String description)
-	{
-		if (detail == null)
-		{
-			return description;
-		}
-		
-		String postFrom = detail.getValueByKey("postMethod");
-		if ("api_mobile_android".equals(postFrom))
-		{
-			return description + "\n来自android客户端";
-		}
-		else if ("baixing_ios".equalsIgnoreCase(postFrom))
-		{
-			return description + "\n来自iPhone客户端";
-		}
-		
-		return description;
-	}
 	
 	private boolean handleRightBtnIfInVerify(){
 		if(!detail.getValueByKey("status").equals("0")){
@@ -787,13 +371,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private void handleStoreBtnClicked(){
 		if(handleRightBtnIfInVerify()) return;
-		Log.d("tracker",!isInMyStore()?"VIEWAD_FAV":"VIEWAD_UNFAV");
 		//tracker
-		Tracker.getInstance()
-		.event(!isInMyStore()?BxEvent.VIEWAD_FAV:BxEvent.VIEWAD_UNFAV)
-		.append(Key.SECONDCATENAME, detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-		.append(Key.ADID, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
-		.end();
+		VadLogger.trackLikeUnlike(detail);
 		
 		if(!isInMyStore()){			
 			List<Ad> myStore = GlobalDataManager.getInstance().addFav(detail); 
@@ -828,16 +407,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		case R.id.vad_call_btn:
 		{
-			Log.d("tracker","VIEWAD_MOBILECALLCLICK");
-			//tracker
-			Tracker.getInstance()
-			.event(BxEvent.VIEWAD_MOBILECALLCLICK)
-			.end();
+			VadLogger.event(BxEvent.VIEWAD_MOBILECALLCLICK, null, null);
 			
 			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
-				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLE).end();
+				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLE, null, null);
+				
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
 			else
@@ -847,9 +423,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			
 			break;
 		}
-		case R.id.retry_load_more:
-			retryLoadMore();
-			break;
 		case R.id.vad_buzz_btn:
 			startContact(true);
 			break;
@@ -857,7 +430,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			showSimpleProgress();
 			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
 
-            trackerLogEvent(BxEvent.MYVIEWAD_REFRESH);
+			VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_REFRESH);
 			break;
 		}
 		case R.id.vad_btn_edit:{
@@ -866,7 +439,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			args.putSerializable("goodsDetail", detail);
 			args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
 			pushFragment(new EditAdFragment(), args);
-            trackerLogEvent(BxEvent.MYVIEWAD_EDIT);
+            VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_EDIT);
 			break;
 		}
 		case R.id.vad_btn_delete:{
@@ -885,7 +458,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			public void onClick(DialogInterface dialog, int which) {
 				showSimpleProgress();
 				new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
-                trackerLogEvent(BxEvent.MYVIEWAD_DELETE);
+				VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_DELETE);
 			}
 		});
 		
@@ -911,27 +484,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 
 
-
-    /**
-     * add track log for MyViewad_Edit MyViewad_Refresh MyViewad_Delete MyViewad_Appeal
-     * @param event
-     */
-    private void trackerLogEvent(BxEvent event) {
-        String tmpCateName = detail.data.get("categoryEnglishName");
-        String secondCategoryName = tmpCateName != null ? tmpCateName : "empty categoryEnglishName";
-        String tmpInsertedTime = detail.data.get("insertedTime");
-        long postedSeconds = -1;
-        if (tmpInsertedTime != null) {
-            long nowTime = new Date().getTime() / 1000;
-            postedSeconds = nowTime - Long.valueOf(tmpInsertedTime);
-        }
-
-        Tracker.getInstance().event(event)
-                .append(Key.SECONDCATENAME, secondCategoryName)
-                .append(Key.POSTEDSECONDS, postedSeconds)
-                .end();
-    }
-	
 	private boolean galleryReturned = true;
 	
 	@Override
@@ -945,72 +497,15 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 
 	
-	private void setMetaObject(View currentPage, Ad detail){
-		LinearLayout ll_meta = (LinearLayout) currentPage.findViewById(R.id.meta);
-		if(ll_meta == null) return;
-		ll_meta.removeAllViews();
-		
-		LayoutInflater inflater = LayoutInflater.from(currentPage.getContext());
-		
-		String price = detail.getValueByKey(EDATAKEYS.EDATAKEYS_PRICE);
-		if (price != null && !"".equals(price))
-		{
-			View item = createMetaView(inflater, "价格:", price, null);
-			ll_meta.addView(item);
-			((TextView) item.findViewById(R.id.tvmeta)).setTextColor(getResources().getColor(R.color.vad_meta_price));
-		}
-		
-		
-		
-		String area = detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-		String address = detail.getMetaValueByKey("具体地点");
-		if (address != null && address.trim().length() > 0)
-		{
-			area = address;
-		}
-		
-		View areaV = createMetaView(inflater, "地区:", area, new View.OnClickListener() {
-			public void onClick(View v) {
-				showMap();
-			}
-		});
-		ll_meta.addView(areaV);
-	}
-	
-	
-	
-	private View createMetaView(LayoutInflater inflater, String label, String value, View.OnClickListener clickListener)
-	{
-		View v = inflater.inflate(R.layout.item_meta, null);
-		
-		TextView tvmetatxt = (TextView) v.findViewById(R.id.tvmetatxt);
-		TextView tvmeta = (TextView) v.findViewById(R.id.tvmeta);
-		
-		tvmetatxt.setText(label);
-		tvmeta.setText(value);
-		
-		if (clickListener != null)
-		{
-			v.findViewById(R.id.action_indicator_img).setVisibility(View.VISIBLE);
-			v.setOnClickListener(clickListener);
-		}
-		else
-		{
-			v.findViewById(R.id.action_indicator_img).setVisibility(View.INVISIBLE);
-		}
-		
-		LinearLayout.LayoutParams layoutParams = (LinearLayout.LayoutParams) v.getLayoutParams();
-		if (layoutParams== null)  layoutParams =  new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
-		layoutParams.height = (int) getResources().getDimension(R.dimen.vad_meta_item_height);
-		v.setLayoutParams(layoutParams);
-		
-		return v;
-	}
-	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
+		case MSG_LOAD_AD_EVENT: {
+			Pair<Integer, Object> data = (Pair<Integer, Object>)msg.obj;
+			processEvent(data.first.intValue(), data.second);
+			break;
+		}
 		case MSG_REFRESH:
 			if(json == null){
 				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
@@ -1238,44 +733,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return list;		
 	}
 	
-	private HashMap<String, List<Integer> > imageMap = new HashMap<String, List<Integer> >();
-	private void increaseImageCount(String url, int pos){
-		if(url == null) return;
-		if(imageMap.containsKey(url)){
-			List<Integer> values = imageMap.get(url);
-			for(int i = 0; i < values.size(); ++ i){
-				if(values.get(i) ==  pos){
-					return;
-				}
-			}
-			values.add(pos);
-			imageMap.put(url, values);
-		}else{
-			List<Integer> value = new ArrayList<Integer>();
-			value.add(pos);
-			imageMap.put(url, value);
-		}
-	}
-	
-	private void decreaseImageCount(String url, int pos){
-		if(url == null) return;
-		if(imageMap.containsKey(url)){
-			List<Integer> values = imageMap.get(url);
-			for(int i = 0; i < values.size(); ++ i){
-				if(values.get(i) == pos){
-					values.remove(i);
-					break;
-				}
-			}
-			if(values.size() == 0){
-				GlobalDataManager.getImageLoader().forceRecycle(url);
-				imageMap.remove(url);
-			}else{
-				imageMap.put(url, values);
-			}
-		}
-	}	
-
 	
 	@Override
 	public void initTitle(TitleDef title){
@@ -1362,76 +819,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void onHasMoreStatusChanged() {
 	}
 	
-	private void onLoadMoreFailed()
-	{
-		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
-		if (page != null)
-		{
-			page.findViewById(R.id.retry_load_more).setOnClickListener(VadFragment.this);
-			page.postDelayed(new Runnable() {
-				@Override
-				public void run() {
-					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
-					page.findViewById(R.id.retry_more_parent).setVisibility(View.VISIBLE);
-					page.findViewById(R.id.llDetail).setVisibility(View.GONE);
-				}
-				
-			}, 10);
-		}
-	}
-	
-	private void retryLoadMore()
-	{
-		//We assume that this action always on UI thread.
-		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
-		if (page != null)
-		{
-			page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
-			page.findViewById(R.id.retry_more_parent).setVisibility(View.GONE);
-			page.findViewById(R.id.llDetail).setVisibility(View.GONE);
-		}
-		
-		if (null != mHolder) {
-			mHolder.startFecthingMore();
-		} else {
-			mListLoader
-					.startFetching(
-							false,
-							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
-									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
-									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
-		}
-	}
-	
-	private void loadMore(View page) {
-		loadingMorePage = new WeakReference(page);
-		
-		retryLoadMore();
-	}
-	
 	public void setListHolder(IListHolder holder)
 	{
 		this.mHolder = holder;
-	}
-	
-	private static List<String> getImageUrls(Ad goodDetail)
-	{
-		List<String> listUrl = null;
-		
-		if (goodDetail.getImageList() != null)
-		{
-			listUrl = new ArrayList<String>();
-			String b = (goodDetail.getImageList().getResize180());//.substring(1, (goodDetail.getImageList().getResize180()).length()-1);
-			if(b == null) return listUrl;
-			b = Communication.replace(b);
-			String[] c = b.split(",");
-			for(int i=0;i<c.length;i++) 
-			{
-				listUrl.add(c[i]);
-			}
-		}
-		
-		return listUrl;
 	}
 	
 	@Override
@@ -1440,12 +830,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
-				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, Value.CALL).end();
+				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.CALL);
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
-				Tracker.getInstance().event(BxEvent.VIEWAD_NOTCALLABLERESULT).append(Key.RESULT, Value.COPY).end();
+				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.COPY);
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
@@ -1460,9 +850,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
-			Tracker.getInstance()
-			.event(BxEvent.VIEWAD_SMS)
-			.end();
+			VadLogger.event(BxEvent.VIEWAD_SMS, null, null);
 		}
 			
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
@@ -1484,62 +872,41 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 	
-	private void showMap()
-	{
-		if (detail == null)
-		{
-            Toast.makeText(getActivity(), "无信息无法显示地图", 1).show();
+	public void showMap() {
+		if (keepSilent) { // FIXME:
+			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
 			return;
 		}
-		
-		if(keepSilent) {
-            Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
-            return;
-        }
-		final BaseActivity baseActivity = (BaseActivity)getActivity();
-		if (baseActivity != null){
-			if (Build.VERSION.SDK_INT >  16)//Fix baidu map SDK crash on android4.2 device.
-			{
-				ViewUtil.startMapForAds(baseActivity, detail);
-			}
-			else
-			{
-				Bundle bundle = new Bundle();
-				bundle.putSerializable("detail", detail);
-				baseActivity.getIntent().putExtras(bundle);
-				
-				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
-				baseActivity.startActivity(baseActivity.getIntent());
-			}
-			Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).end();
-		} else {
-            Toast.makeText(getActivity(), "显示地图失败", 1).show();
-        }
+		else
+		{
+			ViewUtil.startMapForAds(getActivity(), detail);
+		}
+					
 	}
-
+	
 	public boolean hasGlobalTab()
 	{
 		return false;
 	}
 
 	@Override
-	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
-		SimpleImageLoader.showImg(imageView, url, previousUrl, getActivity());
-		increaseImageCount(url, index);
-	}
-
-	@Override
 	public void onRequestComplete(int respCode, Object data) {
+		sendMessage(MSG_LOAD_AD_EVENT, Pair.create(respCode, data));
+	}
+	
+	private void processEvent(int respCode, Object data) {
+
 
 		if(null != mHolder){
 			if(mHolder.onResult(respCode, mListLoader)){
-				onGotMore();
+//				onGotMore();
+				pageController.loadMoreSucced();
 			}else{
 				onNoMore();
 			}
 			
 			if(respCode == ErrorHandler.ERROR_NETWORK_UNAVAILABLE){
-				onLoadMoreFailed();
+				pageController.loadMoreFail();
 			}
 		}else{
 			switch (respCode) {
@@ -1580,45 +947,109 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					
 					mListLoader.setHasMore(true);
 					notifyPageDataChange(true);
-					onGotMore();
+					pageController.loadMoreSucced();
 				}
 				break;
 			case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-				
-				onLoadMoreFailed();
+				pageController.loadMoreFail();
 				
 				break;
 			}
 		}
+	
 	}
 	
-	private void onGotMore() {
-		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
-		if (page != null)
-		{
-			page.postDelayed(new Runnable() {
-
-				@Override
-				public void run() {
-					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
-					page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
-					final Integer tag = (Integer)page.getTag();
-					if(tag != null){
-						initContent(page, mListLoader.getGoodsList().getData().get(tag.intValue()), tag.intValue(), null, false);
-					}
-				}
-				
-			}, 10);
-		}
-	}
-
 	private void onNoMore() {
 		View root = getView();
 		if (root != null)
 		{
 			ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
 		}
+	}
+	
+
+
+	@Override
+	public int totalPages() {
+			if(mListLoader == null || mListLoader.getGoodsList() == null || mListLoader.getGoodsList().getData() == null){
+			return 0;
+		}
+		return mListLoader.getGoodsList().getData().size();//+ (mListLoader.hasMore() ? 1 : 0);
+		
+	}
+
+	@Override
+	public Ad getAd(int pos) {
+		return mListLoader.getGoodsList().getData().get(pos);
+	}
+
+	@Override
+	public void onLoadMore() {
+		if (null != mHolder) {
+			mHolder.startFecthingMore();
+		} else {
+			mListLoader
+					.startFetching(
+							false,
+							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
+									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
+									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+		}
+	}
+
+	@Override
+	public void onPageSwitchTo(int pos) {
+		keepSilent = false;//magic flag to refuse unexpected touch event
+		//tracker
+		VadLogger.trackPageView(detail, VadFragment.this.getAppContext());
+		
+		if (pos != totalPages())
+		{
+			detail = mListLoader.getGoodsList().getData().get(pos);
+			mListLoader.setSelection(pos);
+			updateTitleBar(getTitleDef());
+			updateContactBar(getView(), false);
+		}
+		else
+		{
+			updateTitleBar(getTitleDef());
+			updateContactBar(getView(), true);
+		}
+	}
+
+	@Override
+	public void onRequestBigPic(int pos, Ad detail) {
+		if(galleryReturned){
+			Bundle bundle = createArguments(null, null);
+			bundle.putInt("postIndex", pos);
+			bundle.putSerializable("goodsDetail", detail);
+			galleryReturned = false;
+//						Log.d("haha", "hahaha, new big gallery");
+			pushFragment(new BigGalleryFragment(), bundle);		
+		}else{
+//						Log.d("hhah", "hahaha, it workssssssssssss");
+		}
+	}
+
+	@Override
+	public void onRequestMap() {
+		showMap();
+	}
+
+	@Override
+	public void onPageInitDone(ViewPager pager, final int pageIndex) {
+		final ViewPager vp = pager != null ? pager : (ViewPager) getActivity().findViewById(R.id.svDetail);
+		if (vp != null && pageIndex == vp.getCurrentItem())
+		{
+			updateTitleBar(getTitleDef());
+			updateContactBar(vp.getRootView(), false);
+		}		
+	}
+
+	@Override
+	public boolean hasMore() {
+		return mListLoader == null ? false : mListLoader.hasMore();
 	}
 	
 }
