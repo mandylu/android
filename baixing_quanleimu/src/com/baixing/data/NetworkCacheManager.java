@@ -19,7 +19,7 @@ public class NetworkCacheManager implements ApiClient.CacheProxy {
 	protected final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
 	private BXDatabaseHelper dbManager = null;
 	
-	public static NetworkCacheManager createInstance(Context context) {
+	static NetworkCacheManager createInstance(Context context) {
 		return new NetworkCacheManager(context);
 	}
 	

@@ -2,7 +2,6 @@
 package com.baixing.data;
 
 import java.lang.ref.WeakReference;
-
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -13,34 +12,25 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
-import android.database.Cursor;
-import android.database.SQLException;
-import android.database.sqlite.SQLiteDatabase;
-import android.location.Location;
 import android.util.Pair;
 import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
-import com.baixing.entity.BXLocation;
+import com.baixing.entity.Ad;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.Ad;
 import com.baixing.imageCache.LazyImageLoader;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.BXDatabaseHelper;
 import com.baixing.util.Communication;
-import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 
-import com.baixing.android.api.ApiClient;
-
-public class GlobalDataManager implements LocationService.BXLocationServiceListener, Observer{
+public class GlobalDataManager implements Observer{
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static String version="";
@@ -59,6 +49,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
     
     private AccountManager accountManager;
     private NetworkCacheManager networkCache;
+    private LocationManager locationManager;
     
     public static final LazyImageLoader getImageLoader()
     {
@@ -258,7 +249,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		this.mobile = mobile;
 	}
 
-	//签名档
 	public String personMark = "";
 	
 	public String getPersonMark() {
@@ -401,90 +391,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return allCategory.getChildren();
 	}
 	
-
-	BXLocation location = null;
-	boolean location_updated = false;
-
-	public BXLocation getCurrentPosition(boolean bRealLocality) {
-		if(context.get() == null) return null;
-		if(null == location){
-			location = (BXLocation)Util.loadDataFromLocate(context.get(), "location_data", BXLocation.class);
-			
-			if(null == location){
-				location = new BXLocation(true);
-			}else if(null == location.cityName || 0 == location.cityName.length()){
-				location.geocoded = false;
-			}
-		}
-		
-		return location_updated ? 	location : 
-									bRealLocality ? null : location;
-	}
-	
-	public interface onLocationFetchedListener{
-		public void onLocationFetched(BXLocation location);//null==location means location-fetching failed
-		public void onGeocodedLocationFetched(BXLocation location);
-	}
-	
-	private List<onLocationFetchedListener> locationFetchListeners = new ArrayList<onLocationFetchedListener>();
-	public boolean addLocationListener(final onLocationFetchedListener listener){
-		if(context.get() == null) return false;
-		if(null == listener || locationFetchListeners.contains(listener))
-			return false;
-		
-		locationFetchListeners.add(listener);		
-		LocationService.getInstance().addLocationListener(context.get(), this);
-		
-		final BXLocation curLocation = getCurrentPosition(true);
-		if(null == curLocation){
-			return false;
-		}		
-
-		listener.onLocationFetched(curLocation);
-
-		if (curLocation.geocoded){
-//			Log.d("currentlocation", "xixi, curLocation.geocoded");
-			listener.onGeocodedLocationFetched(curLocation);
-		}else{
-//			Log.d("currentlocation", "xixi, curLocation not geocoded");
-		}
-		
-		return true;
-	}
-	
-	public boolean removeLocationListener(onLocationFetchedListener listener)
-	{
-		return this.locationFetchListeners.remove(listener);
-	}
-
-	public void setLocation(BXLocation location_) {
-		if(context.get() == null) return;
-		if(null == location)
-			getCurrentPosition(false);
-		
-		if(null != location_){
-			if(location_.geocoded){
-				location = location_;
-			}else{
-				location.fLat = location_.fLat;
-				location.fLon = location_.fLon;
-				
-				if(location.geocoded == true){
-					float results[] = {0, 0, 0};
-					Location.distanceBetween(location.fGeoCodedLat, location.fGeoCodedLon, location_.fLat, location_.fLon, results);
-					if(results[0] > 50){
-						location.geocoded = false;
-						//Log.d("kkkkkk", "location geocoding has been invalidated, since location distance is: "+results[0]+">50m");
-					}
-				}
-			}
-			
-			Util.saveDataToLocateDelay(context.get(), "location_data", location);
-
-			location_updated = true;
-		}
-	}
-
 	public String cityName = "";
 	public String getCityName() {
 		return cityName;
@@ -535,6 +441,10 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 		return instance;
 	}
 	
+	public LocationManager getLocationManager() {
+		return this.locationManager;
+	}
+	
 	public AccountManager getAccountManager() {
 		return this.accountManager;
 	}
@@ -546,6 +456,7 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 	private GlobalDataManager(){
 		this.accountManager = new AccountManager();
 		this.networkCache = NetworkCacheManager.createInstance(context.get());
+		this.locationManager = new LocationManager(context);
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
@@ -582,37 +493,6 @@ public class GlobalDataManager implements LocationService.BXLocationServiceListe
 			}
 		}
 
-	}
-
-	@Override
-	public void onLocationUpdated(Location location_) {
-		BXLocation newLocation = new BXLocation(false);
-		newLocation.fLat = (float)location_.getLatitude();
-		newLocation.fLon = (float)location_.getLongitude();
-		
-		setLocation(newLocation);
-		
-		LocationService.getInstance().reverseGeocode(newLocation.fLat, newLocation.fLon, new LocationService.BXRgcListener() {
-			
-			@Override
-			public void onRgcUpdated(BXLocation location) {
-//				Log.d("currentlocation", "xixi, onRgcUpdated");
-				if (null != location) {
-					setLocation(location);
-				}
-				for (onLocationFetchedListener listener : locationFetchListeners)
-				{
-					listener.onGeocodedLocationFetched(location);
-				}					
-			}
-		});
-		
-		for (onLocationFetchedListener listener : locationFetchListeners)
-		{
-			listener.onLocationFetched(newLocation);
-		}
-		
-//		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
 	}
 
 

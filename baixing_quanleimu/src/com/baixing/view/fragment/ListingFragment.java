@@ -310,7 +310,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		lvGoodsList.setOnScrollListener(this);
 
 	
-		curLocation = GlobalDataManager.getInstance().getCurrentPosition(true);
+		curLocation = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true);
 		if(curLocation == null && isSerchNearBy()){
 			filterParamHolder.remove("地区_s");
 		}

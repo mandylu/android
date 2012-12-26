@@ -50,26 +50,27 @@ import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.BXLocation;
+import com.baixing.data.LocationManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.SimpleImageLoader;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
 import com.baixing.util.LocationService.BXRgcListener;
-import com.baixing.widget.ImageSelectionDialog;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
+import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
 
-public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, GlobalDataManager.onLocationFetchedListener{
+public class PostGoodsFragment extends BaseFragment implements BXRgcListener, OnClickListener, LocationManager.onLocationFetchedListener{
 	private static final int MSG_GETLOCATION_TIMEOUT = 8;
 	private static final int VALUE_LOGIN_SUCCEEDED = 9;
 	private static final int MSG_GEOCODING_FETCHED = 0x00010010;
@@ -228,7 +229,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public void onResume() {
 		super.onResume();
 		inreverse = false;
-		GlobalDataManager.getInstance().addLocationListener(this);
+		GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
 		if (goodsDetail!=null) {//edit
 			this.pv = PV.EDITPOST;
 			Tracker.getInstance()
@@ -247,7 +248,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	}
 	
 	public void onPause() {
-		GlobalDataManager.getInstance().removeLocationListener(this);		
+		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);		
 		extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		super.onPause();
