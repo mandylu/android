@@ -38,7 +38,7 @@ public class SplashJob {
 		
 		isJobStarted = true;
 		
-		LocationService.getInstance().start(parentActivity, GlobalDataManager.getInstance());
+		LocationService.getInstance().start(parentActivity, GlobalDataManager.getInstance().getLocationManager());
 		GlobalDataManager.version = Util.getVersion(parentActivity);
 
 		try {

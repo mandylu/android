@@ -1,14 +1,17 @@
 package com.baixing.util;
 
 import java.io.UnsupportedEncodingException;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
+
 import com.baixing.data.GlobalDataManager;
+import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.util.LocationService.BXRgcListener;
 
-public class PostLocationService implements BXRgcListener, GlobalDataManager.onLocationFetchedListener {
+public class PostLocationService implements BXRgcListener, LocationManager.onLocationFetchedListener {
 	private boolean gettingLocationFromBaidu = false;
 	private boolean inreverse = false;
 	public static final int MSG_GEOCODING_FETCHED = 0x00010010;
@@ -21,11 +24,11 @@ public class PostLocationService implements BXRgcListener, GlobalDataManager.onL
 	
 	public void start(){
 		inreverse = false;
-		GlobalDataManager.getInstance().addLocationListener(this);
+		GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
 	}
 	
 	public void stop(){
-		GlobalDataManager.getInstance().removeLocationListener(this);
+		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);
 	}
 	
 	public boolean retreiveLocation(String city, String addr){

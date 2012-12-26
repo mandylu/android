@@ -25,17 +25,18 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.jsonutil.LocateJsonData;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
-public class CityChangeFragment extends BaseFragment  implements GlobalDataManager.onLocationFetchedListener, View.OnClickListener {
+public class CityChangeFragment extends BaseFragment  implements LocationManager.onLocationFetchedListener, View.OnClickListener {
 	// 定义控件名
 	public ScrollView parentView;
 	
@@ -342,7 +343,7 @@ public class CityChangeFragment extends BaseFragment  implements GlobalDataManag
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		GlobalDataManager.getInstance().addLocationListener(this);
+		GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
 	}
 	
 	@Override
@@ -354,7 +355,7 @@ public class CityChangeFragment extends BaseFragment  implements GlobalDataManag
 
 	@Override
 	public void onPause() {
-		GlobalDataManager.getInstance().removeLocationListener(this);
+		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);
 		super.onPause();
 	}
 	
