@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 package com.baixing.util.post;
 
 import java.io.UnsupportedEncodingException;
@@ -57,21 +58,27 @@ public class PostNetworkService implements ApiListener{
 	}
 	
 	public void postAdAsync(HashMap<String, String> params,
+			HashMap<String, String> mustParams,
 			LinkedHashMap<String, PostGoodsBean> beans,
 			List<String> bmpUrls,
 			BXLocation address,
 			boolean editMode){
+
+		if(address != null){
+			params.put(PostCommonValues.STRING_AREA, getDistrictByLocation(address, beans));
+		}
+
 		String apiName = editMode ? "ad_update" : "ad_add";
 		UserBean user = Util.getCurrentUser();
 		boolean registered = (user != null && user.getPhone() != null && !user.getPhone().equals(""));
 		ApiParams apiParam = new ApiParams();
+		if(mustParams != null){
+			apiParam.addAll(mustParams);
+		}
+
 		if(registered){
 			apiParam.addParam("mobile", user.getPhone());
 			apiParam.addParam("userToken", Util.generateUsertoken(user.getPassword()));
-		}
-		apiParam.addAll(params);
-		if(address != null){
-			apiParam.addParam(PostCommonValues.STRING_AREA, getDistrictByLocation(address, beans));
 		}
 		Pair<Double, Double> coorGoogle = PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
 		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
@@ -84,16 +91,21 @@ public class PostNetworkService implements ApiListener{
 				String key = ite.next();
 				String value = params.get(key);
 				if (value != null && value.length() > 0 && beans.get(key) != null) {
-					try{
-						apiParam.addParam(URLEncoder.encode(beans.get(key).getName(), "UTF-8"),
-								URLEncoder.encode(value, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
+//					try{
+//						apiParam.addParam(URLEncoder.encode(beans.get(key).getName(), "UTF-8"),
+//								URLEncoder.encode(value, "UTF-8").replaceAll("%7E", "~"));//ugly, replace, what's that? 
+//						if(beans.get(key).getName().equals(PostCommonValues.STRING_DESCRIPTION)){//generate title from description
+//							apiParam.addParam("title", 
+//									URLEncoder.encode(value.substring(0, Math.min(25, value.length())), "UTF-8").replaceAll("%7E", "~"));
+
+						apiParam.addParam(beans.get(key).getName(), value); 
 						if(beans.get(key).getName().equals(PostCommonValues.STRING_DESCRIPTION)){//generate title from description
-							apiParam.addParam("title", 
-									URLEncoder.encode(value.substring(0, Math.min(25, value.length())), "UTF-8").replaceAll("%7E", "~"));
+							apiParam.addParam("title", value.substring(0, Math.min(25, value.length())));
+						
 						}
-					}catch(UnsupportedEncodingException e){
-						e.printStackTrace();
-					}
+//					}catch(UnsupportedEncodingException e){
+//						e.printStackTrace();
+//					}
 				}
 			}
 		}

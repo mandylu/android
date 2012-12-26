@@ -434,20 +434,23 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	protected void mergeParams(HashMap<String, String> list){
-		Iterator<String> ite = params.keyIterator();
-		while(ite.hasNext()){
-			String key = ite.next();
-			String value = params.getData(key);
-			list.put(key, value);
-		}
+
 	}
 	
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", GlobalDataManager.getApplication().cityEnglishName);		
+		list.put("cityEnglishName", GlobalDataManager.getApplication().cityEnglishName);
+		
+		HashMap<String, String> mapParams = new HashMap<String, String>();
+		Iterator<String> ite = params.keyIterator();
+		while(ite.hasNext()){
+			String key = ite.next();
+			String value = params.getData(key);
+			mapParams.put(key, value);
+		}
 		mergeParams(list);
-		this.postNS.postAdAsync(list, postList, bmpUrls, location, editMode);
+		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
 	}
 
 	private int getLineCount() {
