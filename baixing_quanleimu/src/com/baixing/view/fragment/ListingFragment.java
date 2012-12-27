@@ -1,9 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
@@ -30,23 +27,26 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.BXLocation;
-import com.baixing.entity.Filterss;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
+import com.baixing.entity.BXLocation;
+import com.baixing.entity.Filterss;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
+import com.baixing.util.VadListLoader;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
 import com.baixing.view.FilterUtil.CustomizeItem;
@@ -56,9 +56,7 @@ import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
 
-import com.baixing.android.api.ApiParams;
-
-public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadListLoader.Callback {
+public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener,BaseCommand.Callback, VadListLoader.Callback {
 
 	public static final int MSG_UPDATE_FILTER = 1000;
 	
@@ -212,7 +210,8 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		
 		if (listFilterss == null)
 		{
-			new Thread(new GetGoodsListThread(true)).start();
+//			new Thread(new GetGoodsListThread(true)).start();
+			executeGetAdsCommand();
 		}
 		else
 		{
@@ -221,45 +220,12 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		
 	}
 	
-	class GetGoodsListThread implements Runnable {
-		private boolean isUpdate;
-		public GetGoodsListThread(boolean isUpdate){
-			this.isUpdate = isUpdate;
-		}
-		@Override
-		public void run() {
-			String apiName = "category_meta_filter";
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getInstance().getCityEnglishName());
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				String json = Communication.getDataByUrl(url, false);
-				if (json != null) {
-					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), 
-							json, System.currentTimeMillis()/1000);
-					
-					listFilterss = JsonUtil.getFilters(json).getFilterssList();
-					if(isUpdate){
-						sendMessage(MSG_UPDATE_FILTER, json);
-					}
-				} 
-//				else {
-//					sendMessage(2, null);
-//				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Communication.BXHttpException e){
-				
-			}
-			
-//			hideProgress();
-		}
+	private void executeGetAdsCommand() {
+		ApiParams params = new ApiParams();
+		params.addParam("categoryEnglishName", categoryEnglishName);
+		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		
+		BaseCommand.createCommand(MSG_UPDATE_FILTER, "category_meta_filter", params).execute(this);
 	}
 	
 	private ApiParams getSearchParams()
@@ -762,6 +728,27 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	@Override
 	public void onRequestComplete(int respCode, Object data) {
 		this.sendMessage(respCode, data);
+	}
+
+	@Override
+	public void onNetworkDone(int requstCode, String responseData) {
+		switch (requestCode) {
+		case MSG_UPDATE_FILTER:
+			if (responseData != null) {
+				Util.saveJsonAndTimestampToLocate(getAppContext(), 
+						"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), 
+						responseData, System.currentTimeMillis()/1000);
+				
+				listFilterss = JsonUtil.getFilters(responseData).getFilterssList();
+				sendMessage(MSG_UPDATE_FILTER, responseData);
+			}
+			break;
+		}
+	}
+
+	@Override
+	public void onNetworkFail(int requstCode, ApiError error) {
+		
 	}
 
 }
