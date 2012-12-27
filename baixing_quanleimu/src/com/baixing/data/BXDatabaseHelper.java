@@ -1,9 +1,10 @@
-package com.baixing.util;
+package com.baixing.data;
 
 import android.content.Context;
 import android.database.sqlite.SQLiteDatabase;
 import android.database.sqlite.SQLiteDatabase.CursorFactory;
 import android.database.sqlite.SQLiteOpenHelper;
+import android.util.Log;
 
 public class BXDatabaseHelper extends SQLiteOpenHelper {
 	public static String TABLENAME = "networkReqAndRes";
@@ -19,6 +20,7 @@ public class BXDatabaseHelper extends SQLiteOpenHelper {
 	@Override
 	public void onUpgrade(SQLiteDatabase db, int oldVersion, int newVersion) {
 		// TODO 更改数据库版本的操作
+		Log.d("TEST_UPGRADE", "upgrage database.");
 	}
 
 	@Override

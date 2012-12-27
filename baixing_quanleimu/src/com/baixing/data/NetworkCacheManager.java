@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.List;
 
 import com.baixing.android.api.ApiClient;
-import com.baixing.util.BXDatabaseHelper;
 import com.baixing.util.Util;
 
 import android.content.Context;
@@ -25,7 +24,7 @@ public class NetworkCacheManager implements ApiClient.CacheProxy {
 	
 	private NetworkCacheManager(Context context) {
 		
-		dbManager = new BXDatabaseHelper(context, "network.db", null, 1);
+		dbManager = new BXDatabaseHelper(context, "network.db", null, 2);
 		
 		/**
     	 * do IO on network request will prolong user's time waiting network. This thread do simple IO work on a separate thread.
