@@ -97,7 +97,7 @@ public class DailyTestCase extends BaixingTestCase {
 		openAdWithPic(true);
 		//Check AdView
 		assertElementByText("adlisting ershoujiaoche adview price title not found", ADVIEW_PRICE_TEXT);
-		assertElementByText("adlisting ershoujiaoche adview favorite title not found", AD_FAVORITE_BUTTON_TEXT);
+		assertElementByTexts(AD_FAVORITE_BUTTON_TEXT + "@" + AD_FAVORITE_CANCEL_TEXT, false);
 		
 		goBack();
 		
