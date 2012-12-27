@@ -203,7 +203,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		{
 			return; //No need first run.
 		}
-		String key = f.getClass().getName() + GlobalDataManager.version;
+		String key = f.getClass().getName() + GlobalDataManager.getInstance().getVersion();
 		SharedPreferences share = this.getSharedPreferences(PREF_FIRSTRUN, MODE_PRIVATE);
 		boolean shown = share.getBoolean(key, false);
 		if (!shown)

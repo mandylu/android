@@ -52,7 +52,7 @@ public class PushUpdateHandler extends PushHandler {
                 return;
             }
 
-            if (Version.compare(serverVersion, GlobalDataManager.version) == 1) {
+            if (Version.compare(serverVersion, GlobalDataManager.getInstance().getVersion()) == 1) {
             	String title = "百姓网有新版本啦~";
     			if (data.has("title")) {
     				title = data.getString("title");

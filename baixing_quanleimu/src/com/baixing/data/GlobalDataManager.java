@@ -17,6 +17,8 @@ import android.widget.Toast;
 
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
@@ -33,8 +35,6 @@ import com.baixing.util.Util;
 public class GlobalDataManager implements Observer{
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
-	public static String version="";
-	public static String channelId;
 	public static WeakReference<Context> context;	
 	private static LazyImageLoader lazyImageLoader;
 	public static boolean update = false;
@@ -46,7 +46,10 @@ public class GlobalDataManager implements Observer{
 	
 	protected static final String PREFS_FILE = "device_id.xml";
     protected static final String PREFS_DEVICE_ID = "device_id";
-    
+
+    //
+    private String version="";
+    private String channelId;
     private AccountManager accountManager;
     private NetworkCacheManager networkCache;
     private LocationManager locationManager;
@@ -61,7 +64,6 @@ public class GlobalDataManager implements Observer{
     	return lazyImageLoader;
     }
     
-
 	public static void setTextMode(boolean tMode){
 		GlobalDataManager.textMode = tMode;
 		GlobalDataManager.needNotifiySwitchMode = false;
@@ -353,13 +355,15 @@ public class GlobalDataManager implements Observer{
 	public List<Filterss> listFilterss = new ArrayList<Filterss>();
 
 	// 城市英文名
-	public String cityEnglishName = "";
+	private String cityEnglishName = "";
 
 	public String getCityEnglishName() {
 		return cityEnglishName;
 	}
 	public void setCityEnglishName(String cityEnglishName) {
 		this.cityEnglishName = cityEnglishName;
+		
+		ApiClient.getInstance().addCommonParam(ApiParams.KEY_CITY, this.cityEnglishName);
 	}
 //	public List<FirstStepCate> getListFirst() {
 //		return listFirst;
@@ -428,15 +432,6 @@ public class GlobalDataManager implements Observer{
 		
 		if(instance == null){
 			instance = new GlobalDataManager();
-			if(context != null && context.get() != null){
-				try{
-					PackageManager packageManager = GlobalDataManager.getInstance().getApplicationContext().getPackageManager();
-					ApplicationInfo ai = packageManager.getApplicationInfo(context.get().getPackageName(), PackageManager.GET_META_DATA);
-					channelId = (String)ai.metaData.get("UMENG_CHANNEL");
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
 		}
 		return instance;
 	}
@@ -453,10 +448,30 @@ public class GlobalDataManager implements Observer{
 		return this.networkCache;
 	}
 	
+	public String getVersion() {
+		return version;
+	}
+	
+	public String getChannelId() {
+		return channelId;
+	}
+	
 	private GlobalDataManager(){
 		this.accountManager = new AccountManager();
 		this.networkCache = NetworkCacheManager.createInstance(context.get());
 		this.locationManager = new LocationManager(context);
+		
+		Context androidContext = context == null ? null : context.get();
+		if(androidContext != null){
+			try{
+				version = Util.getVersion(androidContext);
+				PackageManager packageManager = androidContext.getPackageManager();
+				ApplicationInfo ai = packageManager.getApplicationInfo(androidContext.getPackageName(), PackageManager.GET_META_DATA);
+				channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+			}catch(Exception e){
+				e.printStackTrace();
+			}
+		}
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);

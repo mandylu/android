@@ -39,12 +39,6 @@ public class PostNetworkService implements ApiListener{
 	
 	public PostNetworkService(Handler handler){
 		this.handler = handler;
-		ApiClient.getInstance().init(GlobalDataManager.getInstance().getApplicationContext(),
-				Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), 
-				GlobalDataManager.version, 
-				GlobalDataManager.channelId,
-				GlobalDataManager.getInstance().cityEnglishName,
-				GlobalDataManager.getInstance().getNetworkCacheManager());
 	}
 	
 	public void retreiveMetaAsync(String cityEnglishName, String categoryEnglishName){
@@ -53,7 +47,7 @@ public class PostNetworkService implements ApiListener{
 		category = categoryEnglishName;
 		ApiParams param = new ApiParams();
 		param.addParam("categoryEnglishName", categoryEnglishName);
-		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().cityEnglishName : cityEnglishName));
+		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().getCityEnglishName() : cityEnglishName));
 		ApiClient.getInstance().remoteCall(apiName, param, this);
 	}
 	

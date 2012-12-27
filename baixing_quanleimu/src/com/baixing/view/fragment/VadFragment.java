@@ -1,8 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
@@ -41,6 +39,10 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -64,17 +66,21 @@ import com.baixing.view.vad.VadPageController.ActionCallback;
 import com.baixing.widget.ContextMenuItem;
 import com.quanleimu.activity.R;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback {
 
 	public interface IListHolder{
 		public void startFecthingMore();
 		public boolean onResult(int msg, VadListLoader loader);//return true if getMore succeeded, else otherwise
 	};
 	
-	final private int MSG_REFRESH = 5;
-	final private int MSG_UPDATE = 6;
-	final private int MSG_DELETE = 7;
-	final private int MSG_LOAD_AD_EVENT = 8;
+//	private static int NETWORK_REQ_DELETE = 1;
+//	private static int NETWORK_REQ_REFRESH = 2;
+//	private static int NETWORK_REQ_UPDATE = 3;
+	
+	private static final int MSG_REFRESH = 5;
+	private static final int MSG_UPDATE = 6;
+	private static final int MSG_DELETE = 7;
+	private static final int MSG_LOAD_AD_EVENT = 8;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
@@ -95,9 +101,16 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	List<View> pages = new ArrayList<View>();
 	
 	enum REQUEST_TYPE{
-		REQUEST_TYPE_REFRESH,
-		REQUEST_TYPE_UPDATE,
-		REQUEST_TYPE_DELETE
+
+		REQUEST_TYPE_REFRESH(MSG_REFRESH, "ad_refresh"),
+		REQUEST_TYPE_UPDATE(MSG_UPDATE, "ad_list"),
+		REQUEST_TYPE_DELETE(MSG_DELETE, "ad_delete");
+		public int reqCode;
+		public String apiName;
+		REQUEST_TYPE(int requestCode, String apiName) {
+			this.reqCode = requestCode;
+			this.apiName = apiName;
+		}
 	}
 	
 	@Override
@@ -362,7 +375,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private boolean handleRightBtnIfInVerify(){
 		if(!detail.getValueByKey("status").equals("0")){
 			showSimpleProgress();
-			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+			executeModify(REQUEST_TYPE.REQUEST_TYPE_DELETE, 0);
 
 			return true;	
 		}
@@ -428,7 +441,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
-			new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH)).start();
+			executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 0);
 
 			VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_REFRESH);
 			break;
@@ -457,7 +470,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				showSimpleProgress();
-				new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_DELETE)).start();
+				executeModify(REQUEST_TYPE.REQUEST_TYPE_DELETE, 0);
 				VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_DELETE);
 			}
 		});
@@ -517,7 +530,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				String message = js.getString("message");
 				int code = js.getInt("code");
 				if (code == 0) {
-					new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_UPDATE)).start();
+					executeModify(REQUEST_TYPE.REQUEST_TYPE_UPDATE, 0);
 					Toast.makeText(getActivity(), message, 0).show();
 				}else if(2 == code){
 					hideProgress();
@@ -527,7 +540,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
 							showSimpleProgress();
-							new Thread(new RequestThread(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1)).start();
+							executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1);
 							dialog.dismiss();
 						}
 					})
@@ -617,123 +630,38 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	
 	}
-
-	class RequestThread implements Runnable{
-		private REQUEST_TYPE type;
-		private int pay = 0;
-		public RequestThread(REQUEST_TYPE type){
-			this.type = type;
+	
+	private void executeModify(REQUEST_TYPE request, int pay) {
+		json = "";
+		
+		ApiParams params = new ApiParams();
+		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
+		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+			String mobile = user.getPhone();
+			String password = user.getPassword();
+			params.addParam("mobile", mobile);
+			params.addParam("userToken", Util.generateUsertoken(password));
 		}
-		public RequestThread(REQUEST_TYPE type, int pay) {
-			this.type = type;
-			this.pay = pay;
-		}
-		@Override
-		public void run(){
-			synchronized(VadFragment.this){
-				ArrayList<String> requests = null;
-				String apiName = null;
-				int msgToSend = -1;
-				if(REQUEST_TYPE.REQUEST_TYPE_DELETE == type){
-					requests = doDelete();
-					apiName = "ad_delete";
-					msgToSend = MSG_DELETE;
-				}
-				else if(REQUEST_TYPE.REQUEST_TYPE_REFRESH == type){
-					requests = doRefresh(this.pay);
-					apiName = "ad_refresh";
-					msgToSend = MSG_REFRESH;
-				}
-				else if(REQUEST_TYPE.REQUEST_TYPE_UPDATE == type){
-					requests = doUpdate();
-					apiName = "ad_list";
-					msgToSend = MSG_UPDATE;
-				}
-				if(requests != null){
-					String url = Communication.getApiUrl(apiName, requests);
-					try {
-						json = Communication.getDataByUrl(url, true);
-					} catch (UnsupportedEncodingException e) {
-						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-						hideProgress();
-					} catch (IOException e) {
-						ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-						hideProgress();
-					} catch (Communication.BXHttpException e){
-						
-					}
-//					myHandler.sendEmptyMessage(msgToSend);
-					sendMessage(msgToSend, null);
-				}
+		params.addParam("rt", 1);
+		
+		switch(request) {
+		case REQUEST_TYPE_DELETE:
+			params.addParam("adId", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
+			break;
+		case REQUEST_TYPE_REFRESH:
+			params.addParam("adId", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
+			if(pay != 0){
+				params.addParam("pay", 1);
 			}
+			break;
+		case REQUEST_TYPE_UPDATE:
+			params.addParam("query", "id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		}
+			
+		BaseCommand cmd = BaseCommand.createCommand(request.reqCode, request.apiName, params);
+		cmd.execute(this);
 	}
-	
-	private ArrayList<String> doRefresh(int pay){
-		json = "";
-		ArrayList<String> list = new ArrayList<String>();
 
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
-		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			String mobile = user.getPhone();
-			String password = user.getPassword();
-	
-			list.add("mobile=" + mobile);
-			String password1 = Communication.getMD5(password);
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
-		}
-		list.add("adId=" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
-		list.add("rt=1");
-		if(pay != 0){
-			list.add("pay=1");
-		}
-
-		return list;
-	}
-	
-	private ArrayList<String> doUpdate(){
-		json = "";
-		ArrayList<String> list = new ArrayList<String>();
-		
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
-		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			String mobile = user.getPhone();
-			String password = user.getPassword();
-	
-			list.add("mobile=" + mobile);
-			String password1 = Communication.getMD5(password);
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
-		}
-		list.add("query=id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
-		list.add("rt=1");
-		return list;		
-	}
-	
-	private ArrayList<String> doDelete(){
-		json = "";
-		ArrayList<String> list = new ArrayList<String>();
-
-		UserBean user = (UserBean) Util.loadDataFromLocate(this.getAppContext(), "user", UserBean.class);
-		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			String mobile = user.getPhone();
-			String password = user.getPassword();
-			list.add("mobile=" + mobile);
-			String password1 = Communication.getMD5(password);
-			password1 += Communication.apiSecret;
-			String userToken = Communication.getMD5(password1);
-			list.add("userToken=" + userToken);
-		}
-		list.add("adId=" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
-		list.add("rt=1");
-		
-		return list;		
-	}
-	
-	
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
@@ -967,8 +895,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
 		}
 	}
-	
-
 
 	@Override
 	public int totalPages() {
@@ -1025,10 +951,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			bundle.putInt("postIndex", pos);
 			bundle.putSerializable("goodsDetail", detail);
 			galleryReturned = false;
-//						Log.d("haha", "hahaha, new big gallery");
 			pushFragment(new BigGalleryFragment(), bundle);		
-		}else{
-//						Log.d("hhah", "hahaha, it workssssssssssss");
 		}
 	}
 
@@ -1050,6 +973,19 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public boolean hasMore() {
 		return mListLoader == null ? false : mListLoader.hasMore();
+	}
+
+	@Override
+	public void onNetworkDone(int requstCode, String responseData) {
+		json = responseData;
+		sendMessage(requstCode, null);
+	}
+
+	@Override
+	public void onNetworkFail(int requstCode, ApiError error) {
+		ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+		hideProgress();
+		
 	}
 	
 }

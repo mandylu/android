@@ -47,7 +47,6 @@ public class BXInfoHandler extends PushHandler {
 				pushCode = data.getString("pushCode");
 			}
 			if(!Util.isPushAlreadyThere(cxt, pushCode)){
-				GlobalDataManager.version = Util.getVersion(cxt);
 				ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_BXINFO, 
 						CommonIntentAction.ACTION_NOTIFICATION_BXINFO, title, content, null, false);
 //				Util.saveDataToLocate(cxt, "pushCode", pushCode);

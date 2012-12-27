@@ -92,7 +92,7 @@ public class Communication implements Comparator<String> {
 		list.add("udid=" + Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()));
 		list.add("version=" + Util.getVersion(GlobalDataManager.getInstance().getApplicationContext()));
 		list.add("api_key=" + apiKey);
-		list.add("channel=" + GlobalDataManager.channelId);
+		list.add("channel=" + GlobalDataManager.getInstance().getChannelId());
 		list.add("timestamp=" + getTimeStamp());
 		list.add("userId=" + GlobalDataManager.getInstance().getAccountManager().getMyId(GlobalDataManager.getInstance().getApplicationContext()) );
 		if(GlobalDataManager.getInstance() != null){

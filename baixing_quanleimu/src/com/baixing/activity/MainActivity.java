@@ -316,7 +316,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 				if (timestamp < updateTimestamp || categoryContent == null || categoryContent.length() == 0) {
 					String apiName = "category_list";
 					ArrayList<String> list = new ArrayList<String>();
-					list.add("cityEnglishName="+GlobalDataManager.getInstance().cityEnglishName);
+					list.add("cityEnglishName="+GlobalDataManager.getInstance().getCityEnglishName());
 					String url = Communication.getApiUrl(apiName, list);
 					try {
 						String json = Communication.getDataByUrl(url, true);
@@ -357,12 +357,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		splashJob = new SplashJob(this, this);
 		
 //		isRestoring = savedInstanceState != null;
-		Intent intent = this.getIntent();
-		if(intent != null){
-			if(intent.getBooleanExtra("fromNotification", false)){
-				GlobalDataManager.version = Util.getVersion(this);
-			}
-		}
+//		Intent intent = this.getIntent();
+//		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
+//			if(intent.getBooleanExtra("fromNotification", false)){
+//				GlobalDataManager.version = Util.getVersion(this);
+//			}
+//		}
 //		Profiler.markEnd("maincreate");
 
 		byte[] checkFlgData = Util.loadData(this, "umeng_update_check_flg");

@@ -85,7 +85,7 @@ public class MobileConfig {
     public boolean hasNewVersion() {
         try {
             String serverVersion = json.getString("serverVersion");
-            return (Version.compare(serverVersion, GlobalDataManager.version) == 1);
+            return (Version.compare(serverVersion, GlobalDataManager.getInstance().getVersion()) == 1);
         } catch (JSONException e) {
             return false;
         }

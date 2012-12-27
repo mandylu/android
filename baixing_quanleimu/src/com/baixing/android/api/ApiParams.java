@@ -10,6 +10,10 @@ import java.util.Set;
 //liuweili@baixing.com
 import java.util.Map.Entry;
 
+/**
+ * 
+ * @history: by liuchong add <code>addParams</code> for primitive types.
+ */
 public class ApiParams implements Serializable {
 	
 	private static final long serialVersionUID = 6811845003931804312L;
@@ -32,12 +36,51 @@ public class ApiParams implements Serializable {
 	 * @param value
 	 */
 	public void addParam(String key,String value){
-		params.put(key, value);
+		addParameter(key, value);
 	}
 	
 	public void addAll(Map<String, String> all){
 		params.putAll(all);
 	}
+	
+	private void addParameter(String key, Object value)
+	{
+		if (value != null)
+		{
+			params.put(key, value.toString());
+		}
+	}
+	
+	public void addParam(String key, int value)
+	{
+		params.put(key, value + "");
+	}
+	
+	public void addParam(String key, double value)
+	{
+		params.put(key, value + "");
+	}
+	
+	public void addParam(String key, long value)
+	{
+		params.put(key, value + "");
+	}
+	
+	public void addParam(String key, float value)
+	{
+		params.put(key, value + "");
+	}
+	
+	public void addParam(String key, short value)
+	{
+		params.put(key, value + "");
+	}
+	
+	public void addParam(String key, boolean value)
+	{
+		this.addParameter(key, Boolean.valueOf(value));
+	}
+	
 	/**
 	 * 获取已添加的业务参数
 	 * @param key

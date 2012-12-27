@@ -281,7 +281,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	protected String getCityEnglishName(){
-		return GlobalDataManager.getInstance().cityEnglishName;
+		return GlobalDataManager.getInstance().getCityEnglishName();
 	}
 	
 	private void showPost(){
@@ -421,7 +421,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", GlobalDataManager.getInstance().cityEnglishName);
+		list.put("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
 		HashMap<String, String> mapParams = new HashMap<String, String>();
 		Iterator<String> ite = params.keyIterator();

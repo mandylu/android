@@ -200,7 +200,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 									getActivity(),
 									"saveFilterss"
 									+ categoryEnglishName
-									+ GlobalDataManager.getInstance().cityEnglishName);
+									+ GlobalDataManager.getInstance().getCityEnglishName());
 			String json = pair.second;
 			if (json != null && json.length() > 0 && (pair.first + (24 * 3600) >= System.currentTimeMillis()/1000))
 			{
@@ -231,14 +231,14 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			ArrayList<String> list = new ArrayList<String>();
 
 			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getInstance().cityEnglishName);
+			list.add("cityEnglishName=" + GlobalDataManager.getInstance().getCityEnglishName());
 
 			String url = Communication.getApiUrl(apiName, list);
 			try {
 				String json = Communication.getDataByUrl(url, false);
 				if (json != null) {
 					Util.saveJsonAndTimestampToLocate(getAppContext(), 
-							"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().cityEnglishName, 
+							"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), 
 							json, System.currentTimeMillis()/1000);
 					
 					listFilterss = JsonUtil.getFilters(json).getFilterssList();

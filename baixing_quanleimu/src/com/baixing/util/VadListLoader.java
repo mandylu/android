@@ -196,23 +196,10 @@ public class VadListLoader implements Serializable{
 		private boolean isNearby = false;
 		private boolean isUserList = false;
 		
-		private void initApi(){
-			String udid = Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext());
-			//FIXME: move following code to app entry
-			ApiClient.getInstance().init(GlobalDataManager.getInstance().getApplicationContext(),
-					udid, 
-					GlobalDataManager.version, 
-					GlobalDataManager.channelId,
-					GlobalDataManager.getInstance().cityEnglishName,
-					GlobalDataManager.getInstance().getNetworkCacheManager());
-		}
-		
 		GetListCommand(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
-			
-			initApi();
 		}
 		
 		GetListCommand(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
@@ -222,8 +209,6 @@ public class VadListLoader implements Serializable{
 			dataPolicy = dataPolicy_;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
-			
-			initApi();
 		}
 		
 		public void cancel(){

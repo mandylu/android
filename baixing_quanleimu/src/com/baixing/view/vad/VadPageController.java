@@ -77,16 +77,13 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			
 			public Object instantiateItem(View arg0, int position) 
 			{
-				Log.d("instantiateItem", "instantiateItem:    " + position);
 				View detail = getNewPage(LayoutInflater.from(arg0.getContext()), position);//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
-				
 				
 				detail.setTag(R.id.accountEt, detail);
 				((ViewPager) arg0).addView(detail, 0);
 				if (position == callback.totalPages())
 				{
-					detail.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
-					detail.findViewById(R.id.llDetail).setVisibility(View.GONE);
+					updateLoadingPage(detail, true, false);
 					loadingMorePage = new WeakReference(detail);
 					callback.onLoadMore();
 				}
@@ -280,6 +277,10 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 	
 	private void initContent(View contentView, final Ad detail, final int pageIndex, ViewPager pager, boolean useRoot)
 	{
+		if (detail == null) {
+			return;
+		}
+		
 		if(useRoot)
 			contentView = contentView.getRootView();
 		
@@ -303,7 +304,6 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 				llgl.findViewById(R.id.vad_no_img_tip).setVisibility(View.GONE);
 				llgl.findViewById(R.id.glDetail).setVisibility(View.VISIBLE);
 				HorizontalListView glDetail = (HorizontalListView) contentView.findViewById(R.id.glDetail);
-				Log.d("instantiateItem", "instantiateItem:    initContent  " + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION) +  glDetail);
 				if(pageIndex == originalIndex || pageIndex == cur){
 					glDetail.setAdapter(new VadImageAdapter(llgl.getContext(), listUrl, pageIndex, this));
 					glDetail.setOnTouchListener(this);
@@ -348,9 +348,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			page.postDelayed(new Runnable() {
 				@Override
 				public void run() {
-					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
-					page.findViewById(R.id.retry_more_parent).setVisibility(View.VISIBLE);
-					page.findViewById(R.id.llDetail).setVisibility(View.GONE);
+					updateLoadingPage(page, false, true);
 				}
 				
 			}, 10);
@@ -365,8 +363,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 
 				@Override
 				public void run() {
-					page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.GONE);
-					page.findViewById(R.id.llDetail).setVisibility(View.VISIBLE);
+					updateLoadingPage(page, false, false);
 					final Integer tag = (Integer)page.getTag();
 					if(tag != null){
 						initContent(page, callback.getAd(tag.intValue()), tag.intValue(), null, false);
@@ -375,6 +372,12 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 				
 			}, 10);
 		}
+	}
+	
+	private void updateLoadingPage(View page, boolean loading, boolean retry) {
+		page.findViewById(R.id.loading_more_progress_parent).setVisibility(loading ? View.VISIBLE : View.GONE);
+		page.findViewById(R.id.retry_more_parent).setVisibility(retry ? View.VISIBLE : View.GONE);
+		page.findViewById(R.id.llDetail).setVisibility(loading || retry ? View.GONE : View.VISIBLE);
 	}
 	
 	
@@ -604,9 +607,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		final View page = loadingMorePage == null ? null : (View) loadingMorePage.get();
 		if (page != null)
 		{
-			page.findViewById(R.id.loading_more_progress_parent).setVisibility(View.VISIBLE);
-			page.findViewById(R.id.retry_more_parent).setVisibility(View.GONE);
-			page.findViewById(R.id.llDetail).setVisibility(View.GONE);
+			updateLoadingPage(page, true, false);
 		}
 		
 		callback.onLoadMore();
