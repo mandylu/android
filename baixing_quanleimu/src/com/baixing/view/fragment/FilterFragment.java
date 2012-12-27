@@ -24,6 +24,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
@@ -36,13 +40,16 @@ import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
-public class FilterFragment extends BaseFragment implements View.OnClickListener{
+public class FilterFragment extends BaseFragment implements View.OnClickListener, Callback{
 	
 	private static final int MSG_MULTISEL_BACK = 0;
 	private static final int MSG_LOAD_DATA_SUCCED = 1;
 	private static final int MSG_LOAD_DATA_FAILD = 2;
 	private static final int MSG_UPDATE_KEYWORD = 3;
 	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
+	
+	private static final int REQ_REQUEST_FILTER = 1;
+	private static final int REQ_REQUEST_FILTER_SILENT = 2;
 	
 	// 定义变量
 	private EditText ed_sift;
@@ -116,22 +123,21 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		long time = pair.first;
 		if (json == null || json.length() == 0) {
 			showSimpleProgress();
-			new Thread(new GetGoodsListThread(true)).start();
+			executeGetFilterCmd(false);
 		} else {
 			if (time + 24 * 3600 < System.currentTimeMillis()/1000) {
 				sendMessage(MSG_LOAD_DATA_SUCCED, null);
 				showSimpleProgress();
 				
-				new Thread(new GetGoodsListThread(false)).start();
+				executeGetFilterCmd(true);
 			} else {
-				// sendMessage(1, null);
 				loadSiftFrame(getView());
 			}
 		}
 	}
 	
 	public void handleRightAction(){
-		finishFragment(requestCode, parametersHolder);
+		finishFragment(fragmentRequestCode, parametersHolder);
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	
 	public void initTitle(TitleDef title){
@@ -200,6 +206,14 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 				}
 			}
 		}
+	}
+	
+	private void executeGetFilterCmd(boolean isSilent) {
+		ApiParams params = new ApiParams();
+		params.addParam("categoryEnglishName", categoryEnglishName);
+		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		
+		BaseCommand.createCommand(isSilent ? REQ_REQUEST_FILTER_SILENT : REQ_REQUEST_FILTER, "category_meta_filter", params).execute(this);
 	}
 	
 	class GetGoodsListThread implements Runnable {
@@ -470,5 +484,26 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	public boolean hasGlobalTab()
 	{
 		return false;
+	}
+
+	@Override
+	public void onNetworkDone(int requstCode, String responseData) {
+		if (REQ_REQUEST_FILTER == requstCode) {
+			Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), responseData, System.currentTimeMillis()/1000);
+			sendMessage(MSG_LOAD_DATA_SUCCED, null);
+		}
+	}
+
+	@Override
+	public void onNetworkFail(int requstCode, ApiError error) {
+		switch (requstCode) {
+		case REQ_REQUEST_FILTER:
+		case REQ_REQUEST_FILTER_SILENT:
+			sendMessage(MSG_LOAD_DATA_FAILD, null);
+			break;
+
+		default:
+			break;
+		}
 	}
 }

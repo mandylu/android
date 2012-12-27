@@ -212,7 +212,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 //		FirstStepCate cate = allCates.get(index);
 		Category cate = allCates.get(index);
 		Bundle bundle = new Bundle();
-		bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
+		bundle.putInt(ARG_COMMON_REQ_CODE, this.fragmentRequestCode);
 		bundle.putSerializable("cates", cate);
 		bundle.putBoolean("isPost", false);
 		pushFragment(new SecondCateFragment(), bundle);

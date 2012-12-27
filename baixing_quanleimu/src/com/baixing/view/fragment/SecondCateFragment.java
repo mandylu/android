@@ -104,9 +104,9 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 			final Bundle bundle = createArguments(secCate.getName(), "返回");
 			bundle.putString("categoryEnglishName", secCate.getEnglishName());
 			bundle.putString("siftresult", "");
-			if (requestCode != INVALID_REQUEST_CODE) {
+			if (fragmentRequestCode != INVALID_REQUEST_CODE) {
 				String toRet = secCate.getEnglishName() + "," + secCate.getName();
-				finishFragment(requestCode, toRet);
+				finishFragment(fragmentRequestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
 				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
@@ -142,8 +142,8 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 			}
 		} else {
 			String names = secCate.getEnglishName() + "," + secCate.getName();
-			if (requestCode != INVALID_REQUEST_CODE) {
-				finishFragment(requestCode, names);
+			if (fragmentRequestCode != INVALID_REQUEST_CODE) {
+				finishFragment(fragmentRequestCode, names);
 			} else {
 				Bundle bundle = createArguments(null, null);
 				bundle.putSerializable("cateNames", names);

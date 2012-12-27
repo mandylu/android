@@ -732,7 +732,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	@Override
 	public void onNetworkDone(int requstCode, String responseData) {
-		switch (requestCode) {
+		switch (requstCode) {
 		case MSG_UPDATE_FILTER:
 			if (responseData != null) {
 				Util.saveJsonAndTimestampToLocate(getAppContext(), 

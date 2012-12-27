@@ -166,7 +166,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 								MultiLevelItem nItem = new MultiLevelItem();
 								nItem.id = MultiLevelSelectionFragment.this.id;
 								nItem.txt = MultiLevelSelectionFragment.this.title;
-								finishFragment(requestCode, nItem);
+								finishFragment(fragmentRequestCode, nItem);
 //								m_viewInfoListener.onBack(message, nItem);
 								return;
 //							}
@@ -232,7 +232,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 							"全部" : MultiLevelSelectionFragment.this.title;
 					//MultiLevelSelectionFragment.this.title.equals("请选择") ? "全部" : MultiLevelSelectionFragment.this.title;
 //					m_viewInfoListener.onBack(message, nItem);
-					finishFragment(requestCode, nItem);
+					finishFragment(fragmentRequestCode, nItem);
 					return;
 				}
 				if(hasNextLevel){
@@ -242,10 +242,10 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 								: (MultiLevelItem)adapter.getItem(position);
 								
 						if (isMunisipality(item.txt)) { // TODO: levels:"sheng,city"时，直辖市没有下一级了。 @zhongjiawu
-							finishFragment(requestCode, item);
+							finishFragment(fragmentRequestCode, item);
 						} else {
 							Bundle bundle = createArguments(item.txt, null);
-							bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+							bundle.putInt(ARG_COMMON_REQ_CODE, fragmentRequestCode);
 							bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
 							bundle.putString("metaId", item.id);
 							bundle.putString("selectedValue", selectedValue);
@@ -266,7 +266,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //					if(null != m_viewInfoListener){
 //						m_viewInfoListener.onBack(message, mItem);
 //					}
-					finishFragment(requestCode, mItem);
+					finishFragment(fragmentRequestCode, mItem);
 				}
 			}
 		});		
@@ -298,7 +298,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		if(message == SelectionSearchFragment.MSG_SELECTIONVIEW_BACK){
 			if(adapter instanceof CommonItemAdapter && obj instanceof MultiLevelItem){
 				Bundle bundle = createArguments(((MultiLevelItem)obj).txt, null);
-				bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+				bundle.putInt(ARG_COMMON_REQ_CODE, fragmentRequestCode);
 				bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
 				bundle.putString("metaId", ((MultiLevelItem)obj).id);
 				pushFragment(new MultiLevelSelectionFragment(), bundle);
@@ -311,14 +311,14 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //				if(null != m_viewInfoListener){
 //					m_viewInfoListener.onBack(this.message, mItem);
 //				}
-				finishFragment(requestCode, mItem);
+				finishFragment(fragmentRequestCode, mItem);
 			}
 			return;
 		}
 //		if(this.m_viewInfoListener != null){
 //			this.m_viewInfoListener.onBack(message, obj);
 //		}
-		finishFragment(requestCode, obj);
+		finishFragment(fragmentRequestCode, obj);
 	}
 	
 	public boolean hasGlobalTab()

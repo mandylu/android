@@ -70,7 +70,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 				adapter.setList(others);
 				if(singleSelection){
 //					m_viewInfoListener.onBack(message, position);
-					finishFragment(requestCode, position);
+					finishFragment(fragmentRequestCode, position);
 				}
 			}
 		});
@@ -91,7 +91,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 			if(lists.length() > 0){
 				lists = lists.substring(1);
 			}
-			finishFragment(requestCode, lists);
+			finishFragment(fragmentRequestCode, lists);
 //			m_viewInfoListener.onBack(message, lists);
 //		}
 	}

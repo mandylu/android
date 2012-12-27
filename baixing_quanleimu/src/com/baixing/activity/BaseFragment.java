@@ -49,7 +49,7 @@ public abstract class BaseFragment extends Fragment {
 
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;
-	protected int requestCode = INVALID_REQUEST_CODE;
+	protected int fragmentRequestCode = INVALID_REQUEST_CODE;
 	
 	public final int MSG_USER_LOGIN 		= 10001;
 	public final int MSG_USER_LOGOUT 	 	= 10002;
@@ -173,7 +173,7 @@ public abstract class BaseFragment extends Fragment {
 		
 		if (getArguments() != null)
 		{
-			requestCode = getArguments().getInt(ARG_COMMON_REQ_CODE, INVALID_REQUEST_CODE);
+			fragmentRequestCode = getArguments().getInt(ARG_COMMON_REQ_CODE, INVALID_REQUEST_CODE);
 		}
 		
 		if (savedInstanceState != null)

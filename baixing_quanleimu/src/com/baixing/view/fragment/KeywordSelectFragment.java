@@ -57,7 +57,7 @@ public class KeywordSelectFragment extends BaseFragment {
 						Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT)
 								.show();
 					} else {
-						finishFragment(requestCode, searchContent);
+						finishFragment(fragmentRequestCode, searchContent);
 					}
 					return true;
 				} 
@@ -88,7 +88,7 @@ public class KeywordSelectFragment extends BaseFragment {
 	 */
 	@Override
 	public boolean handleBack() {
-		finishFragment(requestCode, null);
+		finishFragment(fragmentRequestCode, null);
 		return true;
 	}
 
@@ -123,7 +123,7 @@ public class KeywordSelectFragment extends BaseFragment {
 					String searchContent = listRemark.get(arg2);
 					etSearch.setText(searchContent);
 					etSearch.setSelection(searchContent.length(), searchContent.length());
-					finishFragment(requestCode, searchContent);
+					finishFragment(fragmentRequestCode, searchContent);
 				} else {
 					listRemark.clear();
 					GlobalDataManager.getInstance().updateRemark((String[])null);
@@ -215,7 +215,7 @@ public class KeywordSelectFragment extends BaseFragment {
 					.show();
 		} else {
 			addToListRemark(searchContent);
-			finishFragment(requestCode, searchContent);
+			finishFragment(fragmentRequestCode, searchContent);
 		}
 	}
 	
