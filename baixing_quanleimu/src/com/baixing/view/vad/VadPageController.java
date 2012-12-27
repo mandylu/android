@@ -28,7 +28,8 @@ import com.baixing.adapter.VadImageAdapter;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
@@ -105,7 +106,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 //                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
                 	List<String> listUrl = getImageUrls(callback.getAd(pos));
                 	if(null != listUrl && listUrl.size() > 0){
-                		SimpleImageLoader.Cancel(listUrl);
+                		ImageLoaderManager.getInstance().Cancel(listUrl);
 	            		for(int i = 0; i < listUrl.size(); ++ i){
 	            			decreaseImageCount(listUrl.get(i), pos);
 	            		}
@@ -476,7 +477,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 	
 	@Override
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
-		SimpleImageLoader.showImg(imageView, url, previousUrl, imageView.getContext());
+		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext());
 		increaseImageCount(url, index);
 	}
 	
@@ -510,7 +511,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 				}
 			}
 			if(values.size() == 0){
-				GlobalDataManager.getImageLoader().forceRecycle(url);
+				ImageCacheManager.getInstance().forceRecycle(url, true);
 				imageMap.remove(url);
 			}else{
 				imageMap.put(url, values);

@@ -35,7 +35,8 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
 import com.quanleimu.activity.R;
 
@@ -144,7 +145,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     static public Bitmap getThumbnailWithPath(String path){
     	if(path == null || path.length() <= 0) return null;
-    	WeakReference<Bitmap> thumbnail = GlobalDataManager.getImageLoader().getWithImmediateIO(path);
+    	WeakReference<Bitmap> thumbnail = ImageLoaderManager.getInstance().getWithImmediateIO(path);
     	if(thumbnail == null) return null;
     	return thumbnail.get();
     }
@@ -338,7 +339,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					iv.setVisibility(View.VISIBLE);
 					if(imgContainer[i].thumbnailPath != null){
 						if(imgContainer[i].thumbnailPath.contains("http://")){
-							SimpleImageLoader.showImg(iv, imgContainer[i].thumbnailPath, null, getActivity());
+							ImageLoaderManager.getInstance().showImg(iv, imgContainer[i].thumbnailPath, null, getActivity());
 						}else{
 							Bitmap bmp = getThumbnailWithPath(imgContainer[i].thumbnailPath);
 							iv.setImageBitmap(bmp);
@@ -532,8 +533,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
 					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageResource(R.drawable.loading_210_black);
-					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
-//							bitmap_url.get(currentImgView),
+					ImageLoaderManager.getInstance().showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
 							imgContainer[currentImgView].bitmapUrl,
 							"",
 							getActivity());
@@ -776,8 +776,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
 				String thumbnailPath = "";
 				if(thumbnailBmp != null){
-					GlobalDataManager.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
-					GlobalDataManager.getImageLoader().putImageToCache("thumbnail_" + path, thumbnailBmp);
+					ImageCacheManager.getInstance().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					ImageCacheManager.getInstance().saveBitmapToCache("thumbnail_" + path, new WeakReference<Bitmap>(thumbnailBmp));
 					thumbnailPath = "thumbnail_" + path;
 				}
 				currentIndex = adjustImgContainerAfterUpload(path, currentIndex, result, thumbnailPath);

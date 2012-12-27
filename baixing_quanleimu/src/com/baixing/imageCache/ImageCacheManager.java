@@ -20,19 +20,28 @@ import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
 import android.util.Log;
 import android.util.Pair;
+
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.BitmapUtils;
-import com.baixing.util.DiskLruCache;
 import com.baixing.util.NetworkProtocols;
 import com.baixing.util.TextUtil;
-class ImageManager{
+public class ImageCacheManager{
 	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
 	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
 	private DiskLruCache imageDiskLruCache = null;	
 	private Context context;	
 	
-	public ImageManager(Context context)
-	{
-		this.context = context;
+	static ImageCacheManager instance;
+	
+	static public ImageCacheManager getInstance(){
+		if(instance == null){
+			instance = new ImageCacheManager();
+		}
+		return instance;
+	}
+	
+	private ImageCacheManager(){
+		this.context = GlobalDataManager.getInstance().getApplicationContext();
 	    // Get memory class of this device, exceeding this amount will throw an
 	    // OutOfMemory exception.
 	    final int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();

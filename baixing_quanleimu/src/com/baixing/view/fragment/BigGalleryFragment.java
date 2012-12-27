@@ -35,7 +35,8 @@ import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -90,7 +91,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
-		GlobalDataManager.getImageLoader().enableSampleSize();
+		ImageCacheManager.getInstance().enableSampleSize(true);
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
@@ -155,14 +156,14 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
-        GlobalDataManager.getImageLoader().disableSampleSize();
-  		SimpleImageLoader.Cancel(listUrl);
+        ImageCacheManager.getInstance().enableSampleSize(false);
+  		ImageLoaderManager.getInstance().Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
 //  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					GlobalDataManager.getImageLoader().forceRecycle(url);
+  					ImageCacheManager.getInstance().forceRecycle(url, true);
 //  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
@@ -237,7 +238,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    	this.pv = PV.VIEWADPIC;
 	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
-	    	GlobalDataManager.getImageLoader().enableSampleSize();
+	    	ImageCacheManager.getInstance().enableSampleSize(true);
 			if (null == mb || mb.get() == null) {
 				BitmapFactory.Options o = new BitmapFactory.Options();
 				o.inPurgeable = true;
@@ -259,7 +260,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //	    		return;
 //	    	}
 //	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
-	    	String filePath = SimpleImageLoader.getFileInDiskCache(path);
+	    	String filePath = ImageCacheManager.getInstance().getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
 	    	String title = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
@@ -394,7 +395,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //					imageView.setImageBitmap(mb);
 					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
 					
-				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
+				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));
 				}
 
@@ -445,7 +446,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(position - index >= 0)
 					urls.add(listUrl.get(position-index));				
 			}
-			SimpleImageLoader.AdjustPriority(urls);		
+			ImageLoaderManager.getInstance().AdjustPriority(urls);		
 		}
 
 		@Override
