@@ -105,7 +105,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		}
 	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if (savedInstanceState != null)
 		{

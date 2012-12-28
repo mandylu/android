@@ -3,7 +3,8 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
-
+	<include layout="@layout/common_title"/>
+	
 	<ScrollView
 		android:id="@+id/scrollViewAbout"
 		android:layout_width="fill_parent"

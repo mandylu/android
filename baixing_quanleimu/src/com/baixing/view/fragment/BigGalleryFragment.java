@@ -88,7 +88,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
 		ImageCacheManager.getInstance().enableSampleSize(true);
@@ -97,12 +97,8 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 		try {
 			if(goodsDetail.getImageList().getBig() == null || goodsDetail.getImageList().getBig().equals(""))
 			{
-//				if(null != m_viewInfoListener){
-					TitleDef title = getTitleDef();
-					title.m_title = "0/0";
-					refreshHeader();
-//					m_viewInfoListener.onTitleChanged(title);
-//				}
+				TitleDef title = getTitleDef();
+				title.m_title = "0/0";
 				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
 			}
 			else
@@ -150,9 +146,9 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	}
 	
 	@Override
-	public void onDestroyView(){
+	public void onViewDestory(View rootView){
 //		ViewFlow vf = ((ViewFlow)this.getView().findViewById(R.id.vfCoupon));
-        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();
+        ((ViewFlow)rootView.findViewById(R.id.vfCoupon)).finalize();
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
@@ -176,8 +172,6 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
             mb.get().recycle();
             mb = null;
         }
-        
-        super.onDestroyView();
 	}
 	
 	

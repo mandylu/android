@@ -4,12 +4,14 @@
     android:layout_height="fill_parent"
     android:background="@color/bg_screen"    
     android:orientation="vertical" >
+	<include layout="@layout/common_title"/>
 
     <LinearLayout
         android:id="@+id/searching_parent"
         android:layout_width="fill_parent"
         android:layout_height="48dp"
         android:background="#fafafa"
+        android:layout_below="@+id/linearTop"
         android:gravity="center"
         android:orientation="horizontal" >
 

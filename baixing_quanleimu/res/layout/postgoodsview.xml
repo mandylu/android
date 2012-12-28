@@ -4,7 +4,7 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
-
+	<include layout="@layout/common_title"/>
     <ScrollView
         android:id="@+id/goodscontent"
         android:layout_width="fill_parent"
@@ -14,6 +14,7 @@
         android:paddingRight="@dimen/post_padding"
         android:paddingLeft="@dimen/post_padding"
         android:paddingBottom="@dimen/post_padding"
+        android:layout_below="@+id/linearTop"
         android:scrollbars="none" >
 
         <LinearLayout

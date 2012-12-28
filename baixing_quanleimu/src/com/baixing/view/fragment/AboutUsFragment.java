@@ -27,7 +27,7 @@ public class AboutUsFragment extends BaseFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		RelativeLayout relAbout = (RelativeLayout)inflater.inflate(R.layout.aboutus, null);
 		

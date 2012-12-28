@@ -45,7 +45,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 	
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v =  inflater.inflate(R.layout.secondcate, null);
 		v.setLayoutParams(new LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));

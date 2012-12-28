@@ -3,9 +3,11 @@
     xmlns:app="http://schemas.android.com/apk/res/com.quanleimu.activity"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent" >
-
+ 	<include layout="@layout/common_title"/>
+ 
         <include layout="@layout/filter_bar"
             android:id="@+id/filter_bar_root"
+            android:layout_below="@+id/linearTop"
         android:layout_width="fill_parent"
         android:layout_height="@dimen/tab_height"/>
         
