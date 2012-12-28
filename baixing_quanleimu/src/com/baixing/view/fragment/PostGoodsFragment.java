@@ -230,7 +230,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);		
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);

@@ -129,7 +129,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.personalcenterview, null);
@@ -719,8 +719,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-//		title.m_rightActionHint = "编辑";
 		if(currentType == TYPE_MYPOST){
 			title.m_title = "我的信息";
 		}

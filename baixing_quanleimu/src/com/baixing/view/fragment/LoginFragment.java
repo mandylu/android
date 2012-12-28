@@ -79,7 +79,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		title.m_leftActionHint = "返回";
 		
 		title.m_visible = true;
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		title.m_rightActionHint = "注册";
 //		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登录";
@@ -144,7 +143,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
