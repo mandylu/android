@@ -6,6 +6,7 @@ import java.util.HashMap;
 import java.util.List;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
 
 import android.content.Context;
@@ -34,9 +35,7 @@ public class VadImageAdapter extends BaseAdapter {
 		pageIndex = detailPostion;
 		this.provider = imageLoader;
 		
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-		o.inPurgeable = true;
-		mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(), R.drawable.icon_vad_loading, o));
+		mb_loading = new WeakReference<Bitmap>(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_vad_loading, -1, -1));
 	}
 	
 	public void setContent(List<String> listUrl){

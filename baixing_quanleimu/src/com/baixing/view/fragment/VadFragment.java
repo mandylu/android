@@ -48,6 +48,7 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -340,7 +341,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		if (!buzzEnable)
 		{
 			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
-			btnImg.setImageResource(R.drawable.icon_sms_disable);
+			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable, -1, -1));
 		}
 		
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);

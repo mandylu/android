@@ -18,13 +18,16 @@ import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
+import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
+import android.view.WindowManager;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.NetworkProtocols;
 import com.baixing.util.TextUtil;
+import com.baixing.util.BitmapUtils._Rect;
 public class ImageCacheManager{
 	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
 	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
@@ -81,24 +84,69 @@ public class ImageCacheManager{
 		}
 	}
 	
-	public WeakReference<Bitmap> getFromMemoryCache(String url){
+	private static void configOption(BitmapFactory.Options option, int maxWidth, int maxHeight){
+		int sampleSize = BitmapUtils.calculateInSampleSize(option, maxWidth, maxHeight);
+		option.inJustDecodeBounds = false;
+		option.inPurgeable = true;
+		option.inInputShareable = true;
+		option.inSampleSize = sampleSize;		
+	}
+	
+	public Bitmap loadBitmapFromFile(String path, int maxWidth, int maxHeight){
+		WeakReference<Bitmap> cached = ImageCacheManager.getInstance().getFromCache(path);
+		if(cached != null && cached.get() != null) return cached.get();
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		if(context == null) return null;
+		BitmapFactory.Options option = new BitmapFactory.Options();
+		option.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, option);
+		configOption(option, maxWidth, maxHeight);
+		Bitmap ret = BitmapFactory.decodeFile(path, option);
+		if(ret != null){
+			ImageCacheManager.getInstance().saveBitmapToCache(path, new WeakReference<Bitmap>(ret));
+			ImageCacheManager.getInstance().putImageToDisk(path, ret);
+		}
+		return ret;
+	}
+	
+	public Bitmap loadBitmapFromResource(int resId, int maxWidth, int maxHeight){
+		WeakReference<Bitmap> cached = ImageCacheManager.getInstance().getFromCache(String.valueOf(resId));
+		if(cached != null && cached.get() != null) return cached.get();
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		if(context == null) return null;
+		BitmapFactory.Options option = new BitmapFactory.Options();
+		option.inJustDecodeBounds = true;
+		BitmapFactory.decodeResource(context.getResources(), resId, option);
+		configOption(option, maxWidth, maxHeight);
+		Bitmap ret = BitmapFactory.decodeResource(context.getResources(), resId, option);
+		if(ret != null){
+			ImageCacheManager.getInstance().saveBitmapToCache(String.valueOf(resId), new WeakReference<Bitmap>(ret));
+			ImageCacheManager.getInstance().putImageToDisk(String.valueOf(resId), ret);
+		}
+		return ret;
+	}
+	
+	public WeakReference<Bitmap> getFromCache(String url){
 		WeakReference<Bitmap> bitmap = null;
 		bitmap = this.getFromMapCache(url);		
 		if(null == bitmap){			
-			bitmap =getFromFileCache(url);
+			bitmap = getFromFileCache(url);
+			if(bitmap != null && bitmap.get() != null){
+				this.saveBitmapToCache(url, bitmap);
+			}
 		}		
 		return bitmap;		
 	}
 
-	public WeakReference<Bitmap> getFromFileCache(String url){
+	private WeakReference<Bitmap> getFromFileCache(String url){
 		if(null != imageDiskLruCache){
-			return new WeakReference<Bitmap>(imageDiskLruCache.get(getMd5(url)));
+			return new WeakReference<Bitmap>(imageDiskLruCache.get(TextUtil.getMD5(url)));
 		}
 		
 		return null;
 	}
 	
-	public WeakReference<Bitmap> getFromMapCache(String url){
+	private WeakReference<Bitmap> getFromMapCache(String url){
 		WeakReference<Bitmap> bitmap = null;
 		synchronized (this){
 			Pair<Integer, WeakReference<Bitmap>> p = imageLruCache.get(url);
@@ -204,58 +252,16 @@ public class ImageCacheManager{
 		}
 	}
 	
-	public WeakReference<Bitmap> safeGetFromFileCacheOrAssets(String url){
-		String fileName = getMd5(url);
-		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
-		Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  " + url + "  md5:  " + fileName);
-		if(null == bitmap || bitmap.get() == null){
-			try{
-				Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap is null");
-				
-				FileInputStream is = context.getAssets().openFd(fileName).createInputStream();
-				BitmapFactory.Options o =  new BitmapFactory.Options();
-	            o.inPurgeable = true;
-	            bitmap = new WeakReference<Bitmap>(BitmapFactory.decodeStream(is, null, o));
-	            Log.d("bitmap", "bitmap, imageManager::safeGetFromFileCacheOrAssets:  bitmap:  " + bitmap.toString());
-	            if(bitmap != null && bitmap.get() != null){
-		            if(null != imageDiskLruCache){
-		            	imageDiskLruCache.put(fileName, bitmap.get());
-		            }
-	            }
-	            
-			}catch(FileNotFoundException ee){
-				
-			}catch(IOException eee){
-				
-			}
-		}
-		saveBitmapToCache(url, bitmap);
-		return bitmap;
-	}
-	
-	
-	public WeakReference<Bitmap> safeGetFromDiskCache(String url){
-		WeakReference<Bitmap> bitmap = this.getFromFileCache(url);
-
-		saveBitmapToCache(url, bitmap);
-		
-		return bitmap;
-	}
-	
 	public void saveBitmapToCache(String url, WeakReference<Bitmap> bitmap){
-		try
-		{
-			if(null != bitmap && bitmap.get() != null)
-			{
-				synchronized (this)
-				{
+		try{
+			if(null != bitmap && bitmap.get() != null){
+				synchronized (this){
 					int bytes = bitmap.get().getHeight() * bitmap.get().getRowBytes();
 					imageLruCache.put(url, new Pair<Integer, WeakReference<Bitmap>>(bytes, bitmap));
 				}
 			}
 		}
-		catch(Throwable t)
-		{
+		catch(Throwable t){
 			//Ignor runtime exception to make sure everything works.
 		}
 	}
@@ -267,10 +273,39 @@ public class ImageCacheManager{
 	}
 	
 	public void putImageToDisk(String url, Bitmap bmp){
-		String key = getMd5(url);
-		Log.d("bitmap", "bitmap, imagemanager:putImageToDisk:  " + url + "  md5:  " + key);
+		String key = TextUtil.getMD5(url);
 		imageDiskLruCache.put(key, bmp);
 	}
+	
+	private static Bitmap decodeSampledBitmapFromFile(InputStream stream){
+		
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    if(BitmapUtils.useSampleSize()){	    	
+			_Rect rc = new _Rect();
+			rc.width = 200;
+			rc.height = 200;
+			WindowManager wm = 
+					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
+			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
+			
+		    options.inJustDecodeBounds = true;
+		    BitmapFactory.decodeStream(stream);
+	
+		    // Calculate inSampleSize
+		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
+	    }
+	    else{
+	    	options.inSampleSize = 1;
+	    }
+	    
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    options.inPurgeable = true;
+	    return BitmapFactory.decodeStream(stream);
+	}
+	
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException{
 		HttpClient httpClient = null;
@@ -284,7 +319,7 @@ public class ImageCacheManager{
 	        HttpGet httpGet = new HttpGet(urlStr); 
 	        HttpResponse response = httpClient.execute(httpGet);	
 	        
-	        String key = getMd5(urlStr);
+	        String key = TextUtil.getMD5(urlStr);
 	        if(null != imageDiskLruCache){
 	           	imageDiskLruCache.put(key, response.getEntity().getContent());
 	           	
@@ -295,7 +330,7 @@ public class ImageCacheManager{
 	        }else{
 	    		
 	    		InputStream inputStream = response.getEntity().getContent();
-	    		bitmapRet = BitmapUtils.decodeSampledBitmapFromFile(inputStream);	    		
+	    		bitmapRet = decodeSampledBitmapFromFile(inputStream);	    		
 	        }
             
             return bitmapRet;
@@ -332,14 +367,10 @@ public class ImageCacheManager{
 			context.deleteFile(str[i]);
 		}
 	}
-	
-	private String getMd5(String src){
-		return TextUtil.getMD5(src);
-	}
 
 	public String getFileInDiskCache(String url) {
 		if(null != imageDiskLruCache){
-			return imageDiskLruCache.getFilePath(this.getMd5(url));
+			return imageDiskLruCache.getFilePath(TextUtil.getMD5(url));
 		}else{
 			return "";
 		}
