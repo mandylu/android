@@ -7,8 +7,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
+
+import com.baixing.data.GlobalDataManager;
+
 import android.content.Context;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
@@ -36,6 +40,49 @@ public class ImageLoaderManager{
 			instance = new ImageLoaderManager();
 		}
 		return instance;
+	}
+	
+	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		final int height = options.outHeight;
+	    final int width = options.outWidth;
+	    int inSampleSize = 1;
+	
+	    if (height > reqHeight || width > reqWidth) {
+	        if (width > height) {
+	            inSampleSize = Math.round((float)height / (float)reqHeight);
+	        } else {
+	            inSampleSize = Math.round((float)width / (float)reqWidth);
+	        }
+	    }
+	    return inSampleSize;
+	}
+	
+	private static void configOption(BitmapFactory.Options option, int maxWidth, int maxHeight){
+		int sampleSize = calculateInSampleSize(option, maxWidth, maxHeight);
+		option.inJustDecodeBounds = false;
+		option.inPurgeable = true;
+		option.inInputShareable = true;
+		option.inSampleSize = sampleSize;		
+	}
+	
+	public static Bitmap loadBitmap(String path, int maxWidth, int maxHeight){
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		if(context == null) return null;
+		BitmapFactory.Options option = new BitmapFactory.Options();
+		option.inJustDecodeBounds = true;
+		BitmapFactory.decodeFile(path, option);
+		configOption(option, maxWidth, maxHeight);
+		return BitmapFactory.decodeFile(path, option); 
+	}
+	
+	public static Bitmap loadBitmap(int resId, int maxWidth, int maxHeight){
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		if(context == null) return null;
+		BitmapFactory.Options option = new BitmapFactory.Options();
+		option.inJustDecodeBounds = true;
+		BitmapFactory.decodeResource(context.getResources(), resId, option);
+		configOption(option, maxWidth, maxHeight);
+		return BitmapFactory.decodeResource(context.getResources(), resId, option); 
 	}
 	
 	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback, final int defaultImgRes){
