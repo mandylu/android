@@ -93,9 +93,12 @@ public final class PostParamsHolder implements Serializable {
 			// keyword 单独处理，放到ad_list的keyword参数里。
 			if (!"".equals(key))
 			{
+//				result.append(" AND ")
+//				.append(URLEncoder.encode(key)).append(":")
+//				.append(URLEncoder.encode(map.get(key).value));
 				result.append(" AND ")
-				.append(URLEncoder.encode(key)).append(":")
-				.append(URLEncoder.encode(map.get(key).value));
+				.append(key).append(":")
+				.append(map.get(key).value);
 			}
 		}
 		

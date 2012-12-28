@@ -5,6 +5,8 @@
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
 
+	<include layout="@layout/common_title"/>
+	
     <LinearLayout
         android:id="@+id/phonelayout"
         android:layout_width="fill_parent"
@@ -111,6 +113,7 @@
         android:id="@+id/svDetail"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_below="@+id/linearTop"
         android:layout_above="@+id/phonelayout" />
 
 </RelativeLayout>

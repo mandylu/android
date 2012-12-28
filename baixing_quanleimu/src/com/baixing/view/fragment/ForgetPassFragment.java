@@ -66,7 +66,7 @@ public class ForgetPassFragment extends BaseFragment {
 		title.m_leftActionHint = "返回";
 	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootV = inflater.inflate(R.layout.forget_password, null);

@@ -94,7 +94,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
 
 	@Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onInitializeView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View v = inflater.inflate(R.layout.personallistview, null);

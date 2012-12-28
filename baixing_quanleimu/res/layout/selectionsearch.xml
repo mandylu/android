@@ -7,11 +7,13 @@
   	 android:focusableInTouchMode="true"
   	 android:background="@color/bg_screen"
   	 android:focusable="true">
+	<include layout="@layout/common_title"/>
 
   	 <LinearLayout
   	 	android:id="@+id/lvSearch"
   	 	android:layout_width="fill_parent"
-  	 	android:layout_height="wrap_content"  	
+  	 	android:layout_height="wrap_content"
+  	 	android:layout_below="@+id/linearTop"  	
   	 	android:gravity="center">
   	     
   	     <LinearLayout

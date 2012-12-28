@@ -5,13 +5,15 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:background="@color/bg_screen" >
-
+ 	<include layout="@layout/common_title"/>
+ 
         <LinearLayout
             android:id="@+id/linearType"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerHorizontal="true"
             android:gravity="center_vertical"
+            android:layout_below="@+id/linearTop"
             android:paddingTop="5dip"
             android:paddingBottom="1dip">
 

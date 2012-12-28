@@ -49,7 +49,7 @@ import com.quanleimu.activity.R.string;
  * @author liuchong
  *
  */
-public class BaseTabActivity extends BaseActivity implements TabSelectListener {
+public class BaseTabActivity extends BaseActivity implements TabSelectListener, IExit {
 	
 	public static final String LIFE_TAG = "mainActivity";
 	public static final int TAB_INDEX_CAT = 0;
@@ -229,12 +229,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected void initTitleAction()
 	{
-		View left = findViewById(R.id.left_action);
-		left.setOnClickListener(this);
-		View right = findViewById(R.id.right_action);
-		right.setOnClickListener(this);
-		View search = findViewById(R.id.search_action);
-		search.setOnClickListener(this);
+		
 	}
 	
 	public void handleBack(){
@@ -425,6 +420,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected void onStatckTop(BaseFragment f) {
 		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+	}
+
+	@Override
+	public void handleFragmentAction() {
+		handleBack();
 	}
 
 }

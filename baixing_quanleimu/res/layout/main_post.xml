@@ -21,8 +21,8 @@
         android:layout_above="@+id/tab_parent"
         android:orientation="vertical" >
 
-		<include layout="@layout/common_title"/>
-
+<!-- 		<include layout="@layout/common_title"/>
+ -->
         <LinearLayout
             android:id="@+id/contentLayout"
             android:layout_width="fill_parent"

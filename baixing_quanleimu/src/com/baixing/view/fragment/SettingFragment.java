@@ -26,7 +26,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private UserBean user;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onInitializeView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View setmain = inflater.inflate(R.layout.setmain, null);
@@ -110,7 +110,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         title.m_visible = true;
         title.m_title = "设置";
         title.m_leftActionHint = "完成";
-        title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
     }
 
     @Override

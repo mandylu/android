@@ -231,7 +231,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if(detail == null || mListLoader == null) return null;
 		final int originalSelect = getArguments().getInt("index", 0);

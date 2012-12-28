@@ -93,7 +93,7 @@ public class KeywordSelectFragment extends BaseFragment {
 	}
 
 	
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		ViewGroup rootV = (ViewGroup) inflater.inflate(R.layout.keyword_selector, null);

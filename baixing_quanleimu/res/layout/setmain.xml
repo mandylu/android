@@ -3,10 +3,12 @@
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
                 android:background="@color/bg_screen">
+	<include layout="@layout/common_title"/>
 
     <ScrollView
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:layout_below="@+id/linearTop"
             android:layout_marginBottom="5dip">
 
         <LinearLayout
