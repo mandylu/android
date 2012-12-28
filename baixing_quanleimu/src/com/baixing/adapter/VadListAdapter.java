@@ -23,6 +23,7 @@ import android.widget.TextView;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
@@ -279,17 +280,11 @@ public class VadListAdapter extends BaseAdapter {
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 
 		if(null == defaultBk2){
-			BitmapFactory.Options o =  new BitmapFactory.Options();
-	        o.inPurgeable = true;
-//				defaultBk2 = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o));
-	        defaultBk2 = BitmapFactory.decodeResource(context.getResources(),R.drawable.icon_listing_nopic, o);
+	        defaultBk2 = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_listing_nopic, -1, -1);
 		}
 		
 		if(null == downloadFailBk){				
-			BitmapFactory.Options o =  new BitmapFactory.Options();
-	        o.inPurgeable = true;
-//				downloadFailBk = new WeakReference<Bitmap>(BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o));				
-	        downloadFailBk = BitmapFactory.decodeResource(context.getResources(), R.drawable.home_bg_thumb_2x, o);
+	        downloadFailBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x, -1, -1);
 		}
 		
 		holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);

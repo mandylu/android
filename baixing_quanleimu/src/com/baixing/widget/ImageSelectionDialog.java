@@ -145,7 +145,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     static public Bitmap getThumbnailWithPath(String path){
     	if(path == null || path.length() <= 0) return null;
-    	WeakReference<Bitmap> thumbnail = ImageLoaderManager.getInstance().getWithImmediateIO(path);
+    	WeakReference<Bitmap> thumbnail = ImageCacheManager.getInstance().getFromCache(path);
     	if(thumbnail == null) return null;
     	return thumbnail.get();
     }
@@ -161,7 +161,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			imgs.get(i).setImageBitmap(getThumbnailWithPath(imgContainer[i].thumbnailPath));
     		}
     	}
-    	imgs.get(i).setImageResource(R.drawable.btn_add_picture);
+    	imgs.get(i).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
     	for(int j = i + 1; j < imgs.size(); ++ j){
     		imgs.get(j).setVisibility(View.INVISIBLE);
     	}
@@ -348,7 +348,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Uploading){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageResource(R.drawable.icon_post_loading);
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
 					iv.setVisibility(View.VISIBLE);
 					if(reUploadBitmap && imgContainer[i].bitmapPath != null && imgContainer[i].bitmapPath.length() > 0){
 						new Thread(new UpLoadThread(imgContainer[i].bitmapPath, i)).start();
@@ -356,7 +356,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Failed){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageResource(R.drawable.f);
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f, -1, -1));
 					iv.setVisibility(View.VISIBLE);
 					imgs.add(iv);
 				}				
@@ -515,7 +515,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 								new Thread(new UpLoadThread(imgContainer[currentImgView].bitmapPath, currentImgView)).start();
 							}
 							else{
-								imgs.get(currentImgView).setImageResource(R.drawable.btn_add_picture);
+								imgs.get(currentImgView).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
 								pickupPhoto(currentImgView);
 							}							
 						}
@@ -532,7 +532,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
-					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageResource(R.drawable.loading_210_black);
+					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black, -1, -1));
 					ImageLoaderManager.getInstance().showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
 							imgContainer[currentImgView].bitmapUrl,
 							"",
@@ -611,7 +611,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			case MSG_START_UPLOAD:{
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
-					imgs.get(index.intValue()).setImageResource(R.drawable.icon_post_loading);
+					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
 					imgs.get(index).setClickable(false);
 					imgs.get(index.intValue()).invalidate();
 					

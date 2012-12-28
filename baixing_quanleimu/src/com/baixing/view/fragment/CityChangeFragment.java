@@ -28,6 +28,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.jsonutil.LocateJsonData;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -157,7 +158,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 
 			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
 			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
-			ivChoose.setImageResource(R.drawable.gou);
+			ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.gou, -1, -1));
 
 			tvCityName.setText(city.getName());
 			ivChoose.setVisibility(View.INVISIBLE);
@@ -216,7 +217,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 						
 						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvCateName);
 						ImageView ivChoose = (ImageView) vTemp.findViewById(R.id.ivChoose);
-						ivChoose.setImageResource(R.drawable.arrow);
+						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow, -1, -1));
 						tvCityName.setText(shengArray[i]);
 
 						// 设置标志位
@@ -314,7 +315,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 	
 						TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
 						ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
-						ivChoose.setImageResource(R.drawable.gou);
+						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow, -1, -1));
 						tvCityName.setText(city.getName());
 						ivChoose.setVisibility(View.INVISIBLE);
 						v.setTag(new Pair<CityDetail, String>(city, "search"));

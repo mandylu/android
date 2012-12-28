@@ -19,7 +19,9 @@ import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.util.DisplayMetrics;
 import android.view.View;
+import android.view.WindowManager;
 import android.widget.ImageView;
 public class ImageLoaderManager{
 
@@ -42,72 +44,12 @@ public class ImageLoaderManager{
 		return instance;
 	}
 	
-	private static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
-		final int height = options.outHeight;
-	    final int width = options.outWidth;
-	    int inSampleSize = 1;
-	
-	    if (height > reqHeight || width > reqWidth) {
-	        if (width > height) {
-	            inSampleSize = Math.round((float)height / (float)reqHeight);
-	        } else {
-	            inSampleSize = Math.round((float)width / (float)reqWidth);
-	        }
-	    }
-	    return inSampleSize;
-	}
-	
-	private static void configOption(BitmapFactory.Options option, int maxWidth, int maxHeight){
-		int sampleSize = calculateInSampleSize(option, maxWidth, maxHeight);
-		option.inJustDecodeBounds = false;
-		option.inPurgeable = true;
-		option.inInputShareable = true;
-		option.inSampleSize = sampleSize;		
-	}
-	
-	public static Bitmap loadBitmap(String path, int maxWidth, int maxHeight){
-		Context context = GlobalDataManager.getInstance().getApplicationContext();
-		if(context == null) return null;
-		BitmapFactory.Options option = new BitmapFactory.Options();
-		option.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(path, option);
-		configOption(option, maxWidth, maxHeight);
-		return BitmapFactory.decodeFile(path, option); 
-	}
-	
-	public static Bitmap loadBitmap(int resId, int maxWidth, int maxHeight){
-		Context context = GlobalDataManager.getInstance().getApplicationContext();
-		if(context == null) return null;
-		BitmapFactory.Options option = new BitmapFactory.Options();
-		option.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(context.getResources(), resId, option);
-		configOption(option, maxWidth, maxHeight);
-		return BitmapFactory.decodeResource(context.getResources(), resId, option); 
-	}
-	
-	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback, final int defaultImgRes){
+	private WeakReference<Bitmap> get(String url,ImageLoaderCallback callback){
 		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
 		
 		//1. try to get from memory cache
 		if(ImageCacheManager.getInstance().contains(url)){
-			bitmap = ImageCacheManager.getInstance().getFromMemoryCache(url);
-		}
-		
-		if(bitmap!=null){//if found in memory cache, just return that to the caller
-			return bitmap;
-		}else{//else, try try to load from disk cache
-			callbackManager.put(url, callback);			
-			startFetchingTread(url);
-	    }		
-		return bitmap;
-	}
-	
-	public WeakReference<Bitmap> get(String url,ImageLoaderCallback callback){
-		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
-		
-		//1. try to get from memory cache
-		if(ImageCacheManager.getInstance().contains(url)){
-			bitmap = ImageCacheManager.getInstance().getFromMemoryCache(url);
+			bitmap = ImageCacheManager.getInstance().getFromCache(url);
 		}
 		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
@@ -144,18 +86,6 @@ public class ImageLoaderManager{
 			urlDequeDiskIO.remove(url);
 			urlDequeDownload.remove(url);
 		}
-	}
-	
-	public WeakReference<Bitmap> getWithImmediateIO(String url){		
-		WeakReference<Bitmap> result = null;		
-		if(ImageCacheManager.getInstance().contains(url)){
-			result = ImageCacheManager.getInstance().getFromMemoryCache(url); 	
-			if(result != null && result.get() != null){
-				return result;
-			}
-		}		
-		result = ImageCacheManager.getInstance().safeGetFromFileCacheOrAssets(url);
-		return result;		
 	}
 
 	protected void putToDownloadDeque(String url) {
@@ -238,7 +168,7 @@ public class ImageLoaderManager{
 						continue;
 					} 
 					
-					WeakReference<Bitmap> bitmap = ImageCacheManager.getInstance().safeGetFromDiskCache(mCurrentUrl);
+					WeakReference<Bitmap> bitmap = ImageCacheManager.getInstance().getFromCache(mCurrentUrl);
 					if(bitmap==null || bitmap.get() == null){//if not in disk cache, put the url to download-deque for further downloading
 						putToDownloadDeque(mCurrentUrl);
 						startDownloadingTread();
@@ -305,7 +235,7 @@ public class ImageLoaderManager{
 
 	private WeakReference<Bitmap> getBitmapInMemory(String url){
 		if(url == null || url.equals("")) return null;
-		return ImageCacheManager.getInstance().getFromMemoryCache(url);
+		return ImageCacheManager.getInstance().getFromCache(url);
 	}
 	
 	public void showImg(final View view,final String url, final String preUrl, Context con, WeakReference<Bitmap> bmp){

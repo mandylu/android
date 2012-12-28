@@ -43,6 +43,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -703,7 +704,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				v.setOnClickListener(this);
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
-				((ImageView)v.findViewById(R.id.myImg)).setImageResource(R.drawable.btn_add_picture);
+				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
 				if(imgSelBundle != null){
 		    		Object[] container = (Object[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
 					if(container != null && container.length > 0
@@ -807,10 +808,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 							if(iv != null && thumbnail != null){
 								iv.setImageBitmap(thumbnail);
 							}else{
-								iv.setImageResource(R.drawable.btn_add_picture);
+								iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
 							}
 						}else{
-							iv.setImageResource(R.drawable.btn_add_picture);
+							iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
 						}
 					}
 					

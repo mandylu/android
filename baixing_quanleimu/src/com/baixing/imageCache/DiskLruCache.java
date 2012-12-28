@@ -51,6 +51,7 @@ import java.util.Timer;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.BitmapUtils;
+import com.baixing.util.BitmapUtils._Rect;
 
 /**
  * A simple disk LRU bitmap cache to illustrate how a disk cache would be used for bitmap caching. A
@@ -265,11 +266,43 @@ class DiskLruCache {
 //            }           
         }
     }
+    
+	private static Bitmap decodeSampledBitmapFromFile(String fileName) {
+		
+		if(null == fileName)	return null;
+		if(!(new File(fileName)).exists()) return null;
+		
+	    // First decode with inJustDecodeBounds=true to check dimensions
+	    final BitmapFactory.Options options = new BitmapFactory.Options();
+	    if(BitmapUtils.useSampleSize()){
+			_Rect rc = new _Rect();
+			rc.width = 200;
+			rc.height = 200;
+			WindowManager wm = 
+					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
+			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
+			
+		    options.inJustDecodeBounds = true;
+		    BitmapFactory.decodeFile(fileName,options);
+	
+		    // Calculate inSampleSize
+		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
+	    }
+	    else{
+	    	options.inSampleSize = 1;
+	    }
+	    
+	    // Decode bitmap with inSampleSize set
+	    options.inJustDecodeBounds = false;
+	    options.inPurgeable = true;
+	    return BitmapFactory.decodeFile(fileName, options);
+	}
 
 	public Bitmap decodeBitmapFromFile(String fileName){
 		try
 		{
-			return BitmapUtils.decodeSampledBitmapFromFile(fileName);
+			return decodeSampledBitmapFromFile(fileName);
 		}
 		catch(Throwable t)
 		{
