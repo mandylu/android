@@ -12,12 +12,15 @@ import org.jivesoftware.smack.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.LocationListener;
+import com.baidu.mapapi.MKEvent;
+import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
@@ -45,6 +48,39 @@ import java.util.List;
 import org.json.JSONObject;
 
 public class BaiduMapActivity extends MapActivity implements LocationListener{
+
+		// 授权Key
+		// TODO: 请输入您的Key,
+		// 申请地址：http://dev.baidu.com/wiki/static/imap/key/
+		//713E99B1CD54866996162791BA789A0D9A13791B	
+		public static String mStrKey = "736C4435847CB7D20DD1131064E35E8941C934F5";
+
+		// 常用事件监听，用来处理通常的网络错误，授权验证错误等
+		public static class MyGeneralListener implements MKGeneralListener {
+			boolean m_bKeyRight = true; // 授权Key正确，验证通过
+			private Context context;
+			MyGeneralListener(Context cxt) {
+				context = cxt;
+			}
+			
+			@Override
+			public void onGetNetworkState(int iError) {
+				Toast.makeText(context,
+						"您的网络出错啦！", Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onGetPermissionState(int iError) {
+				if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
+					// 授权Key错误：
+					Toast.makeText(context,
+							"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
+							.show();
+					this.m_bKeyRight = false;
+				}
+			}
+
+		}
 	
 	BMapManager mBMapMan = null;
 	private GeoPoint endGeoPoint;
@@ -247,7 +283,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		if (mBMapMan == null) 
 		{
 			mBMapMan = new BMapManager(GlobalDataManager.getInstance().getApplicationContext());
-			mBMapMan.init(GlobalDataManager.getInstance().mStrKey, new GlobalDataManager.MyGeneralListener());
+			mBMapMan.init(mStrKey, new MyGeneralListener(this));
 		}
 		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {
 			
