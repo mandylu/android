@@ -40,15 +40,15 @@ import com.quanleimu.activity.R;
 import com.baixing.android.api.ApiParams;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadFragment.IListHolder, VadListLoader.Callback, Observer {
-    private boolean isFav = false;
+//    private boolean isFav = false;
     static final int MSG_UPDATEFAV = 1;
-    static final int MSG_UPDATEHISTORY = 2;
+//    static final int MSG_UPDATEHISTORY = 2;
     static final int MSG_DELETEAD = 3;
     static final int MSG_DELETEALL = 4;
     static final int MSG_GOTMOREFAV = 5;
-    static final int MSG_GOTMOREHISTORY = 6;
+//    static final int MSG_GOTMOREHISTORY = 6;
     static final int MSG_NOMOREFAV = 7;
-    static final int MSG_NOMOREHISTORY = 8;
+//    static final int MSG_NOMOREHISTORY = 8;
     private final int MSG_ITEM_OPERATE = 9;
 
     private VadListAdapter adapter = null;
@@ -61,9 +61,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
 
-        if (getArguments() != null) {
-            isFav = getArguments().getBoolean("isFav", false);
-        }
+//        if (getArguments() != null) {
+//            isFav = getArguments().getBoolean("isFav", false);
+//        }
 
         glLoader = new VadListLoader(null, this, null, tempGoodsList);
         
@@ -121,15 +121,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         });
 
         
-        tempGoodsList = new AdList(isFav ? GlobalDataManager.getInstance().getListMyStore() : 
-        											GlobalDataManager.getInstance().getListLookHistory());
-        if(isFav){
-        		AdList list = (AdList)(tempGoodsList.clone()); 
-        		glLoader.setGoodsList(list);
-        		tempGoodsList = list;//dirty fix
-        }else{
-        		glLoader.setGoodsList(tempGoodsList);
-        }
+        tempGoodsList = new AdList(GlobalDataManager.getInstance().getListMyStore());
+		AdList list = (AdList)(tempGoodsList.clone()); 
+		glLoader.setGoodsList(list);
+		tempGoodsList = list;//dirty fix
         glLoader.setHasMore(false);
 
         adapter = new VadListAdapter(this.getActivity(), tempGoodsList.getData(), null);
@@ -231,8 +226,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     public void initTitle(TitleDef title) {
         title.m_visible = true;
         title.m_leftActionHint = "返回";
-        title.m_title = isFav ? "收藏的信息" : "浏览历史";
-//		title.m_rightActionHint = "编辑";
+        title.m_title = "收藏的信息";
     }
 
     @Override
@@ -307,67 +301,16 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 pullListView.onRefreshComplete();
 
                 break;
-            case MSG_UPDATEHISTORY:
-                hideProgress();
-
-                tempGoodsList = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
-                Log.d("fav","updatehistory.size:"+tempGoodsList.getData().size());
-                if (null == tempGoodsList || 0 == tempGoodsList.getData().size()) {
-                    ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
-                    
-                    pullListView.onFail();
-                } else {
-                    List<Ad> tmp = new ArrayList<Ad>();
-                    List<Ad> historyList = GlobalDataManager.getInstance().getListLookHistory();
-
-                    if (tempGoodsList.getData().size() <= historyList.size()) {
-                        for (int i = tempGoodsList.getData().size() - 1; i >= 0; --i) {
-                            boolean exist = false;
-                            for (int j = 0; j < tempGoodsList.getData().size(); ++j) {
-                                if (historyList.get(i).equals(tempGoodsList.getData().get(j))) {
-                                    tmp.add(0, tempGoodsList.getData().get(j));
-                                    historyList.set(i, tempGoodsList.getData().get(j));
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist) {
-                                historyList.remove(i);
-                            }
-                        }
-                    }
-                    tempGoodsList.setData(tmp);
-
-                    //view history is disabled from V3.1
-//                    QuanleimuApplication.getApplication().setListLookHistory(historyList);
-//                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", historyList);
-                    adapter.setList(tempGoodsList.getData());
-                    glLoader.setGoodsList(tempGoodsList);
-                    glLoader.setHasMore(tempGoodsList.getData().size() < historyList.size());
-
-                    pullListView.onRefreshComplete();
-                }
-
-                break;
             case MSG_DELETEAD:
             	Log.d("fav","deleteAd");
                 int pos = (Integer) msg.obj;
-                if (isFav) {
-                    List<Ad> goodsList = GlobalDataManager.getInstance().getListMyStore();
-                    Ad detail = goodsList.remove(pos);
-                    if (goodsList != tempGoodsList.getData())
-                        tempGoodsList.getData().remove(detail);
-                    //QuanleimuApplication.getApplication().setListMyStore(goodsList);
-                    GlobalDataManager.getInstance().removeFav(detail);
-                    Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", goodsList);
-                } else {
-                    List<Ad> goodsList = GlobalDataManager.getInstance().getListLookHistory();
-                    goodsList.remove(pos);
-                    if (goodsList != tempGoodsList.getData())
-                        tempGoodsList.getData().remove(pos);
-                    //QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-                    Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listLookHistory", goodsList);
-                }
+                List<Ad> goodsList = GlobalDataManager.getInstance().getListMyStore();
+                Ad detail = goodsList.remove(pos);
+                if (goodsList != tempGoodsList.getData())
+                    tempGoodsList.getData().remove(detail);
+                //QuanleimuApplication.getApplication().setListMyStore(goodsList);
+                GlobalDataManager.getInstance().removeFav(detail);
+                Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", goodsList);
 
                 adapter.setList(tempGoodsList.getData());
                 adapter.notifyDataSetChanged();
@@ -376,17 +319,11 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 break;
             case MSG_DELETEALL:
             	Log.d("fav","deleteAll");
-                List<Ad> goodsList = new ArrayList<Ad>();
-                if (isFav) {
-                    GlobalDataManager.getInstance().clearMyStore();//setListMyStore(new ArrayList<GoodsDetail>(goodsList));
-                    Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", new ArrayList<Ad>(goodsList));
-                } 
-//                else {
-//                    QuanleimuApplication.getApplication().setListLookHistory(goodsList);
-//                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", new ArrayList<GoodsDetail>(goodsList));
-//                }
+                List<Ad> adList = new ArrayList<Ad>();
+                GlobalDataManager.getInstance().clearMyStore();//setListMyStore(new ArrayList<GoodsDetail>(goodsList));
+                Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", new ArrayList<Ad>(adList));
 
-                glLoader.getGoodsList().setData(goodsList);
+                glLoader.getGoodsList().setData(adList);
                 glLoader.setHasMore(false);
                 adapter.setList(tempGoodsList.getData());
                 adapter.notifyDataSetChanged();
@@ -404,9 +341,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 break;
 
             case MSG_GOTMOREFAV:
-            case MSG_GOTMOREHISTORY:
             case MSG_NOMOREFAV:
-            case MSG_NOMOREHISTORY:
             case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
             	Log.d("fav","gotmorefav & gotmorhistory &...&network unavailable");
                 hideProgress();
@@ -414,11 +349,8 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                 break;
 
             case MSG_ITEM_OPERATE:
-                if (isFav) {
-                    Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
-                } else {
-//                    Tracker.getInstance().event(BxEvent.HISTORY_MANAGE).end();
-                }
+                Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
+                
                 // 弹出 menu 确认删除
                 final Integer position = new Integer(msg.arg2);
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -428,11 +360,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                                     public void onClick(DialogInterface dialog, int which) {
                                         if (which == 0) {
                                             sendMessage(MSG_DELETEAD, position);
-                                            if (isFav) {
-                                                Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
-                                            } else {
-//                                                Tracker.getInstance().event(BxEvent.HISTORY_DELETE).end();
-                                            }
+                                            Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
                                         }
                                     }
                                 })
@@ -456,8 +384,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
     public void updateAdsThread(boolean isFav, boolean isGetMore) {
 
         ApiParams list = new ApiParams();
-        List<Ad> details = isFav ? GlobalDataManager.getInstance().getListMyStore() :
-                GlobalDataManager.getInstance().getListLookHistory();
+        List<Ad> details = GlobalDataManager.getInstance().getListMyStore();
 
         int startIndex = 0;
         if (isGetMore) {//Notice: should ensure that tempGoodsList is shorter than whole list, Or unexpected results may occur
@@ -474,9 +401,9 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
         list.addParam("rt", "1");
 
-        int msgGotFirst = (isFav ? MSG_UPDATEFAV : MSG_UPDATEHISTORY);
-        int msgGotMore = (isFav ? MSG_GOTMOREFAV : MSG_GOTMOREHISTORY);
-        int msgNoMore = (isFav ? MSG_NOMOREFAV : MSG_NOMOREHISTORY);
+        int msgGotFirst = MSG_UPDATEFAV;
+        int msgGotMore = MSG_GOTMOREFAV;
+        int msgNoMore = MSG_NOMOREFAV;
 
         glLoader.setParams(list);
         glLoader.setRows(ITEMS_PER_REQUEST);
@@ -489,11 +416,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     @Override
     public void onRefresh() {
-        if ((isFav && GlobalDataManager.getInstance().getListMyStore() != null
+        if ((GlobalDataManager.getInstance().getListMyStore() != null
                 && GlobalDataManager.getInstance().getListMyStore().size() > 0)
-                || (!isFav && GlobalDataManager.getInstance().getListLookHistory() != null
-                && GlobalDataManager.getInstance().getListLookHistory().size() > 0)) {
-            updateAdsThread(isFav, false);
+                ) {
+            updateAdsThread(true, false);
         } else {
             this.pullListView.onRefreshComplete();
         }
@@ -501,13 +427,10 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     @Override
     public void onGetMore() {
-        if ((isFav && GlobalDataManager.getInstance().getListMyStore() != null
+        if ((GlobalDataManager.getInstance().getListMyStore() != null
                 && tempGoodsList != null
-                && tempGoodsList.getData().size() < GlobalDataManager.getInstance().getListMyStore().size())
-                || (!isFav && GlobalDataManager.getInstance().getListLookHistory() != null
-                && tempGoodsList != null
-                && tempGoodsList.getData().size() < GlobalDataManager.getInstance().getListLookHistory().size())) {
-            updateAdsThread(isFav, true);
+                && tempGoodsList.getData().size() < GlobalDataManager.getInstance().getListMyStore().size())) {
+            updateAdsThread(true, true);
         } else {
             this.pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
         }
@@ -516,93 +439,53 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
     @Override
     public void startFecthingMore() {
-        updateAdsThread(isFav, true);
+        updateAdsThread(true, true);
     }
 
     @Override
     public boolean onResult(int msg, VadListLoader loader) {
-        if (msg == MSG_GOTMOREFAV || msg == MSG_GOTMOREHISTORY) {
+        if (msg == MSG_GOTMOREFAV) {
             AdList moreGoodsList = JsonUtil.getGoodsListFromJson(loader.getLastJson());
-            if (isFav) {
-                if (null == moreGoodsList || 0 == moreGoodsList.getData().size()) {
+            if (null == moreGoodsList || 0 == moreGoodsList.getData().size()) {
 
-                    pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
-                    glLoader.setHasMore(false);
-                    return false;
-                } else {
-                    List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
-                    if (tempGoodsList.getData().size() < favList.size()) {
-                        List<Ad> tmp = new ArrayList<Ad>();
-
-                        for (int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); --i) {
-                            boolean exist = false;
-                            for (int j = 0; j < moreGoodsList.getData().size(); ++j) {
-                                if (favList.get(i).equals(moreGoodsList.getData().get(j))) {
-                                    tmp.add(0, moreGoodsList.getData().get(j));
-                                    favList.set(i, moreGoodsList.getData().get(j));
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist) {
-                                favList.remove(i);
-                            }
-                        }
-                        List<Ad> prev = tempGoodsList.getData();
-                        prev.addAll(tmp);
-                        tempGoodsList.setData(prev);
-                    }
-
-                	GlobalDataManager.getInstance().updateFav(favList);
-                	Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", favList);
-
-                    adapter.setList(tempGoodsList.getData());
-                    adapter.notifyDataSetChanged();
-                    loader.setHasMore(tempGoodsList.getData().size() < favList.size());
-
-                    pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
-                    return true;
-                }
+                pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
+                glLoader.setHasMore(false);
+                return false;
             } else {
-                if (null == moreGoodsList || 0 == moreGoodsList.getData().size()) {
+                List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
+                if (tempGoodsList.getData().size() < favList.size()) {
+                    List<Ad> tmp = new ArrayList<Ad>();
 
-                    pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
-                    glLoader.setHasMore(false);
-                    return false;
-                } else {
-                    List<Ad> historyList = GlobalDataManager.getInstance().getListLookHistory();
-                    if (tempGoodsList.getData().size() < historyList.size()) {
-                        List<Ad> tmp = new ArrayList<Ad>();
-                        for (int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); --i) {
-                            boolean exist = false;
-                            for (int j = 0; j < moreGoodsList.getData().size(); ++j) {
-                                if (historyList.get(i).equals(moreGoodsList.getData().get(j))) {
-                                    tmp.add(0, moreGoodsList.getData().get(j));
-                                    historyList.set(i, moreGoodsList.getData().get(j));
-                                    exist = true;
-                                    break;
-                                }
-                            }
-                            if (!exist) {
-                                historyList.remove(i);
+                    for (int i = moreGoodsList.getData().size() + tempGoodsList.getData().size() - 1; i >= tempGoodsList.getData().size(); --i) {
+                        boolean exist = false;
+                        for (int j = 0; j < moreGoodsList.getData().size(); ++j) {
+                            if (favList.get(i).equals(moreGoodsList.getData().get(j))) {
+                                tmp.add(0, moreGoodsList.getData().get(j));
+                                favList.set(i, moreGoodsList.getData().get(j));
+                                exist = true;
+                                break;
                             }
                         }
-                        List<Ad> prev = tempGoodsList.getData();
-                        prev.addAll(tmp);
-                        tempGoodsList.setData(prev);
+                        if (!exist) {
+                            favList.remove(i);
+                        }
                     }
-
-//                    QuanleimuApplication.getApplication().setListLookHistory(historyList);
-//                    Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", historyList);
-
-                    adapter.setList(tempGoodsList.getData());
-                    adapter.notifyDataSetChanged();
-                    loader.setHasMore(tempGoodsList.getData().size() < historyList.size());
-                    pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
-                    return true;
+                    List<Ad> prev = tempGoodsList.getData();
+                    prev.addAll(tmp);
+                    tempGoodsList.setData(prev);
                 }
+
+            	GlobalDataManager.getInstance().updateFav(favList);
+            	Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", favList);
+
+                adapter.setList(tempGoodsList.getData());
+                adapter.notifyDataSetChanged();
+                loader.setHasMore(tempGoodsList.getData().size() < favList.size());
+
+                pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_OK);
+                return true;
             }
-        } else if (msg == MSG_NOMOREFAV || msg == MSG_NOMOREHISTORY) {
+        } else if (msg == MSG_NOMOREFAV) {
             glLoader.setHasMore(false);
             pullListView.onGetMoreCompleted(E_GETMORE.E_GETMORE_NO_MORE);
             return false;
@@ -611,7 +494,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
 
             pullListView.onFail();
             return false;
-        } else if (msg == MSG_UPDATEHISTORY || msg == MSG_UPDATEFAV) {
+        } else if (msg == MSG_UPDATEFAV) {
             pullListView.onRefreshComplete();
             return false;
         }

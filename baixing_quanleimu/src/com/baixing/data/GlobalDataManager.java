@@ -83,12 +83,6 @@ public class GlobalDataManager implements Observer{
 		return GlobalDataManager.needNotifiySwitchMode;
 	}
 	
-	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
-	public List<Ad> listLookHistory = new ArrayList<Ad>();
-	public List<Ad> getListLookHistory() {
-		return listLookHistory;
-	}
-
 	public List<Ad> getListMyStore() {
 		return listMyStore;
 	}
@@ -245,15 +239,15 @@ public class GlobalDataManager implements Observer{
 		this.mobile = mobile;
 	}
 
-	public String personMark = "";
-	
-	public String getPersonMark() {
-		return personMark;
-	}
-
-	public void setPersonMark(String personMark) {
-		this.personMark = personMark;
-	}
+//	public String personMark = "";
+//	
+//	public String getPersonMark() {
+//		return personMark;
+//	}
+//
+//	public void setPersonMark(String personMark) {
+//		this.personMark = personMark;
+//	}
 	
 	public void updateCityList(CityList cityList)
 	{
@@ -359,32 +353,13 @@ public class GlobalDataManager implements Observer{
 		
 		ApiClient.getInstance().addCommonParam(ApiParams.KEY_CITY, this.cityEnglishName);
 	}
-//	public List<FirstStepCate> getListFirst() {
-//		return listFirst;
-//	}
+	
 	public String queryCategoryDisplayName(String englishName){
-//		for(int i = 0;i<this.listFirst.size();i++){
-//			FirstStepCate cate = this.listFirst.get(i);
-//			if(cate.englishName.equals(englishName)){
-//				return cate.name;
-//			}
-//			for(int j = 0; j< cate.children.size(); j++){
-//				SecondStepCate s = cate.children.get(j);
-//				if(s.englishName.equals(englishName)){
-//					return s.name;
-//				}
-//			}
-//		}
-		
 		Category cat = allCategory.findCategoryByEnglishName(englishName);
 		
 		return cat == null ? englishName : cat.getName();
 	}
 
-//	public void setListFirst(List<FirstStepCate> listFirst) {
-//		this.listFirst = listFirst;
-//	}
-	
 	public List<Category> getFirstLevelCategory() {
 		return allCategory.getChildren();
 	}
@@ -476,35 +451,6 @@ public class GlobalDataManager implements Observer{
 				null : GlobalDataManager.context.get();
 	}
 
-	// 授权Key
-	// TODO: 请输入您的Key,
-	// 申请地址：http://dev.baidu.com/wiki/static/imap/key/
-	//713E99B1CD54866996162791BA789A0D9A13791B	
-	public String mStrKey = "736C4435847CB7D20DD1131064E35E8941C934F5";
-	boolean m_bKeyRight = true; // 授权Key正确，验证通过
-
-	// 常用事件监听，用来处理通常的网络错误，授权验证错误等
-	public static class MyGeneralListener implements MKGeneralListener {
-		@Override
-		public void onGetNetworkState(int iError) {
-			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(),
-					"您的网络出错啦！", Toast.LENGTH_LONG).show();
-		}
-
-		@Override
-		public void onGetPermissionState(int iError) {
-			if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
-				// 授权Key错误：
-				Toast.makeText(GlobalDataManager.instance.getApplicationContext(),
-						"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
-						.show();
-				GlobalDataManager.instance.m_bKeyRight = false;
-			}
-		}
-
-	}
-
-
 	@Override
 	public void update(Observable observable, Object data) {
 		if (data instanceof IBxNotification)
@@ -533,8 +479,6 @@ public class GlobalDataManager implements Observer{
 		
 		String json = pair.second;
 		if (json != null && json.length() > 0) {
-//			AllCates allCates = JsonUtil.getAllCatesFromJson(Communication.decodeUnicode(json));//TODO:
-//			QuanleimuApplication.getApplication().setListFirst(allCates.getChildren());
 			this.allCategory = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
 		}
 	
@@ -567,10 +511,10 @@ public class GlobalDataManager implements Observer{
 		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
 		GlobalDataManager.getInstance().updateFav(objStore);
 		
-		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
-		if(personalMark != null){
-			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
-		}
+//		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
+//		if(personalMark != null){
+//			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
+//		}
 
 	}
 }

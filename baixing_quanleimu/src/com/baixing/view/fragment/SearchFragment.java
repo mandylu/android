@@ -1,7 +1,5 @@
 package com.baixing.view.fragment;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -26,6 +23,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
@@ -37,8 +38,10 @@ import com.baixing.util.Communication;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
-public class SearchFragment extends BaseFragment {
+public class SearchFragment extends BaseFragment implements Callback {
 
+	private static final int NETWOTK_REQ_SEARACH_CAT = 100;
+	
 //	private static final int REQ_SELECT_SEARCH_CATEGORY = 147;
 	private static final int MSG_SEARCH_RESULT = 1;
 	private static final int MSG_START_SERACH = 2;
@@ -223,7 +226,7 @@ public class SearchFragment extends BaseFragment {
 		{
 //			this.showProgress("消息", "搜索中...", true);
 			this.sendMessage(MSG_START_SERACH, null);
-			new Thread(new SearchCategoryListThread()).start();
+			searchCategory();
 		}
 		else
 		{
@@ -280,37 +283,14 @@ public class SearchFragment extends BaseFragment {
 		}
 	}
 	
-	
-
-	class SearchCategoryListThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "ad_search";
-			List<String> parameters = new ArrayList<String>();
-			parameters.add("query="
-					+ URLEncoder.encode(SearchFragment.this.searchContent));
-		    parameters.add("cityEnglishName=" + URLEncoder.encode(GlobalDataManager.getInstance().getCityEnglishName()));
-			String apiUrl = Communication.getApiUrl(apiName, parameters);
-			try {
-				String json = Communication.getDataByUrl(apiUrl, true);
-				categoryResultCountList = JsonUtil
-						.parseAdSearchCategoryCountResult(json);
-			} catch (Exception e) {
-				categoryResultCountList = null;
-				Log.e(TAG, e.getMessage()==null?"网络请求失败":e.getMessage());
-				getActivity().runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
-								Toast.LENGTH_SHORT).show();
-					}
-				});
-			}
-			SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
-					categoryResultCountList);			
-		}
+	private void searchCategory() {
+		ApiParams params = new ApiParams();
+		params.addParam("query", searchContent);
+		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		
+		BaseCommand.createCommand(NETWOTK_REQ_SEARACH_CAT, "ad_search", params).execute(this);
 	}
-
+	
 	class ResultListAdapter extends ArrayAdapter<Pair<Category, Integer>> {
 		List<Pair<Category, Integer>> objects;
 
@@ -350,6 +330,34 @@ public class SearchFragment extends BaseFragment {
 	public int getExitAnimation()
 	{
 		return getArguments() == null ? R.anim.zoom_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, R.anim.zoom_exit);
+	}
+
+	private void handleCategoryResult(String responseData) {
+		categoryResultCountList = JsonUtil
+				.parseAdSearchCategoryCountResult(responseData);
+		SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
+				categoryResultCountList);	
+	}
+	
+	private void handleCategorySearchFail(ApiError error) {
+		categoryResultCountList = null;
+		getActivity().runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
+	@Override
+	public void onNetworkDone(int requstCode, String responseData) {
+		handleCategoryResult(responseData);
+	}
+
+	@Override
+	public void onNetworkFail(int requstCode, ApiError error) {
+		handleCategorySearchFail(error);
 	}
 
 }

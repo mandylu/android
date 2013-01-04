@@ -609,7 +609,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
         if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-        	Util.makeupUserInfoParams(user, requests);
+        	ApiParams.makeupUserInfoParams(user, requests);
         }
         requests.add("adId=" + adId);
         requests.add("rt=1");
@@ -685,7 +685,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			String apiName = "ad_delete";
 			ArrayList<String> list = new ArrayList<String>();
 			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-				Util.makeupUserInfoParams(user, list);
+				ApiParams.makeupUserInfoParams(user, list);
 			}
 			list.add("adId=" + id);
 			list.add("rt=1");

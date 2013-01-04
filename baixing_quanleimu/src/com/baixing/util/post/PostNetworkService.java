@@ -71,8 +71,7 @@ public class PostNetworkService implements ApiListener{
 		}
 
 		if(registered){
-			apiParam.addParam("mobile", user.getPhone());
-			apiParam.addParam("userToken", Util.generateUsertoken(user.getPassword()));
+			apiParam.appendUserInfo(user);
 		}
 		Pair<Double, Double> coorGoogle = PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
 		apiParam.addParam("lat", String.valueOf(coorGoogle.first));

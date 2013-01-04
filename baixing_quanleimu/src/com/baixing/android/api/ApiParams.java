@@ -10,6 +10,10 @@ import java.util.Set;
 //liuweili@baixing.com
 import java.util.Map.Entry;
 
+import com.baixing.entity.UserBean;
+import com.baixing.util.Communication;
+import com.baixing.util.TextUtil;
+
 /**
  * 
  * @history: by liuchong add <code>addParams</code> for primitive types.
@@ -118,5 +122,19 @@ public class ApiParams implements Serializable {
 		return sb.toString();
 	}
 	
+	public void appendUserInfo(UserBean user) {
+		if (user == null) {
+			return;
+		}
+		this.addParam("mobile", user.getPhone());
+		this.addParam("userToken", ApiClient.generateUsertoken(user.getPassword()));
+	}
+	
+    static public void makeupUserInfoParams(UserBean user, List<String> params){
+		if(user != null && params != null){
+			params.add("mobile=" + user.getPhone());
+			params.add("userToken=" + ApiClient.generateUsertoken(user.getPassword()));
+		}    	
+    }
 
 }
