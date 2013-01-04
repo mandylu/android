@@ -54,7 +54,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	private int postIndex = -1;
 	private Ad goodsDetail;
 	private List<String> listUrl = new ArrayList<String>();
-	private WeakReference<Bitmap> mb;
+//	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
 	private boolean exit = false;
 	
@@ -120,7 +120,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
-                mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o));  
+//                mb = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black, -1, -1);  
                 
 				ViewFlow vfCoupon = (ViewFlow)v.findViewById(R.id.vfCoupon);
 				
@@ -225,11 +225,11 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
 	    	ImageCacheManager.getInstance().enableSampleSize(true);
-			if (null == mb || mb.get() == null) {
-				BitmapFactory.Options o = new BitmapFactory.Options();
-				o.inPurgeable = true;
-				mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(), R.drawable.loading_210_black, o));
-			}
+//			if (null == mb || mb.get() == null) {
+//				BitmapFactory.Options o = new BitmapFactory.Options();
+//				o.inPurgeable = true;
+//				mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(), R.drawable.loading_210_black, o));
+//			}
 	    }
 	    
 	    
@@ -379,7 +379,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
 //					imageView.setImageBitmap(mb);
-					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent, -1, -1));
 					
 				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));

@@ -5,6 +5,7 @@ import android.content.Intent;
 import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.view.fragment.MyAdFragment;
 import com.baixing.view.fragment.PersonalProfileFragment;
 import com.quanleimu.activity.R;
@@ -33,6 +34,7 @@ public class PersonalActivity extends BaseTabActivity {
 	@Override
 	public void onCreate(Bundle savedBundle){
 		super.onCreate(savedBundle);
+		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0){
