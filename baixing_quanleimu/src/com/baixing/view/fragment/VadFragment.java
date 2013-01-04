@@ -341,7 +341,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		if (!buzzEnable)
 		{
 			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
-			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable, -1, -1));
+			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable));
 		}
 		
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);

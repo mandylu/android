@@ -35,7 +35,7 @@ public class VadImageAdapter extends BaseAdapter {
 		pageIndex = detailPostion;
 		this.provider = imageLoader;
 		
-		mb_loading = new WeakReference<Bitmap>(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_vad_loading, -1, -1));
+		mb_loading = new WeakReference<Bitmap>(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_vad_loading));
 	}
 	
 	public void setContent(List<String> listUrl){

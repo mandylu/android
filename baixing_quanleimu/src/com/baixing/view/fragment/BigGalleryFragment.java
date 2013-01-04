@@ -91,7 +91,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
-		ImageCacheManager.getInstance().enableSampleSize(true);
+//		ImageCacheManager.getInstance().enableSampleSize(true);
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
@@ -152,7 +152,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
-        ImageCacheManager.getInstance().enableSampleSize(false);
+//        ImageCacheManager.getInstance().enableSampleSize(false);
   		ImageLoaderManager.getInstance().Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
@@ -224,7 +224,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    	this.pv = PV.VIEWADPIC;
 	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
-	    	ImageCacheManager.getInstance().enableSampleSize(true);
+//	    	ImageCacheManager.getInstance().enableSampleSize(true);
 //			if (null == mb || mb.get() == null) {
 //				BitmapFactory.Options o = new BitmapFactory.Options();
 //				o.inPurgeable = true;
@@ -379,7 +379,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
 //					imageView.setImageBitmap(mb);
-					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent, -1, -1));
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent));
 					
 				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));

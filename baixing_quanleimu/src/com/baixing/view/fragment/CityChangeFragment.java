@@ -158,7 +158,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 
 			TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
 			ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
-			ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.gou, -1, -1));
+			ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.gou));
 
 			tvCityName.setText(city.getName());
 			ivChoose.setVisibility(View.INVISIBLE);
@@ -217,7 +217,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 						
 						TextView tvCityName = (TextView) vTemp.findViewById(R.id.tvCateName);
 						ImageView ivChoose = (ImageView) vTemp.findViewById(R.id.ivChoose);
-						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow, -1, -1));
+						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow));
 						tvCityName.setText(shengArray[i]);
 
 						// 设置标志位
@@ -315,7 +315,7 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 	
 						TextView tvCityName = (TextView) v.findViewById(R.id.tvCateName);
 						ImageView ivChoose = (ImageView) v.findViewById(R.id.ivChoose);
-						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow, -1, -1));
+						ivChoose.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.arrow));
 						tvCityName.setText(city.getName());
 						ivChoose.setVisibility(View.INVISIBLE);
 						v.setTag(new Pair<CityDetail, String>(city, "search"));

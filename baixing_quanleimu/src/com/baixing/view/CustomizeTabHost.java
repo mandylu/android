@@ -121,7 +121,7 @@ public final class CustomizeTabHost implements Serializable
     	}
     	else
     	{
-    		icon.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex), -1, -1));
+    		icon.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex)));
     	}
     }
     

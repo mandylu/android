@@ -99,7 +99,7 @@ public class GridAdapter extends BaseAdapter {
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(info.imgResourceId, -1, -1));
+            holder.imageBtn.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(info.imgResourceId));
             holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  

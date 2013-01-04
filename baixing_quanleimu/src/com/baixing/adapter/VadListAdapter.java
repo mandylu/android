@@ -251,11 +251,11 @@ public class VadListAdapter extends BaseAdapter {
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 
 		if(null == defaultBk2){
-	        defaultBk2 = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_listing_nopic, -1, -1);
+	        defaultBk2 = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_listing_nopic);
 		}
 		
 		if(null == downloadFailBk){				
-	        downloadFailBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x, -1, -1);
+	        downloadFailBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
 		}
 		
 		holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);

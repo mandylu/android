@@ -704,7 +704,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				v.setOnClickListener(this);
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
-				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
+				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
 				if(imgSelBundle != null){
 		    		Object[] container = (Object[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
 					if(container != null && container.length > 0
@@ -808,10 +808,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 							if(iv != null && thumbnail != null){
 								iv.setImageBitmap(thumbnail);
 							}else{
-								iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
+								iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
 							}
 						}else{
-							iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
+							iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
 						}
 					}
 					
