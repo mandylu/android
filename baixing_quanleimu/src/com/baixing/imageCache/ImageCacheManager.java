@@ -89,7 +89,8 @@ public class ImageCacheManager{
 		option.inJustDecodeBounds = false;
 		option.inPurgeable = true;
 		option.inInputShareable = true;
-		option.inSampleSize = sampleSize;		
+		option.inSampleSize = sampleSize;
+		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	}
 	
 	public Bitmap loadBitmapFromFile(String path, int maxWidth, int maxHeight){
