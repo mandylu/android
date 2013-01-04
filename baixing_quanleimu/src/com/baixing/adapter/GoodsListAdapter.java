@@ -65,35 +65,6 @@ public class GoodsListAdapter extends BaseAdapter {
 	private boolean showImage = true;
 	private AdViewHistory vadHistory;
 	
-//	private RelativeLayout.LayoutParams lp = null;
-	
-	public void releaseResource(){
-		Thread t = new Thread(new Runnable(){
-			public void run(){
-//				Helper.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listLookHistory", QuanleimuApplication.getApplication().getListLookHistory());
-				try{
-					Thread.sleep(2000);
-//					if(defaultBk2 != null && defaultBk2.get() != null){
-					if(defaultBk2 != null){
-//						defaultBk2.get().recycle();
-						defaultBk2.recycle();
-						defaultBk2 = null;
-					}
-//					if(null != downloadFailBk && null != downloadFailBk.get()){
-					if(null != downloadFailBk){
-//						downloadFailBk.get().recycle();
-						downloadFailBk.recycle();
-						downloadFailBk = null;
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-		});
-		t.start();
-
-	}
-	
 	@Override
 	public void unregisterDataSetObserver(DataSetObserver observer) {
 	    if (observer != null) {

@@ -323,54 +323,38 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	
 	@Override
 	public void onDestroy(){
-		final VadListAdapter adapter = findGoodListAdapter();
-		if(adapter != null){
-			Thread t = new Thread(new Runnable(){
-				public void run(){
-					try{
-						Thread.sleep(2000);
-						adapter.releaseResource();
-					}catch(Exception e){
-						e.printStackTrace();
-					}
-				}
-			});
-			t.start();
-
-		}
 		this.lvGoodsList = null;
 //		this.adapter = null;
 		AdList goodData = this.goodsListLoader.getGoodsList();
 		this.goodsListLoader.reset();
 		this.goodsListLoader = null;
 		
-		if(goodData != null){
-			 List<Ad> list = goodData.getData();
-			 if(list != null){
-				 for(int i = 0; i < list.size(); ++ i){
-					 Ad gd = list.get(i);
-					 if(gd != null){
-						 ImageList il = gd.getImageList();
-						 if(il != null){
-							 if(il.getSquare() != null){
-								 String b = il.getSquare();
-								 if (b.contains(",")) {
-									String[] c = b.split(",");
-									if (c[0] != null && !c[0].equals("")) {
-//										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
-										ImageCacheManager.getInstance().forceRecycle(c[0], false);
-//										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
-									}
-								 }
-							 }
-						 }
-					 }
-				 }
-			 }
-		}
-
-		ImageCacheManager.getInstance().postRecycle();
-		System.gc();
+//		if(goodData != null){
+//			 List<Ad> list = goodData.getData();
+//			 if(list != null){
+//				 for(int i = 0; i < list.size(); ++ i){
+//					 Ad gd = list.get(i);
+//					 if(gd != null){
+//						 ImageList il = gd.getImageList();
+//						 if(il != null){
+//							 if(il.getSquare() != null){
+//								 String b = il.getSquare();
+//								 if (b.contains(",")) {
+//									String[] c = b.split(",");
+//									if (c[0] != null && !c[0].equals("")) {
+////										Log.d("ondestroy of getgoodsview", "hahahaha recycle in getgoodsview ondestroy");
+//										ImageCacheManager.getInstance().forceRecycle(c[0], false);
+////										Log.d("ondestroy of getgoodsview", "hahahaha end recycle in getgoodsview ondestroy");
+//									}
+//								 }
+//							 }
+//						 }
+//					 }
+//				 }
+//			 }
+//		}
+//
+//		ImageCacheManager.getInstance().postRecycle();
 		super.onDestroy();
 	}
 	

@@ -164,14 +164,6 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
   				}
   			}
   		}
-//  		listUrl = null;
-//  		System.gc();
-        
-        if(mb != null && mb.get() != null)
-        {
-            mb.get().recycle();
-            mb = null;
-        }
 	}
 	
 	
