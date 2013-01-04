@@ -172,10 +172,10 @@ public class StateImage implements Serializable{
 				switch(status)
 				{
 				case ImageStatus_DEFAULT:
-					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(defaultRes, -1, -1));
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(defaultRes));
 					break;
 				case ImageStatus_UPLOADING:
-					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.u, -1, -1));
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.u));
 					break;
 				case ImageStatus_SYNC:
 					ImageLoaderManager.getInstance().showImg(imageView, serverImage.toString(), null, imageView.getContext());

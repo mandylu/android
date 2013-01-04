@@ -161,7 +161,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			imgs.get(i).setImageBitmap(getThumbnailWithPath(imgContainer[i].thumbnailPath));
     		}
     	}
-    	imgs.get(i).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
+    	imgs.get(i).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
     	for(int j = i + 1; j < imgs.size(); ++ j){
     		imgs.get(j).setVisibility(View.INVISIBLE);
     	}
@@ -348,7 +348,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Uploading){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading));
 					iv.setVisibility(View.VISIBLE);
 					if(reUploadBitmap && imgContainer[i].bitmapPath != null && imgContainer[i].bitmapPath.length() > 0){
 						new Thread(new UpLoadThread(imgContainer[i].bitmapPath, i)).start();
@@ -356,7 +356,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Failed){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f, -1, -1));
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f));
 					iv.setVisibility(View.VISIBLE);
 					imgs.add(iv);
 				}				
@@ -515,7 +515,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 								new Thread(new UpLoadThread(imgContainer[currentImgView].bitmapPath, currentImgView)).start();
 							}
 							else{
-								imgs.get(currentImgView).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
+								imgs.get(currentImgView).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
 								pickupPhoto(currentImgView);
 							}							
 						}
@@ -532,7 +532,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
-					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black, -1, -1));
+					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black));
 					ImageLoaderManager.getInstance().showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
 							imgContainer[currentImgView].bitmapUrl,
 							"",
@@ -611,7 +611,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			case MSG_START_UPLOAD:{
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
-					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
+					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading));
 					imgs.get(index).setClickable(false);
 					imgs.get(index.intValue()).invalidate();
 					
@@ -624,7 +624,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					Integer index = (Integer) msg.obj;
 //					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
 //					imgs.get(index.intValue()).setImageBitmap(bd.getBitmap());
-					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f, -1, -1));
+					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f));
 //					imgs.get(index.intValue()).setImageResource(R.drawable.f);
 					imgs.get(index).setClickable(true);
 					imgs.get(index.intValue()).invalidate();	
