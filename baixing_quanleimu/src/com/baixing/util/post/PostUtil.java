@@ -203,14 +203,14 @@ public class PostUtil{
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
 
-			if(postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION))//description is builtin keyword
-			{
-				String personalMark = GlobalDataManager.getInstance().getPersonMark();
-				if(personalMark != null && personalMark.length() > 0){
-					personalMark = "\n\n" + personalMark;
-					descriptionEt.setText(personalMark);
-				}
-			}
+//			if(postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION))//description is builtin keyword
+//			{
+//				String personalMark = GlobalDataManager.getInstance().getPersonMark();
+//				if(personalMark != null && personalMark.length() > 0){
+//					personalMark = "\n\n" + personalMark;
+//					descriptionEt.setText(personalMark);
+//				}
+//			}
 			
 			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
 			v.setTag(PostCommonValues.HASH_CONTROL, descriptionEt);

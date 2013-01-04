@@ -83,12 +83,6 @@ public class GlobalDataManager implements Observer{
 		return GlobalDataManager.needNotifiySwitchMode;
 	}
 	
-	//浏览历史 //FIXME: remove me later , keep it because we do not want change code a lot at one time.
-	public List<Ad> listLookHistory = new ArrayList<Ad>();
-	public List<Ad> getListLookHistory() {
-		return listLookHistory;
-	}
-
 	public List<Ad> getListMyStore() {
 		return listMyStore;
 	}
@@ -245,15 +239,15 @@ public class GlobalDataManager implements Observer{
 		this.mobile = mobile;
 	}
 
-	public String personMark = "";
-	
-	public String getPersonMark() {
-		return personMark;
-	}
-
-	public void setPersonMark(String personMark) {
-		this.personMark = personMark;
-	}
+//	public String personMark = "";
+//	
+//	public String getPersonMark() {
+//		return personMark;
+//	}
+//
+//	public void setPersonMark(String personMark) {
+//		this.personMark = personMark;
+//	}
 	
 	public void updateCityList(CityList cityList)
 	{
@@ -567,10 +561,10 @@ public class GlobalDataManager implements Observer{
 		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
 		GlobalDataManager.getInstance().updateFav(objStore);
 		
-		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
-		if(personalMark != null){
-			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
-		}
+//		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
+//		if(personalMark != null){
+//			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
+//		}
 
 	}
 }
