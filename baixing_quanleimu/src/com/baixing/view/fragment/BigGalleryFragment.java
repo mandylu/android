@@ -33,9 +33,10 @@ import android.widget.ImageView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -51,7 +52,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	//int index = 0;
 	static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
-	private GoodsDetail goodsDetail;
+	private Ad goodsDetail;
 	private List<String> listUrl = new ArrayList<String>();
 	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
@@ -74,7 +75,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 		super.onCreate(savedInstanceState);
 		Bundle bundle = getArguments();
 		postIndex = bundle.getInt("postIndex");
-		goodsDetail = (GoodsDetail) bundle.getSerializable("goodsDetail");
+		goodsDetail = (Ad) bundle.getSerializable("goodsDetail");
 	}
 
 
@@ -87,21 +88,17 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
-		QuanleimuApplication.getImageLoader().enableSampleSize();
+		ImageCacheManager.getInstance().enableSampleSize(true);
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
 			if(goodsDetail.getImageList().getBig() == null || goodsDetail.getImageList().getBig().equals(""))
 			{
-//				if(null != m_viewInfoListener){
-					TitleDef title = getTitleDef();
-					title.m_title = "0/0";
-					refreshHeader();
-//					m_viewInfoListener.onTitleChanged(title);
-//				}
+				TitleDef title = getTitleDef();
+				title.m_title = "0/0";
 				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
 			}
 			else
@@ -149,34 +146,24 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	}
 	
 	@Override
-	public void onDestroyView(){
+	public void onViewDestory(View rootView){
 //		ViewFlow vf = ((ViewFlow)this.getView().findViewById(R.id.vfCoupon));
-        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();
+        ((ViewFlow)rootView.findViewById(R.id.vfCoupon)).finalize();
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
-        QuanleimuApplication.getImageLoader().disableSampleSize();
-  		SimpleImageLoader.Cancel(listUrl);
+        ImageCacheManager.getInstance().enableSampleSize(false);
+  		ImageLoaderManager.getInstance().Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
 //  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+  					ImageCacheManager.getInstance().forceRecycle(url, true);
 //  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
   		}
-//  		listUrl = null;
-//  		System.gc();
-        
-        if(mb != null && mb.get() != null)
-        {
-            mb.get().recycle();
-            mb = null;
-        }
-        
-        super.onDestroyView();
 	}
 	
 	
@@ -235,9 +222,9 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	    {
 	    	super.onResume();
 	    	this.pv = PV.VIEWADPIC;
-	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
+	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
-	    	QuanleimuApplication.getImageLoader().enableSampleSize();
+	    	ImageCacheManager.getInstance().enableSampleSize(true);
 			if (null == mb || mb.get() == null) {
 				BitmapFactory.Options o = new BitmapFactory.Options();
 				o.inPurgeable = true;
@@ -259,10 +246,10 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //	    		return;
 //	    	}
 //	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
-	    	String filePath = SimpleImageLoader.getFileInDiskCache(path);
+	    	String filePath = ImageCacheManager.getInstance().getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
-	    	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
+	    	String title = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
 
 	        int index = filePath.lastIndexOf("/");
 	        String fileName = filePath.substring(index+1)+".png";
@@ -394,7 +381,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //					imageView.setImageBitmap(mb);
 					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
 					
-				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
+				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));
 				}
 
@@ -445,7 +432,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(position - index >= 0)
 					urls.add(listUrl.get(position-index));				
 			}
-			SimpleImageLoader.AdjustPriority(urls);		
+			ImageLoaderManager.getInstance().AdjustPriority(urls);		
 		}
 
 		@Override

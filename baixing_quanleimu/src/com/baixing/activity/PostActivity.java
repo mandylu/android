@@ -41,7 +41,6 @@ public class PostActivity extends BaseTabActivity {
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
-            QuanleimuApplication.postEntryFlag = 0;
             Intent intent = getIntent();
             Bundle bundle = new Bundle();
             if(intent != null && intent.hasExtra(PostGoodsFragment.KEY_INIT_CATEGORY)){

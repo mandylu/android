@@ -20,12 +20,14 @@ import android.view.Menu;
 import android.view.MenuItem;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -41,14 +43,14 @@ import com.quanleimu.activity.R;
  * @author liuchong
  *
  */
-public abstract class BaseFragment extends Fragment {
+public abstract class BaseFragment extends Fragment  {
 
 	public static final String TAG = "QLM";//"BaseFragment";
 	protected PV pv = PV.BASE; 
 
 	
 	protected static int INVALID_REQUEST_CODE = 0xFFFFFFFF;
-	protected int requestCode = INVALID_REQUEST_CODE;
+	protected int fragmentRequestCode = INVALID_REQUEST_CODE;
 	
 	public final int MSG_USER_LOGIN 		= 10001;
 	public final int MSG_USER_LOGOUT 	 	= 10002;
@@ -67,13 +69,7 @@ public abstract class BaseFragment extends Fragment {
 	private TitleDef titleDef;
 	
 	protected Handler handler;
-	
-	public enum EBUTT_STYLE{
-		EBUTT_STYLE_BACK,
-		EBUTT_STYLE_NORMAL,
-		EBUTT_STYLE_CUSTOM
-		//EBUTT_STYLE_FORWARD
-	};
+	private View.OnClickListener titleActionListener;
 	
 	public Handler getHandler() {
 		return handler;
@@ -83,15 +79,12 @@ public abstract class BaseFragment extends Fragment {
 		private TitleDef() {}
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
-		public EBUTT_STYLE m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
-		public int leftCustomResourceId = -1;
 		
 		public String m_title = null;
 		public View m_titleControls = null;
 		
 		public String m_rightActionHint = null;
 		public int m_rightActionBg = R.drawable.title_bg_selector;//Default right action bg
-		public EBUTT_STYLE m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		public int rightCustomResourceId = -1;
 		
 		public boolean hasGlobalSearch = false; //Disable search by default
@@ -154,6 +147,29 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		titleActionListener = new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				switch (v.getId()) {
+				case R.id.right_action:
+					handleRightAction();
+
+					break;
+				case R.id.left_action:
+					if (getActivity() instanceof IExit) {
+						((IExit) getActivity()).handleFragmentAction();
+					}
+					break;
+				case R.id.search_action: {
+					handleSearch();
+					break;
+				}
+				}
+			}
+		};
+		
 		this.setHasOptionsMenu(true);
 		handler = new Handler() {
 			@Override
@@ -172,7 +188,7 @@ public abstract class BaseFragment extends Fragment {
 		
 		if (getArguments() != null)
 		{
-			requestCode = getArguments().getInt(ARG_COMMON_REQ_CODE, INVALID_REQUEST_CODE);
+			fragmentRequestCode = getArguments().getInt(ARG_COMMON_REQ_CODE, INVALID_REQUEST_CODE);
 		}
 		
 		if (savedInstanceState != null)
@@ -256,7 +272,7 @@ public abstract class BaseFragment extends Fragment {
 			options.remove(excludeMenus[i]);
 		}
 				
-		if (Util.isUserLogin())
+		if (GlobalDataManager.getInstance().getAccountManager().isUserLogin())
 		{
 			if (options.remove(OPTION_LOGIN))
 			{
@@ -356,7 +372,7 @@ public abstract class BaseFragment extends Fragment {
 	@Override
 	public void onActivityCreated(Bundle savedInstanceState) {
 		super.onActivityCreated(savedInstanceState);
-		refreshHeader();
+		refreshHeader(getView());
 	}
 	
 	public final void notifyOnStackTop(boolean isBack)
@@ -386,20 +402,34 @@ public abstract class BaseFragment extends Fragment {
 	 * View will be destroyed before you leave this fragment.
 	 */
 	@Override
-	public void onDestroyView() {
+	public final void onDestroyView() {
+		onViewDestory(getView());
 //		Log.w(TAG, "#" + this.getName() + " going to destory view.");
 		if (pd != null && pd.isShowing())
 		{
 			pd.dismiss();
 		}
+		TitleDef title = getTitleDef();
+		if (title != null && title.m_titleControls != null) {
+			((ViewGroup)getView().findViewById(R.id.linearTop)).removeView(title.m_titleControls);
+		}
 		super.onDestroyView();
+	}
+	
+	protected void onViewDestory(View rootView) {
+		//Give sub class a chance to release some resource.
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public final View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
-		return super.onCreateView(inflater, container, savedInstanceState);
+		View rootView = onInitializeView(inflater, container, savedInstanceState);
+		refreshHeader(rootView);
+		return rootView;
 	}
+	
+	protected abstract View onInitializeView(LayoutInflater inflater, ViewGroup container,
+			Bundle savedInstanceState);
 
 	/**
 	 * {@inheritDoc}
@@ -530,18 +560,28 @@ public abstract class BaseFragment extends Fragment {
 		
 	}
 		
-	protected void refreshHeader()
+	protected void refreshHeader() {
+		refreshHeader(getView());
+	}
+	
+	private void refreshHeader(View rootView)
 	{
-		if (!this.isUiActive())
+		if (rootView == null)
 		{
 			Log.e(TAG, "cannot refresh header because ui is not active now");
 			return;
 		}
 		
-		TitleDef title = getTitleDef();
-		Activity activity = getActivity();
+		View left = rootView.findViewById(R.id.left_action);
+		left.setOnClickListener(titleActionListener);
+		View right = rootView.findViewById(R.id.right_action);
+		right.setOnClickListener(titleActionListener);
+		View search = rootView.findViewById(R.id.search_action);
+		search.setOnClickListener(titleActionListener);
 		
-		RelativeLayout top = (RelativeLayout)activity.findViewById(R.id.linearTop);
+		TitleDef title = getTitleDef();
+		
+		RelativeLayout top = (RelativeLayout)rootView.findViewById(R.id.linearTop);
 		top.setPadding(0, 0, 0, 0);//For nine patch.
 		
 		if( title != null && title.m_visible){
@@ -549,7 +589,7 @@ public abstract class BaseFragment extends Fragment {
 			
 			LinearLayout llTitleControls = (LinearLayout) top
 					.findViewById(R.id.linearTitleControls);
-			TextView tTitle = (TextView) activity.findViewById(R.id.tvTitle);
+			TextView tTitle = (TextView) rootView.findViewById(R.id.tvTitle);
 			
 			if (null != title.m_titleControls) {
 				llTitleControls.setVisibility(View.VISIBLE);
@@ -557,8 +597,11 @@ public abstract class BaseFragment extends Fragment {
 				
 				View titleControl = llTitleControls.getChildCount() == 0 ? null : llTitleControls.getChildAt(0);
 				if (titleControl != title.m_titleControls) {
-					llTitleControls.removeAllViews();
-					llTitleControls.addView(title.m_titleControls);		
+					ViewParent p = title.m_titleControls.getParent();
+					if (p != null) {
+						((ViewGroup) p).removeView(title.m_titleControls);
+					}
+					llTitleControls.addView(title.m_titleControls);	
 					onAddTitleControl(title.m_titleControls);
 				}
 			} else {
@@ -568,20 +611,15 @@ public abstract class BaseFragment extends Fragment {
 			}
 			
 			//left action bar settings
-			View left = activity.findViewById(R.id.left_action);
 			left.setPadding(0, 0, 0, 0);//Fix 9-ppatch issue.
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				left.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
-			}else if(title.m_leftActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.leftCustomResourceId > 0){
-				left.setVisibility(View.VISIBLE);
-				activity.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
+				rootView.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
 			}else{
 				left.setVisibility(View.GONE);
-				activity.findViewById(R.id.left_line).setVisibility(View.GONE);
+				rootView.findViewById(R.id.left_line).setVisibility(View.GONE);
 			}
 			
-			View search = activity.findViewById(R.id.search_action);
 			search.setPadding(0, 0, 0, 0);//Fix 9-patch issue.
 			if (title.hasGlobalSearch)
 			{
@@ -594,17 +632,13 @@ public abstract class BaseFragment extends Fragment {
 			
 			
 			//right action bar settings
-			View right = activity.findViewById(R.id.right_action);
 			if(right != null && title.m_rightActionHint != null && !"".equals(title.m_rightActionHint)){
 //				right.setText(title.m_rightActionHint);
 				right.setVisibility(View.VISIBLE);
 				right.setBackgroundResource(title.m_rightActionBg);
 				
-				TextView text = (TextView) activity.findViewById(R.id.right_btn_txt);
+				TextView text = (TextView) rootView.findViewById(R.id.right_btn_txt);
 				text.setText(title.m_rightActionHint);
-			}else if(right != null && title.m_rightActionStyle == EBUTT_STYLE.EBUTT_STYLE_CUSTOM && title.rightCustomResourceId > 0){
-				right.setVisibility(View.VISIBLE);
-				right.setBackgroundResource(title.m_rightActionBg);
 			}else if (right != null){
 				right.setVisibility(View.GONE);
 			}
@@ -670,7 +704,7 @@ public abstract class BaseFragment extends Fragment {
 	
 	protected final Context getAppContext()
 	{
-		return QuanleimuApplication.getApplication().getApplicationContext();
+		return GlobalDataManager.getInstance().getApplicationContext();
 	}
 	
 	protected void logCreateView(Bundle bundle)

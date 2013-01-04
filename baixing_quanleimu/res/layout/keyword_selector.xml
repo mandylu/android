@@ -4,10 +4,13 @@
     android:layout_height="match_parent"
     android:background="@color/bg_screen">
     
+     <include layout="@layout/common_title"/>
+     
     <ListView
         android:id="@+id/lvSearchHistory"
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
+        android:layout_below="@+id/linearTop"
         android:focusable="false"
         android:focusableInTouchMode="true"
         android:divider="@drawable/list_divider"

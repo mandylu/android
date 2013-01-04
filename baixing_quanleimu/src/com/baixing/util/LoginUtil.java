@@ -16,7 +16,7 @@ import android.view.inputmethod.InputMethodManager;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -134,11 +134,11 @@ public class LoginUtil implements View.OnClickListener{
 				String password = ((TextView) view.findViewById(R.id.et_password))
 						.getText().toString();
 				user.setPassword(password);
-				QuanleimuApplication.getApplication()
+				GlobalDataManager.getInstance()
 						.setMobile(user.getPhone());
 				Util.saveDataToLocate(view.getContext(), "user", user);
-				Util.reloadUser();
-				QuanleimuApplication.getApplication().setPhoneNumber(user.getPhone());
+				GlobalDataManager.getInstance().getAccountManager().reloadUser();
+				GlobalDataManager.getInstance().setPhoneNumber(user.getPhone());
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
 				
 				if(listener != null){

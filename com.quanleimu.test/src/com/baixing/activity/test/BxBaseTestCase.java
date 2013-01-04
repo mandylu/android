@@ -205,7 +205,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	@SuppressWarnings("unchecked")
 	public BxBaseTestCase() throws Exception {
-		super("com.quanleimu.activity", "com.quanleimu.activity.QuanleimuMainActivity");
+		super("com.quanleimu.activity", "com.baixing.activity.MainActivity");
 		AthrunTestCase.setMaxTimeToFindView(3000);
 	}
 	
@@ -404,7 +404,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	}
 	
 	private void startScreen() throws Exception {
-		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		assertEquals(true, getDevice().waitForActivity("MainActivity", 3000));
 		sleep(5);
 		TextViewElement vm = findElementByText("以后再说");
 		if (vm != null) {
@@ -420,7 +420,7 @@ public class BxBaseTestCase extends AthrunTestCase {
 	
 	private void startScreen_v3() throws Exception {
 		Log.i(LOG_TAG, "This is a test for startScreen_v3() method");
-		assertEquals(true, getDevice().waitForActivity("QuanleimuMainActivity", 3000));
+		assertEquals(true, getDevice().waitForActivity("MainActivity", 3000));
 		TextViewElement v = findElementById(HOME_FIRST_RUN_ID_V3, TextViewElement.class);
 		if (v != null) {
 			v.setText(TEST_DATA_DEFAULT_CITYNAME);

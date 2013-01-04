@@ -56,7 +56,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.selectionsearch, null);
 	
@@ -138,9 +138,6 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 		switch(v.getId())
 		{
 			case R.id.btnCancel:
-//				if(m_viewInfoListener != null){
-//					m_viewInfoListener.onBack();
-//				}
 				finishFragment();
 				break;
 		}

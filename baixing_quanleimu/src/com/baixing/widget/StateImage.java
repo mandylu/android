@@ -13,7 +13,8 @@ import android.provider.MediaStore;
 import android.widget.ImageView;
 
 import com.baixing.activity.BaseActivity;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.UploadImageCommand;
 import com.baixing.util.UploadImageCommand.ProgressListener;
@@ -171,13 +172,13 @@ public class StateImage implements Serializable{
 				switch(status)
 				{
 				case ImageStatus_DEFAULT:
-					imageView.setImageResource(defaultRes);
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(defaultRes, -1, -1));
 					break;
 				case ImageStatus_UPLOADING:
-					imageView.setImageResource(R.drawable.u);
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.u, -1, -1));
 					break;
 				case ImageStatus_SYNC:
-					SimpleImageLoader.showImg(imageView, serverImage.toString(), null, imageView.getContext());
+					ImageLoaderManager.getInstance().showImg(imageView, serverImage.toString(), null, imageView.getContext());
 					break;
 				case ImageStatus_LOCAL:
 					if (defaultImg != null)

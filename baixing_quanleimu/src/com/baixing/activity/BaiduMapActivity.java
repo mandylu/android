@@ -12,20 +12,24 @@ import org.jivesoftware.smack.util.Base64;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.LocationListener;
+import com.baidu.mapapi.MKEvent;
+import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -44,6 +48,39 @@ import java.util.List;
 import org.json.JSONObject;
 
 public class BaiduMapActivity extends MapActivity implements LocationListener{
+
+		// 授权Key
+		// TODO: 请输入您的Key,
+		// 申请地址：http://dev.baidu.com/wiki/static/imap/key/
+		//713E99B1CD54866996162791BA789A0D9A13791B	
+		public static String mStrKey = "736C4435847CB7D20DD1131064E35E8941C934F5";
+
+		// 常用事件监听，用来处理通常的网络错误，授权验证错误等
+		public static class MyGeneralListener implements MKGeneralListener {
+			boolean m_bKeyRight = true; // 授权Key正确，验证通过
+			private Context context;
+			MyGeneralListener(Context cxt) {
+				context = cxt;
+			}
+			
+			@Override
+			public void onGetNetworkState(int iError) {
+				Toast.makeText(context,
+						"您的网络出错啦！", Toast.LENGTH_LONG).show();
+			}
+
+			@Override
+			public void onGetPermissionState(int iError) {
+				if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
+					// 授权Key错误：
+					Toast.makeText(context,
+							"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
+							.show();
+					this.m_bKeyRight = false;
+				}
+			}
+
+		}
 	
 	BMapManager mBMapMan = null;
 	private GeoPoint endGeoPoint;
@@ -65,9 +102,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	    super.onPause();
 	}
 	
-	private void setTargetCoordinate(final GoodsDetail detail){
-		final String latV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		final String lonV = detail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
+	private void setTargetCoordinate(final Ad detail){
+		final String latV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+		final String lonV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
 		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
 		{
 //			final double lat = Double.valueOf(latV);
@@ -120,8 +157,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			Thread getCoordinate = new Thread(new Runnable(){
 	            @Override
 	            public void run() {
-	            	if(QuanleimuApplication.getApplication().getApplicationContext() == null) return;
-					String city = QuanleimuApplication.getApplication().cityName;
+	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
+					String city = GlobalDataManager.getInstance().cityName;
 					if(!city.equals("")){
 						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
 						try{
@@ -209,7 +246,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 
         Bundle bundle = this.getIntent().getExtras();
         if(bundle != null){
-	        GoodsDetail position = (GoodsDetail)bundle.getSerializable("detail");
+	        Ad position = (Ad)bundle.getSerializable("detail");
 	        if(position == null) return;
 			String areaname = position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
 			if(areaname != null){
@@ -231,8 +268,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	protected void onCreate(Bundle savedInstanceState) {
 		this.setTheme(R.style.lightTheme);
 		super.onCreate(savedInstanceState);
-		if(QuanleimuApplication.context == null){
-			QuanleimuApplication.context = new WeakReference<Context>(this);
+		if(GlobalDataManager.context == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
 		this.setContentView(R.layout.baidumaplayout);
 		findViewById(R.id.search_action).setVisibility(View.GONE);
@@ -245,8 +282,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		
 		if (mBMapMan == null) 
 		{
-			mBMapMan = new BMapManager(QuanleimuApplication.getApplication().getApplicationContext());
-			mBMapMan.init(QuanleimuApplication.getApplication().mStrKey, new QuanleimuApplication.MyGeneralListener());
+			mBMapMan = new BMapManager(GlobalDataManager.getInstance().getApplicationContext());
+			mBMapMan.init(mStrKey, new MyGeneralListener(this));
 		}
 		this.findViewById(R.id.left_action).setOnClickListener(new View.OnClickListener() {
 			

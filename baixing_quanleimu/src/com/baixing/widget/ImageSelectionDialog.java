@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 package com.baixing.widget;
 
 import java.io.File;
@@ -5,7 +6,6 @@ import java.io.Serializable;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -33,19 +33,15 @@ import android.view.View.OnClickListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.Toast;
-
-import com.baixing.activity.QuanleimuApplication;
 import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
-import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
 public class ImageSelectionDialog extends DialogFragment implements OnClickListener{
-//	public static final String KEY_BITMAP_URL = "bitmapurl";
-//	public static final String KEY_CACHED_BPS = "cachedbps";
 	private static final String KEY_CURRENT_IMGVIEW = "currentImageView";
-//	private static final String KEY_OUT_HANDLER = "outHandler";
 	public static final String KEY_THUMBNAIL_URL = "thumbnailurl";
 	private static final String KEY_BUNDLE = "key_bundle";
 	public static final String KEY_IMG_CONTAINER = "image_container";
@@ -57,14 +53,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public static final int MSG_IMG_SEL_DISMISSED = 0x11110001;
 	private static final int PHOTORESOULT = 3;
 	
-	private int uploadCount = 0;
     private int currentImgView = -1;
-//    private ArrayList<String> bitmap_url;
-//    private ArrayList<String> thumbnail_url;
     private int imgHeight = 0;
     private List<ImageView> imgs;
-//    private ArrayList<WeakReference<Bitmap> > cachedBps;
-//    private ArrayList<Bitmap> cachedBps;
     private Bundle bundle;
     private Handler outHandler;
     private boolean pickDlgShown = false;
@@ -79,9 +70,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	static final private int[] imgIds = {R.id.iv_1, R.id.iv_2, R.id.iv_3, R.id.iv_4, R.id.iv_5, R.id.iv_6};
 	
 	public static class ImageContainer implements Serializable{
-		/**
-		 * 
-		 */
 		private static final long serialVersionUID = 8249910731524630367L;
 		public ImageStatus status = ImageStatus.ImageStatus_Unset;
 		public String bitmapUrl = "";
@@ -103,8 +91,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	    
 	private ImageContainer[] imgContainer = 
 			new ImageContainer[]{new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer(),new ImageContainer()}; 
-	
-	
+		
     @SuppressWarnings("unchecked")
 	public ImageSelectionDialog(Bundle bundle){
     	this.setMsgOutBundle(bundle); 	
@@ -158,15 +145,13 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     
     static public Bitmap getThumbnailWithPath(String path){
     	if(path == null || path.length() <= 0) return null;
-    	WeakReference<Bitmap> thumbnail = QuanleimuApplication.getImageLoader().getWithImmediateIO(path);
+    	WeakReference<Bitmap> thumbnail = ImageCacheManager.getInstance().getFromCache(path);
     	if(thumbnail == null) return null;
     	return thumbnail.get();
     }
     
     private void adjustImageCountAfterDel(View v){
     	removeImageContainer(currentImgView);
-//		bitmap_url.remove(currentImgView);
-//		cachedBps.remove(currentImgView);
     	int i = currentImgView;
     	for(; i < imgs.size(); ++ i){
     		if(imgContainer[i].status == ImageStatus.ImageStatus_Unset){
@@ -176,7 +161,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     			imgs.get(i).setImageBitmap(getThumbnailWithPath(imgContainer[i].thumbnailPath));
     		}
     	}
-    	imgs.get(i).setImageResource(R.drawable.btn_add_picture);
+    	imgs.get(i).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
     	for(int j = i + 1; j < imgs.size(); ++ j){
     		imgs.get(j).setVisibility(View.INVISIBLE);
     	}
@@ -196,15 +181,12 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			if (imgs != null){
 				imgs.get(currentImgView).setFocusable(true);
 			}
-//			imgContainer[currentImgView].status = ImageStatus.ImageStatus_Uploading;
-//			imgContainer[currentImgView].bitmapPath = path;
 			new Thread(new UpLoadThread(path, currentImgView)).start();
 		}
 	}
     
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.d("index", "bitmap, onActivityResult");
 		pickDlgShown = false;
 		
 		if (resultCode == NONE) {
@@ -212,28 +194,23 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		}
 		imgs.get(0).setVisibility(View.VISIBLE);
 		imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.VISIBLE);
-//		this.showPost();
 		
-		// 拍照 
 		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH) {
-			// 设置文件保存路径这里放在跟目录下
 			File picture = new File(Environment.getExternalStorageDirectory(), "temp" + this.currentImgView + ".jpg");
 			uri = Uri.fromFile(picture);
-			getBitmap(uri, requestCode); // 直接返回图片
-			//startPhotoZoom(uri); //截取图片尺寸
+			getBitmap(uri, requestCode);
 		}
 
 		if (data == null) {
 			return;
 		}
 
-		// 读取相册缩放图片
 		if (requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM) {
 			uri = data.getData();
 			//startPhotoZoom(uri);
 			getBitmap(uri, requestCode);
 		}
-		// 处理结果
+
 		if (requestCode == PHOTORESOULT) {
 			File picture = new File("/sdcard/cropped.jpg");
 			
@@ -265,13 +242,10 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public void onDismiss(DialogInterface dialog){
 		if(outHandler != null){
 			if(this.bundle != null){
-//				bundle.putSerializable(KEY_BITMAP_URL, bitmap_url);
-//				bundle.putSerializable(KEY_CACHED_BPS, (cachedBps));
 				bundle.putSerializable(KEY_IMG_CONTAINER, imgContainer);
 			}
 			outHandler.sendEmptyMessage(MSG_IMG_SEL_DISMISSED);
 		}
-//		popUpDlgFragment();
 		super.onDismiss(dialog);
 	}
 	
@@ -280,20 +254,15 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 		super.onCreate(savedInstanceState);
 		
 		if(savedInstanceState != null){
-//    		bitmap_url = (ArrayList<String>)savedInstanceState.getSerializable(KEY_BITMAP_URL);
-//    		cachedBps = (ArrayList<Bitmap>)savedInstanceState.getSerializable(KEY_CACHED_BPS);
 			currentImgView = savedInstanceState.getInt(KEY_CURRENT_IMGVIEW);
-    		Log.d("index", "bitmap:   onCreate: " + String.valueOf(currentImgView));
     		bundle = savedInstanceState.getBundle(KEY_BUNDLE);
     		Object[] container = (Object[])savedInstanceState.getSerializable(KEY_IMG_CONTAINER);
     		if(container != null){
     			for(int i = 0; i < imgContainer.length && i < container.length; ++ i){
     				imgContainer[i].set((ImageContainer)container[i]);
     			}
-    		}
-    		 
-		}
-		
+    		}    		
+		}		
 	}
 	
 	@Override
@@ -312,10 +281,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	public void onSaveInstanceState(Bundle outState){
 		super.onSaveInstanceState(outState);
 		if(outState != null){
-//			outState.putSerializable(KEY_BITMAP_URL, bitmap_url);
-//			outState.putSerializable(KEY_CACHED_BPS, cachedBps);
 			outState.putInt(KEY_CURRENT_IMGVIEW, currentImgView);
-			Log.d("index", "bitmap:   onsave: " + String.valueOf(currentImgView));
 			outState.putBundle(KEY_BUNDLE, bundle);
 			outState.putSerializable(KEY_IMG_CONTAINER, imgContainer);
 		}
@@ -356,7 +322,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 	
 	private void setImageViews(View parent, boolean reUploadBitmap){
-		Log.d("index", "bitmap, setImageViews");
 		imgs = new ArrayList<ImageView>();
 		if(imgContainer.length == 0){
 	        ImageView iv = (ImageView)parent.findViewById(imgIds[0]);
@@ -374,7 +339,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					iv.setVisibility(View.VISIBLE);
 					if(imgContainer[i].thumbnailPath != null){
 						if(imgContainer[i].thumbnailPath.contains("http://")){
-							SimpleImageLoader.showImg(iv, imgContainer[i].thumbnailPath, null, getActivity());
+							ImageLoaderManager.getInstance().showImg(iv, imgContainer[i].thumbnailPath, null, getActivity());
 						}else{
 							Bitmap bmp = getThumbnailWithPath(imgContainer[i].thumbnailPath);
 							iv.setImageBitmap(bmp);
@@ -383,7 +348,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Uploading){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageResource(R.drawable.icon_post_loading);
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
 					iv.setVisibility(View.VISIBLE);
 					if(reUploadBitmap && imgContainer[i].bitmapPath != null && imgContainer[i].bitmapPath.length() > 0){
 						new Thread(new UpLoadThread(imgContainer[i].bitmapPath, i)).start();
@@ -391,7 +356,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.add(iv);
 				}else if(imgContainer[i].status == ImageStatus.ImageStatus_Failed){
 					ImageView iv = (ImageView)parent.findViewById(imgIds[i]);
-					iv.setImageResource(R.drawable.f);
+					iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f, -1, -1));
 					iv.setVisibility(View.VISIBLE);
 					imgs.add(iv);
 				}				
@@ -402,9 +367,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
     @Override
     public Dialog onCreateDialog(Bundle savedInstanceState) {
 //   		imgs = new ArrayList<ImageView>(imgIds.length);
-		Log.d("index", "bitmap, onCreateDialog");
-		uploadCount = 0;
-        
         Dialog dialog = new Dialog(getActivity(), android.R.style.Theme_Translucent_NoTitleBar);
         LayoutInflater inflater = getActivity().getLayoutInflater();
         View v = inflater.inflate(R.layout.dialog_image_selection, null);
@@ -413,15 +375,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         	v.findViewById(imgIds[i]).setOnClickListener(this);
         }
         v.findViewById(R.id.btn_finish_sel).setOnClickListener(this);
-        Log.d("index", "index, before setimageview, container count is:   " + imgContainer.length);
-        
-        for(int i = 0; i < imgContainer.length; ++ i){
-        	Log.d("bitmap", "bitmap container content:  " + imgContainer[i].status + "index:  " + i);
-        }
-        
         setImageViews(v, true);
-        Log.d("index", "index, after setimageview, count is:   " + imgs.size());
-        
         adjustImageLines();
         
         v.setOnClickListener(this);
@@ -465,10 +419,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
         
 	private ImageStatus getCurrentImageStatus(int index){
 		if(index < 0 || index >= imgContainer.length) return ImageStatus.ImageStatus_Unset;
-//		if(imgContainer.length <= index || imgContainer.get(index) == null)return ImageStatus.ImageStatus_Unset;
 		return imgContainer[index].status;
-//		if(bitmap_url.get(index).contains("http:")) return ImageStatus.ImageStatus_Normal; 
-//		return ImageStatus.ImageStatus_Failed;
 	}
 	
 	private void pickupPhoto(final int tmpFileIndex){
@@ -564,20 +515,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 								new Thread(new UpLoadThread(imgContainer[currentImgView].bitmapPath, currentImgView)).start();
 							}
 							else{
-//								if (cachedBps.size() > currentImgView && cachedBps.get(currentImgView) != null){
-//									if(cachedBps.get(currentImgView) != null && cachedBps.get(currentImgView) != null){
-//										cachedBps.get(currentImgView).recycle();
-//									}
-//									cachedBps.set(currentImgView, null);
-//								}
-//								setListContent(bitmap_url, null, currentImgView);
-//								bitmap_url.set(currentImgView, null);
-								imgs.get(currentImgView).setImageResource(R.drawable.btn_add_picture);
-//								showDialog();
+								imgs.get(currentImgView).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture, -1, -1));
 								pickupPhoto(currentImgView);
-								//((BXDecorateImageView)imgs[currentImgView]).setDecorateResource(-1, BXDecorateImageView.ImagePos.ImagePos_LeftTop);
-							}
-							
+							}							
 						}
 					})
 					.setNegativeButton("取消", new DialogInterface.OnClickListener() {
@@ -592,9 +532,8 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgs.get(0).getRootView().findViewById(R.id.img_sel_content).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.btn_finish_sel).setVisibility(View.GONE);
 					imgs.get(0).getRootView().findViewById(R.id.post_big).setVisibility(View.VISIBLE);
-					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageResource(R.drawable.loading_210_black);
-					SimpleImageLoader.showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
-//							bitmap_url.get(currentImgView),
+					((ImageView)imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black, -1, -1));
+					ImageLoaderManager.getInstance().showImg(imgs.get(0).getRootView().findViewById(R.id.iv_post_big_img), 
 							imgContainer[currentImgView].bitmapUrl,
 							"",
 							getActivity());
@@ -670,10 +609,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			switch(msg.what){
 			case MSG_START_UPLOAD:{
-				Log.d("bitmap", "bitmap MSG_START_UPLOAD got");
 				Integer index = (Integer) msg.obj;
 				if (imgs != null){
-					imgs.get(index.intValue()).setImageResource(R.drawable.icon_post_loading);
+					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_post_loading, -1, -1));
 					imgs.get(index).setClickable(false);
 					imgs.get(index.intValue()).invalidate();
 					
@@ -682,7 +620,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				break;		
 			}
 			case MSG_FAIL_UPLOAD:{
-				Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got");
 				if (imgs != null){			
 					Integer index = (Integer) msg.obj;
 					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
@@ -690,7 +627,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 //					imgs.get(index.intValue()).setImageResource(R.drawable.f);
 					imgs.get(index).setClickable(true);
 					imgs.get(index.intValue()).invalidate();	
-					Log.d("bitmap", "bitmap MSG_FAIL_UPLOAD got, and invalidate");
 				}
 				break;			
 			}
@@ -701,8 +637,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				if (imgs != null){
 //					imgs.get(index).setImageBitmap(cachedBps.get(index));
 					Bitmap bmp = getThumbnailWithPath(imgContainer[index].thumbnailPath);
-					Log.d("bitmap", "bitmap MSG_SUCCEED_UPLOAD got, thumbnailpath:  " + imgContainer[index].thumbnailPath
-							+ "bitmap:   " + (bmp == null ? "" : bmp.toString()));
 					imgs.get(index).setImageBitmap(bmp);
 					imgs.get(index).setClickable(true);
 					imgs.get(index).invalidate();
@@ -809,8 +743,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				handler.sendMessage(msg);
 			}
 			
-//			synchronized(ImageSelectionDialog.this){
-			++ uploadCount;
 			if(bmpPath == null || bmpPath.equals("")) return;
 
 			Uri uri = Uri.parse(bmpPath);
@@ -820,23 +752,15 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			}
 			Bitmap currentBmp = null;
 			if (path != null) {
-				try {
-				       
+				try{
 				    BitmapFactory.Options bfo = new BitmapFactory.Options();
 			        bfo.inJustDecodeBounds = true;
-			        BitmapFactory.decodeFile(path, bfo);
-			        
+			        BitmapFactory.decodeFile(path, bfo);			        
 				    BitmapFactory.Options o =  new BitmapFactory.Options();
-	                o.inPurgeable = true;
-	                
-	                int maxDim = 600;
-	                
-	                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);
-	                
-	                
+	                o.inPurgeable = true;	                
+	                int maxDim = 600;	                
+	                o.inSampleSize = getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);	               	                
 	                currentBmp = BitmapFactory.decodeFile(path, o);
-					//photo = Util.newBitmap(tphoto, 480, 480);
-					//tphoto.recycle();
 				} catch (Exception e) {
 					e.printStackTrace();
 				}
@@ -846,21 +770,15 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				imgContainer[currentIndex].bitmapPath = path;
 				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Uploading;
 				String result = Communication.uploadPicture(currentBmp);
-//				imgContainer[currentIndex].bitmapUrl = result;
-//				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Normal;
-				-- uploadCount;
 				if(imgs != null && imgs.size() > 0 && imgs.get(0) != null && imgs.get(0).getHeight() != 0){
 					imgHeight = imgs.get(0).getHeight();
 				}
 				Bitmap thumbnailBmp = createThumbnail(currentBmp, imgHeight == 0 ? 90 : imgHeight);//imgs[currentIndex].getHeight());
 				String thumbnailPath = "";
 				if(thumbnailBmp != null){
-					QuanleimuApplication.getImageLoader().putImageToDisk("thumbnail_" + path, thumbnailBmp);
-//					imgContainer[currentIndex].thumbnailPath = "thumbnail_" + path;
+					ImageCacheManager.getInstance().putImageToDisk("thumbnail_" + path, thumbnailBmp);
+					ImageCacheManager.getInstance().saveBitmapToCache("thumbnail_" + path, new WeakReference<Bitmap>(thumbnailBmp));
 					thumbnailPath = "thumbnail_" + path;
-					Log.d("bitmpa", "bitmap thumbnail is NOT NULL:  " + thumbnailPath);
-				}else{
-					Log.d("bitmap", "bitmap  thumbnail is nullllllll");
 				}
 				currentIndex = adjustImgContainerAfterUpload(path, currentIndex, result, thumbnailPath);
 				if(currentIndex < 0) return;
@@ -869,13 +787,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 				currentBmp = null;
 	
 				if (result != null) {
-//					setListContent(bitmap_url, result, currentIndex);						
-	
 					if(handler == null) {
-						Log.d("bitmap", "bitmap, handler is nullllll");
 						return;
 					}
-					Log.d("index", "bitmap, handler is NOTTTT nullllll  " + handler.toString());
 					Message msg = Message.obtain();
 					msg.what = MSG_SUCCEED_UPLOAD;
 					msg.obj = currentIndex;
@@ -893,10 +807,7 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 					imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
 				}
 			}else{
-				Log.d("bitmap", "bitmap is nullllllll");
-				-- uploadCount;
 				imgContainer[currentIndex].status = ImageStatus.ImageStatus_Failed;
-//				setListContent(bitmap_url, bmpPath, currentIndex);
 			}
 			
 			if(handler == null) return;
@@ -904,42 +815,6 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			msg.what = MSG_FAIL_UPLOAD;
 			msg.obj = currentIndex;
 			handler.sendMessage(msg);
-			Log.d("bitmap", "bitmap send Mesage");
-
-//			activity.runOnUiThread(new Runnable(){
-//				public void run(){
-//					Toast.makeText(activity, "上传图片失败", 0).show();
-//				}
-//			});
-//			}
-		}
-	}
-	
-	class DownloadThumbnailsThread extends Thread{
-		private List<String> urls = new ArrayList<String>();
-		public DownloadThumbnailsThread(List<String> urls){
-			this.urls.addAll(urls);
-		}
-		@Override
-		public void run(){
-			if(urls.size() == 0) return;
-			synchronized(ImageSelectionDialog.this){
-//				int size = cachedBps.size() < urls.size() ? cachedBps.size() : urls.size();
-//				for(int i = 0; i < size; ++ i){
-//					if(cachedBps.get(i) == null){
-//						Bitmap bmp = Util.getImage(urls.get(i));
-//						setListContent(cachedBps, bmp, i);
-//					}
-//				}
-//				getActivity().runOnUiThread(new Runnable(){
-//					@Override
-//					public void run(){
-//						for(int i = 0; i < cachedBps.size(); ++ i){
-//							((ImageView)imgs.get(i)).setImageBitmap(cachedBps.get(i));
-//						}
-//					}
-//				});
-			}
 		}
 	}
 }

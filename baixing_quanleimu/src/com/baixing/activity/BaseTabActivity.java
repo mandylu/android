@@ -23,8 +23,9 @@ import android.widget.CheckBox;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -35,7 +36,7 @@ import com.baixing.view.AdViewHistory;
 import com.baixing.view.CustomizeTabHost;
 import com.baixing.view.CustomizeTabHost.TabIconRes;
 import com.baixing.view.CustomizeTabHost.TabSelectListener;
-import com.baixing.view.fragment.GetGoodFragment;
+import com.baixing.view.fragment.ListingFragment;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.drawable;
@@ -48,7 +49,7 @@ import com.quanleimu.activity.R.string;
  * @author liuchong
  *
  */
-public class BaseTabActivity extends BaseActivity implements TabSelectListener {
+public class BaseTabActivity extends BaseActivity implements TabSelectListener, IExit {
 	
 	public static final String LIFE_TAG = "mainActivity";
 	public static final int TAB_INDEX_CAT = 0;
@@ -91,7 +92,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 			instanceList.remove(this.hashCode());
 			this.finish();
 		}
-		else if (originalAppHash != 0 && QuanleimuApplication.isAppDestroy(originalAppHash))
+		else if (originalAppHash != 0 && GlobalDataManager.isAppDestroy(originalAppHash))
 		{
 			finish();
 			return;
@@ -114,7 +115,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		}
 		else
 		{
-			originalAppHash = QuanleimuApplication.getApplication().hashCode();
+			originalAppHash = GlobalDataManager.getInstance().hashCode();
 		}
 		
 		
@@ -228,12 +229,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected void initTitleAction()
 	{
-		View left = findViewById(R.id.left_action);
-		left.setOnClickListener(this);
-		View right = findViewById(R.id.right_action);
-		right.setOnClickListener(this);
-		View search = findViewById(R.id.search_action);
-		search.setOnClickListener(this);
+		
 	}
 	
 	public void handleBack(){
@@ -324,7 +320,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 				startPush.putExtra("updateToken", true);
 				BaseTabActivity.this.startService(startPush);
 				
-				QuanleimuApplication.deleteOldRecorders(3600 * 24 * 3);
+				GlobalDataManager.getInstance().getNetworkCacheManager().deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
 //				isInActiveStack = false;
 				
@@ -340,10 +336,10 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
-		    	List<GoodsDetail> favList = QuanleimuApplication.getApplication().getListMyStore();
+		    	List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
 		    	if (favList != null)
 		    	{
-		    		Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "listMyStore", favList);
+		    		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", favList);
 		    	}
 		    	
 		    	Iterator<Integer> keys =  instanceList.keySet().iterator();
@@ -354,7 +350,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		    	}
 		    	
 		    	instanceList.remove(this.hashCode());
-		    	QuanleimuApplication.resetApplication();//FIXME: check if application instance is needed after user press "exit" button.
+		    	GlobalDataManager.resetApplication();//FIXME: check if application instance is needed after user press "exit" button.
 				BaseTabActivity.this.finish();
 		    }
 		});
@@ -391,12 +387,12 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 		switch(newSelectIndex)
 		{
 		case TAB_INDEX_CAT:
-			intent.setClass(this, QuanleimuMainActivity.class);
+			intent.setClass(this, MainActivity.class);
 			break;
 		case TAB_INDEX_POST:
 			BaseFragment bf = this.getCurrentFragment();
-			if(bf != null && (bf instanceof GetGoodFragment)){
-				intent.putExtra(PostGoodsFragment.KEY_INIT_CATEGORY, ((GetGoodFragment)bf).getCategoryNames());
+			if(bf != null && (bf instanceof ListingFragment)){
+				intent.putExtra(PostGoodsFragment.KEY_INIT_CATEGORY, ((ListingFragment)bf).getCategoryNames());
 			}
 			intent.setClass(this, PostActivity.class);
 			break;
@@ -424,6 +420,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener {
 	
 	protected void onStatckTop(BaseFragment f) {
 		findViewById(R.id.tab_parent).setVisibility(f.hasGlobalTab() ? View.VISIBLE : View.GONE);
+	}
+
+	@Override
+	public void handleFragmentAction() {
+		handleBack();
 	}
 
 }

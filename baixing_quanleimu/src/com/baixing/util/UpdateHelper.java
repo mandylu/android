@@ -1,6 +1,8 @@
 package com.baixing.util;
 
-import android.app.Activity;
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.AlertDialog;
 import android.app.ProgressDialog;
 import android.content.Context;
@@ -8,15 +10,10 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Handler;
 import android.os.Message;
-import android.util.Log;
-import android.view.View;
 import android.widget.Toast;
 
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.data.GlobalDataManager;
 import com.quanleimu.activity.R;
-import org.json.JSONException;
-import org.json.JSONObject;
 
 /**
  * Created with IntelliJ IDEA.
@@ -74,7 +71,7 @@ public class UpdateHelper {
             case MSG_HAS_NEW_VERSION:
                 AlertDialog.Builder builder = new AlertDialog.Builder(activity);
                 builder.setTitle("检查更新")
-                        .setMessage("当前版本: " + QuanleimuApplication.version
+                        .setMessage("当前版本: " + GlobalDataManager.getInstance().getVersion()
                                 + "\n发现新版本: " + serverVersion
                                 + "\n是否更新？")
                         .setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
@@ -106,7 +103,7 @@ public class UpdateHelper {
         this.activity = currentActivity;
 
         ParameterHolder params = new ParameterHolder();
-        params.addParameter("clientVersion", QuanleimuApplication.version);
+        params.addParameter("clientVersion", GlobalDataManager.getInstance().getVersion());
 
         pd = ProgressDialog.show(activity, "提示", "请稍候...");
         pd.show();

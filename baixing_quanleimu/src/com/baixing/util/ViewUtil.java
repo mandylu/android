@@ -1,37 +1,26 @@
 //liuchong@baixing.com
 package com.baixing.util;
 
-import java.io.File;
-
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.broadcast.NotificationIds;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
-import com.baixing.view.fragment.LoginFragment;
-import com.quanleimu.activity.R;
-
-import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.baixing.activity.BaiduMapActivity;
+import com.baixing.activity.BaseActivity;
+import com.baixing.broadcast.NotificationIds;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.quanleimu.activity.R;
 
 /**
  * 
@@ -130,34 +119,66 @@ public class ViewUtil {
 		mNotificationManager.notify(notificationId, notification);
 	}
 	
-	public static void startMapForAds(Context context, GoodsDetail ad) {
-		final String latV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		final String lonV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-		String query = null;
-		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+	public static void startMapForAds(Context context, Ad ad) {
+		
+		if (ad == null)
 		{
-			query = latV + "," + lonV;
-		}
-		else
-		{
-			String area = ad.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-			String address = ad.getMetaValueByKey("具体地点");
-			if (address != null && address.trim().length() > 0)
-			{
-				query = address.trim();
-			}
-			else if (area != null && area.trim().length() > 0)
-			{
-				query = area.trim();
-			}
+            Toast.makeText(context, "无信息无法显示地图", 1).show();
+			return;
 		}
 		
-		if (query != null)
-		{
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse("http://maps.google.com/?q=" + query));
-			context.startActivity(intent);
-		}
+//		if(keepSilent) { //FIXME:
+//            Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
+//            return;
+//        }
+		
+		final BaseActivity baseActivity = (BaseActivity)context; //FIXME: should not be activity.
+		if (baseActivity != null){
+			if (Build.VERSION.SDK_INT >  16)//Fix baidu map SDK crash on android4.2 device.
+			{
+				final String latV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+				final String lonV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
+				String query = null;
+				if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+				{
+					query = latV + "," + lonV;
+				}
+				else
+				{
+					String area = ad.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+					String address = ad.getMetaValueByKey("具体地点");
+					if (address != null && address.trim().length() > 0)
+					{
+						query = address.trim();
+					}
+					else if (area != null && area.trim().length() > 0)
+					{
+						query = area.trim();
+					}
+				}
+				
+				if (query != null)
+				{
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse("http://maps.google.com/?q=" + query));
+					context.startActivity(intent);
+				}
+			}
+			else
+			{
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("detail", ad);
+				baseActivity.getIntent().putExtras(bundle);
+				
+				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+				baseActivity.startActivity(baseActivity.getIntent());
+			}
+			
+		} else {
+            Toast.makeText(context, "显示地图失败", Toast.LENGTH_SHORT).show();
+        }
+		
+		
 	}
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)

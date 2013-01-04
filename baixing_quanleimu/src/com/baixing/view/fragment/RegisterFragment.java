@@ -17,7 +17,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -37,7 +37,7 @@ public class RegisterFragment extends BaseFragment {
 	public String json = "";
 	private boolean registered = false;
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
         
 		View v = inflater.inflate(R.layout.register, null);
@@ -171,7 +171,7 @@ public class RegisterFragment extends BaseFragment {
 					user.setId(usrId);
 					user.setPhone(accoutnEt.getText().toString());
 					user.setPassword(passwordEt.getText().toString());
-					QuanleimuApplication.getApplication().setMobile(user.getPhone());
+					GlobalDataManager.getInstance().setMobile(user.getPhone());
 					Util.saveDataToLocate(activity, "user", user);
 					
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);

@@ -16,8 +16,7 @@ import android.widget.TextView;
 
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.compare.MsgTimeComparator;
-import com.baixing.imageCache.SimpleImageLoader;
-import com.baixing.view.fragment.GoodDetailFragment;
+import com.baixing.view.fragment.VadFragment;
 import com.quanleimu.activity.R;
 
 public class ChatMessageAdapter extends BaseAdapter {

@@ -10,8 +10,8 @@ import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
-import com.baixing.activity.QuanleimuMainActivity;
+import com.baixing.activity.MainActivity;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -26,7 +26,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     private UserBean user;
 
     @Override
-    public View onCreateView(LayoutInflater inflater, ViewGroup container,
+    public View onInitializeView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
         View setmain = inflater.inflate(R.layout.setmain, null);
@@ -81,7 +81,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 
     private void refreshUI(View rootView) {
     	if(rootView == null) return;
-        user = Util.getCurrentUser();
+        user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 
         TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
         if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
@@ -91,7 +91,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         }
 
         TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
-        String res = getResources().getStringArray(R.array.item_flow_optimize)[QuanleimuApplication.isTextMode() ? 1 : 0];;
+        String res = getResources().getStringArray(R.array.item_flow_optimize)[GlobalDataManager.isTextMode() ? 1 : 0];;
         flowOptimizeTw.setText(res);
 
     }
@@ -110,7 +110,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         title.m_visible = true;
         title.m_title = "设置";
         title.m_leftActionHint = "完成";
-        title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
     }
 
     @Override
@@ -163,7 +162,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 //                updateIntent.putExtra("apkUrl", "3");
 //                getAppContext().startService(updateIntent);
 //                UpdateHelper.getInstance().checkNewVersion(getActivity());
-                UmengUpdateAgent.update(QuanleimuApplication.getApplication().getApplicationContext());
+                UmengUpdateAgent.update(GlobalDataManager.getInstance().getApplicationContext());
                 UmengUpdateAgent.setUpdateAutoPopup(false);
                 UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
                     @Override
@@ -289,13 +288,13 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
      * 省流量设置
      */
     private void showFlowOptimizeDialog() {
-        int checkedIdx = QuanleimuApplication.isTextMode() ? 1 : 0;
+        int checkedIdx = GlobalDataManager.isTextMode() ? 1 : 0;
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         builder.setTitle(R.string.label_flow_optimize)
                 .setSingleChoiceItems(R.array.item_flow_optimize, checkedIdx, new DialogInterface.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface dialog, int i) {
-                        QuanleimuApplication.setTextMode(i == 1);
+                        GlobalDataManager.setTextMode(i == 1);
                         refreshUI(getView());
                         dialog.dismiss();
                         String tip =getResources().getStringArray(R.array.item_flow_optimize)[i];

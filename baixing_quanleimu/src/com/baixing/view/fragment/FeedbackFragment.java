@@ -21,7 +21,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.QuanleimuApplication;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
@@ -76,7 +76,7 @@ public class FeedbackFragment extends BaseFragment {
 		}
 	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.opinionback, null);
 		
@@ -188,11 +188,11 @@ public class FeedbackFragment extends BaseFragment {
 					sendMessage(1, null);
 				}
 			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 				
 			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

@@ -1,8 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.widget;
 
-import java.util.List;
-
 import android.content.Context;
 import android.util.AttributeSet;
 import android.view.ContextMenu;

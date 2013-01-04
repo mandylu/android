@@ -3,8 +3,10 @@ package com.baixing.adapter;
 import java.util.List;
 
 import com.baixing.adapter.BXAlphabetSortableAdapter;
+import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
 import android.content.Context;
+import android.graphics.Bitmap;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -129,7 +131,8 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 		
 		if(this.hasArrow){
 			holder.iv.setVisibility(View.VISIBLE);
-			holder.iv.setImageResource(iconId);
+			Bitmap bmp = ImageCacheManager.getInstance().loadBitmapFromResource(iconId, -1, -1);
+			holder.iv.setImageBitmap(bmp);
 		}
 		else{
 			holder.iv.setVisibility(View.GONE);

@@ -3,36 +3,36 @@ package com.baixing.jsonutil;
 import java.util.ArrayList;
 import java.util.List;
 
+import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
-import com.baixing.entity.SecondStepCate;
 
 public class LocateJsonData {
 
-	public static List<SecondStepCate> getUsualCatesJson()
+	public static List<Category> getUsualCatesJson()
 	{
-		List<SecondStepCate> listSecondCate = new ArrayList<SecondStepCate>();
+		List<Category> listSecondCate = new ArrayList<Category>();
 		
-		SecondStepCate secondStepCate1 = new SecondStepCate();
+		Category secondStepCate1 = new Category();
 		secondStepCate1.setEnglishName("shouji");
 		secondStepCate1.setName("二手手机");
 		secondStepCate1.setParentEnglishName("ershou");
 		
-		SecondStepCate secondStepCate2 = new SecondStepCate();
+		Category secondStepCate2 = new Category();
 		secondStepCate2.setEnglishName("gongren");
 		secondStepCate2.setName("本地工人/技工");
 		secondStepCate2.setParentEnglishName("gongzuo");
 		
-		SecondStepCate secondStepCate3 = new SecondStepCate();
+		Category secondStepCate3 = new Category();
 		secondStepCate3.setEnglishName("nvzhaonan");
 		secondStepCate3.setName("女找男");
 		secondStepCate3.setParentEnglishName("huodong");
 		
-		SecondStepCate secondStepCate4 = new SecondStepCate();
+		Category secondStepCate4 = new Category();
 		secondStepCate4.setEnglishName("ershouqiche");
 		secondStepCate4.setName("二手轿车");
 		secondStepCate4.setParentEnglishName("cheliang");
 		
-		SecondStepCate secondStepCate5 = new SecondStepCate();
+		Category secondStepCate5 = new Category();
 		secondStepCate5.setEnglishName("zhengzu");
 		secondStepCate5.setName("租房");
 		secondStepCate5.setParentEnglishName("fang");
