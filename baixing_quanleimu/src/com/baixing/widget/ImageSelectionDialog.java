@@ -622,8 +622,9 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 			case MSG_FAIL_UPLOAD:{
 				if (imgs != null){			
 					Integer index = (Integer) msg.obj;
-					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
-					imgs.get(index.intValue()).setImageBitmap(bd.getBitmap());
+//					BitmapDrawable bd = (BitmapDrawable)getResources().getDrawable(R.drawable.f);
+//					imgs.get(index.intValue()).setImageBitmap(bd.getBitmap());
+					imgs.get(index.intValue()).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.f, -1, -1));
 //					imgs.get(index.intValue()).setImageResource(R.drawable.f);
 					imgs.get(index).setClickable(true);
 					imgs.get(index.intValue()).invalidate();	

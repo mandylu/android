@@ -379,7 +379,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
 //					imageView.setImageBitmap(mb);
-					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
+					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent, -1, -1));
 					
 				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
 		            imageView.setTag(imageUrls.get(position));
