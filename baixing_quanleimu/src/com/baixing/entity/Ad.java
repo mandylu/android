@@ -190,6 +190,7 @@ public class Ad implements Serializable{
 		return false;
 	}
 	
+	@JsonIgnore
 	public boolean isValidMessage() {
 		return !this.getValueByKey("status").equals("4") && !this.getValueByKey("status").equals("20");
 	}

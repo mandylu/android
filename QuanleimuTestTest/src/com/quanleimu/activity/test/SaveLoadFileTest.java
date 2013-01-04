@@ -2,7 +2,10 @@ package com.quanleimu.activity.test;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
@@ -14,6 +17,7 @@ import com.baixing.entity.BXLocation;
 import com.baixing.entity.Ad;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Util;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SaveLoadFileTest extends AndroidTestCase {
 	public void setUp()
@@ -154,15 +158,16 @@ public class SaveLoadFileTest extends AndroidTestCase {
 		List<Ad> list = GlobalDataManager.getInstance().getListMyStore();
 		assertEquals(count, list.size());
 		Util.saveDataToLocate(getContext(), fileName, list);
+
 		
 		Ad[] result = (Ad[]) Util.loadDataFromLocate(getContext(), fileName, Ad[].class);
 		assertEquals(count, result.length);
+		
 		for (int i=0; i<count;i++)
 		{
-			assertEquals(result[i], detail[i]);
-			assertEquals(result[i].getDistance(), detail[i].getDistance());
+			assertEquals(list.get(i), result[i]);
+			assertEquals(list.get(i).getDistance(), result[i].getDistance());
 		}
-		
-		
 	}
+	
 }
