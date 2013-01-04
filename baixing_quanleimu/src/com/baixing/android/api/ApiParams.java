@@ -127,21 +127,14 @@ public class ApiParams implements Serializable {
 			return;
 		}
 		this.addParam("mobile", user.getPhone());
-		this.addParam("userToken", generateUsertoken(user.getPassword()));
+		this.addParam("userToken", ApiClient.generateUsertoken(user.getPassword()));
 	}
 	
     static public void makeupUserInfoParams(UserBean user, List<String> params){
 		if(user != null && params != null){
 			params.add("mobile=" + user.getPhone());
-			params.add("userToken=" + generateUsertoken(user.getPassword()));
+			params.add("userToken=" + ApiClient.generateUsertoken(user.getPassword()));
 		}    	
     }
-    
-    static public String generateUsertoken(String password){
-    		String password1 =TextUtil.getMD5(password.trim());//Communication.getMD5(password.trim());
-		password1 += Communication.apiSecret;
-		return Communication.getMD5(password1);
-    }
-	
 
 }

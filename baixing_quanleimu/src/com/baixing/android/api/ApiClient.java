@@ -2,20 +2,18 @@
 package com.baixing.android.api;
 
 import java.security.MessageDigest;
-
-import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
 import java.util.Vector;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import com.baixing.util.Util;
 import android.content.Context;
-import android.text.TextUtils;
 import android.util.Log;
+
+import com.baixing.util.TextUtil;
 
 public class ApiClient {
 	private static final String LOG_TAG = "ApiClient";
@@ -264,5 +262,11 @@ public class ApiClient {
 		public void onSave(String url, String jsonStr);
 		public String onLoad(String url);
 	}
+	
+    static public String generateUsertoken(String password){
+		String password1 =TextUtil.getMD5(password.trim());//Communication.getMD5(password.trim());
+	password1 += apiSecrect;
+	return TextUtil.getMD5(password1);
+}
 		
 }

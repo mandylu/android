@@ -216,42 +216,6 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		BaseCommand.createCommand(isSilent ? REQ_REQUEST_FILTER_SILENT : REQ_REQUEST_FILTER, "category_meta_filter", params).execute(this);
 	}
 	
-	class GetGoodsListThread implements Runnable {
-		private boolean isUpdate;
-		public GetGoodsListThread(boolean isUpdate){
-			this.isUpdate = isUpdate;
-		}
-		@Override
-		public void run() {
-			String apiName = "category_meta_filter";
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("categoryEnglishName=" + categoryEnglishName);
-			list.add("cityEnglishName=" + GlobalDataManager.getInstance().getCityEnglishName());
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, false);
-				if (json != null) {
-					Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), json, System.currentTimeMillis()/1000);
-					if(isUpdate){
-						sendMessage(MSG_LOAD_DATA_SUCCED, null);
-					}
-				} else {
-					sendMessage(MSG_LOAD_DATA_FAILD, null);
-				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (Communication.BXHttpException e){
-				
-			}
-			
-			hideProgress();
-		}
-	}
-	
 	private void loadSiftFrame(View rootView)
 	{
 		listFilterss = JsonUtil.getFilters(json).getFilterssList();
