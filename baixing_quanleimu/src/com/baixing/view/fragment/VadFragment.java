@@ -638,10 +638,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		ApiParams params = new ApiParams();
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			String mobile = user.getPhone();
-			String password = user.getPassword();
-			params.addParam("mobile", mobile);
-			params.addParam("userToken", Util.generateUsertoken(password));
+			params.appendUserInfo(user);
 		}
 		params.addParam("rt", 1);
 		

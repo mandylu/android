@@ -939,17 +939,4 @@ public class Util {
     	return DEVICE_ID;
 
     }	
-    
-    static public void makeupUserInfoParams(UserBean user, List<String> params){
-		if(user != null && params != null){
-			params.add("mobile=" + user.getPhone());
-			params.add("userToken=" + generateUsertoken(user.getPassword()));
-		}    	
-    }
-    
-    static public String generateUsertoken(String password){
-    		String password1 = Communication.getMD5(password.trim());
-		password1 += Communication.apiSecret;
-		return Communication.getMD5(password1);
-    }
 }
