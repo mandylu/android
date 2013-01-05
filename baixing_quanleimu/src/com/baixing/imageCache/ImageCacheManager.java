@@ -93,36 +93,16 @@ public class ImageCacheManager{
 		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
 	}
 	
-	public Bitmap loadBitmapFromFile(String path, int maxWidth, int maxHeight){
-		WeakReference<Bitmap> cached = ImageCacheManager.getInstance().getFromCache(path);
-		if(cached != null && cached.get() != null) return cached.get();
-		Context context = GlobalDataManager.getInstance().getApplicationContext();
-		if(context == null) return null;
-		BitmapFactory.Options option = new BitmapFactory.Options();
-		option.inJustDecodeBounds = true;
-		BitmapFactory.decodeFile(path, option);
-		configOption(option, maxWidth, maxHeight);
-		Bitmap ret = BitmapFactory.decodeFile(path, option);
-		if(ret != null){
-			ImageCacheManager.getInstance().saveBitmapToCache(path, new WeakReference<Bitmap>(ret));
-			ImageCacheManager.getInstance().putImageToDisk(path, ret);
-		}
-		return ret;
-	}
-	
-	public Bitmap loadBitmapFromResource(int resId, int maxWidth, int maxHeight){
+	public Bitmap loadBitmapFromResource(int resId){
 		WeakReference<Bitmap> cached = ImageCacheManager.getInstance().getFromCache(String.valueOf(resId));
 		if(cached != null && cached.get() != null) return cached.get();
-		Context context = GlobalDataManager.getInstance().getApplicationContext();
-		if(context == null) return null;
 		BitmapFactory.Options option = new BitmapFactory.Options();
-		option.inJustDecodeBounds = true;
-		BitmapFactory.decodeResource(context.getResources(), resId, option);
-		configOption(option, maxWidth, maxHeight);
+		option.inPurgeable = true;
+		option.inInputShareable = true;
+		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		Bitmap ret = BitmapFactory.decodeResource(context.getResources(), resId, option);
 		if(ret != null){
 			ImageCacheManager.getInstance().saveBitmapToCache(String.valueOf(resId), new WeakReference<Bitmap>(ret));
-			ImageCacheManager.getInstance().putImageToDisk(String.valueOf(resId), ret);
 		}
 		return ret;
 	}
@@ -326,12 +306,15 @@ public class ImageCacheManager{
 	           	
 	           	httpClient.getConnectionManager().shutdown();
 	           	httpClient = null;
-	           	
+	           	enableSampleSize(true);
 	           	bitmapRet = imageDiskLruCache.get(key);
+	           	enableSampleSize(false);
 	        }else{
 	    		
 	    		InputStream inputStream = response.getEntity().getContent();
-	    		bitmapRet = decodeSampledBitmapFromFile(inputStream);	    		
+	    		enableSampleSize(true);
+	    		bitmapRet = decodeSampledBitmapFromFile(inputStream);
+	    		enableSampleSize(false);
 	        }
             
             return bitmapRet;

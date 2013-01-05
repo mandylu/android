@@ -20,6 +20,7 @@ import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
@@ -284,6 +285,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
 		super.onCreate(savedInstanceState);
+		ImageLoaderManager.initImageLoader();
 		GlobalDataManager.context = new WeakReference<Context>(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);

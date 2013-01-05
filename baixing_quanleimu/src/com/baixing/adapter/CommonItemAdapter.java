@@ -131,7 +131,7 @@ public class CommonItemAdapter extends BXAlphabetSortableAdapter {
 		
 		if(this.hasArrow){
 			holder.iv.setVisibility(View.VISIBLE);
-			Bitmap bmp = ImageCacheManager.getInstance().loadBitmapFromResource(iconId, -1, -1);
+			Bitmap bmp = ImageCacheManager.getInstance().loadBitmapFromResource(iconId);
 			holder.iv.setImageBitmap(bmp);
 		}
 		else{

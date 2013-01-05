@@ -37,6 +37,13 @@ public class ImageLoaderManager{
 	private CallbackManager callbackManager = new CallbackManager();
 	
 	static ImageLoaderManager instance;
+	
+	static public void initImageLoader(){
+		if(instance == null){
+			instance = new ImageLoaderManager();
+		}		
+	}
+	
 	static public ImageLoaderManager getInstance(){
 		if(instance == null){
 			instance = new ImageLoaderManager();

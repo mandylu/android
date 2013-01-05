@@ -89,7 +89,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private boolean called = false;
 	private String json = "";
 	
-	private WeakReference<Bitmap> mb_loading = null;
+//	private WeakReference<Bitmap> mb_loading = null;
 	
 	private boolean keepSilent = false;
 	
@@ -118,20 +118,20 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void onDestroy(){
 		this.keepSilent = true;
 		
-		Thread t = new Thread(new Runnable(){
-			public void run(){
-				try{
-					Thread.sleep(2000);
-					if(mb_loading != null && mb_loading.get() != null){
-						mb_loading.get().recycle();
-						mb_loading = null;
-					}
-				}catch(Exception e){
-					e.printStackTrace();
-				}
-			}
-		});
-		t.start();
+//		Thread t = new Thread(new Runnable(){
+//			public void run(){
+//				try{
+//					Thread.sleep(2000);
+//					if(mb_loading != null && mb_loading.get() != null){
+//						mb_loading.get().recycle();
+//						mb_loading = null;
+//					}
+//				}catch(Exception e){
+//					e.printStackTrace();
+//				}
+//			}
+//		});
+//		t.start();
 	
 		super.onDestroy();
 	}
@@ -244,7 +244,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		BitmapFactory.Options o =  new BitmapFactory.Options();
         o.inPurgeable = true;
-        mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
+//        mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
         
         mListLoader.setSelection(originalSelect);
         mListLoader.setCallback(this);       
@@ -341,7 +341,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		if (!buzzEnable)
 		{
 			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
-			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable, -1, -1));
+			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable));
 		}
 		
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);

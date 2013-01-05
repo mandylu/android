@@ -10,6 +10,7 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
 
@@ -20,6 +21,7 @@ public class PostActivity extends BaseTabActivity {
 	@Override
 	public void onCreate(Bundle savedBundle){
 		super.onCreate(savedBundle);
+		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		final View rootV = findViewById(R.id.root);
 		rootV.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() { //When user is input some thing. do not need show tab bar until user finish input.
