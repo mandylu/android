@@ -1,7 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.activity;
 
-import java.io.IOException;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.Date;
@@ -13,7 +12,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
-import android.util.Pair;
 import android.view.KeyEvent;
 import android.view.View;
 
@@ -22,15 +20,10 @@ import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
-import com.baixing.entity.CityList;
-import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.Sender;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.Communication;
-import com.baixing.util.Communication.BXHttpException;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.LocationService;
-import com.baixing.util.MobileConfig;
 import com.baixing.util.Util;
 import com.baixing.view.fragment.HomeFragment;
 import com.quanleimu.activity.R;
@@ -279,54 +272,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		((new Thread(new Runnable(){
 			@Override
 			public void run(){
-				// update city list first
-				try {
-					// 1. load from locate.
-					Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "cityjson");
-					
-					long timestamp = pair.first;
-					String content = pair.second;
-					
-					// 2. check the timestamp && update from server.
-					long updateTimestamp = MobileConfig.getInstance().getCityTimestamp();
-					if (timestamp < updateTimestamp || content == null || content.length() == 0) {
-						String apiName = "city_list";
-						String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-						content = Communication.getDataByUrl(url, true);
-						if (content != null && content.length() > 0) 
-						{
-							CityList cityList = JsonUtil.parseCityListFromJson(content);
-							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "cityjson", content, updateTimestamp);							
-							GlobalDataManager.getInstance().updateCityList(cityList);
-						}
-					}
-		
-				} catch (IOException e) {
-					e.printStackTrace();
-				} catch (BXHttpException e) {
-					e.printStackTrace();
-				}
-			
-				// update category list
-				Pair<Long, String> firstCatePair = Util.loadJsonAndTimestampFromLocate(getApplicationContext(), "saveFirstStepCate");
-				
-				String categoryContent = firstCatePair.second;
-				long timestamp = firstCatePair.first;
-				long updateTimestamp = MobileConfig.getInstance().getCategoryTimestamp();
-				if (timestamp < updateTimestamp || categoryContent == null || categoryContent.length() == 0) {
-					String apiName = "category_list";
-					ArrayList<String> list = new ArrayList<String>();
-					list.add("cityEnglishName="+GlobalDataManager.getInstance().getCityEnglishName());
-					String url = Communication.getApiUrl(apiName, list);
-					try {
-						String json = Communication.getDataByUrl(url, true);
-						if (json != null) {
-							Util.saveJsonAndTimestampToLocate(getApplicationContext(), "saveFirstStepCate", json, updateTimestamp);
-						}
-					} catch(Exception e){
-						
-					}
-				}
+				new UpdateCityAndCatCommand(MainActivity.this).execute();
 			}
 		}))).start();
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();

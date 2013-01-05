@@ -17,14 +17,18 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
@@ -52,7 +56,8 @@ public class RegisterFragment extends BaseFragment {
             public void onClick(View view) {
                 if (check()) {
                     showSimpleProgress();
-                    new Thread(new RegisterThread()).start();
+//                    new Thread(new RegisterThread()).start();
+                    sendRegisterCmd();
                 }
             }
         });
@@ -103,36 +108,31 @@ public class RegisterFragment extends BaseFragment {
 
 	// 13564852987//{"id":{"nickname":"API_2129712564","userId":"79703682"},"error":{"message":"用户注册成功","code":0}}
 	// 13564852977//{"id":{"nickname":"API_2130603956","userId":"79703763"},"error":{"message":"用户注册成功","code":0}}
-
-	class RegisterThread implements Runnable {
-		public void run() {
-
-			String apiName = "user_register";
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("mobile=" + accoutnEt.getText().toString());
-			list.add("password=" + passwordEt.getText().toString());
-			list.add("isRegister=1");
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, true);
+	
+	private void sendRegisterCmd() {
+		ApiParams params = new ApiParams();
+		params.addParam("mobile", accoutnEt.getText().toString());
+		params.addParam("password", passwordEt.getText().toString());
+		params.addParam("isRegister", 1);
+		
+		BaseCommand.createCommand(0, "user_register", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				sendMessage(2, error == null ? "注册失败"  : error.getMsg());
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				json = responseData;
 				if (json != null) {
 					sendMessage(1, null);
 				} else {
 					sendMessage(2, "response json is null!");
 				}
-				return;
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				sendMessage(2, e.getMessage());
-			} catch (Exception e) {
-				e.printStackTrace();
-				sendMessage(2, e.getMessage());
 			}
-		}
+		});
 	}
-
-	
 	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {

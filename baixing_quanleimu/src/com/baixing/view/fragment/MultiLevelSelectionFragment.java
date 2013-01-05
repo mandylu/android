@@ -8,6 +8,7 @@ import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -22,6 +23,8 @@ import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
 import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
@@ -281,13 +284,17 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		@Override
 		public void run() {
 			String apiName = "metaobject";
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("objIds=" + id);
-			String url = Communication.getApiUrl(apiName, list);
+//			ArrayList<String> list = new ArrayList<String>();
+			ApiParams params = new ApiParams();
+			params.addParam("objIds", id);
+//			list.add("objIds=" + id);
 			try {
-				json = Communication.getDataByUrl(url, false);
+//				String url = Communication.getApiUrl(apiName, list);
+				json = ApiClient.getInstance().invokeApi(apiName, params);
+//				json = Communication.getDataByUrl(url, false);
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
+				Log.d("QLM", "fail to get meta object, caused by " + e.getMessage());
 			}
 			sendMessage(MESSAGE_GET_METAOBJ, null);
 		}

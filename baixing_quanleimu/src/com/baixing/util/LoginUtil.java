@@ -4,7 +4,6 @@ import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
 import java.util.ArrayList;
 
-import android.widget.Button;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -13,17 +12,21 @@ import android.content.Context;
 import android.os.Message;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.message.BxMessageCenter.IBxNotification;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.Tracker;
 import com.quanleimu.activity.R;
 
 public class LoginUtil implements View.OnClickListener{
@@ -76,7 +79,7 @@ public class LoginUtil implements View.OnClickListener{
 				pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
 				pd.setCancelable(true);
 				pd.show();
-				(new Thread(new LoginThread(account, password))).start();
+				sendLoginCmd(account, password);
 			}
 		}
         else if(v.getId() == R.id.loginForgetPwdBtn){
@@ -156,50 +159,36 @@ public class LoginUtil implements View.OnClickListener{
 			}			
 		}
 	}
-
-	class LoginThread implements Runnable {
-		private String account = "";
-		private String password = "";
-
-		public LoginThread(String account, String password) {
-			this.account = account;
-			this.password = password;
-		}
-
-		public void run() {
-			String apiName = "user_login";
-			ArrayList<String> list = new ArrayList<String>();
-			try {
-				account = URLEncoder.encode(account, "UTF-8");
-			} catch (Exception e) {
-				e.printStackTrace();
+	
+	private void sendLoginCmd(String account, String password) {
+		ApiParams params = new ApiParams();
+		params.addParam("mobile", account);
+		params.addParam("nickname", account);
+		params.addParam("password", password.trim());
+		
+		BaseCommand.createCommand(0, "user_login", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				if(pd != null){
+					pd.dismiss();
+				}
+				
+				if(listener != null){
+					listener.onLoginFail("登录未成功，请稍后重试！");
+				}	
 			}
-			list.add("mobile=" + account);
-			list.add("nickname=" + account);
-			list.add("password=" + password.trim());
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				String json = Communication.getDataByUrl(url, true);
-				if (json != null) {
-					parseLoginResponse(json);
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				if (responseData != null) {
+					parseLoginResponse(responseData);
 					if(pd != null){
 						pd.dismiss();
 					}
 					return;
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (Exception e) {
-				e.printStackTrace();
 			}
-			if(pd != null){
-				pd.dismiss();
-			}
-			
-			if(listener != null){
-				listener.onLoginFail("登录未成功，请稍后重试！");
-			}	
-		}
+		});
 	}
 }

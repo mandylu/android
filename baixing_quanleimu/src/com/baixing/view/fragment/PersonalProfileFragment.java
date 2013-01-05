@@ -1,6 +1,7 @@
 package com.baixing.view.fragment;
 
 import java.text.SimpleDateFormat;
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
@@ -9,6 +10,7 @@ import java.util.Observer;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -17,6 +19,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
@@ -248,14 +252,26 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 			{
 				return;
 			}
-			String upJson = Util.requestUserProfile(user.getId());
-			if(upJson != null){
-				UserProfile profile = UserProfile.from(upJson);
-				if (getActivity() != null)
-				{
-					Util.saveDataToLocate(getActivity(), "userProfile", profile);
-					sendMessage(MSG_GETPERSONALPROFILE, profile);
+			
+			String apiName = "user_profile";
+			ApiParams params = new ApiParams();
+			
+			params.addParam("rt", 1);
+			params.addParam("userId", user.getId());
+			
+			try {
+				String upJson = ApiClient.getInstance().invokeApi(apiName, params);
+				if (!TextUtils.isEmpty(upJson)) {
+					UserProfile profile = UserProfile.from(upJson);
+					if (getActivity() != null)
+					{
+						Util.saveDataToLocate(getActivity(), "userProfile", profile);
+						sendMessage(MSG_GETPERSONALPROFILE, profile);
+					}
 				}
+			}
+			catch(Throwable t) {
+				Log.d("QLM", "request user profile failed, caused by " + t.getMessage());
 			}
 
 			hideProgress();

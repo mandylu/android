@@ -43,6 +43,10 @@ public class ApiParams implements Serializable {
 		addParameter(key, value);
 	}
 	
+	public boolean hasParam(String key) {
+		return params.containsKey(key);
+	}
+	
 	public void addAll(Map<String, String> all){
 		params.putAll(all);
 	}

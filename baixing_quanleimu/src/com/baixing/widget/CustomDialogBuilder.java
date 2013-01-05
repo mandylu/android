@@ -23,6 +23,10 @@ import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
 
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
@@ -275,7 +279,8 @@ public class CustomDialogBuilder {
 							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
 							CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
 							String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
-							(new Thread(new GetMetaDataThread(id,txt))).start();
+//							(new Thread(new GetMetaDataThread(id,txt))).start();
+							sendGetMetaCmd(id, txt);
 						}
 					}//not category over
 					
@@ -340,32 +345,33 @@ public class CustomDialogBuilder {
 		return new CustomDialog(context);
 	}
 	
-	class GetMetaDataThread implements Runnable {
-		private String id;
-		private String txt;
-
-		public GetMetaDataThread(String id, String txt) {
-			this.id = id;
-			this.txt = txt;
-		}
-
-		@Override
-		public void run() {
-			String apiName = "metaobject";
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("objIds=" + id);
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, false);
-			} catch (Exception e) {
-				e.printStackTrace();
+	private void sendGetMetaCmd(final String id, final String txt) {
+		ApiParams params = new ApiParams();
+		params.addParam("objIds", id);
+		BaseCommand.createCommand(0, "metaobject", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				MultiLevelItem selectedItem = new MultiLevelItem();
+				selectedItem.id = id;
+				selectedItem.txt = txt;
+				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
+				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 			}
-			MultiLevelItem selectedItem = new MultiLevelItem();
-			selectedItem.id = this.id;
-			selectedItem.txt = this.txt;
-			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
-		}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				json = responseData;
+				
+				MultiLevelItem selectedItem = new MultiLevelItem();
+				selectedItem.id = id;
+				selectedItem.txt = txt;
+				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
+			}
+		});
 	}
+	
+	
 	class FirstCateAdapter extends BaseAdapter {
 		private List list = null;
 		public FirstCateAdapter(List list) {

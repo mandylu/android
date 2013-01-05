@@ -21,6 +21,8 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -159,8 +161,7 @@ public class FeedbackFragment extends BaseFragment {
 			break;
 		}
 	}
-
-
+	
 	class FeedbackThread implements Runnable {
 		@Override
 		public void run() {
@@ -169,17 +170,21 @@ public class FeedbackFragment extends BaseFragment {
 			// url = url + "&content="+URLEncoder.encode(content)
 			// +"&androidUniqueIdentifier="+phoneMark+"&mobile="+mobile;
 			String apiName = -1 == opinionType ? "feedback" : (0 == opinionType ? "report" : "appeal");
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("mobile=" + mobile);
-			list.add((-1 != opinionType ? "description=" : "feedback=") + URLEncoder.encode(content));
-			if(-1 != opinionType){
-				list.add("adId=" + adId);
+//			ArrayList<String> list = new ArrayList<String>();
+			ApiParams params = new ApiParams();
+			params.addParam("mobile", mobile);
+			if (opinionType == -1) {
+				params.addParam("feedback", content);
 			}
+			else {
+				params.addParam("description", content);
+				params.addParam("adId", adId);
+			}
+			
 
-			String url = Communication.getApiUrl(apiName, list);
 			try {
-				result = Communication.getDataByUrl(url, true);
+//				String url = Communication.getApiUrl(apiName, list);
+				result = ApiClient.getInstance().invokeApi(apiName, params);//Communication.getDataByUrl(url, true);
 				if (result != null) {
 //					myHandler.sendEmptyMessage(0);
 					sendMessage(0, null);

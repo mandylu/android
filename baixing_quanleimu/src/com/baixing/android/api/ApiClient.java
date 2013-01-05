@@ -1,19 +1,28 @@
 //liuweili@baixing.com
 package com.baixing.android.api;
 
+import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.Map;
 import java.util.Map.Entry;
+import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
 
+import org.apache.http.client.HttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
 import android.util.Log;
 
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.UserBean;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
+import com.baixing.util.Util;
 
 public class ApiClient {
 	private static final String LOG_TAG = "ApiClient";
@@ -122,8 +131,6 @@ public class ApiClient {
 			}
 		}.start();
 		
-	
-		
 	}
 	
 	private static String getMD5(String str) {
@@ -158,13 +165,15 @@ public class ApiClient {
 		}
 	}
 	
-	private void invokeApi(final String method, final ApiParams params, final ApiListener listener){
-		//insert common params
+	private final String invokeApi(final String method, final ApiParams params, boolean skipRegisterDevice) throws Exception {
+
 		Map<String, String> map = this.commonParams.getParams();
 		if (map != null) {
 			Set<Entry<String, String>> set = map.entrySet();
 			for (Entry<String, String> entry : set) {
-				params.addParam(entry.getKey(), entry.getValue());
+				if (!params.hasParam(entry.getKey())) { 
+					params.addParam(entry.getKey(), entry.getValue());
+				}
 			}
 		}
 		
@@ -174,29 +183,42 @@ public class ApiClient {
 		params.addParam(ApiParams.KEY_ACCESSTOKEN, md5String);
 		
 		Log.d("invokeApi", params.toString());
-		//start url
+		
+		String url = this.apiUrl + method + "/";
+		String jsonStr = null; 
+		String fullUrl = WebUtils.getFullUrl(url,params);
+		if(params.useCache){
+			//fetch data from database directly
+			jsonStr = loadCache(fullUrl);
+		}
+		
+		if(jsonStr == null){//no hit from cache or cache not enabled
+			jsonStr = WebUtils.doPost(context, url,
+				params.getParams(),
+				null,//no header specified
+				null,//no file item
+				connectTimeout, readTimeout);
+		}
+		Log.d(LOG_TAG, jsonStr);
+		
+		//if(params.useCache){ //anyway, save it to cache
+		this.saveCache(fullUrl, jsonStr);
+		
+		if (!skipRegisterDevice) {
+			registerDevice();
+		}
+		
+		return jsonStr;
+	
+	}
+	
+	public final String invokeApi(final String method, final ApiParams params) throws Exception {
+		return invokeApi(method, params, false);
+	}
+	
+	private final void invokeApi(final String method, final ApiParams params, final ApiListener listener){
 		try {
-			String url = this.apiUrl + method + "/";
-			String jsonStr = null; 
-			String fullUrl = WebUtils.getFullUrl(url,params);
-			if(params.useCache){
-				//fetch data from database directly
-				jsonStr = loadCache(fullUrl);
-			}
-			
-			if(jsonStr == null){//no hit from cache or cache not enabled
-				jsonStr = WebUtils.doPost(context, url,
-					params.getParams(),
-					null,//no header specified
-					null,//no file item
-					connectTimeout, readTimeout);
-			}
-			Log.d(LOG_TAG, jsonStr);
-			
-			//if(params.useCache){ //anyway, save it to cache
-				this.saveCache(fullUrl, jsonStr);
-			//}
-			handleApiResponse(listener, jsonStr);
+			handleApiResponse(listener, invokeApi(method, params));
 		} catch (Exception e) {
 			Log.e(LOG_TAG, e.getMessage(), e);
 			
@@ -256,6 +278,60 @@ public class ApiClient {
 		return error;
 		*/
 	}
+	
+	private void registerDevice(){
+		UserBean currentUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", UserBean.class);
+		if(currentUser == null){
+			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
+			if(anonymousUser != null){
+				Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", anonymousUser);
+				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, anonymousUser);
+				return;
+			}
+		}else{
+			return;
+		}
+		
+		String apiName = "user_autoregister";
+//		ArrayList<String> list = new ArrayList<String>();
+		ApiParams params = new ApiParams();
+		
+		try {
+			String json_response = this.invokeApi(apiName, params, true);
+			
+			if (json_response != null) {
+				JSONObject jsonObject = new JSONObject(json_response);
+
+				JSONObject userObj = null;
+				try {
+					userObj = jsonObject.getJSONObject("user");
+				} catch (Exception e) {
+//					userObj = ";
+					e.printStackTrace();
+				}
+				JSONObject json = jsonObject.getJSONObject("error");
+//				String message = json.getString("message");
+
+				if (userObj != null) {
+					
+					// 登录成功
+					UserBean user = new UserBean();
+//					JSONObject jb = jsonObject.getJSONObject("id");
+					user.setId(userObj.getString("id"));
+//					user.
+//					user.setPhone(userObj.getString("mobile"));
+					
+					Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", user);
+					Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", user);
+					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, user);
+				} 
+			}
+		}
+		catch (Throwable t)
+		{
+			t.printStackTrace();
+		}
+	}
 
 	
 	public interface CacheProxy{
@@ -267,6 +343,6 @@ public class ApiClient {
 		String password1 =TextUtil.getMD5(password.trim());//Communication.getMD5(password.trim());
 	password1 += apiSecrect;
 	return TextUtil.getMD5(password1);
-}
+    }
 		
 }

@@ -8,8 +8,10 @@ import java.util.Date;
 import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
+
 import org.json.JSONException;
 import org.json.JSONObject;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
@@ -21,9 +23,14 @@ import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
 import android.widget.Toast;
+
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -35,18 +42,17 @@ import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.tracking.LogData;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.VadListLoader;
 import com.baixing.util.Util;
+import com.baixing.util.VadListLoader;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
-import com.baixing.android.api.ApiParams;
 
 
 public class MyAdFragment extends BaseFragment  implements PullToRefreshListView.OnRefreshListener, VadListLoader.Callback, Observer{
@@ -340,7 +346,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //			pos = pos - lvGoodsList.getHeaderViewsCount();
 			String id = glLoader.getGoodsList().getData().get(pos).getValueByKey(EDATAKEYS.EDATAKEYS_ID);
 			showSimpleProgress();
-			new Thread(new MyMessageDeleteThread(id)).start();
+//			new Thread(new MyMessageDeleteThread(id)).start();
+			sendDeteleCmd(id, TYPE_MYPOST);
 			break;
 		case MSG_DELETE_POST_FAIL:
 			hideProgress();
@@ -479,7 +486,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
                 showSimpleProgress();
-                new Thread(new MyMessageDeleteThread(adId)).start();
+//                new Thread(new MyMessageDeleteThread(adId)).start();
+	              sendDeteleCmd(adId, TYPE_MYPOST);  
                         event.end();
 			}
 		})
@@ -605,115 +613,99 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     }
 
     private void doRefresh(int pay, final String adId){
-        ArrayList<String> requests = new ArrayList<String>();
-
+//        ArrayList<String> requests = new ArrayList<String>();
+    	ApiParams params = new ApiParams();
+    	
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
         if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-        	ApiParams.makeupUserInfoParams(user, requests);
+        	params.appendUserInfo(user);
         }
-        requests.add("adId=" + adId);
-        requests.add("rt=1");
+        params.addParam("adId", adId);
+        params.addParam("rt", 1);
         if(pay != 0){
-            requests.add("pay=1");
+        	params.addParam("pay", 1);
         }
-        String url = Communication.getApiUrl("ad_refresh", requests);
         json = null;
-        try {
-            json = Communication.getDataByUrl(url, true);
-        } catch (UnsupportedEncodingException e) {
-            ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-        } catch (IOException e) {
-        	ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-        } catch (Communication.BXHttpException e){
+        showSimpleProgress();
+        BaseCommand.createCommand(0, "ad_refresh", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				hideProgress();
+				Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				hideProgress();
+				json = responseData;
+				try {
+		            JSONObject jb = new JSONObject(json);
+		            JSONObject js = jb.getJSONObject("error");
+		            String message = js.getString("message");
+		            int code = js.getInt("code");
+		            if (code == 0) {
+		                Toast.makeText(getActivity(), message, 1).show();
+		            }else if(2 == code){
+		                new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		                        .setMessage(message)
+		                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+		                            @Override
+		                            public void onClick(DialogInterface dialog, int which) {
+		                                showSimpleProgress();
+		                                doRefresh(1, adId);
+		                                dialog.dismiss();
+		                            }
+		                        })
+		                        .setNegativeButton(
+		                                "取消", new DialogInterface.OnClickListener() {
+		                            @Override
+		                            public void onClick(DialogInterface dialog, int which) {
+		                                dialog.cancel();
+		                            }
+		                        })
+		                        .show();
 
-        }finally {
-        	hideProgress();
-        }
-
-        if(json == null){
-            Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
-            return;
-        }
-        try {
-            JSONObject jb = new JSONObject(json);
-            JSONObject js = jb.getJSONObject("error");
-            String message = js.getString("message");
-            int code = js.getInt("code");
-            if (code == 0) {
-                Toast.makeText(getActivity(), message, 1).show();
-            }else if(2 == code){
-                new AlertDialog.Builder(getActivity()).setTitle("提醒")
-                        .setMessage(message)
-                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                showSimpleProgress();
-                                doRefresh(1, adId);
-                                dialog.dismiss();
-                            }
-                        })
-                        .setNegativeButton(
-                                "取消", new DialogInterface.OnClickListener() {
-                            @Override
-                            public void onClick(DialogInterface dialog, int which) {
-                                dialog.cancel();
-                            }
-                        })
-                        .show();
-
-            }else {
-                Toast.makeText(getActivity(), message, 1).show();
-            }
-        } catch (JSONException e) {
-            // TODO Auto-generated catch block
-            e.printStackTrace();
-        }
+		            }else {
+		                Toast.makeText(getActivity(), message, 1).show();
+		            }
+		        } catch (JSONException e) {
+		            // TODO Auto-generated catch block
+		            e.printStackTrace();
+		        }
+			}
+		});
+    }
+    
+    private void sendDeteleCmd(final String id, final int currentType) {
+    	ApiParams params = new ApiParams();
+    	params.addParam("adId", id);
+    	params.addParam("rt", 1);
+    	if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
+    		params.appendUserInfo(user);
+		}
+    	
+    	BaseCommand.createCommand(0, "ad_delete", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				hideProgress();
+				sendMessage(MSG_DELETE_POST_FAIL, null);
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				json = responseData;
+				hideProgress();
+				Message msg = Message.obtain();//handler.obtainMessage();
+				msg.obj = id;
+				msg.arg1 = currentType;
+				msg.what = MSG_DELETE_POST_SUCCESS;
+				handler.sendMessage(msg);
+			}
+		});
     }
 
-	private class MyMessageDeleteThread implements Runnable {
-		private String id;
-		private int currentType = TYPE_MYPOST;
-
-		private MyMessageDeleteThread(String id){
-			this.id = id;
-			this.currentType = MyAdFragment.this.currentType;
-		}
-
-		@Override
-		public void run() {
-			json = "";
-			String apiName = "ad_delete";
-			ArrayList<String> list = new ArrayList<String>();
-			if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-				ApiParams.makeupUserInfoParams(user, list);
-			}
-			list.add("adId=" + id);
-			list.add("rt=1");
-
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, true);
-				if (json != null) {
-					Message msg = Message.obtain();//handler.obtainMessage();
-					msg.obj = id;
-					msg.arg1 = currentType;
-					msg.what = MSG_DELETE_POST_SUCCESS;
-					handler.sendMessage(msg);
-				} else {
-					sendMessage(MSG_DELETE_POST_FAIL, null);
-				} 
-				return;
-
-			} catch (UnsupportedEncodingException e) {
-				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-			} catch (IOException e) {
-				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-			} catch (Communication.BXHttpException e){
-				
-			}
-			hideProgress();
-		}
-	}
 
 
 	@Override

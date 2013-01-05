@@ -73,6 +73,7 @@ public class Communication implements Comparator<String> {
 		return false;
 	}
 	
+	@Deprecated
 	public static String getApiUrl(String apiName, List<String> parameters) {
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
 		Log.d("Communication", url);

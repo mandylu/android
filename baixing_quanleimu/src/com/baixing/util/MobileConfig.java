@@ -9,8 +9,11 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -107,9 +110,9 @@ public class MobileConfig {
 				return;
 			}
 			
-			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+//			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
-				String content = Communication.getDataByUrl(url, true);
+				String content = ApiClient.getInstance().invokeApi(apiName, new ApiParams());//
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
 					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
@@ -118,14 +121,10 @@ public class MobileConfig {
 //			            UpdateHelper.getInstance().checkNewVersion(QuanleimuApplication.getApplication().getApplicationContext());
 //			        }
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (BXHttpException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
+			}
+			catch (Throwable t)
+			{
+				Log.e("QLM", "get mobile config faild. caused by " + t.getMessage());
 			}
 			finally
 			{

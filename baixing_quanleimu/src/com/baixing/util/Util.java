@@ -638,27 +638,6 @@ public class Util {
 		}
 	}
 	
-	public static String requestUserProfile(String usrId){
-		String apiName = "user_profile";
-		ArrayList<String> list = new ArrayList<String>();
-		 
-		list.add("rt=1");
-		list.add("userId=" + usrId);
-		
-		String url = Communication.getApiUrl(apiName, list);
-		try {
-			return Communication.getDataByUrl(url, true);
-		} catch (UnsupportedEncodingException e) {
-			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
-		} catch (IOException e) {
-			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-		} catch (Communication.BXHttpException e) {
-			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-		}
-		return null;
-	}
-	
-	
 	public static String getJsonDataFromURLByPost(String path,String params) throws SocketTimeoutException, UnknownHostException {
 		//����һ��URL����
 //		HttpURLConnection urlCon = null;

@@ -21,7 +21,7 @@ public class BaseCommand implements ApiListener {
 	
 	private Callback callback;
 	
-	private BaseCommand(final int requestCode, String apiName, ApiParams params) {
+	protected BaseCommand(final int requestCode, String apiName, ApiParams params) {
 		this.requestCode = requestCode;
 		this.apiName = apiName;
 		this.apiParams = params;
@@ -33,7 +33,7 @@ public class BaseCommand implements ApiListener {
 	
 	public void execute(Callback callback) {
 		this.callback = callback;
-		ApiClient.getInstance().remoteCall(apiName, apiParams, this);
+		ApiClient.getInstance().remoteCall(apiName, apiParams == null ? new ApiParams() : apiParams, this);
 	}
 	
 	public void cancel() {
