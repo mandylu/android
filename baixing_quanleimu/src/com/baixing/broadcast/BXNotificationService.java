@@ -91,7 +91,7 @@ public class BXNotificationService extends Service implements ApiListener {
 			list.addParam("pushCode", URLEncoder.encode(new String(timeObj)));
 		}
 
-		ApiClient.getInstance().remoteCall(method, list, this);
+		ApiClient.getInstance().remoteCall(ApiClient.Api.createPost(method), list, this);
 	}
 	
 	Handler myHandler = new Handler() {
