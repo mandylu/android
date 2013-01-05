@@ -4,6 +4,7 @@ package com.baixing.android.api.cmd;
 import org.json.JSONObject;
 
 import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
@@ -17,23 +18,23 @@ public class BaseCommand implements ApiListener {
 	
 	private int requestCode;
 	private ApiParams apiParams;
-	private String apiName;
+	private Api api;
 	
 	private Callback callback;
 	
-	protected BaseCommand(final int requestCode, String apiName, ApiParams params) {
+	protected BaseCommand(final int requestCode, Api api, ApiParams params) {
 		this.requestCode = requestCode;
-		this.apiName = apiName;
+		this.api = api;
 		this.apiParams = params;
 	}
 	
-	public static BaseCommand createCommand(final int reqCode, String apiName, ApiParams params) {
-		return new BaseCommand(reqCode, apiName, params);
-	}
+//	public static BaseCommand createCommand(final int reqCode, String apiName, ApiParams params) {
+//		return new BaseCommand(reqCode, apiName, params);
+//	}
 	
 	public void execute(Callback callback) {
 		this.callback = callback;
-		ApiClient.getInstance().remoteCall(apiName, apiParams == null ? new ApiParams() : apiParams, this);
+		ApiClient.getInstance().remoteCall(api, apiParams == null ? new ApiParams() : apiParams, this);
 	}
 	
 	public void cancel() {

@@ -30,6 +30,7 @@ import com.baixing.adapter.VadListAdapter;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
@@ -225,7 +226,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		params.addParam("categoryEnglishName", categoryEnglishName);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		BaseCommand.createCommand(MSG_UPDATE_FILTER, "category_meta_filter", params).execute(this);
+		HttpGetCommand.createCommand(MSG_UPDATE_FILTER, "category_meta_filter", params).execute(this);
 	}
 	
 	private ApiParams getSearchParams()

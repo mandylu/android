@@ -13,6 +13,7 @@ import android.util.Log;
 import android.util.Pair;
 
 import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
@@ -112,7 +113,7 @@ public class MobileConfig {
 			
 //			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
-				String content = ApiClient.getInstance().invokeApi(apiName, new ApiParams());//
+				String content = ApiClient.getInstance().invokeApi(Api.createGet(apiName), new ApiParams());//
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
 					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);

@@ -9,6 +9,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.CityList;
 import com.baixing.jsonutil.JsonUtil;
@@ -42,7 +43,7 @@ public class UpdateCityAndCatCommand implements Callback {
 		
 		 cityUpdateTime = MobileConfig.getInstance().getCityTimestamp();
 		if (timestamp < cityUpdateTime || content == null || content.length() == 0) {
-			BaseCommand.createCommand(NETWORK_REQ_GET_CITY_LIST, "city_list", null).execute(this);
+			HttpGetCommand.createCommand(NETWORK_REQ_GET_CITY_LIST, "city_list", null).execute(this);
 		}
 	
 		// check and update category list
@@ -55,7 +56,7 @@ public class UpdateCityAndCatCommand implements Callback {
 			ApiParams params = new ApiParams();
 			params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 			
-			BaseCommand.createCommand(NETWORK_REQ_GET_CATEGORY_LIST, "category_list", params).execute(this);
+			HttpGetCommand.createCommand(NETWORK_REQ_GET_CATEGORY_LIST, "category_list", params).execute(this);
 		}
 	}
 

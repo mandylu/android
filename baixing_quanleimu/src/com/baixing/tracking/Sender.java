@@ -17,6 +17,7 @@ import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Communication;
@@ -167,15 +168,15 @@ public class Sender implements Runnable{
 	}
 	
 	public static boolean executeSyncPostTask(final String apiName, final String jsonStr) {
-//		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-//		url += "&json=";
-//		url += jsonStr;
+		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+		url += "&json=";
+		url += jsonStr;
 		
-		ApiParams params = new ApiParams();
-		params.addParam("json", jsonStr);
+//		ApiParams params = new ApiParams();
+//		params.addParam("json", jsonStr);
 		try {
 			Log.d("sender", "try sending");
-			String result = ApiClient.getInstance().invokeApi(apiName, params);//Communication.getDataByGzipUrl(url, true);
+			String result = Communication.getDataByGzipUrl(url, true);//ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);//
 			Log.d("response",result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");

@@ -15,6 +15,7 @@ import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
@@ -48,7 +49,7 @@ public class PostNetworkService implements ApiListener{
 		ApiParams param = new ApiParams();
 		param.addParam("categoryEnglishName", categoryEnglishName);
 		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().getCityEnglishName() : cityEnglishName));
-		ApiClient.getInstance().remoteCall(apiName, param, this);
+		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
 	}
 	
 	public void postAdAsync(HashMap<String, String> params,
@@ -118,7 +119,7 @@ public class PostNetworkService implements ApiListener{
 			}
 		}
 		
-		ApiClient.getInstance().remoteCall(apiName, apiParam, this);
+		ApiClient.getInstance().remoteCall(Api.createPost(apiName), apiParam, this);
 	}
 	
 	private void sendMessage(int what, Object obj){

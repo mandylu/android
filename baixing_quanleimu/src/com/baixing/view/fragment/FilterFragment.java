@@ -27,6 +27,7 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Filterss;
@@ -213,7 +214,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		params.addParam("categoryEnglishName", categoryEnglishName);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		BaseCommand.createCommand(isSilent ? REQ_REQUEST_FILTER_SILENT : REQ_REQUEST_FILTER, "category_meta_filter", params).execute(this);
+		HttpGetCommand.createCommand(isSilent ? REQ_REQUEST_FILTER_SILENT : REQ_REQUEST_FILTER, "category_meta_filter", params).execute(this);
 	}
 	
 	private void loadSiftFrame(View rootView)

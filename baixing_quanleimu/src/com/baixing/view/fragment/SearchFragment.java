@@ -27,6 +27,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
@@ -288,7 +289,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 		params.addParam("query", searchContent);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		BaseCommand.createCommand(NETWOTK_REQ_SEARACH_CAT, "ad_search", params).execute(this);
+		HttpGetCommand.createCommand(NETWOTK_REQ_SEARACH_CAT, "ad_search", params).execute(this);
 	}
 	
 	class ResultListAdapter extends ArrayAdapter<Pair<Category, Integer>> {

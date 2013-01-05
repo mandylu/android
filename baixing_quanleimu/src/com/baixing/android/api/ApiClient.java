@@ -1,15 +1,12 @@
 //liuweili@baixing.com
 package com.baixing.android.api;
 
-import java.io.UnsupportedEncodingException;
 import java.security.MessageDigest;
 import java.util.Map;
 import java.util.Map.Entry;
-import java.util.ArrayList;
 import java.util.Set;
 import java.util.Vector;
 
-import org.apache.http.client.HttpClient;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -20,11 +17,45 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.Communication;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
 public class ApiClient {
+	
+	private enum METHOD_TYPE {
+		HTTP_POST, HTTP_GET
+	}
+	
+	/**
+	 * 
+	 * @author liuchong
+	 *
+	 */
+	public static final class Api {
+		private METHOD_TYPE type;
+		private String apiName;
+		public Api (METHOD_TYPE methodType, String apiName) {
+			this.type = methodType;
+			this.apiName = apiName;
+		}
+		
+		public METHOD_TYPE getMethodType() {
+			return type;
+		}
+		
+		public String getApiName() {
+			return apiName;
+		}
+		
+		public static Api createPost(String apiName) {
+			return new Api(METHOD_TYPE.HTTP_POST, apiName);
+		}
+		
+		public static Api createGet(String apiName) {
+			return new Api(METHOD_TYPE.HTTP_GET, apiName);
+		}
+	}
+	
 	private static final String LOG_TAG = "ApiClient";
 	private static final String apiKey = "api_mobile_android";
 	private static final String apiSecrect = "c6dd9d408c0bcbeda381d42955e08a3f";
@@ -107,7 +138,7 @@ public class ApiClient {
 	/*
 	 * asynchronized remote method invoked by method specific params
 	 */
-	public void remoteCall(final String method, final ApiParams params, final ApiListener listener){
+	public void remoteCall(final Api method, final ApiParams params, final ApiListener listener){
 		if (method == null) {
 			throw new IllegalArgumentException("method must not null.");
 		}
@@ -165,7 +196,7 @@ public class ApiClient {
 		}
 	}
 	
-	private final String invokeApi(final String method, final ApiParams params, boolean skipRegisterDevice) throws Exception {
+	private final String invokeApi(final Api method, final ApiParams params, boolean skipRegisterDevice) throws Exception {
 
 		Map<String, String> map = this.commonParams.getParams();
 		if (map != null) {
@@ -184,7 +215,7 @@ public class ApiClient {
 		
 		Log.d("invokeApi", params.toString());
 		
-		String url = this.apiUrl + method + "/";
+		String url = apiUrl + method.getApiName() + "/";
 		String jsonStr = null; 
 		String fullUrl = WebUtils.getFullUrl(url,params);
 		if(params.useCache){
@@ -193,11 +224,11 @@ public class ApiClient {
 		}
 		
 		if(jsonStr == null){//no hit from cache or cache not enabled
-			jsonStr = WebUtils.doPost(context, url,
+			jsonStr = method.getMethodType() == METHOD_TYPE.HTTP_POST ? WebUtils.doPost(context, url,
 				params.getParams(),
 				null,//no header specified
 				null,//no file item
-				connectTimeout, readTimeout);
+				connectTimeout, readTimeout) :WebUtils.doGet(context, url, params.getParams());
 		}
 		Log.d(LOG_TAG, jsonStr);
 		
@@ -212,11 +243,11 @@ public class ApiClient {
 	
 	}
 	
-	public final String invokeApi(final String method, final ApiParams params) throws Exception {
+	public final String invokeApi(final Api method, final ApiParams params) throws Exception {
 		return invokeApi(method, params, false);
 	}
 	
-	private final void invokeApi(final String method, final ApiParams params, final ApiListener listener){
+	private final void invokeApi(final Api method, final ApiParams params, final ApiListener listener){
 		try {
 			handleApiResponse(listener, invokeApi(method, params));
 		} catch (Exception e) {
@@ -297,7 +328,7 @@ public class ApiClient {
 		ApiParams params = new ApiParams();
 		
 		try {
-			String json_response = this.invokeApi(apiName, params, true);
+			String json_response = this.invokeApi(Api.createPost(apiName), params, true);
 			
 			if (json_response != null) {
 				JSONObject jsonObject = new JSONObject(json_response);

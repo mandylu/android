@@ -25,6 +25,7 @@ import com.baixing.adapter.CheckableAdapter.CheckableItem;
 import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
@@ -290,7 +291,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //			list.add("objIds=" + id);
 			try {
 //				String url = Communication.getApiUrl(apiName, list);
-				json = ApiClient.getInstance().invokeApi(apiName, params);
+				json = ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
 //				json = Communication.getDataByUrl(url, false);
 			} catch (Exception e) {
 //				e.printStackTrace();
