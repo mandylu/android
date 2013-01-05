@@ -1,10 +1,8 @@
+//xumengyi@baixing.com
 package com.baixing.broadcast;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
 import java.net.URLEncoder;
-import java.util.ArrayList;
 import org.json.JSONObject;
 
 import android.app.Service;
@@ -13,15 +11,17 @@ import android.content.Intent;
 import android.os.IBinder;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.Settings.Secure;
 import android.util.Log;
 import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiListener;
+import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
@@ -29,12 +29,8 @@ import com.quanleimu.activity.R;
 import android.net.ConnectivityManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
-import android.content.pm.PackageInfo;
-import android.content.pm.PackageManager;
 
-
-public class BXNotificationService extends Service {
-	private static final String TAG = "BXService";
+public class BXNotificationService extends Service implements ApiListener {
 	private static final int HELLO_ID = 0x11223344;
 	private static final int MSG_CHECK_UPDATE = 1;
 	private static final int MSG_PUSH_RETURN = 2;
@@ -83,83 +79,19 @@ public class BXNotificationService extends Service {
 		mNotificationManager.notify(HELLO_ID, notification);
 	}
 	
-	private String getVersion(){
-		PackageManager packageManager = getPackageManager();
-		PackageInfo packInfo;
-		try {
-			packInfo = packageManager.getPackageInfo(getPackageName(), 0);
-			return packInfo.versionName;
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return "";
-	}
-
-//	private String getUdid(){
-//		return Secure.getString(this.getContentResolver(), Secure.ANDROID_ID);
-//	}
-
-	class GetNotificationThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "pushNotification";
-			ArrayList<String> list = new ArrayList<String>();
-			UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user", UserBean.class);
-			list.add("userid=" + (user == null ? "" : URLEncoder.encode(user.getId())));
-			
-			byte[] timeObj = Util.loadData(BXNotificationService.this, "pushCode");//Util.loadDataFromLocate(BXNotificationService.this, "pushCode", String.class);
-			if(timeObj != null){
-				list.add("pushCode=" + URLEncoder.encode(new String(timeObj)));
-			}
-			String url = Communication.getApiUrl(apiName, list);
-			if(url.contains("version=")){
-				int index = url.indexOf("version=");
-				index += 8;
-				if(index >= url.length()){
-					url += getVersion();
-				}
-				else{
-					char version = url.charAt(index);
-					if(version == '&'){
-						StringBuffer sb = new StringBuffer(url);
-						sb = sb.insert(index, getVersion());
-						url = sb.toString();
-					}
-				}
-			}
-			if(url.contains("udid=")){
-				int index = url.indexOf("udid=");
-				index += 5;
-				if(index >= url.length()){
-					url += Util.getDeviceUdid(BXNotificationService.this);
-				}
-				else{
-					char version = url.charAt(index);
-					if(version == '&'){
-						StringBuffer sb = new StringBuffer(url);
-						sb = sb.insert(index, Util.getDeviceUdid(BXNotificationService.this));
-						url = sb.toString();
-					}
-				}
-			}			
-			try {
-				json = Communication.getDataByUrl(url, true);
-				myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
-
-			} catch (UnsupportedEncodingException e) {
-				myHandler
-						.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (IOException e) {
-				myHandler
-						.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-			} catch (Communication.BXHttpException e) {
-
-			}
-		}
-	}
-
 	private void doGetPushInfo() {
-		(new Thread(new GetNotificationThread())).start();
+		ApiParams list = new ApiParams();
+		list.useCache = false;
+		String method = "pushNotification";
+		UserBean user = (UserBean) Util.loadDataFromLocate(BXNotificationService.this, "user", UserBean.class);
+		list.addParam("userid", (user == null ? "" : URLEncoder.encode(user.getId())));
+		
+		byte[] timeObj = Util.loadData(BXNotificationService.this, "pushCode");//Util.loadDataFromLocate(BXNotificationService.this, "pushCode", String.class);
+		if(timeObj != null){
+			list.addParam("pushCode", URLEncoder.encode(new String(timeObj)));
+		}
+
+		ApiClient.getInstance().remoteCall(method, list, this);
 	}
 	
 	Handler myHandler = new Handler() {
@@ -171,6 +103,7 @@ public class BXNotificationService extends Service {
 				myHandler.sendEmptyMessageDelayed(MSG_CHECK_UPDATE, 7200000);
 				break;
 			case MSG_PUSH_RETURN:
+				Log.d("notification", "notification result:  " + json);
 				if (json != null && !json.toString().equals("null")) {
 					String time = null, ticket = null, title = null, content = null;
 					try {
@@ -263,5 +196,25 @@ public class BXNotificationService extends Service {
 		return cm.getActiveNetworkInfo() != null
 				&& cm.getActiveNetworkInfo().isAvailable()
 				&& cm.getActiveNetworkInfo().isConnected();
+	}
+
+	@Override
+	public void onComplete(JSONObject json, String rawData) {
+		// TODO Auto-generated method stub
+		this.json = rawData;
+		myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
+			
+	}
+
+	@Override
+	public void onError(ApiError error) {
+		// TODO Auto-generated method stub
+		myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+	}
+
+	@Override
+	public void onException(Exception e) {
+		// TODO Auto-generated method stub
+		myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
 	}
 }
