@@ -31,6 +31,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -627,7 +628,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         }
         json = null;
         showSimpleProgress();
-        BaseCommand.createCommand(0, "ad_refresh", params).execute(new Callback() {
+        HttpPostCommand.createCommand(0, "ad_refresh", params).execute(new Callback() {
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {
@@ -685,7 +686,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     		params.appendUserInfo(user);
 		}
     	
-    	BaseCommand.createCommand(0, "ad_delete", params).execute(new Callback() {
+    	HttpPostCommand.createCommand(0, "ad_delete", params).execute(new Callback() {
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {

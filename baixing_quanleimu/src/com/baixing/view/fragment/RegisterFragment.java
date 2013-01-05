@@ -21,6 +21,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
@@ -115,7 +116,7 @@ public class RegisterFragment extends BaseFragment {
 		params.addParam("password", passwordEt.getText().toString());
 		params.addParam("isRegister", 1);
 		
-		BaseCommand.createCommand(0, "user_register", params).execute(new Callback() {
+		HttpPostCommand.createCommand(0, "user_register", params).execute(new Callback() {
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {

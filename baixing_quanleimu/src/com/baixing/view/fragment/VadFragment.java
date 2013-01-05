@@ -43,6 +43,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -656,7 +657,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			params.addParam("query", "id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		}
 			
-		BaseCommand cmd = BaseCommand.createCommand(request.reqCode, request.apiName, params);
+		BaseCommand cmd = HttpGetCommand.createCommand(request.reqCode, request.apiName, params);
 		cmd.execute(this);
 	}
 

@@ -19,6 +19,7 @@ import android.widget.Toast;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
@@ -166,7 +167,7 @@ public class LoginUtil implements View.OnClickListener{
 		params.addParam("nickname", account);
 		params.addParam("password", password.trim());
 		
-		BaseCommand.createCommand(0, "user_login", params).execute(new Callback() {
+		HttpPostCommand.createCommand(0, "user_login", params).execute(new Callback() {
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {

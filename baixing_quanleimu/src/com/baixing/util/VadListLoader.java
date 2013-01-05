@@ -8,6 +8,7 @@ import org.json.JSONObject;
 import android.util.Log;
 
 import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
@@ -262,7 +263,7 @@ public class VadListLoader implements Serializable{
 			}
 			
 			String method = this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName);
-			ApiClient.getInstance().remoteCall(method, list, this);
+			ApiClient.getInstance().remoteCall(Api.createGet(method), list, this);
 		}
 		
 		

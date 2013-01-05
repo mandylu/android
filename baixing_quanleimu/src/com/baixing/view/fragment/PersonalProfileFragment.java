@@ -20,6 +20,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
@@ -260,7 +261,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 			params.addParam("userId", user.getId());
 			
 			try {
-				String upJson = ApiClient.getInstance().invokeApi(apiName, params);
+				String upJson = ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
 				if (!TextUtils.isEmpty(upJson)) {
 					UserProfile profile = UserProfile.from(upJson);
 					if (getActivity() != null)

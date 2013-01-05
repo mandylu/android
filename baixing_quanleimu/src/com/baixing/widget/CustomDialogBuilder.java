@@ -27,6 +27,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
@@ -348,7 +349,7 @@ public class CustomDialogBuilder {
 	private void sendGetMetaCmd(final String id, final String txt) {
 		ApiParams params = new ApiParams();
 		params.addParam("objIds", id);
-		BaseCommand.createCommand(0, "metaobject", params).execute(new Callback() {
+		HttpGetCommand.createCommand(0, "metaobject", params).execute(new Callback() {
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {

@@ -22,6 +22,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
@@ -184,7 +185,7 @@ public class FeedbackFragment extends BaseFragment {
 
 			try {
 //				String url = Communication.getApiUrl(apiName, list);
-				result = ApiClient.getInstance().invokeApi(apiName, params);//Communication.getDataByUrl(url, true);
+				result = ApiClient.getInstance().invokeApi(Api.createPost(apiName), params);//Communication.getDataByUrl(url, true);
 				if (result != null) {
 //					myHandler.sendEmptyMessage(0);
 					sendMessage(0, null);

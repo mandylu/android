@@ -11,6 +11,7 @@ import com.baixing.android.api.ApiClient;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.ApiClient.Api;
 
 public class ApiClientTest extends AndroidTestCase implements ApiListener {
 	public void setUp()
@@ -29,7 +30,7 @@ public class ApiClientTest extends AndroidTestCase implements ApiListener {
 	{
 		ApiParams ap = new ApiParams();
 		ap.addParam("query", "cityEnglishName:shanghai categoryEnglishName:shouji");
-		ApiClient.getInstance().remoteCall("ad_list", ap, this);
+		ApiClient.getInstance().remoteCall(Api.createGet("ad_list"), ap, this);
 		
 		synchronized(this){
 			try{
