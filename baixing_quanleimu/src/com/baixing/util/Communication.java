@@ -442,29 +442,6 @@ public class Communication implements Comparator<String> {
 		return result;
 	}
 	
-	// get提交数据方法
-	public static String getDataByUrl(HttpClient httpClient, String url,
-			E_DATA_POLICY dataPolicy) throws UnsupportedEncodingException,
-			IOException, BXHttpException {
-
-		if (/* E_DATA_POLICY.E_DATA_POLICY_PREFER_LOCAL == dataPolicy || */E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy) {
-			String cached = getCacheRequestIfExist(url);
-			if (E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy
-					|| cached != null)
-				return cached;
-		}
-//		Profiler.markStart("REG_USER");
-		registerDevice(httpClient);
-//		Profiler.markEnd("REG_USER");
-		
-//		Profiler.markStart("REQ_");
-		String result =  doRequest(httpClient, url, true);
-//		Profiler.markEnd("REQ_");
-		
-//		Profiler.dump();
-		return result;
-	}
-
 	public static String getCacheRequestIfExist(String url) {
 		String extractedUrl = Util.extractUrlWithoutSecret(url);
 		String result = GlobalDataManager
@@ -703,10 +680,24 @@ public class Communication implements Comparator<String> {
 		return o1.compareTo(o2);
 	}
 
+	/**
+	 * @deprecated
+	 * 
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	public static void executeAsyncGetTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
 		executeAsyncTask(false, apiName, params, listener);
 	}
 	
+	/**
+	 * @deprecated
+	 * @param isGet
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	private static void executeAsyncTask(final boolean isGet, final String apiName, final ParameterHolder params, final CommandListener listener) {
 		Thread t = new Thread(
 				new Runnable() {
@@ -732,6 +723,12 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
+	/**
+	 * @deprecated
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	public static void executeAsyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
 		
 		executeAsyncTask(false, apiName, params, listener);

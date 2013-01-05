@@ -12,6 +12,10 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.quanleimu.activity.R;
 
@@ -102,17 +106,25 @@ public class UpdateHelper {
     public void checkNewVersion(Context currentActivity) {
         this.activity = currentActivity;
 
-        ParameterHolder params = new ParameterHolder();
-        params.addParameter("clientVersion", GlobalDataManager.getInstance().getVersion());
-
+        ApiParams params = new ApiParams();
+//        ParameterHolder params = new ParameterHolder();
+//        params.addParameter("clientVersion", GlobalDataManager.getInstance().getVersion());
+        params.addParam("clientVersion", GlobalDataManager.getInstance().getVersion());
         pd = ProgressDialog.show(activity, "提示", "请稍候...");
         pd.show();
-        Communication.executeAsyncGetTask("check_version", params, new Communication.CommandListener() {
+        
+        HttpGetCommand.createCommand(0, "check_version", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				sendMessage(MSG_NETWORK_ERROR, "网络异常");				
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
 
-            @Override
-            public void onServerResponse(String serverMessage) {
                 try {
-                    JSONObject respond = new JSONObject(serverMessage);
+                    JSONObject respond = new JSONObject(responseData);
                     JSONObject error = respond.getJSONObject("error");
 
                     serverVersion = respond.getString("serverVersion");
@@ -131,13 +143,9 @@ public class UpdateHelper {
                     sendMessage(MSG_NETWORK_ERROR, "网络异常");
                 }
 
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                sendMessage(MSG_NETWORK_ERROR, "网络异常");
-            }
-        });
+            				
+			}
+		});
     }
 
     private void updateAppDownload() {

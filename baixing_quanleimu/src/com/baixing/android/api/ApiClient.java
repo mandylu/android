@@ -243,6 +243,14 @@ public class ApiClient {
 	
 	}
 	
+	/**
+	 * Invoke remote api in current thread.
+	 * 
+	 * @param method
+	 * @param params
+	 * @return
+	 * @throws Exception
+	 */
 	public final String invokeApi(final Api method, final ApiParams params) throws Exception {
 		return invokeApi(method, params, false);
 	}

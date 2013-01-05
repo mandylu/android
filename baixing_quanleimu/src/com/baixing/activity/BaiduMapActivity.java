@@ -27,6 +27,7 @@ import com.baidu.mapapi.MapView;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.Projection;
+import com.baixing.android.api.WebUtils;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -118,7 +119,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 							latV, lonV);
 					
 					try{
-						String baiduJsn = Communication.getDataByUrlGet(baiduUrl);
+						String baiduJsn = WebUtils.doGet(BaiduMapActivity.this, baiduUrl, null);//Communication.getDataByUrlGet(baiduUrl);
 						JSONObject js = new JSONObject(baiduJsn);
 						Object errorCode = js.get("error");
 						if(errorCode instanceof Integer && (Integer)errorCode == 0){

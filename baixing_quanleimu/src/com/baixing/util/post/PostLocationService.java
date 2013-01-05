@@ -7,6 +7,7 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
+import com.baixing.android.api.WebUtils;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
@@ -43,7 +44,7 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 		}
 		String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", addr);
 		try{
-			String googleJsn = Communication.getDataByUrlGet(googleUrl);
+			String googleJsn = WebUtils.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl, null);//Communication.getDataByUrlGet(googleUrl);
 			String[] info = googleJsn.split(",");
 			if(info != null && info.length == 4){
 				return new Pair<Double, Double>(Double.parseDouble(info[2]), Double.parseDouble(info[3]));
