@@ -26,6 +26,7 @@ import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.Ad;
+import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -394,7 +395,8 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 			if(bf != null && (bf instanceof ListingFragment)){
 				intent.putExtra(PostGoodsFragment.KEY_INIT_CATEGORY, ((ListingFragment)bf).getCategoryNames());
 			}
-			intent.setClass(this, PostActivity.class);
+//			intent.setClass(this, PostActivity.class);
+			intent.setClass(this, QZoneSharingManager.class);
 			break;
 		case TAB_INDEX_PERSONAL:
 			intent.setClass(this, PersonalActivity.class);
