@@ -4,6 +4,8 @@ import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.ImageList;
 import com.tencent.tauth.TencentOpenAPI;
 import com.tencent.tauth.TencentOpenAPI2;
 import com.tencent.tauth.TencentOpenHost;
@@ -31,7 +33,52 @@ public class QZoneSharingManager implements Callback {
 	}
 	
 	public void share2QZone(Ad ad){
+		Bundle bundle = new Bundle();
+
+		bundle.putString("title", ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+		bundle.putString("url", ad.getValueByKey(EDATAKEYS.EDATAKEYS_LINK));
 		
+//		//用户评论内容，也叫发表分享时的分享理由。禁止使用系统生产的语句进行代替。最长40个中文字，超出部分会被截断。
+//		bundle.putString("comment", ("QQ登录SDK：测试comment" + new Date()));
+		
+		bundle.putString("summary", ad.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION));
+		ImageList il = ad.getImageList();
+		if(il != null){
+			String resize180 = il.getResize180();
+			resize180 = resize180.replaceAll(",", "|");
+			bundle.putString("images", resize180);
+		}
+		
+		//分享内容的类型。4表示网页；5表示视频（type=5时，必须传入playurl）。
+		bundle.putString("type", "4");
+		
+		TencentOpenAPI2.sendStore(mActivity.getApplicationContext(), mAccessToken, mAppid, mOpenId, "_self", bundle, new Callback() {
+			@Override
+			public void onSuccess(final Object obj) {
+				mActivity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast toast = Toast.makeText(mActivity.getApplicationContext(), "成功分享到QQ空间！", Toast.LENGTH_SHORT);
+						toast.show();
+					}
+				});
+			}
+			   		
+			@Override
+			public void onFail(final int ret, final String msg) {
+				mActivity.runOnUiThread(new Runnable() {
+					@Override
+					public void run() {
+						Toast toast = Toast.makeText(mActivity.getApplicationContext(), "分享失败，错误信息:" + ret + ", " + msg, Toast.LENGTH_SHORT);
+						toast.show();
+					}
+				});
+			}
+			   
+			@Override
+			public void onCancel(int flag) {
+			}
+		}, null);
 	}
 	
 	public void destroy(){
@@ -97,7 +144,6 @@ public class QZoneSharingManager implements Callback {
 							@Override
 							public void run() {
 								mOpenId = ((OpenId) obj).getOpenId();
-								share2qzone();
 							}
 						});
 					}
@@ -116,59 +162,6 @@ public class QZoneSharingManager implements Callback {
 			if (error_ret != null) {
 			}
 		}
-	}
-
-	private void share2qzone(){
-		 Bundle bundle = new Bundle();
-
-	   //必须。feeds的标题，最长36个中文字，超出部分会被截断。
-	   bundle.putString("title", "QQ登录SDK：Add_Share测试");
-
-	   //必须。分享所在网页资源的链接，点击后跳转至第三方网页， 请以http://开头。
-	   bundle.putString("url", "http://www.baixing.com");
-
-	   //用户评论内容，也叫发表分享时的分享理由。禁止使用系统生产的语句进行代替。最长40个中文字，超出部分会被截断。
-	   bundle.putString("comment", ("QQ登录SDK：测试comment" + new Date()));
-
-	   //所分享的网页资源的摘要内容，或者是网页的概要描述。 最长80个中文字，超出部分会被截断。
-	   bundle.putString("summary", "QQ登录SDK：测试summary");
-
-	   //所分享的网页资源的代表性图片链接"，请以http://开头，长度限制255字符。
-	   //多张图片以竖线（|）分隔，目前只有第一张图片有效，图片规格100*100为佳。
-	   bundle.putString("images", "http://imgcache.qq.com/qzone/space_item/pre/0/66768.gif");
-
-	   //分享内容的类型。4表示网页；5表示视频（type=5时，必须传入playurl）。
-	   bundle.putString("type", "4");
-
-	   TencentOpenAPI2.sendStore(mActivity.getApplicationContext(), mAccessToken, mAppid, mOpenId, "_self", bundle, new Callback() {
-		       @Override
-		       public void onSuccess(final Object obj) {
-		    	   mActivity.runOnUiThread(new Runnable() {
-		                 @Override
-		                 public void run() {
-		                      Toast toast = Toast.makeText(mActivity.getApplicationContext(), "成功分享到QQ空间！", Toast.LENGTH_SHORT);
-		                      toast.show();
-		                 }
-		            });
-		       }
-		       		
-		       @Override
-		       public void onFail(final int ret, final String msg) {
-		    	   mActivity.runOnUiThread(new Runnable() {
-		                 @Override
-		                 public void run() {
-		                      Toast toast = Toast.makeText(mActivity.getApplicationContext(), "分享失败，错误信息:" + ret + ", " + msg, Toast.LENGTH_SHORT);
-		                      toast.show();
-                          }
-                      });
-                  }
-		       
-		       @Override
-		       public void onCancel(int flag) {
-		                 // TODO Auto-generated method stub
-		                      }
-		      }, null);
-
 	}
 
 	@Override
