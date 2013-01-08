@@ -42,7 +42,6 @@ public class BitmapUtil {
         Toast.makeText(context, "take pic succed", Toast.LENGTH_LONG).show();
         
         BitmapFactory.Options opts = new BitmapFactory.Options();
-        opts.inJustDecodeBounds = true;
         opts.inPurgeable = true;
         
         Bitmap source;
