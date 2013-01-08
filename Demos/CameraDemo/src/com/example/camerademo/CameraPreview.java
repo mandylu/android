@@ -5,9 +5,12 @@ import java.io.IOException;
 import android.content.Context;
 import android.hardware.Camera;
 import android.util.Log;
+import android.view.Display;
+import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
 import android.view.View;
+import android.view.WindowManager;
 
 /** A basic Camera preview class */
 public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback {
@@ -67,11 +70,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // start preview with new settings
         try {
         	mCamera.setDisplayOrientation(90); //FIXME: this is business related.
+//        	adjustOrientation();
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 
         } catch (Exception e){
             Log.d("CAMPRE", "Error starting camera preview: " + e.getMessage());
         }
+    }
+    
+    private void adjustOrientation() {
+    	Display disp = ((WindowManager)this.getContext().getSystemService(Context.WINDOW_SERVICE)).getDefaultDisplay();
+    	switch (disp.getOrientation()) {
+    	case Surface.ROTATION_0:
+    		mCamera.setDisplayOrientation(90);
+    		break;
+    	case Surface.ROTATION_270:
+    		mCamera.setDisplayOrientation(180);
+    		break;
+    	case Surface.ROTATION_90:
+    	case Surface.ROTATION_180:
+    		break;
+    	}
     }
 }
