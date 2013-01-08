@@ -85,7 +85,7 @@ public final class PostParamsHolder implements Serializable {
 		while(keys.hasNext())
 		{
 			String key = keys.next();
-			if (INVALID_VALUE.equals(map.get(key)))
+			if (INVALID_VALUE.equals(map.get(key).value))
 			{
 				continue;
 			}
