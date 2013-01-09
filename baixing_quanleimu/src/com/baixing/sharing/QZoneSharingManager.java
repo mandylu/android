@@ -1,11 +1,19 @@
 package com.baixing.sharing;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.lang.ref.WeakReference;
+import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.ImageList;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.util.Util;
 import com.tencent.tauth.TencentOpenAPI;
 import com.tencent.tauth.TencentOpenAPI2;
 import com.tencent.tauth.TencentOpenHost;
@@ -16,39 +24,115 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
+import android.graphics.Bitmap;
 import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-public class QZoneSharingManager implements Callback {
+public class QZoneSharingManager implements Callback, BaseSharingManager{
+	private final int MSG_AUTO_SUCCEED = 1;
+	private final int MSG_AUTO_FAIL = 2;
+	private final int MSG_UPLOADIMG_FINISH = 3;
 	private String mAccessToken;
 	private String mOpenId;
 	private AuthReceiver receiver;
 	static final String mAppid = "100358719";
 	private Activity mActivity;
+	private Ad mAd;
+	private String mImageUrl;
+	static final private String STRING_ACCESS_TOKEN = "qzoneaccess";
+	static final private String STRING_OPENID = "qzonopenid";
 
 	public QZoneSharingManager(Activity startingActivity){
 		mActivity = startingActivity;
 		registerIntentReceivers();
+		mAccessToken = (String)Util.loadDataFromLocate(mActivity, STRING_ACCESS_TOKEN, String.class);
+		mOpenId = (String)Util.loadDataFromLocate(mActivity, STRING_OPENID, String.class);
 	}
 	
-	public void share2QZone(Ad ad){
+	private void uploadImage(){
+		ImageList il = mAd.getImageList();
+		if(il != null){
+			String big = il.getBig();
+			if(big != null && big.length() > 0){
+				String path = ImageCacheManager.getInstance().getFileInDiskCache(big.split(",")[0]);
+				if(path != null && path.length() > 0){
+					
+					StringBuilder sb = new StringBuilder();
+					FileInputStream fis = null;
+					try{
+						File file = new File(path);
+//						fis = mActivity.openFileInput(path);
+						fis =  new FileInputStream(file);
+						
+						byte[] fileContent = new byte[1024];
+						int numRead = 0;
+						while((numRead = fis.read(fileContent)) > 0){
+							String fc = new String(fileContent);
+							sb.append(fc);
+						}					
+					}catch(FileNotFoundException e){
+						
+					}catch(IOException e){
+						
+					}finally{
+						if(fis != null){
+							try{
+								fis.close();
+							}catch(IOException e){
+								
+							}
+						}
+					}
+					if(sb != null && sb.length() > 0){
+						Bundle bundle = new Bundle();
+						bundle.putByteArray("picture", sb.toString().getBytes());
+						TencentOpenAPI.uploadPic(this.mAccessToken, mAppid, this.mOpenId, bundle, new Callback(){
+	
+							@Override
+							public void onCancel(int arg0) {
+								// TODO Auto-generated method stub
+								handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
+							}
+	
+							@Override
+							public void onFail(int arg0, String arg1) {
+								// TODO Auto-generated method stub
+								handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
+							}
+	
+							@Override
+							public void onSuccess(Object arg0) {
+								// TODO Auto-generated method stub
+								Message msg = Message.obtain();
+								msg.what = MSG_UPLOADIMG_FINISH;
+								msg.obj = arg0;
+								handler.sendMessage(msg);
+							}
+							
+						});
+					}else{
+						handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
+					}
+				}
+			}
+		}
+			
+
+	}
+	
+	private void share2QZone(Ad ad){
 		Bundle bundle = new Bundle();
 
-		bundle.putString("title", ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
-		bundle.putString("url", ad.getValueByKey(EDATAKEYS.EDATAKEYS_LINK));
-		
-//		//用户评论内容，也叫发表分享时的分享理由。禁止使用系统生产的语句进行代替。最长40个中文字，超出部分会被截断。
-//		bundle.putString("comment", ("QQ登录SDK：测试comment" + new Date()));
-		
+		bundle.putString("title", ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));		
+		bundle.putString("url", ad.getValueByKey(EDATAKEYS.EDATAKEYS_LINK));		
+		bundle.putString("comment", "我正在百姓网卖" + "\"" + ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\"" + "，求转发");		
 		bundle.putString("summary", ad.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION));
-		ImageList il = ad.getImageList();
-		if(il != null){
-			String resize180 = il.getResize180();
-			resize180 = resize180.replaceAll(",", "|");
-			bundle.putString("images", resize180);
-		}
-		
+		if(mImageUrl != null && mImageUrl.length() > 0){
+			bundle.putString("images", mImageUrl);
+		}				
 		//分享内容的类型。4表示网页；5表示视频（type=5时，必须传入playurl）。
 		bundle.putString("type", "4");
 		
@@ -81,12 +165,6 @@ public class QZoneSharingManager implements Callback {
 		}, null);
 	}
 	
-	public void destroy(){
-		if (receiver != null) {
-			unregisterIntentReceivers();
-		}
-	}
-
 	private void auth() {
 		Intent intent = new Intent(mActivity, com.tencent.tauth.TAuthView.class);
 		intent.putExtra(TencentOpenHost.CLIENT_ID, mAppid);
@@ -94,7 +172,7 @@ public class QZoneSharingManager implements Callback {
 				TencentOpenHost.SCOPE,
 				"get_user_info,get_user_profile,add_share,add_topic,list_album,upload_pic,add_album");
 		intent.putExtra(TencentOpenHost.TARGET, "_blank");
-		// intent.putExtra(TencentOpenHost.CALLBACK, this);
+		intent.putExtra(TencentOpenHost.CALLBACK, "auth://tauth.qq.com/");
 		mActivity.startActivity(intent);
 	}
 
@@ -108,6 +186,17 @@ public class QZoneSharingManager implements Callback {
 	private void unregisterIntentReceivers() {
 		GlobalDataManager.getInstance().getApplicationContext().unregisterReceiver(receiver);
 	}
+	
+	Handler handler = new Handler(){
+		@Override
+		public void handleMessage(Message msg) {
+			if(msg.what == MSG_AUTO_SUCCEED){
+				uploadImage();
+			}else if(msg.what == MSG_UPLOADIMG_FINISH){
+				share2QZone(mAd);
+			}
+		}
+	};
 
 	class AuthReceiver extends BroadcastReceiver {
 
@@ -130,6 +219,7 @@ public class QZoneSharingManager implements Callback {
 					raw, access_token, dt));
 			if (access_token != null) {
 				mAccessToken = access_token;
+				Util.saveDataToLocate(mActivity, STRING_ACCESS_TOKEN, mAccessToken);
 
 				// 用access token 来获取open id
 				TencentOpenAPI.openid(access_token, new Callback() {
@@ -144,6 +234,10 @@ public class QZoneSharingManager implements Callback {
 							@Override
 							public void run() {
 								mOpenId = ((OpenId) obj).getOpenId();
+								Util.saveDataToLocate(mActivity, STRING_OPENID, mOpenId);
+								if(handler != null){
+									handler.sendEmptyMessage(MSG_AUTO_SUCCEED);
+								}
 							}
 						});
 					}
@@ -180,5 +274,26 @@ public class QZoneSharingManager implements Callback {
 	public void onSuccess(Object arg0) {
 		// TODO Auto-generated method stub
 
+	}
+
+	@Override
+	public void share(Ad ad) {
+		// TODO Auto-generated method stub
+		mAd = ad;
+		if(mAccessToken == null || mOpenId == null){
+			auth();
+		}else if(ad.getImageList() != null){
+			uploadImage();
+		}else{
+			share2QZone(ad);
+		}
+	}
+
+	@Override
+	public void release() {
+		// TODO Auto-generated method stub
+		if (receiver != null) {
+			unregisterIntentReceivers();
+		}		
 	}
 }

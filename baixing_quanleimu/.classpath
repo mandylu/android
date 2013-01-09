@@ -2,6 +2,7 @@
 <classpath>
 	<classpathentry kind="lib" path="libs/baidumapapi.jar"/>
 	<classpathentry kind="lib" path="libs/tencent_openapi.jar"/>
+	<classpathentry kind="lib" path="libs/weibo.sdk.android.sso.jar"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
 	<classpathentry kind="src" path="src"/>
