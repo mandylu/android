@@ -1,10 +1,14 @@
 //liuchong@baixing.com
 package com.baixing.activity;
 
+import java.lang.ref.WeakReference;
+
+import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.view.fragment.MyAdFragment;
 import com.baixing.view.fragment.PersonalProfileFragment;
@@ -34,6 +38,9 @@ public class PersonalActivity extends BaseTabActivity {
 	@Override
 	public void onCreate(Bundle savedBundle){
 		super.onCreate(savedBundle);
+		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
+		}
 		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		
