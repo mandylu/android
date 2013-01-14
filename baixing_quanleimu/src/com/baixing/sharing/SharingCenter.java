@@ -15,6 +15,8 @@ public class SharingCenter{
 	
 	public static void share2Weixin(Activity activity, Ad ad){
 		release();
+		sm = new WeixinSharingManager(activity);
+		sm.share(ad);
 	}
 	
 	public static void share2QZone(Activity activity, Ad ad){

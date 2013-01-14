@@ -217,7 +217,7 @@ public class PostNetworkService implements ApiListener{
 	@Override
 	public void onError(ApiError error) {
 		// TODO Auto-generated method stub
-		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+//		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
 		if(error != null){
 			sendMessage(PostCommonValues.MSG_POST_FAIL, error.getMsg());
 		}
@@ -226,6 +226,8 @@ public class PostNetworkService implements ApiListener{
 	@Override
 	public void onException(Exception e) {
 		// TODO Auto-generated method stub
-		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+		if(e != null){
+			sendMessage(PostCommonValues.MSG_POST_FAIL, e.getMessage());
+		}
 	}
 }

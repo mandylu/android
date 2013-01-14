@@ -15,6 +15,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.app.Fragment;
@@ -932,10 +933,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();
 			ErrorHandler.getInstance().handleMessage(msg);
-			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
-			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
-			this.reCreateTitle();
-			this.refreshHeader();
+//			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
+//			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
+//			this.reCreateTitle();
+//			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:			
