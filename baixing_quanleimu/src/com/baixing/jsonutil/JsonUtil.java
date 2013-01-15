@@ -262,6 +262,7 @@ public class JsonUtil {
 		List<Ad> list = new ArrayList<Ad>();
 		try{
 			JsonParser parser = factory.createJsonParser(jsonData);
+			JsonToken tmpToken;
 			while (parser.nextToken() != JsonToken.END_OBJECT) {
 				String fieldname = parser.getCurrentName();
 				if(fieldname == null) continue;
