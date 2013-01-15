@@ -1,0 +1,102 @@
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:tools="http://schemas.android.com/tools"
+    android:layout_width="match_parent"
+    android:layout_height="match_parent"
+    tools:context=".MainActivity" >
+
+    <RelativeLayout
+        android:id="@+id/RelativeLayout1"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/title_height"
+        android:layout_alignParentLeft="true"
+        android:layout_alignParentTop="true"
+        android:background="@drawable/bg_camera_header"
+        >
+        <android.view.View
+            android:id="@+id/cancel_cap"
+            android:layout_width="68dp"
+            android:layout_height="44dp"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/btn_camera_close"
+            />
+        
+         <TextView
+            android:id="@+id/cap_title"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:textColor="#ffffff"
+            android:text="免费发布信息"
+            android:textAppearance="?android:attr/textAppearanceMedium" />
+
+        <android.view.View
+            android:id="@+id/finish_cap"
+            android:layout_width="68dp"
+            android:layout_height="44dp"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:background="@drawable/btn_camera_finish"
+            />
+    </RelativeLayout>
+
+    <RelativeLayout
+        android:id="@+id/bottom_line"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/camera_action_bar_height"
+        android:background="@drawable/bg_camera_header"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true" >
+
+        <ImageView
+            android:id="@+id/cap"
+            android:layout_width="@dimen/camera_cap_button_width"
+            android:layout_height="@dimen/camera_cap_button_height"
+            android:layout_centerHorizontal="true"
+            android:src="@drawable/btn_capture" />
+
+        <ImageView
+            android:id="@+id/pick_gallery"
+            android:layout_width="@dimen/camera_cap_button_width"
+            android:layout_height="@dimen/camera_cap_button_height"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:scaleType="centerInside"
+            android:src="@drawable/btn_gallery" />
+    </RelativeLayout>
+
+    <FrameLayout
+        android:id="@+id/camera_parent"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_above="@+id/bottom_line"
+        android:layout_below="@+id/RelativeLayout1"
+        android:layout_centerHorizontal="true" >
+
+        <TextView
+            android:id="@+id/cam_not_available_tip"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:gravity="center"
+            android:text="相机暂时不可用"
+            android:textAppearance="?android:attr/textAppearanceMedium"
+            android:visibility="gone" />
+    </FrameLayout>
+
+    <HorizontalScrollView
+        android:layout_width="fill_parent"
+        android:background="#80808080"
+        android:layout_height="@dimen/camera_result_width"
+        android:padding="@dimen/camera_preview_gap"
+        android:layout_above="@+id/bottom_line" >
+
+        <LinearLayout
+            android:id="@+id/result_parent"
+            android:layout_width="wrap_content"
+            android:layout_height="match_parent"
+            android:gravity="left"
+            android:orientation="horizontal" >
+        </LinearLayout>
+    </HorizontalScrollView>
+
+</RelativeLayout>

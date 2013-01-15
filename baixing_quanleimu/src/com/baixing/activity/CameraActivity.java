@@ -1,0 +1,618 @@
+package com.baixing.activity;
+
+import java.lang.ref.WeakReference;
+import java.util.ArrayList;
+import java.util.List;
+
+import android.annotation.SuppressLint;
+import android.app.Activity;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ActivityInfo;
+import android.database.Cursor;
+import android.graphics.Bitmap;
+import android.hardware.Camera;
+import android.hardware.Camera.AutoFocusCallback;
+import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.PictureCallback;
+import android.hardware.Sensor;
+import android.hardware.SensorEvent;
+import android.hardware.SensorEventListener;
+import android.hardware.SensorManager;
+import android.net.Uri;
+import android.os.AsyncTask;
+import android.os.Build.VERSION;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.provider.MediaStore;
+import android.util.Log;
+import android.util.Pair;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.View.OnClickListener;
+import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.view.WindowManager;
+import android.widget.ImageView;
+import android.widget.TextView;
+import android.widget.Toast;
+
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.entity.BXLocation;
+import com.baixing.entity.BXThumbnail;
+import com.baixing.util.BitmapUtils;
+import com.baixing.util.Util;
+import com.baixing.util.post.ImageUploader;
+import com.baixing.util.post.ImageUploader.Callback;
+import com.baixing.view.CameraPreview;
+import com.quanleimu.activity.R;
+/**
+ * 
+ * @author liuchong
+ *
+ */
+public class CameraActivity extends Activity  implements OnClickListener, SensorEventListener {
+	public static final String TAG = "CAMPREV";
+	
+	private static final int REQ_PICK_GALLERY = 1;
+	
+	private static final int MAX_IMG_COUNT = 8;
+	
+	private SensorManager sensorMgr;
+	private Sensor sensor;
+	
+	private CameraPreview mPreview;
+    Camera mCamera;
+    boolean isFrontCam; //If current camera is facing or front camera.
+    boolean isLandscapeMode;
+//    int cameraCurrentlyLocked;
+    
+    Orien currentOrien = Orien.DEFAULT;
+    SensorEvent lastSensorEvent;
+    
+    private ArrayList<BXThumbnail> imageList = new ArrayList<BXThumbnail>();
+    private List<UploadingCallback> callbacks = new ArrayList<UploadingCallback>();
+//    private ArrayList<String> imagePaths = new ArrayList<String>();
+    
+    private OnDeleteListener deleteListener;
+    
+    /*
+     * Internal message. 
+     */
+    private static final int MSG_PIC_TAKEN = 0;
+    private static final int MSG_SAVE_DONE = 1;
+    private static final int MSG_ORIENTATION_CHANGE = 2;
+    private static final int MSG_UPDATE_THUMBNAILS = 3;
+    private static final int MSG_UPLOADING_STATUS_UPDATE = 4;
+
+    /*
+     * Internal message parameters: image uploading status.
+     */
+    private static final int STATE_UPLOADING = 1;
+    private static final int STATE_FAIL = 2;
+    private static final int STATE_DONE = 3;
+    
+    private Handler handler;
+    
+    public static enum Orien {
+    	DEFAULT("DEFAULT",0),
+    	TOP_UP("TOP_UP", 90),
+    	RIGHT_UP("RIGHT_UP", 0),
+    	BOTTOM_UP("BOTTOM_UP", 270),
+    	LEFT_UP("LEFT_UP", 180);
+    	String des = "";
+    	int orientationDegree;
+    	private Orien(String des, int degree) {
+    		this.des = des;
+    		this.orientationDegree = degree;
+    	}
+    }
+    
+    class InternalHandler extends Handler {
+		@Override
+		public void handleMessage(Message msg) {
+			switch(msg.what) {
+			case MSG_PIC_TAKEN:
+				mCamera.startPreview();
+				break;
+			case MSG_SAVE_DONE:
+				BXThumbnail newPicPair = (BXThumbnail)  msg.obj;
+				ImageUploader.getInstance().startUpload(newPicPair.getLocalPath(), newPicPair.getThumbnail(), null);
+				boolean succed = appendResultImage(newPicPair);
+				if (succed) {
+					addImageUri(newPicPair);
+				}
+				break;
+			case MSG_ORIENTATION_CHANGE:
+				autoFocusWhenOrienChange();
+				break;
+			case MSG_UPDATE_THUMBNAILS:
+				if (imageList != null) {
+					for (BXThumbnail t : imageList) {
+						appendResultImage(t);
+					}
+				}
+				break;
+				
+			case MSG_UPLOADING_STATUS_UPDATE:
+				Pair<Bitmap, ImageView> p = (Pair<Bitmap, ImageView>) msg.obj;
+				if (p.second != null) {
+					switch (msg.arg1) {
+					case STATE_UPLOADING:
+						p.second.setImageBitmap(p.first);
+						break;
+					case STATE_FAIL:
+						p.second.setImageResource(R.drawable.arrow_back);//FIXME: 
+						break;
+					case STATE_DONE:
+						p.second.setImageBitmap(p.first);
+						break;
+					}
+				}
+				break;
+			}
+		}
+    
+    }
+    
+    private ArrayList<String> getLocalUrls() {
+    	ArrayList<String> list = new ArrayList<String>();
+    	for (BXThumbnail t : imageList) {
+    		list.add(t.getLocalPath());
+    	}
+    	
+    	return list;
+    }
+    
+    private void addImageUri(BXThumbnail  p) {
+    	imageList.add(p);
+    	if (imageList.size() == MAX_IMG_COUNT) {
+    		finishTakenPic();
+    	}
+    }
+    
+    private void finishTakenPic() {
+    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
+		
+		Intent data = new Intent();
+		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
+		bundle.putParcelable(CommonIntentAction.EXTRA_COMMON_DATA, data);
+		
+		backIntent.putExtras(bundle);
+		this.startActivity(backIntent);
+		this.finish();
+    }
+    
+    private void deleteImageUri(BXThumbnail t) {
+    	imageList.remove(t);
+    }
+    
+    private boolean appendResultImage(BXThumbnail thumbnail) {
+    	
+    	if (thumbnail == null) {
+    		return false;
+    	}
+    	
+    	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
+    	LayoutInflater layoutInf = LayoutInflater.from(CameraActivity.this);
+		View imageRoot = layoutInf.inflate(R.layout.single_image_layout, null);
+		
+		View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
+		deleteCmd.setOnClickListener(deleteListener);
+		deleteCmd.setTag(thumbnail);
+		
+		try
+		{
+			final int gap = getResources().getDimensionPixelSize(R.dimen.camera_preview_gap);
+//			if (isLandscapeMode) {
+//				imageRoot.setPadding(0, gap/2, 0, gap/2);
+//			}
+//			else {
+//				imageRoot.setPadding(gap/2, 0, gap/2, 0);
+//			}
+			vp.addView(imageRoot, getResources().getDimensionPixelSize(R.dimen.camera_preview_width), getResources().getDimensionPixelSize(R.dimen.camera_preview_width));
+			vp.addView(new View(CameraActivity.this), gap, gap);
+			
+			ImageView img = (ImageView) imageRoot.findViewById(R.id.result_image);
+			if (thumbnail.getThumbnail() == null) {
+				img.setImageResource(R.drawable.arrowdown); //FIXME:
+				UploadingCallback cbk = new UploadingCallback(img);
+				callbacks.add(cbk);
+				ImageUploader.getInstance().registerCallback(thumbnail.getLocalPath(), cbk);
+			}
+			else {
+				img.setImageBitmap(thumbnail.getThumbnail());
+			}
+			
+			return true;
+		}
+		catch (Throwable t) {
+			Log.d(TAG, "error when add image view " + imageRoot);
+		}
+		
+		return false;
+    }
+    
+    class UploadingCallback implements ImageUploader.Callback {
+    	WeakReference<ImageView> viewRef;
+    	UploadingCallback(ImageView v) {
+    		viewRef = new WeakReference<ImageView>(v);
+    	}
+    	
+		@Override
+		public void onUploadDone(String imagePath, String serverUrl,
+				Bitmap thumbnail) {
+			notifyHandler(STATE_DONE, thumbnail);
+		}
+		@Override
+		public void onUploading(String imagePath, Bitmap thumbnail) {
+			notifyHandler(STATE_UPLOADING, thumbnail);
+		}
+		@Override
+		public void onUploadFail(String imagePath, Bitmap thumbnail) {
+			notifyHandler(STATE_FAIL, thumbnail);
+		}
+		
+		private void notifyHandler(int status, Bitmap thumbnail) {
+			Log.d(TAG, "image status update to : " + status);
+			ImageView img = viewRef.get();
+			if (img != null && handler != null) { //When activity is destroyed, handler will be null.
+				Message msg = handler.obtainMessage();
+				msg.what = MSG_UPLOADING_STATUS_UPDATE;
+				msg.arg1 = status;
+				msg.obj = new Pair<Bitmap, ImageView>(thumbnail, viewRef.get());
+				handler.sendMessage(msg);
+			}
+		}
+    }
+    
+	@Override
+	protected void onCreate(Bundle savedInstanceState) {
+		super.onCreate(savedInstanceState);
+		
+		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
+		
+		if (VERSION.SDK_INT <= 8) {
+			isLandscapeMode = true;
+			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+			setContentView(R.layout.image_selector_land);
+		}
+		else
+		{
+			setContentView(R.layout.image_selector);
+		}
+					
+		
+		//Take picture action.
+		findViewById(R.id.cap).setOnClickListener(this);
+		findViewById(R.id.finish_cap).setOnClickListener(this);
+		findViewById(R.id.cancel_cap).setOnClickListener(this);
+		
+		//Sensor to update current orientation. 
+		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
+		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		
+		deleteListener = new OnDeleteListener();
+		
+		findViewById(R.id.pick_gallery).setOnClickListener(new OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				Intent goIntent = new Intent(Intent.ACTION_GET_CONTENT);
+				goIntent.addCategory(Intent.CATEGORY_OPENABLE);
+				goIntent.setType("image/*");
+				startActivityForResult(goIntent, REQ_PICK_GALLERY);
+			}
+		});
+		
+		ImageUploader.getInstance().attachActivity(this); //Attach activity.
+		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_IMAGE_LIST)) {
+			ArrayList<String> list = this.getIntent().getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
+			this.imageList.clear();
+			for (String p : list) {
+				this.imageList.add(BXThumbnail.createThumbnail(p, null));
+			}
+			
+			handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
+		}
+	}
+	
+	protected void onDestroy() {
+		this.handler = null; //Do not handle action any more.
+		
+		for (Callback callback : this.callbacks) {
+			ImageUploader.getInstance().removeCallback(callback);
+		}
+		this.callbacks.clear();
+		
+		super.onDestroy();
+	}
+	
+	@SuppressLint("NewApi") 
+	public void initializeCamera(){
+	    Camera c = null;
+	    try {
+    		c = Camera.open(); // attempt to get a Camera instance, this will open the default facing camera if there is any.
+    		isFrontCam = false;
+	    }
+	    catch (Exception e){
+	        // Camera is not available (in use or does not exist)
+	    	Log.d("CAM", "fail to open cam " + e.getMessage());
+	    }
+	    
+	    if (c == null) { //For devices which only have front camera.
+	    	try {
+	    		c = Camera.open(0);
+	    		CameraInfo info = new CameraInfo();
+	    		Camera.getCameraInfo(0, info);
+	    		isFrontCam = info.facing == CameraInfo.CAMERA_FACING_FRONT;
+	    	}
+	    	catch (Throwable t) {
+	    		Log.w(TAG, "Open camera failed.");
+	    	}
+	    }
+	    
+	    mCamera = c;
+	    
+	    if (mCamera != null && this.getIntent().hasExtra("location")) {
+	    	BXLocation loc = (BXLocation) this.getIntent().getSerializableExtra("location");
+	    	mCamera.getParameters().setGpsLatitude(loc.fLat);
+	    	mCamera.getParameters().setGpsLongitude(loc.fLon);
+	    }
+	    
+//	    return c; // returns null if camera is unavailable
+	}
+
+	@Override
+	protected void onPause() {
+		super.onPause();
+		sensorMgr.unregisterListener(this);
+		if (mCamera != null) {
+            mPreview.setCamera(null);
+            mCamera.release();
+            mCamera = null;
+        }
+	}
+
+	@Override
+	protected void onResume() {
+		super.onResume();
+		
+		ViewGroup cameraP = (ViewGroup) this.findViewById(R.id.camera_parent);
+		if (mPreview != null) {
+			cameraP.removeView(mPreview);
+		}
+
+		initializeCamera();
+		
+		TextView txt = (TextView) findViewById(R.id.cam_not_available_tip);
+		txt.setVisibility(mCamera == null ? View.VISIBLE : View.GONE);
+		if (mCamera != null) {
+			mPreview = new CameraPreview(this);
+			cameraP.addView(mPreview, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
+			
+			mPreview.setCamera(mCamera);
+		}
+        
+        if (sensor != null) {
+        	sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+        }
+        
+	}
+	
+	//An indicator to indicate if user.
+	private void autoFocusWhenOrienChange() {
+//		findViewById(R.id.focus_done).setVisibility(View.GONE);
+		if (mCamera != null) {
+			mCamera.autoFocus(new Camera.AutoFocusCallback() {
+				public void onAutoFocus(boolean success, Camera camera) {
+//				findViewById(R.id.focus_done).setVisibility(success ? View.VISIBLE : View.GONE);
+				}
+			});
+		}
+	}
+	
+	private PictureCallback mPicture = new PictureCallback() {
+
+	    @Override
+	    public void onPictureTaken(byte[] data, Camera camera) {
+	    	
+	    	if (!Util.isExternalStorageWriteable()) {
+	    		Toast.makeText(CameraActivity.this, "请检查SD卡状态", Toast.LENGTH_SHORT).show();
+	    		return;
+	    	}
+	    	
+	    	findViewById(R.id.cap).setEnabled(true);
+	    	
+//	        BXThumbnail result = BitmapUtils.saveAndCreateThumbnail(data, currentOrien.orientationDegree, CameraActivity.this, isFrontCam);
+	    	postAppendPhoto(data);
+	        
+	        handler.sendEmptyMessage(MSG_PIC_TAKEN);
+	    }
+	};
+	
+	@Override
+	public void onClick(View v) {
+		switch(v.getId()) {
+		case R.id.cap:
+			takePic();
+			break;
+		case R.id.finish_cap:
+			finishTakenPic();
+			break;
+		case R.id.cancel_cap:
+			finish();
+			break;
+		}
+	}
+	
+	public void takePic() {
+		
+		mCamera.cancelAutoFocus();//Cancel last auto focus because we will do auto focus.
+		mCamera.autoFocus(new AutoFocusCallback() {
+			@Override
+			public void onAutoFocus(boolean focused, Camera cam) {
+//				if (arg0) {//Some device will never return "True"
+					findViewById(R.id.cap).setEnabled(false);
+					cam.takePicture(null, null, mPicture);
+//				}
+			}
+		});
+	}
+
+	@Override
+	public void onAccuracyChanged(Sensor arg0, int arg1) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onSensorChanged(SensorEvent sensorEvent) {
+		if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
+			lastSensorEvent = sensorEvent;
+			float pitch = sensorEvent.values[1];
+			float roll = sensorEvent.values[2];
+			
+			Orien newOrien = updateOrien(pitch, roll);
+			if (newOrien != null && currentOrien != newOrien) {
+				Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
+				currentOrien = newOrien;
+				handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
+			}
+				
+		}
+	}
+	
+	private Orien updateOrien(float pitch, float roll) {
+		if ((pitch < -45 && pitch > -135) || 
+				(roll >= -15 && roll <= 15 && pitch >= -45 && pitch <= 0)) { //When roll is very small, most likely phone is top up.Do not consider bottom up case because no body will do that.
+			return Orien.TOP_UP;
+		}
+		
+		if (pitch > 45 && pitch < 135) {
+			return Orien.BOTTOM_UP;
+		}
+		
+		if (roll > 45) {
+			return Orien.RIGHT_UP;
+		}
+		
+		if (roll < -45 || 
+				(roll > -45 && roll < 0 && (pitch > -15 && pitch < 15))) { //When pitch is very small and roll is negative.
+			return Orien.LEFT_UP;
+		}
+		
+		return Orien.DEFAULT;
+	}
+	
+	class OnDeleteListener implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			ViewGroup vp = (ViewGroup) findViewById(R.id.result_parent);
+			vp.removeView((View) v.getParent());
+			BXThumbnail thumbnail = (BXThumbnail) v.getTag();
+			deleteImageUri(thumbnail);
+			ImageUploader.getInstance().cancel(thumbnail.getLocalPath());
+		}
+	}
+
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if (requestCode == REQ_PICK_GALLERY && resultCode == RESULT_OK) {
+			postAppendData(data);
+		}
+	}
+	
+	private String getRealPathFromURI(Uri contentUri) {
+		String[] proj = { MediaStore.Images.Media.DATA };
+		Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+
+		if (cursor == null)
+			return null;
+
+		int column_index = cursor
+				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+
+		cursor.moveToFirst();
+
+		String ret = cursor.getString(column_index);
+//		cursor.close();
+		return ret == null ? contentUri.getPath() : ret;
+	}
+	
+	private void postAppendData(Intent data) {
+		
+		AsyncTask<Uri, Integer, BXThumbnail> task = new AsyncTask<Uri, Integer, BXThumbnail>() {
+
+			@Override
+			protected BXThumbnail doInBackground(Uri... params) {
+				String path = getRealPathFromURI(params[0]);
+				Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
+				if (bp != null) {
+					ImageUploader.getInstance().startUpload(path, bp, null);
+					return BXThumbnail.createThumbnail(path, bp);
+				}
+				
+				return null;
+			}
+
+			@Override
+			protected void onPostExecute(BXThumbnail result) {
+				boolean appendSucced = appendResultImage(result);
+				if (appendSucced) {
+					addImageUri(result);
+				}
+				else
+				{
+					//TODO: post error message.
+				}
+			}
+		};
+		
+		task.execute(data.getData());
+	}
+	
+	private void postAppendPhoto(byte[] cameraData) {
+		AsyncTask<byte[], Integer, BXThumbnail> task = new AsyncTask<byte[], Integer, BXThumbnail>() {
+
+			@Override
+			protected BXThumbnail doInBackground(byte[]... params) {
+				return BitmapUtils.saveAndCreateThumbnail(params[0], currentOrien.orientationDegree, CameraActivity.this, isFrontCam);
+			}
+
+			@Override
+			protected void onPostExecute(BXThumbnail result) {
+				
+				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
+		        handler.sendMessage(msg);
+		        Toast.makeText(CameraActivity.this, "take pic succed", Toast.LENGTH_LONG).show();
+			}
+		};
+		task.execute(cameraData);
+	}
+	
+	
+	protected void finalize() {
+		try {
+			if (mCamera != null) {
+				mCamera.release();
+			}
+		} catch (Throwable t) {
+			Log.d(TAG, "close camera failed when finalize this class.");
+		}
+		
+		try {
+			super.finalize();
+		} catch (Throwable e) {
+			e.printStackTrace();
+		}
+	}
+	
+}

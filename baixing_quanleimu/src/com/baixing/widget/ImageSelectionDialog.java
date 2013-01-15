@@ -35,6 +35,7 @@ import android.widget.LinearLayout;
 import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.BXLocation;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
@@ -423,72 +424,80 @@ public class ImageSelectionDialog extends DialogFragment implements OnClickListe
 	}
 	
 	private void pickupPhoto(final int tmpFileIndex){
-		final String[] names = {"拍照","相册"};
-		Activity act = getActivity();
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
-		.setItems(names, new DialogInterface.OnClickListener(){
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which){
-				Intent backIntent = new Intent();
-				backIntent.setClass(getActivity(), getActivity().getClass());
-				
-				Intent goIntent = new Intent();
-				goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
-				switch(which){
-					case 0:
-						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
-						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
-						goIntent.putExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH, "temp" + tmpFileIndex + ".jpg");
-						getActivity().startActivity(goIntent);
-//						Intent intent2 = new Intent(MediaStore.ACTION_IMAGE_CAPTURE);
-//						intent2.putExtra(MediaStore.EXTRA_OUTPUT,
-//								Uri.fromFile(new File(Environment.getExternalStorageDirectory(), "temp" + tmpFileIndex + ".jpg")));
-//						context.startActivityForResult(intent2, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
-						break;						
-					case 1:
-						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_SELECT);
-						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOZOOM);
-						getActivity().startActivity(goIntent);
-//						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
-//						intent3.addCategory(Intent.CATEGORY_OPENABLE);
-//						intent3.setType("image/*");
-//						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
-						break;
-
-				}				
-			}
-		})
-		.setNegativeButton("取消", new DialogInterface.OnClickListener(){
-			@Override
-			public void onClick(DialogInterface dialog, int which){
-				dialog.dismiss();
-				if(!imgs.get(0).isShown()){
-					ImageSelectionDialog.this.dismiss();
-				}		
-				pickDlgShown = false;
-			}
-		});//.show();
-		AlertDialog dlg = builder.create();
-		dlg.setOnKeyListener(new OnKeyListener(){
-
-			@Override
-			public boolean onKey(DialogInterface dialog, int keyCode,
-					KeyEvent event) {
-				// TODO Auto-generated method stub
-				if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
-					dialog.dismiss();
-					pickDlgShown = false;
-					if(imgs.size() <= 1){
-						ImageSelectionDialog.this.dismiss();						
-					}
-					return true;
-				}
-				return false;
-			}
-			
-		});
-		dlg.show();
+//		final String[] names = {"拍照","相册"};
+//		Activity act = getActivity();
+//		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")//.setMessage("无法确定当前位置")
+//		.setItems(names, new DialogInterface.OnClickListener(){
+//			
+//			@Override
+//			public void onClick(DialogInterface dialog, int which){
+//				Intent backIntent = new Intent();
+//				backIntent.setClass(getActivity(), getActivity().getClass());
+//				
+//				Intent goIntent = new Intent();
+//				goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
+//				switch(which){
+//					case 0:
+//						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
+//						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+//						goIntent.putExtra(CommonIntentAction.EXTRA_IMAGE_SAEV_PATH, "temp" + tmpFileIndex + ".jpg");
+//						getActivity().startActivity(goIntent);
+//						break;						
+//					case 1:
+//						goIntent.setAction(CommonIntentAction.ACTION_IMAGE_SELECT);
+//						goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+//						getActivity().startActivity(goIntent);
+////						Intent intent3 = new Intent(Intent.ACTION_GET_CONTENT);
+////						intent3.addCategory(Intent.CATEGORY_OPENABLE);
+////						intent3.setType("image/*");
+////						context.startActivityForResult(Intent.createChooser(intent3, "选择图片"), CommonIntentAction.PhotoReqCode.PHOTOZOOM);
+//						break;
+//
+//				}				
+//			}
+//		})
+//		.setNegativeButton("取消", new DialogInterface.OnClickListener(){
+//			@Override
+//			public void onClick(DialogInterface dialog, int which){
+//				dialog.dismiss();
+//				if(!imgs.get(0).isShown()){
+//					ImageSelectionDialog.this.dismiss();
+//				}		
+//				pickDlgShown = false;
+//			}
+//		});//.show();
+//		AlertDialog dlg = builder.create();
+//		dlg.setOnKeyListener(new OnKeyListener(){
+//
+//			@Override
+//			public boolean onKey(DialogInterface dialog, int keyCode,
+//					KeyEvent event) {
+//				// TODO Auto-generated method stub
+//				if(keyCode == KeyEvent.KEYCODE_BACK && event.getAction() == KeyEvent.ACTION_UP){
+//					dialog.dismiss();
+//					pickDlgShown = false;
+//					if(imgs.size() <= 1){
+//						ImageSelectionDialog.this.dismiss();						
+//					}
+//					return true;
+//				}
+//				return false;
+//			}
+//			
+//		});
+//		dlg.show();
+		Intent backIntent = new Intent();
+		backIntent.setClass(getActivity(), getActivity().getClass());
+		
+		Intent goIntent = new Intent();
+		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
+		goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
+		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
+		if (loc != null) {
+			goIntent.putExtra("location", loc);
+		}
+		getActivity().startActivity(goIntent);
 	}
 
 	@Override

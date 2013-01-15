@@ -692,40 +692,16 @@ public class Util {
 		return str;
 	}
 	
-	public static String saveBitmapToSdCard(String path,String name,Bitmap bitmap) {
-		String res = null;
-		FileOutputStream fos = null; 
-		if (Environment.getExternalStorageState() != null) {
-			try {
-				String sdRoot = getSdCardRoot();
-				File p = new File(sdRoot + "quanleimu"); // 创建目录
-				File s = new File(sdRoot + "quanleimu" + "/" + path); // 创建目录
-				File f = new File(sdRoot + "quanleimu" + "/" + path + "/" + name + ".png"); // 创建文件
-				if (!p.exists()) {
-					p.mkdir();
-				}
-				if (!s.exists()) {
-					s.mkdir();
-				}
-				if (!f.exists()) {
-					f.createNewFile();
-				}
-				fos = new FileOutputStream(f);
-				
-				bitmap.compress(CompressFormat.JPEG, 100, fos);
-				fos.close();
-				res = f.getAbsolutePath();
-			} catch (FileNotFoundException e) {
-				res = "没有找到文件";
-				e.printStackTrace();
-			} catch (Exception e) {
-				res = "SD卡未安装";
-				e.printStackTrace();
-			}
-		}else{
-			res = "无SD卡";
-		}
-		return res;
+	public static boolean isExternalStorageWriteable() {
+		String state = Environment.getExternalStorageState();
+		
+		return Environment.MEDIA_MOUNTED.equals(state);
+	}
+	
+	public static boolean isExternalStorageReadable() {
+		String state = Environment.getExternalStorageState();
+		
+		return Environment.MEDIA_MOUNTED.equals(state) || Environment.MEDIA_MOUNTED_READ_ONLY.equals(state);
 	}
 	
 	public static int getWidthByContext(Context context){
