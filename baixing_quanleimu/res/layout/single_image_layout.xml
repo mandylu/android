@@ -1,0 +1,27 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:layout_marginLeft="@dimen/camera_preview_half_gap"
+    android:layout_marginRight="@dimen/camera_preview_half_gap"
+    android:layout_marginTop="@dimen/camera_preview_half_gap"
+    android:layout_marginBottom="@dimen/camera_preview_half_gap"
+    >
+
+    <ImageView
+        android:id="@+id/result_image"
+        android:layout_width="@dimen/camera_preview_width"
+        android:layout_height="@dimen/camera_preview_width"
+        android:layout_centerInParent="true"
+        android:scaleType="fitXY"
+        android:src="@android:drawable/alert_dark_frame" />
+
+    <ImageView
+        android:id="@+id/delete_preview"
+        android:layout_width="@dimen/camera_del_preview_width"
+        android:layout_height="@dimen/camera_del_preview_width"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:src="@drawable/delete_img_icon" />
+
+</RelativeLayout>

@@ -27,6 +27,7 @@ public class CommonIntentAction
 	public static final String EXTRA_COMMON_DATA = "extra.common.data";
 	public static final String EXTRA_COMMON_INTENT = "extra.common.intent";
 	public static final String EXTRA_COMMON_REQUST_CODE = "extra.image.reqcode";
+	public static final String EXTRA_COMMON_EXTRALS = "extra.common.extral";
 	
 	/**
 	 * Third party actions to request an image.
@@ -34,6 +35,7 @@ public class CommonIntentAction
 	public static final String ACTION_IMAGE_CAPTURE = "com.baixing.action.img.cap";
 	public static final String ACTION_IMAGE_SELECT = "com.baixing.action.img.select";
 	public static final String EXTRA_IMAGE_SAEV_PATH = "extra.image.savepath";
+	public static final String EXTRA_IMAGE_LIST = "extra.image.list";
 	
 	public static interface PhotoReqCode
 	{

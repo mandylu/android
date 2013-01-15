@@ -252,7 +252,15 @@ public class ApiClient {
 	 * @throws Exception
 	 */
 	public final String invokeApi(final Api method, final ApiParams params) throws Exception {
-		return invokeApi(method, params, false);
+		try {
+			return invokeApi(method, params, false);
+		}
+		catch (Exception ex) {
+			throw ex;
+		}
+		catch (Throwable t) {
+			throw new Exception(t);
+		}
 	}
 	
 	private final void invokeApi(final Api method, final ApiParams params, final ApiListener listener){

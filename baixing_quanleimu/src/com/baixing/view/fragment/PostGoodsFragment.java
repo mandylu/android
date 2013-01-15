@@ -18,6 +18,7 @@ import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Message;
+import android.os.Parcelable;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
@@ -42,6 +43,7 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
+import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
@@ -54,6 +56,7 @@ import com.baixing.util.ErrorHandler;
 import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostUtil;
 import com.baixing.util.Util;
+import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
@@ -91,29 +94,42 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     private PostLocationService postLBS;
     private PostNetworkService postNS;
     
+    private ArrayList<String> photoList = new ArrayList<String>();
+    
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == NONE) {
 			return;
 		}
 		
-		FragmentManager fm = getActivity().getSupportFragmentManager();
-
-		Fragment fg = fm.getFragment(this.imgSelBundle, "imageFragment");
-		if(fg != null && (fg instanceof ImageSelectionDialog)){
-			this.imgSelDlg = (ImageSelectionDialog)fg;
-		}
-		if(this.imgSelDlg != null &&
-				(requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH
-				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
-				|| requestCode == PHOTORESOULT)){
-			imgSelDlg.setMsgOutHandler(handler);
-			if(imgSelBundle == null){
-				imgSelBundle = new Bundle();
+		if (resultCode == Activity.RESULT_OK) {
+			photoList.clear();
+			if (data.getExtras().containsKey(CommonIntentAction.EXTRA_IMAGE_LIST)){
+				ArrayList<String> result = data.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
+				photoList.addAll(result);
 			}
-			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
-			imgSelDlg.onActivityResult(requestCode, resultCode, data);
 		}
+
+		reCreateTitle(); 		//FIXME: remove only for debug.
+		refreshHeader();		//FIXME: remove only for debug.
+		
+//		FragmentManager fm = getActivity().getSupportFragmentManager();
+//
+//		Fragment fg = fm.getFragment(this.imgSelBundle, "imageFragment");
+//		if(fg != null && (fg instanceof ImageSelectionDialog)){
+//			this.imgSelDlg = (ImageSelectionDialog)fg;
+//		}
+//		if(this.imgSelDlg != null &&
+//				(requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH
+//				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
+//				|| requestCode == PHOTORESOULT)){
+//			imgSelDlg.setMsgOutHandler(handler);
+//			if(imgSelBundle == null){
+//				imgSelBundle = new Bundle();
+//			}
+//			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
+//			imgSelDlg.onActivityResult(requestCode, resultCode, data);
+//		}
     }
     
     private void initWithCategoryNames(String categoryNames) {
@@ -153,10 +169,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			imgSelBundle =  new Bundle();
 		}
 
-		if(imgSelDlg == null){
-			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
-			imgSelDlg.setMsgOutHandler(handler);
-		}
+//		if(imgSelDlg == null){ //FIXME: remove 
+//			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
+//			imgSelDlg.setMsgOutHandler(handler);
+//		}
 		
 		String appPhone = GlobalDataManager.getInstance().getPhoneNumber();
 		if(!editMode && (appPhone == null || appPhone.length() == 0)){
@@ -245,11 +261,25 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	protected void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
-		if(container != null){
-			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
+//		if(container != null){
+//			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
+//		}
+//		imgSelDlg.setMsgOutBundle(imgSelBundle);
+//		imgSelDlg.show(getFragmentManager(), null);
+		
+		Intent backIntent = new Intent();
+		backIntent.setClass(getActivity(), getActivity().getClass());
+		
+		Intent goIntent = new Intent();
+		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
+		goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
+		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
+		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
+		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
+		if (loc != null) {
+			goIntent.putExtra("location", loc);
 		}
-		imgSelDlg.setMsgOutBundle(imgSelBundle);
-		imgSelDlg.show(getFragmentManager(), null);
+		getActivity().startActivity(goIntent);
 	}
 
 	private void deployDefaultLayout(){
@@ -398,6 +428,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				}
 			}
 		}
+		
+		if (ImageUploader.getInstance().hasPendingJob()) {
+			Toast.makeText(this.getActivity(), "图片上传中", Toast.LENGTH_SHORT).show();
+			return false;
+		}
+		
 		return true;
 	}
 	
@@ -433,6 +469,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			mapParams.put(key, value);
 		}
 		mergeParams(list);
+//		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
+		bmpUrls.clear();
+		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
 		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
 	}
 
@@ -991,7 +1030,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
+		title.m_title = "免费发布" + "(" + this.photoList.size() + ")";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){

@@ -157,9 +157,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 			BaseFragment f = getCurrentFragment();
 			if (f != null && intent.getBooleanExtra(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, false))
 			{
+				Intent receivedIntent = (Intent) intent.getExtras().get(CommonIntentAction.EXTRA_COMMON_DATA);
 				f.onActivityResult(intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, -1), 
 						intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, -1), 
-						(Intent) intent.getExtras().get(CommonIntentAction.EXTRA_COMMON_DATA));
+						receivedIntent
+						);
 			}
 		}
 	}
