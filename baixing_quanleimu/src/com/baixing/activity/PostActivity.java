@@ -1,6 +1,8 @@
 //liuchong@baixing.com
 package com.baixing.activity;
 
+import java.lang.ref.WeakReference;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
@@ -10,6 +12,7 @@ import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
@@ -21,6 +24,9 @@ public class PostActivity extends BaseTabActivity {
 	@Override
 	public void onCreate(Bundle savedBundle){
 		super.onCreate(savedBundle);
+		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
+		}
 		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		final View rootV = findViewById(R.id.root);

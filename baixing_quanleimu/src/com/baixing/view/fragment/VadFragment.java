@@ -413,7 +413,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			super(context, theme);
 		}
 	}
-
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
