@@ -26,6 +26,7 @@ public class PersonalActivity extends BaseTabActivity {
 		if (action != null && action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
 			Bundle extras = intent.getExtras();
 			if(extras != null){
+				extras.putBoolean(CommonIntentAction.ACTION_BROADCAST_POST_FINISH, true);
 				if(this.getSupportFragmentManager().getBackStackEntryCount() > 1 
 						&& !(getCurrentFragment() instanceof MyAdFragment)){
 					pushFragment(new PersonalProfileFragment(), bundle, true);

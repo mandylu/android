@@ -32,6 +32,7 @@ import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.android.api.cmd.HttpPostCommand;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -85,7 +86,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
         final Bundle arguments = getArguments();
         if (arguments != null && arguments.containsKey(MyAdFragment.TYPE_KEY)) {
             this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY,
@@ -281,7 +282,22 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	}
 	
 	
-	
+	private void doShare(){
+		Bundle bundle = getArguments();
+		if(currentType == TYPE_MYPOST && listMyPost != null && listMyPost.size() > 0 && 
+				bundle != null && bundle.getBoolean(CommonIntentAction.ACTION_BROADCAST_POST_FINISH, false)){
+			String lastPost = bundle.getString("lastPost");
+			if(lastPost != null && lastPost.length() > 0){
+				lastPost = lastPost.split(",")[0];
+				for(int i = 0; i < listMyPost.size(); ++ i){
+					if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(lastPost)){
+						(new SharingFragment(listMyPost.get(i))).show(getFragmentManager(), null);
+						break;
+					}
+				}
+			}
+		}    				
+	}
 	
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
@@ -334,6 +350,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			}
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
+			doShare();
 			break;
 		case VadListLoader.MSG_FIRST_FAIL:
 		case VadListLoader.MSG_EXCEPTION:{

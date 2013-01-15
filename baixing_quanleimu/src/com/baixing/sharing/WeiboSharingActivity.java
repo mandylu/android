@@ -1,16 +1,10 @@
 package com.baixing.sharing;
 
 import java.io.File;
-import java.io.IOException;
-import java.net.MalformedURLException;
-
-import com.baixing.entity.ImageList;
-import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.api.StatusesAPI;
-import com.weibo.sdk.android.net.RequestListener;
+import com.weibo.net.AccessToken;
+import com.weibo.net.Weibo;
+import com.weibo.net.WeiboException;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -36,7 +30,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class WeiboSharingActivity extends Activity implements OnClickListener, RequestListener{
+public class WeiboSharingActivity extends Activity implements OnClickListener{
     private TextView mTextNum;
     private Button mSend;
     private EditText mEdit;
@@ -59,14 +53,19 @@ public class WeiboSharingActivity extends Activity implements OnClickListener, R
     
 	private void doShare2Weibo(){
 		Log.d("doShar2Weibo", "doshare2weibo in sharingActivity" + "  accessToken: " + mAccessToken + "   expires_in:  " + mExpires_in);
-		Oauth2AccessToken accessToken = new Oauth2AccessToken(mAccessToken, mExpires_in);
-		StatusesAPI statusApi = new StatusesAPI(accessToken);
-		statusApi.upload("我在#百姓网#发布" + mContent, 
-				(mPicPath == null || mPicPath.length() == 0) ? "" : mPicPath, 
-				"", "", this);
+		AccessToken accessToken = new AccessToken(mAccessToken, mExpires_in);
+		try{ 
+			Weibo.getInstance().share2weibo(this,
+					accessToken.getToken(),
+					accessToken.getSecret(), 
+					"我在#百姓网#发布" + mContent,
+					(mPicPath == null || mPicPath.length() == 0) ? "" : mPicPath);
+		}
+		catch(WeiboException e){
+			e.printStackTrace();
+		}
 		mPd = ProgressDialog.show(this, "", "请稍候");
 		mPd.setCancelable(true);
-
 	}
 
 	@Override
@@ -177,25 +176,25 @@ public class WeiboSharingActivity extends Activity implements OnClickListener, R
 		}
     }
 
-	@Override
-	public void onComplete(String arg0) {
-		// TODO Auto-generated method stub
-		Log.d("weiboshare", "weiboshare oncomplete");
-		showToast("分享成功");
-		this.finish();
-	}
-
-	@Override
-	public void onError(WeiboException arg0) {
-		// TODO Auto-generated method stub
-		Log.d("weiboshare", "weiboshare onError: " + arg0.getMessage());
-		showToast("分享失败：" + arg0.getMessage());
-	}
-
-	@Override
-	public void onIOException(IOException arg0) {
-		// TODO Auto-generated method stub
-		Log.d("weiboshare", "weiboshare onIOException");
-		showToast("分享错误：" + arg0.getMessage());
-	}
+//	@Override
+//	public void onComplete(String arg0) {
+//		// TODO Auto-generated method stub
+//		Log.d("weiboshare", "weiboshare oncomplete");
+//		showToast("分享成功");
+//		this.finish();
+//	}
+//
+//	@Override
+//	public void onError(WeiboException arg0) {
+//		// TODO Auto-generated method stub
+//		Log.d("weiboshare", "weiboshare onError: " + arg0.getMessage());
+//		showToast("分享失败：" + arg0.getMessage());
+//	}
+//
+//	@Override
+//	public void onIOException(IOException arg0) {
+//		// TODO Auto-generated method stub
+//		Log.d("weiboshare", "weiboshare onIOException");
+//		showToast("分享错误：" + arg0.getMessage());
+//	}
 }

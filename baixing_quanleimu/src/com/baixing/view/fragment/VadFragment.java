@@ -414,10 +414,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 	
-	private void share(){
-		(new SharingFragment(this.detail)).show(getFragmentManager(), null);
-	}
-
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -443,8 +439,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		}
 		case R.id.vad_buzz_btn:
-//			startContact(true);
-			share();
+			startContact(true);
 			break;
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
