@@ -35,7 +35,6 @@
             android:id="@+id/cap_result_list"
             android:layout_width="@dimen/camera_result_width"
             android:background="#80808080"
-            android:padding="@dimen/camera_preview_gap"
             android:layout_height="fill_parent">
 
             <LinearLayout

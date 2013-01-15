@@ -215,8 +215,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 //			else {
 //				imageRoot.setPadding(gap/2, 0, gap/2, 0);
 //			}
-			vp.addView(imageRoot, getResources().getDimensionPixelSize(R.dimen.camera_preview_width), getResources().getDimensionPixelSize(R.dimen.camera_preview_width));
-			vp.addView(new View(CameraActivity.this), gap, gap);
+//			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_del_preview_width)/2);
+//			vp.addView(imageRoot, size, size);
+			
+			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_preview_gap));
+			vp.addView(imageRoot, size, size);
+
 			
 			ImageView img = (ImageView) imageRoot.findViewById(R.id.result_image);
 			if (thumbnail.getThumbnail() == null) {

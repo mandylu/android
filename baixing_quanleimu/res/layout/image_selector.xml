@@ -87,14 +87,13 @@
         android:layout_width="fill_parent"
         android:background="#80808080"
         android:layout_height="@dimen/camera_result_width"
-        android:padding="@dimen/camera_preview_gap"
         android:layout_above="@+id/bottom_line" >
 
         <LinearLayout
             android:id="@+id/result_parent"
             android:layout_width="wrap_content"
-            android:layout_height="match_parent"
-            android:gravity="left"
+            android:layout_height="fill_parent"
+            android:gravity="left|center_vertical"
             android:orientation="horizontal" >
         </LinearLayout>
     </HorizontalScrollView>
