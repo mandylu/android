@@ -135,6 +135,15 @@ public class ImageUploader {
 		appendJob(image);
 	}
 	
+	public Bitmap getThumbnail(String imagePath) {
+		StateImage img = this.findImage(imagePath);
+		if (img == null) {
+			return null;
+		}
+		
+		return img.thumbnail;
+	}
+	
 	/**
 	 * Listening the uploading state of the specified image.
 	 * @param imagePath

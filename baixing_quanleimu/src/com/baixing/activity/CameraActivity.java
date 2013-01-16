@@ -85,6 +85,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private static final int MSG_ORIENTATION_CHANGE = 2;
     private static final int MSG_UPDATE_THUMBNAILS = 3;
     private static final int MSG_UPLOADING_STATUS_UPDATE = 4;
+//    private static final int MSG_FINISH_ME = 5;
+    private static final int MSG_PAUSE_ME = 6;
 
     /*
      * Internal message parameters: image uploading status.
@@ -113,6 +115,16 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		@Override
 		public void handleMessage(Message msg) {
 			switch(msg.what) {
+			case MSG_PAUSE_ME:
+			{
+				sensorMgr.unregisterListener(CameraActivity.this);
+				if (mCamera != null) {
+		            mPreview.setCamera(null);
+		            mCamera.release();
+		            mCamera = null;
+		        }
+				break;
+			}
 			case MSG_PIC_TAKEN:
 				mCamera.startPreview();
 				break;
@@ -184,7 +196,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		bundle.putParcelable(CommonIntentAction.EXTRA_COMMON_DATA, data);
 		
 		backIntent.putExtras(bundle);
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(backIntent);
+//		handler.sendEmptyMessageDelayed(MSG_FINISH_ME, 50);
 		this.finish();
     }
     
@@ -251,19 +265,28 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		@Override
 		public void onUploadDone(String imagePath, String serverUrl,
 				Bitmap thumbnail) {
-			notifyHandler(STATE_DONE, thumbnail);
+			notifyHandler(STATE_DONE, imagePath, thumbnail);
 		}
 		@Override
 		public void onUploading(String imagePath, Bitmap thumbnail) {
-			notifyHandler(STATE_UPLOADING, thumbnail);
+			notifyHandler(STATE_UPLOADING, imagePath, thumbnail);
 		}
 		@Override
 		public void onUploadFail(String imagePath, Bitmap thumbnail) {
-			notifyHandler(STATE_FAIL, thumbnail);
+			notifyHandler(STATE_FAIL, imagePath, thumbnail);
 		}
 		
-		private void notifyHandler(int status, Bitmap thumbnail) {
+		private void notifyHandler(int status, String imagePath, Bitmap thumbnail) {
 			Log.d(TAG, "image status update to : " + status);
+			
+			if (thumbnail != null) { //Update thumbnail.
+				for (BXThumbnail t : imageList) {
+					if (imagePath.equals(t.getLocalPath())) {
+						t.setThumbnail(thumbnail);
+					}
+				}
+			}
+			
 			ImageView img = viewRef.get();
 			if (img != null && handler != null) { //When activity is destroyed, handler will be null.
 				Message msg = handler.obtainMessage();
@@ -318,6 +341,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		ImageUploader.getInstance().attachActivity(this); //Attach activity.
 		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_IMAGE_LIST)) {
 			ArrayList<String> list = this.getIntent().getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
+			this.getIntent().removeExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 			this.imageList.clear();
 			for (String p : list) {
 				this.imageList.add(BXThumbnail.createThumbnail(p, null));
@@ -336,6 +360,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		this.callbacks.clear();
 		
 		super.onDestroy();
+		Log.d(TAG, "cam destroyed!");
 	}
 	
 	@SuppressLint("NewApi") 
@@ -375,13 +400,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onPause() {
+		handler.sendEmptyMessage(MSG_PAUSE_ME);
+		Log.d(TAG, "cam paused");
 		super.onPause();
-		sensorMgr.unregisterListener(this);
-		if (mCamera != null) {
-            mPreview.setCamera(null);
-            mCamera.release();
-            mCamera = null;
-        }
 	}
 
 	@Override
@@ -617,6 +638,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		} catch (Throwable e) {
 			e.printStackTrace();
 		}
+		Log.d(TAG, "came finalize");
 	}
 	
 }

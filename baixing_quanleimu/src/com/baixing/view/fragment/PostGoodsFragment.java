@@ -81,6 +81,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private static final int PHOTORESOULT = 3;
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
+	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 	protected ArrayList<String> listUrl = new ArrayList<String>();
@@ -95,6 +96,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     private PostNetworkService postNS;
     
     private ArrayList<String> photoList = new ArrayList<String>();
+    private Bitmap firstImage = null;
     
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -108,11 +110,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				ArrayList<String> result = data.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 				photoList.addAll(result);
 			}
+			
+			if (photoList != null && photoList.size() > 0) {
+				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
+			}
+			else {
+				firstImage = null;
+			}
 		}
-
-		reCreateTitle(); 		//FIXME: remove only for debug.
-		refreshHeader();		//FIXME: remove only for debug.
 		
+		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
+
 //		FragmentManager fm = getActivity().getSupportFragmentManager();
 //
 //		Fragment fg = fm.getFragment(this.imgSelBundle, "imageFragment");
@@ -239,6 +247,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			    }
 			});
 		}
+		
 	}	
 
 	@Override
@@ -275,10 +284,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
 		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
-		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
-		if (loc != null) {
-			goIntent.putExtra("location", loc);
-		}
+//		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
+//		if (loc != null) {
+//			goIntent.putExtra("location", loc);
+//		}
 		getActivity().startActivity(goIntent);
 	}
 
@@ -749,17 +758,18 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		    		Object[] container = (Object[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
 					if(container != null && container.length > 0
 							&& ((ImageSelectionDialog.ImageContainer)container[0]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
-						Bitmap bp = ImageSelectionDialog.getThumbnailWithPath(((ImageSelectionDialog.ImageContainer)container[0]).thumbnailPath);
+//						Bitmap bp = ImageSelectionDialog.getThumbnailWithPath(((ImageSelectionDialog.ImageContainer)container[0]).thumbnailPath);
+						Bitmap bp = this.firstImage;
 						if(bp != null){
 							((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bp);
 							((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
-							int count = 0;
-							for(int i = 0; i < container.length; ++ i){
-								if(((ImageSelectionDialog.ImageContainer)container[i]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
-									break;
-								}
-								++ count;
-							}
+							int count = photoList == null ? 0 : photoList.size();
+//							for(int i = 0; i < container.length; ++ i){
+//								if(((ImageSelectionDialog.ImageContainer)container[i]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
+//									break;
+//								}
+//								++ count;
+//							}
 							((TextView)v.findViewById(R.id.imgCout)).setText(String.valueOf(count));
 						}
 					}
@@ -822,6 +832,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 	}
 
+	private void updateImageInfo(View rootView) {
+		if(rootView != null){
+			ImageView iv = (ImageView)rootView.findViewById(R.id.myImg);
+			if (iv != null && firstImage != null) {
+				iv.setImageBitmap(this.firstImage);
+			}
+			else if (iv != null) {
+				iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
+			}
+			
+			TextView tv = (TextView) rootView.findViewById(R.id.imgCout);
+			if(tv != null){
+				int containerCount = photoList == null ? 0 : photoList.size();
+				if(containerCount > 0){
+					tv.setText(String.valueOf(containerCount));
+					tv.setVisibility(View.VISIBLE);
+				}else{
+					tv.setVisibility(View.INVISIBLE);
+				}
+			}
+		}
+		
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessage(Message msg, final Activity activity, View rootView) {
@@ -833,6 +867,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
 			break;
 		}		
+		case MSG_UPDATE_IMAGE_LIST:
+		{
+			updateImageInfo(rootView);
+			break;
+		}
 		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
 			if(imgSelBundle != null){
 				ImageSelectionDialog.ImageContainer[] container = 
@@ -902,7 +941,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			break;
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
-
+			
+			//Clear the upload image list.
+			this.photoList.clear();
+			this.firstImage = null;
+			ImageUploader.getInstance().clearAll();
+			
+			
 			String id = ((PostResultData)msg.obj).id;
 			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;
 			String message = ((PostResultData)msg.obj).message;
@@ -1030,7 +1075,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "免费发布" + "(" + this.photoList.size() + ")";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
+		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
