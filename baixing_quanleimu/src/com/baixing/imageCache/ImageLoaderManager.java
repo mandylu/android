@@ -25,6 +25,11 @@ import android.view.WindowManager;
 import android.widget.ImageView;
 public class ImageLoaderManager{
 
+	public static interface DownloadCallback {
+		public void onFail(String url);
+		public void onSucced(String url, Bitmap bp);
+	}
+	
 	private static final int MESSAGE_ID =1;
 	public static final int MESSAGE_FAIL = 2;
 	public static final String EXTRA_IMG_URL="extra_img_url";
@@ -243,6 +248,28 @@ public class ImageLoaderManager{
 	private WeakReference<Bitmap> getBitmapInMemory(String url){
 		if(url == null || url.equals("")) return null;
 		return ImageCacheManager.getInstance().getFromCache(url);
+	}
+	
+	public void loadImg(final DownloadCallback downloadCallback, String url) {
+		ImageLoaderCallback loaderCallback = new ImageLoaderCallback() {
+			
+			@Override
+			public void refresh(String url, Bitmap bitmap) {
+				downloadCallback.onSucced(url, bitmap);
+			}
+			
+			@Override
+			public Object getObject() {
+				return null;
+			}
+			
+			@Override
+			public void fail(String url) {
+				downloadCallback.onFail(url);
+			}
+		};
+		
+		get(url, loaderCallback);
 	}
 	
 	public void showImg(final View view,final String url, final String preUrl, Context con, WeakReference<Bitmap> bmp){

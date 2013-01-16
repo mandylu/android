@@ -57,7 +57,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	private static final int REQ_PICK_GALLERY = 1;
 	
-	private static final int MAX_IMG_COUNT = 8;
+	private static final int MAX_IMG_COUNT = 6;
 	
 	private SensorManager sensorMgr;
 	private Sensor sensor;
@@ -111,6 +111,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     }
     
+    private void updateCapState() {
+    	boolean enable = imageList.size() < MAX_IMG_COUNT; 
+		findViewById(R.id.cap).setEnabled(enable);
+		findViewById(R.id.pick_gallery).setEnabled(enable);
+    }
+    
     class InternalHandler extends Handler {
 		@Override
 		public void handleMessage(Message msg) {
@@ -140,10 +146,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				autoFocusWhenOrienChange();
 				break;
 			case MSG_UPDATE_THUMBNAILS:
-				if (imageList != null) {
+				updateCapState();
+				
+				if (imageList != null && imageList.size() > 0) {
+					
 					for (BXThumbnail t : imageList) {
 						appendResultImage(t);
 					}
+					
+				}
+				else {
+					Toast.makeText(CameraActivity.this, "有图的信息效果更好！", Toast.LENGTH_LONG).show();
 				}
 				break;
 				
@@ -152,12 +165,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				if (p.second != null) {
 					switch (msg.arg1) {
 					case STATE_UPLOADING:
+						((View) p.second.getParent()).findViewById(R.id.loading_status).setVisibility(View.VISIBLE);
 						p.second.setImageBitmap(p.first);
 						break;
 					case STATE_FAIL:
-						p.second.setImageResource(R.drawable.arrow_back);//FIXME: 
+						((View) p.second.getParent()).findViewById(R.id.loading_status).setVisibility(View.GONE);
 						break;
 					case STATE_DONE:
+						((View) p.second.getParent()).findViewById(R.id.loading_status).setVisibility(View.GONE);
 						p.second.setImageBitmap(p.first);
 						break;
 					}
@@ -179,6 +194,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void addImageUri(BXThumbnail  p) {
     	imageList.add(p);
+    	updateCapState();
     	if (imageList.size() == MAX_IMG_COUNT) {
     		finishTakenPic();
     	}
@@ -204,6 +220,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void deleteImageUri(BXThumbnail t) {
     	imageList.remove(t);
+    	updateCapState();
     }
     
     private boolean appendResultImage(BXThumbnail thumbnail) {
@@ -222,30 +239,19 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		
 		try
 		{
-			final int gap = getResources().getDimensionPixelSize(R.dimen.camera_preview_gap);
-//			if (isLandscapeMode) {
-//				imageRoot.setPadding(0, gap/2, 0, gap/2);
-//			}
-//			else {
-//				imageRoot.setPadding(gap/2, 0, gap/2, 0);
-//			}
-//			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_del_preview_width)/2);
-//			vp.addView(imageRoot, size, size);
-			
 			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_preview_gap));
 			vp.addView(imageRoot, size, size);
 
 			
+			
 			ImageView img = (ImageView) imageRoot.findViewById(R.id.result_image);
-			if (thumbnail.getThumbnail() == null) {
-				img.setImageResource(R.drawable.arrowdown); //FIXME:
-				UploadingCallback cbk = new UploadingCallback(img);
-				callbacks.add(cbk);
-				ImageUploader.getInstance().registerCallback(thumbnail.getLocalPath(), cbk);
-			}
-			else {
+			if (thumbnail.getThumbnail() != null) {
 				img.setImageBitmap(thumbnail.getThumbnail());
 			}
+			UploadingCallback cbk = new UploadingCallback(img);
+			callbacks.add(cbk);
+			ImageUploader.getInstance().registerCallback(thumbnail.getLocalPath(), cbk);
+			
 			
 			return true;
 		}
@@ -617,7 +623,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
-		        Toast.makeText(CameraActivity.this, "take pic succed", Toast.LENGTH_LONG).show();
+		        Toast.makeText(CameraActivity.this, "拍的漂亮！再来一张吧！", Toast.LENGTH_SHORT).show();
 			}
 		};
 		task.execute(cameraData);

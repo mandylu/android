@@ -13,6 +13,7 @@ import com.baixing.util.BitmapUtils;
 import com.baixing.util.Communication;
 
 public class ImageUploader {
+	
 	public static interface Callback {
 		public void onUploadDone(String imagePath, String serverUrl, Bitmap thumbnail);
 		public void onUploading(String imagePath, Bitmap thumbnail);
@@ -112,6 +113,10 @@ public class ImageUploader {
 		imageList.clear();
 	}
 	
+	public void addDownloadImage() {
+		
+	}
+	
 	/**
 	 * start to upload the specified image to server.  
 	 */
@@ -165,6 +170,9 @@ public class ImageUploader {
 			}
 			else
 			{
+				if (callback != null && !image.callbacks.contains(callback)) {
+					image.callbacks.add(callback);
+				}
 				notifyState(callback, image);
 			}
 		}
@@ -187,28 +195,6 @@ public class ImageUploader {
 				img.state = ImageState.UPLOADING; //Set state
 				notifyState(img);
 				
-//				Uri uri = Uri.parse(img.imagePath);
-				
-//				String path = BitmapUtils.getRealPathFromURI(activity, uri);//getRealPathFromURI(uri); // from Gallery
-//				if (path == null) {
-//					path = uri.getPath(); // from File Manager
-//				}
-//				Bitmap currentBmp = null;
-//				if (path != null) {
-//					try{
-//					    BitmapFactory.Options bfo = new BitmapFactory.Options();
-//				        bfo.inJustDecodeBounds = true;
-//				        BitmapFactory.decodeFile(path, bfo);			        
-//					    BitmapFactory.Options o =  new BitmapFactory.Options();
-//		                o.inPurgeable = true;	                
-//		                int maxDim = 600;	                
-//		                o.inSampleSize = BitmapUtils.getClosestResampleSize(bfo.outWidth, bfo.outHeight, maxDim);	               	                
-//		                currentBmp = BitmapFactory.decodeFile(path, o);
-//					} catch (Exception e) {
-//						e.printStackTrace();
-//					}
-//				}			
-										
 				if(img.imagePath != null){
 					String result = null;
 					try {
@@ -217,10 +203,7 @@ public class ImageUploader {
 					catch (Throwable t) {
 						//Fail
 					}
-
-//					currentBmp.recycle();
-//					currentBmp = null;
-		
+					
 					if (result != null) {
 						img.state = ImageState.SYNC;
 						img.serverUrl = result;
@@ -252,12 +235,10 @@ public class ImageUploader {
 	}
 	
 	private void notifyState(StateImage img) {
-		synchronized (imageList) {
-			for (Callback callbackE : img.callbacks) {
-				Callback callback = callbackE;
-				if (callback != null) {
-					notifyState(callback, img);
-				}
+		for (Callback callbackE : img.callbacks) {
+			Callback callback = callbackE;
+			if (callback != null) {
+				notifyState(callback, img);
 			}
 		}
 	}

@@ -30,10 +30,12 @@ public class PostActivity extends BaseTabActivity {
 		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		final View rootV = findViewById(R.id.root);
+		
 		rootV.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() { //When user is input some thing. do not need show tab bar until user finish input.
 			
 			@Override
 			public void onGlobalLayout() {
+				BaseFragment currentF = getCurrentFragment();
 				int hDiff = rootV.getRootView().getHeight() - rootV.getHeight();
 				if (hDiff > 100)
 				{
@@ -41,7 +43,7 @@ public class PostActivity extends BaseTabActivity {
 				}
 				else
 				{
-					findViewById(R.id.common_tab_layout).setVisibility(View.VISIBLE);
+					findViewById(R.id.common_tab_layout).setVisibility(currentF != null && currentF.hasGlobalTab() ? View.VISIBLE : View.GONE);
 				}
 			}
 		});

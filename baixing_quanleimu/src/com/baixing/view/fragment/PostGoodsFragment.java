@@ -11,16 +11,13 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -38,12 +35,12 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
@@ -53,13 +50,13 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.post.PostLocationService;
-import com.baixing.util.post.PostUtil;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostCommonValues;
+import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
+import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
@@ -208,11 +205,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 	@Override
 	public boolean handleBack() {
-		if(imgSelDlg != null)
-			if(imgSelDlg.handleBack()){
-				return true;
-		}		
-		return super.handleBack();
+//		if(imgSelDlg != null)
+//			if(imgSelDlg.handleBack()){
+//				return true;
+//		}		
+//		return super.handleBack();
+		AlertDialog.Builder builder = new Builder(getActivity());
+		builder.setMessage("退出发布？");
+		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//Do nothing.
+			}
+		});
+		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				finishFragment();
+			}
+		});
+		builder.create().show();
+		
+		return true;
 	}	
 
 	@Override
@@ -989,7 +1005,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	                bd.setTitle("")
 	                        .setMessage(message)
 	                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-	                            @Override
+	                        	@Override
 	                            public void onClick(DialogInterface dialog, int which) {
 	                                dialog.dismiss();
 	        						if(activity != null){
@@ -1075,6 +1091,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
+		title.m_leftActionHint = "返回";
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
@@ -1194,5 +1211,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
             }
 			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}		
+	}
+	
+	public boolean hasGlobalTab() {
+		return false;
 	}
 }
