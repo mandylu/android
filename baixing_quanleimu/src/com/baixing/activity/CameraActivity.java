@@ -28,6 +28,7 @@ import android.os.Message;
 import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
+import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -71,6 +72,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     Orien currentOrien = Orien.DEFAULT;
     SensorEvent lastSensorEvent;
     
+    private ArrayList<BXThumbnail> originalList = new ArrayList<BXThumbnail>();
+    private ArrayList<BXThumbnail> deleteList = new ArrayList<BXThumbnail>();
     private ArrayList<BXThumbnail> imageList = new ArrayList<BXThumbnail>();
     private List<UploadingCallback> callbacks = new ArrayList<UploadingCallback>();
 //    private ArrayList<String> imagePaths = new ArrayList<String>();
@@ -170,6 +173,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 						break;
 					case STATE_FAIL:
 						((View) p.second.getParent()).findViewById(R.id.loading_status).setVisibility(View.GONE);
+						p.second.setImageResource(R.drawable.icon_load_fail);
 						break;
 					case STATE_DONE:
 						((View) p.second.getParent()).findViewById(R.id.loading_status).setVisibility(View.GONE);
@@ -200,7 +204,28 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     }
     
+    public boolean onKeyDown(int keyCode, KeyEvent event)
+    {
+        if (keyCode == KeyEvent.KEYCODE_BACK)
+        {
+        	onCancelEdit();
+        	finish();
+        }
+        
+        else{
+        	return super.onKeyDown(keyCode, event);
+        }
+        
+        return true;
+    }
+    
     private void finishTakenPic() {
+    	
+    	//Cancel the delete list.
+    	for (BXThumbnail t : deleteList) {
+    		ImageUploader.getInstance().cancel(t.getLocalPath());
+    	}
+    	
     	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
@@ -220,6 +245,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void deleteImageUri(BXThumbnail t) {
     	imageList.remove(t);
+    	deleteList.add(t);
     	updateCapState();
     }
     
@@ -349,9 +375,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			ArrayList<String> list = this.getIntent().getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 			this.getIntent().removeExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 			this.imageList.clear();
+			this.originalList.clear();
 			for (String p : list) {
-				this.imageList.add(BXThumbnail.createThumbnail(p, null));
+				this.originalList.add(BXThumbnail.createThumbnail(p, null));
 			}
+			this.imageList.addAll(originalList);
+			
 			
 			handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
 		}
@@ -478,8 +507,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			finishTakenPic();
 			break;
 		case R.id.cancel_cap:
+			onCancelEdit();
 			finish();
 			break;
+		}
+	}
+	
+	private void onCancelEdit() {
+		for (BXThumbnail t : imageList ) {
+			if (originalList.indexOf(t) == -1) {
+				ImageUploader.getInstance().cancel(t.getLocalPath());
+			}
 		}
 	}
 	
@@ -550,7 +588,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			vp.removeView((View) v.getParent());
 			BXThumbnail thumbnail = (BXThumbnail) v.getTag();
 			deleteImageUri(thumbnail);
-			ImageUploader.getInstance().cancel(thumbnail.getLocalPath());
+//			ImageUploader.getInstance().cancel(thumbnail.getLocalPath());
+//			thumbnail.getThumbnail().recycle();
 		}
 	}
 
@@ -562,20 +601,37 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	}
 	
 	private String getRealPathFromURI(Uri contentUri) {
-		String[] proj = { MediaStore.Images.Media.DATA };
-		Cursor cursor = managedQuery(contentUri, proj, null, null, null);
-
-		if (cursor == null)
-			return null;
-
-		int column_index = cursor
-				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
-
-		cursor.moveToFirst();
-
-		String ret = cursor.getString(column_index);
-//		cursor.close();
-		return ret == null ? contentUri.getPath() : ret;
+//		String[] proj = { MediaStore.Images.Media.DATA };
+//		Cursor cursor = managedQuery(contentUri, proj, null, null, null);
+//
+//		if (cursor == null)
+//			return null;
+//
+//		int column_index = cursor
+//				.getColumnIndexOrThrow(MediaStore.Images.Media.DATA);
+//
+//		cursor.moveToFirst();
+//
+//		String ret = cursor.getString(column_index);
+////		cursor.close();
+//		return ret == null ? contentUri.getPath() : ret;
+		return BitmapUtils.getRealPathFromURI(this, contentUri);
+	}
+	
+	private BXThumbnail findFromList(String path, List<BXThumbnail> list, boolean deleteIt) {
+		BXThumbnail t = null;
+		for (BXThumbnail tt : list) {
+			if (tt.getLocalPath().equals(path)) {
+				t = tt;
+				break;
+			}
+		}
+		
+		if (t != null && deleteIt) {
+			list.remove(t);
+		}
+		
+		return t;
 	}
 	
 	private void postAppendData(Intent data) {
@@ -585,13 +641,16 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			@Override
 			protected BXThumbnail doInBackground(Uri... params) {
 				String path = getRealPathFromURI(params[0]);
-				Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
-				if (bp != null) {
-					ImageUploader.getInstance().startUpload(path, bp, null);
-					return BXThumbnail.createThumbnail(path, bp);
+				BXThumbnail tb = findFromList(path, deleteList, true);
+				if (tb == null) {
+					Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
+					if (bp != null) {
+						ImageUploader.getInstance().startUpload(path, bp, null);
+						tb = BXThumbnail.createThumbnail(path, bp);
+					}
 				}
 				
-				return null;
+				return tb;
 			}
 
 			@Override

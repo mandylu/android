@@ -92,7 +92,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     private PostLocationService postLBS;
     private PostNetworkService postNS;
     
-    private ArrayList<String> photoList = new ArrayList<String>();
+    protected ArrayList<String> photoList = new ArrayList<String>();
     private Bitmap firstImage = null;
     
     @Override
@@ -202,6 +202,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		outState.putInt("imgHeight", imgHeight);
 		outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
 	}
+	
+	private void doClearUp() {
+		//Clear the upload image list.
+		this.photoList.clear();
+		this.firstImage = null;
+		ImageUploader.getInstance().clearAll();
+	}
 
 	@Override
 	public boolean handleBack() {
@@ -223,6 +230,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
+				doClearUp();
 				finishFragment();
 			}
 		});
@@ -382,9 +390,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else if(v.getId() == R.id.myImg){
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
-			if(!editMode){
+//			if(!editMode){
 				startImgSelDlg(null);
-			}
+//			}
 		}else if(v.getId() == R.id.img_description){
 			final View et = v.findViewById(R.id.description_input);
 			if(et != null){
@@ -958,11 +966,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
 			
-			//Clear the upload image list.
-			this.photoList.clear();
-			this.firstImage = null;
-			ImageUploader.getInstance().clearAll();
-			
+			doClearUp();
 			
 			String id = ((PostResultData)msg.obj).id;
 			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;

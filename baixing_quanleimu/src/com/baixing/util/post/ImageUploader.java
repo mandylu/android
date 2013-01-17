@@ -6,13 +6,12 @@ import java.util.List;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
-import android.net.Uri;
 
+import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.imageCache.ImageLoaderManager.DownloadCallback;
 import com.baixing.util.BitmapUtils;
-import com.baixing.util.Communication;
 
-public class ImageUploader {
+public class ImageUploader implements DownloadCallback {
 	
 	public static interface Callback {
 		public void onUploadDone(String imagePath, String serverUrl, Bitmap thumbnail);
@@ -23,7 +22,7 @@ public class ImageUploader {
 	private class StateImage {
 		public String imagePath;
 		public String serverUrl;
-		public ImageState state = ImageState.LOCAL;
+		public ImageState state = ImageState.FAIL;
 		public Bitmap thumbnail;
 		
 		public List<Callback> callbacks = new ArrayList<ImageUploader.Callback>();
@@ -31,9 +30,9 @@ public class ImageUploader {
 	
 	private enum ImageState{
 		SYNC, // upload to server.
-		DEFAULT, //
-		LOCAL, //Fail upload to server.
-		UPLOADING
+		FAIL, //Fail upload to server.
+		UPLOADING,
+		DOWNLOADING
 	}
 	
 	private ImageUploader() {}
@@ -88,7 +87,7 @@ public class ImageUploader {
 	
 	public boolean hasPendingJob() {
 		for (StateImage img : this.imageList) {
-			if (img.state != ImageState.SYNC) {
+			if (img.state != ImageState.SYNC && img.state != ImageState.FAIL) {
 				return true;
 			}
 		}
@@ -99,7 +98,9 @@ public class ImageUploader {
 	public List<String> getServerUrlList() {
 		ArrayList<String> array = new ArrayList<String>();
 		for (StateImage img : this.imageList) {
-			array.add(img.serverUrl);
+			if (img.state == ImageState.SYNC) {
+				array.add(img.serverUrl);
+			}
 		}
 		
 		return array;
@@ -113,8 +114,24 @@ public class ImageUploader {
 		imageList.clear();
 	}
 	
-	public void addDownloadImage() {
+	public void addDownloadImage(String thumbnailUrl, String url, Callback callback) {
+		if (this.findImage(thumbnailUrl) != null) {
+			return;
+		}
 		
+		StateImage image = null;
+		synchronized (imageList) {
+			image = new StateImage();
+			image.imagePath = thumbnailUrl;
+			image.serverUrl = url;
+			image.state = ImageState.DOWNLOADING;
+			if (callback != null) {
+				image.callbacks.add(callback);
+			}
+			imageList.add(image);
+		}
+		
+		ImageLoaderManager.getInstance().loadImg(this, thumbnailUrl);
 	}
 	
 	/**
@@ -210,7 +227,7 @@ public class ImageUploader {
 						notifyState(img);
 					}
 				}else{
-					img.state = ImageState.LOCAL;
+					img.state = ImageState.FAIL;
 					notifyFail(img);
 				}
 			}
@@ -221,12 +238,13 @@ public class ImageUploader {
 	private void notifyState(Callback callback, StateImage img) {
 		switch (img.state) {
 		case UPLOADING:
+		case DOWNLOADING:
 			callback.onUploading(img.imagePath, img.thumbnail);
 			break;
 		case SYNC:
 			callback.onUploadDone(img.imagePath, img.serverUrl, img.thumbnail);
 			break;
-		case LOCAL:
+		case FAIL:
 			callback.onUploadFail(img.imagePath, img.thumbnail);
 			break;
 		default:
@@ -262,6 +280,25 @@ public class ImageUploader {
 			if (callback != null) {
 				callback.onUploadFail(img.imagePath, img.thumbnail);
 			}
+		}
+	}
+
+	@Override
+	public void onFail(String url) {
+		StateImage img = this.findImage(url);
+		if (img != null) {
+			img.state = ImageState.FAIL;
+			this.notifyFail(img);
+		}
+	}
+
+	@Override
+	public void onSucced(String url, Bitmap bp) {
+		StateImage img = this.findImage(url);
+		if (img != null) {
+			img.state = ImageState.SYNC;
+			img.thumbnail = bp.copy(bp.getConfig(), true);
+			this.notifyState(img);
 		}
 	}
 	

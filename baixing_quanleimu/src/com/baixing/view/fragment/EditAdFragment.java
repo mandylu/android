@@ -5,6 +5,7 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 import android.os.Bundle;
+import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.CheckBox;
 import android.widget.TextView;
@@ -16,6 +17,7 @@ import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
+import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.widget.ImageSelectionDialog;
@@ -49,47 +51,79 @@ class EditAdFragment extends PostGoodsFragment{
 		return super.getCityEnglishName();
 	}
 	
-	@Override
-	public void onClick(View v) {
-		if(v.getId() == R.id.myImg){
-			if(goodsDetail != null){
-				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_IMG_CONTAINER)){
-					startImgSelDlg(null);
-				}else{					
-					ArrayList<String> smalls = new ArrayList<String>();
-					ArrayList<String> bigs = new ArrayList<String>();
-					String big = (goodsDetail.getImageList().getBig());
-					if(big != null && big.length() > 0){
-						big = Communication.replace(big);
-						String[] cbig = big.split(",");
-						for (int j = 0; j < listUrl.size(); j++) {
-							String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
-							smalls.add(listUrl.get(j));
-							bigs.add(bigUrl);
-						}
-					}
-					if(bigs != null){
-						List<ImageSelectionDialog.ImageContainer> container = new ArrayList<ImageSelectionDialog.ImageContainer>();
-						for(int i = 0; i < bigs.size(); ++ i){
-							ImageSelectionDialog.ImageContainer ic = new ImageSelectionDialog.ImageContainer();
-							ic.bitmapUrl = bigs.get(i);
-							ic.status = ImageSelectionDialog.ImageStatus.ImageStatus_Normal;
-							ic.thumbnailPath = smalls.get(i);
-							container.add(ic);
-						}
-						ImageSelectionDialog.ImageContainer[] ic = new ImageSelectionDialog.ImageContainer[container.size()];
-						for(int i = 0; i < container.size(); ++ i){
-							ic[i] = new ImageSelectionDialog.ImageContainer();
-							ic[i].set(container.get(i));
-						}
-						startImgSelDlg(ic);
-					}
-				}
-				return;
+	private void loadIamgeUrl(ArrayList<String> smalls, ArrayList<String> bigs) {
+		String[] bList = goodsDetail.getImageList().getBigArray();
+		String[] sList = goodsDetail.getImageList().getResize180Array();
+		
+		if (sList != null && sList.length > 0) {
+			for (int i=0; i<sList.length; i++) {
+				smalls.add(sList[i]);
+				bigs.add(bList[i]);
 			}
 		}
-		super.onClick(v);
+		
 	}
+	
+//	@Override
+//	public void onClick(View v) {
+//		if(v.getId() == R.id.myImg){
+//			if(goodsDetail != null){
+//				ArrayList<String> smalls = new ArrayList<String>();
+//				ArrayList<String> bigs = new ArrayList<String>();
+//				String big = (goodsDetail.getImageList().getBig());
+//				if(big != null && big.length() > 0){
+//					big = Communication.replace(big);
+//					String[] cbig = big.split(",");
+//					for (int j = 0; j < listUrl.size(); j++) {
+//						String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+//						smalls.add(listUrl.get(j));
+//						bigs.add(bigUrl);
+//					}
+//				}
+//				if(bigs != null){
+//					for(int i = 0; i < bigs.size(); ++ i){
+//						ImageUploader.getInstance().addDownloadImage(smalls.get(i), bigs.get(i), null);
+//					}
+//				}
+				
+				
+//				if(this.imgSelBundle.containsKey(ImageSelectionDialog.KEY_IMG_CONTAINER)){
+//					startImgSelDlg(null);
+//				}else{					
+//					ArrayList<String> smalls = new ArrayList<String>();
+//					ArrayList<String> bigs = new ArrayList<String>();
+//					String big = (goodsDetail.getImageList().getBig());
+//					if(big != null && big.length() > 0){
+//						big = Communication.replace(big);
+//						String[] cbig = big.split(",");
+//						for (int j = 0; j < listUrl.size(); j++) {
+//							String bigUrl = (cbig == null || cbig.length <= j) ? null : cbig[j];
+//							smalls.add(listUrl.get(j));
+//							bigs.add(bigUrl);
+//						}
+//					}
+//					if(bigs != null){
+//						List<ImageSelectionDialog.ImageContainer> container = new ArrayList<ImageSelectionDialog.ImageContainer>();
+//						for(int i = 0; i < bigs.size(); ++ i){
+//							ImageSelectionDialog.ImageContainer ic = new ImageSelectionDialog.ImageContainer();
+//							ic.bitmapUrl = bigs.get(i);
+//							ic.status = ImageSelectionDialog.ImageStatus.ImageStatus_Normal;
+//							ic.thumbnailPath = smalls.get(i);
+//							container.add(ic);
+//						}
+//						ImageSelectionDialog.ImageContainer[] ic = new ImageSelectionDialog.ImageContainer[container.size()];
+//						for(int i = 0; i < container.size(); ++ i){
+//							ic[i] = new ImageSelectionDialog.ImageContainer();
+//							ic[i].set(container.get(i));
+//						}
+//						startImgSelDlg(ic);
+//					}
+//				}
+//				return;
+//			}
+//		}
+//		super.onClick(v);
+//	}
 	
 	@Override
 	protected void mergeParams(HashMap<String, String> list){
@@ -151,16 +185,26 @@ class EditAdFragment extends PostGoodsFragment{
 		}
 
 		if (goodsDetail.getImageList() != null) {
-			String b = (goodsDetail.getImageList().getResize180());
-			if(b == null || b.equals("")) return;
-			b = Communication.replace(b);
-			if (b.contains(",")) {
-				String[] c = b.split(",");
-				for (int k = 0; k < c.length; k++) {
-					listUrl.add(c[k]);
+//			String b = (goodsDetail.getImageList().getResize180());
+//			if(b == null || b.equals("")) return;
+//			b = Communication.replace(b);
+//			if (b.contains(",")) {
+//				String[] c = b.split(",");
+//				for (int k = 0; k < c.length; k++) {
+//					listUrl.add(c[k]);
+//				}
+//			}else{
+//				listUrl.add(b);
+//			}
+			if (this.photoList.size() == 0) {
+				ArrayList<String> list = new ArrayList<String>();
+				loadIamgeUrl(this.listUrl, list);
+				if (list.size() > 0) {
+					photoList.addAll(listUrl);
+					for (int i=0; i<listUrl.size(); i++) {
+						ImageUploader.getInstance().addDownloadImage(listUrl.get(i), list.get(i), null);
+					}
 				}
-			}else{
-				listUrl.add(b);
 			}
 			
 			if(listUrl.size() > 0){

@@ -269,7 +269,10 @@ public class ImageLoaderManager{
 			}
 		};
 		
-		get(url, loaderCallback);
+		WeakReference<Bitmap> bp = get(url, loaderCallback);
+		if (bp != null && bp.get() != null) {
+			loaderCallback.refresh(url, bp.get());
+		}
 	}
 	
 	public void showImg(final View view,final String url, final String preUrl, Context con, WeakReference<Bitmap> bmp){
