@@ -94,6 +94,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     
     protected ArrayList<String> photoList = new ArrayList<String>();
     private Bitmap firstImage = null;
+    protected boolean isNewPost = true;
     
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -158,6 +159,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		
+		if (savedInstanceState != null) {
+			isNewPost = false;
+		} else {
+			isNewPost = !editMode;
+		}
 		
 		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
@@ -270,6 +277,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			           scroll.fullScroll(View.FOCUS_DOWN);              
 			    }
 			});
+		}
+		
+		if (isNewPost) {
+			isNewPost = false;
+			this.startImgSelDlg(null);
 		}
 		
 	}	

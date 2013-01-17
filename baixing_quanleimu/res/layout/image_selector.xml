@@ -57,8 +57,9 @@
 
         <ImageView
             android:id="@+id/pick_gallery"
-            android:layout_width="@dimen/camera_cap_button_width"
-            android:layout_height="@dimen/camera_cap_button_height"
+            android:layout_width="@dimen/camera_gallery_width"
+            android:layout_height="@dimen/camera_gallery_height"
+            android:layout_marginLeft="@dimen/camera_gallery_width"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
             android:scaleType="centerInside"
