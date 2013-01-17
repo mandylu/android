@@ -46,7 +46,8 @@
         android:layout_height="@dimen/camera_action_bar_height"
         android:background="@drawable/bg_camera_header"
         android:layout_alignParentBottom="true"
-        android:layout_alignParentLeft="true" >
+        android:layout_alignParentLeft="true"
+        >
 
         <ImageView
             android:id="@+id/cap"

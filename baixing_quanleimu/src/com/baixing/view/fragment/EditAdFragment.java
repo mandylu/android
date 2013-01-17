@@ -196,9 +196,11 @@ class EditAdFragment extends PostGoodsFragment{
 //			}else{
 //				listUrl.add(b);
 //			}
+			
+			ArrayList<String> listUrl = new ArrayList<String>();
 			if (this.photoList.size() == 0) {
 				ArrayList<String> list = new ArrayList<String>();
-				loadIamgeUrl(this.listUrl, list);
+				loadIamgeUrl(listUrl, list);
 				if (list.size() > 0) {
 					photoList.addAll(listUrl);
 					for (int i=0; i<listUrl.size(); i++) {

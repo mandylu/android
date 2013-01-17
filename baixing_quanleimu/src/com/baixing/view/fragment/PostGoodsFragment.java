@@ -81,7 +81,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
-	protected ArrayList<String> listUrl = new ArrayList<String>();
+//	protected ArrayList<String> listUrl = new ArrayList<String>();
 	protected Bundle imgSelBundle = null;
 	private ImageSelectionDialog imgSelDlg = null;	
 	private View locationView = null;
@@ -172,7 +172,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if (savedInstanceState != null){
 			postList.putAll( (HashMap<String, PostGoodsBean>)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
-			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
+//			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
+			photoList.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
 			imgHeight = savedInstanceState.getInt("imgHeight");
 			imgSelBundle = savedInstanceState.getBundle(KEY_IMG_BUNDLE);
 		}
@@ -205,12 +206,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		PostUtil.extractInputData(layout_txt, params);
 		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
-		outState.putSerializable("listUrl", listUrl);
+		outState.putSerializable("listUrl", photoList);
 		outState.putInt("imgHeight", imgHeight);
 		outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
 	}
 	
-	private void doClearUp() {
+	private void doClearUpImages() {
 		//Clear the upload image list.
 		this.photoList.clear();
 		this.firstImage = null;
@@ -237,7 +238,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
-				doClearUp();
+				doClearUpImages();
 				finishFragment();
 			}
 		});
@@ -612,12 +613,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			layout_txt.removeAllViews();
 			layout_txt.addView(v);
 		}
-		postList.clear();
+//		postList.clear();
 		
 		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
 			clearCategoryParameters();
 			if(clearImgs){
-				listUrl.clear();
+//				listUrl.clear();
+				this.doClearUpImages();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
@@ -978,7 +980,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
 			
-			doClearUp();
+			doClearUpImages();
 			
 			String id = ((PostResultData)msg.obj).id;
 			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;
