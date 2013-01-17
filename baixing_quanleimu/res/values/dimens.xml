@@ -46,8 +46,8 @@
     <dimen name="camera_action_bar_height">54dp</dimen>
     <dimen name="camera_cap_button_width">126dp</dimen>
     <dimen name="camera_cap_button_height">54dp</dimen>
-    <dimen name="camera_gallery_width">30dp</dimen>
-    <dimen name="camera_gallery_height">30dp</dimen>
+    <dimen name="camera_gallery_width">20dp</dimen>
+    <dimen name="camera_gallery_height">20dp</dimen>
     <dimen name="camera_action_button_width">65dp</dimen>
     <dimen name="camera_preview_width">68dp</dimen>
     <dimen name="camera_preview_gap">14dp</dimen>

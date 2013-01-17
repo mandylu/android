@@ -34,7 +34,7 @@
         <ScrollView
             android:id="@+id/cap_result_list"
             android:layout_width="@dimen/camera_result_width"
-            android:background="#80808080"
+            android:background="#B3000000"
             android:layout_height="fill_parent">
 
             <LinearLayout
@@ -55,16 +55,22 @@
                 android:layout_height="@dimen/camera_cap_button_width"
                 android:layout_centerInParent="true"
                 android:src="@drawable/btn_capture_l" />
-
-            <ImageView
+            
+            <LinearLayout
                 android:id="@+id/pick_gallery"
-                android:layout_width="@dimen/camera_gallery_height"
-                android:layout_height="@dimen/camera_gallery_width"
-                android:layout_marginBottom="20dp"
+                android:layout_width="@dimen/camera_action_bar_height"
+                android:layout_height="@dimen/camera_action_bar_height"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:scaleType="centerInside"
-                android:src="@drawable/btn_gallery" />
+                android:gravity="center" >
+
+                <ImageView
+                    android:layout_width="@dimen/camera_gallery_height"
+                    android:layout_height="@dimen/camera_gallery_width"
+                    android:scaleType="centerInside"
+                    android:src="@drawable/btn_gallery" />
+            </LinearLayout>
+
         </RelativeLayout>
     </LinearLayout>
     

@@ -159,7 +159,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, "有图的信息效果更好！", Toast.LENGTH_LONG).show();
+					Toast.makeText(CameraActivity.this, "无图的信息效果会打折哦", Toast.LENGTH_LONG).show();
 				}
 				break;
 				
@@ -679,10 +679,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-				
+				boolean full = (MAX_IMG_COUNT -1) == imageList.size();
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
-		        Toast.makeText(CameraActivity.this, "拍的漂亮！再来一张吧！", Toast.LENGTH_SHORT).show();
+		        if (!full) {
+		        	Toast.makeText(CameraActivity.this, "压缩上传中，再来一张！", Toast.LENGTH_SHORT).show();
+		        }
 			}
 		};
 		task.execute(cameraData);
