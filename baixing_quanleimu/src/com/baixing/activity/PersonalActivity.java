@@ -3,10 +3,13 @@ package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.AdList;
 import com.baixing.data.GlobalDataManager;
@@ -88,22 +91,33 @@ public class PersonalActivity extends BaseTabActivity {
 			Bundle bundle = intent.getExtras();
 			if(bundle != null){
 				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
-					
-					AdList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
-					if(gl != null){
-						VadListLoader glLoader = new VadListLoader(null, null, null, gl);
-						glLoader.setGoodsList(gl);
-						glLoader.setHasMore(false);		
-						BaseFragment bf = this.getCurrentFragment();
-						if(bf != null && bf instanceof VadFragment){
-							bf.finishFragment();
+					ApiParams param = new ApiParams();
+					param.addParam("query", "id:" + (String)bundle.getString("detailFromWX"));
+					ProgressDialog pd = ProgressDialog.show(this, "", "请稍候");
+					pd.setCancelable(false);
+					pd.show();
+					try {
+						String result = ApiClient.getInstance().invokeApi(ApiClient.Api.createGet("ad_list"), param);
+						AdList gl = JsonUtil.getGoodsListFromJson(result);
+						if(gl != null){
+							VadListLoader glLoader = new VadListLoader(null, null, null, gl);
+							glLoader.setGoodsList(gl);
+							glLoader.setHasMore(false);		
+							BaseFragment bf = this.getCurrentFragment();
+							if(bf != null && bf instanceof VadFragment){
+								bf.finishFragment();
+							}
+							Bundle bundle2 = new Bundle();
+							bundle2.putSerializable("loader", glLoader);
+							bundle2.putInt("index", 0);
+	
+							this.pushFragment(new VadFragment(), bundle2, false);
 						}
-						Bundle bundle2 = new Bundle();
-						bundle2.putSerializable("loader", glLoader);
-						bundle2.putInt("index", 0);
-
-						this.pushFragment(new VadFragment(), bundle2, false);
+					} catch (Exception e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
 					}
+					pd.dismiss();
 				}
 			}
 		}		

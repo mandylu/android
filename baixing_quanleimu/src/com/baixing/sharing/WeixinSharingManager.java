@@ -13,6 +13,7 @@ import android.app.Activity;
 import android.graphics.Bitmap;
 
 import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
 import com.tencent.mm.sdk.openapi.IWXAPI;
@@ -20,6 +21,8 @@ import com.tencent.mm.sdk.openapi.SendMessageToWX;
 import com.tencent.mm.sdk.openapi.WXAPIFactory;
 import com.tencent.mm.sdk.openapi.WXAppExtendObject;
 import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.tencent.mm.sdk.openapi.WXTextObject;
+import com.tencent.mm.sdk.openapi.WXWebpageObject;
 
 class WeixinSharingManager implements BaseSharingManager{
 //	static private final String WX_APP_ID = "wx862b30c868401dbc";
@@ -38,13 +41,7 @@ class WeixinSharingManager implements BaseSharingManager{
 		String detailJson = convert2JSONString(ad);
 		String title = "我在百姓网发布：" + ad.getValueByKey("title");
 		
-//		WXWebpageObject webObj = new WXWebpageObject();
-//		webObj.webpageUrl = detail.getValueByKey("link");
-		WXAppExtendObject appObj = new WXAppExtendObject();
-		appObj.fileData = detailJson.getBytes();
-		
 		String imgUrl = getImageUrl(ad);
-//		String imgPath = (imgUrl == null || imgUrl.length()==0 ? null : ImageCacheManager.getInstance().getFileInDiskCache(imgUrl));
 
 		WXMediaMessage obj = new WXMediaMessage();
 		
@@ -63,7 +60,20 @@ class WeixinSharingManager implements BaseSharingManager{
 		}
 		obj.description = description;
 		obj.title = title;
-		obj.mediaObject = appObj;
+
+		if(mApi.getWXAppSupportAPI() >= 0x21020001){
+			WXWebpageObject webObj = new WXWebpageObject();
+			String link = ad.getValueByKey("link");
+			link = link.replace(".baixing.com/", ".baixing.com/m/");
+			webObj.webpageUrl = link;
+			obj.mediaObject = webObj;
+		}else{
+			WXAppExtendObject appObj = new WXAppExtendObject();
+//			appObj.fileData = detailJson.getBytes();
+			appObj.fileData = ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID).getBytes();
+			obj.mediaObject = appObj;
+		}
+		
 		if(imgUrl != null){
 			WeakReference<Bitmap> thumbnail = ImageCacheManager.getInstance().getFromCache(imgUrl);
 			if(thumbnail != null && thumbnail.get() != null){
@@ -77,13 +87,15 @@ class WeixinSharingManager implements BaseSharingManager{
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;
+		if(mApi.getWXAppSupportAPI() >= 0x21020001){
+			req.scene = SendMessageToWX.Req.WXSceneTimeline;
+		}
 		mApi.sendReq(req);
 	}
 
 	@Override
 	public void release() {
 		// TODO Auto-generated method stub
-		
 	}
 	
 	private String convert2JSONString(Ad detail){

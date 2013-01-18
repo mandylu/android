@@ -1,10 +1,13 @@
 package com.baixing.sharing;
 
 import java.io.File;
+import java.io.IOException;
+
 import com.quanleimu.activity.R;
-import com.weibo.net.AccessToken;
-import com.weibo.net.Weibo;
-import com.weibo.net.WeiboException;
+import com.weibo.sdk.android.Oauth2AccessToken;
+import com.weibo.sdk.android.WeiboException;
+import com.weibo.sdk.android.api.StatusesAPI;
+import com.weibo.sdk.android.net.RequestListener;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -51,21 +54,44 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
     
     private ProgressDialog mPd;
     
+    class ShareListener implements RequestListener{
+
+		@Override
+		public void onComplete(String arg0) {
+			// TODO Auto-generated method stub
+			WeiboSharingActivity.this.finish();
+			WeiboSharingActivity.this.runOnUiThread(new Runnable(){
+				@Override
+				public void run(){
+					Toast.makeText(getApplicationContext(), "分享成功", 0).show();
+				}
+			});
+		}
+
+		@Override
+		public void onError(WeiboException arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onIOException(IOException arg0) {
+			// TODO Auto-generated method stub
+			
+		}
+    	
+    }
+    
 	private void doShare2Weibo(){
-		Log.d("doShar2Weibo", "doshare2weibo in sharingActivity" + "  accessToken: " + mAccessToken + "   expires_in:  " + mExpires_in);
-		AccessToken accessToken = new AccessToken(mAccessToken, mExpires_in);
-		try{ 
-			Weibo.getInstance().share2weibo(this,
-					accessToken.getToken(),
-					accessToken.getSecret(), 
-					"我在#百姓网#发布" + mContent,
-					(mPicPath == null || mPicPath.length() == 0) ? "" : mPicPath);
+		Oauth2AccessToken accessToken = new Oauth2AccessToken(mAccessToken, mExpires_in);
+		StatusesAPI statusApi = new StatusesAPI(accessToken);
+		if(mPicPath == null || mPicPath.length() == 0){
+			statusApi.update("我在#百姓网#发布" + mContent, "", "", new ShareListener());
+		}else{
+			statusApi.upload("我在#百姓网#发布" + mContent, mPicPath, "", "", new ShareListener());
 		}
-		catch(WeiboException e){
-			e.printStackTrace();
-		}
-		mPd = ProgressDialog.show(this, "", "请稍候");
-		mPd.setCancelable(true);
+//		mPd = ProgressDialog.show(this, "", "请稍候");
+//		mPd.setCancelable(true);
 	}
 
 	@Override
@@ -104,7 +130,7 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
                 int len = mText.length();
                 if (len <= WEIBO_MAX_LENGTH) {
                     len = WEIBO_MAX_LENGTH - len;
-                    mTextNum.setTextColor(R.color.text_num_gray);
+//                    mTextNum.setTextColor(R.color.text_num_gray);
                     if (!mSend.isEnabled())
                         mSend.setEnabled(true);
                 } else {

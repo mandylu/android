@@ -1,6 +1,7 @@
 package com.baixing.sharing;
 
 import android.app.Activity;
+import android.content.Intent;
 
 import com.baixing.entity.Ad;
 
@@ -9,7 +10,8 @@ public class SharingCenter{
 	
 	public static void share2Weibo(Activity activity, Ad ad){
 		release();
-		sm = new WeiboSharingManager(activity);
+//		sm = new WeiboSharingManager(activity);
+		sm = new WeiboSSOSharingManager(activity);
 		sm.share(ad);
 	}
 	

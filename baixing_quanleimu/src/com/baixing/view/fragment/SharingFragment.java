@@ -18,7 +18,7 @@ class SharingFragment extends DialogFragment{
 	public SharingFragment(){
 		
 	}
-
+	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceBundle){
 		String[] names = {"分享到新浪微薄", "分享到微信", "分享到QQ空间"};
@@ -27,6 +27,7 @@ class SharingFragment extends DialogFragment{
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which){
+				dismiss();
 				switch(which){
 				case 0:
 					SharingCenter.share2Weibo(getActivity(), mAd);
@@ -37,8 +38,7 @@ class SharingFragment extends DialogFragment{
 				case 2:
 					SharingCenter.share2QZone(getActivity(), mAd);
 					break;
-				}
-				dialog.dismiss();
+				}				
 			}
 		}).setNegativeButton("取消", new DialogInterface.OnClickListener(){
 

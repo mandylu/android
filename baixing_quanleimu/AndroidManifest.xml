@@ -99,6 +99,13 @@
             android:screenOrientation="portrait"
             android:theme="@style/lightTheme" >
         </activity>
+        <activity
+            android:name="com.baixing.sharing.WeiboManagerActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:label="@string/app_name"
+            android:launchMode="singleTask"
+            android:screenOrientation="portrait">
+        </activity>
        	<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="com.baixing.activity.CameraActivity" android:theme="@style/lightTheme" android:screenOrientation="portrait" android:launchMode="singleTop">
 			<intent-filter>
 			    <action android:name="com.baixing.action.img.cap" />
