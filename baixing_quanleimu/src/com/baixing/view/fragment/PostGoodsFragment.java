@@ -11,16 +11,13 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.os.Bundle;
 import android.os.Message;
-import android.os.Parcelable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.text.InputFilter;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -38,12 +35,12 @@ import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
 import android.widget.Toast;
+
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
@@ -53,13 +50,13 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.post.PostLocationService;
-import com.baixing.util.post.PostUtil;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostCommonValues;
+import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
+import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
@@ -84,7 +81,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
-	protected ArrayList<String> listUrl = new ArrayList<String>();
+//	protected ArrayList<String> listUrl = new ArrayList<String>();
 	protected Bundle imgSelBundle = null;
 	private ImageSelectionDialog imgSelDlg = null;	
 	private View locationView = null;
@@ -95,8 +92,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     private PostLocationService postLBS;
     private PostNetworkService postNS;
     
-    private ArrayList<String> photoList = new ArrayList<String>();
+    protected ArrayList<String> photoList = new ArrayList<String>();
     private Bitmap firstImage = null;
+    protected boolean isNewPost = true;
     
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
@@ -162,13 +160,20 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
+		if (savedInstanceState != null) {
+			isNewPost = false;
+		} else {
+			isNewPost = !editMode;
+		}
+		
 		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
 				
 		if (savedInstanceState != null){
 			postList.putAll( (HashMap<String, PostGoodsBean>)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
-			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
+//			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
+			photoList.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
 			imgHeight = savedInstanceState.getInt("imgHeight");
 			imgSelBundle = savedInstanceState.getBundle(KEY_IMG_BUNDLE);
 		}
@@ -201,18 +206,45 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		PostUtil.extractInputData(layout_txt, params);
 		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
-		outState.putSerializable("listUrl", listUrl);
+		outState.putSerializable("listUrl", photoList);
 		outState.putInt("imgHeight", imgHeight);
 		outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
+	}
+	
+	private void doClearUpImages() {
+		//Clear the upload image list.
+		this.photoList.clear();
+		this.firstImage = null;
+		ImageUploader.getInstance().clearAll();
 	}
 
 	@Override
 	public boolean handleBack() {
-		if(imgSelDlg != null)
-			if(imgSelDlg.handleBack()){
-				return true;
-		}		
-		return super.handleBack();
+//		if(imgSelDlg != null)
+//			if(imgSelDlg.handleBack()){
+//				return true;
+//		}		
+//		return super.handleBack();
+		AlertDialog.Builder builder = new Builder(getActivity());
+		builder.setMessage("退出发布？");
+		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//Do nothing.
+			}
+		});
+		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				doClearUpImages();
+				finishFragment();
+			}
+		});
+		builder.create().show();
+		
+		return true;
 	}	
 
 	@Override
@@ -246,6 +278,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			           scroll.fullScroll(View.FOCUS_DOWN);              
 			    }
 			});
+		}
+		
+		if (isNewPost) {
+			isNewPost = false;
+			this.startImgSelDlg(null);
 		}
 		
 	}	
@@ -366,9 +403,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else if(v.getId() == R.id.myImg){
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
-			if(!editMode){
+//			if(!editMode){
 				startImgSelDlg(null);
-			}
+//			}
 		}else if(v.getId() == R.id.img_description){
 			final View et = v.findViewById(R.id.description_input);
 			if(et != null){
@@ -576,12 +613,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			layout_txt.removeAllViews();
 			layout_txt.addView(v);
 		}
-		postList.clear();
+//		postList.clear();
 		
 		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
 			clearCategoryParameters();
 			if(clearImgs){
-				listUrl.clear();
+//				listUrl.clear();
+				this.doClearUpImages();
 				this.bmpUrls.clear();
 				if(this.imgSelDlg != null){
 					imgSelDlg.clearResource();
@@ -942,11 +980,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
 			
-			//Clear the upload image list.
-			this.photoList.clear();
-			this.firstImage = null;
-			ImageUploader.getInstance().clearAll();
-			
+			doClearUpImages();
 			
 			String id = ((PostResultData)msg.obj).id;
 			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;
@@ -989,7 +1023,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	                bd.setTitle("")
 	                        .setMessage(message)
 	                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-	                            @Override
+	                        	@Override
 	                            public void onClick(DialogInterface dialog, int which) {
 	                                dialog.dismiss();
 	        						if(activity != null){
@@ -1075,6 +1109,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
+		title.m_leftActionHint = "返回";
 		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
@@ -1194,5 +1229,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
             }
 			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}		
+	}
+	
+	public boolean hasGlobalTab() {
+		return false;
 	}
 }

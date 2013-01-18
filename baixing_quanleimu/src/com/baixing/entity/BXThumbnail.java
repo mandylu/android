@@ -26,6 +26,14 @@ public class BXThumbnail implements Parcelable {
 	public static BXThumbnail createThumbnail(String path, Bitmap bitmap) {
 		return new BXThumbnail(path, bitmap);
 	}
+	
+	public boolean equals(Object obj) {
+		if (obj instanceof BXThumbnail) {
+			return ((BXThumbnail) obj).getLocalPath().equals(this.getLocalPath());
+		}
+		
+		return false;
+	}
 
 	public String getLocalPath() {
 		return localPath;

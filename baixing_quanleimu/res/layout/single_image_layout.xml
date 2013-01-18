@@ -24,4 +24,11 @@
         android:layout_alignParentTop="true"
         android:src="@drawable/delete_img_icon" />
 
+    <ProgressBar
+        android:id="@+id/loading_status"
+        android:visibility="gone"
+        android:layout_width="@dimen/progress_size_small"
+        android:layout_height="@dimen/progress_size_small"
+        android:layout_centerInParent="true"/>
+
 </RelativeLayout>

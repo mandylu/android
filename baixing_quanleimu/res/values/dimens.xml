@@ -23,6 +23,7 @@
     <dimen name="font_input_text">16sp</dimen>
     <dimen name="filter_gap">10dp</dimen>
     <dimen name="line_space">6sp</dimen>
+    <dimen name="progress_size_small">10dp</dimen>
     
     <!-- personal center -->
     <dimen name="icon_width_small">30dp</dimen>
@@ -43,7 +44,7 @@
     <!-- camera -->
     <dimen name="camera_result_width">90dp</dimen>
     <dimen name="camera_action_bar_height">54dp</dimen>
-    <dimen name="camera_cap_button_width">54dp</dimen>
+    <dimen name="camera_cap_button_width">126dp</dimen>
     <dimen name="camera_cap_button_height">54dp</dimen>
     <dimen name="camera_gallery_width">20dp</dimen>
     <dimen name="camera_gallery_height">20dp</dimen>
