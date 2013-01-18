@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -82,15 +83,29 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     private int currentType = TYPE_MYPOST;
 	private VadListLoader glLoader = null;	
 	private String json = "";
+	private boolean showShareDlg = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		
         final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(MyAdFragment.TYPE_KEY)) {
-            this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY,
-            		MyAdFragment.TYPE_MYPOST);
+        if (arguments != null){
+        	if(arguments.containsKey(MyAdFragment.TYPE_KEY)) {
+        		this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+        	}
+        }
+        
+        Activity activity = getActivity();
+        if(activity != null){
+        	Intent intent = activity.getIntent();
+        	if(intent != null){
+        		String action = intent.getAction();
+        		if (action != null && action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
+        			this.showShareDlg = true;
+        			intent.setAction("");
+        		}
+        	}
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -100,7 +115,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
-	
 	
 	public void onDestroy() {
 		super.onDestroy();
@@ -127,6 +141,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 	}
 
+	private boolean isRefreshing = false;
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(!isBack || needReloadData){
@@ -281,17 +296,16 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
 	
-	
 	private void doShare(){
 		Bundle bundle = getArguments();
-		if(currentType == TYPE_MYPOST && listMyPost != null && listMyPost.size() > 0 && 
-				bundle != null && bundle.getBoolean(CommonIntentAction.ACTION_BROADCAST_POST_FINISH, false)){
+		if(currentType == TYPE_MYPOST && listMyPost != null && listMyPost.size() > 0 && showShareDlg){
 			String lastPost = bundle.getString("lastPost");
 			if(lastPost != null && lastPost.length() > 0){
 				lastPost = lastPost.split(",")[0];
 				for(int i = 0; i < listMyPost.size(); ++ i){
 					if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(lastPost)){
 						(new SharingFragment(listMyPost.get(i))).show(getFragmentManager(), null);
+						showShareDlg = false;
 						break;
 					}
 				}
@@ -303,6 +317,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
 		case MSG_MYPOST:
+			isRefreshing = false;
 //		case MSG_INVERIFY:
 //		case MSG_DELETED:
 			hideProgress();
@@ -355,6 +370,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		case VadListLoader.MSG_FIRST_FAIL:
 		case VadListLoader.MSG_EXCEPTION:{
 			hideProgress();
+			isRefreshing = false;
 			lvGoodsList.onRefreshComplete();
 			break;
 		}
@@ -419,6 +435,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+			isRefreshing = false;
 			hideProgress();
 			//tracker
 			Tracker.getInstance()
@@ -737,6 +754,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onRefresh() {
+		if(isRefreshing) return;
 		ApiParams params = new ApiParams();
 		if(user != null){
 			params.addParam("userId", user.getId());
@@ -752,6 +770,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader.setParams(params);
 		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+		isRefreshing = true;
 	}
 	
 	@Override
