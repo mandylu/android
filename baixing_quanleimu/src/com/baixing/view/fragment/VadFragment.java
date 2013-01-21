@@ -963,9 +963,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		showMap();
 	}
 	
-	public void onRequestUserAd(int userId) {
+	public void onRequestUserAd(int userId, String userNick) {
 		Bundle args = createArguments(null, null);
 		args.putInt("userId", userId);
+		args.putString("userNick", userNick);
 		
 		pushFragment(new UserAdFragment(), args);
 	}

@@ -205,6 +205,18 @@
 		                        android:textColor="#000000"
 		                        android:textSize="@dimen/font_small" >
 		                    </TextView>
+		                    
+               		        <TextView
+		                        android:id="@+id/user_info"
+		                        android:layout_width="wrap_content"
+		                        android:layout_height="wrap_content"
+		                        android:lineSpacingExtra="@dimen/line_space"
+		                        android:gravity="left|top"
+		                        android:paddingLeft="@dimen/vad_margin_LF"
+		                        android:paddingRight="@dimen/vad_margin_LF"
+		                        android:textColor="@color/vad_meta_label"
+		                        android:textSize="@dimen/font_small" >
+		                    </TextView>
 
 		                    <LinearLayout
 		                        android:id="@+id/shareandjubao"

@@ -38,6 +38,7 @@ public class VadListAdapter extends BaseAdapter {
 	{
 		public String filterHint;
 		public int resultCount;
+		public boolean isCountVisible = true;
 	}
 	
 	private Context context;
@@ -235,6 +236,10 @@ public class VadListAdapter extends BaseAdapter {
 			text.setText(g.filterHint);
 			TextView countTxt = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_result_count);
 			countTxt.setText(g.resultCount + "");
+			if (!g.isCountVisible) {
+				countTxt.setVisibility(View.GONE);
+				v.findViewById(R.id.textView2).setVisibility(View.GONE);
+			}
 			holder.divider.setVisibility(View.GONE);
 			v.setEnabled(false);	
 			return v;

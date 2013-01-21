@@ -9,6 +9,7 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.AdapterView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
@@ -64,7 +65,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 	@Override
 	protected void initTitle(TitleDef title) {
 		title.m_leftActionHint = "返回";
-		title.m_title = userProfile == null ? "" : userProfile.nickName;
+		title.m_title = getArguments().getString("userNick");//userProfile == null ? "" : userProfile.nickName;
 	}
 
 	@Override
@@ -115,6 +116,21 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		
 		lvGoodsList.setOnRefreshListener(this);	
 		
+		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
+			@Override
+			public void onItemClick(AdapterView<?> arg0, View arg1,
+					int pos, long arg3) {
+				int index = (int) arg3;//(int) (arg3 - lvGoodsList.getHeaderViewsCount());
+				if(index < 0 || index > listLoader.getGoodsList().getData().size() - 1)
+					return;
+					Bundle bundle = createArguments(null, null);
+					bundle.putSerializable("loader", listLoader);
+					bundle.putInt("index", index);
+					pushFragment(new VadFragment(), bundle);
+//				}				
+			}
+		});
+		
 		return v;
 	}
 	
@@ -127,6 +143,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		GroupItem g = new GroupItem();
 		g.resultCount = list.size();
 		g.filterHint = "共发布" + list.size() + "条信息";
+		g.isCountVisible = false;
 		
 		ArrayList<GroupItem> gList = new ArrayList<VadListAdapter.GroupItem>();
 		gList.add(g);
@@ -135,9 +152,9 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 	}
 	
 	public void onStackTop(boolean isBack) {
-		if (userProfile == null) {
-			getProfile();
-		}
+//		if (userProfile == null) {
+//			getProfile();
+//		}
 		
 		rebuildPage(getView());
 	}
@@ -223,7 +240,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		ApiParams params = new ApiParams();
 		params.addParam("query", filterParamHolder.toUrlString());
 		
-		listLoader.setRows(1000);
+		listLoader.setRows(30);
 		listLoader.setParams(params);
 		int msg = MSG_LIST_UPDATE;
 		listLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);

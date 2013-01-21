@@ -6,9 +6,12 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import org.jivesoftware.smack.util.StringUtils;
+
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -31,6 +34,7 @@ import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.util.Communication;
+import com.baixing.util.TextUtil;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
@@ -48,9 +52,10 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		public void onPageSwitchTo(int pos);
 		public void onRequestBigPic(int pos, Ad detail);
 		public void onRequestMap();
-		public void onRequestUserAd(int userId);
+		public void onRequestUserAd(int userId, String userNick);
 	}
-	
+
+	private static final String[] INVISIBLE_META = new String[] {"价格", "地点", "地区", "查看", "来自", "具体地点", "分类", "发布人"};
 
 	private WeakReference<View> viewRoot;
 	private Ad detail;
@@ -321,12 +326,14 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 
 		TextView txt_tittle = (TextView) contentView.findViewById(R.id.goods_tittle);
 		TextView txt_message1 = (TextView) contentView.findViewById(R.id.sendmess1);
-
+		TextView txt_user = (TextView) contentView.findViewById(R.id.user_info);
 		this.setMetaObject(contentView, detail);
 		
 		String title = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE);
 		String description = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION);
-
+		final String userNick = TextUtils.isEmpty(detail.getValueByKey("userNick")) ? "匿名" : detail.getValueByKey("userNick");
+		String userInfo ="发布人：" + userNick + "(" + detail.getMetaValueByKey("发布人") + ")";
+		
 		if ((title == null || title.length() == 0) && description != null)
 		{
 			title = description.length() > 40 ? description.substring(0, 40) : description;
@@ -338,6 +345,26 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		
 		txt_message1.setText(description);
 		txt_tittle.setText(title);
+		txt_user.setText(userInfo);
+		
+		
+		txt_user.setOnClickListener(new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				int userId = -1;
+				
+				try {
+					userId = Integer.parseInt(detail.getValueByKey("userId"));
+				}
+				catch (Throwable t) {
+					//Ignor
+				}
+				if (userId != -1) {
+					callback.onRequestUserAd(userId, userNick);
+				}
+			}
+		});
 		
 		callback.onPageInitDone(pager, pageIndex);
 	}
@@ -425,6 +452,16 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		return listUrl;
 	}
 	
+	private boolean isVisible(String metaKey) {
+		for (String key : INVISIBLE_META) {
+			if (metaKey.startsWith(key)) {
+				return false;
+			}
+		}
+		
+		return true;
+	}
+	
 	private String appendExtralMetaInfo(Ad detail, String description)
 	{
 		if (detail == null)
@@ -436,8 +473,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		ArrayList<String> allMeta = detail.getMetaData();
 		for (String meta : allMeta)
 		{
-			if (!meta.startsWith("价格") && !meta.startsWith("地点") &&
-					!meta.startsWith("地区") && !meta.startsWith("查看") && !meta.startsWith("来自") && !meta.startsWith("具体地点") && !meta.startsWith("分类"))
+			if (isVisible(meta))
 			{
 				final int splitIndex = meta.indexOf(" ");
 				if (splitIndex != -1)
@@ -550,16 +586,6 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			}
 		});
 		ll_meta.addView(areaV);
-		
-		final int userId = Integer.parseInt(detail.getValueByKey("userId"));
-		View tmp = createMetaView(inflater, "用户", userId + "", new View.OnClickListener() {
-			
-			@Override
-			public void onClick(View v) {
-				callback.onRequestUserAd(userId);
-			}
-		});
-		ll_meta.addView(tmp);
 	}
 	
 	
