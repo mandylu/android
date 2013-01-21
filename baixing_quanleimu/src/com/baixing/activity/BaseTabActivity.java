@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
@@ -417,6 +418,25 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 //		gg.setClass(this, ManagerActivity.class);
 //		gg.putExtra("intent", intent);
 //		this.startActivity(gg);
+	}
+	
+	protected final void onSetRootView(final View rootV) {
+		rootV.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() { //When user is input some thing. do not need show tab bar until user finish input.
+			
+			@Override
+			public void onGlobalLayout() {
+				BaseFragment currentF = getCurrentFragment();
+				int hDiff = rootV.getRootView().getHeight() - rootV.getHeight();
+				if (hDiff > 100)
+				{
+					findViewById(R.id.common_tab_layout).setVisibility(View.GONE);
+				}
+				else
+				{
+					findViewById(R.id.common_tab_layout).setVisibility(currentF != null && currentF.hasGlobalTab() ? View.VISIBLE : View.GONE);
+				}
+			}
+		});
 	}
 	
 	

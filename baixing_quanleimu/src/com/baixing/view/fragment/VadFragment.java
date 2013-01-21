@@ -334,14 +334,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
 		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
-		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
-		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
+//		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
+//		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
 		
 		final boolean buzzEnable = TextUtil.isNumberSequence(contactS) && mobileArea != null && !"".equals(mobileArea) ? true : false;
 		btnBuzz.setEnabled(buzzEnable);
 		if (!buzzEnable)
 		{
-			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
+//			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
 			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable));
 		}
 		

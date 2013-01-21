@@ -92,7 +92,8 @@
             android:layout_height="@dimen/camera_action_bar_height"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:gravity="center" >
+            android:gravity="center"
+			>
 
             <ImageView
                 android:layout_width="@dimen/camera_gallery_width"
@@ -100,7 +101,13 @@
                 android:duplicateParentState="true"
                 android:scaleType="centerInside"
                 android:src="@drawable/btn_gallery" />
+            
         </LinearLayout>
+        
+        <include layout="@layout/title_line_dark"
+                android:layout_width="2dp"
+                android:layout_height="fill_parent"
+                android:layout_toRightOf="@+id/pick_gallery"/>
 
     </RelativeLayout>
 
