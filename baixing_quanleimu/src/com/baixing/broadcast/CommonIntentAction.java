@@ -6,6 +6,8 @@ public class CommonIntentAction
 	public static final String ACTION_BROADCAST_NEW_MSG = "com.baixing.action.newmsg";
 	public static final String EXTRA_MSG_MESSAGE	= "extra.message.msgbody";
 	
+	public static final String ACTION_BROADCAST_WEIBO_AUTH_DONE = "com.baixing.action.weibo_auth_done";
+	
 	public static final String ACTION_BROADCAST_POST_FINISH = "com.baixing.action.fisish.post";
 	public static final String EXTRA_MSG_FINISHED_POST = "extra.post.info";
 	
