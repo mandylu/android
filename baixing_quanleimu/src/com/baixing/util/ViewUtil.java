@@ -95,7 +95,7 @@ public class ViewUtil {
 			notificationIntent.putExtras(extras);
 		}
 		if(notificationId == NotificationIds.NOTIFICATION_ID_BXINFO){
-			notificationIntent.putExtra("fromNotification", true);
+			notificationIntent.putExtra("pagejump", true);
 		}
 		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);

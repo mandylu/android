@@ -18,6 +18,7 @@ import android.view.View;
 import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
+import com.baixing.broadcast.push.PageJumper;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
 import com.baixing.imageCache.ImageLoaderManager;
@@ -276,6 +277,16 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 				new UpdateCityAndCatCommand(MainActivity.this).execute();
 			}
 		}))).start();
+		
+		Intent intent = this.getIntent();
+		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
+			if(intent.getBooleanExtra("pagejump", false)){
+				Bundle data = intent.getExtras();
+				PageJumper.jumpToPage(this, data.getString("page"), data.getString("data"));
+				///intent.getExtras()
+			}
+		}
+
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
 //		Profiler.clear();
 	}
@@ -305,12 +316,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		splashJob = new SplashJob(this, this);
 		
 //		isRestoring = savedInstanceState != null;
-//		Intent intent = this.getIntent();
-//		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
-//			if(intent.getBooleanExtra("fromNotification", false)){
-//				GlobalDataManager.version = Util.getVersion(this);
-//			}
-//		}
 //		Profiler.markEnd("maincreate");
 
 		byte[] checkFlgData = Util.loadData(this, "umeng_update_check_flg");
