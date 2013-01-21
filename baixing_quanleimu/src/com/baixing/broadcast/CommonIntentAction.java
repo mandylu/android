@@ -13,6 +13,10 @@ public class CommonIntentAction
 	
 	public static final String ACTION_BROADCAST_XMPP_CONNECTED = "com.baixing.action.xmpp.connected";
 	
+	public static final String ACTION_BROADCAST_JUMP = "com.baixing.action.jump";
+	public static final String EXTRA_JUMP_PAGENAME = "extra.common.jump.pagename";
+	public static final String EXTRA_JUMP_DATA = "extra.common.jump.data";
+	
 	/**
 	 * Status bar notification actions.
 	 */

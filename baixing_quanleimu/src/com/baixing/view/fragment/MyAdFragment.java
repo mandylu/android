@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.activity.PersonalActivity;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
@@ -78,7 +79,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private UserBean user;
 	private boolean needReloadData = false;
 
-    final static String TYPE_KEY = "PersonalPostFragment_type_key";
+    public final static String TYPE_KEY = "PersonalPostFragment_type_key";
     final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     private int currentType = TYPE_MYPOST;
 	private VadListLoader glLoader = null;	
@@ -462,8 +463,11 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public boolean handleBack(){
 		Bundle bundle = createArguments(null, null);
 //		bundle.putInt("defaultPageIndex", 1);
-		((BaseActivity)this.getActivity()).pushFragment(new PersonalProfileFragment(), bundle, true);
-		return true;
+		if(this.getActivity() instanceof PersonalActivity){
+			((BaseActivity)this.getActivity()).pushFragment(new PersonalProfileFragment(), bundle, true);
+			return true;
+		}
+		return false;
 	}
 	
 	private String getPostCateEnglishName() {

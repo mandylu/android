@@ -29,12 +29,12 @@ public class PushDispatcher {
 		try
 		{
 			JSONObject jsonObj = new JSONObject(msgJson);
-			if (jsonObj == null || !jsonObj.has("type"))
+			if (jsonObj == null || !jsonObj.has("a"))
 			{
 				return;
 			}
 			
-			final String type = jsonObj.getString("type");
+			final String type = jsonObj.getString("a");
 			for (PushHandler h : handlers)
 			{
 				if (h.acceptMessage(type))
