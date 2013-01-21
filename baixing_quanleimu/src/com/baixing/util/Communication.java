@@ -53,6 +53,11 @@ public class Communication implements Comparator<String> {
 	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
 	 
 	 public static boolean isWifiConnection() {
+		 
+		 if (GlobalDataManager.getInstance() == null || GlobalDataManager.getInstance().getApplicationContext() == null) {
+			 return false;
+		 }
+		 
 		ConnectivityManager connectivityManager = 
 				(ConnectivityManager) GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();

@@ -86,7 +86,7 @@ public class FilterUtil {
 		{
 			buf.deleteCharAt(buf.length()-1);
 			GroupItem g = new GroupItem();
-			g.filterHint = "\"" + buf.toString() + "\"";
+			g.filterHint = "\"" + buf.toString() + "\"的搜索结果";
 			g.resultCount = list.size();
 			groups.add(g);
 		}

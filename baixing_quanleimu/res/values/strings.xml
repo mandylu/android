@@ -17,6 +17,7 @@
     <string name="tip_add_fav">您刚联系过对方，是否收藏该信息，方便下次查找</string>
     <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，不要轻信汇款和转账相关的行为</string>
     <string name="tip_history_cleared">搜索历史已清空</string>
+    <string name="warning_fail_to_get_profile">获取用户信息失败</string>
     
     <!-- tips show as toast. -->
     <string name="tip_clipd_contact">联系方式已经复制到粘贴板</string>

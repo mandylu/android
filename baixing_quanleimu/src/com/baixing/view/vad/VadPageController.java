@@ -48,6 +48,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		public void onPageSwitchTo(int pos);
 		public void onRequestBigPic(int pos, Ad detail);
 		public void onRequestMap();
+		public void onRequestUserAd(int userId);
 	}
 	
 
@@ -549,6 +550,16 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			}
 		});
 		ll_meta.addView(areaV);
+		
+		final int userId = Integer.parseInt(detail.getValueByKey("userId"));
+		View tmp = createMetaView(inflater, "用户", userId + "", new View.OnClickListener() {
+			
+			@Override
+			public void onClick(View v) {
+				callback.onRequestUserAd(userId);
+			}
+		});
+		ll_meta.addView(tmp);
 	}
 	
 	
