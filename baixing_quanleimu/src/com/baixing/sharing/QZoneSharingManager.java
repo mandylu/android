@@ -116,6 +116,8 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 					}else{
 						handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
 					}
+				}else{
+					handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
 				}
 			}
 		}
@@ -282,7 +284,7 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 		mAd = ad;
 		if(mAccessToken == null || mOpenId == null){
 			auth();
-		}else if(ad.getImageList() != null){
+		}else if(ad.getImageList() != null && ad.getImageList().getBig() != null && ad.getImageList().getBig().length() > 0){
 			uploadImage();
 		}else{
 			share2QZone(ad);

@@ -585,34 +585,37 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
             public void onClick(DialogInterface dialog, int clickedIndex) {
                 if (isValidMessage(detail)) {
                     switch (clickedIndex) {
-                        case 0://刷新
-                            doRefresh(0, adId);
-                            Tracker.getInstance().event(BxEvent.SENT_REFRESH)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 1://修改
-                            Bundle args = createArguments(null, null);
-                            args.putSerializable("goodsDetail", detail);
-                            args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-							pushFragment(new EditAdFragment(), args);
-                            Tracker.getInstance().event(BxEvent.SENT_EDIT)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 2://删除
-                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, Value.VALID)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            break;
+                    case 0:///sharing
+                    	(new SharingFragment(detail)).show(getFragmentManager(), null);
+                    	break;
+                    case 1://刷新
+                        doRefresh(0, adId);
+                        Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 2://修改
+                        Bundle args = createArguments(null, null);
+                        args.putSerializable("goodsDetail", detail);
+                        args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+						pushFragment(new EditAdFragment(), args);
+                        Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 3://删除
+                    	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                    			.append(Key.STATUS, Value.VALID)
+                    			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+                        break;
                     }
                 } 
                 else {
