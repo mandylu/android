@@ -208,8 +208,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     {
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
-        	onCancelEdit();
-        	finish();
+        	cancelTakenPic();
         }
         
         else{
@@ -217,6 +216,22 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
         }
         
         return true;
+    }
+    
+    private void cancelTakenPic() {
+    	onCancelEdit();
+    	int resultCode = getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED);
+    	
+    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
+		
+		backIntent.putExtras(bundle);
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		this.startActivity(backIntent);
+		this.finish();
     }
     
     private void finishTakenPic() {
@@ -351,7 +366,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		//Take picture action.
 		findViewById(R.id.cap).setOnClickListener(this);
 		findViewById(R.id.finish_cap).setOnClickListener(this);
-		findViewById(R.id.cancel_cap).setOnClickListener(this);
+		
+		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL)) {
+			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
+			nextLabel.setText(getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL));
+		}
 		
 		//Sensor to update current orientation. 
 		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
@@ -505,10 +524,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			break;
 		case R.id.finish_cap:
 			finishTakenPic();
-			break;
-		case R.id.cancel_cap:
-			onCancelEdit();
-			finish();
 			break;
 		}
 	}
