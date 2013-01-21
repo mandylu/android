@@ -225,27 +225,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //				return true;
 //		}		
 //		return super.handleBack();
-//		AlertDialog.Builder builder = new Builder(getActivity());
-//		builder.setMessage("退出发布？");
-//		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				//Do nothing.
-//			}
-//		});
-//		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				doClearUpImages();
-//				finishFragment();
-//			}
-//		});
-//		builder.create().show();
-		
-		doClearUpImages();
-		finishFragment();
+		AlertDialog.Builder builder = new Builder(getActivity());
+		builder.setMessage("退出发布？");
+		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//Do nothing.
+			}
+		});
+		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				doClearUpImages();
+				finishFragment();
+			}
+		});
+		builder.create().show();
 		
 		return true;
 	}	

@@ -159,7 +159,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, "无图的信息效果会打折哦", Toast.LENGTH_LONG).show();
+					Toast.makeText(CameraActivity.this, "拍张照片，无图的信息效果略差", Toast.LENGTH_LONG).show();
 				}
 				break;
 				

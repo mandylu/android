@@ -14,8 +14,22 @@
         android:layout_height="@dimen/camera_preview_width"
         android:layout_centerInParent="true"
         android:scaleType="fitXY"
-        android:src="@android:drawable/alert_dark_frame" />
+        android:src="@drawable/icon_post_loading" />
 
+    <LinearLayout android:id="@+id/loading_status"
+        android:visibility="gone"
+        android:layout_width="@dimen/camera_preview_width"
+        android:layout_height="@dimen/camera_preview_width"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="#80000000"
+        >
+    <ProgressBar
+        android:layout_width="@dimen/progress_size_small"
+        android:layout_height="@dimen/progress_size_small"
+        />
+    </LinearLayout>
+    
     <ImageView
         android:id="@+id/delete_preview"
         android:layout_width="@dimen/camera_del_preview_width"
@@ -23,12 +37,8 @@
         android:layout_alignParentRight="true"
         android:layout_alignParentTop="true"
         android:src="@drawable/delete_img_icon" />
+    
+    
 
-    <ProgressBar
-        android:id="@+id/loading_status"
-        android:visibility="gone"
-        android:layout_width="@dimen/progress_size_small"
-        android:layout_height="@dimen/progress_size_small"
-        android:layout_centerInParent="true"/>
 
 </RelativeLayout>
