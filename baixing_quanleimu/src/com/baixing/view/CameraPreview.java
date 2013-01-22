@@ -70,9 +70,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
+        try {
+        	mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
+        }
+        catch (Throwable t) {
+        	//Ignor this exception.
+        }
+        
         // start preview with new settings
         try {
-        	mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode. 
             mCamera.setPreviewDisplay(mHolder);
             mCamera.startPreview();
 

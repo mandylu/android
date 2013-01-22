@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<resources> 
+<resources xmlns:android="http://schemas.android.com/apk/res/android"> 
     <style name="CustomDialogStyle" parent="@android:style/Theme.Dialog"> 
         <item name="android:windowBackground">@color/dialogbackgournd</item> 
         <item name="android:windowNoTitle">true</item>
@@ -22,4 +22,8 @@
 	<style name="ThemeActivity">
 		<item name="android:windowAnimationStyle">@style/AnimationActivity</item>
 	</style>    
+
+	<style name="mainActivityTheme" parent="@style/lightTheme">
+	    <item name="android:windowAnimationStyle">@null</item>
+	</style>	
 </resources>
