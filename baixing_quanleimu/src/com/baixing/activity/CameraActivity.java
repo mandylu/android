@@ -9,7 +9,6 @@ import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
-import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
@@ -25,7 +24,6 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.provider.MediaStore;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -93,6 +91,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private static final int MSG_PAUSE_ME = 6;
     private static final int MSG_INIT_CAME = 7;
     private static final int MSG_CANCEL_STORE_PIC = 8;
+    private static final int MSG_RESUME_ME = 9;
 
     /*
      * Internal message parameters: image uploading status.
@@ -167,6 +166,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				
 				isInitialized = true;
+				break;
+			}
+			case MSG_RESUME_ME:{
+//		        Profiler.markStart("sensorRegister");
+		        if (sensor != null) {
+		        	sensorMgr.registerListener(CameraActivity.this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
+		        }
+//		        Profiler.markEnd("sensorRegister");
 				break;
 			}
 			case MSG_PIC_TAKEN:
@@ -387,7 +394,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-		
+//		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
 		
 		if (VERSION.SDK_INT <= 8) {
@@ -442,6 +449,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			
 			handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
 		}
+//		Profiler.markEnd("cameOnCreate");
 	}
 	
 	protected void onDestroy() {
@@ -458,6 +466,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	@SuppressLint("NewApi") 
 	public void initializeCamera(){
+//		Profiler.markStart("initializeCame");
 	    Camera c = null;
 	    try {
     		c = Camera.open(); // attempt to get a Camera instance, this will open the default facing camera if there is any.
@@ -487,7 +496,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	    	mCamera.getParameters().setGpsLatitude(loc.fLat);
 	    	mCamera.getParameters().setGpsLongitude(loc.fLon);
 	    }
-	    
+//	    Profiler.markEnd("initializeCame");
 //	    return c; // returns null if camera is unavailable
 	}
 
@@ -500,27 +509,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+//		Profiler.markStart("cameOnResume");
 		super.onResume();
 		
-//		ViewGroup cameraP = (ViewGroup) this.findViewById(R.id.camera_parent);
-//		if (mPreview != null) {
-//			cameraP.removeView(mPreview);
-//		}
-//
-//		initializeCamera();
-//		
-//		TextView txt = (TextView) findViewById(R.id.cam_not_available_tip);
-//		txt.setVisibility(mCamera == null ? View.VISIBLE : View.GONE);
-//		if (mCamera != null) {
-//			mPreview = new CameraPreview(this);
-//			cameraP.addView(mPreview, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
-//			
-//			mPreview.setCamera(mCamera);
-//		}
         handler.sendEmptyMessageDelayed(MSG_INIT_CAME, 100);
-        if (sensor != null) {
-        	sensorMgr.registerListener(this, sensor, SensorManager.SENSOR_DELAY_NORMAL);
-        }
+        handler.sendEmptyMessageDelayed(MSG_RESUME_ME, 500);//Do not block the main thread.
+//        Profiler.markEnd("cameOnResume");
         
 	}
 	
@@ -643,8 +637,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			vp.removeView((View) v.getParent());
 			BXThumbnail thumbnail = (BXThumbnail) v.getTag();
 			deleteImageUri(thumbnail);
-//			ImageUploader.getInstance().cancel(thumbnail.getLocalPath());
-//			thumbnail.getThumbnail().recycle();
 		}
 	}
 
