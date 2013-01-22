@@ -86,6 +86,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";//this.getArguments().getString("backPageName");
 		title.m_title = getArguments().getString("categoryName");//getArguments().getString("name");
+		title.m_rightActionHint = "筛选";
 	}
 	
 	public VadListAdapter findGoodListAdapter()
@@ -103,11 +104,22 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	}
 	
 	public void handleRightAction(){
-		String categoryName = getArguments().getString("categoryName");
-		categoryName = categoryEnglishName + "," + categoryName;
-		Bundle bundle = createArguments(null, null);
-		bundle.putSerializable("cateNames", categoryName);
-		pushFragment(new PostGoodsFragment(), bundle);
+//		String categoryName = getArguments().getString("categoryName");
+//		categoryName = categoryEnglishName + "," + categoryName;
+//		Bundle bundle = createArguments(null, null);
+//		bundle.putSerializable("cateNames", categoryName);
+//		pushFragment(new PostGoodsFragment(), bundle);
+		if(categoryEnglishName == null || categoryEnglishName.equals("")){
+			pushAndFinish(new SearchFragment(), createArguments(null, null));
+		} else {
+			Bundle args = createArguments(null, getArguments().getString(ARG_COMMON_BACK_HINT));
+			args.putAll(getArguments());
+			args.putInt(ARG_COMMON_REQ_CODE, REQ_SIFT);
+			args.putString("searchType", "goodslist");
+			args.putString("categoryEnglishName", categoryEnglishName);
+	
+			pushFragment(new FilterFragment(), args);
+		}
 	}
 	
 	public String getCategoryNames(){
@@ -584,22 +596,22 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 			@Override
 			public void onClick(View v) {
-				if (v.getId() == R.id.filter_item_more || v.getId() == R.id.filter_item_single)
-				{
-					if(categoryEnglishName == null || categoryEnglishName.equals("")){
-						pushAndFinish(new SearchFragment(), createArguments(null, null));
-					}else{
-						Bundle args = createArguments(null, getArguments().getString(ARG_COMMON_BACK_HINT));
-						args.putAll(getArguments());
-				//		bundle.putString("backPageName", bundle.getString("backPageName"));
-						args.putInt(ARG_COMMON_REQ_CODE, REQ_SIFT);
-						args.putString("searchType", "goodslist");
-						args.putString("categoryEnglishName", categoryEnglishName);
-				
-						pushFragment(new FilterFragment(), args);
-					}
-				}
-				else
+//				if (v.getId() == R.id.filter_item_single)
+//				{
+//					if(categoryEnglishName == null || categoryEnglishName.equals("")){
+//						pushAndFinish(new SearchFragment(), createArguments(null, null));
+//					}else{
+//						Bundle args = createArguments(null, getArguments().getString(ARG_COMMON_BACK_HINT));
+//						args.putAll(getArguments());
+//				//		bundle.putString("backPageName", bundle.getString("backPageName"));
+//						args.putInt(ARG_COMMON_REQ_CODE, REQ_SIFT);
+//						args.putString("searchType", "goodslist");
+//						args.putString("categoryEnglishName", categoryEnglishName);
+//				
+//						pushFragment(new FilterFragment(), args);
+//					}
+//				}
+//				else
 				{
 					final Filterss fss = (Filterss) v.getTag();
 					final boolean isLocation = fss.getName().equals("地区_s");
@@ -645,14 +657,12 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 		
 		View fItemParent = getView().findViewById(R.id.filter_parent);
-		View moreItem = getView().findViewById(R.id.filter_item_more);
-		View singleFilter = getView().findViewById(R.id.filter_item_single);
+//		View singleFilter = getView().findViewById(R.id.filter_item_single);
 		if (fss != null)
 		{
 			FilterUtil.loadFilterBar(fss, filterParamHolder, actionViews);
-			singleFilter.setVisibility(View.GONE);
+//			singleFilter.setVisibility(View.GONE);
 			fItemParent.setVisibility(View.VISIBLE);
-			moreItem.setVisibility(View.VISIBLE);
 		}
 		else
 		{
@@ -660,18 +670,16 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			{
 				view.setVisibility(View.GONE);
 			}
-			singleFilter.setVisibility(View.VISIBLE);
+//			singleFilter.setVisibility(View.VISIBLE);
 			fItemParent.setVisibility(View.GONE);
-			moreItem.setVisibility(View.GONE);
 		}
 		
-		singleFilter.setOnClickListener(listener);
-		moreItem.setOnClickListener(listener);
+//		singleFilter.setOnClickListener(listener);
 		
 		View filterParent =getView() == null ? null : getView().findViewById(R.id.filter_bar_root);
 		if (filterParent != null)
 		{
-			filterParent.setVisibility(View.VISIBLE);
+			filterParent.setVisibility(fss != null ? View.VISIBLE : View.GONE);
 		}
 		
 	}

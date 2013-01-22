@@ -130,6 +130,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			case MSG_PAUSE_ME:
 			{
 				sensorMgr.unregisterListener(CameraActivity.this);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				if (mPreview != null) {
+					cameraP.removeView(mPreview);
+				}
+				
 				if (mCamera != null) {
 		            mPreview.setCamera(null);
 		            mCamera.release();
