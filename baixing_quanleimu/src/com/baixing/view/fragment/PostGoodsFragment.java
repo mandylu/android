@@ -400,25 +400,29 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	@Override
 	public void onClick(View v) {
-		if(v.getId() == R.id.iv_post_finish){
+		switch(v.getId()){
+		case R.id.iv_post_finish:
 			Tracker.getInstance()
 			.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
 			.append(Key.SECONDCATENAME, categoryEnglishName).end();			
 			this.postAction();
-		}else if(v.getId() == R.id.location){
+			break;
+		case R.id.location:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
 			}else if(detailLocation == null){
 				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
 			}
-		}else if(v.getId() == R.id.myImg){
+			break;
+		case R.id.myImg:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 //			if(!editMode){
 				startImgSelDlg(Activity.RESULT_CANCELED, "完成");
 //			}
-		}else if(v.getId() == R.id.img_description){
+				break;
+		case R.id.img_description:
 			final View et = v.findViewById(R.id.description_input);
 			if(et != null){
 				et.postDelayed(new Runnable(){
@@ -433,6 +437,22 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					}			
 				}, 100);
 			}
+			break;
+		case R.id.postinputlayout:
+			final View et2 = v.findViewById(R.id.postinput);
+			if(et2 != null){
+				et2.postDelayed(new Runnable(){
+					@Override
+					public void run(){
+						if (et2 != null){
+							et2.requestFocus();
+							InputMethodManager inputMgr = (InputMethodManager) et2.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+							inputMgr.showSoftInput(et2, InputMethodManager.SHOW_IMPLICIT);
+						}
+					}			
+				}, 100);
+			}			
+			break;
 		}
 	}
 	
@@ -691,6 +711,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}	
 		
 		ViewGroup layout = createItemByPostBean(postBean);//FIXME:
+		if(layout != null && layout.findViewById(R.id.postinputlayout) != null){
+			layout.setClickable(true);
+			layout.setOnClickListener(this);
+		}
 
 		if(layout != null && !postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
 			ViewGroup.LayoutParams lp = layout.getLayoutParams();
@@ -700,7 +724,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 
 		if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
 			layout.findViewById(R.id.location).setOnClickListener(this);
-			((TextView)layout.findViewById(R.id.postinput)).setHint("请输入");
+			((TextView)layout.findViewById(R.id.postinput)).setHint("填写或点击按钮定位");
 			locationView = layout;
 			
 			String address = GlobalDataManager.getInstance().getAddress();
@@ -709,6 +733,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 		}else if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(PostCommonValues.HASH_CONTROL));
+			((TextView)layout.findViewById(R.id.postinput)).setHint("手机或座机");
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
 			String phone = GlobalDataManager.getInstance().getPhoneNumber();
 			if(editMode){
@@ -720,6 +745,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			}
 		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
+		}else if(postBean.getName().equals("价格")){
+			((TextView)layout.findViewById(R.id.postinput)).setHint("价格越低成交越快");
 		}
 		
 		if(layout != null){
@@ -760,7 +787,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		});//categoryItem.setOnClickListener
 		
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null){
-			 ((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
+			((TextView)categoryItem.findViewById(R.id.posthint)).setText(categoryName);
+		}else{
+			((TextView)categoryItem.findViewById(R.id.posthint)).setText("请选择分类");
 		}
 		PostUtil.adjustMarginBottomAndHeight(categoryItem);
 		layout_txt.addView(categoryItem);
@@ -878,6 +907,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			if(postBean.getName().equals(PostCommonValues.STRING_AREA)){
 				continue;
 			}
+			
 			this.appendBeanToLayout(postBean);
 		}
 	}
