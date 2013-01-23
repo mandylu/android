@@ -645,7 +645,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			layout_txt.removeAllViews();
 			layout_txt.addView(v);
 		}
-//		postList.clear();
+		postList.clear();
 		
 		if(null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY, String.class)){
 			clearCategoryParameters();
@@ -1034,6 +1034,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
 				resetData(!editMode);
+				Util.deleteDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
+				categoryEnglishName = "";
+				categoryName = "";
 				if(!editMode){
 					showPost();
 					String lp = getArguments().getString("lastPost");
@@ -1054,7 +1057,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 						intent.putExtras(args);
 						activity.sendBroadcast(intent);
-					}						
+					}
 				}else{
 					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 				}
