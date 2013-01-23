@@ -91,8 +91,11 @@ public class TrackConfig implements Observer {
 			FRAGMENT("fragment","fragment"),
 			//from3.1
 			RESULT("result","结果"),
+			FAIL_REASON("failReason","失败原因"),
 			ACTION("action","inputing动作"),
 			STATUS("status","信息状态"),
+			SIZEINBYTES("sizeInBytes","字节数大小"),
+			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
 			;
 			private String name;
 			private String description;
@@ -218,6 +221,7 @@ public class TrackConfig implements Observer {
 			POST_POSTRESULT("Post_PostResult","Post_PostResult"),
 			POST_GPSFAIL("Post_GpsFail","Post_GPS失败"),
 			POST_INPUTING("Post_Inputing","post页面编辑项目"),
+			POST_IMAGEUPLOAD("Post_ImgUpload", "照片上传"),
 			
 //			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
 			EDITPOST_POSTBTNCONTENTCLICKED("EditPost_PostBtnContentClicked","EditPost_PostBtnContentClicked"),
