@@ -425,7 +425,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		case R.id.vad_call_btn:
 		{
-			VadLogger.event(BxEvent.VIEWAD_MOBILECALLCLICK, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_MOBILECALLCLICK, detail);
 			
 			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
@@ -777,7 +777,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
-			VadLogger.event(BxEvent.VIEWAD_SMS, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_SMS, detail);
 		}
 			
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
@@ -800,6 +800,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	public void showMap() {
+		VadLogger.trackShowMapEvent(detail);
 		if (keepSilent) { // FIXME:
 			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
 			return;
