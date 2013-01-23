@@ -95,10 +95,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
     protected ArrayList<String> photoList = new ArrayList<String>();
     private Bitmap firstImage = null;
     protected boolean isNewPost = true;
+    private boolean finishRightNow = false;
     
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == NONE) {
+			return;
+		} else if (resultCode == Activity.RESULT_FIRST_USER) {
+			finishRightNow = true;
 			return;
 		}
 		
@@ -225,27 +229,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //				return true;
 //		}		
 //		return super.handleBack();
-//		AlertDialog.Builder builder = new Builder(getActivity());
-//		builder.setMessage("退出发布？");
-//		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				//Do nothing.
-//			}
-//		});
-//		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
-//			
-//			@Override
-//			public void onClick(DialogInterface dialog, int which) {
-//				doClearUpImages();
-//				finishFragment();
-//			}
-//		});
-//		builder.create().show();
-		
-		doClearUpImages();
-		finishFragment();
+		AlertDialog.Builder builder = new Builder(getActivity());
+		builder.setMessage("退出发布？");
+		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				//Do nothing.
+			}
+		});
+		builder.setPositiveButton("是", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				doClearUpImages();
+				finishFragment();
+			}
+		});
+		builder.create().show();
 		
 		return true;
 	}	
@@ -260,7 +261,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			.pv(this.pv)
 			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.end();
-		}		
+		}	
+		
+		if (finishRightNow) {
+			finishRightNow = false;
+			doClearUpImages();
+			finishFragment();
+		}
 	}
 	
 	@Override
@@ -285,7 +292,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		
 		if (isNewPost) {
 			isNewPost = false;
-			this.startImgSelDlg(null);
+			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "继续\n发布");
 		}
 		
 	}	
@@ -309,7 +316,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		return v;
 	}
 	
-	protected void startImgSelDlg(ImageSelectionDialog.ImageContainer[] container){
+	protected void startImgSelDlg(final int cancelResultCode, String finishActionLabel){
 //		if(container != null){
 //			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
 //		}
@@ -324,6 +331,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		goIntent.setAction(CommonIntentAction.ACTION_IMAGE_CAPTURE);
 		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.PhotoReqCode.PHOTOHRAPH);
 		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
+		goIntent.putExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL, finishActionLabel);
+		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, cancelResultCode);
 //		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
 //		if (loc != null) {
 //			goIntent.putExtra("location", loc);
@@ -407,7 +416,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 //			if(!editMode){
-				startImgSelDlg(null);
+				startImgSelDlg(Activity.RESULT_CANCELED, "完成");
 //			}
 		}else if(v.getId() == R.id.img_description){
 			final View et = v.findViewById(R.id.description_input);

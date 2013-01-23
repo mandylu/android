@@ -165,6 +165,7 @@ public class Ad implements Serializable{
 	public void setDistance(double distance) {
 		this.distance = distance;
 	}
+	
 	/*
 	@Override
 	public String toString() {

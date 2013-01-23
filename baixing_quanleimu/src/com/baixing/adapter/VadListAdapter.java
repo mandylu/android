@@ -13,7 +13,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -380,13 +382,15 @@ public class VadListAdapter extends BaseAdapter {
 			holder.actionLine.setVisibility(View.GONE);
 		}
 		
+		Pair<String, String> priceP = getPrice(detailObj);
 //			String price = list.get(position).getMetaValueByKey("价格");
-		String price = detailObj.getValueByKey("价格");
-		if (price == null || price.equals("")) {
+//		String price = detailObj.getValueByKey("价格");
+//		if (price == null || price.equals("")) {
+		if (priceP == null) {
 			holder.tvPrice.setVisibility(View.GONE);
 		} else {
 			holder.tvPrice.setVisibility(View.VISIBLE);
-			holder.tvPrice.setText(price);
+			holder.tvPrice.setText(priceP.second);
 		}
 //			String title = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
 //			TextPaint tp = holder.tvDes.getPaint();
@@ -420,7 +424,7 @@ public class VadListAdapter extends BaseAdapter {
 		}
 		
 		
-		String areaV = list.get(position).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
+		String areaV = getArea(list.get(position));//list.get(position).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
 		if(areaV != null && !areaV.equals(""))
 		{
 			holder.tvDateAndAddress.setText(areaV);
@@ -468,5 +472,34 @@ public class VadListAdapter extends BaseAdapter {
 	private boolean isValidMessage(Ad detail)
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
+	
+	private String getArea(Ad detail) {
+		String cityName = GlobalDataManager.getInstance().getCityName();
+		String areaV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
+		if (TextUtils.isEmpty(cityName)) {
+			return areaV;
+		}
+		
+		if (areaV != null && areaV.startsWith(cityName)) {
+			int index = areaV.indexOf(cityName) + cityName.length();
+			if (index < areaV.length() - 2) {
+				areaV = areaV.substring(index + 1);
+			}
+		}
+		
+		return areaV;
+	}
+	
+	private Pair<String, String> getPrice(Ad detail) {
+		String price = detail.getValueByKey("价格");
+		String sallary = detail.getValueByKey("工资");
+		if (!TextUtils.isEmpty(price)) {
+			return new Pair<String, String>("价格", price);
+		} else if (!TextUtils.isEmpty(sallary)) {
+			return new Pair<String, String>("工资", sallary);
+		}
+		
+		return null;
 	}
 }

@@ -307,6 +307,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		pendingTask = new ArrayList<Runnable>();
 		
 		setContentView(R.layout.main_activity);
+		onSetRootView(this.findViewById(R.id.root));
+		
 		if (savedInstanceState == null)
 		{
 			findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);

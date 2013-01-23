@@ -51,11 +51,12 @@ public class PersonalActivity extends BaseTabActivity {
 		}
 		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
+		onSetRootView(findViewById(R.id.root));
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0){
 			pushFragment(new PersonalProfileFragment(), bundle, true);
 		}
-		Intent intent = getIntent();
+//		Intent intent = getIntent();
 		
 //		jumpToPersonalPost(intent);
 //		showDetailViewFromWX();

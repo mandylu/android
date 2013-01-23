@@ -9,7 +9,6 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
-import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
@@ -31,23 +30,7 @@ public class PostActivity extends BaseTabActivity {
 		this.setContentView(R.layout.main_post);
 		final View rootV = findViewById(R.id.root);
 		
-		rootV.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() { //When user is input some thing. do not need show tab bar until user finish input.
-			
-			@Override
-			public void onGlobalLayout() {
-				BaseFragment currentF = getCurrentFragment();
-				int hDiff = rootV.getRootView().getHeight() - rootV.getHeight();
-				if (hDiff > 100)
-				{
-					findViewById(R.id.common_tab_layout).setVisibility(View.GONE);
-				}
-				else
-				{
-					findViewById(R.id.common_tab_layout).setVisibility(currentF != null && currentF.hasGlobalTab() ? View.VISIBLE : View.GONE);
-				}
-			}
-		});
-		
+		onSetRootView(rootV);
 		
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{

@@ -177,8 +177,6 @@ public class ViewUtil {
 		} else {
             Toast.makeText(context, "显示地图失败", Toast.LENGTH_SHORT).show();
         }
-		
-		
 	}
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
