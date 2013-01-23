@@ -16,4 +16,11 @@
         android:gravity="center_horizontal"
         android:maxWidth="120dip" />
 
+    <TextView
+        android:id="@+id/map_bubbleText"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_below="@id/map_bubbleTitle"
+        android:maxWidth="120dip" />
+
 </RelativeLayout>

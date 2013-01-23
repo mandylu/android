@@ -274,6 +274,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	        
 	        if(popView != null){
 	        	((TextView)popView.findViewById(R.id.map_bubbleTitle)).setText(position.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+	        	((TextView)popView.findViewById(R.id.map_bubbleText)).setText(position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
 	        }
         }	    
 	    
