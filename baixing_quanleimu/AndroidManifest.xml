@@ -202,6 +202,7 @@
                 <action android:name="com.baixing.action.notify.msg" />
                 <action android:name="com.baixing.action.notify.bxinfo" />
                 <action android:name="com.baixing.action.notify.hot" />
+                <action android:name="com.baixing.action.notify.jumpurl" />
             </intent-filter>
         </receiver>
         <receiver android:name="com.baixing.broadcast.BXStartupIntentReceiver" >

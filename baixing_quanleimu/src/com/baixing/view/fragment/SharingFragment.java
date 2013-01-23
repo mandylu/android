@@ -21,7 +21,7 @@ class SharingFragment extends DialogFragment{
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceBundle){
-		String[] names = {"分享到新浪微薄", "分享到微信", "分享到QQ空间"};
+		String[] names = {"分享到新浪微博", "分享到微信", "分享到QQ空间"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")
 		.setItems(names, new DialogInterface.OnClickListener(){
 			
