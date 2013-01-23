@@ -202,8 +202,8 @@ public class TrackConfig implements Observer {
 //			VIEWAD_BUZZ("Viewad_Buzz","Viewad_Buzz"),
 			VIEWAD_HINTFAV("Viewad_HintFav","拨打后提示收藏"),
 			VIEWAD_HINTFAVRESULT("Viewad_HintFavResult","拨打后提示收藏的结果"),
-			VIEWAD_NOTCALLABLE("Viewad_NotCallable","点击非手机号按钮"),
-			VIEWAD_NOTCALLABLERESULT("Viewad_NotCallableResult","点击非手机号提示框的结果"),
+//			VIEWAD_NOTCALLABLE("Viewad_NotCallable","点击非手机号按钮"),
+//			VIEWAD_NOTCALLABLERESULT("Viewad_NotCallableResult","点击非手机号提示框的结果"),
 			BUZZLIST("BuzzList","BuzzList"),
 			
 //			POST_POSTBTNHEADERCLICKED("Post_PostBtnHeaderClicked","Post_PostBtnHeaderClicked"),

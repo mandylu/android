@@ -430,8 +430,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLE, null, null);
-				
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
 			else
@@ -761,12 +759,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.CALL);
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.COPY);
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
