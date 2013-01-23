@@ -168,4 +168,9 @@ class WeixinSharingManager implements BaseSharingManager{
 		return "";
 	}
 	
+	@Override
+	public void auth(){
+		
+	}
+	
 }

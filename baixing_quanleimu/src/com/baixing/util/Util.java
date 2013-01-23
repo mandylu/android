@@ -584,6 +584,13 @@ public class Util {
 		return mapper;
 	}
 	
+	public static void deleteDataFromLocate(Context context, String file){
+		if(file != null && !file.equals("") && file.charAt(0) != '_'){//ForArray
+			file = "_" + file;
+		}
+		context.deleteFile(file);
+	}
+	
 	//将数据从手机内存中读出来
 	public static Object loadDataFromLocate(Context context,String file, Class clsName) {
 //		Profiler.markStart("READ_OBJ");
