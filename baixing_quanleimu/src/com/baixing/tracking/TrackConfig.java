@@ -35,7 +35,8 @@ public class TrackConfig implements Observer {
 		public static enum Key implements TrackMobile {//每条记录可能的key
 			TRACKTYPE("tracktype","tracktype"),
 			TIMESTAMP("timestamp","timestamp"),
-			
+			TIMESTAMP_MS("timestamp_ms","timestamp_ms"),
+
 			URL("url","页面URL"),
 			FIRSTCATENAME("firstCateName","一级类目名"),
 			SECONDCATENAME("secondCateName","二级类目名"),
