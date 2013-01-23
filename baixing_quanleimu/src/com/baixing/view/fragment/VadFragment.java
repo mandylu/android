@@ -967,7 +967,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		Bundle args = createArguments(null, null);
 		args.putInt("userId", userId);
 		args.putString("userNick", userNick);
-		
+		args.putString("secondCategoryName", detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+		args.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+
 		pushFragment(new UserAdFragment(), args);
 	}
 

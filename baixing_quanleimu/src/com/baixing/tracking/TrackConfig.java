@@ -151,10 +151,12 @@ public class TrackConfig implements Observer {
 			VIEWADMAP("/viewAdMap","Viewad地图页"),
 //			BUZZ("/buzz","私信"),
 			VIEWADPIC("/viewAdPic","图"),
+			USER("/user","用户相关信息"),
 //			POSTCATE1("/post/cate1","发布选择一级类目页"),
 //			POSTCATE2("/post/cate2","发布选择二级类目页"),
 			POST("/post","发布界面"),
 			EDITPOST("/editPost","编辑界面"),
+			CAMERA("/camera", "拍照"),
 			MY("/my","我的百姓网"),
 			MYADS_SENT("/myAds_sent","已发布信息"),
 //			MYADS_APPROVING("/myAds_approving","审核未通过"),
@@ -167,7 +169,7 @@ public class TrackConfig implements Observer {
 			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
-			FORGETPASSWORD("/forgetPassword","忘记密码");			
+			FORGETPASSWORD("/forgetPassword","忘记密码");
 			
 			private String name;
 			private String description;
