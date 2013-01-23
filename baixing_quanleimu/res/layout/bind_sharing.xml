@@ -1,0 +1,78 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen"
+    android:orientation="vertical" >
+
+    <include layout="@layout/common_title" />
+
+    <RelativeLayout
+        android:id="@+id/bindWeibo"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/set_table_height"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/list_selector"
+        android:clickable="true" >
+
+        <TextView
+            android:id="@+id/weiboText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="新浪微博"
+            android:textSize="@dimen/set_table_item_text_height" />
+
+        <TextView
+            android:id="@+id/weiboBindStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/weiboText"
+            android:layout_marginRight="10dp"
+            android:text="已绑定"
+            android:textSize="@dimen/set_table_item_text_height" />
+    </RelativeLayout>
+
+    <View
+        android:id="@+id/lineView"
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:layout_centerVertical="true"
+        android:background="@color/list_line" />
+
+    <RelativeLayout
+        android:id="@+id/bindQQ"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/set_table_height"
+        android:layout_marginLeft="10dp"
+        android:layout_marginRight="10dp"
+        android:background="@drawable/list_selector"
+        android:clickable="true" >
+
+        <TextView
+            android:id="@+id/qqText"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:layout_marginLeft="10dp"
+            android:text="QQ空间"
+            android:textSize="@dimen/set_table_item_text_height" />
+
+        <TextView
+            android:id="@+id/qqBindStatus"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true"
+            android:layout_alignTop="@id/qqText"
+            android:layout_marginRight="10dp"
+            android:text="已绑定"
+            android:textSize="@dimen/set_table_item_text_height" />
+    </RelativeLayout>
+
+</LinearLayout>
