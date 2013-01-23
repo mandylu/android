@@ -181,7 +181,7 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
         	doShare2Weibo();
         } else if (viewId == R.id.ll_text_limit_unit) {
             Dialog dialog = new AlertDialog.Builder(this).setTitle("注意")
-                    .setMessage("是否要删除这条微薄？")
+                    .setMessage("是否要删除这条微博？")
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             mEdit.setText("");

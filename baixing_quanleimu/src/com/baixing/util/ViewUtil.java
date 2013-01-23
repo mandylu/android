@@ -1,6 +1,9 @@
 //liuchong@baixing.com
 package com.baixing.util;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -90,6 +93,25 @@ public class ViewUtil {
 		String contentText = msg;
 
 		Intent notificationIntent = notificationType == null ? new Intent() : new Intent(notificationType);
+		if(notificationType.equals(Intent.ACTION_VIEW)){
+			if(extras != null){
+				String data = extras.getString("data");
+				JSONObject obj;
+				try {
+					obj = new JSONObject(data);
+					String url = obj.getString("url");
+					notificationIntent.setData(Uri.parse(url));
+					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+					Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
+					notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+					mNotificationManager.notify(notificationId, notification);
+					return;
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (extras != null)
 		{
 			notificationIntent.putExtras(extras);
