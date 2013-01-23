@@ -10,6 +10,7 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
+import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
@@ -183,10 +184,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				break;
 			case MSG_SAVE_DONE:
 				BXThumbnail newPicPair = (BXThumbnail)  msg.obj;
-				ImageUploader.getInstance().startUpload(newPicPair.getLocalPath(), newPicPair.getThumbnail(), null);
-				boolean succed = appendResultImage(newPicPair);
-				if (succed) {
-					addImageUri(newPicPair);
+				if (newPicPair != null) {
+					ImageUploader.getInstance().startUpload(newPicPair.getLocalPath(), newPicPair.getThumbnail(), null);
+					boolean succed = appendResultImage(newPicPair);
+					if (succed) {
+						addImageUri(newPicPair);
+					}
+				} else {
+					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
 				}
 				break;
 			case MSG_ORIENTATION_CHANGE:
@@ -396,7 +401,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
-		
 		if (VERSION.SDK_INT <= 8) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -524,12 +528,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			if (mCamera != null) {
 				mCamera.autoFocus(new Camera.AutoFocusCallback() {
 					public void onAutoFocus(boolean success, Camera camera) {
+						//Do nothing.
 					}
 				});
 			}
 		}
 		catch (Throwable t) {
-			//This should not block the photo capture flow.
+			Log.d(TAG, "error occur when do autofocus.");
 		}
 	}
 	
@@ -579,7 +584,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				View capV = findViewById(R.id.cap);
 				capV.setEnabled(false);
 				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
-				cam.takePicture(null, null, mPicture);
+				mCamera.takePicture(null, null, mPicture);
 			}
 		});
 	}
@@ -676,11 +681,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				String path = getRealPathFromURI(params[0]);
 				BXThumbnail tb = findFromList(path, deleteList, true);
 				if (tb == null) {
-					Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
-					if (bp != null) {
-						ImageUploader.getInstance().startUpload(path, bp, null);
-						tb = BXThumbnail.createThumbnail(path, bp);
-					}
+//					Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
+//					if (bp != null) {
+//						ImageUploader.getInstance().startUpload(path, bp, null);
+//						tb = BXThumbnail.createThumbnail(path, bp);
+//					}
+					tb = BitmapUtils.copyAndCreateThrmbnail(path, CameraActivity.this);
 				}
 				
 				return tb;
@@ -688,14 +694,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-				boolean appendSucced = appendResultImage(result);
-				if (appendSucced) {
-					addImageUri(result);
-				}
-				else
-				{
-					//TODO: post error message.
-				}
+//				boolean appendSucced = appendResultImage(result);
+//				if (appendSucced) {
+//					addImageUri(result);
+//				}
+//				else
+//				{
+//					//TODO: post error message.
+//				}findViewById(R.id.cap).setEnabled(true);
+		    	
+				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
+		        handler.sendMessage(msg);
 			}
 		};
 		
