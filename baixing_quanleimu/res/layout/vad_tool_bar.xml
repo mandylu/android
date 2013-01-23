@@ -1,9 +1,9 @@
 <?xml version="1.0" encoding="utf-8"?>
 <LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
-      android:id="@+id/vad_tool_bar"
+    android:id="@+id/vad_tool_bar"
     android:layout_width="fill_parent"
     android:layout_height="50dp"
-	android:baselineAligned="false"
+    android:baselineAligned="false"
     android:orientation="horizontal" >
 
     <RelativeLayout
@@ -11,8 +11,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_weight="1"
-        android:background="@drawable/bg_vad_toolbar_item_selector"
-            >
+        android:background="@drawable/bg_vad_toolbar_item_selector" >
 
         <LinearLayout
             android:layout_width="wrap_content"
@@ -20,17 +19,17 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingRight="7dp">
+            android:paddingRight="7dp" >
 
-		<ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:scaleType="centerInside"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/linearLayout1"
-            android:src="@drawable/icon_edit" />
-                    
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/linearLayout1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_edit" />
+
             <TextView
                 android:id="@+id/tab_text_1"
                 android:layout_width="wrap_content"
@@ -42,8 +41,6 @@
                 android:textColor="@color/tab_font"
                 android:textSize="16sp" />
         </LinearLayout>
-
-
     </RelativeLayout>
 
     <RelativeLayout
@@ -59,17 +56,17 @@
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingRight="5dp">
+            android:paddingRight="5dp" >
 
-		<ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:scaleType="centerInside"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/linearLayout1"
-            android:src="@drawable/icon_refresh" />
-                    
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/linearLayout1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_refresh" />
+
             <TextView
                 android:id="@+id/tab_text_1"
                 android:layout_width="wrap_content"
@@ -81,8 +78,6 @@
                 android:textColor="@color/tab_font"
                 android:textSize="16sp" />
         </LinearLayout>
-
-
     </RelativeLayout>
 
     <RelativeLayout
@@ -91,24 +86,24 @@
         android:layout_height="fill_parent"
         android:layout_weight="1"
         android:background="@drawable/bg_vad_toolbar_item_selector" >
-     	
-         <LinearLayout
+
+        <LinearLayout
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_centerInParent="true"
             android:gravity="center"
             android:orientation="horizontal"
-            android:paddingRight="5dp">
+            android:paddingRight="5dp" >
 
-		<ImageView
-            android:id="@+id/imageView1"
-            android:layout_width="24dp"
-            android:layout_height="24dp"
-            android:scaleType="centerInside"
-            android:layout_centerVertical="true"
-            android:layout_toLeftOf="@+id/linearLayout1"
-            android:src="@drawable/icon_delete" />
-                    
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:layout_toLeftOf="@+id/linearLayout1"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_delete" />
+
             <TextView
                 android:id="@+id/tab_text_1"
                 android:layout_width="wrap_content"
@@ -120,8 +115,42 @@
                 android:textColor="@color/tab_font"
                 android:textSize="16sp" />
         </LinearLayout>
-
     </RelativeLayout>
-    
+
+    <RelativeLayout
+        android:id="@+id/vad_btn_forward"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_weight="1"
+        android:background="@drawable/bg_vad_toolbar_item_selector" >
+
+        <LinearLayout
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:orientation="horizontal"
+            android:paddingRight="5dp" >
+
+            <ImageView
+                android:id="@+id/imageView1"
+                android:layout_width="24dp"
+                android:layout_height="24dp"
+                android:layout_centerVertical="true"
+                android:scaleType="centerInside"
+                android:src="@drawable/icon_delete" />
+
+            <TextView
+                android:id="@+id/tab_text_1"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingLeft="2dp"
+                android:paddingRight="2dp"
+                android:text="转发"
+                android:textColor="@color/tab_font"
+                android:textSize="16sp" />
+        </LinearLayout>
+    </RelativeLayout>
 
 </LinearLayout>

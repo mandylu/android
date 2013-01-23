@@ -140,6 +140,7 @@ public class VadListAdapter extends BaseAdapter {
 		ImageView ivInfo;
 		View pbView;
 		View divider;
+		TextView tvShared;
 	}
 	
 	private boolean isGroupPosition(int pos)
@@ -220,6 +221,7 @@ public class VadListAdapter extends BaseAdapter {
 			holder.pbView = v.findViewById(R.id.pbLoadingProgress);
 			holder.tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
 			holder.divider = v.findViewById(R.id.vad_divider);
+			holder.tvShared = (TextView)v.findViewById(R.id.sharedTag);
 			((AnimatingImageView)holder.ivInfo).setForefrontView(holder.pbView);
 			v.setTag(holder);
 		}
@@ -279,7 +281,6 @@ public class VadListAdapter extends BaseAdapter {
 			if(null != holder.ivInfo.getTag()) strTag = holder.ivInfo.getTag().toString();
 			
 //				holder.ivInfo.setLayoutParams(lp);
-			
 			if (list.get(position).getImageList() == null
 					|| list.get(position).getImageList().equals("")
 					|| list.get(position).getImageList().getSquare() == null
@@ -455,6 +456,11 @@ public class VadListAdapter extends BaseAdapter {
                 handler.sendMessage(msg);
 			}
 		});	
+		if(detailObj.getValueByKey("shared").equals("1")){
+			holder.tvShared.setVisibility(View.VISIBLE);
+		}else{
+			holder.tvShared.setVisibility(View.GONE);
+		}
 		return v;
 		
 	}

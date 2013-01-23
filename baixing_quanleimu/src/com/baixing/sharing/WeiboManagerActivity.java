@@ -7,11 +7,16 @@ import com.weibo.sdk.android.Weibo;
 import com.weibo.sdk.android.WeiboAuthListener;
 import com.weibo.sdk.android.WeiboDialogError;
 import com.weibo.sdk.android.WeiboException;
+import com.weibo.sdk.android.WeiboParameters;
 import com.weibo.sdk.android.sso.SsoHandler;
 
 import android.app.Activity;
 import android.content.Intent;
 import android.os.Bundle;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.webkit.WebSettings;
+import android.webkit.WebView;
 
 public class WeiboManagerActivity extends Activity{
 	private SsoHandler mSsoHandler;
@@ -22,7 +27,10 @@ public class WeiboManagerActivity extends Activity{
 		doAuthSSO();
 	}
 		
-	public void doAuthSSO(){		
+	public void doAuthSSO(){
+		CookieSyncManager.createInstance(this); 
+	    CookieManager cookieManager = CookieManager.getInstance();
+	    cookieManager.removeAllCookie();
 		mSsoHandler = new SsoHandler(this, Weibo.getInstance(WeiboSSOSharingManager.kWBBaixingAppKey, "http://www.baixing.com"));
         mSsoHandler.authorize(new WeiboAuthListener(){
 

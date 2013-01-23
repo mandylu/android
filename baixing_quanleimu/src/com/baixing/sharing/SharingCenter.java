@@ -1,9 +1,17 @@
 package com.baixing.sharing;
 
 import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
 
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.util.Util;
 
 public class SharingCenter{
 	static private BaseSharingManager sm;
@@ -12,18 +20,21 @@ public class SharingCenter{
 		release();
 //		sm = new WeiboSharingManager(activity);
 		sm = new WeiboSSOSharingManager(activity);
+		registerReceiver(ad);
 		sm.share(ad);
 	}
 	
 	public static void share2Weixin(Activity activity, Ad ad){
 		release();
 		sm = new WeixinSharingManager(activity);
+		registerReceiver(ad);
 		sm.share(ad);
 	}
 	
 	public static void share2QZone(Activity activity, Ad ad){
 		release();
 		sm = new QZoneSharingManager(activity);
+		registerReceiver(ad);
 		sm.share(ad);
 	}
 	
@@ -32,5 +43,32 @@ public class SharingCenter{
 			sm.release();
 			sm = null;
 		}
+	}
+	
+	static private void registerReceiver(final Ad ad){
+		GlobalDataManager.getInstance().getApplicationContext().registerReceiver(new BroadcastReceiver(){
+
+			@Override
+			public void onReceive(Context context, Intent intent) {
+				// TODO Auto-generated method stub
+				Bundle bundle = intent.getExtras();
+				String id = null;
+				if(bundle != null){
+					id = bundle.getString(CommonIntentAction.EXTRA_MSG_SHARED_AD_ID);
+				}
+				if(id == null || id.length() == 0){
+					id = ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID);
+				}
+				if(id != null && id.length() > 0){
+					String savedIds = (String)Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, String.class);
+					if(savedIds != null && savedIds.length() > 0){
+						id += "," + savedIds;
+					}
+					Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, id);
+				}
+				GlobalDataManager.getInstance().getApplicationContext().unregisterReceiver(this);
+			}
+			
+		}, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED));
 	}
 }

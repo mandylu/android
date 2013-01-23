@@ -317,6 +317,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			rootView.findViewById(R.id.vad_btn_edit).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_refresh).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_delete).setOnClickListener(this);
+			rootView.findViewById(R.id.vad_btn_forward).setOnClickListener(this);
 			
 			if (!detail.isValidMessage())
 			{
@@ -463,6 +464,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		case R.id.vad_btn_delete:{
 			postDelete(true, null);
+			break;
+		}
+		case R.id.vad_btn_forward:{
+			(new SharingFragment(detail)).show(getFragmentManager(), null);
 			break;
 		}
 		}

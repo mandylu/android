@@ -8,6 +8,8 @@ import java.lang.ref.WeakReference;
 import java.nio.ByteBuffer;
 import java.text.SimpleDateFormat;
 import java.util.Date;
+
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -42,8 +44,8 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 	private Activity mActivity;
 	private Ad mAd;
 	private String mImageUrl;
-	static final private String STRING_ACCESS_TOKEN = "qzoneaccess";
-	static final private String STRING_OPENID = "qzonopenid";
+	static final public String STRING_ACCESS_TOKEN = "qzoneaccess";
+	static final public String STRING_OPENID = "qzonopenid";
 
 	public QZoneSharingManager(Activity startingActivity){
 		mActivity = startingActivity;
@@ -53,6 +55,7 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 	}
 	
 	private void uploadImage(){
+		if(mAd == null) return;
 		ImageList il = mAd.getImageList();
 		if(il != null){
 			String big = il.getBig();
@@ -125,12 +128,13 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 
 	}
 	
-	private void share2QZone(Ad ad){
+	private void share2QZone(final Ad ad){
 		Bundle bundle = new Bundle();
 
 		bundle.putString("title", ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));		
 		bundle.putString("url", ad.getValueByKey(EDATAKEYS.EDATAKEYS_LINK));		
-		bundle.putString("comment", "我正在百姓网卖" + "\"" + ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\"" + "，求转发");		
+		bundle.putString("comment", 
+				"我用百姓网App发布了\"" + ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\"" + "麻烦朋友们帮忙转发一下～");		
 		bundle.putString("summary", ad.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION));
 		if(mImageUrl != null && mImageUrl.length() > 0){
 			bundle.putString("images", mImageUrl);
@@ -138,9 +142,15 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 		//分享内容的类型。4表示网页；5表示视频（type=5时，必须传入playurl）。
 		bundle.putString("type", "4");
 		
-		TencentOpenAPI2.sendStore(mActivity.getApplicationContext(), mAccessToken, mAppid, mOpenId, "_self", bundle, new Callback() {
+		TencentOpenAPI2.sendStore(mActivity, mAccessToken, mAppid, mOpenId, "_self", bundle, new Callback() {
 			@Override
 			public void onSuccess(final Object obj) {
+				Context ctx = GlobalDataManager.getInstance().getApplicationContext();
+				if(ctx != null){
+					Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED);
+					intent.putExtra(CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+					ctx.sendBroadcast(intent);
+				}
 				mActivity.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -165,16 +175,24 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 			public void onCancel(int flag) {
 			}
 		}, null);
+		Context ctx = GlobalDataManager.getInstance().getApplicationContext();
+		if(ctx != null){
+			Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED);
+			intent.putExtra(CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+			ctx.sendBroadcast(intent);
+		}
+
 	}
 	
-	private void auth() {
+	@Override
+	public void auth() {
 		Intent intent = new Intent(mActivity, com.tencent.tauth.TAuthView.class);
 		intent.putExtra(TencentOpenHost.CLIENT_ID, mAppid);
 		intent.putExtra(
 				TencentOpenHost.SCOPE,
 				"get_user_info,get_user_profile,add_share,add_topic,list_album,upload_pic,add_album");
-		intent.putExtra(TencentOpenHost.TARGET, "_blank");
-		intent.putExtra(TencentOpenHost.CALLBACK, "auth://tauth.qq.com/");
+		intent.putExtra(TencentOpenHost.TARGET, "_self");
+//		intent.putExtra(TencentOpenHost.CALLBACK, "auth://tauth.qq.com/");
 		mActivity.startActivity(intent);
 	}
 
