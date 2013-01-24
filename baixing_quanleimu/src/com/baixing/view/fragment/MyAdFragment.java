@@ -225,7 +225,19 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}	
 	}
 
-
+	private void setSharedStatus(){
+		String sharedIds = (String)Util.loadDataFromLocate(this.getActivity(), CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, String.class);
+		if(sharedIds == null || sharedIds.length() == 0 || glLoader.getGoodsList().getData() == null) return;
+		String[] ids = sharedIds.split(",");
+		for(int i = 0; i < ids.length; ++ i){
+			for(int j = 0; j < glLoader.getGoodsList().getData().size(); ++ j){
+				if(ids[i].equals(glLoader.getGoodsList().getData().get(j).getValueByKey(EDATAKEYS.EDATAKEYS_ID))){
+					glLoader.getGoodsList().getData().get(j).setValueByKey("shared", "1");
+					break;
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onResume() {
@@ -242,7 +254,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
 			}
 		}
-		
+		setSharedStatus();
 		glLoader.setHasMoreListener(null);
 		glLoader.setCallback(this);
 		adapter.setList(glLoader.getGoodsList().getData());
@@ -364,6 +376,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			if(msg.what == MSG_MYPOST){
 				GlobalDataManager.getInstance().setListMyPost(listMyPost);
 			}
+			setSharedStatus();
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			doShare();
@@ -585,34 +598,37 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
             public void onClick(DialogInterface dialog, int clickedIndex) {
                 if (isValidMessage(detail)) {
                     switch (clickedIndex) {
-                        case 0://刷新
-                            doRefresh(0, adId);
-                            Tracker.getInstance().event(BxEvent.SENT_REFRESH)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 1://修改
-                            Bundle args = createArguments(null, null);
-                            args.putSerializable("goodsDetail", detail);
-                            args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-							pushFragment(new EditAdFragment(), args);
-                            Tracker.getInstance().event(BxEvent.SENT_EDIT)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 2://删除
-                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, Value.VALID)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            break;
+                    case 0:///sharing
+                    	(new SharingFragment(detail)).show(getFragmentManager(), null);
+                    	break;
+                    case 1://刷新
+                        doRefresh(0, adId);
+                        Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 2://修改
+                        Bundle args = createArguments(null, null);
+                        args.putSerializable("goodsDetail", detail);
+                        args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+						pushFragment(new EditAdFragment(), args);
+                        Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 3://删除
+                    	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                    			.append(Key.STATUS, Value.VALID)
+                    			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+                        break;
                     }
                 } 
                 else {

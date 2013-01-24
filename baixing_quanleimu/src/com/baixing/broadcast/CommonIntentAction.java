@@ -6,6 +6,9 @@ public class CommonIntentAction
 	public static final String ACTION_BROADCAST_NEW_MSG = "com.baixing.action.newmsg";
 	public static final String EXTRA_MSG_MESSAGE	= "extra.message.msgbody";
 	
+	public static final String ACTION_BROADCAST_SHARE_SUCCEED = "com.baixing.action.share_succeed";
+	public static final String EXTRA_MSG_SHARED_AD_ID = "extra.message.shared.ad.id";
+	
 	public static final String ACTION_BROADCAST_WEIBO_AUTH_DONE = "com.baixing.action.weibo_auth_done";
 	
 	public static final String ACTION_BROADCAST_POST_FINISH = "com.baixing.action.fisish.post";
@@ -24,6 +27,7 @@ public class CommonIntentAction
 	public static final String ACTION_NOTIFICATION_HOT = "com.baixing.action.notify.hot";//Hot spot.
 	public static final String ACTION_NOTIFICATION_BXINFO = "com.baixing.action.notify.bxinfo";
 	public static final String ACTION_NOTIFICATION_UPGRADE = "com.baixing.action.notify.upgrade";
+	public static final String ACTION_NOTIFICATION_JUMPURL = "com.baixing.action.notify.jumpurl";
 	
 	/**
 	 * Common extra key.

@@ -3,6 +3,9 @@ package com.baixing.sharing;
 import java.io.File;
 import java.io.IOException;
 
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.quanleimu.activity.R;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.WeiboException;
@@ -13,6 +16,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -60,6 +64,12 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 		public void onComplete(String arg0) {
 			// TODO Auto-generated method stub
 			WeiboSharingActivity.this.finish();
+			Context ctx = GlobalDataManager.getInstance().getApplicationContext();
+			if(ctx != null){
+				Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED);
+				ctx.sendBroadcast(intent);
+			}
+
 			WeiboSharingActivity.this.runOnUiThread(new Runnable(){
 				@Override
 				public void run(){
@@ -86,9 +96,9 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 		Oauth2AccessToken accessToken = new Oauth2AccessToken(mAccessToken, mExpires_in);
 		StatusesAPI statusApi = new StatusesAPI(accessToken);
 		if(mPicPath == null || mPicPath.length() == 0){
-			statusApi.update("我在#百姓网#发布" + mContent, "", "", new ShareListener());
+			statusApi.update("我用百姓网App发布了\"" + mContent + "\"" + "麻烦朋友们帮忙转发一下～", "", "", new ShareListener());
 		}else{
-			statusApi.upload("我在#百姓网#发布" + mContent, mPicPath, "", "", new ShareListener());
+			statusApi.upload("我用百姓网App发布了\"" + mContent + "\"" + "麻烦朋友们帮忙转发一下～", mPicPath, "", "", new ShareListener());
 		}
 //		mPd = ProgressDialog.show(this, "", "请稍候");
 //		mPd.setCancelable(true);
@@ -171,7 +181,7 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
         	doShare2Weibo();
         } else if (viewId == R.id.ll_text_limit_unit) {
             Dialog dialog = new AlertDialog.Builder(this).setTitle("注意")
-                    .setMessage("是否要删除这条微薄？")
+                    .setMessage("是否要删除这条微博？")
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             mEdit.setText("");

@@ -96,6 +96,7 @@
     </string-array>
 
     <string-array name="item_operate_mypost">
+        <item>分享</item>
         <item>刷新</item>
         <item>修改</item>
         <item>删除</item>

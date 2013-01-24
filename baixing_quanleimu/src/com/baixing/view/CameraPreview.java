@@ -1,10 +1,16 @@
 package com.baixing.view;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.annotation.SuppressLint;
 import android.content.Context;
+import android.graphics.ImageFormat;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
+import android.os.Build;
+import android.os.Build.VERSION;
 import android.util.Log;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
@@ -70,20 +76,58 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
-        try {
-        	mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
-        }
-        catch (Throwable t) {
-        	//Ignor this exception.
+        final boolean isNewSdk = VERSION.SDK_INT > 8;
+        
+        if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
+        	try {
+        		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
+        	}
+        	catch (Throwable t) {
+        		//Ignor this exception.
+        	}
         }
         
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
+            
+            Parameters param = mCamera.getParameters();
+            param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 
+            initParam(param, isNewSdk);
+            mCamera.setParameters(param);
+            
             mCamera.startPreview();
 
         } catch (Exception e){
             Log.d(TAG, "Error starting camera preview: " + e.getMessage());
         }
+    }
+    
+    private void initParam(Parameters params, boolean isNewSdk) {
+		List<Integer> prevF = params.getSupportedPreviewFormats();
+		params.setPreviewFormat(prevF.get(0));
+		
+//    	if (isNewSdk) {
+//    		List<int[]>  r = params.getSupportedPreviewFpsRange();
+//    		params.setPreviewFpsRange(r.get(0)[0], r.get(0)[1]);
+//    	}
+//    	else {
+////    		List<String> fM = params.getSupportedFlashModes();
+////    		if (fM != null) {
+////    			params.setFlashMode(fM.get(0));
+////    		}
+//    		List<Integer> r = params.getSupportedPreviewFrameRates();
+//    		params.setPreviewFrameRate(r.get(0));
+//    		List<String> cEs = params.getSupportedColorEffects();
+//    		params.setColorEffect(cEs.get(0));
+//    		List<String> bs = params.getSupportedAntibanding();
+//    		if (bs != null) {
+//    			params.setAntibanding(bs.get(0));
+//    		}
+//    		List<String> wbs = params.getSupportedWhiteBalance();
+//    		if (wbs != null) {
+//    			params.setWhiteBalance(wbs.get(0));
+//    		}
+//    	}
     }
 }

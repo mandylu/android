@@ -1,9 +1,13 @@
 //liuchong@baixing.com
 package com.baixing.broadcast;
 
+import org.json.JSONObject;
+
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.TrackConfig;
@@ -28,7 +32,6 @@ public class NotificationHandler extends BroadcastReceiver {
 //    		handleBXInfoMessage(context, intent);
     		startApp(context, intent);
     	}
-    	
     }
     
     private void startApp(Context context, Intent outerIntent)

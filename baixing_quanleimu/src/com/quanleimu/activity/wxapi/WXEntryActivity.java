@@ -8,11 +8,14 @@ import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Toast;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.activity.PersonalActivity;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.tencent.mm.sdk.openapi.BaseReq;
 import com.tencent.mm.sdk.openapi.BaseResp;
 import com.tencent.mm.sdk.openapi.ConstantsAPI;
@@ -135,6 +138,10 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 		switch (resp.errCode) {
 		case BaseResp.ErrCode.ERR_OK:
 			result = "发送成功";
+			Context ctx = GlobalDataManager.getInstance().getApplicationContext();
+			if(ctx != null){
+				ctx.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED));
+			}
 			break;
 		case BaseResp.ErrCode.ERR_USER_CANCEL:
 			result = "发送取消";

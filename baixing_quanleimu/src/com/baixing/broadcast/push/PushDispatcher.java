@@ -18,7 +18,8 @@ public class PushDispatcher {
 		this.context = context;
 		handlers = new PushHandler[] {
 				new BXInfoHandler(context),
-                new PushUpdateHandler(context)
+                new PushUpdateHandler(context),
+				new UrlHandler(context)
 		};
 	}
 	

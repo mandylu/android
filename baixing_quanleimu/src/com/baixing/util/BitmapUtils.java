@@ -52,6 +52,9 @@ import com.baixing.entity.BXThumbnail;
 public class BitmapUtils {
 	public static final String TAG = "BitmapUtils";
 	
+	public static final int DEFAULT_THUMBNAIL_WIDTH = 200;
+	public static final int DEFAULT_THUMBNAIL_HEIGHT = 200;
+	
     private static boolean useSampleSize = false;
     
     public static boolean useSampleSize(){
@@ -318,11 +321,68 @@ public class BitmapUtils {
 	}
 	
 	private static File getOutputMediaFile() {
-//		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bx/";
-//		File dirF = new File(dir);
-//		dirF.mkdirs();
+		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bx/";
+		File dirF = new File(dir);
+		dirF.mkdirs();
 		
-		return new File(Environment.getExternalStorageDirectory(), "bx_" + System.currentTimeMillis() + ".jpg");
+//		return new File(Environment.getExternalStorageDirectory(), "bx_" + System.currentTimeMillis() + ".jpg");
+		return new File(dirF, "bx_" + System.currentTimeMillis() + ".jpg");
+	}
+	
+	public static final BXThumbnail copyAndCreateThrmbnail(String sourceFile, Context context) {
+		String savedPath = getOutputMediaFile().getAbsolutePath();
+		if (savedPath == null) {
+			return null;
+		}
+		
+		Bitmap source = null;
+		try {
+			FileOutputStream fos = new FileOutputStream(savedPath);
+			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPurgeable = true;
+			options.inJustDecodeBounds = true;
+			
+			BitmapFactory.decodeFile(sourceFile, options);
+			
+			options.inJustDecodeBounds = false;
+			options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
+			
+			source = BitmapFactory.decodeFile(sourceFile, options);
+			
+			source.compress(CompressFormat.JPEG, 100, fos);
+			
+			fos.close();
+		}
+		catch (Throwable t) {
+			Log.e(TAG, "copy image failed." + t.getMessage());
+		}
+		finally {
+			if (source != null) {
+//				try {
+//					ExifInterface original = new ExifInterface(sourceFile);
+//					ExifInterface target = new ExifInterface(savedPath);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				//TODO: copy EXIF.
+				
+			}
+		}
+		
+		if (source == null) {
+			return null;
+		}
+
+		try {
+			Bitmap bp = Bitmap.createScaledBitmap(source, DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, true);
+			
+			source.recycle();
+			return BXThumbnail.createThumbnail(savedPath, bp);
+		} catch (Throwable t) {
+			return BXThumbnail.createThumbnail(savedPath, source);
+		}
 	}
 	
 	/**
@@ -364,6 +424,10 @@ public class BitmapUtils {
         } catch (IOException e) {
             Log.d(TAG, "Error accessing file: " + e.getMessage());
         }
+		
+		if (source == null) {
+			return null;
+		}
         
         BitmapFactory.Options opts = new BitmapFactory.Options();
         opts.inPurgeable = true;
