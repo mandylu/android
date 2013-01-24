@@ -282,6 +282,7 @@ public class TrackConfig implements Observer {
 			APP_STOP("App_Stop","App_Stop"),
 			APP_PAUSE("App_Pause","App_Pause"),
 			APP_RESUME("App_Resume","App_Resume"),
+			PUSH_STARTAPP("Push_StartApp","Push_StartApp"),
 			GPS("GPS","GPS");
 			
 			private String name;
