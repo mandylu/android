@@ -24,7 +24,7 @@ import com.tencent.mm.sdk.openapi.WXMediaMessage;
 import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
 
-class WeixinSharingManager implements BaseSharingManager{
+class WeixinSharingManager extends BaseSharingManager{
 //	static private final String WX_APP_ID = "wx862b30c868401dbc";
 	static private final String WX_APP_ID = "wx47a12013685c6d3b";//debug
 	private Activity mActivity;
@@ -38,10 +38,10 @@ class WeixinSharingManager implements BaseSharingManager{
 	@Override
 	public void share(Ad ad) {
 		// TODO Auto-generated method stub
-		String detailJson = convert2JSONString(ad);
-		String title = "我在百姓网发布：" + ad.getValueByKey("title");
+//		String detailJson = convert2JSONString(ad);
+		String title = "我在转让：" + ad.getValueByKey("title") + ",请各位朋友们帮忙转发下哦~";
 		
-		String imgUrl = getImageUrl(ad);
+		String imgUrl = super.getThumbnailUrl(ad);
 
 		WXMediaMessage obj = new WXMediaMessage();
 		
@@ -154,18 +154,6 @@ class WeixinSharingManager implements BaseSharingManager{
 		
 //		GoodsList gl = JsonUtil.getGoodsListFromJson(obj.toString());
 		return obj.toString();
-	}
-	
-	private static String getImageUrl(Ad goodDetail)
-	{
-		ImageList il = goodDetail.getImageList();
-		if(il != null){
-			String resize180 = il.getResize180();
-			if(resize180 != null && resize180.length() > 0){
-				return resize180.split(",")[0];
-			}
-		}
-		return "";
 	}
 	
 	@Override

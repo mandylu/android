@@ -33,7 +33,7 @@ import android.os.Message;
 import android.util.Log;
 import android.widget.Toast;
 
-public class QZoneSharingManager implements Callback, BaseSharingManager{
+public class QZoneSharingManager  extends BaseSharingManager implements Callback{
 	private final int MSG_AUTO_SUCCEED = 1;
 	private final int MSG_AUTO_FAIL = 2;
 	private final int MSG_UPLOADIMG_FINISH = 3;

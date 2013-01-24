@@ -173,6 +173,7 @@ public class RegisterFragment extends BaseFragment {
 					user.setPhone(accoutnEt.getText().toString());
 					user.setPassword(passwordEt.getText().toString());
 					GlobalDataManager.getInstance().setMobile(user.getPhone());
+					GlobalDataManager.getInstance().setPhoneNumber(user.getPhone());
 					Util.saveDataToLocate(activity, "user", user);
 					
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);

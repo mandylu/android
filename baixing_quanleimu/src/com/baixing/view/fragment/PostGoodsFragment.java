@@ -1093,6 +1093,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				Toast.makeText(activity, (String)msg.obj, 0).show();
 			}
 			break;
+		case PostCommonValues.MSG_POST_EXCEPTION:
+			hideProgress();
+			Toast.makeText(activity, "网络连接异常", 0).show();
+			break;
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();
 			ErrorHandler.getInstance().handleMessage(msg);

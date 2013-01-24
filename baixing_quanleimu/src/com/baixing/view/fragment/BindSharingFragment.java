@@ -1,5 +1,7 @@
 package com.baixing.view.fragment;
 
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -77,6 +79,37 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 		super.onResume();
 		setBindingStatus();
 	}
+	
+	enum BindType{
+		BindType_Weibo,
+		BindType_QZone
+	}
+	private void showUnBindConfirmDialog(final BindType type){
+		new AlertDialog.Builder(this.getActivity())
+		.setMessage("是否解除绑定？")
+		.setPositiveButton("是", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				if(type == BindType.BindType_Weibo){
+					Util.deleteDataFromLocate(getActivity(), WeiboSSOSharingManager.STRING_WEIBO_ACCESS_TOKEN);
+					setBindingStatus();
+				}else if(type == BindType.BindType_QZone){
+					Util.deleteDataFromLocate(getActivity(), QZoneSharingManager.STRING_ACCESS_TOKEN);
+					Util.deleteDataFromLocate(getActivity(), QZoneSharingManager.STRING_OPENID);
+					setBindingStatus();
+				}
+			}
+		})
+		.setNegativeButton("否", new DialogInterface.OnClickListener() {
+			
+			@Override
+			public void onClick(DialogInterface dialog, int which) {	
+				//tracker
+				dialog.dismiss();
+			}
+		}).show();
+	}
 
 	private BaseSharingManager sharingMgr = null;
 	@Override
@@ -84,8 +117,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 		// TODO Auto-generated method stub
 		if(v.getId() == R.id.bindWeibo){
 			if(isWeiboBinded()){
-				Util.deleteDataFromLocate(getActivity(), WeiboSSOSharingManager.STRING_WEIBO_ACCESS_TOKEN);
-				setBindingStatus();
+				showUnBindConfirmDialog(BindType.BindType_Weibo);
 			}else{
 				if(sharingMgr != null){
 					sharingMgr.release();
@@ -95,9 +127,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 			}
 		}else if(v.getId() == R.id.bindQQ){
 			if(isQZoneBinded()){
-				Util.deleteDataFromLocate(getActivity(), QZoneSharingManager.STRING_ACCESS_TOKEN);
-				Util.deleteDataFromLocate(getActivity(), QZoneSharingManager.STRING_OPENID);
-				setBindingStatus();
+				showUnBindConfirmDialog(BindType.BindType_QZone);
 			}else{
 				if(sharingMgr != null){
 					sharingMgr.release();

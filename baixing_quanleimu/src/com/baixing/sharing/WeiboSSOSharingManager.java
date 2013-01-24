@@ -30,7 +30,7 @@ import com.weibo.sdk.android.WeiboDialogError;
 import com.weibo.sdk.android.WeiboException;
 import com.weibo.sdk.android.sso.SsoHandler;
 
-public class WeiboSSOSharingManager implements BaseSharingManager {
+public class WeiboSSOSharingManager extends BaseSharingManager {
 	public static class WeiboAccessTokenWrapper implements Serializable {
 		/**
 		 * 
@@ -191,14 +191,8 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 	}
 
 	private void doShare2Weibo(Oauth2AccessToken accessToken) {
-		ImageList il = mAd.getImageList();
-		String resize180 = null;
-		if (il != null) {
-			resize180 = il.getResize180();
-			if (resize180 != null) {
-				resize180 = resize180.split(",")[0];
-			}
-		}
+		String imgUrl = super.getThumbnailUrl(mAd);
+		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : ImageCacheManager.getInstance().getFileInDiskCache(imgUrl);
 
 		Intent i = new Intent(mActivity, WeiboSharingActivity.class);
 		i.putExtra(
@@ -207,9 +201,7 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 						+ mAd.getValueByKey("link"));
 		i.putExtra(
 				WeiboSharingActivity.EXTRA_PIC_URI,
-				(resize180 == null || resize180.length() == 0) ? ""
-						: ImageCacheManager.getInstance().getFileInDiskCache(
-								resize180));
+				(imgPath == null || imgPath.length() == 0) ? "" : imgPath);
 		i.putExtra(WeiboSharingActivity.EXTRA_ACCESS_TOKEN,
 				accessToken.getToken());
 		i.putExtra(WeiboSharingActivity.EXTRA_EXPIRES_IN,

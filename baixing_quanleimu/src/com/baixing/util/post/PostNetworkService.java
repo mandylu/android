@@ -227,7 +227,7 @@ public class PostNetworkService implements ApiListener{
 	public void onException(Exception e) {
 		// TODO Auto-generated method stub
 		if(e != null){
-			sendMessage(PostCommonValues.MSG_POST_FAIL, e.getMessage());
+			sendMessage(PostCommonValues.MSG_POST_EXCEPTION, e.getMessage());
 		}
 	}
 }

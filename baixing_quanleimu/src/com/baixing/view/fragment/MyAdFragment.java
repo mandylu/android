@@ -186,12 +186,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		
 		Bundle bundle = this.getArguments();
 		if(bundle != null){
-			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
-				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
-				}
-				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
-			}
+//			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
+//				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
+//					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
+//				}
+//				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
+//			}
 			if(bundle.containsKey("forceUpdate")){
 				if(bundle.getBoolean("forceUpdate")){
 					this.needReloadData = true;
@@ -466,9 +466,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         case MSG_ITEM_OPERATE:
             showItemOperateMenu(msg);
             break;
-        case MSG_SHOW_BIND_DIALOG:
-        	showBindDialog();
-        	break;
+//        case MSG_SHOW_BIND_DIALOG:
+//        	showBindDialog();
+//        	break;
 		}
 	}
 	
@@ -491,39 +491,39 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		return "";
 	}
 	
-	private void showBindDialog(){
-		new AlertDialog.Builder(this.getActivity())
-		.setMessage(R.string.personalpost_bind_baixing_account)
-		.setPositiveButton("是", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				Tracker.getInstance()
-				.event(BxEvent.POST_POSTWITHLOGIN)
-				.append(Key.SECONDCATENAME, getPostCateEnglishName())
-				.end();
-				
-				dialog.dismiss();
-				BaseActivity activity = (BaseActivity)getActivity();
-				if(activity != null){
-					activity.pushFragment(new LoginFragment(), MyAdFragment.createArguments(null, null), false);
-				}				
-			}
-		})
-		.setNegativeButton("否", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {	
-				//tracker
-				Tracker.getInstance()
-				.event(BxEvent.POST_POSTWITHOUTLOGIN)
-				.append(Key.SECONDCATENAME, getPostCateEnglishName())
-				.end();
-				dialog.dismiss();
-			}
-		}).show();
-		
-	}
+//	private void showBindDialog(){
+//		new AlertDialog.Builder(this.getActivity())
+//		.setMessage(R.string.personalpost_bind_baixing_account)
+//		.setPositiveButton("是", new DialogInterface.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				Tracker.getInstance()
+//				.event(BxEvent.POST_POSTWITHLOGIN)
+//				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+//				.end();
+//				
+//				dialog.dismiss();
+//				BaseActivity activity = (BaseActivity)getActivity();
+//				if(activity != null){
+//					activity.pushFragment(new LoginFragment(), MyAdFragment.createArguments(null, null), false);
+//				}				
+//			}
+//		})
+//		.setNegativeButton("否", new DialogInterface.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {	
+//				//tracker
+//				Tracker.getInstance()
+//				.event(BxEvent.POST_POSTWITHOUTLOGIN)
+//				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+//				.end();
+//				dialog.dismiss();
+//			}
+//		}).show();
+//		
+//	}
 	
 	private boolean isValidMessage(Ad detail)
 	{
