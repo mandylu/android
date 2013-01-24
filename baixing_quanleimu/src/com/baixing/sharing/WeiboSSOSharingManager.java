@@ -214,6 +214,8 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 				accessToken.getToken());
 		i.putExtra(WeiboSharingActivity.EXTRA_EXPIRES_IN,
 				String.valueOf(accessToken.getExpiresTime()));
+		i.putExtra(WeiboSharingActivity.EXTRA_ADID, mAd.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
+		i.putExtra(WeiboSharingActivity.EXTRA_CATENAME, mAd.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
 		mActivity.startActivity(i);
 
 		// try{

@@ -5,7 +5,8 @@ import java.io.IOException;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.quanleimu.activity.R;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.WeiboException;
@@ -53,7 +54,9 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
     public static final String EXTRA_PIC_URI = "com.weibo.android.pic.uri";
     public static final String EXTRA_ACCESS_TOKEN = "com.weibo.android.accesstoken";
     public static final String EXTRA_EXPIRES_IN = "com.weibo.android.expires";
-    
+	public static final String EXTRA_ADID = "com.baixing.adid";
+	public static final String EXTRA_CATENAME = "com.baixing.catename";
+
     public static final int WEIBO_MAX_LENGTH = 140;
     
     private ProgressDialog mPd;
@@ -62,7 +65,6 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 
 		@Override
 		public void onComplete(String arg0) {
-			// TODO Auto-generated method stub
 			WeiboSharingActivity.this.finish();
 			Context ctx = GlobalDataManager.getInstance().getApplicationContext();
 			if(ctx != null){
@@ -70,23 +72,44 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 				ctx.sendBroadcast(intent);
 			}
 
-			WeiboSharingActivity.this.runOnUiThread(new Runnable(){
+			WeiboSharingActivity.this.runOnUiThread(new Runnable() {
 				@Override
-				public void run(){
+				public void run() {
 					Toast.makeText(getApplicationContext(), "分享成功", 0).show();
 				}
 			});
+			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
+					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.YES)
+					.end();
 		}
 
 		@Override
 		public void onError(WeiboException arg0) {
-			// TODO Auto-generated method stub
+			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
+					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
+					.append(TrackConfig.TrackMobile.Key.FAIL_REASON, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage())
+					.end();
 			
 		}
 
 		@Override
 		public void onIOException(IOException arg0) {
-			// TODO Auto-generated method stub
+			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
+					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
+					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
+					.append(TrackConfig.TrackMobile.Key.FAIL_REASON, arg0.getMessage())
+					.end();
 			
 		}
     	

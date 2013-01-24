@@ -317,7 +317,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				lastPost = lastPost.split(",")[0];
 				for(int i = 0; i < listMyPost.size(); ++ i){
 					if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(lastPost)){
-						(new SharingFragment(listMyPost.get(i))).show(getFragmentManager(), null);
+						new SharingFragment(listMyPost.get(i), "postSuccess").show(getFragmentManager(), null);
 						showShareDlg = false;
 						break;
 					}
@@ -599,7 +599,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
                 if (isValidMessage(detail)) {
                     switch (clickedIndex) {
                     case 0:///sharing
-                    	(new SharingFragment(detail)).show(getFragmentManager(), null);
+                    	(new SharingFragment(detail, "myAdList")).show(getFragmentManager(), null);
                     	break;
                     case 1://刷新
                         doRefresh(0, adId);

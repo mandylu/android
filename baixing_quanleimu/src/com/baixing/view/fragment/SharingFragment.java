@@ -11,8 +11,9 @@ import android.support.v4.app.DialogFragment;
 
 class SharingFragment extends DialogFragment{
 	private Ad mAd;
-	public SharingFragment(Ad ad){
+	public SharingFragment(Ad ad, String shareFrom){
 		mAd = ad;
+		SharingCenter.shareFrom = shareFrom;
 	}
 	
 	public SharingFragment(){

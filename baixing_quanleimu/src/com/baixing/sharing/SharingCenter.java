@@ -15,6 +15,7 @@ import com.baixing.util.Util;
 
 public class SharingCenter{
 	static private BaseSharingManager sm;
+	public static String shareFrom = null;
 	
 	public static void share2Weibo(Activity activity, Ad ad){
 		release();

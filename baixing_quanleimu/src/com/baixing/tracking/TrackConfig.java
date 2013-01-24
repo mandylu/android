@@ -96,6 +96,8 @@ public class TrackConfig implements Observer {
 			STATUS("status","信息状态"),
 			SIZEINBYTES("sizeInBytes","字节数大小"),
 			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
+			SHARE_FROM("shareFrom", "分享发起页"),
+			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			;
 			private String name;
 			private String description;
@@ -283,6 +285,7 @@ public class TrackConfig implements Observer {
 			APP_PAUSE("App_Pause","App_Pause"),
 			APP_RESUME("App_Resume","App_Resume"),
 			PUSH_STARTAPP("Push_StartApp","Push_StartApp"),
+			SHARE("SHARE","SHARE"),
 			GPS("GPS","GPS");
 			
 			private String name;

@@ -15,6 +15,8 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 import com.tencent.tauth.TencentOpenAPI;
 import com.tencent.tauth.TencentOpenAPI2;
@@ -245,7 +247,14 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 				TencentOpenAPI.openid(access_token, new Callback() {
 
 					public void onCancel(int flag) {
-
+						Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+								.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+								.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "qzone")
+								.append(TrackConfig.TrackMobile.Key.ADID, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+								.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+								.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
+								.append(TrackConfig.TrackMobile.Key.FAIL_REASON, "cancel_flag"+flag)
+								.end();
 					}
 
 					@Override
@@ -260,6 +269,14 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 								}
 							}
 						});
+						Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+								.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+								.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "qzone")
+								.append(TrackConfig.TrackMobile.Key.ADID, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+								.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+								.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.YES)
+								.end();
+
 					}
 
 					@Override
@@ -270,6 +287,14 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 								Toast.makeText(mActivity.getApplicationContext(), msg, 0);
 							}
 						});
+						Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+								.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+								.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "qzone")
+								.append(TrackConfig.TrackMobile.Key.ADID, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+								.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, mAd.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+								.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
+								.append(TrackConfig.TrackMobile.Key.FAIL_REASON, "code:" + ret + " msg:" + msg)
+								.end();
 					}
 				});
 			}

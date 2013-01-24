@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,10 +82,10 @@ class WeixinSharingManager implements BaseSharingManager{
 				obj.setThumbImage(thumbnail.get());
 			}
 		}
-		sendWXRequest(obj);
+		sendWXRequest(obj, ad);
 	}
 	
-	private void sendWXRequest(WXMediaMessage msg){
+	private void sendWXRequest(WXMediaMessage msg, Ad ad){
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;
@@ -91,6 +93,14 @@ class WeixinSharingManager implements BaseSharingManager{
 			req.scene = SendMessageToWX.Req.WXSceneTimeline;
 		}
 		mApi.sendReq(req);
+		Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+				.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+				.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weixin")
+				.append(TrackConfig.TrackMobile.Key.ADID, ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, ad.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+				.append(TrackConfig.TrackMobile.Key.RESULT, "unknow")
+				.append(TrackConfig.TrackMobile.Key.FAIL_REASON, "unknow")
+				.end();
 	}
 
 	@Override

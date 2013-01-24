@@ -416,7 +416,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	private void doshare(){
-		(new SharingFragment(this.detail)).show(getFragmentManager(), null);
+		(new SharingFragment(this.detail, "sms_for_test")).show(getFragmentManager(), null);//TODO: 这个应该是会删掉的才对。
 	}
 	@Override
 	public void onClick(View v) {
@@ -465,7 +465,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		}
 		case R.id.vad_btn_forward:{
-			(new SharingFragment(detail)).show(getFragmentManager(), null);
+			//my viewad share
+			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
 			break;
 		}
 		}
