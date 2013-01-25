@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
@@ -577,14 +576,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	public void takePic() {
 		Log.w(TAG, "click to take pic " + System.currentTimeMillis());
-		mCamera.cancelAutoFocus();//Cancel last auto focus because we will do auto focus.
 		mCamera.autoFocus(new AutoFocusCallback() {
 			@Override
 			public void onAutoFocus(boolean focused, Camera cam) {
 				View capV = findViewById(R.id.cap);
 				capV.setEnabled(false);
-				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
 				mCamera.takePicture(null, null, mPicture);
+				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
 			}
 		});
 	}
