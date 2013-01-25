@@ -4,17 +4,13 @@ import java.io.File;
 import java.io.IOException;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.Ad.EDATAKEYS;
 import com.quanleimu.activity.R;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.WeiboException;
 import com.weibo.sdk.android.api.StatusesAPI;
 import com.weibo.sdk.android.net.RequestListener;
-
-import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -28,17 +24,14 @@ import android.os.Bundle;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.widget.Button;
 import android.widget.EditText;
 import android.widget.FrameLayout;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
@@ -67,6 +60,9 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 
 		@Override
 		public void onComplete(String arg0) {
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			// TODO Auto-generated method stub
 			WeiboSharingFragment.this.getActivity().runOnUiThread(new Runnable(){
 				@Override
@@ -86,12 +82,18 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 		@Override
 		public void onError(WeiboException arg0) {
 			// TODO Auto-generated method stub
+			if(mPd != null){
+				mPd.dismiss();
+			}			
 			showToast(arg0.getMessage());
 		}
 
 		@Override
 		public void onIOException(IOException arg0) {
 			// TODO Auto-generated method stub
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			showToast(arg0.getMessage());
 		}
     	
@@ -105,8 +107,8 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 		}else{
 			statusApi.upload(mContent, mPicPath, "", "", new ShareListener());
 		}
-//		mPd = ProgressDialog.show(this, "", "请稍候");
-//		mPd.setCancelable(true);
+		mPd = ProgressDialog.show(this.getActivity(), "", "请稍候");
+		mPd.setCancelable(true);
 	}
 
 	@Override
@@ -181,7 +183,6 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 
             public void onTextChanged(CharSequence s, int start, int before, int count) {
                 String mText = mEdit.getText().toString();
-                String mStr;
                 int len = mText.length();
                 View right = getView() != null && getView().getRootView() != null ? 
                 		getView().getRootView().findViewById(R.id.right_action) : null;

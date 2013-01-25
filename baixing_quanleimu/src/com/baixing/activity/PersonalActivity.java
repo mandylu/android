@@ -67,7 +67,7 @@ public class PersonalActivity extends BaseTabActivity {
 	@Override
 	public void onResume(){
 		super.onResume();
-		jumpToPersonalPost(intent);
+		jumpToPersonalPost(getIntent());
 		showDetailViewFromWX();
 	}
 	
