@@ -22,6 +22,7 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
@@ -262,8 +263,10 @@ public class CustomDialogBuilder {
 											//configSecondLevel
 											configSecondLevel(cd, lv, secondLevelItems);										}
 									}
-									else
+									else{
+										Toast.makeText(context, "网络连接异常", 0).show();
 										return;
+									}
 									
 									break;
 								}
@@ -356,7 +359,6 @@ public class CustomDialogBuilder {
 				MultiLevelItem selectedItem = new MultiLevelItem();
 				selectedItem.id = id;
 				selectedItem.txt = txt;
-				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 			}
 			
