@@ -440,8 +440,10 @@ public class BitmapUtils {
 										 0, 0, 1});
 			}
 			m.postRotate(rotation);
-			
-			
+			float scaleW = (float)DEFAULT_THUMBNAIL_WIDTH / (float) source.getWidth();
+			float scaleH = (float) DEFAULT_THUMBNAIL_HEIGHT / (float) source.getHeight();
+			m.postScale(scaleW, scaleH);
+
 			Bitmap out = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), m, false);
 			return BXThumbnail.createThumbnail(savedPath, out);
 		} catch (Throwable e) {
