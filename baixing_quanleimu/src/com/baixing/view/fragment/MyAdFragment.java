@@ -121,7 +121,16 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		super.onDestroy();
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
-
+	
+	private boolean isAnonyUser(String uid) {
+		UserBean anonyUser = GlobalDataManager.getInstance().getAccountManager().getAnonymousUser();
+		if (anonyUser == null) {
+			return false;
+		}
+		
+		return uid.equals(anonyUser.getId());
+	}
+	
 	private  void filterOutAd(List<Ad> list, UserBean user)
 	{
 		if (list != null && user != null)
@@ -130,7 +139,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			while (i<listMyPost.size())
 			{
 				Ad detail = list.get(i);
-				if (!detail.getValueByKey("userId").equals(user.getId()))
+				final String uid = detail.getValueByKey("userId");
+				if (!uid.equals(user.getId()) && !isAnonyUser(uid))
 				{
 					list.remove(i);
 				}
