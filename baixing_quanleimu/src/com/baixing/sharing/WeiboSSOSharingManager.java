@@ -178,7 +178,9 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 					isActive = true;
 				}
 				if(mToken != null && isActive){
-					share(mAd);
+					if(mAd != null){
+						share(mAd);
+					}
 					unregisterListener();
 				}
 			}
