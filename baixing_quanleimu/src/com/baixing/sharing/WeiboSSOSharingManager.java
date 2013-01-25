@@ -160,29 +160,34 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 	}
 
 	private BroadcastReceiver msgListener;
+	private boolean isActive = true;
 
 	private void authSSO() {
 		Intent intent = new Intent();
 		intent.setClass(mActivity, WeiboManagerActivity.class);
 		intent.putExtra("ad", mAd);
 		mActivity.startActivity(intent);
-
+		isActive = false;
 		unregisterListener();
 		msgListener = new BroadcastReceiver() {
 
 			public void onReceive(Context outerContext, Intent outerIntent) {
-				if (outerIntent.getAction().equals(
-						CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE)) {
+				if (outerIntent.getAction().equals(CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE)) {
 					mToken = loadToken();
-					if(mAd != null){
-						share(mAd);
-					}
+				}else if(outerIntent.getAction().equals(CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT)){
+					isActive = true;
+				}
+				if(mToken != null && isActive){
+					share(mAd);
+					unregisterListener();
 				}
 			}
 
 		};
 		mActivity.registerReceiver(msgListener, new IntentFilter(
 				CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE));
+		mActivity.registerReceiver(msgListener, new IntentFilter(
+				CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT));		
 	}
 
 	@Override

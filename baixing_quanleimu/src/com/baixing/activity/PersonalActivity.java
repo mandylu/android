@@ -69,6 +69,7 @@ public class PersonalActivity extends BaseTabActivity {
 		super.onResume();
 		jumpToPersonalPost(getIntent());
 		showDetailViewFromWX();
+		this.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT));
 	}
 	
 	@Override

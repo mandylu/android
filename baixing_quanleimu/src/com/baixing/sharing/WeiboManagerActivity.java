@@ -19,12 +19,12 @@ import android.webkit.WebSettings;
 import android.webkit.WebView;
 
 public class WeiboManagerActivity extends Activity{
-	private SsoHandler mSsoHandler;
+	private SsoHandler mSsoHandler = null;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		this.getWindow().setBackgroundDrawable(null);
 		super.onCreate(savedInstanceState);
-		doAuthSSO();
+		
 	}
 		
 	public void doAuthSSO(){
@@ -54,7 +54,6 @@ public class WeiboManagerActivity extends Activity{
 					WeiboManagerActivity.this.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE));
 	            }
 	            finish();
-
 			}
 
 			@Override
@@ -70,6 +69,19 @@ public class WeiboManagerActivity extends Activity{
 			}
         	
         });
+	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		if(mSsoHandler == null){
+			doAuthSSO();
+		}
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
 	}
 	
 	@Override
