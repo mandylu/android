@@ -61,18 +61,18 @@ class WeixinSharingManager extends BaseSharingManager{
 		obj.description = description;
 		obj.title = title;
 
-		if(mApi.getWXAppSupportAPI() >= 0x21020001){
+//		if(mApi.getWXAppSupportAPI() >= 0x21020001){
 			WXWebpageObject webObj = new WXWebpageObject();
 			String link = ad.getValueByKey("link");
 			link = link.replace(".baixing.com/", ".baixing.com/m/");
 			webObj.webpageUrl = link;
 			obj.mediaObject = webObj;
-		}else{
-			WXAppExtendObject appObj = new WXAppExtendObject();
-//			appObj.fileData = detailJson.getBytes();
-			appObj.fileData = ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID).getBytes();
-			obj.mediaObject = appObj;
-		}
+//		}else{
+//			WXAppExtendObject appObj = new WXAppExtendObject();
+////			appObj.fileData = detailJson.getBytes();
+//			appObj.fileData = ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID).getBytes();
+//			obj.mediaObject = appObj;
+//		}
 		
 		if(imgUrl != null){
 			WeakReference<Bitmap> thumbnail = ImageCacheManager.getInstance().getFromCache(imgUrl);
