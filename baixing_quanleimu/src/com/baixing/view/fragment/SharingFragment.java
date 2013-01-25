@@ -1,5 +1,6 @@
 package com.baixing.view.fragment;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.entity.Ad;
 import com.baixing.sharing.SharingCenter;
 
@@ -30,13 +31,13 @@ class SharingFragment extends DialogFragment{
 				dismiss();
 				switch(which){
 				case 0:
-					SharingCenter.share2Weibo(getActivity(), mAd);
+					SharingCenter.share2Weibo((BaseActivity)getActivity(), mAd);
 					break;
 				case 1:
-					SharingCenter.share2Weixin(getActivity(), mAd);
+					SharingCenter.share2Weixin((BaseActivity)getActivity(), mAd);
 					break;
 				case 2:
-					SharingCenter.share2QZone(getActivity(), mAd);
+					SharingCenter.share2QZone((BaseActivity)getActivity(), mAd);
 					break;
 				}				
 			}

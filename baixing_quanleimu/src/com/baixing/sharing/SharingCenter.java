@@ -7,6 +7,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
@@ -16,7 +17,7 @@ import com.baixing.util.Util;
 public class SharingCenter{
 	static private BaseSharingManager sm;
 	
-	public static void share2Weibo(Activity activity, Ad ad){
+	public static void share2Weibo(BaseActivity activity, Ad ad){
 		release();
 //		sm = new WeiboSharingManager(activity);
 		sm = new WeiboSSOSharingManager(activity);
@@ -24,14 +25,14 @@ public class SharingCenter{
 		sm.share(ad);
 	}
 	
-	public static void share2Weixin(Activity activity, Ad ad){
+	public static void share2Weixin(BaseActivity activity, Ad ad){
 		release();
 		sm = new WeixinSharingManager(activity);
 		registerReceiver(ad);
 		sm.share(ad);
 	}
 	
-	public static void share2QZone(Activity activity, Ad ad){
+	public static void share2QZone(BaseActivity activity, Ad ad){
 		release();
 		sm = new QZoneSharingManager(activity);
 		registerReceiver(ad);

@@ -11,6 +11,7 @@ import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.sharing.BaseSharingManager;
@@ -122,7 +123,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 				if(sharingMgr != null){
 					sharingMgr.release();
 				}				
-				sharingMgr = new WeiboSSOSharingManager(getActivity());
+				sharingMgr = new WeiboSSOSharingManager((BaseActivity)getActivity());
 				sharingMgr.auth();
 			}
 		}else if(v.getId() == R.id.bindQQ){
