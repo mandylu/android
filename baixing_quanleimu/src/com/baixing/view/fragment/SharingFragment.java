@@ -14,6 +14,8 @@ class SharingFragment extends DialogFragment{
 	public SharingFragment(Ad ad, String shareFrom){
 		mAd = ad;
 		SharingCenter.shareFrom = shareFrom;
+		SharingCenter.adId = mAd.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID);
+		SharingCenter.categoryName = mAd.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME);
 	}
 	
 	public SharingFragment(){

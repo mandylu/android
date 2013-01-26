@@ -1,18 +1,5 @@
 package com.baixing.sharing;
 
-import java.io.File;
-import java.io.IOException;
-
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.data.GlobalDataManager;
-import com.baixing.tracking.TrackConfig;
-import com.baixing.tracking.Tracker;
-import com.quanleimu.activity.R;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.api.StatusesAPI;
-import com.weibo.sdk.android.net.RequestListener;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -30,13 +17,17 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
+import com.quanleimu.activity.R;
+import com.weibo.sdk.android.Oauth2AccessToken;
+import com.weibo.sdk.android.WeiboException;
+import com.weibo.sdk.android.api.StatusesAPI;
+import com.weibo.sdk.android.net.RequestListener;
+
+import java.io.File;
+import java.io.IOException;
 
 public class WeiboSharingActivity extends Activity implements OnClickListener{
     private TextView mTextNum;
@@ -54,8 +45,6 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
     public static final String EXTRA_PIC_URI = "com.weibo.android.pic.uri";
     public static final String EXTRA_ACCESS_TOKEN = "com.weibo.android.accesstoken";
     public static final String EXTRA_EXPIRES_IN = "com.weibo.android.expires";
-	public static final String EXTRA_ADID = "com.baixing.adid";
-	public static final String EXTRA_CATENAME = "com.baixing.catename";
 
     public static final int WEIBO_MAX_LENGTH = 140;
     
@@ -78,38 +67,17 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 					Toast.makeText(getApplicationContext(), "分享成功", 0).show();
 				}
 			});
-			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
-					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
-					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
-					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.YES)
-					.end();
+			SharingCenter.trackShareResult("weibo", true, null);
 		}
 
 		@Override
 		public void onError(WeiboException arg0) {
-			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
-					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
-					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
-					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
-					.append(TrackConfig.TrackMobile.Key.FAIL_REASON, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage())
-					.end();
-			
+			SharingCenter.trackShareResult("weibo", false, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage());
 		}
 
 		@Override
 		public void onIOException(IOException arg0) {
-			Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
-					.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
-					.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, "weibo")
-					.append(TrackConfig.TrackMobile.Key.ADID, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getIntent().getStringExtra(EXTRA_ADID))
-					.append(TrackConfig.TrackMobile.Key.RESULT, TrackConfig.TrackMobile.Value.NO)
-					.append(TrackConfig.TrackMobile.Key.FAIL_REASON, arg0.getMessage())
-					.end();
+			SharingCenter.trackShareResult("weibo", false, " msg:" + arg0.getMessage());
 			
 		}
     	
