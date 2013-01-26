@@ -35,7 +35,8 @@ public class TrackConfig implements Observer {
 		public static enum Key implements TrackMobile {//每条记录可能的key
 			TRACKTYPE("tracktype","tracktype"),
 			TIMESTAMP("timestamp","timestamp"),
-			
+			TIMESTAMP_MS("timestamp_ms","timestamp_ms"),
+
 			URL("url","页面URL"),
 			FIRSTCATENAME("firstCateName","一级类目名"),
 			SECONDCATENAME("secondCateName","二级类目名"),
@@ -57,6 +58,8 @@ public class TrackConfig implements Observer {
 			CATEGORYCOUNT("categoryCount","类目数"),
 			MAXCATE_ADSCOUNT("maxCate_adsCount","最大类目条数"),
 			FILTER("filter","筛选条件"),
+			FILTERNAME("filterName","筛选名"),
+			FILTERVALUE("filterValue","筛选值"),
 			RESULTCATESCOUNT("resultCatesCount","结果类目数"),
 			TOTAL_ADSCOUNT("total_adsCount","总信息数"),
 			SELECTEDROWINDEX("selectedRowIndex","点进去看的所在行（从0开始）"),
@@ -88,8 +91,13 @@ public class TrackConfig implements Observer {
 			FRAGMENT("fragment","fragment"),
 			//from3.1
 			RESULT("result","结果"),
+			FAIL_REASON("failReason","失败原因"),
 			ACTION("action","inputing动作"),
 			STATUS("status","信息状态"),
+			SIZEINBYTES("sizeInBytes","字节数大小"),
+			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
+			SHARE_FROM("shareFrom", "分享发起页"),
+			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			;
 			private String name;
 			private String description;
@@ -150,10 +158,12 @@ public class TrackConfig implements Observer {
 			VIEWADMAP("/viewAdMap","Viewad地图页"),
 //			BUZZ("/buzz","私信"),
 			VIEWADPIC("/viewAdPic","图"),
+			USER("/user","用户相关信息"),
 //			POSTCATE1("/post/cate1","发布选择一级类目页"),
 //			POSTCATE2("/post/cate2","发布选择二级类目页"),
 			POST("/post","发布界面"),
 			EDITPOST("/editPost","编辑界面"),
+			CAMERA("/camera", "拍照"),
 			MY("/my","我的百姓网"),
 			MYADS_SENT("/myAds_sent","已发布信息"),
 //			MYADS_APPROVING("/myAds_approving","审核未通过"),
@@ -166,7 +176,7 @@ public class TrackConfig implements Observer {
 			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
-			FORGETPASSWORD("/forgetPassword","忘记密码");			
+			FORGETPASSWORD("/forgetPassword","忘记密码");
 			
 			private String name;
 			private String description;
@@ -191,6 +201,8 @@ public class TrackConfig implements Observer {
 			LISTING("Listing","Listing"),
 			LISTING_SELECTEDROWINDEX("Listing_SelectedRowIndex","Listing_SelectedRowIndex"),
 			LISTING_MORE("Listing_More","Listing_More"),
+			LISTING_TOPFILTEROPEN("Listing_TopFilterOpen","Listing_TopFilterOpen"),
+			LISTING_TOPFILTERSUBMIT("Listing_TopFilterSubmit", "Listing_TopFilterSubmit"),
 //			VIEWAD_MOBILENUMBERCLICK("Viewad_MobileNumberClick","点击电话号码"),
 			VIEWAD_MOBILECALLCLICK("Viewad_MobileCallClick","点击拨打按钮"),
 			VIEWAD_FAV("Viewad_Fav","Viewad_Fav"),
@@ -199,8 +211,9 @@ public class TrackConfig implements Observer {
 //			VIEWAD_BUZZ("Viewad_Buzz","Viewad_Buzz"),
 			VIEWAD_HINTFAV("Viewad_HintFav","拨打后提示收藏"),
 			VIEWAD_HINTFAVRESULT("Viewad_HintFavResult","拨打后提示收藏的结果"),
-			VIEWAD_NOTCALLABLE("Viewad_NotCallable","点击非手机号按钮"),
-			VIEWAD_NOTCALLABLERESULT("Viewad_NotCallableResult","点击非手机号提示框的结果"),
+//			VIEWAD_NOTCALLABLE("Viewad_NotCallable","点击非手机号按钮"),
+//			VIEWAD_NOTCALLABLERESULT("Viewad_NotCallableResult","点击非手机号提示框的结果"),
+			VIEWAD_SHOWMAP("Viewad_ShowMap","点击查看地图"),
 			BUZZLIST("BuzzList","BuzzList"),
 			
 //			POST_POSTBTNHEADERCLICKED("Post_PostBtnHeaderClicked","Post_PostBtnHeaderClicked"),
@@ -210,6 +223,7 @@ public class TrackConfig implements Observer {
 			POST_POSTRESULT("Post_PostResult","Post_PostResult"),
 			POST_GPSFAIL("Post_GpsFail","Post_GPS失败"),
 			POST_INPUTING("Post_Inputing","post页面编辑项目"),
+			POST_IMAGEUPLOAD("Post_ImgUpload", "照片上传"),
 			
 //			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
 			EDITPOST_POSTBTNCONTENTCLICKED("EditPost_PostBtnContentClicked","EditPost_PostBtnContentClicked"),
@@ -270,6 +284,8 @@ public class TrackConfig implements Observer {
 			APP_STOP("App_Stop","App_Stop"),
 			APP_PAUSE("App_Pause","App_Pause"),
 			APP_RESUME("App_Resume","App_Resume"),
+			PUSH_STARTAPP("Push_StartApp","Push_StartApp"),
+			SHARE("SHARE","SHARE"),
 			GPS("GPS","GPS");
 			
 			private String name;

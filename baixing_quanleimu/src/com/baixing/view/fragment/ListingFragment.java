@@ -621,11 +621,21 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					cItem.txt = "附近500米";
 					
 					CustomizeItem[] cs = isLocation && curLocation != null ? new CustomizeItem[] {cItem} : null; 
-					
+
+					Tracker.getInstance().event(BxEvent.LISTING_TOPFILTEROPEN)
+							.append(Key.SECONDCATENAME, categoryEnglishName)
+							.append(Key.FILTERNAME, fss.getDisplayName())
+							.end();
+
 					FilterUtil.startSelect(getActivity(), cs, fss, new FilterSelectListener() {
 						
 						@Override
 						public void onItemSelect(MultiLevelItem item) {
+							Tracker.getInstance().event(BxEvent.LISTING_TOPFILTERSUBMIT)
+									.append(Key.SECONDCATENAME, categoryEnglishName)
+									.append(Key.FILTERNAME, fss.getDisplayName())
+									.append(Key.FILTERVALUE, item.txt)
+									.end();
 							FilterUtil.updateFilter(filterParamHolder, item, fss.getName());
 							
 							if (filterParamHolder.containsKey(fss.getName()))

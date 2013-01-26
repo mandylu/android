@@ -23,6 +23,8 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserProfile;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.VadListLoader;
@@ -135,6 +137,12 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 	}
 	
 	public void onResume() {
+		this.pv = TrackConfig.TrackMobile.PV.USER;
+		Tracker.getInstance().pv(this.pv)
+				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, getArguments().getString("secondCategoryName"))
+				.append(TrackConfig.TrackMobile.Key.ADID, getArguments().getString("adId"))
+				.append(TrackConfig.TrackMobile.Key.ADSENDERID, userId)
+				.end();
 		super.onResume();
 	}
 	

@@ -1,14 +1,15 @@
 package com.baixing.sharing;
 
-import java.io.File;
-import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
-import java.lang.ref.WeakReference;
-import java.nio.ByteBuffer;
-import java.text.SimpleDateFormat;
-import java.util.Date;
-
+import android.app.Activity;
+import android.content.BroadcastReceiver;
+import android.content.Context;
+import android.content.Intent;
+import android.content.IntentFilter;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
+import android.util.Log;
+import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
@@ -21,17 +22,13 @@ import com.tencent.tauth.TencentOpenAPI2;
 import com.tencent.tauth.TencentOpenHost;
 import com.tencent.tauth.bean.OpenId;
 import com.tencent.tauth.http.Callback;
-import android.app.Activity;
-import android.content.BroadcastReceiver;
-import android.content.Context;
-import android.content.Intent;
-import android.content.IntentFilter;
-import android.graphics.Bitmap;
-import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
-import android.util.Log;
-import android.widget.Toast;
+
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.IOException;
+import java.text.SimpleDateFormat;
+import java.util.Date;
 
 public class QZoneSharingManager implements Callback, BaseSharingManager{
 	private final int MSG_AUTO_SUCCEED = 1;
@@ -245,7 +242,7 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 				TencentOpenAPI.openid(access_token, new Callback() {
 
 					public void onCancel(int flag) {
-
+						SharingCenter.trackShareResult("qzone", false, "cancel_flag" + flag);
 					}
 
 					@Override
@@ -253,13 +250,14 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 						mActivity.runOnUiThread(new Runnable() {
 							@Override
 							public void run() {
-								mOpenId = ((OpenId) obj).getOpenId();
+								mOpenId = ((OpenId)obj).getOpenId();
 								Util.saveDataToLocate(mActivity, STRING_OPENID, mOpenId);
-								if(handler != null){
+								if (handler != null) {
 									handler.sendEmptyMessage(MSG_AUTO_SUCCEED);
 								}
 							}
 						});
+						SharingCenter.trackShareResult("qzone", true, null);
 					}
 
 					@Override
@@ -270,6 +268,7 @@ public class QZoneSharingManager implements Callback, BaseSharingManager{
 								Toast.makeText(mActivity.getApplicationContext(), msg, 0);
 							}
 						});
+						SharingCenter.trackShareResult("qzone", false, "code:" + ret + " msg:" + msg);
 					}
 				});
 			}

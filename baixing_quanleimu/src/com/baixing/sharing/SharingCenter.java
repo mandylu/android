@@ -11,11 +11,17 @@ import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.tracking.LogData;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 
 public class SharingCenter{
 	static private BaseSharingManager sm;
-	
+	public static String shareFrom = null;
+	public static String adId = null;
+	public static String categoryName = null;
+
 	public static void share2Weibo(Activity activity, Ad ad){
 		release();
 //		sm = new WeiboSharingManager(activity);
@@ -70,5 +76,16 @@ public class SharingCenter{
 			}
 			
 		}, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED));
+	}
+
+	public static void trackShareResult(String channel, boolean success, String failReason) {
+		LogData e = Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE)
+				.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+				.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, channel)
+				.append(TrackConfig.TrackMobile.Key.ADID, SharingCenter.adId)
+				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, SharingCenter.categoryName)
+				.append(TrackConfig.TrackMobile.Key.RESULT, success ? TrackConfig.TrackMobile.Value.YES : TrackConfig.TrackMobile.Value.NO);
+		if(!success) e.append(TrackConfig.TrackMobile.Key.FAIL_REASON, failReason);
+		e.end();
 	}
 }

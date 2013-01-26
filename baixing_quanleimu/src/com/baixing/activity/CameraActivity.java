@@ -40,6 +40,8 @@ import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
@@ -512,6 +514,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
 //		Profiler.markStart("cameOnResume");
 		super.onResume();
 		

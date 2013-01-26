@@ -210,10 +210,6 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 				(resize180 == null || resize180.length() == 0) ? ""
 						: ImageCacheManager.getInstance().getFileInDiskCache(
 								resize180));
-		i.putExtra(WeiboSharingActivity.EXTRA_ACCESS_TOKEN,
-				accessToken.getToken());
-		i.putExtra(WeiboSharingActivity.EXTRA_EXPIRES_IN,
-				String.valueOf(accessToken.getExpiresTime()));
 		mActivity.startActivity(i);
 
 		// try{

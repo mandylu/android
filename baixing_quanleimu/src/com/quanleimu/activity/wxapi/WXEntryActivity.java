@@ -1,31 +1,23 @@
 package com.quanleimu.activity.wxapi;
-import java.io.BufferedReader;
-import java.io.FileInputStream;
-import java.io.InputStreamReader;
-import java.util.List;
+
 import android.app.Activity;
 import android.app.ActivityManager;
 import android.app.ActivityManager.RunningTaskInfo;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.widget.Toast;
-
-import com.baixing.activity.MainActivity;
 import com.baixing.activity.PersonalActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
-import com.tencent.mm.sdk.openapi.BaseReq;
-import com.tencent.mm.sdk.openapi.BaseResp;
-import com.tencent.mm.sdk.openapi.ConstantsAPI;
-import com.tencent.mm.sdk.openapi.IWXAPI;
-import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
-import com.tencent.mm.sdk.openapi.ShowMessageFromWX;
-import com.tencent.mm.sdk.openapi.WXAPIFactory;
-import com.tencent.mm.sdk.openapi.WXAppExtendObject;
-import com.tencent.mm.sdk.openapi.WXMediaMessage;
+import com.baixing.sharing.SharingCenter;
+import com.tencent.mm.sdk.openapi.*;
 import com.tencent.mm.sdk.platformtools.Log;
+
+import java.io.BufferedReader;
+import java.io.FileInputStream;
+import java.io.InputStreamReader;
+import java.util.List;
 
 public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 	private IWXAPI mApi;
@@ -142,15 +134,19 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 			if(ctx != null){
 				ctx.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED));
 			}
+			SharingCenter.trackShareResult("weixin", true, null);
 			break;
 		case BaseResp.ErrCode.ERR_USER_CANCEL:
 			result = "发送取消";
+			SharingCenter.trackShareResult("weixin", false, result);
 			break;
 		case BaseResp.ErrCode.ERR_AUTH_DENIED:
 			result = "发送被拒绝";
+			SharingCenter.trackShareResult("weixin", false, result);
 			break;
 		default:
 			result = "发送返回";
+			SharingCenter.trackShareResult("weixin", false, result);
 			break;
 		}
 		Toast.makeText(this, result, 3).show();

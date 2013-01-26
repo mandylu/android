@@ -1,17 +1,5 @@
 package com.baixing.sharing;
 
-import java.io.File;
-import java.io.IOException;
-
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.Ad.EDATAKEYS;
-import com.quanleimu.activity.R;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.api.StatusesAPI;
-import com.weibo.sdk.android.net.RequestListener;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
@@ -29,13 +17,17 @@ import android.text.TextWatcher;
 import android.util.Log;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.widget.Button;
-import android.widget.EditText;
-import android.widget.FrameLayout;
-import android.widget.ImageView;
-import android.widget.LinearLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
+import com.quanleimu.activity.R;
+import com.weibo.sdk.android.Oauth2AccessToken;
+import com.weibo.sdk.android.WeiboException;
+import com.weibo.sdk.android.api.StatusesAPI;
+import com.weibo.sdk.android.net.RequestListener;
+
+import java.io.File;
+import java.io.IOException;
 
 public class WeiboSharingActivity extends Activity implements OnClickListener{
     private TextView mTextNum;
@@ -53,7 +45,7 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
     public static final String EXTRA_PIC_URI = "com.weibo.android.pic.uri";
     public static final String EXTRA_ACCESS_TOKEN = "com.weibo.android.accesstoken";
     public static final String EXTRA_EXPIRES_IN = "com.weibo.android.expires";
-    
+
     public static final int WEIBO_MAX_LENGTH = 140;
     
     private ProgressDialog mPd;
@@ -62,7 +54,6 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 
 		@Override
 		public void onComplete(String arg0) {
-			// TODO Auto-generated method stub
 			WeiboSharingActivity.this.finish();
 			Context ctx = GlobalDataManager.getInstance().getApplicationContext();
 			if(ctx != null){
@@ -70,23 +61,23 @@ public class WeiboSharingActivity extends Activity implements OnClickListener{
 				ctx.sendBroadcast(intent);
 			}
 
-			WeiboSharingActivity.this.runOnUiThread(new Runnable(){
+			WeiboSharingActivity.this.runOnUiThread(new Runnable() {
 				@Override
-				public void run(){
+				public void run() {
 					Toast.makeText(getApplicationContext(), "分享成功", 0).show();
 				}
 			});
+			SharingCenter.trackShareResult("weibo", true, null);
 		}
 
 		@Override
 		public void onError(WeiboException arg0) {
-			// TODO Auto-generated method stub
-			
+			SharingCenter.trackShareResult("weibo", false, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage());
 		}
 
 		@Override
 		public void onIOException(IOException arg0) {
-			// TODO Auto-generated method stub
+			SharingCenter.trackShareResult("weibo", false, " msg:" + arg0.getMessage());
 			
 		}
     	
