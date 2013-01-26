@@ -94,6 +94,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             Parameters param = mCamera.getParameters();
             param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 
             initParam(param, isNewSdk);
+            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), isNewSdk ? h : w, isNewSdk ? w : h);
+            if (size != null) {
+            	param.setPreviewSize(size.width, size.height);
+            }
             mCamera.setParameters(param);
             
             mCamera.startPreview();
@@ -107,15 +111,15 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 		List<Integer> prevF = params.getSupportedPreviewFormats();
 		params.setPreviewFormat(prevF.get(0));
 		
-//    	if (isNewSdk) {
-//    		List<int[]>  r = params.getSupportedPreviewFpsRange();
-//    		params.setPreviewFpsRange(r.get(0)[0], r.get(0)[1]);
-//    	}
-//    	else {
-////    		List<String> fM = params.getSupportedFlashModes();
-////    		if (fM != null) {
-////    			params.setFlashMode(fM.get(0));
-////    		}
+    	if (isNewSdk) {
+    		List<int[]>  r = params.getSupportedPreviewFpsRange();
+    		params.setPreviewFpsRange(r.get(0)[0], r.get(0)[1]);
+    	}
+    	else {
+//    		List<String> fM = params.getSupportedFlashModes();
+//    		if (fM != null) {
+//    			params.setFlashMode(fM.get(0));
+//    		}
 //    		List<Integer> r = params.getSupportedPreviewFrameRates();
 //    		params.setPreviewFrameRate(r.get(0));
 //    		List<String> cEs = params.getSupportedColorEffects();
@@ -128,6 +132,40 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 //    		if (wbs != null) {
 //    			params.setWhiteBalance(wbs.get(0));
 //    		}
-//    	}
+    	}
+    }
+    
+    
+    private static Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) return null;
+
+        Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
     }
 }
