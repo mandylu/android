@@ -275,6 +275,7 @@ class CaculateFiles {
 		$start = strpos($string, $this->blockSkip[1]);
 		if ($start >= 0) {
 			$str2 = substr($string, $start + strlen($this->blockSkip[1]));
+			$str2 = trim($str2);
 			if ($str2 == '') 
 				return self::$COMMENT_BLOCK_ENDED_LINE;
 			else {
