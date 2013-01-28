@@ -58,7 +58,6 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
-import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener{
@@ -83,7 +82,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
 	protected Bundle imgSelBundle = null;
-	private ImageSelectionDialog imgSelDlg = null;	
 	private View locationView = null;
 	private BXLocation detailLocation = null;
     protected List<String> bmpUrls = new ArrayList<String>();
@@ -653,10 +651,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //				listUrl.clear();
 				this.doClearUpImages();
 				this.bmpUrls.clear();
-				if(this.imgSelDlg != null){
-					imgSelDlg.clearResource();
-				}
-				this.imgSelBundle.clear();// = null;
 				
 				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 				
@@ -833,26 +827,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				
 				v.findViewById(R.id.myImg).setOnClickListener(this);
 				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
-				if(imgSelBundle != null){
-		    		Object[] container = (Object[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
-					if(container != null && container.length > 0
-							&& ((ImageSelectionDialog.ImageContainer)container[0]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
-//						Bitmap bp = ImageSelectionDialog.getThumbnailWithPath(((ImageSelectionDialog.ImageContainer)container[0]).thumbnailPath);
-						Bitmap bp = this.firstImage;
-						if(bp != null){
-							((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(bp);
-							((TextView)v.findViewById(R.id.imgCout)).setVisibility(View.VISIBLE);
-							int count = photoList == null ? 0 : photoList.size();
-//							for(int i = 0; i < container.length; ++ i){
-//								if(((ImageSelectionDialog.ImageContainer)container[i]).status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
-//									break;
-//								}
-//								++ count;
-//							}
-							((TextView)v.findViewById(R.id.imgCout)).setText(String.valueOf(count));
-						}
-					}
-				}				
+				this.updateImageInfo(layout_txt);
 			}			
 		}
 		
@@ -947,63 +922,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
 			break;
 		}		
-		case MSG_UPDATE_IMAGE_LIST:
-		{
+		case MSG_UPDATE_IMAGE_LIST:{
 			updateImageInfo(rootView);
 			break;
 		}
-		case ImageSelectionDialog.MSG_IMG_SEL_DISMISSED:{
-			if(imgSelBundle != null){
-				ImageSelectionDialog.ImageContainer[] container = 
-						(ImageSelectionDialog.ImageContainer[])imgSelBundle.getSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER);
-				if(getView() != null && container != null){
-					ImageView iv = (ImageView)this.getView().findViewById(R.id.myImg);
-					if(iv != null){						
-						if(container != null 
-								&& container.length > 0
-								&& container[0].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal
-								&& container[0].bitmapPath != null){
-							Bitmap thumbnail = ImageSelectionDialog.getThumbnailWithPath(container[0].thumbnailPath);
-							if(iv != null && thumbnail != null){
-								iv.setImageBitmap(thumbnail);
-							}else{
-								iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
-							}
-						}else{
-							iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
-						}
-					}
-					
-					TextView tv = (TextView)getView().findViewById(R.id.imgCout);
-					if(iv != null){
-						int containerCount = 0;
-						for(int i = 0; i < container.length; ++ i){
-							if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Unset){
-								break;
-							}else if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
-								++ containerCount;
-							}
-						}
-						if(containerCount > 0){
-							tv.setText(String.valueOf(containerCount));
-							tv.setVisibility(View.VISIBLE);
-						}else{
-							tv.setVisibility(View.INVISIBLE);
-						}
-					}
-					
-					bmpUrls.clear();
-					if(container != null){
-						for(int i = 0; i < container.length; ++ i){
-							if(container[i].status == ImageSelectionDialog.ImageStatus.ImageStatus_Normal){
-								bmpUrls.add(container[i].bitmapUrl);
-							}
-						}
-					}				
-				}
-			}
-		}
-			break;
 		case PostCommonValues.MSG_GET_META_SUCCEED:
 			postList = (LinkedHashMap<String, PostGoodsBean>)msg.obj;
 			addCategoryItem();
@@ -1092,6 +1014,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			if(msg.obj != null){
 				Toast.makeText(activity, (String)msg.obj, 0).show();
 			}
+			break;
+		case PostCommonValues.MSG_POST_EXCEPTION:
+			hideProgress();
+			Toast.makeText(activity, "网络连接异常", 0).show();
 			break;
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();

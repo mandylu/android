@@ -415,9 +415,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 	
-	private void doshare(){
-		(new SharingFragment(this.detail, "sms_for_test")).show(getFragmentManager(), null);//TODO: 这个应该是会删掉的才对。
-	}
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -441,8 +438,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		}
 		case R.id.vad_buzz_btn:
-//			startContact(true);
-			doshare();
+			startContact(true);
 			break;
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
