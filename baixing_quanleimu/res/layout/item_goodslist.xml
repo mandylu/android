@@ -87,16 +87,21 @@
             android:singleLine="true"
             android:textColor="@color/vad_meta_price"
             android:textSize="14dip"
-                >
+		>
         </TextView>
+        
+        <View android:id="@+id/tvGap"
+           android:layout_width="10dp"
+           android:layout_height="wrap_content"
+           android:layout_toRightOf="@+id/tvPrice" 
+            />
 
         <TextView
             android:id="@+id/tvUpdateDate"
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:layout_below="@+id/tvDateAndAddress"
-            android:layout_marginLeft="10dip"
-            android:layout_toRightOf="@+id/tvPrice"
+            android:layout_toRightOf="@+id/tvGap"
             android:singleLine="true"
             android:textColor="@color/vad_list_sub_info"
             android:textSize="14dip" >
