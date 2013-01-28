@@ -1,7 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,8 +51,6 @@ import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
@@ -87,7 +83,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
 	public Ad detail = new Ad();
-	private boolean called = false;
 	private String json = "";
 	
 //	private WeakReference<Bitmap> mb_loading = null;
@@ -158,30 +153,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		this.keepSilent = false;
 		super.onResume();
-		
-		if (called)
-		{
-			called = false;
-			if (!isInMyStore())
-			{
-				VadLogger.event(BxEvent.VIEWAD_HINTFAV, null, null);
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(R.string.dialog_title_info)
-				.setMessage(R.string.tip_add_fav)
-				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.CANCEL);
-					}
-				})
-				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.FAV);
-						handleStoreBtnClicked();
-					}
-					
-				}).create().show();
-			}
-		}
 	}
 	
 	private boolean isMyAd(){
@@ -796,7 +767,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			if (ls != null && ls.size() > 0)
 			{
 				startActivity(intent);
-				called = true;
 			}
 			else
 			{
