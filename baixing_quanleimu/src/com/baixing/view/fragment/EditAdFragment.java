@@ -20,7 +20,6 @@ import com.baixing.util.Communication;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
-import com.baixing.widget.ImageSelectionDialog;
 import com.quanleimu.activity.R;
 
 class EditAdFragment extends PostGoodsFragment{
