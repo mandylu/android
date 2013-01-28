@@ -1,7 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
@@ -17,7 +16,6 @@ import android.content.DialogInterface.OnCancelListener;
 import android.content.Intent;
 import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
-import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
 import android.os.Bundle;
@@ -53,8 +51,6 @@ import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
@@ -87,7 +83,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
 	public Ad detail = new Ad();
-	private boolean called = false;
 	private String json = "";
 	
 //	private WeakReference<Bitmap> mb_loading = null;
@@ -158,30 +153,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		this.keepSilent = false;
 		super.onResume();
-		
-		if (called)
-		{
-			called = false;
-			if (!isInMyStore())
-			{
-				VadLogger.event(BxEvent.VIEWAD_HINTFAV, null, null);
-				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-				builder.setTitle(R.string.dialog_title_info)
-				.setMessage(R.string.tip_add_fav)
-				.setNegativeButton(R.string.no, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.CANCEL);
-					}
-				})
-				.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
-					public void onClick(DialogInterface dialog, int which) {
-						VadLogger.event(BxEvent.VIEWAD_HINTFAVRESULT, Key.RESULT, Value.FAV);
-						handleStoreBtnClicked();
-					}
-					
-				}).create().show();
-			}
-		}
 	}
 	
 	private boolean isMyAd(){
@@ -317,6 +288,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			rootView.findViewById(R.id.vad_btn_edit).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_refresh).setOnClickListener(this);
 			rootView.findViewById(R.id.vad_btn_delete).setOnClickListener(this);
+			rootView.findViewById(R.id.vad_btn_forward).setOnClickListener(this);
 			
 			if (!detail.isValidMessage())
 			{
@@ -334,14 +306,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 		ViewGroup btnBuzz = (ViewGroup) rootView.findViewById(R.id.vad_buzz_btn);
 		ImageView btnImg = (ImageView) btnBuzz.findViewById(R.id.vad_buzz_btn_img);
-		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
-		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
+//		TextView btnTxt = (TextView) btnBuzz.findViewById(R.id.vad_buzz_btn_txt);
+//		btnTxt.setTextColor(getResources().getColor(R.color.vad_sms));
 		
 		final boolean buzzEnable = TextUtil.isNumberSequence(contactS) && mobileArea != null && !"".equals(mobileArea) ? true : false;
 		btnBuzz.setEnabled(buzzEnable);
 		if (!buzzEnable)
 		{
-			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
+//			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
 			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable));
 		}
 		
@@ -413,7 +385,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			super(context, theme);
 		}
 	}
-
+	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -422,13 +394,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		case R.id.vad_call_btn:
 		{
-			VadLogger.event(BxEvent.VIEWAD_MOBILECALLCLICK, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_MOBILECALLCLICK, detail);
 			
 			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLE, null, null);
-				
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
 			else
@@ -459,6 +429,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		case R.id.vad_btn_delete:{
 			postDelete(true, null);
+			break;
+		}
+		case R.id.vad_btn_forward:{
+			//my viewad share
+			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
 			break;
 		}
 		}
@@ -757,12 +732,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.CALL);
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.COPY);
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
@@ -777,7 +750,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
-			VadLogger.event(BxEvent.VIEWAD_SMS, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_SMS, detail);
 		}
 			
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
@@ -786,11 +759,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			Intent intent = new Intent(
 					sms ? Intent.ACTION_SENDTO : Intent.ACTION_DIAL,
 					Uri.parse((sms ? "smsto:" : "tel:") + contact));
+			if (sms) {
+				intent.putExtra("sms_body", "你好，我在百姓网看到你发的\"" + detail.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\",");
+			}
+			
 			List<ResolveInfo> ls = getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 			if (ls != null && ls.size() > 0)
 			{
 				startActivity(intent);
-				called = true;
 			}
 			else
 			{
@@ -800,6 +776,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	public void showMap() {
+		VadLogger.trackShowMapEvent(detail);
 		if (keepSilent) { // FIXME:
 			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
 			return;
@@ -957,6 +934,16 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public void onRequestMap() {
 		showMap();
+	}
+	
+	public void onRequestUserAd(int userId, String userNick) {
+		Bundle args = createArguments(null, null);
+		args.putInt("userId", userId);
+		args.putString("userNick", userNick);
+		args.putString("secondCategoryName", detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+		args.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+
+		pushFragment(new UserAdFragment(), args);
 	}
 
 	@Override

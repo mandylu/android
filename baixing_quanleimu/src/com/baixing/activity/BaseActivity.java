@@ -186,7 +186,6 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 			
 			onStatckTop(f);
 		}
-	
 	}
 	
 	/**
@@ -354,11 +353,16 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	{
 		if(savedInstance) return false;
 		FragmentManager fm = getSupportFragmentManager();
+		final int entryCount = fm.getBackStackEntryCount();
 		FragmentTransaction ft = fm.beginTransaction();
 		//Pop current
 		boolean popSucceed = fm.popBackStackImmediate();
 		
 		ft.commit();
+		
+		if (popSucceed && entryCount <= 1) {
+			finish();
+		}
 		return popSucceed;
 	}
 	

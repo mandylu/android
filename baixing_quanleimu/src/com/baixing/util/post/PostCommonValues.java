@@ -6,6 +6,7 @@ public class PostCommonValues {
 	static public final int MSG_GET_META_FAIL = 0xFFFF0111;
 	static public final int MSG_POST_SUCCEED = 0xFFFF0F11;
 	static public final int MSG_POST_FAIL = 0xFFFF0F12;
+	static public final int MSG_POST_EXCEPTION = 0xFFFF0F13;
 	public static final String STRING_AREA = "地区";
 	public final static String STRING_DETAIL_POSITION = "具体地点";
 	public static final String STRING_DESCRIPTION = "description";

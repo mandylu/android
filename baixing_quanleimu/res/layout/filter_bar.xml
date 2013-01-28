@@ -6,7 +6,7 @@
     android:visibility="gone"
    	android:background="@drawable/bg_filter_bar">
     
-    <RelativeLayout 
+<!--     <RelativeLayout 
         android:id="@+id/filter_item_single"
         android:visibility="visible"
         android:layout_width="fill_parent"
@@ -40,9 +40,9 @@
                 android:textSize="@dimen/tab_font_size" />
         </FrameLayout>
 
-    </RelativeLayout>
+    </RelativeLayout> -->
   
-      <RelativeLayout
+<!--       <RelativeLayout
           android:id="@+id/filter_item_more"
           android:layout_width="54dp"
           android:layout_height="fill_parent"
@@ -65,11 +65,10 @@
         android:textColor="@color/font_filter_bar"
         android:textSize="@dimen/tab_font_size"
         android:text="更多" />
-      </RelativeLayout>
+      </RelativeLayout> -->
     
     <LinearLayout
     android:id="@+id/filter_parent"
-    android:layout_toLeftOf="@+id/filter_item_more"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/tab_height"
     android:orientation="horizontal" >

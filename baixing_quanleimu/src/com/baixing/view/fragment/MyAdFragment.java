@@ -15,8 +15,10 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -26,12 +28,14 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.activity.PersonalActivity;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.android.api.cmd.HttpPostCommand;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -52,6 +56,7 @@ import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
 
@@ -67,6 +72,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private final int MSG_RESTORE_POST_FAIL = 9;
     private final int MSG_ITEM_OPERATE = 10;
     private final int MSG_SHOW_BIND_DIALOG = 11;
+    private final int MSG_REFRESH_FAIL = 12;
+    private final int MSG_ASK_REFRESH = 13;
 
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -76,20 +83,34 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private UserBean user;
 	private boolean needReloadData = false;
 
-    final static String TYPE_KEY = "PersonalPostFragment_type_key";
+    public final static String TYPE_KEY = "PersonalPostFragment_type_key";
     final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
     private int currentType = TYPE_MYPOST;
 	private VadListLoader glLoader = null;	
 	private String json = "";
+	private boolean showShareDlg = false;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
-
+		
         final Bundle arguments = getArguments();
-        if (arguments != null && arguments.containsKey(MyAdFragment.TYPE_KEY)) {
-            this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY,
-            		MyAdFragment.TYPE_MYPOST);
+        if (arguments != null){
+        	if(arguments.containsKey(MyAdFragment.TYPE_KEY)) {
+        		this.currentType = arguments.getInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+        	}
+        }
+        
+        Activity activity = getActivity();
+        if(activity != null){
+        	Intent intent = activity.getIntent();
+        	if(intent != null){
+        		String action = intent.getAction();
+        		if (action != null && action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
+        			this.showShareDlg = true;
+        			intent.setAction("");
+        		}
+        	}
         }
 
 		user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
@@ -100,12 +121,20 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
 	
-	
 	public void onDestroy() {
 		super.onDestroy();
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
-
+	
+	private boolean isAnonyUser(String uid) {
+		UserBean anonyUser = GlobalDataManager.getInstance().getAccountManager().getAnonymousUser();
+		if (anonyUser == null) {
+			return false;
+		}
+		
+		return uid.equals(anonyUser.getId());
+	}
+	
 	private  void filterOutAd(List<Ad> list, UserBean user)
 	{
 		if (list != null && user != null)
@@ -114,7 +143,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			while (i<listMyPost.size())
 			{
 				Ad detail = list.get(i);
-				if (!detail.getValueByKey("userId").equals(user.getId()))
+				final String uid = detail.getValueByKey("userId");
+				if (!uid.equals(user.getId()) && !isAnonyUser(uid))
 				{
 					list.remove(i);
 				}
@@ -126,6 +156,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 	}
 
+	private boolean isRefreshing = false;
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(!isBack || needReloadData){
@@ -169,12 +200,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		
 		Bundle bundle = this.getArguments();
 		if(bundle != null){
-			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
-				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
-					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
-				}
-				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
-			}
+//			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
+//				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
+//					this.handler.sendEmptyMessageDelayed(MSG_SHOW_BIND_DIALOG, 1000);
+//				}
+//				bundle.remove(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER);
+//			}
 			if(bundle.containsKey("forceUpdate")){
 				if(bundle.getBoolean("forceUpdate")){
 					this.needReloadData = true;
@@ -208,7 +239,19 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}	
 	}
 
-
+	private void setSharedStatus(){
+		String sharedIds = (String)Util.loadDataFromLocate(this.getActivity(), CommonIntentAction.EXTRA_MSG_SHARED_AD_ID, String.class);
+		if(sharedIds == null || sharedIds.length() == 0 || glLoader.getGoodsList().getData() == null) return;
+		String[] ids = sharedIds.split(",");
+		for(int i = 0; i < ids.length; ++ i){
+			for(int j = 0; j < glLoader.getGoodsList().getData().size(); ++ j){
+				if(ids[i].equals(glLoader.getGoodsList().getData().get(j).getValueByKey(EDATAKEYS.EDATAKEYS_ID))){
+					glLoader.getGoodsList().getData().get(j).setValueByKey("shared", "1");
+					break;
+				}
+			}
+		}
+	}
 
 	@Override
 	public void onResume() {
@@ -225,7 +268,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
 			}
 		}
-		
+		setSharedStatus();
 		glLoader.setHasMoreListener(null);
 		glLoader.setCallback(this);
 		adapter.setList(glLoader.getGoodsList().getData());
@@ -280,13 +323,56 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
 	
-	
-	
+	private void doShare(){
+		Bundle bundle = getArguments();
+		if(currentType == TYPE_MYPOST && listMyPost != null && listMyPost.size() > 0 && showShareDlg){
+			String lastPost = bundle.getString("lastPost");
+			if(lastPost != null && lastPost.length() > 0){
+				lastPost = lastPost.split(",")[0];
+				for(int i = 0; i < listMyPost.size(); ++ i){
+					if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(lastPost)){
+						new SharingFragment(listMyPost.get(i), "postSuccess").show(getFragmentManager(), null);
+						showShareDlg = false;
+						break;
+					}
+				}
+			}
+		}    				
+	}
 	
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_ASK_REFRESH: {
+			hideProgress();
+			final Pair<String, String> p = (Pair<String, String>) msg.obj;
+			new AlertDialog.Builder(getActivity()).setTitle("提醒")
+            .setMessage(p.first)
+            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    showSimpleProgress();
+                    doRefresh(1, p.second);
+                    dialog.dismiss();
+                }
+            })
+            .setNegativeButton(
+                    "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            })
+            .show();
+			break;
+		}
+		case MSG_REFRESH_FAIL: {
+			hideProgress();
+			ViewUtil.postShortToastMessage(rootView, (String) msg.obj, (long) 0);
+			break;
+		}
 		case MSG_MYPOST:
+			isRefreshing = false;
 //		case MSG_INVERIFY:
 //		case MSG_DELETED:
 			hideProgress();
@@ -332,12 +418,15 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			if(msg.what == MSG_MYPOST){
 				GlobalDataManager.getInstance().setListMyPost(listMyPost);
 			}
+			setSharedStatus();
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
+			doShare();
 			break;
 		case VadListLoader.MSG_FIRST_FAIL:
 		case VadListLoader.MSG_EXCEPTION:{
 			hideProgress();
+			isRefreshing = false;
 			lvGoodsList.onRefreshComplete();
 			break;
 		}
@@ -402,6 +491,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
+			isRefreshing = false;
 			hideProgress();
 			//tracker
 			Tracker.getInstance()
@@ -418,9 +508,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         case MSG_ITEM_OPERATE:
             showItemOperateMenu(msg);
             break;
-        case MSG_SHOW_BIND_DIALOG:
-        	showBindDialog();
-        	break;
+//        case MSG_SHOW_BIND_DIALOG:
+//        	showBindDialog();
+//        	break;
 		}
 	}
 	
@@ -428,8 +518,11 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public boolean handleBack(){
 		Bundle bundle = createArguments(null, null);
 //		bundle.putInt("defaultPageIndex", 1);
-		((BaseActivity)this.getActivity()).pushFragment(new PersonalProfileFragment(), bundle, true);
-		return true;
+		if(this.getActivity() instanceof PersonalActivity){
+			((BaseActivity)this.getActivity()).pushFragment(new PersonalProfileFragment(), bundle, true);
+			return true;
+		}
+		return false;
 	}
 	
 	private String getPostCateEnglishName() {
@@ -440,39 +533,39 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		return "";
 	}
 	
-	private void showBindDialog(){
-		new AlertDialog.Builder(this.getActivity())
-		.setMessage(R.string.personalpost_bind_baixing_account)
-		.setPositiveButton("是", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				Tracker.getInstance()
-				.event(BxEvent.POST_POSTWITHLOGIN)
-				.append(Key.SECONDCATENAME, getPostCateEnglishName())
-				.end();
-				
-				dialog.dismiss();
-				BaseActivity activity = (BaseActivity)getActivity();
-				if(activity != null){
-					activity.pushFragment(new LoginFragment(), MyAdFragment.createArguments(null, null), false);
-				}				
-			}
-		})
-		.setNegativeButton("否", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {	
-				//tracker
-				Tracker.getInstance()
-				.event(BxEvent.POST_POSTWITHOUTLOGIN)
-				.append(Key.SECONDCATENAME, getPostCateEnglishName())
-				.end();
-				dialog.dismiss();
-			}
-		}).show();
-		
-	}
+//	private void showBindDialog(){
+//		new AlertDialog.Builder(this.getActivity())
+//		.setMessage(R.string.personalpost_bind_baixing_account)
+//		.setPositiveButton("是", new DialogInterface.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {
+//				Tracker.getInstance()
+//				.event(BxEvent.POST_POSTWITHLOGIN)
+//				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+//				.end();
+//				
+//				dialog.dismiss();
+//				BaseActivity activity = (BaseActivity)getActivity();
+//				if(activity != null){
+//					activity.pushFragment(new LoginFragment(), MyAdFragment.createArguments(null, null), false);
+//				}				
+//			}
+//		})
+//		.setNegativeButton("否", new DialogInterface.OnClickListener() {
+//			
+//			@Override
+//			public void onClick(DialogInterface dialog, int which) {	
+//				//tracker
+//				Tracker.getInstance()
+//				.event(BxEvent.POST_POSTWITHOUTLOGIN)
+//				.append(Key.SECONDCATENAME, getPostCateEnglishName())
+//				.end();
+//				dialog.dismiss();
+//			}
+//		}).show();
+//		
+//	}
 	
 	private boolean isValidMessage(Ad detail)
 	{
@@ -547,34 +640,37 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
             public void onClick(DialogInterface dialog, int clickedIndex) {
                 if (isValidMessage(detail)) {
                     switch (clickedIndex) {
-                        case 0://刷新
-                            doRefresh(0, adId);
-                            Tracker.getInstance().event(BxEvent.SENT_REFRESH)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 1://修改
-                            Bundle args = createArguments(null, null);
-                            args.putSerializable("goodsDetail", detail);
-                            args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-							pushFragment(new EditAdFragment(), args);
-                            Tracker.getInstance().event(BxEvent.SENT_EDIT)
-                                    .append(Key.STATUS, Value.VALID)
-                                    .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds)
-                                    .end();
-                            break;
-                        case 2://删除
-                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, Value.VALID)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                    .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            break;
+                    case 0:///sharing
+                    	(new SharingFragment(detail, "myAdList")).show(getFragmentManager(), null);
+                    	break;
+                    case 1://刷新
+                        doRefresh(0, adId);
+                        Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 2://修改
+                        Bundle args = createArguments(null, null);
+                        args.putSerializable("goodsDetail", detail);
+                        args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+						pushFragment(new EditAdFragment(), args);
+                        Tracker.getInstance().event(BxEvent.SENT_EDIT)
+                                .append(Key.STATUS, Value.VALID)
+                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds)
+                                .end();
+                        break;
+                    case 3://删除
+                    	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+                    			.append(Key.STATUS, Value.VALID)
+                    			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+                                .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+                        break;
                     }
                 } 
                 else {
@@ -632,13 +728,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {
-				hideProgress();
-				Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
+				sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
 			}
 			
 			@Override
 			public void onNetworkDone(int requstCode, String responseData) {
-				hideProgress();
+//				hideProgress();
 				json = responseData;
 				try {
 		            JSONObject jb = new JSONObject(json);
@@ -646,29 +741,14 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		            String message = js.getString("message");
 		            int code = js.getInt("code");
 		            if (code == 0) {
-		                Toast.makeText(getActivity(), message, 1).show();
+//		                Toast.makeText(getActivity(), message, 1).show();
+		            	sendMessage(MSG_REFRESH_FAIL, message);
 		            }else if(2 == code){
-		                new AlertDialog.Builder(getActivity()).setTitle("提醒")
-		                        .setMessage(message)
-		                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-		                            @Override
-		                            public void onClick(DialogInterface dialog, int which) {
-		                                showSimpleProgress();
-		                                doRefresh(1, adId);
-		                                dialog.dismiss();
-		                            }
-		                        })
-		                        .setNegativeButton(
-		                                "取消", new DialogInterface.OnClickListener() {
-		                            @Override
-		                            public void onClick(DialogInterface dialog, int which) {
-		                                dialog.cancel();
-		                            }
-		                        })
-		                        .show();
-
+		            	Pair<String, String> p = new Pair<String, String>(message, adId);
+		            	sendMessage(MSG_ASK_REFRESH, p);
 		            }else {
-		                Toast.makeText(getActivity(), message, 1).show();
+//		                Toast.makeText(getActivity(), message, 1).show();
+		            	sendMessage(MSG_REFRESH_FAIL, message);
 		            }
 		        } catch (JSONException e) {
 		            // TODO Auto-generated catch block
@@ -720,6 +800,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onRefresh() {
+		if(isRefreshing) return;
 		ApiParams params = new ApiParams();
 		if(user != null){
 			params.addParam("userId", user.getId());
@@ -735,6 +816,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader.setParams(params);
 		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		glLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+		isRefreshing = true;
 	}
 	
 	@Override

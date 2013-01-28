@@ -5,77 +5,81 @@
     android:layout_height="@dimen/title_height"
     android:background="@drawable/bg_title" >
 
-    <RelativeLayout android:id="@+id/left_action"
+    <RelativeLayout
+        android:id="@+id/left_action"
         android:layout_width="@dimen/title_action_width"
-        android:background="@drawable/title_bg_selector"
-        android:layout_height="fill_parent">
+        android:layout_height="fill_parent"
+        android:background="@drawable/title_bg_selector" >
+
         <ImageView
             android:id="@+id/imageView1"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerInParent="true"
             android:src="@drawable/icon_back" />
-        
     </RelativeLayout>
-    
-    <include layout="@layout/title_line"
-        android:layout_width="2dp"
-            android:layout_height="fill_parent"
+
+    <include
         android:id="@+id/left_line"
-        android:layout_toRightOf="@+id/left_action"/>
-    
-<!--         <LinearLayout
+        android:layout_width="2dp"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@+id/left_action"
+        layout="@layout/title_line" />
+
+    <!--
+             <LinearLayout
             android:layout_width="1dp"
             android:layout_height="fill_parent"
             android:id="@+id/left_line"
             android:layout_toRightOf="@+id/left_action"
-            android:background="@color/title_gap_line" /> -->
-    
-   
-    
+            android:background="@color/title_gap_line" />
+    -->
+
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
         android:gravity="center"
+        android:maxWidth="200dip"
+        android:singleLine="true"
         android:text="首页"
         android:textColor="@color/font_title"
         android:textSize="@dimen/font_medium" >
     </TextView>
-    
+
     <LinearLayout
+        android:id="@+id/right_action_parent"
         android:layout_width="wrap_content"
         android:layout_height="fill_parent"
-        android:id="@+id/right_action_parent"
         android:layout_alignParentRight="true"
         android:orientation="horizontal" >
-
-
 
         <RelativeLayout
             android:id="@+id/search_action"
             android:layout_width="@dimen/title_action_width"
             android:layout_height="@dimen/title_height"
-            android:background="@drawable/title_bg_selector"
-            >
-<!--         <View
+            android:background="@drawable/title_bg_selector" >
+
+            <!--
+             <View
             android:layout_width="1dp"
             android:layout_height="@dimen/title_height"
-            android:background="@color/title_gap_line" /> -->
-            <include layout="@layout/title_line"/>
-        
+            android:background="@color/title_gap_line" />
+            -->
+
+            <include layout="@layout/title_line" />
+
             <ImageView
                 android:id="@+id/globalSearch"
-                android:layout_centerInParent="true"
-                android:scaleType="fitXY"
                 android:layout_width="28dp"
                 android:layout_height="28dp"
+                android:layout_centerInParent="true"
                 android:background="@drawable/icon_search"
-                android:gravity="center" >
+                android:gravity="center"
+                android:scaleType="fitXY" >
             </ImageView>
         </RelativeLayout>
-
 
         <RelativeLayout
             android:id="@+id/right_action"
@@ -84,37 +88,40 @@
             android:background="@drawable/bg_post_selector"
             android:gravity="center" >
 
-<!--             <View
+            <!--
+                 <View
             android:layout_width="1dp"
             android:layout_height="@dimen/title_height"
-            android:background="@color/title_gap_line" /> -->
-            <include layout="@layout/title_line"/>
+            android:background="@color/title_gap_line" />
+            -->
+
+            <include layout="@layout/title_line" />
+
             <TextView
                 android:id="@+id/right_btn_txt"
-                android:layout_centerInParent="true"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
                 android:gravity="center"
                 android:text="发布 "
                 android:textColor="@color/font_title"
                 android:textSize="@dimen/font_medium" >
             </TextView>
-
         </RelativeLayout>
     </LinearLayout>
-    
-	<LinearLayout
+
+    <LinearLayout
         android:id="@+id/linearTitleControls"
-        android:layout_toRightOf="@+id/left_line"
-        android:layout_toLeftOf="@+id/right_action_parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_centerInParent="true" />
-    
-<View android:layout_width="fill_parent"
-    android:layout_height="1dp"
-    android:background="#d2d2d2"
-    android:layout_alignParentBottom="true"
-    />
+        android:layout_centerInParent="true"
+        android:layout_toLeftOf="@+id/right_action_parent"
+        android:layout_toRightOf="@+id/left_line" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="#d2d2d2" />
 
 </RelativeLayout>

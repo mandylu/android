@@ -18,6 +18,7 @@ import android.util.Log;
 import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.CheckBox;
 
@@ -26,6 +27,7 @@ import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.Ad;
+import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -156,9 +158,11 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 			BaseFragment f = getCurrentFragment();
 			if (f != null && intent.getBooleanExtra(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, false))
 			{
+				Intent receivedIntent = (Intent) intent.getExtras().get(CommonIntentAction.EXTRA_COMMON_DATA);
 				f.onActivityResult(intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, -1), 
 						intent.getIntExtra(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, -1), 
-						(Intent) intent.getExtras().get(CommonIntentAction.EXTRA_COMMON_DATA));
+						receivedIntent
+						);
 			}
 		}
 	}
@@ -414,6 +418,25 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 //		gg.setClass(this, ManagerActivity.class);
 //		gg.putExtra("intent", intent);
 //		this.startActivity(gg);
+	}
+	
+	protected final void onSetRootView(final View rootV) {
+		rootV.getViewTreeObserver().addOnGlobalLayoutListener(new OnGlobalLayoutListener() { //When user is input some thing. do not need show tab bar until user finish input.
+			
+			@Override
+			public void onGlobalLayout() {
+				BaseFragment currentF = getCurrentFragment();
+				int hDiff = rootV.getRootView().getHeight() - rootV.getHeight();
+				if (hDiff > 100)
+				{
+					findViewById(R.id.common_tab_layout).setVisibility(View.GONE);
+				}
+				else
+				{
+					findViewById(R.id.common_tab_layout).setVisibility(currentF != null && currentF.hasGlobalTab() ? View.VISIBLE : View.GONE);
+				}
+			}
+		});
 	}
 	
 	

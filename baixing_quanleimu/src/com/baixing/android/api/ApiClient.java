@@ -81,9 +81,10 @@ public class ApiClient {
 	
 	
 	//init with mandatory parameters
-	public void init(Context context, String udid, String version, String channel, String city, CacheProxy cache){
+	public void init(Context context, String udid, String userId, String version, String channel, String city, CacheProxy cache){
 		this.context = context;
 		commonParams.addParam(ApiParams.KEY_UDID, udid);
+		commonParams.addParam(ApiParams.KEY_USERID, userId);
 		commonParams.addParam(ApiParams.KEY_VERSION, version);
 		commonParams.addParam(ApiParams.KEY_CHANNEL, channel);
 		commonParams.addParam(ApiParams.KEY_CITY, city);
@@ -252,7 +253,15 @@ public class ApiClient {
 	 * @throws Exception
 	 */
 	public final String invokeApi(final Api method, final ApiParams params) throws Exception {
-		return invokeApi(method, params, false);
+		try {
+			return invokeApi(method, params, false);
+		}
+		catch (Exception ex) {
+			throw ex;
+		}
+		catch (Throwable t) {
+			throw new Exception(t);
+		}
 	}
 	
 	private final void invokeApi(final Api method, final ApiParams params, final ApiListener listener){

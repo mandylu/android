@@ -13,7 +13,9 @@ import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -38,6 +40,7 @@ public class VadListAdapter extends BaseAdapter {
 	{
 		public String filterHint;
 		public int resultCount;
+		public boolean isCountVisible = true;
 	}
 	
 	private Context context;
@@ -139,6 +142,7 @@ public class VadListAdapter extends BaseAdapter {
 		ImageView ivInfo;
 		View pbView;
 		View divider;
+		TextView tvShared;
 	}
 	
 	private boolean isGroupPosition(int pos)
@@ -219,6 +223,7 @@ public class VadListAdapter extends BaseAdapter {
 			holder.pbView = v.findViewById(R.id.pbLoadingProgress);
 			holder.tvUpdateDate = (TextView) v.findViewById(R.id.tvUpdateDate);
 			holder.divider = v.findViewById(R.id.vad_divider);
+			holder.tvShared = (TextView)v.findViewById(R.id.sharedTag);
 			((AnimatingImageView)holder.ivInfo).setForefrontView(holder.pbView);
 			v.setTag(holder);
 		}
@@ -235,6 +240,10 @@ public class VadListAdapter extends BaseAdapter {
 			text.setText(g.filterHint);
 			TextView countTxt = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_result_count);
 			countTxt.setText(g.resultCount + "");
+			if (!g.isCountVisible) {
+				countTxt.setVisibility(View.GONE);
+				v.findViewById(R.id.textView2).setVisibility(View.GONE);
+			}
 			holder.divider.setVisibility(View.GONE);
 			v.setEnabled(false);	
 			return v;
@@ -274,7 +283,6 @@ public class VadListAdapter extends BaseAdapter {
 			if(null != holder.ivInfo.getTag()) strTag = holder.ivInfo.getTag().toString();
 			
 //				holder.ivInfo.setLayoutParams(lp);
-			
 			if (list.get(position).getImageList() == null
 					|| list.get(position).getImageList().equals("")
 					|| list.get(position).getImageList().getSquare() == null
@@ -374,13 +382,15 @@ public class VadListAdapter extends BaseAdapter {
 			holder.actionLine.setVisibility(View.GONE);
 		}
 		
+		Pair<String, String> priceP = getPrice(detailObj);
 //			String price = list.get(position).getMetaValueByKey("价格");
-		String price = detailObj.getValueByKey("价格");
-		if (price == null || price.equals("")) {
+//		String price = detailObj.getValueByKey("价格");
+//		if (price == null || price.equals("")) {
+		if (priceP == null) {
 			holder.tvPrice.setVisibility(View.GONE);
 		} else {
 			holder.tvPrice.setVisibility(View.VISIBLE);
-			holder.tvPrice.setText(price);
+			holder.tvPrice.setText(priceP.second);
 		}
 //			String title = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
 //			TextPaint tp = holder.tvDes.getPaint();
@@ -414,7 +424,7 @@ public class VadListAdapter extends BaseAdapter {
 		}
 		
 		
-		String areaV = list.get(position).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
+		String areaV = getArea(list.get(position));//list.get(position).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
 		if(areaV != null && !areaV.equals(""))
 		{
 			holder.tvDateAndAddress.setText(areaV);
@@ -427,7 +437,7 @@ public class VadListAdapter extends BaseAdapter {
 		
 		if (isValidMessage)
 		{
-			holder.tvPrice.setVisibility(View.VISIBLE);
+			holder.tvPrice.setVisibility(priceP == null ? View.GONE : View.VISIBLE);
 			holder.tvUpdateDate.setVisibility(View.VISIBLE);
 			holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
 		}
@@ -450,6 +460,11 @@ public class VadListAdapter extends BaseAdapter {
                 handler.sendMessage(msg);
 			}
 		});	
+		if(detailObj.getValueByKey("shared").equals("1")){
+			holder.tvShared.setVisibility(View.VISIBLE);
+		}else{
+			holder.tvShared.setVisibility(View.GONE);
+		}
 		return v;
 		
 	}
@@ -457,5 +472,34 @@ public class VadListAdapter extends BaseAdapter {
 	private boolean isValidMessage(Ad detail)
 	{
 		return !detail.getValueByKey("status").equals("4") && !detail.getValueByKey("status").equals("20");
+	}
+	
+	private String getArea(Ad detail) {
+		String cityName = GlobalDataManager.getInstance().getCityName();
+		String areaV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
+		if (TextUtils.isEmpty(cityName)) {
+			return areaV;
+		}
+		
+		if (areaV != null && areaV.startsWith(cityName)) {
+			int index = areaV.indexOf(cityName) + cityName.length();
+			if (index < areaV.length() - 2) {
+				areaV = areaV.substring(index + 1);
+			}
+		}
+		
+		return areaV;
+	}
+	
+	private Pair<String, String> getPrice(Ad detail) {
+		String price = detail.getValueByKey("价格");
+		String sallary = detail.getValueByKey("工资");
+		if (!TextUtils.isEmpty(price)) {
+			return new Pair<String, String>("价格", price);
+		} else if (!TextUtils.isEmpty(sallary)) {
+			return new Pair<String, String>("工资", sallary);
+		}
+		
+		return null;
 	}
 }

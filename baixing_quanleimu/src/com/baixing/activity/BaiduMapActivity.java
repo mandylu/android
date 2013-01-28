@@ -10,6 +10,7 @@ import android.location.Location;
 import android.os.Bundle;
 import org.jivesoftware.smack.util.Base64;
 import android.util.Log;
+import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,10 +23,13 @@ import com.baidu.mapapi.LocationListener;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
+import com.baidu.mapapi.MKPoiInfo;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
+import com.baidu.mapapi.MapView.LayoutParams;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
+import com.baidu.mapapi.PoiOverlay;
 import com.baidu.mapapi.Projection;
 import com.baixing.android.api.WebUtils;
 import com.baixing.data.GlobalDataManager;
@@ -44,7 +48,9 @@ import com.quanleimu.activity.R.style;
 
 import java.io.UnsupportedEncodingException;
 import java.lang.ref.WeakReference;
+import java.util.ArrayList;
 import java.util.List;
+import java.util.zip.Inflater;
 
 import org.json.JSONObject;
 
@@ -55,6 +61,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		// 申请地址：http://dev.baidu.com/wiki/static/imap/key/
 		//713E99B1CD54866996162791BA789A0D9A13791B	
 		public static String mStrKey = "736C4435847CB7D20DD1131064E35E8941C934F5";
+		
+		private View popView;
 
 		// 常用事件监听，用来处理通常的网络错误，授权验证错误等
 		public static class MyGeneralListener implements MKGeneralListener {
@@ -203,8 +211,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 					mapController.setZoom(15);
 					
 					List<Overlay> overlays = mapView.getOverlays();
-					if (overlays != null)
-					{
+					if (overlays != null){
 						overlays.add(new MyLocationOverlays(endGeoPoint));
 					}
 					
@@ -216,6 +223,13 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 						locationManager.requestLocationUpdates(BaiduMapActivity.this);
 					}
 					manager.start();
+					
+					if(popView != null){
+						MapView.LayoutParams geoLP = (MapView.LayoutParams) popView.getLayoutParams();  
+				        geoLP.point = endGeoPoint;  
+				        mapView.updateViewLayout(popView, geoLP);
+				        popView.setVisibility(View.VISIBLE);  
+					}
 				}
 				catch(Throwable t)
 				{
@@ -257,6 +271,11 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 				}
 			}
 	        setTargetCoordinate(position);
+	        
+	        if(popView != null){
+	        	((TextView)popView.findViewById(R.id.map_bubbleTitle)).setText(position.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+	        	((TextView)popView.findViewById(R.id.map_bubbleText)).setText(position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME));
+	        }
         }	    
 	    
 	} 
@@ -297,7 +316,16 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		this.findViewById(R.id.left_action).setPadding(0, 0, 0, 0);		
         super.initMapActivity(mBMapMan);
         
-        
+        MapView mapView = (MapView) findViewById(R.id.bmapsView);
+		if(popView == null){
+			LayoutInflater inflater = LayoutInflater.from(BaiduMapActivity.this);
+	        popView = inflater.inflate(R.layout.map_bubble, null);
+		}
+        mapView.addView( popView,  
+              new MapView.LayoutParams(MapView.LayoutParams.WRAP_CONTENT, MapView.LayoutParams.WRAP_CONTENT,  
+            		  null, MapView.LayoutParams.BOTTOM_CENTER));  
+        popView.setVisibility(View.GONE);  
+
 	}
 	
 	private void updateMyLocationOverlay(Location location)
@@ -322,13 +350,37 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			mylocationOverlay.enableMyLocation();
 			mapView.getOverlays().add(mylocationOverlay);	
 			mapView.getController().animateTo(midPoint);
-			mapView.getController().zoomToSpan(latSpan*2, longSpan*2);
+			mapView.getController().zoomToSpan(latSpan*2, longSpan*2);			
 		}
 		catch(Throwable t)
 		{
 			//Ignore any exception.
 		}
 	}
+	
+//	class AdOverlay extends Overlay{
+//		private GeoPoint geoPoint;
+//		private String content;
+//		public AdOverlay(GeoPoint geoPoint, String content){
+//			geoPoint = geoPoint;
+//			this.content = content;
+//		}
+//		
+//		@Override
+//		public void draw(Canvas canvas, MapView mapView, boolean shadow) {
+//			super.draw(canvas, mapView, shadow);
+//			Point point = new Point();
+//			Projection projection = mapView.getProjection();
+//			projection.toPixels(geoPoint, point);
+//			Paint paint = new Paint();
+//			BitmapFactory.Options o =  new BitmapFactory.Options();
+//            o.inPurgeable = true;
+//			Bitmap bmp = BitmapFactory.decodeResource(getResources(),
+//					R.drawable.red, o);
+//			canvas.drawBitmap(bmp, point.x, point.y, paint);
+//			bmp.recycle();
+//		}		
+//	}
 	
 	class MyLocationOverlays extends Overlay {
 		GeoPoint geoPoint;

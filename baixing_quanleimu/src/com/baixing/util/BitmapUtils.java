@@ -23,20 +23,37 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
+import android.graphics.Bitmap.CompressFormat;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
 import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Pair;
 import android.view.WindowManager;
+import android.widget.Toast;
+
 import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.BXThumbnail;
 
 /**
  * Class containing some static utility methods.
  */
 public class BitmapUtils {
+	public static final String TAG = "BitmapUtils";
+	
+	public static final int DEFAULT_THUMBNAIL_WIDTH = 200;
+	public static final int DEFAULT_THUMBNAIL_HEIGHT = 200;
 	
     private static boolean useSampleSize = false;
     
@@ -265,7 +282,7 @@ public class BitmapUtils {
 		return null;
 	}
 	
-	private static int getClosestResampleSize(int cx, int cy, int maxDim)
+	public static int getClosestResampleSize(int cx, int cy, int maxDim)
     {
         int max = Math.max(cx, cy);
         
@@ -301,6 +318,171 @@ public class BitmapUtils {
 		String ret = cursor.getString(column_index);
 //		cursor.close();
 		return ret;
+	}
+	
+	private static File getOutputMediaFile() {
+		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bx/";
+		File dirF = new File(dir);
+		dirF.mkdirs();
+		
+//		return new File(Environment.getExternalStorageDirectory(), "bx_" + System.currentTimeMillis() + ".jpg");
+		return new File(dirF, "bx_" + System.currentTimeMillis() + ".jpg");
+	}
+	
+	public static final BXThumbnail copyAndCreateThrmbnail(String sourceFile, Context context) {
+		String savedPath = getOutputMediaFile().getAbsolutePath();
+		if (savedPath == null) {
+			return null;
+		}
+		
+		Bitmap source = null;
+		try {
+			FileOutputStream fos = new FileOutputStream(savedPath);
+			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPurgeable = true;
+			options.inJustDecodeBounds = true;
+			
+			BitmapFactory.decodeFile(sourceFile, options);
+			
+			options.inJustDecodeBounds = false;
+			options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
+			
+			source = BitmapFactory.decodeFile(sourceFile, options);
+			
+			source.compress(CompressFormat.JPEG, 100, fos);
+			
+			fos.close();
+		}
+		catch (Throwable t) {
+			Log.e(TAG, "copy image failed." + t.getMessage());
+		}
+		finally {
+			if (source != null) {
+//				try {
+//					ExifInterface original = new ExifInterface(sourceFile);
+//					ExifInterface target = new ExifInterface(savedPath);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				//TODO: copy EXIF.
+				
+			}
+		}
+		
+		if (source == null) {
+			return null;
+		}
+
+		try {
+			Bitmap bp = Bitmap.createScaledBitmap(source, DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, true);
+			
+			source.recycle();
+			return BXThumbnail.createThumbnail(savedPath, bp);
+		} catch (Throwable t) {
+			return BXThumbnail.createThumbnail(savedPath, source);
+		}
+	}
+	
+	/**
+	 * Save the data to persist data and then return the thumbnail.
+	 * 
+	 * @param data
+	 * @param rotation value range [0, 360]. Target image data should  rotate this degree when saved to file.
+	 * @param context 
+	 * @param isMirror if true, an mirror transform should be added when saving the target data.
+	 * @return return the saved file path and thumbnail which can be shown to user.
+	 */
+	public static final BXThumbnail saveAndCreateThumbnail(byte[] data, int rotation, Context context, boolean isMirror) {
+		String savedPath = getOutputMediaFile().getAbsolutePath();
+		if (savedPath == null) {
+			return null;
+		}
+		
+		Bitmap source = null;
+		try {
+            FileOutputStream fos = new FileOutputStream(savedPath);
+            
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPurgeable = true;
+            options.inJustDecodeBounds = true;
+            
+            BitmapFactory.decodeByteArray(data, 0, data.length, options);
+            
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
+            
+            
+            source = BitmapFactory.decodeByteArray(data, 0, data.length, options);//Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+            
+            source.compress(CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        }
+		
+		if (source == null) {
+			return null;
+		}
+        
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inPurgeable = true;
+        
+		try {
+			Matrix m = new Matrix();
+			if (isMirror) {
+				m.setValues(new float[] {-1, 0, 0, 
+										 0, 1, 0, 
+										 0, 0, 1});
+			}
+			m.postRotate(rotation);
+			float scaleW = (float)DEFAULT_THUMBNAIL_WIDTH / (float) source.getWidth();
+			float scaleH = (float) DEFAULT_THUMBNAIL_HEIGHT / (float) source.getHeight();
+			m.postScale(scaleW, scaleH);
+
+			Bitmap out = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), m, false);
+			return BXThumbnail.createThumbnail(savedPath, out);
+		} catch (Throwable e) {
+			Log.d(TAG, "save and create image failed " + e.getMessage());
+		}
+		finally {
+			 ExifInterface exif = null;
+				try {
+					exif = new ExifInterface(savedPath);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (exif != null) {
+					exif.setAttribute(ExifInterface.TAG_ORIENTATION, getExifOrientation(rotation));
+					
+					try {
+						exif.saveAttributes();
+					} catch (IOException e) {
+						//Igonr exception
+					}
+				}
+		}
+		
+		return null;
+	}
+	
+	private static String getExifOrientation(int degree) {
+		switch (degree) {
+		case 0:
+			return "" + ExifInterface.ORIENTATION_NORMAL;
+		case 90:
+			return "" + ExifInterface.ORIENTATION_ROTATE_90;
+		case 180:
+			return "" + ExifInterface.ORIENTATION_ROTATE_180;
+		case 270:
+			return "" + ExifInterface.ORIENTATION_ROTATE_270;
+			default:
+				return "" + ExifInterface.ORIENTATION_UNDEFINED;
+		}
 	}
 
 }

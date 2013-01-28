@@ -41,7 +41,7 @@ public class PostNetworkService implements ApiListener{
 	public PostNetworkService(Handler handler){
 		this.handler = handler;
 	}
-	
+	private boolean isretreiveMeta = false; 
 	public void retreiveMetaAsync(String cityEnglishName, String categoryEnglishName){
 		String apiName = "category_meta_post";
 		city = cityEnglishName;
@@ -50,6 +50,7 @@ public class PostNetworkService implements ApiListener{
 		param.addParam("categoryEnglishName", categoryEnglishName);
 		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().getCityEnglishName() : cityEnglishName));
 		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
+		isretreiveMeta = true;
 	}
 	
 	public void postAdAsync(HashMap<String, String> params,
@@ -120,6 +121,7 @@ public class PostNetworkService implements ApiListener{
 		}
 		
 		ApiClient.getInstance().remoteCall(Api.createPost(apiName), apiParam, this);
+		isretreiveMeta = false;
 	}
 	
 	private void sendMessage(int what, Object obj){
@@ -210,14 +212,17 @@ public class PostNetworkService implements ApiListener{
 	@Override
 	public void onComplete(JSONObject json, String rawData) {
 		// TODO Auto-generated method stub
-		handleGetMetaMsgBack(rawData);
-		handlePostMsgBack(rawData);
+		if(isretreiveMeta){
+			handleGetMetaMsgBack(rawData);
+		}else{
+			handlePostMsgBack(rawData);
+		}
 	}
 
 	@Override
 	public void onError(ApiError error) {
 		// TODO Auto-generated method stub
-		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+//		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
 		if(error != null){
 			sendMessage(PostCommonValues.MSG_POST_FAIL, error.getMsg());
 		}
@@ -226,6 +231,8 @@ public class PostNetworkService implements ApiListener{
 	@Override
 	public void onException(Exception e) {
 		// TODO Auto-generated method stub
-		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+		if(e != null){
+			sendMessage(PostCommonValues.MSG_POST_EXCEPTION, e.getMessage());
+		}
 	}
 }

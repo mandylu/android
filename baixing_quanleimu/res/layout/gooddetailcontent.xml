@@ -154,17 +154,16 @@
 		                    <RelativeLayout
 		                        android:id="@+id/llgl"
 		                        android:layout_width="fill_parent"
-		                        android:layout_height="122dp"
+		                        android:layout_height="116dp"
 		                        android:paddingTop="8dp"
-		                        android:paddingBottom="8dp"
-		                        android:background="#ebebeb" >
+		                        android:paddingBottom="8dp">
 								<TextView android:id="@+id/vad_no_img_tip"
 								    android:layout_width="fill_parent"
 								    android:layout_height="wrap_content"
 								    android:layout_centerInParent="true"
 								    android:gravity="center"
 								    android:text="暂无图片"
-								    android:textSize="@dimen/font_small"
+								    android:textSize="@dimen/font_medium"
 								    android:visibility="gone"
 								    android:textColor="@color/common_placeholder"/>
 								
@@ -203,7 +202,19 @@
 		                        android:gravity="left|top"
 		                        android:padding="@dimen/vad_margin_LF"
 		                        android:textColor="#000000"
-		                        android:textSize="@dimen/font_small" >
+		                        android:textSize="@dimen/font_medium" >
+		                    </TextView>
+		                    
+               		        <TextView
+		                        android:id="@+id/user_info"
+		                        android:layout_width="wrap_content"
+		                        android:layout_height="wrap_content"
+		                        android:lineSpacingExtra="@dimen/line_space"
+		                        android:gravity="left|top"
+		                        android:paddingLeft="@dimen/vad_margin_LF"
+		                        android:paddingRight="@dimen/vad_margin_LF"
+		                        android:textColor="@color/vad_meta_label"
+		                        android:textSize="@dimen/font_medium" >
 		                    </TextView>
 
 		                    <LinearLayout

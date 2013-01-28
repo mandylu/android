@@ -393,15 +393,23 @@ public class GlobalDataManager implements Observer{
 	}
 
 	static public GlobalDataManager getInstance(){
-		if(null == preferences){
-			preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
-			textMode = preferences.getBoolean("isTextMode", false);
-			needNotifiySwitchMode = preferences.getBoolean("needNotifyUser", true);
+		try {
+			if(null == preferences){
+				preferences = context.get().getApplicationContext().getSharedPreferences("QuanleimuPreferences", Context.MODE_PRIVATE);
+				textMode = preferences.getBoolean("isTextMode", false);
+				needNotifiySwitchMode = preferences.getBoolean("needNotifyUser", true);
+			}
+			
+			if(instance == null){
+				instance = new GlobalDataManager();
+			}
+			
+		} catch (Throwable t) {
+			//Igonor.
+		} finally {
 		}
 		
-		if(instance == null){
-			instance = new GlobalDataManager();
-		}
+		
 		return instance;
 	}
 	

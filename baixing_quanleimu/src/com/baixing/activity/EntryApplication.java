@@ -26,7 +26,8 @@ public class EntryApplication extends Application {
 		//Init api.
 		GlobalDataManager mangerInstance = GlobalDataManager.getInstance();
 		ApiClient.getInstance().init(mangerInstance.getApplicationContext(),
-				Util.getDeviceUdid(mangerInstance.getApplicationContext()), 
+				Util.getDeviceUdid(mangerInstance.getApplicationContext()),
+				mangerInstance.getAccountManager().getMyId(mangerInstance.getApplicationContext()),
 				mangerInstance.getVersion(), 
 				mangerInstance.getChannelId(),
 				mangerInstance.getCityEnglishName(),

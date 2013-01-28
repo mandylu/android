@@ -14,14 +14,14 @@
         android:textColor="@color/vad_group_title"
         android:layout_centerVertical="true"/>
     
-    <TextView
+   <!--  <TextView
         android:id="@+id/textView1"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_toRightOf="@+id/filter_string"
         android:layout_centerVertical="true"
         android:textColor="@color/vad_group_title"
-        android:text="的搜索结果" />
+        android:text="的搜索结果" /> -->
     
     
     <View
@@ -37,7 +37,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
+        android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/textView2"
         android:textColor="@color/vad_group_title"
         android:text="1000" />
@@ -47,7 +47,7 @@
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
         android:layout_alignBaseline="@+id/textView1"
-        android:layout_alignBottom="@+id/textView1"
+        android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/vad_group_title"
         android:text="条" />

@@ -35,6 +35,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setCheckUpdate)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
+        ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
 
 //		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
 //		AccessToken token = null;
@@ -197,6 +198,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 pushFragment(new FeedbackFragment(), createArguments("反馈信息", null));
                 Tracker.getInstance().event(BxEvent.SETTINGS_FEEDBACK).end();
                 break;
+            case R.id.bindSharingAccount:
+            	pushFragment(new BindSharingFragment(), createArguments("绑定转发帐号", null));
+            	break;
             default:
                 Toast.makeText(getAppContext(), "no action", 1).show();
                 break;
