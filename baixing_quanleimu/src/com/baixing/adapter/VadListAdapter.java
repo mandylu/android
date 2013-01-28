@@ -135,6 +135,7 @@ public class VadListAdapter extends BaseAdapter {
 	static class ViewHolder{
 		TextView tvDes;
 		TextView tvPrice;
+		View tvGap;
 		TextView tvDateAndAddress;
 		TextView tvUpdateDate;
         View operateView;
@@ -216,6 +217,7 @@ public class VadListAdapter extends BaseAdapter {
 			holder = new ViewHolder();
 			holder.tvDes = (TextView) v.findViewById(R.id.tvDes);
 			holder.tvPrice = (TextView) v.findViewById(R.id.tvPrice);
+			holder.tvGap = v.findViewById(R.id.tvGap);
 			holder.tvDateAndAddress = (TextView) v.findViewById(R.id.tvDateAndAddress);
 			holder.operateView =  v.findViewById(R.id.rlListOperate);
 			holder.actionLine = v.findViewById(R.id.lineView);
@@ -388,8 +390,10 @@ public class VadListAdapter extends BaseAdapter {
 //		if (price == null || price.equals("")) {
 		if (priceP == null) {
 			holder.tvPrice.setVisibility(View.GONE);
+			holder.tvGap.setVisibility(View.GONE);
 		} else {
 			holder.tvPrice.setVisibility(View.VISIBLE);
+			holder.tvGap.setVisibility(View.VISIBLE);
 			holder.tvPrice.setText(priceP.second);
 		}
 //			String title = list.get(position).getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE);
@@ -438,12 +442,14 @@ public class VadListAdapter extends BaseAdapter {
 		if (isValidMessage)
 		{
 			holder.tvPrice.setVisibility(View.VISIBLE);
+			holder.tvGap.setVisibility(View.VISIBLE);
 			holder.tvUpdateDate.setVisibility(View.VISIBLE);
 			holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
 		}
 		else
 		{
 			holder.tvPrice.setVisibility(View.GONE);
+			holder.tvGap.setVisibility(View.GONE);
 			holder.tvUpdateDate.setVisibility(View.GONE);
 			holder.tvDateAndAddress.setText("审核未通过");
 			holder.tvDateAndAddress.setTextColor(Color.RED);

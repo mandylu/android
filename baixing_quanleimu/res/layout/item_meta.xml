@@ -6,8 +6,8 @@
 	
 	<ImageView
         android:id="@+id/meta_icon"
-        android:layout_width="12dp"
-        android:layout_height="12dp"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
         android:layout_marginRight="@dimen/vad_margin_LF"
         android:layout_alignParentLeft="true"
         android:layout_centerVertical="true"
