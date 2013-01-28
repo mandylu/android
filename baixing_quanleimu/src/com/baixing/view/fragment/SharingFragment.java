@@ -1,5 +1,6 @@
 package com.baixing.view.fragment;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.entity.Ad;
 import com.baixing.sharing.SharingCenter;
 
@@ -24,7 +25,7 @@ class SharingFragment extends DialogFragment{
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceBundle){
-		String[] names = {"分享到新浪微博", "分享到微信", "分享到QQ空间"};
+		String[] names = {"转发到新浪微博", "转发到微信", "转发到QQ空间"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")
 		.setItems(names, new DialogInterface.OnClickListener(){
 			
@@ -33,13 +34,13 @@ class SharingFragment extends DialogFragment{
 				dismiss();
 				switch(which){
 				case 0:
-					SharingCenter.share2Weibo(getActivity(), mAd);
+					SharingCenter.share2Weibo((BaseActivity)getActivity(), mAd);
 					break;
 				case 1:
-					SharingCenter.share2Weixin(getActivity(), mAd);
+					SharingCenter.share2Weixin((BaseActivity)getActivity(), mAd);
 					break;
 				case 2:
-					SharingCenter.share2QZone(getActivity(), mAd);
+					SharingCenter.share2QZone((BaseActivity)getActivity(), mAd);
 					break;
 				}				
 			}

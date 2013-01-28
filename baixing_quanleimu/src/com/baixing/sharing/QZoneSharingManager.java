@@ -30,7 +30,7 @@ import java.io.IOException;
 import java.text.SimpleDateFormat;
 import java.util.Date;
 
-public class QZoneSharingManager implements Callback, BaseSharingManager{
+public class QZoneSharingManager  extends BaseSharingManager implements Callback{
 	private final int MSG_AUTO_SUCCEED = 1;
 	private final int MSG_AUTO_FAIL = 2;
 	private final int MSG_UPLOADIMG_FINISH = 3;

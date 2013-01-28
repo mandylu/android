@@ -15,6 +15,7 @@ import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.activity.MainActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
@@ -30,7 +31,7 @@ import com.weibo.sdk.android.WeiboDialogError;
 import com.weibo.sdk.android.WeiboException;
 import com.weibo.sdk.android.sso.SsoHandler;
 
-public class WeiboSSOSharingManager implements BaseSharingManager {
+public class WeiboSSOSharingManager extends BaseSharingManager {
 	public static class WeiboAccessTokenWrapper implements Serializable {
 		/**
 		 * 
@@ -62,7 +63,7 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 	}
 
 	private Ad mAd;
-	private Activity mActivity;
+	private BaseActivity mActivity;
 	static final String kWBBaixingAppKey = "3747392969";
 	private static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static final String STRING_WEIBO_ACCESS_TOKEN = "weiboaccesstoken";
@@ -85,7 +86,7 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 		Util.saveDataToLocate(context, STRING_WEIBO_ACCESS_TOKEN, token);
 	}
 
-	public WeiboSSOSharingManager(Activity activity) {
+	public WeiboSSOSharingManager(BaseActivity activity) {
 		mActivity = activity;
 		mToken = loadToken();
 	}
@@ -159,29 +160,36 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 	}
 
 	private BroadcastReceiver msgListener;
+	private boolean isActive = true;
 
 	private void authSSO() {
 		Intent intent = new Intent();
 		intent.setClass(mActivity, WeiboManagerActivity.class);
 		intent.putExtra("ad", mAd);
 		mActivity.startActivity(intent);
-
+		isActive = false;
 		unregisterListener();
 		msgListener = new BroadcastReceiver() {
 
 			public void onReceive(Context outerContext, Intent outerIntent) {
-				if (outerIntent.getAction().equals(
-						CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE)) {
+				if (outerIntent.getAction().equals(CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE)) {
 					mToken = loadToken();
+				}else if(outerIntent.getAction().equals(CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT)){
+					isActive = true;
+				}
+				if(mToken != null && isActive){
 					if(mAd != null){
 						share(mAd);
 					}
+					unregisterListener();
 				}
 			}
 
 		};
 		mActivity.registerReceiver(msgListener, new IntentFilter(
 				CommonIntentAction.ACTION_BROADCAST_WEIBO_AUTH_DONE));
+		mActivity.registerReceiver(msgListener, new IntentFilter(
+				CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT));		
 	}
 
 	@Override
@@ -191,39 +199,18 @@ public class WeiboSSOSharingManager implements BaseSharingManager {
 	}
 
 	private void doShare2Weibo(Oauth2AccessToken accessToken) {
-		ImageList il = mAd.getImageList();
-		String resize180 = null;
-		if (il != null) {
-			resize180 = il.getResize180();
-			if (resize180 != null) {
-				resize180 = resize180.split(",")[0];
-			}
-		}
+		String imgUrl = super.getThumbnailUrl(mAd);
+		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : ImageCacheManager.getInstance().getFileInDiskCache(imgUrl);
 
-		Intent i = new Intent(mActivity, WeiboSharingActivity.class);
-		i.putExtra(
-				WeiboSharingActivity.EXTRA_WEIBO_CONTENT,
-				"我在#百姓网#发布" + mAd.getValueByKey("title") + ",求扩散！"
-						+ mAd.getValueByKey("link"));
-		i.putExtra(
-				WeiboSharingActivity.EXTRA_PIC_URI,
-				(resize180 == null || resize180.length() == 0) ? ""
-						: ImageCacheManager.getInstance().getFileInDiskCache(
-								resize180));
-		mActivity.startActivity(i);
-
-		// try{
-		// Weibo.getInstance().share2weibo(mActivity,
-		// accessToken.getToken(),
-		// accessToken.getSecret(),
-		// "我在#百姓网#发布" + mAd.getValueByKey("title") + ",求扩散！" +
-		// mAd.getValueByKey("link"),
-		// (big == null || big.length() == 0) ? "" :
-		// ImageCacheManager.getInstance().getFileInDiskCache(big));
-		// }
-		// catch(WeiboException e){
-		// e.printStackTrace();
-		// }
-		//
+		Bundle bundle = new Bundle();
+		bundle.putString(WeiboSharingFragment.EXTRA_WEIBO_CONTENT,
+				"我用百姓网App发布了\"" + mAd.getValueByKey("title") + "\"" + "麻烦朋友们帮忙转发一下～ " + mAd.getValueByKey("link"));
+		bundle.putString(WeiboSharingFragment.EXTRA_PIC_URI,
+				(imgPath == null || imgPath.length() == 0) ? "" : imgPath);
+		bundle.putString(WeiboSharingFragment.EXTRA_ACCESS_TOKEN,
+				accessToken.getToken());
+		bundle.putString(WeiboSharingFragment.EXTRA_EXPIRES_IN,
+				String.valueOf(accessToken.getExpiresTime()));
+		mActivity.pushFragment(new WeiboSharingFragment(), bundle, false);
 	}
 }

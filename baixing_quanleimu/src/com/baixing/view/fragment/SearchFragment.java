@@ -342,6 +342,9 @@ public class SearchFragment extends BaseFragment implements Callback {
 	
 	private void handleCategorySearchFail(ApiError error) {
 		categoryResultCountList = null;
+		if(this.loadingView != null){
+			loadingView.setVisibility(View.GONE);
+		}
 		getActivity().runOnUiThread(new Runnable(){
 			@Override
 			public void run(){
