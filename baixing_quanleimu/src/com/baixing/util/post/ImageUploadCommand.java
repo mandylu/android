@@ -8,6 +8,8 @@ import java.io.InputStream;
 import java.io.InputStreamReader;
 import java.io.OutputStream;
 
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.*;
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
 import org.apache.http.client.methods.HttpPost;
@@ -29,6 +31,10 @@ public class ImageUploadCommand {
 	}
 	
 	public String doUpload() {
+		String url = null;
+		String failReason = null;
+		long size = 0;
+		long startTime = System.currentTimeMillis();
 		try {
 
 			HttpClient httpClient = NetworkProtocols.getInstance()
@@ -38,6 +44,7 @@ public class ImageUploadCommand {
 
 //			EntityTemplate fileEntity = new EntityTemplate(new FileContentProvider(imagePath));
 			FileContentProvider fileEntity = new FileContentProvider(imagePath);
+			size = fileEntity.getContentLength();
 			fileEntity.setContentType("multipart/form-data; boundary=" + BOUNDARY);
 			httpPost.setEntity(fileEntity);
 
@@ -53,16 +60,23 @@ public class ImageUploadCommand {
 			
 			reader.close();
 			httpClient.getConnectionManager().shutdown();
-			String retUrl = null;
 			JSONObject obj = new JSONObject(content);
-			retUrl = obj.getString("url");
-			if (retUrl != null) {
-				return obj.getString("url");
+			url = obj.getString("url");
+			if(url == null) {
+				failReason = "url of json string in response is null";
 			}
 		} catch (Exception e) {
 			e.printStackTrace();
+			failReason = e.getMessage();
 		}
-		return null;
+		long timeInMill = System.currentTimeMillis() - startTime;
+		Tracker.getInstance().event(BxEvent.POST_IMAGEUPLOAD)
+				.append(Key.RESULT, url != null ? Value.YES : Value.NO)
+				.append(Key.FAIL_REASON, failReason)
+				.append(Key.SIZEINBYTES, size)
+				.append(Key.UPLOADSECONDS, timeInMill / 1000.0)
+				.end();
+		return url;
 	}
 
 	class FileContentProvider extends AbstractHttpEntity {

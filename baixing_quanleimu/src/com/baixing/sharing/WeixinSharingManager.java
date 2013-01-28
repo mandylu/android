@@ -5,6 +5,8 @@ import java.util.ArrayList;
 import java.util.List;
 import java.util.Set;
 
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -80,10 +82,10 @@ class WeixinSharingManager extends BaseSharingManager{
 				obj.setThumbImage(thumbnail.get());
 			}
 		}
-		sendWXRequest(obj);
+		sendWXRequest(obj, ad);
 	}
 	
-	private void sendWXRequest(WXMediaMessage msg){
+	private void sendWXRequest(WXMediaMessage msg, Ad ad){
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;

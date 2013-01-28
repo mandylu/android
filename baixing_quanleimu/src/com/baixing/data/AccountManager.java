@@ -13,7 +13,7 @@ import com.baixing.util.Util;
  */
 public class AccountManager {
 	private static UserBean currentUser;
-	
+	private static UserBean anonymousUser;
 	AccountManager() {
 		
 	}
@@ -26,6 +26,15 @@ public class AccountManager {
 			Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", anonymousUser);
 			currentUser = anonymousUser;
 		}
+	}
+	
+	public UserBean getAnonymousUser() {
+		if (anonymousUser != null) {
+			return anonymousUser;
+		}
+		
+		anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
+		return anonymousUser;
 	}
 	
 	/**

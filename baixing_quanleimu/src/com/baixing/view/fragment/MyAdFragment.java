@@ -121,7 +121,16 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		super.onDestroy();
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
-
+	
+	private boolean isAnonyUser(String uid) {
+		UserBean anonyUser = GlobalDataManager.getInstance().getAccountManager().getAnonymousUser();
+		if (anonyUser == null) {
+			return false;
+		}
+		
+		return uid.equals(anonyUser.getId());
+	}
+	
 	private  void filterOutAd(List<Ad> list, UserBean user)
 	{
 		if (list != null && user != null)
@@ -130,7 +139,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			while (i<listMyPost.size())
 			{
 				Ad detail = list.get(i);
-				if (!detail.getValueByKey("userId").equals(user.getId()))
+				final String uid = detail.getValueByKey("userId");
+				if (!uid.equals(user.getId()) && !isAnonyUser(uid))
 				{
 					list.remove(i);
 				}
@@ -317,7 +327,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				lastPost = lastPost.split(",")[0];
 				for(int i = 0; i < listMyPost.size(); ++ i){
 					if(listMyPost.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(lastPost)){
-						(new SharingFragment(listMyPost.get(i))).show(getFragmentManager(), null);
+						new SharingFragment(listMyPost.get(i), "postSuccess").show(getFragmentManager(), null);
 						showShareDlg = false;
 						break;
 					}
@@ -599,7 +609,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
                 if (isValidMessage(detail)) {
                     switch (clickedIndex) {
                     case 0:///sharing
-                    	(new SharingFragment(detail)).show(getFragmentManager(), null);
+                    	(new SharingFragment(detail, "myAdList")).show(getFragmentManager(), null);
                     	break;
                     case 1://刷新
                         doRefresh(0, adId);

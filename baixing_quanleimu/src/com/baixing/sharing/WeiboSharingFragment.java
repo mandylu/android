@@ -51,7 +51,7 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
     public static final String EXTRA_PIC_URI = "com.weibo.android.pic.uri";
     public static final String EXTRA_ACCESS_TOKEN = "com.weibo.android.accesstoken";
     public static final String EXTRA_EXPIRES_IN = "com.weibo.android.expires";
-    
+
     public static final int WEIBO_MAX_LENGTH = 140;
     
     private ProgressDialog mPd;
@@ -77,6 +77,7 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 			}
 
 			showToast("分享成功");
+			SharingCenter.trackShareResult("weibo", true, null);
 		}
 
 		@Override
@@ -86,6 +87,7 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 				mPd.dismiss();
 			}			
 			showToast(arg0.getMessage());
+			SharingCenter.trackShareResult("weibo", false, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage());
 		}
 
 		@Override
@@ -95,6 +97,7 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 				mPd.dismiss();
 			}
 			showToast(arg0.getMessage());
+			SharingCenter.trackShareResult("weibo", false, " msg:" + arg0.getMessage());
 		}
     	
     }

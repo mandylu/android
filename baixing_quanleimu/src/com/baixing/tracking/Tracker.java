@@ -54,7 +54,9 @@ public class Tracker {
 //		Log.d("trackmobile","@"+url.getName());
 		LogData data = new LogData(new HashMap<String, String>());
 		data.append(Key.TRACKTYPE, "pageview");
-		data.append(Key.TIMESTAMP, Communication.getTimeStamp());
+		long timestamp_ms = System.currentTimeMillis();
+		data.append(Key.TIMESTAMP, String.valueOf(timestamp_ms/1000));
+		data.append(Key.TIMESTAMP_MS, String.valueOf(timestamp_ms));
 		data.append(Key.URL, url.getName());
 		return data;
 	}
@@ -63,7 +65,9 @@ public class Tracker {
 //		Log.d("trackmobile","@"+event.getName());
 		LogData data = new LogData(new HashMap<String, String>());
 		data.append(Key.TRACKTYPE, "event");
-		data.append(Key.TIMESTAMP, Communication.getTimeStamp());
+		long timestamp_ms = System.currentTimeMillis();
+		data.append(Key.TIMESTAMP, String.valueOf(timestamp_ms/1000));
+		data.append(Key.TIMESTAMP_MS, String.valueOf(timestamp_ms));
 		data.append(Key.EVENT, event.getName());
 		return data;
 	}

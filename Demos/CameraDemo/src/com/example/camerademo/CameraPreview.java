@@ -1,15 +1,18 @@
 package com.example.camerademo;
 
 import java.io.IOException;
+import java.util.List;
 
 import android.content.Context;
 import android.hardware.Camera;
+import android.hardware.Camera.Parameters;
+import android.hardware.Camera.Size;
+import android.os.Build.VERSION;
 import android.util.Log;
 import android.view.Display;
 import android.view.Surface;
 import android.view.SurfaceHolder;
 import android.view.SurfaceView;
-import android.view.View;
 import android.view.WindowManager;
 
 /** A basic Camera preview class */
@@ -67,16 +70,59 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
+        final boolean isNewDevice = VERSION.SDK_INT > 8;
         // start preview with new settings
         try {
         	mCamera.setDisplayOrientation(90); //FIXME: this is business related.
 //        	adjustOrientation();
             mCamera.setPreviewDisplay(mHolder);
+            adjustSize(isNewDevice? h : w, isNewDevice ? w : h);
             mCamera.startPreview();
 
         } catch (Exception e){
             Log.d("CAMPRE", "Error starting camera preview: " + e.getMessage());
         }
+    }
+    
+    private void adjustSize(int w, int h) {
+    	Parameters params = mCamera.getParameters();
+    	List<Size> sL = params.getSupportedPreviewSizes();
+    	Size op = getOptimalPreviewSize(sL, w, h);
+    	params.setPreviewSize(op.width, op.height);
+    	mCamera.setParameters(params);
+    }
+    
+    private Size getOptimalPreviewSize(List<Size> sizes, int w, int h) {
+        final double ASPECT_TOLERANCE = 0.1;
+        double targetRatio = (double) w / h;
+        if (sizes == null) return null;
+
+        Size optimalSize = null;
+        double minDiff = Double.MAX_VALUE;
+
+        int targetHeight = h;
+
+        // Try to find an size match aspect ratio and size
+        for (Size size : sizes) {
+            double ratio = (double) size.width / size.height;
+            if (Math.abs(ratio - targetRatio) > ASPECT_TOLERANCE) continue;
+            if (Math.abs(size.height - targetHeight) < minDiff) {
+                optimalSize = size;
+                minDiff = Math.abs(size.height - targetHeight);
+            }
+        }
+
+        // Cannot find the one match the aspect ratio, ignore the requirement
+        if (optimalSize == null) {
+            minDiff = Double.MAX_VALUE;
+            for (Size size : sizes) {
+                if (Math.abs(size.height - targetHeight) < minDiff) {
+                    optimalSize = size;
+                    minDiff = Math.abs(size.height - targetHeight);
+                }
+            }
+        }
+        return optimalSize;
     }
     
     private void adjustOrientation() {

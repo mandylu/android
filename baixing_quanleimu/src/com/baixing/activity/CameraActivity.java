@@ -10,7 +10,6 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ActivityInfo;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
@@ -41,6 +40,8 @@ import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
@@ -513,6 +514,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
 //		Profiler.markStart("cameOnResume");
 		super.onResume();
 		
@@ -577,14 +579,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	public void takePic() {
 		Log.w(TAG, "click to take pic " + System.currentTimeMillis());
-		mCamera.cancelAutoFocus();//Cancel last auto focus because we will do auto focus.
 		mCamera.autoFocus(new AutoFocusCallback() {
 			@Override
 			public void onAutoFocus(boolean focused, Camera cam) {
 				View capV = findViewById(R.id.cap);
 				capV.setEnabled(false);
-				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
 				mCamera.takePicture(null, null, mPicture);
+				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
 			}
 		});
 	}

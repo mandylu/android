@@ -415,9 +415,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 	
-	private void doshare(){
-		(new SharingFragment(this.detail)).show(getFragmentManager(), null);
-	}
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -426,13 +423,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		case R.id.vad_call_btn:
 		{
-			VadLogger.event(BxEvent.VIEWAD_MOBILECALLCLICK, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_MOBILECALLCLICK, detail);
 			
 			final String mobileArea = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_MOBILE_AREA);
 			if (mobileArea == null || "".equals(mobileArea.trim()))
 			{
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLE, null, null);
-				
 				getView().findViewById(R.id.vad_call_nonmobile).performLongClick();
 			}
 			else
@@ -443,8 +438,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		}
 		case R.id.vad_buzz_btn:
-//			startContact(true);
-			doshare();
+			startContact(true);
 			break;
 		case R.id.vad_btn_refresh:{
 			showSimpleProgress();
@@ -467,7 +461,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			break;
 		}
 		case R.id.vad_btn_forward:{
-			(new SharingFragment(detail)).show(getFragmentManager(), null);
+			//my viewad share
+			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
 			break;
 		}
 		}
@@ -766,12 +761,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		switch (menuItem.getItemId())
 		{
 			case R.id.vad_call_nonmobile + 1: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.CALL);
 				startContact(false);
 				return true;
 			}
 			case R.id.vad_call_nonmobile + 2: {
-				VadLogger.event(BxEvent.VIEWAD_NOTCALLABLERESULT, Key.RESULT, Value.COPY);
 				ClipboardManager clipboard = (ClipboardManager)
 				        getActivity().getSystemService(Context.CLIPBOARD_SERVICE);
 				clipboard.setText(detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
@@ -786,7 +779,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
-			VadLogger.event(BxEvent.VIEWAD_SMS, null, null);
+			VadLogger.trackContactEvent(BxEvent.VIEWAD_SMS, detail);
 		}
 			
 		String contact = detail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT);
@@ -809,6 +802,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	public void showMap() {
+		VadLogger.trackShowMapEvent(detail);
 		if (keepSilent) { // FIXME:
 			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
 			return;
@@ -972,7 +966,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		Bundle args = createArguments(null, null);
 		args.putInt("userId", userId);
 		args.putString("userNick", userNick);
-		
+		args.putString("secondCategoryName", detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+		args.putString("adId", detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+
 		pushFragment(new UserAdFragment(), args);
 	}
 

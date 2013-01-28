@@ -85,4 +85,18 @@ public class VadLogger {
 	public static final void trackViewMap(Ad detail) {
 		Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).end();
 	}
+
+	public static final void trackContactEvent(BxEvent event, Ad detail) {
+		Tracker.getInstance().event(event)
+				.append(Key.SECONDCATENAME, detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+				.append(Key.ADID, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+				.end();
+	}
+
+	public static final void trackShowMapEvent(Ad detail) {
+		Tracker.getInstance().event(BxEvent.VIEWAD_SHOWMAP)
+				.append(Key.SECONDCATENAME, detail.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+				.append(Key.ADID, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))
+				.end();
+	}
 }
