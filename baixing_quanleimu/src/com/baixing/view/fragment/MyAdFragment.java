@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -55,6 +56,7 @@ import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
 
@@ -70,6 +72,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private final int MSG_RESTORE_POST_FAIL = 9;
     private final int MSG_ITEM_OPERATE = 10;
     private final int MSG_SHOW_BIND_DIALOG = 11;
+    private final int MSG_REFRESH_FAIL = 12;
+    private final int MSG_ASK_REFRESH = 13;
 
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -339,6 +343,34 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_ASK_REFRESH: {
+			hideProgress();
+			final Pair<String, String> p = (Pair<String, String>) msg.obj;
+			new AlertDialog.Builder(getActivity()).setTitle("提醒")
+            .setMessage(p.first)
+            .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    showSimpleProgress();
+                    doRefresh(1, p.second);
+                    dialog.dismiss();
+                }
+            })
+            .setNegativeButton(
+                    "取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialog, int which) {
+                    dialog.cancel();
+                }
+            })
+            .show();
+			break;
+		}
+		case MSG_REFRESH_FAIL: {
+			hideProgress();
+			ViewUtil.postShortToastMessage(rootView, (String) msg.obj, (long) 0);
+			break;
+		}
 		case MSG_MYPOST:
 			isRefreshing = false;
 //		case MSG_INVERIFY:
@@ -696,13 +728,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			
 			@Override
 			public void onNetworkFail(int requstCode, ApiError error) {
-				hideProgress();
-				Toast.makeText(getActivity(), "刷新失败，请稍后重试！", 1).show();
+				sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
 			}
 			
 			@Override
 			public void onNetworkDone(int requstCode, String responseData) {
-				hideProgress();
+//				hideProgress();
 				json = responseData;
 				try {
 		            JSONObject jb = new JSONObject(json);
@@ -710,29 +741,14 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		            String message = js.getString("message");
 		            int code = js.getInt("code");
 		            if (code == 0) {
-		                Toast.makeText(getActivity(), message, 1).show();
+//		                Toast.makeText(getActivity(), message, 1).show();
+		            	sendMessage(MSG_REFRESH_FAIL, message);
 		            }else if(2 == code){
-		                new AlertDialog.Builder(getActivity()).setTitle("提醒")
-		                        .setMessage(message)
-		                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-		                            @Override
-		                            public void onClick(DialogInterface dialog, int which) {
-		                                showSimpleProgress();
-		                                doRefresh(1, adId);
-		                                dialog.dismiss();
-		                            }
-		                        })
-		                        .setNegativeButton(
-		                                "取消", new DialogInterface.OnClickListener() {
-		                            @Override
-		                            public void onClick(DialogInterface dialog, int which) {
-		                                dialog.cancel();
-		                            }
-		                        })
-		                        .show();
-
+		            	Pair<String, String> p = new Pair<String, String>(message, adId);
+		            	sendMessage(MSG_ASK_REFRESH, p);
 		            }else {
-		                Toast.makeText(getActivity(), message, 1).show();
+//		                Toast.makeText(getActivity(), message, 1).show();
+		            	sendMessage(MSG_REFRESH_FAIL, message);
 		            }
 		        } catch (JSONException e) {
 		            // TODO Auto-generated catch block
