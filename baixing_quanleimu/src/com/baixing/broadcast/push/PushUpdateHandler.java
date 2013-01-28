@@ -51,7 +51,6 @@ public class PushUpdateHandler extends PushHandler {
 //            String serverVersion = updateInfo.getString("serverVersion");
             String serverVersion = data.getString("serverVersion");
             String apkUrl = data.getString("apkUrl");
-            String versionInfo = data.getString("versionInfo");
 
             Pattern p = Pattern.compile("http(s)?://\\w+");
             Matcher matcher = p.matcher(apkUrl);
@@ -77,10 +76,20 @@ public class PushUpdateHandler extends PushHandler {
 //// mId allows you to update the notification later on.
 //                mNotificationManager.notify(0, mBuilder.getNotification());
                 
+    			String title = "百姓网客户端有新版本啦~";
+    			if (data.has("title")) {
+    				title = data.getString("title");
+    			}
+    			
+    			String content = "赶紧去更新";
+    			if (data.has("content")) {
+    				content = data.getString("content");
+    			}
+            	
                 Bundle extral = new Bundle();
                 extral.putString("apkUrl", apkUrl);
                 ViewUtil.putOrUpdateNotification(cxt, NotificationIds.NOTIFICATION_ID_UPGRADE, CommonIntentAction.ACTION_NOTIFICATION_UPGRADE, 
-                		"百姓网客户端新版本啦~", "去看看", extral, false);
+                		title, content, extral, false);
             }
         }
         catch(Exception ex)

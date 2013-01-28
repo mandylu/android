@@ -464,7 +464,7 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 	public View onCreateView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
-		View v = inflater.inflate(R.layout.postgoodsview, null);
+		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);
 		
 		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
 		
@@ -476,6 +476,11 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		else
 			button.setText("立即更新信息");
 		
+		WindowManager winMgr = (WindowManager) getActivity().getSystemService(Context.WINDOW_SERVICE);
+		final int halfH = winMgr.getDefaultDisplay().getHeight()/2;
+		View blank = v.findViewById(R.id.padding_bottom);//new View(v.getContext());
+		blank.getLayoutParams().height = halfH;
+		blank.setEnabled(false);
 
 		getActivity().getWindow().setSoftInputMode(
 				WindowManager.LayoutParams.SOFT_INPUT_STATE_ALWAYS_HIDDEN);
@@ -758,12 +763,12 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 		
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.getActivity(), categoryEnglishName + cityEnglishName);
 		json = pair.second;
-		if (json != null && json.length() > 0) {
-			addCategoryItem();
+		if (json != null && json.length() > 0) {			
 			if (pair.first + (24 * 3600) < System.currentTimeMillis()/1000) {
 				showSimpleProgress();
 				new Thread(new GetCategoryMetaThread(cityEnglishName)).start();
 			} else {
+				addCategoryItem();
 				buildPostLayout();
 				loadCachedData();
 			}
@@ -779,7 +784,10 @@ public class PostGoodsFragment extends BaseFragment implements BXRgcListener, On
 			postFinish();
 		}else if(v.getId() == R.id.location){
 			Log.d("xx","isPost:"+(goodsDetail==null)+",action:"+STRING_DETAIL_POSITION);
-			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, STRING_DETAIL_POSITION).end();
+			Tracker.getInstance().event((goodsDetail==null)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING)
+			.append(Key.ACTION, STRING_DETAIL_POSITION)
+			.append(Key.STATUS, 1)
+			.end();
 			
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);

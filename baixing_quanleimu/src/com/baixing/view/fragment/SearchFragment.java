@@ -6,7 +6,6 @@ import java.util.List;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.PendingIntent;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
@@ -14,34 +13,26 @@ import android.os.Message;
 import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
-import android.view.KeyEvent;
 import android.view.LayoutInflater;
 import android.view.View;
-import android.view.View.OnClickListener;
 import android.view.ViewGroup;
-import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ArrayAdapter;
-import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.adapter.CommonItemAdapter;
-import com.baixing.entity.FirstStepCate;
 import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.baixing.util.Helper;
-import com.baixing.util.Tracker;
-import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
 import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.TrackConfig.TrackMobile.Key;
 import com.baixing.util.TrackConfig.TrackMobile.PV;
+import com.baixing.util.Tracker;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
@@ -179,11 +170,13 @@ public class SearchFragment extends BaseFragment {
 	
 	@Override
 	public void onStackTop(boolean isBack) {
+		Log.d("ooo","searchfragment->onstacktop,isBack"+isBack);
 		if (isBack)
 		{
 			this.showSearchResult(false);
 		}
 		else if (null == searchContent || searchContent.length() == 0) {
+			
 			handleSearch();
 		}
 	}
@@ -196,13 +189,14 @@ public class SearchFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-
-		if (searchContent.equals(""))
-			Tracker.getInstance().pv(PV.SEARCH).end();
+		Log.d("ooo","searchfragment->onresume");
+//		if (searchContent.equals(""))
+//			Tracker.getInstance().pv(PV.SEARCH).end();
 	}
 
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result) {
+		Log.d("ooo","searchfragment->onfragmentbackwithdata");
 		if (requestCode == REQ_GETKEYWORD) {
 			if (result == null && (categoryResultCountList == null || categoryResultCountList.size() == 0))
 			{
@@ -229,8 +223,7 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		this.pv = PV.SEARCHRESULTCATEGORY;
-		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
+		
 
 		this.hideSoftKeyboard();
 		if (search)
@@ -281,13 +274,13 @@ public class SearchFragment extends BaseFragment {
 					totalAdsCount += pair.second;
 					maxAdsCount = Math.max(maxAdsCount, pair.second);
 				}
+				Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY)
+				.append(Key.SEARCHKEYWORD, searchContent)
+				.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
+				.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
+				.end();
+				
 			}
-			
-			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
-					.append(Key.SEARCHKEYWORD, searchContent)
-					.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
-					.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
-					.append(Key.MAXCATE_ADSCOUNT, ""+maxAdsCount).end();
 			
 			this.hideProgress();
 			break;

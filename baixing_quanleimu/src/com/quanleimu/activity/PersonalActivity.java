@@ -35,6 +35,7 @@ public class PersonalActivity extends BaseTabActivity {
 				}
 				pushFragment(new PersonalPostFragment(), extras, false);
 			}		
+//			intent.setAction("");
 		}
 	}
 	
@@ -46,24 +47,30 @@ public class PersonalActivity extends BaseTabActivity {
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0){
 			pushFragment(new PersonalInfoFragment(), bundle, true);
 		}
-		Intent intent = getIntent();
-		
-		jumpToPersonalPost(intent);
 		
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		initTitleAction();
 	}
 	
 	@Override
-	protected void onNewIntent(final Intent intent) {		
+	public void onResume(){
+		super.onResume();
+		jumpToPersonalPost(this.getIntent());
+	}
+	
+//	private boolean 
+//	
+	@Override
+	protected void onNewIntent(Intent intent) {		
 		super.onNewIntent(intent);
-		Thread t = new Thread(new Runnable(){
-			@Override
-			public void run(){
-				jumpToPersonalPost(intent);
-			}
-		});
-		t.start();
+		setIntent(intent);
+//		Thread t = new Thread(new Runnable(){
+//			@Override
+//			public void run(){
+//				jumpToPersonalPost(intent);
+//			}
+//		});
+//		t.start();
 	}
 	
 

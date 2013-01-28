@@ -153,7 +153,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	public void onStackTop(boolean isBack) {
 //		//Mobile Track Config入口
 //		TrackConfig.getInstance().getConfig();//获取config
-		Tracker.getInstance().pv(this.pv).end();
 		
 		String cityName = QuanleimuApplication.getApplication().getCityName();
 		if (null == cityName || "".equals(cityName)) {
