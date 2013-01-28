@@ -788,6 +788,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			Intent intent = new Intent(
 					sms ? Intent.ACTION_SENDTO : Intent.ACTION_DIAL,
 					Uri.parse((sms ? "smsto:" : "tel:") + contact));
+			if (sms) {
+				intent.putExtra("sms_body", "你好，我在百姓网看到你发的\"" + detail.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\",");
+			}
+			
 			List<ResolveInfo> ls = getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 			if (ls != null && ls.size() > 0)
 			{

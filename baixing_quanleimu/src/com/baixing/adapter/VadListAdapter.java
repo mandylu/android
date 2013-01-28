@@ -442,7 +442,6 @@ public class VadListAdapter extends BaseAdapter {
 		if (isValidMessage)
 		{
 			holder.tvPrice.setVisibility(View.VISIBLE);
-			holder.tvGap.setVisibility(View.VISIBLE);
 			holder.tvUpdateDate.setVisibility(View.VISIBLE);
 			holder.tvDateAndAddress.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
 		}
