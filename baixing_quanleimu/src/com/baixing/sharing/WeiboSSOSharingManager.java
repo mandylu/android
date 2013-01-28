@@ -204,7 +204,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		Bundle bundle = new Bundle();
 		bundle.putString(WeiboSharingFragment.EXTRA_WEIBO_CONTENT,
-				"我用百姓网App发布了\"" + mAd.getValueByKey("title") + "\"" + "麻烦朋友们帮忙转发一下～ " + mAd.getValueByKey("link"));
+				"我用@百姓网发布了\"" + mAd.getValueByKey("title") + "\"" + "麻烦朋友们帮忙转发一下～ " + mAd.getValueByKey("link"));
 		bundle.putString(WeiboSharingFragment.EXTRA_PIC_URI,
 				(imgPath == null || imgPath.length() == 0) ? "" : imgPath);
 		bundle.putString(WeiboSharingFragment.EXTRA_ACCESS_TOKEN,

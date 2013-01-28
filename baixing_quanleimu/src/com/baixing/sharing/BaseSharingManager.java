@@ -15,12 +15,13 @@ public abstract class BaseSharingManager{
 		if(il != null){
 			imgUrl = il.getResize180();
 			if(imgUrl != null && imgUrl.length() > 0){
-				imgPath = ImageCacheManager.getInstance().getFileInDiskCache(imgUrl.split(",")[0]);
+				imgUrl = imgUrl.split(",")[0];
+				imgPath = ImageCacheManager.getInstance().getFileInDiskCache(imgUrl);
 			}
 			
 			if(imgPath == null || imgPath.length() == 0){
 				imgUrl = il.getSquare();
-				if(imgUrl != null){
+				if(imgUrl != null && imgUrl.length() > 0){
 					imgUrl = imgUrl.split(",")[0];
 				}
 			}
