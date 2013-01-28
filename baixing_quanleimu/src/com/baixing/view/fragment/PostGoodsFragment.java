@@ -980,6 +980,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						intent.putExtras(args);
 						activity.sendBroadcast(intent);
 					}
+					doClearUpImages();
+					finishFragment();
 				}else{
 					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 				}
