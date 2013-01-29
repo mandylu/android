@@ -4,6 +4,7 @@ package com.baixing.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -208,4 +209,12 @@ public class ViewUtil {
 		return thumbnail;
 	}
 	
+	static public void showToast(final Activity activity, final String msg){
+		activity.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				Toast.makeText(activity, msg, 0).show();
+			}
+		});
+	}
 }

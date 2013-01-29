@@ -14,6 +14,7 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.MainActivity;
@@ -24,6 +25,7 @@ import com.baixing.entity.ChatMessage;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.Weibo;
 import com.weibo.sdk.android.WeiboAuthListener;
@@ -110,6 +112,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onError(WeiboDialogError e) {
+			ViewUtil.showToast(mActivity, e.getMessage());
 		}
 
 		@Override
@@ -118,6 +121,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onWeiboException(WeiboException e) {
+			ViewUtil.showToast(mActivity, e.getMessage());
 		}
 	}
 
