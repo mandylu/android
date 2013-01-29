@@ -473,13 +473,43 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				this.originalList.add(BXThumbnail.createThumbnail(p, null));
 			}
 			this.imageList.addAll(originalList);
-			
-			
-			handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
 		}
+		
+		handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
 //		Profiler.markEnd("cameOnCreate");
 	}
 	
+	@Override
+	protected void onSaveInstanceState(Bundle outState) {
+		super.onSaveInstanceState(outState);
+
+		ArrayList<String> imgKeys = new ArrayList<String>();
+		if (imageList != null) {
+			for (BXThumbnail t : imageList) {
+				imgKeys.add(t.getLocalPath());
+			}
+		}
+		
+		outState.putStringArrayList(CommonIntentAction.EXTRA_IMAGE_LIST, imgKeys);
+	}
+	
+
+	@Override
+	protected void onRestoreInstanceState(Bundle savedInstanceState) {
+		
+		ArrayList<String> imgKeys = savedInstanceState.getStringArrayList(CommonIntentAction.EXTRA_IMAGE_LIST);
+		if (imgKeys != null) {
+			this.imageList.clear();
+			this.originalList.clear();
+			for (String p : imgKeys) {
+				this.originalList.add(BXThumbnail.createThumbnail(p, null));
+			}
+			this.imageList.addAll(originalList);
+		}
+		
+		super.onRestoreInstanceState(savedInstanceState);
+	}
+
 	protected void onDestroy() {
 		this.handler = null; //Do not handle action any more.
 		
