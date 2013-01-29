@@ -316,6 +316,19 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	updateCapState();
     }
     
+    private ViewGroup findFirstBlankImage(ViewGroup root) {
+    	final int count = root.getChildCount();
+    	for (int i=0; i<count; i++) {
+    		ViewGroup child = (ViewGroup) root.getChildAt(i);
+    		if (child.getTag() == null) {
+    			return child;
+    		}
+    	}
+    	
+    	return null;
+    }
+    
+    
     private boolean appendResultImage(BXThumbnail thumbnail) {
     	
     	if (thumbnail == null) {
@@ -323,17 +336,24 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	
     	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
-    	LayoutInflater layoutInf = LayoutInflater.from(CameraActivity.this);
-		View imageRoot = layoutInf.inflate(R.layout.single_image_layout, null);
+//    	LayoutInflater layoutInf = LayoutInflater.from(CameraActivity.this);
+//		View imageRoot = layoutInf.inflate(R.layout.single_image_layout, null);
+    	
+    	ViewGroup imageRoot = findFirstBlankImage(vp);
+    	if (imageRoot == null) {
+    		return false; // you should nerver encounter this case.
+    	}
+    	imageRoot.setTag(thumbnail.getLocalPath());
 		
 		View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
+		deleteCmd.setVisibility(View.VISIBLE);
 		deleteCmd.setOnClickListener(deleteListener);
 		deleteCmd.setTag(thumbnail);
 		
 		try
 		{
-			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_preview_gap));
-			vp.addView(imageRoot, size, size);
+//			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_preview_gap));
+//			vp.addView(imageRoot, size, size);
 
 			
 			
@@ -639,10 +659,21 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 		@Override
 		public void onClick(View v) {
-			ViewGroup vp = (ViewGroup) findViewById(R.id.result_parent);
-			vp.removeView((View) v.getParent());
+			ViewGroup vp = (ViewGroup) v.getParent();//(ViewGroup) findViewById(R.id.result_parent);
+//			vp.removeView((View) v.getParent());
+			vp.setTag(null);
+			
+			ImageView img = (ImageView) vp.findViewById(R.id.result_image);
+			img.setImageResource(R.drawable.bg_transparent);
 			BXThumbnail thumbnail = (BXThumbnail) v.getTag();
 			deleteImageUri(thumbnail);
+			v.setVisibility(View.INVISIBLE);
+			
+			
+			//Append this view to the tail of the child list.
+			ViewGroup imgContainer = (ViewGroup) vp.getParent();
+			imgContainer.removeView(vp);
+			imgContainer.addView(vp);
 		}
 	}
 

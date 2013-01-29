@@ -139,7 +139,7 @@
         android:id="@+id/camera_parent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_above="@+id/bottom_line"
+        android:layout_above="@+id/cap_result_list"
         android:layout_below="@+id/RelativeLayout1"
         android:layout_centerHorizontal="true" >
 
@@ -154,6 +154,7 @@
     </FrameLayout>
 
     <HorizontalScrollView
+        android:id="@+id/cap_result_list"
         android:layout_width="fill_parent"
         android:background="#B3000000"
         android:layout_height="@dimen/camera_result_width"
@@ -161,10 +162,18 @@
 
         <LinearLayout
             android:id="@+id/result_parent"
-            android:layout_width="wrap_content"
+            android:layout_width="fill_parent"
             android:layout_height="fill_parent"
+            android:paddingLeft="@dimen/camera_preview_half_gap"
+            android:paddingRight="@dimen/camera_preview_half_gap"
             android:gravity="left|center_vertical"
             android:orientation="horizontal" >
+            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>
         </LinearLayout>
     </HorizontalScrollView>
 

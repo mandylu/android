@@ -10,7 +10,7 @@
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
         android:layout_centerHorizontal="true"
-        android:paddingRight="@dimen/camera_action_bar_height"
+        android:layout_toLeftOf="@+id/bottom_line"
         >
 
         <TextView
@@ -41,7 +41,15 @@
                 android:id="@+id/result_parent"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
+                android:paddingTop="@dimen/camera_preview_half_gap"
+                android:paddingBottom="@dimen/camera_preview_half_gap"
                 android:orientation="vertical" >
+                <include layout="@layout/single_image_layout"/>
+                <include layout="@layout/single_image_layout"/>
+                <include layout="@layout/single_image_layout"/>
+                <include layout="@layout/single_image_layout"/>
+                <include layout="@layout/single_image_layout"/>
+                <include layout="@layout/single_image_layout"/>
             </LinearLayout>
         </ScrollView>
 

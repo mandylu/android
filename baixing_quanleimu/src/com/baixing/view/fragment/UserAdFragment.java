@@ -59,7 +59,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 			
 			break;
 		case MSG_LIST_UPDATE:
-			rebuildPage(rootView);
+			rebuildPage(true);
 			break;
 		}
 	}
@@ -107,7 +107,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		PullToRefreshListView lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
 		adapter = new VadListAdapter(this.getActivity(), userAdList, null);
         adapter.setHasDelBtn(true);
-		lvGoodsList.setAdapter(adapter);
+		lvGoodsList.setAdapter(adapter, userAdList != null && userAdList.size() > 0);
 
 		AdList gl = new AdList();
 		gl.setData(userAdList == null ? new ArrayList<Ad>() : userAdList);
@@ -164,10 +164,10 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 //			getProfile();
 //		}
 		
-		rebuildPage(getView());
+		rebuildPage(false);
 	}
 	
-	private void rebuildPage(View rootView){		
+	private void rebuildPage(boolean isNetworkFinish){		
 		if(listLoader != null){
 			listLoader.setCallback(this);
 		}
@@ -176,18 +176,22 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		if (listLoader.getGoodsList().getData() != null && listLoader.getGoodsList().getData().size() > 0)
 		{
 			adapter = new VadListAdapter(getActivity(), listLoader.getGoodsList().getData(), AdViewHistory.getInstance());
-			listView.setAdapter(adapter);
+			listView.setAdapter(adapter, true);
 			updateData(adapter, listLoader.getGoodsList().getData());
 			listView.setSelectionFromHeader(listLoader.getSelection());
 		}
 		else
 		{
 			adapter = new VadListAdapter(getActivity(), new ArrayList<Ad>(), AdViewHistory.getInstance());
-			listView.setAdapter(adapter);
-			listView.fireRefresh();
+			listView.setAdapter(adapter, isNetworkFinish);
+			if (!isNetworkFinish) {
+				listView.fireRefresh();
+			}
 		}
-		listView.onRefreshComplete();
-		
+
+		if (isNetworkFinish) {
+			listView.onRefreshComplete();
+		}
 
 	}
 	
