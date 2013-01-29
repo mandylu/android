@@ -6,6 +6,7 @@ import java.io.IOException;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.WeiboException;
@@ -76,7 +77,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 				ctx.sendBroadcast(intent);
 			}
 
-			showToast("分享成功");
+			ViewUtil.showToast(getActivity(), "分享成功");
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", true, null);
 		}
 
@@ -86,7 +90,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 			if(mPd != null){
 				mPd.dismiss();
 			}			
-			showToast(arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", false, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage());
 		}
 
@@ -96,7 +103,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 			if(mPd != null){
 				mPd.dismiss();
 			}
-			showToast(arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", false, " msg:" + arg0.getMessage());
 		}
     	
@@ -144,18 +154,6 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
         }
     }
     
-    private void showToast(final String text){
-		this.getActivity().runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				Toast.makeText(getActivity(), text, 0).show();
-			}
-		});    
-		if(mPd != null){
-			mPd.dismiss();
-		}
-    }
-
 	@Override
 	protected View onInitializeView(LayoutInflater inflater,
 			ViewGroup container, Bundle savedInstanceState) {

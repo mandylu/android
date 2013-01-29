@@ -2,6 +2,7 @@ package com.baixing.sharing;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.sharing.WeiboSSOSharingManager.WeiboAccessTokenWrapper;
+import com.baixing.util.ViewUtil;
 import com.weibo.sdk.android.Oauth2AccessToken;
 import com.weibo.sdk.android.Weibo;
 import com.weibo.sdk.android.WeiboAuthListener;
@@ -37,7 +38,7 @@ public class WeiboManagerActivity extends Activity{
 			@Override
 			public void onCancel() {
 				// TODO Auto-generated method stub
-				
+				finish();
 			}
 
 			@Override
@@ -59,13 +60,13 @@ public class WeiboManagerActivity extends Activity{
 			@Override
 			public void onError(WeiboDialogError arg0) {
 				// TODO Auto-generated method stub
-				
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
 			}
 
 			@Override
 			public void onWeiboException(WeiboException arg0) {
 				// TODO Auto-generated method stub
-				
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
 			}
         	
         });
