@@ -345,10 +345,18 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	imageRoot.setTag(thumbnail.getLocalPath());
 		
-		View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
+		final View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
 		deleteCmd.setVisibility(View.VISIBLE);
 		deleteCmd.setOnClickListener(deleteListener);
 		deleteCmd.setTag(thumbnail);
+		
+		View deleteBtn = imageRoot.findViewById(R.id.delete_btn);
+		deleteBtn.setOnClickListener(new View.OnClickListener() {
+			@Override
+			public void onClick(View v) {
+				deleteCmd.performClick();
+			}
+		});
 		
 		try
 		{
