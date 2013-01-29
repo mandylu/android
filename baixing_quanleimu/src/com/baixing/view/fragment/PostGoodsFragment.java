@@ -1083,7 +1083,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
-		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
+		title.m_leftActionImage  = R.drawable.icon_close;
+//		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){

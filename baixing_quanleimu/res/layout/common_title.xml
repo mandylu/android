@@ -12,7 +12,7 @@
         android:background="@drawable/title_bg_selector" >
 
         <ImageView
-            android:id="@+id/imageView1"
+            android:id="@+id/back_icon"
             android:layout_width="24dp"
             android:layout_height="24dp"
             android:layout_centerInParent="true"
