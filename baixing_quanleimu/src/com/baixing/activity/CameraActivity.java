@@ -194,6 +194,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				} else {
 					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
 				}
+				
+				findViewById(R.id.cap).setEnabled(true);
 				break;
 			case MSG_ORIENTATION_CHANGE:
 				if (isInitialized) {
@@ -632,11 +634,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	public void takePic() {
 		Log.w(TAG, "click to take pic " + System.currentTimeMillis());
+		View capV = findViewById(R.id.cap);
+		capV.setEnabled(false);
 		mCamera.autoFocus(new AutoFocusCallback() {
 			@Override
 			public void onAutoFocus(boolean focused, Camera cam) {
-				View capV = findViewById(R.id.cap);
-				capV.setEnabled(false);
 				mCamera.takePicture(null, null, mPicture);
 				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
 			}
@@ -746,11 +748,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				String path = getRealPathFromURI(params[0]);
 				BXThumbnail tb = findFromList(path, deleteList, true);
 				if (tb == null) {
-//					Bitmap bp = BitmapUtils.createThumbnail(path, 200, 200);//FIXME: hard code.
-//					if (bp != null) {
-//						ImageUploader.getInstance().startUpload(path, bp, null);
-//						tb = BXThumbnail.createThumbnail(path, bp);
-//					}
 					tb = BitmapUtils.copyAndCreateThrmbnail(path, CameraActivity.this);
 				}
 				
@@ -759,15 +756,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-//				boolean appendSucced = appendResultImage(result);
-//				if (appendSucced) {
-//					addImageUri(result);
-//				}
-//				else
-//				{
-//					//TODO: post error message.
-//				}findViewById(R.id.cap).setEnabled(true);
-		    	
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
 			}
@@ -786,8 +774,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-		    	findViewById(R.id.cap).setEnabled(true);
-		    	
 				boolean full = (MAX_IMG_COUNT -1) == imageList.size();
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
