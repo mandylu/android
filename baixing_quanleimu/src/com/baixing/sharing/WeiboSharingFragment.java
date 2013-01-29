@@ -115,10 +115,11 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 	private void doShare2Weibo(){
 		Oauth2AccessToken accessToken = new Oauth2AccessToken(mAccessToken, mExpires_in);
 		StatusesAPI statusApi = new StatusesAPI(accessToken);
+		String content = mEdit != null ? mEdit.getText().toString() : "";
 		if(mPicPath == null || mPicPath.length() == 0){
-			statusApi.update(mContent, "", "", new ShareListener());
+			statusApi.update(content, "", "", new ShareListener());
 		}else{
-			statusApi.upload(mContent, mPicPath, "", "", new ShareListener());
+			statusApi.upload(content, mPicPath, "", "", new ShareListener());
 		}
 		mPd = ProgressDialog.show(this.getActivity(), "", "请稍候");
 		mPd.setCancelable(true);
@@ -148,6 +149,7 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             mPiclayout.setVisibility(View.GONE);
+                            mPicPath = "";
                         }
                     }).setNegativeButton(R.string.cancel, null).create();
             dialog.show();
