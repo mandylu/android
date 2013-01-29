@@ -25,9 +25,11 @@ class SharingFragment extends DialogFragment{
 	
 	@Override
 	public Dialog onCreateDialog(Bundle savedInstanceBundle){
-		String[] names = {"转发到新浪微博", "转发到微信", "转发到QQ空间"};
+		final boolean wxInstalled = SharingCenter.isWeixinInstalled(getActivity());
+		String[] namesInstalled = {"转发到新浪微博", "转发到微信", "转发到QQ空间"};
+		String[] namesNotInstalled = {"转发到新浪微博", "转发到QQ空间"};
 		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")
-		.setItems(names, new DialogInterface.OnClickListener(){
+		.setItems(wxInstalled ? namesInstalled : namesNotInstalled, new DialogInterface.OnClickListener(){
 			
 			@Override
 			public void onClick(DialogInterface dialog, int which){
@@ -37,7 +39,11 @@ class SharingFragment extends DialogFragment{
 					SharingCenter.share2Weibo((BaseActivity)getActivity(), mAd);
 					break;
 				case 1:
-					SharingCenter.share2Weixin((BaseActivity)getActivity(), mAd);
+					if(wxInstalled){
+						SharingCenter.share2Weixin((BaseActivity)getActivity(), mAd);
+					}else{
+						SharingCenter.share2QZone((BaseActivity)getActivity(), mAd);
+					}
 					break;
 				case 2:
 					SharingCenter.share2QZone((BaseActivity)getActivity(), mAd);

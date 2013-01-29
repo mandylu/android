@@ -12,6 +12,7 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.content.Context;
 import android.graphics.Bitmap;
 
 import com.baixing.entity.Ad;
@@ -35,6 +36,11 @@ class WeixinSharingManager extends BaseSharingManager{
 		mActivity = activity;
 		mApi = WXAPIFactory.createWXAPI(mActivity, WX_APP_ID, false);
 		mApi.registerApp(WX_APP_ID);
+	}
+	
+	public static boolean isWXInstalled(Context ctx){
+		IWXAPI api = WXAPIFactory.createWXAPI(ctx, WX_APP_ID, false);
+		return api == null ? false : api.isWXAppInstalled();
 	}
 
 	@Override

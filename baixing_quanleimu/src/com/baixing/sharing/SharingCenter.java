@@ -22,6 +22,10 @@ public class SharingCenter{
 	public static String shareFrom = null;
 	public static String adId = null;
 	public static String categoryName = null;
+	
+	public static boolean isWeixinInstalled(Context ctx){
+		return WeixinSharingManager.isWXInstalled(ctx);
+	}
 
 	public static void share2Weibo(BaseActivity activity, Ad ad){
 		release();
