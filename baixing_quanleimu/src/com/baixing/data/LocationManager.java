@@ -7,8 +7,10 @@ import java.util.List;
 
 import android.content.Context;
 import android.location.Location;
+import android.util.Pair;
 
 import com.baixing.entity.BXLocation;
+import com.baixing.entity.CityDetail;
 import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 
@@ -24,9 +26,14 @@ public class LocationManager implements LocationService.BXLocationServiceListene
 	
 	BXLocation location = null;
 	boolean location_updated = false;
+	String currentCity;
 	
 	LocationManager(WeakReference<Context> cxt) {
 		this.context = cxt;
+	}
+	
+	public String getCurrentCity() {
+		return this.currentCity;
 	}
 	
 	public boolean addLocationListener(final onLocationFetchedListener listener){
@@ -115,6 +122,9 @@ public class LocationManager implements LocationService.BXLocationServiceListene
 			
 			@Override
 			public void onRgcUpdated(BXLocation location) {
+				
+				parse4City(location);
+				
 //				Log.d("currentlocation", "xixi, onRgcUpdated");
 				if (null != location) {
 					setLocation(location);
@@ -134,4 +144,10 @@ public class LocationManager implements LocationService.BXLocationServiceListene
 //		Log.d("kkkkkk", "new location arrived at QuanleimuApplication: (" + location_.getLatitude() + ", " + location_.getLongitude() + ") !!!");
 	}
 
+	
+	private void parse4City(BXLocation location) {
+		if (location != null && location.cityName != null) {
+			this.currentCity = location.cityName;
+		}
+	}
 }

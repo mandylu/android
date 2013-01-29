@@ -582,6 +582,13 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		
 	}
 	
+	private boolean isCurrentCity() {
+		String geoCity = GlobalDataManager.getInstance().getLocationManager().getCurrentCity();
+		String selectCity = GlobalDataManager.getInstance().getCityName();
+		
+		return geoCity != null && geoCity.contains(selectCity);
+	}
+	
 	public void showFilterBar(View root, final List<Filterss> fss)
 	{
 		View[] actionViews = findAllFilterView();
@@ -620,7 +627,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					cItem.id = PostParamsHolder.INVALID_VALUE; //FIXME:  this is special for current location.
 					cItem.txt = "附近500米";
 					
-					CustomizeItem[] cs = isLocation && curLocation != null ? new CustomizeItem[] {cItem} : null; 
+					CustomizeItem[] cs = isLocation && curLocation != null && isCurrentCity() ? new CustomizeItem[] {cItem} : null; 
 
 					Tracker.getInstance().event(BxEvent.LISTING_TOPFILTEROPEN)
 							.append(Key.SECONDCATENAME, categoryEnglishName)
