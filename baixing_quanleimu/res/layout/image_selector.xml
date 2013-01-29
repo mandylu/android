@@ -1,74 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity" >
-
-   <!--  <RelativeLayout
-        android:id="@+id/RelativeLayout1"
-        android:layout_width="fill_parent"
-        android:layout_height="@dimen/title_height"
-        android:layout_alignParentLeft="true"
-        android:layout_alignParentTop="true"
-        android:background="@drawable/bg_camera_header"
-        >
-        
-         <LinearLayout
-            android:id="@+id/cancel_cap"
-            android:layout_width="@dimen/title_action_right_width"
-            android:layout_height="fill_parent"
-            android:layout_alignParentLeft="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/bg_post_selector"
-            android:gravity="right|center_vertical">
-			    
-            <TextView
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="关闭"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/font_medium" >
-            </TextView>
-        <include layout="@layout/title_line_dark"/>
-        </LinearLayout>
-        
-        
-        
-         <TextView
-            android:id="@+id/cap_title"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:textColor="#ffffff"
-            android:text="免费发布信息"
-            android:textAppearance="?android:attr/textAppearanceMedium" />
-
-                 <RelativeLayout
-            android:id="@+id/finish_cap"
-            android:layout_width="@dimen/title_action_right_width"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:layout_alignParentTop="true"
-            android:background="@drawable/bg_post_selector"
-            android:gravity="center" >
-
-            <include layout="@layout/title_line_dark"/>
-
-            <TextView
-                android:id="@+id/right_btn_txt"
-                android:layout_centerInParent="true"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="下一步"
-                android:textColor="#ffffff"
-                android:textSize="@dimen/font_medium" >
-            </TextView>
-
-        </RelativeLayout>
-         
-    </RelativeLayout> -->
+    android:layout_height="match_parent">
 
     <RelativeLayout
         android:id="@+id/bottom_line"
@@ -86,23 +19,27 @@
             android:layout_centerInParent="true"
             android:src="@drawable/btn_capture" />
         
-        <LinearLayout
+        <RelativeLayout
             android:id="@+id/pick_gallery"
-            android:layout_width="@dimen/camera_action_bar_height"
-            android:layout_height="@dimen/camera_action_bar_height"
+            android:layout_width="@dimen/camera_action_button_width"
+            android:layout_height="fill_parent"
             android:layout_alignParentLeft="true"
             android:layout_centerVertical="true"
-            android:gravity="center"
+            android:background="@drawable/bg_camera_btn_selector"
 			>
 
-            <ImageView
-                android:layout_width="@dimen/camera_gallery_width"
-                android:layout_height="@dimen/camera_gallery_height"
-                android:duplicateParentState="true"
-                android:scaleType="centerInside"
-                android:src="@drawable/btn_gallery" />
+            <TextView
+                android:layout_centerInParent="true"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:text="相册"
+                android:textColor="#ffffff"
+                android:singleLine="true"
+                android:textSize="@dimen/font_medium" >
+            </TextView>
             
-        </LinearLayout>
+        </RelativeLayout>
         
         <include layout="@layout/title_line_dark"
                 android:layout_width="2dp"
@@ -111,12 +48,12 @@
         
         <RelativeLayout
             android:id="@+id/finish_cap"
-            android:layout_width="@dimen/title_action_right_width"
+            android:layout_width="@dimen/camera_action_button_width"
             android:layout_height="fill_parent"
             android:layout_alignParentRight="true"
             android:layout_alignParentTop="true"
-            android:background="@drawable/bg_post_selector"
-            android:gravity="center" >
+            android:background="@drawable/bg_camera_btn_selector"
+           >
 
             <include layout="@layout/title_line_dark"/>
 
@@ -126,8 +63,9 @@
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:gravity="center"
-                android:text="下一步"
+                android:text="跳过发布"
                 android:textColor="#ffffff"
+                android:singleLine="true"
                 android:textSize="@dimen/font_medium" >
             </TextView>
 
@@ -148,7 +86,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
-            android:text="相机暂时不可用"
+            android:text="@string/warning_camera_in_use"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone" />
     </FrameLayout>
@@ -156,7 +94,7 @@
     <HorizontalScrollView
         android:id="@+id/cap_result_list"
         android:layout_width="fill_parent"
-        android:background="#B3000000"
+        android:background="#000000"
         android:layout_height="@dimen/camera_result_width"
         android:layout_above="@+id/bottom_line" >
 

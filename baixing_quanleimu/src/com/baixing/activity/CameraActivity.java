@@ -211,7 +211,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, "拍张照片，无图的信息效果略差", Toast.LENGTH_LONG).show();
+					Toast.makeText(CameraActivity.this, R.string.tip_camera_before_post, Toast.LENGTH_LONG).show();
 				}
 				break;
 				
@@ -336,8 +336,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	
     	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
-//    	LayoutInflater layoutInf = LayoutInflater.from(CameraActivity.this);
-//		View imageRoot = layoutInf.inflate(R.layout.single_image_layout, null);
     	
     	ViewGroup imageRoot = findFirstBlankImage(vp);
     	if (imageRoot == null) {
@@ -360,11 +358,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		
 		try
 		{
-//			final int size = (int) (getResources().getDimensionPixelSize(R.dimen.camera_preview_width) + getResources().getDimension(R.dimen.camera_preview_gap));
-//			vp.addView(imageRoot, size, size);
-
-			
-			
 			ImageView img = (ImageView) imageRoot.findViewById(R.id.result_image);
 			if (thumbnail.getThumbnail() != null) {
 				img.setImageBitmap(thumbnail.getThumbnail());
@@ -373,6 +366,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			callbacks.add(cbk);
 			ImageUploader.getInstance().registerCallback(thumbnail.getLocalPath(), cbk);
 			
+			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
+			nextLabel.setText("完成");
 			
 			return true;
 		}
@@ -767,7 +762,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
 		        if (!full) {
-		        	Toast.makeText(CameraActivity.this, "压缩上传中，再来一张！", Toast.LENGTH_SHORT).show();
+		        	Toast.makeText(CameraActivity.this, "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", Toast.LENGTH_SHORT).show();
 		        }
 			}
 		};

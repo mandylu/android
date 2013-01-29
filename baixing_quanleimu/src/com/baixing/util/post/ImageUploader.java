@@ -226,6 +226,10 @@ public class ImageUploader implements DownloadCallback {
 						img.serverUrl = result;
 						notifyState(img);
 					}
+					else {
+						img.state = ImageState.FAIL;
+						notifyFail(img);
+					}
 				}else{
 					img.state = ImageState.FAIL;
 					notifyFail(img);

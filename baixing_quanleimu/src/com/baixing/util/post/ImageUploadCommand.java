@@ -49,7 +49,7 @@ public class ImageUploadCommand {
 			httpPost.setEntity(fileEntity);
 
 			HttpResponse response = httpClient.execute(httpPost);
-
+			
 			InputStreamReader reader = new InputStreamReader(response
 					.getEntity().getContent());
 			BufferedReader buffer = new BufferedReader(reader);
