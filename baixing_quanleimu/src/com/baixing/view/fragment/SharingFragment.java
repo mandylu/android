@@ -28,7 +28,7 @@ class SharingFragment extends DialogFragment{
 		final boolean wxInstalled = SharingCenter.isWeixinInstalled(getActivity());
 		String[] namesInstalled = {"转发到新浪微博", "转发到微信", "转发到QQ空间"};
 		String[] namesNotInstalled = {"转发到新浪微博", "转发到QQ空间"};
-		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("请选择")
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity()).setTitle("发布成功！请朋友帮忙转发")
 		.setItems(wxInstalled ? namesInstalled : namesNotInstalled, new DialogInterface.OnClickListener(){
 			
 			@Override

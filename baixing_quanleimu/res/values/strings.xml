@@ -96,7 +96,7 @@
     </string-array>
 
     <string-array name="item_operate_mypost">
-        <item>转发</item>
+        <item>转发到其他网站</item>
         <item>刷新</item>
         <item>修改</item>
         <item>删除</item>
