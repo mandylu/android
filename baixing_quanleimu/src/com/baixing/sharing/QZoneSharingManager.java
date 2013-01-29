@@ -131,7 +131,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 		bundle.putString("title", ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));		
 		bundle.putString("url", ad.getValueByKey(EDATAKEYS.EDATAKEYS_LINK));		
 		bundle.putString("comment", 
-				"我用百姓网App发布了\"" + ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "\"" + "麻烦朋友们帮忙转发一下～");		
+				"我用百姓网App发布了：" + ad.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE) + "，麻烦朋友们帮忙转发一下～");		
 		bundle.putString("summary", ad.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION));
 		if(mImageUrl != null && mImageUrl.length() > 0){
 			bundle.putString("images", mImageUrl);
