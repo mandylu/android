@@ -18,10 +18,12 @@
     <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，不要轻信汇款和转账相关的行为</string>
     <string name="tip_history_cleared">搜索历史已清空</string>
     <string name="warning_fail_to_get_profile">获取用户信息失败</string>
+    <string name="warning_camera_in_use">相机暂时不可用，请退出百姓网应用并再次进入重试</string>
     
     <!-- tips show as toast. -->
     <string name="tip_clipd_contact">联系方式已经复制到粘贴板</string>
     <string name="tip_searching">搜索中...</string>
+    <string name="tip_camera_before_post">免费发布，请先拍张照片</string>
 
     <!-- time related -->
     <string name="common_time_ago">前</string>

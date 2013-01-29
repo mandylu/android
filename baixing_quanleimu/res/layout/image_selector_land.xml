@@ -1,8 +1,7 @@
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="match_parent"
-    android:layout_height="match_parent"
-    tools:context=".MainActivity" >
+    android:layout_height="match_parent">
 
     
     <FrameLayout
@@ -18,7 +17,7 @@
             android:layout_width="fill_parent"
             android:layout_height="fill_parent"
             android:gravity="center"
-            android:text="相机暂时不可用"
+            android:text="@string/warning_camera_in_use"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone" />
     </FrameLayout>
@@ -34,7 +33,7 @@
         <ScrollView
             android:id="@+id/cap_result_list"
             android:layout_width="@dimen/camera_result_width"
-            android:background="#B3000000"
+            android:background="#000000"
             android:layout_height="fill_parent">
 
             <LinearLayout
@@ -54,7 +53,7 @@
         </ScrollView>
 
         <RelativeLayout
-            android:layout_width="@dimen/title_action_right_width"
+            android:layout_width="@dimen/camera_action_button_width"
             android:layout_height="fill_parent"
             android:background="@drawable/bg_camera_header" >
 
@@ -65,20 +64,26 @@
                 android:layout_centerInParent="true"
                 android:src="@drawable/btn_capture_l" />
             
-            <LinearLayout
+            <RelativeLayout
                 android:id="@+id/pick_gallery"
-                android:layout_width="@dimen/camera_action_bar_height"
+                android:layout_width="fill_parent"
                 android:layout_height="@dimen/camera_action_bar_height"
                 android:layout_alignParentBottom="true"
                 android:layout_centerHorizontal="true"
-                android:gravity="center" >
+                android:background="@drawable/bg_camera_btn_selector"
+                 >
 
-                <ImageView
-                    android:layout_width="@dimen/camera_gallery_height"
-                    android:layout_height="@dimen/camera_gallery_width"
-                    android:scaleType="centerInside"
-                    android:src="@drawable/btn_gallery" />
-            </LinearLayout>
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerInParent="true"
+                    android:gravity="center"
+                    android:text="相册"
+                    android:textColor="#ffffff"
+                    android:textSize="@dimen/font_medium" >
+                </TextView>
+                
+            </RelativeLayout>
             <include layout="@layout/title_line_dark_l"
                 android:layout_width="fill_parent"
                 android:layout_height="2dp"
@@ -90,7 +95,7 @@
                 android:layout_height="@dimen/title_action_right_width"
                 android:layout_alignParentRight="true"
                 android:layout_alignParentTop="true"
-                android:background="@drawable/bg_post_selector"
+                android:background="@drawable/bg_camera_btn_selector"
                 >
 
 
@@ -100,7 +105,7 @@
                     android:layout_height="wrap_content"
                     android:layout_centerInParent="true"
                     android:gravity="center"
-                    android:text="下一步"
+                    android:text="跳过拍照"
                     android:textColor="#ffffff"
                     android:textSize="@dimen/font_medium" >
                 </TextView>

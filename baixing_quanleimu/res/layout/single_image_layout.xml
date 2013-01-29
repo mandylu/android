@@ -38,7 +38,11 @@
         android:visibility="invisible"
         android:src="@drawable/delete_img_icon" />
     
-    
-
+    <View android:id="@+id/delete_btn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+		android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        />
 
 </RelativeLayout>

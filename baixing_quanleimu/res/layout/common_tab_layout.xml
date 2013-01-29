@@ -2,7 +2,7 @@
     android:id="@+id/common_tab_layout"
     android:layout_width="fill_parent"
     android:layout_height="@dimen/tab_height"
-    android:background="@color/tab_bg"
+    android:background="@drawable/bg_camera_header"
     android:orientation="horizontal" >
 
     <include layout="@layout/common_tab_item"

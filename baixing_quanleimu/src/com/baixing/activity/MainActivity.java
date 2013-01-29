@@ -309,10 +309,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		setContentView(R.layout.main_activity);
 		onSetRootView(this.findViewById(R.id.root));
 		
-		if (savedInstanceState == null)
-		{
-			findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
-		}
+		findViewById(R.id.splash_cover).setVisibility(savedInstanceState == null ? View.VISIBLE : View.GONE);
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		
 		splashJob = new SplashJob(this, this);
