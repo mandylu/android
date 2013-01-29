@@ -372,6 +372,23 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		return GlobalDataManager.getInstance().getCityEnglishName();
 	}
 	
+	private void showGettingMetaProgress(boolean show){
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			View v = layout_txt.getChildAt(i);
+			if(v == null) continue;
+			View progress = v.findViewById(R.id.metaLoadingBar);
+			if(progress != null){
+				if(show){
+					progress.setVisibility(View.VISIBLE);
+					v.findViewById(R.id.post_next).setVisibility(View.GONE);
+				}else{
+					progress.setVisibility(View.GONE);
+					v.findViewById(R.id.post_next).setVisibility(View.VISIBLE);					
+				}				
+			}
+		}
+	}
+	
 	private void showPost(){
 		if(this.categoryEnglishName == null || categoryEnglishName.length() == 0){
 			deployDefaultLayout();
@@ -392,7 +409,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				return;
 			}
 		}
-		showSimpleProgress();
+//		showSimpleProgress();
+		showGettingMetaProgress(true);
 		postNS.retreiveMetaAsync(cityEnglishName, categoryEnglishName);
 	}
 	
@@ -466,6 +484,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	private void postAction() {
+		if(this.postList == null || postList.size() == 0) return;
 		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		if(!this.checkInputComplete()){
@@ -639,9 +658,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
-			View v = layout_txt.findViewById(R.id.img_description);
+			View desView = layout_txt.findViewById(R.id.img_description);
+			View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
-			layout_txt.addView(v);
+			layout_txt.addView(desView);
+			layout_txt.addView(catView);
 		}
 		postList.clear();
 		
@@ -740,7 +761,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}else if(postBean.getName().equals("价格")){
-			((TextView)layout.findViewById(R.id.postinput)).setHint("价格越低成交越快");
+			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
 		}
 		
 		if(layout != null){
@@ -767,8 +788,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
-		LayoutInflater inflater = LayoutInflater.from(activity);
-		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+//		LayoutInflater inflater = LayoutInflater.from(activity);
+//		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
+		
+		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
 		
 		categoryItem.setTag(PostCommonValues.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
@@ -786,7 +809,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			((TextView)categoryItem.findViewById(R.id.posthint)).setText("请选择分类");
 		}
 		PostUtil.adjustMarginBottomAndHeight(categoryItem);
-		layout_txt.addView(categoryItem);
+//		layout_txt.addView(categoryItem);
 	}
 	
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl){
@@ -931,6 +954,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			addCategoryItem();
 			buildPostLayout(postList);
 			loadCachedData();
+			this.showGettingMetaProgress(false);
 			break;
 
 		case PostCommonValues.MSG_GET_META_FAIL:
@@ -939,7 +963,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);
 			this.reCreateTitle();
 			this.refreshHeader();
-
+			this.showGettingMetaProgress(false);
 			break;
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
@@ -1084,7 +1108,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_leftActionImage  = R.drawable.icon_close;
-//		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
