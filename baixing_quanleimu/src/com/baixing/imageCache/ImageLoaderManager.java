@@ -60,9 +60,9 @@ public class ImageLoaderManager{
 		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
 		
 		//1. try to get from memory cache
-		if(ImageCacheManager.getInstance().contains(url)){
-			bitmap = ImageCacheManager.getInstance().getFromCache(url);
-		}
+//		if(ImageCacheManager.getInstance().contains(url)){
+		bitmap = ImageCacheManager.getInstance().getFromCache(url);
+//		}
 		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
 		}else{//else, try try to load from disk cache

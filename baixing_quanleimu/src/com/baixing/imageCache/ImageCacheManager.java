@@ -110,7 +110,7 @@ public class ImageCacheManager{
 	public WeakReference<Bitmap> getFromCache(String url){
 		WeakReference<Bitmap> bitmap = null;
 		bitmap = this.getFromMapCache(url);		
-		if(null == bitmap){			
+		if(null == bitmap || null == bitmap.get()){			
 			bitmap = getFromFileCache(url);
 			if(bitmap != null && bitmap.get() != null){
 				this.saveBitmapToCache(url, bitmap);
