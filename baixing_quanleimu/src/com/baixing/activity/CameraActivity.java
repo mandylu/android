@@ -573,7 +573,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 //		Profiler.markStart("cameOnResume");
 		super.onResume();
 		
-        handler.sendEmptyMessageDelayed(MSG_INIT_CAME, 100);
+        handler.sendEmptyMessage(MSG_INIT_CAME);
         handler.sendEmptyMessageDelayed(MSG_RESUME_ME, 500);//Do not block the main thread.
 //        Profiler.markEnd("cameOnResume");
         
