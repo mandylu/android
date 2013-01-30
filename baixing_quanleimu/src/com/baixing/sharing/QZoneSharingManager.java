@@ -113,16 +113,12 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 							}
 							
 						});
-					}else{
-						handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
+						return;
 					}
-				}else{
-					handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
 				}
 			}
 		}
-			
-
+		handler.sendEmptyMessage(MSG_UPLOADIMG_FINISH);
 	}
 	
 	private void share2QZone(final Ad ad){
