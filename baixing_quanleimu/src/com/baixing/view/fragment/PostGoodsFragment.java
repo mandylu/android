@@ -786,7 +786,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
-		if(editMode)return;
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
@@ -794,7 +793,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
 		
 		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
-		
+		if(editMode){
+			layout_txt.removeView(categoryItem);
+			return;
+		}
 		categoryItem.setTag(PostCommonValues.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
