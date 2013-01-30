@@ -201,8 +201,10 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<Ad>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
-			mRefreshUsingLocal = true;
-			lvGoodsList.fireRefresh();
+			if (!isBack){
+				mRefreshUsingLocal = true;
+				lvGoodsList.fireRefresh();
+			}
 		}
 		
 		
