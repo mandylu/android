@@ -45,12 +45,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
-        try {
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
-        } catch (IOException e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-        }
+//        try {
+//            mCamera.setPreviewDisplay(holder);
+//            mCamera.startPreview();
+//        } catch (IOException e) {
+//            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
+//        }
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -78,18 +78,19 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         
         final boolean isNewSdk = VERSION.SDK_INT > 8;
         
-        if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
-        	try {
-        		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
-        	}
-        	catch (Throwable t) {
-        		//Ignor this exception.
-        	}
-        }
         
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
+            
+            if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
+            	try {
+            		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
+            	}
+            	catch (Throwable t) {
+            		//Ignor this exception.
+            	}
+            }
             
             Parameters param = mCamera.getParameters();
             param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 

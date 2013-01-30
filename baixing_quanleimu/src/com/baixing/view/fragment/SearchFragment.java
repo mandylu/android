@@ -342,12 +342,13 @@ public class SearchFragment extends BaseFragment implements Callback {
 	
 	private void handleCategorySearchFail(ApiError error) {
 		categoryResultCountList = null;
-		if(this.loadingView != null){
-			loadingView.setVisibility(View.GONE);
-		}
 		getActivity().runOnUiThread(new Runnable(){
 			@Override
 			public void run(){
+				if(loadingView != null){
+					loadingView.setVisibility(View.GONE);
+				}
+				
 				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
 						Toast.LENGTH_SHORT).show();
 			}

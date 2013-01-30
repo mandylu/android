@@ -64,6 +64,7 @@ public abstract class BaseFragment extends Fragment  {
 	public static final String ARG_COMMON_REQ_CODE = "reqestCode";
 	public static final String ARG_COMMON_ANIMATION_IN = "inAnimation";
 	public static final String ARG_COMMON_ANIMATION_EXIT = "exitAnimation";
+	public static final String ARG_COMMON_HAS_GLOBAL_TAB = "hasGlobalTabbar";
 	
 	private ProgressDialog pd;
 	
@@ -662,11 +663,14 @@ public abstract class BaseFragment extends Fragment  {
 		}
 	}
 	
-	protected static Bundle createArguments(String title, String backhint)
+	protected final Bundle createArguments(String title, String backhint)
 	{
 		Bundle bundle = new Bundle();
 		if (title != null) bundle.putString(ARG_COMMON_TITLE, title);
 		if (backhint != null) bundle.putString(ARG_COMMON_BACK_HINT, backhint);
+		if (getArguments() != null) {
+			bundle.putBoolean(ARG_COMMON_HAS_GLOBAL_TAB, hasGlobalTab());
+		}
 		return bundle;
 	}
 	
@@ -739,7 +743,7 @@ public abstract class BaseFragment extends Fragment  {
 	
 	public boolean hasGlobalTab()
 	{
-		return true;
+		return getArguments() != null && getArguments().containsKey(ARG_COMMON_HAS_GLOBAL_TAB) ? getArguments().getBoolean(ARG_COMMON_HAS_GLOBAL_TAB) : true;
 	}
 	
 }
