@@ -168,6 +168,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				
 				isInitialized = true;
+				updateCapState();
 				break;
 			}
 			case MSG_RESUME_ME:{
@@ -203,8 +204,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				break;
 			case MSG_UPDATE_THUMBNAILS:
-				updateCapState();
-				
 				if (imageList != null && imageList.size() > 0) {
 					
 					for (BXThumbnail t : imageList) {
@@ -442,6 +441,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		//Take picture action.
 		findViewById(R.id.cap).setOnClickListener(this);
 		findViewById(R.id.finish_cap).setOnClickListener(this);
+		findViewById(R.id.cap).setEnabled(false);//Do not let user take pitcure before initialize.
 		
 		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL)) {
 			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
