@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.util.StringUtils;
 
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -512,9 +513,14 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		return description;
 	}
 	
+	private Bitmap failBk;
+        
 	@Override
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
-		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext());
+		if(failBk == null){
+			failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+		}
+		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext(), new WeakReference<Bitmap>(failBk));
 		increaseImageCount(url, index);
 	}
 	

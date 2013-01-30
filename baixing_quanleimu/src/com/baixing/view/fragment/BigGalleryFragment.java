@@ -330,7 +330,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	        private List<String> imageUrls;
 
 	        private int position = 0;
-
+	        private Bitmap failBk;
 	 //       private final ExecutorService pool;
 
 	        private GalleryImageAdapter(Context c, List<String> imageUrls)
@@ -379,10 +379,16 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
 //					imageView.setImageBitmap(mb);
-					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent));
+//					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent));
 					
-				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
-		            imageView.setTag(imageUrls.get(position));
+					if(failBk == null){
+						failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+					}
+					String prevTag = (String) imageView.getTag();
+					imageView.setTag(imageUrls.get(position));
+				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), 
+				    		prevTag, getAppContext(), new WeakReference<Bitmap>(failBk));
+		            
 				}
 
 //	            return imageView;
