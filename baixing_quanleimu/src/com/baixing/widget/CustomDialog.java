@@ -21,7 +21,7 @@ public class CustomDialog extends Dialog {
 	
 	public CustomDialog(Context context) {
 //		super(context);
-		super(context);
+		super(context, R.style.customize_dialog);
 		this.context = context;
 	}
 	
