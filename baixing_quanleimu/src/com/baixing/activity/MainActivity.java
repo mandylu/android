@@ -108,6 +108,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		}
 		else
 		{
+			jumpToPage();
 			responseOnResume();
 		}
 		
@@ -278,6 +279,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			}
 		}))).start();
 		
+//		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
+//		Profiler.clear();
+		jumpToPage();
+	}
+	
+	private void jumpToPage(){
 		Intent intent = this.getIntent();
 		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
 			if(intent.getBooleanExtra("pagejump", false)){
@@ -286,9 +293,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 				///intent.getExtras()
 			}
 		}
-
-//		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
-//		Profiler.clear();
 	}
 
 	@Override
