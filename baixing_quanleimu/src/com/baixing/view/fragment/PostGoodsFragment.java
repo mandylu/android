@@ -1108,6 +1108,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_leftActionImage  = R.drawable.icon_close;
+		title.m_title = "免费发布";
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){

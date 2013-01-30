@@ -24,6 +24,7 @@
     <dimen name="filter_gap">10dp</dimen>
     <dimen name="line_space">6sp</dimen>
     <dimen name="progress_size_small">10dp</dimen>
+    <dimen name="check_box_size">38dp</dimen>
     
     <!-- personal center -->
     <dimen name="icon_width_small">30dp</dimen>
