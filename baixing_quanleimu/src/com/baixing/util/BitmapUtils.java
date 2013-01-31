@@ -296,10 +296,20 @@ public class BitmapUtils {
             }
         }
         
-        if (resample > 0)
+        if (resample > 1)
         {
+        	//For fucking LenovoA60 device: only 1, 2, 4, 8, 16, 32 ... works on this device.
+			if (resample < 4) {
+				resample = 2;
+			} else if (resample < 8) {
+				resample = 4;
+			} else {
+				resample = 8;
+			}          
+
             return resample;
         }
+        
         return 1;
     }
 	
@@ -413,7 +423,6 @@ public class BitmapUtils {
             options.inJustDecodeBounds = false;
             options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
             
-            
             source = BitmapFactory.decodeByteArray(data, 0, data.length, options);//Bitmap.createScaledBitmap(bitmap, 200, 200, false);
             
             source.compress(CompressFormat.JPEG, 100, fos);
@@ -423,6 +432,8 @@ public class BitmapUtils {
             Log.d(TAG, "File not found: " + e.getMessage());
         } catch (IOException e) {
             Log.d(TAG, "Error accessing file: " + e.getMessage());
+        } catch (Throwable t) {
+        	Log.d(TAG, "other exception when processing image." + t.getMessage());
         }
 		
 		if (source == null) {
