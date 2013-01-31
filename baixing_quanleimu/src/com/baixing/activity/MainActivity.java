@@ -67,6 +67,19 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onDestroy();
 		isInActiveStack = false;
 	}
+	
+	protected void onNewIntent(Intent intent)
+	{
+		super.onNewIntent(intent);
+		
+		if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+			Intent go = new Intent();
+			go.addCategory(Intent.CATEGORY_LAUNCHER);
+			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
+			
+			startActivity(go);
+		}
+	}
 
 	@Override
 	protected void onPause() {

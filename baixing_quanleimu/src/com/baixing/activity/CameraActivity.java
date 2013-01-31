@@ -38,6 +38,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.tracking.TrackConfig;
@@ -569,6 +570,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+		GlobalDataManager.getInstance().setLastActiveActivity(this.getClass());
 		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
 //		Profiler.markStart("cameOnResume");
 		super.onResume();
