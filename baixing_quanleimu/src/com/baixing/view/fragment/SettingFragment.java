@@ -111,6 +111,12 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         title.m_visible = true;
         title.m_title = "设置";
         title.m_leftActionHint = "完成";
+        title.m_rightActionHint = "Debug";
+    }
+
+    @Override
+    public void handleRightAction() {
+        pushFragment(new DebugFragment(), null);
     }
 
     @Override

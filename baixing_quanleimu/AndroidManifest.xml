@@ -163,6 +163,7 @@
                 <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
         </activity>
+        <activity android:name="com.baixing.view.fragment.DebugFragment" android:label="Debug"/>
 
         <service
             android:name="com.baixing.broadcast.BXNotificationService"
