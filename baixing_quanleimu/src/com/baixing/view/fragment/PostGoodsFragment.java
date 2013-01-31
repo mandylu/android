@@ -664,7 +664,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
 			layout_txt.addView(desView);
-			layout_txt.addView(catView);
+			if(catView != null){
+				layout_txt.addView(catView);
+			}
 		}
 		postList.clear();
 		
