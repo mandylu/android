@@ -426,7 +426,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
-		if (VERSION.SDK_INT <= 8) {
+		if (VERSION.SDK_INT <= 10) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);

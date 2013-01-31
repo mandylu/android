@@ -25,6 +25,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public static final String TAG	= "CameraPreview";
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private int screenRotation;
 
     public CameraPreview(Context context) {
         super(context);
@@ -76,7 +77,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
-        final boolean isNewSdk = VERSION.SDK_INT > 8;
+        final boolean isNewSdk = VERSION.SDK_INT > 10;
         
         
         // start preview with new settings
@@ -169,4 +170,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         return optimalSize;
     }
+    
 }
