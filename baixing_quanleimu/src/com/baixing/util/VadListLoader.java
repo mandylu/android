@@ -228,6 +228,16 @@ public class VadListLoader implements Serializable{
 			run();
 		}
 		
+		private int skipCount() {
+			AdList list = getGoodsList();
+			if (list == null || list.getData() == null) {
+				return 0;
+			}
+			else {
+				return list.getCount();
+			}
+		}
+		
 		@Override
 		public void run() {
 			
@@ -245,7 +255,7 @@ public class VadListLoader implements Serializable{
 			
 			if(null != mFields && mFields.length() > 0)
 				list.addParam("fields",mFields);
-			list.addParam("start",  "" + (mIsFirst ? 0 : mGoodsList.getData().size()));
+			list.addParam("start",  "" + (mIsFirst ? 0 : skipCount()));
 			if(mRt){
 				list.addParam("rt","1");
 			}

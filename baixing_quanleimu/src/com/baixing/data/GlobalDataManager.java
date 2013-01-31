@@ -54,6 +54,8 @@ public class GlobalDataManager implements Observer{
     private NetworkCacheManager networkCache;
     private LocationManager locationManager;
     
+    private Class lastActiveCls;
+    
     public final ImageCacheManager getImageManager(){
     	return ImageCacheManager.getInstance();
     }
@@ -81,6 +83,14 @@ public class GlobalDataManager implements Observer{
 	public static boolean needNotifySwitchMode()
 	{
 		return GlobalDataManager.needNotifiySwitchMode;
+	}
+	
+	public void setLastActiveActivity(Class cls) {
+		lastActiveCls = cls;
+	}
+	
+	public Class getLastActiveClass() {
+		return lastActiveCls;
 	}
 	
 	public List<Ad> getListMyStore() {

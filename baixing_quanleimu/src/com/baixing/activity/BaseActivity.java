@@ -149,6 +149,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	protected void onResume() {
 		// TODO Auto-generated method stub
 		super.onResume();
+		GlobalDataManager.getInstance().setLastActiveActivity(this.getClass());
 		MobclickAgent.onResume(this);
 		this.savedInstance = false;
 	}
