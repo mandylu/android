@@ -14,6 +14,8 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
@@ -24,14 +26,14 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.sharing.weibo.Oauth2AccessToken;
+import com.baixing.sharing.weibo.SsoHandler;
+import com.baixing.sharing.weibo.Weibo;
+import com.baixing.sharing.weibo.WeiboAuthListener;
+import com.baixing.sharing.weibo.WeiboDialogError;
+import com.baixing.sharing.weibo.WeiboException;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.Weibo;
-import com.weibo.sdk.android.WeiboAuthListener;
-import com.weibo.sdk.android.WeiboDialogError;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.sso.SsoHandler;
 
 public class WeiboSSOSharingManager extends BaseSharingManager {
 	public static class WeiboAccessTokenWrapper implements Serializable {
@@ -128,7 +130,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 	@Override
 	public void auth() {
 		try {
-			Class sso = Class.forName("com.weibo.sdk.android.sso.SsoHandler");
+			Class sso = Class.forName("com.baixing.sharing.weibo.SsoHandler");
 			authSSO();
 		} catch (ClassNotFoundException e) {
 			authTraditional();
@@ -153,6 +155,10 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 	}
 
 	private void authTraditional() {
+		CookieSyncManager.createInstance(mActivity); 
+	    CookieManager cookieManager = CookieManager.getInstance();
+	    cookieManager.removeAllCookie();
+
 		mWeibo = Weibo.getInstance(kWBBaixingAppKey, "http://www.baixing.com");
 		mWeibo.authorize(mActivity, new AuthDialogListener());
 	}
