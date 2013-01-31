@@ -484,7 +484,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	private void postAction() {
-		if(this.postList == null || postList.size() == 0) return;
+		if(this.postList == null || postList.size() == 0) {
+			return;
+		}
 		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		if(!this.checkInputComplete()){
@@ -784,7 +786,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
-		if(editMode)return;
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
@@ -792,7 +793,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 //		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
 		
 		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
-		
+		if(editMode){
+			layout_txt.removeView(categoryItem);
+			return;
+		}
 		categoryItem.setTag(PostCommonValues.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
@@ -949,20 +953,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			updateImageInfo(rootView);
 			break;
 		}
-		case PostCommonValues.MSG_GET_META_SUCCEED:
+		case PostCommonValues.MSG_GET_META_SUCCEED:{
+			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+			if(button != null){
+				button.setEnabled(true);
+			}
+
 			postList = (LinkedHashMap<String, PostGoodsBean>)msg.obj;
 			addCategoryItem();
 			buildPostLayout(postList);
 			loadCachedData();
 			this.showGettingMetaProgress(false);
 			break;
+		}
 
 		case PostCommonValues.MSG_GET_META_FAIL:
 			hideProgress();
-			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
-			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);
-			this.reCreateTitle();
-			this.refreshHeader();
+			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+			if(button != null){
+				button.setEnabled(false);
+			}
+			addCategoryItem();
+			if(msg.obj != null){
+				Toast.makeText(activity, (String)msg.obj, 0).show();
+			}
 			this.showGettingMetaProgress(false);
 			break;
 		case PostCommonValues.MSG_POST_SUCCEED:

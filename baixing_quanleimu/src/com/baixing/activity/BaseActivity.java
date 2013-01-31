@@ -64,6 +64,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 	@Override
 	protected void onNewIntent(Intent intent) {
 		savedInstance = false;
+		this.setIntent(intent);
 		super.onNewIntent(intent);
 	}
 	
