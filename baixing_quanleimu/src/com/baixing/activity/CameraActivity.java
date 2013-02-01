@@ -134,7 +134,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			case MSG_TAKEPIC_DELAY:
 			{
 				BooleanWrapper bW = (BooleanWrapper) msg.obj;
-				if (!bW.isTrue) {
+				if (!bW.isTrue && mCamera != null) {
 					mCamera.takePicture(null, null, mPicture);
 				}
 				break;
