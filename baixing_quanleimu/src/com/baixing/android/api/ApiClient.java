@@ -59,7 +59,7 @@ public class ApiClient {
 	private static final String LOG_TAG = "ApiClient";
 	private static final String apiKey = "api_mobile_android";
 	private static final String apiSecrect = "c6dd9d408c0bcbeda381d42955e08a3f";
-	private static final String apiUrl = "http://www.baixing.com/api/mobile.";
+	public static String host = "www.baixing.com";
 	private static ApiClient _instance = null;
 	private ApiParams commonParams = new ApiParams();
 	private Context context = null;
@@ -67,6 +67,10 @@ public class ApiClient {
 	private int readTimeout = 30000;// 30秒
 	private Vector pendingListeners = new Vector();
 	private CacheProxy cache = null;
+
+    public static String getApiUrl() {
+        return "http://" + ApiClient.host + "/api/mobile.";
+    }
 	
 	protected ApiClient(){
 		
@@ -216,7 +220,7 @@ public class ApiClient {
 		
 		Log.d("invokeApi", params.toString());
 		
-		String url = apiUrl + method.getApiName() + "/";
+		String url = ApiClient.getApiUrl() + method.getApiName() + "/";
 		String jsonStr = null; 
 		String fullUrl = WebUtils.getFullUrl(url,params);
 		if(params.useCache){

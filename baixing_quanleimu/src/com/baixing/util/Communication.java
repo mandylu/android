@@ -13,6 +13,7 @@ import java.util.Comparator;
 import java.util.List;
 import java.util.zip.GZIPInputStream;
 
+import com.baixing.android.api.ApiClient;
 import org.apache.http.Header;
 import org.apache.http.HttpResponse;
 import org.apache.http.StatusLine;
@@ -50,8 +51,6 @@ public class Communication implements Comparator<String> {
 	public static String apiSecret = "c6dd9d408c0bcbeda381d42955e08a3f";
 //	 public static String apiSecret = "f93bfd64405a641a7c8447fc50e55d6e";
 
-//	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
-    public static String host = "www.baixing.com";
 
 	 
 	 public static boolean isWifiConnection() {
@@ -82,7 +81,7 @@ public class Communication implements Comparator<String> {
 	
 	@Deprecated
 	public static String getApiUrl(String apiName, List<String> parameters) {
-		String url = "http://" + host + apiName + "/?" + getPostParameters(parameters);
+		String url = "http://" + ApiClient.host + apiName + "/?" + getPostParameters(parameters);
 		Log.d("Communication", url);
 		return url;
 	}

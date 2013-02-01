@@ -34,6 +34,18 @@
 					android:id="@+id/pushTestBtn" android:layout_alignParentLeft="false"
 					android:layout_alignParentBottom="false" android:layout_alignParentTop="false"
 					android:layout_marginRight="20dp" android:layout_alignParentRight="true"/>
+			<ToggleButton
+					android:layout_width="60dp"
+					android:layout_height="fill_parent"
+					android:text="showPush"
+					android:id="@+id/showPushBtn"
+					android:checked="false"
+					android:layout_toLeftOf="@+id/pushTestBtn" android:layout_marginRight="20dp"/>
 		</RelativeLayout>
+		<TextView
+				android:layout_width="fill_parent"
+				android:layout_height="wrap_content"
+				android:text="none"
+				android:id="@+id/infoTv" android:layout_marginLeft="20dp" android:layout_marginRight="20dp"/>
 	</LinearLayout>
 </RelativeLayout>

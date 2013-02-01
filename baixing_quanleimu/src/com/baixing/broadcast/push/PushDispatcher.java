@@ -1,6 +1,17 @@
 //liuchong@baixing.com
 package com.baixing.broadcast.push;
 
+import android.app.AlertDialog;
+import android.app.Service;
+import android.content.DialogInterface;
+import android.os.Bundle;
+import android.widget.Toast;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.broadcast.NotificationIds;
+import com.baixing.util.Communication;
+import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
+import com.quanleimu.activity.R;
 import org.json.JSONObject;
 
 import android.content.Context;
@@ -25,8 +36,13 @@ public class PushDispatcher {
 	
 	public void dispatch(String msgJson)
 	{
-
-			
+        Boolean showDebugPush = (Boolean) Util.loadDataFromLocate(context, "showDebugPush", Boolean.class);
+        if (showDebugPush) {
+            ViewUtil.putOrUpdateNotification(context,
+                    NotificationIds.NOTIFICATION_ID_DEBUG,
+                    CommonIntentAction.ACTION_NOTIFICATION_DEBUG,
+                    "收到 push", msgJson, new Bundle(), false);
+        }
 		try
 		{
 			JSONObject jsonObj = new JSONObject(msgJson);

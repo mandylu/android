@@ -29,6 +29,7 @@ public class CommonIntentAction
 	public static final String ACTION_NOTIFICATION_BXINFO = "com.baixing.action.notify.bxinfo";
 	public static final String ACTION_NOTIFICATION_UPGRADE = "com.baixing.action.notify.upgrade";
 	public static final String ACTION_NOTIFICATION_JUMPURL = "com.baixing.action.notify.jumpurl";
+    public static final String ACTION_NOTIFICATION_DEBUG = "com.baixing.action.notify.debug";
 	
 	/**
 	 * Common extra key.

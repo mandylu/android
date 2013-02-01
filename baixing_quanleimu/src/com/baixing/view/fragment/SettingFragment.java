@@ -3,9 +3,12 @@ package com.baixing.view.fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.method.DateTimeKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,8 +25,12 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 
+import java.util.Date;
+
 public class SettingFragment extends BaseFragment implements View.OnClickListener {
     private UserBean user;
+    private long debugShowFlagTime = 0;
+    private long debugShowFlag = 0;
 
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
@@ -36,6 +43,21 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
+        ((Button) setmain.findViewById(R.id.debugBtn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long nowTime = System.currentTimeMillis();
+                if (nowTime - debugShowFlagTime > 1000) {
+                    debugShowFlagTime = nowTime;
+                    debugShowFlag = 0;
+                } else {
+                    debugShowFlag++;
+                    if (debugShowFlag>1) {
+                        pushFragment(new DebugFragment(), null);
+                    }
+                }
+            }
+        });
 
 //		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
 //		AccessToken token = null;
@@ -111,12 +133,6 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         title.m_visible = true;
         title.m_title = "设置";
         title.m_leftActionHint = "完成";
-        title.m_rightActionHint = "Debug";
-    }
-
-    @Override
-    public void handleRightAction() {
-        pushFragment(new DebugFragment(), null);
     }
 
     @Override

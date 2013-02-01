@@ -5,15 +5,19 @@ import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.graphics.Color;
 import android.os.Bundle;
+import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.Button;
-import android.widget.RelativeLayout;
-import android.widget.TextView;
-import android.widget.Toast;
+import android.widget.*;
 import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.broadcast.XMPPManager;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Communication;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
@@ -24,8 +28,10 @@ import com.quanleimu.activity.R;
  * Date: 13-1-30
  * Time: AM10:02
  */
-public class DebugFragment extends BaseFragment implements View.OnClickListener {
+public class DebugFragment extends BaseFragment implements View.OnClickListener, BaseCommand.Callback {
     private Button hostBtn;
+    private final int MSG_pushTestSuccess = 101;
+    private final int MSG_pushTestFail = 102;
 
     public void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
@@ -43,9 +49,9 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener 
 
         hostBtn = (Button)debugLayout.findViewById(R.id.hostBtn);
         hostBtn.setOnClickListener(this);
-        debugLayout.findViewById(R.id.pushTestBtn).setOnClickListener(this);
+        hostBtn.setText(ApiClient.host);
 
-        hostBtn.setText(Communication.host);
+        debugLayout.findViewById(R.id.pushTestBtn).setOnClickListener(this);
 
         TextView xmppTv = (TextView)debugLayout.findViewById(R.id.xmppConTv);
         if (XMPPManager.getInstance(this.getAppContext()).isConnected()) {
@@ -55,6 +61,22 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener 
             xmppTv.setText("XMPP无法连接");
             xmppTv.setTextColor(Color.RED);
         }
+
+        ToggleButton showPushBtn = (ToggleButton)debugLayout.findViewById(R.id.showPushBtn);
+        Boolean showDebugPush = (Boolean) Util.loadDataFromLocate(getAppContext(), "showDebugPush", Boolean.class);
+        if (showDebugPush != null) {
+            showPushBtn.setChecked(showDebugPush);
+        }
+
+        showPushBtn.setOnCheckedChangeListener(new CompoundButton.OnCheckedChangeListener() {
+            @Override
+            public void onCheckedChanged(CompoundButton buttonView, boolean isChecked) {
+                Util.saveDataToLocate(getAppContext(), "showDebugPush", new Boolean(isChecked));
+            }
+        });
+
+        TextView infoTv = (TextView)debugLayout.findViewById(R.id.infoTv);
+        infoTv.setText("udid:" + Util.getDeviceUdid(getAppContext()));
 
         return debugLayout;
     }
@@ -85,8 +107,8 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener 
         builder.setTitle("选择 api")
             .setItems(hosts, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    Communication.host = hosts[which].toString();
-                    hostBtn.setText(Communication.host);
+                    ApiClient.host = hosts[which].toString();
+                    hostBtn.setText(ApiClient.host);
                     dialog.dismiss();
                 }
             })
@@ -99,6 +121,42 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener 
     }
 
     private void pushTestBtnClicked() {
+        Toast.makeText(getActivity(), "sssssss", 3);
+        ApiParams params = new ApiParams();
+        params.addParam("type", "push");
+        HttpGetCommand.createCommand(1, "debug", params).execute(this);
+    }
 
+
+    @Override
+    public void onNetworkDone(int requstCode, String responseData) {
+        sendMessage(MSG_pushTestSuccess, responseData);
+    }
+
+    @Override
+    public void onNetworkFail(int requstCode, ApiError error) {
+        sendMessage(MSG_pushTestFail, error);
+    }
+
+    @Override
+    protected void handleMessage(Message msg, Activity activity, View rootView) {
+        switch (msg.what) {
+            case MSG_pushTestSuccess:
+
+                break;
+            case MSG_pushTestFail:
+                AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+                builder.setTitle("提示")
+                    .setMessage(msg.obj.toString())
+                    .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                            @Override
+                            public void onClick(DialogInterface dialog, int id) {
+                        dialog.dismiss();
+                        }
+                        }).create().show();
+                break;
+            default:
+                break;
+        }
     }
 }
