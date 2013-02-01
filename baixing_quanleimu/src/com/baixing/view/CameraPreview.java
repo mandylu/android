@@ -112,6 +112,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private void initParam(Parameters params, boolean isNewSdk) {
 		List<Integer> prevF = params.getSupportedPreviewFormats();
 		params.setPreviewFormat(prevF.get(0));
+
+		final int min = params.getMinExposureCompensation();
+		final int max = params.getMaxExposureCompensation();
+		if (min == 0 && max == 0) {
+			
+		} else {
+			int mid = (params.getMinExposureCompensation() + params.getMaxExposureCompensation() ) /2;
+			params.setExposureCompensation(mid);
+		}
+		
 		
     	if (isNewSdk) {
     		List<int[]>  r = params.getSupportedPreviewFpsRange();

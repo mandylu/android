@@ -131,6 +131,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			switch(msg.what) {
 			case MSG_PAUSE_ME:
 			{
+				isInitialized = false;
 				sensorMgr.unregisterListener(CameraActivity.this);
 				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
 				if (mPreview != null) {
@@ -514,7 +515,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	}
 
 	protected void onDestroy() {
-		this.handler = null; //Do not handle action any more.
+//		this.handler = null; //Do not handle action any more.
 		
 		for (Callback callback : this.callbacks) {
 			ImageUploader.getInstance().removeCallback(callback);

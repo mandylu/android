@@ -72,7 +72,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	{
 		super.onNewIntent(intent);
 		
-		if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+		if (Intent.ACTION_MAIN.equals(intent.getAction()) && GlobalDataManager.getInstance().getLastActiveClass() != null) {
 			Intent go = new Intent();
 			go.addCategory(Intent.CATEGORY_LAUNCHER);
 			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());

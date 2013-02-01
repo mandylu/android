@@ -65,7 +65,7 @@ public class ImageUploadCommand {
 			if(url == null) {
 				failReason = "url of json string in response is null";
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			failReason = e.getMessage();
 		}
