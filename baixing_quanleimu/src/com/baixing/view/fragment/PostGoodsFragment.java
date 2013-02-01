@@ -252,6 +252,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void onResume() {
 		super.onResume();
+		isActive = true;
 		postLBS.start();
 		if(!editMode) {
 			this.pv = PV.POST;
@@ -268,11 +269,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 	}
 	
+	private boolean isActive = false;
 	@Override
 	public void onPause() {
 		postLBS.stop();
 		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
+		isActive = false;
 		super.onPause();
 	}
 
@@ -995,10 +998,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				Toast.makeText(activity, message, 0).show();
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
-				resetData(!editMode);
-				Util.deleteDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
-				categoryEnglishName = "";
-				categoryName = "";
+				if(!editMode || (editMode && isActive)){
+					resetData(!editMode);
+					Util.deleteDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
+					categoryEnglishName = "";
+					categoryName = "";
+				}
+//				showPost();
 				if(!editMode){
 					showPost();
 					String lp = getArguments().getString("lastPost");
@@ -1023,6 +1029,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 					doClearUpImages();
 //					finishFragment();
 				}else{
+//					showPost();
 					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 				}
 			}else{
@@ -1072,6 +1079,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:			
 			showSimpleProgress();
+			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
+			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
 			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
