@@ -163,6 +163,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 		
 		goodsListLoader = new VadListLoader(getSearchParams(), this, null, new AdList());
+		goodsListLoader.setRuntime(true);
 	}
 	
 	@Override
@@ -301,7 +302,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
 			goodsListLoader.setNearby(true);
-			goodsListLoader.setRuntime(false);
+			goodsListLoader.setRuntime(true);
 		}
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -733,7 +734,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		{
 			goodsListLoader.setNearby(true);
 			goodsListLoader.setParams(getSearchParams());
-			goodsListLoader.setRuntime(false);
+			goodsListLoader.setRuntime(true);
 		}
 	}
 
