@@ -95,6 +95,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private static final int MSG_INIT_CAME = 7;
     private static final int MSG_CANCEL_STORE_PIC = 8;
     private static final int MSG_RESUME_ME = 9;
+    private static final int MSG_TAKEPIC_DELAY = 10;
+    
 
     /*
      * Internal message parameters: image uploading status.
@@ -129,6 +131,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		@Override
 		public void handleMessage(Message msg) {
 			switch(msg.what) {
+			case MSG_TAKEPIC_DELAY:
+			{
+				BooleanWrapper bW = (BooleanWrapper) msg.obj;
+				if (!bW.isTrue) {
+					mCamera.takePicture(null, null, mPicture);
+				}
+				break;
+			}
 			case MSG_PAUSE_ME:
 			{
 				isInitialized = false;
@@ -639,13 +649,20 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		Log.w(TAG, "click to take pic " + System.currentTimeMillis());
 		View capV = findViewById(R.id.cap);
 		capV.setEnabled(false);
+		final BooleanWrapper bWrapper = new BooleanWrapper();
 		mCamera.autoFocus(new AutoFocusCallback() {
 			@Override
 			public void onAutoFocus(boolean focused, Camera cam) {
+				bWrapper.isTrue = true;
+				
 				mCamera.takePicture(null, null, mPicture);
-				mCamera.cancelAutoFocus(); //Avoid deprecate autofocus notification. 
+				mCamera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
 			}
 		});
+		
+		//For some device, auto focus never return for unknown reason.
+		Message msg = handler.obtainMessage(MSG_TAKEPIC_DELAY, bWrapper);
+		handler.sendMessageDelayed(msg, 2000);
 	}
 
 	@Override
@@ -804,6 +821,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			e.printStackTrace();
 		}
 		Log.d(TAG, "came finalize");
+	}
+	
+	private class BooleanWrapper {
+		boolean isTrue;
 	}
 	
 }
