@@ -44,6 +44,7 @@ import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -52,6 +53,7 @@ import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
+import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService;
@@ -60,7 +62,7 @@ import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
-public class PostGoodsFragment extends BaseFragment implements OnClickListener{
+public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
 	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
@@ -113,6 +115,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			
 			if (photoList != null && photoList.size() > 0) {
 				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
+				for(int i = 0; i < photoList.size(); ++ i){
+					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
+				}				
 			}
 			else {
 				firstImage = null;
@@ -1256,5 +1261,27 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	public boolean hasGlobalTab() {
 		return false;
+	}
+
+	@Override
+	public void onUploadDone(String imagePath, String serverUrl,
+			Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUploading(String imagePath, Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUploadFail(String imagePath, Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
+		if(getView() != null && getView().getRootView() != null){
+			updateImageInfo(this.getView().getRootView());
+		}
 	}
 }
