@@ -157,22 +157,22 @@ public class PostNetworkService implements ApiListener{
 		if (rawData != null) {
 			try{
 				JSONObject jsonObject = new JSONObject(rawData);
-				boolean isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");
-				String id = jsonObject.getString("id");
 				JSONObject errorJson = jsonObject.getJSONObject("error");
 				int code = errorJson.getInt("code");
 				String message = errorJson.getString("message");
-				
-				PostResultData data = new PostResultData();
-				data.error = code;
-				data.message = message;
-				data.id = id;
-				data.isRegisteredUser = isRegisteredUser;
-				
-				sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
+				if(code == 0){
+					PostResultData data = new PostResultData();
+					data.error = code;
+					data.message = message;
+					data.id = jsonObject.getString("id");
+					data.isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");				
+					sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
+				}else{
+					sendMessage(PostCommonValues.MSG_POST_FAIL, message);
+				}
 				return;
 			}catch(JSONException e){
-				
+				sendMessage(PostCommonValues.MSG_POST_FAIL, "发布失败");
 			}
 		}
 	}

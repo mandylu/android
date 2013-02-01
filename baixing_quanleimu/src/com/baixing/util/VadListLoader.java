@@ -234,7 +234,7 @@ public class VadListLoader implements Serializable{
 				return 0;
 			}
 			else {
-				return list.getCount();
+				return list.getData().size();//getCount();
 			}
 		}
 		
