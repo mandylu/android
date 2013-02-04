@@ -1039,34 +1039,19 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				}
 			}else{
 				postResultFail(message);
-				if(code == 505){
-					AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
-	                bd.setTitle("")
-	                        .setMessage(message)
-	                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-	                        	@Override
-	                            public void onClick(DialogInterface dialog, int which) {
-	                                dialog.dismiss();
-	        						if(activity != null){
-	        							resetData(true);
-	        							showPost();
-	        							Bundle args = createArguments(null, null);
-	        							args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-	        							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-	        							intent.putExtras(args);
-	        							activity.sendBroadcast(intent);							
-	        						}
-	                            }
-	                        });
-	                AlertDialog alert = bd.create();
-	                alert.show();	
+				if(msg.obj != null){
+					handlePostFail((PostResultData)msg.obj);
 				}
 			}
 			break;
 		case PostCommonValues.MSG_POST_FAIL:
 			hideProgress();
 			if(msg.obj != null){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
+				if(msg.obj instanceof String){
+					Toast.makeText(activity, (String)msg.obj, 0).show();
+				}else if(msg.obj instanceof PostResultData){
+					handlePostFail((PostResultData)msg.obj);
+				}
 			}
 			break;
 		case PostCommonValues.MSG_POST_EXCEPTION:
@@ -1091,6 +1076,32 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation)msg.obj;
 			break;
+		}
+	}
+	
+	private void handlePostFail(PostResultData result){
+		if(result == null) return;
+		if(result.error == 505){
+			AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+	        bd.setTitle("")
+	                .setMessage(result.message)
+	                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+	                	@Override
+	                    public void onClick(DialogInterface dialog, int which) {
+	                        dialog.dismiss();
+							if(getActivity() != null){
+								resetData(true);
+								showPost();
+								Bundle args = createArguments(null, null);
+								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+								intent.putExtras(args);
+								getActivity().sendBroadcast(intent);							
+							}
+	                    }
+	                });
+	        AlertDialog alert = bd.create();
+	        alert.show();	
 		}
 	}
 
