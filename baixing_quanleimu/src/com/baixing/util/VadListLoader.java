@@ -14,7 +14,7 @@ import com.baixing.android.api.ApiListener;
 import com.baixing.android.api.ApiParams;
 import com.baixing.entity.AdList;
 
-public class VadListLoader implements Serializable{
+public class  VadListLoader implements Serializable{
 	
 	/**
 	 * 
