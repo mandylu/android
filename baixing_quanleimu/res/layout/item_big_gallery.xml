@@ -20,6 +20,6 @@
         android:maxHeight="720dip"
         android:maxWidth="480dip"
         android:scaleType="fitCenter"
-        android:background="@drawable/loading_210_black" />
+        android:src="@drawable/loading_210_black" />
 
 </RelativeLayout>
