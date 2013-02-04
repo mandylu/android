@@ -1281,7 +1281,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		// TODO Auto-generated method stub
 		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
 		if(getView() != null && getView().getRootView() != null){
-			updateImageInfo(this.getView().getRootView());
+			getActivity().runOnUiThread(new Runnable(){
+				@Override
+				public void run(){
+					updateImageInfo(getView().getRootView());
+				}
+			});
 		}
 	}
 }
