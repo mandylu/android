@@ -134,8 +134,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			case MSG_TAKEPIC_DELAY:
 			{
 				BooleanWrapper bW = (BooleanWrapper) msg.obj;
-				if (!bW.isTrue && mCamera != null) {
-					mCamera.takePicture(null, null, mPicture);
+				Camera cam = mCamera;
+				if (!bW.isTrue && cam != null) {
+					cam.takePicture(null, null, mPicture);
 				}
 				break;
 			}
@@ -157,8 +158,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			}
 			case MSG_CANCEL_STORE_PIC: {
 				updateCapState();
-				if (isInitialized) {
-					mCamera.startPreview();
+				Camera cam = mCamera;
+				if (isInitialized && cam != null) {
+					cam.startPreview();
 				}
 				break;
 			}
@@ -192,8 +194,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				break;
 			}
 			case MSG_PIC_TAKEN:
-				if (isInitialized) {
-					mCamera.startPreview();
+				Camera cam = mCamera;
+				if (isInitialized && cam != null) {
+					cam.startPreview();
 				}
 				break;
 			case MSG_SAVE_DONE:
@@ -595,8 +598,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	//An indicator to indicate if user.
 	private void autoFocusWhenOrienChange() {
 		try {
-			if (mCamera != null) {
-				mCamera.autoFocus(new Camera.AutoFocusCallback() {
+			Camera cam = mCamera;
+			if (cam != null) {
+				cam.autoFocus(new Camera.AutoFocusCallback() {
 					public void onAutoFocus(boolean success, Camera camera) {
 						//Do nothing.
 					}
@@ -654,9 +658,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			@Override
 			public void onAutoFocus(boolean focused, Camera cam) {
 				bWrapper.isTrue = true;
-				
-				mCamera.takePicture(null, null, mPicture);
-				mCamera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
+				Camera camera = mCamera;
+				if (camera != null) {
+					camera.takePicture(null, null, mPicture);
+					camera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
+				}
 			}
 		});
 		
