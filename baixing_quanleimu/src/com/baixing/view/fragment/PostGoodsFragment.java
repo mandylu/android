@@ -492,7 +492,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void postAction() {
-		if(this.postList == null || postList.size() == 0) {
+		if((this.postList == null || postList.size() == 0) 
+				&& ((this.categoryEnglishName != null && categoryEnglishName.length() > 0)
+						|| (this.categoryName != null && categoryName.length() > 0))){
 			return;
 		}
 		PostUtil.extractInputData(layout_txt, params);
