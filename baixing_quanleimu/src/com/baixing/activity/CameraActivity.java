@@ -3,6 +3,7 @@ package com.baixing.activity;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Vector;
 
 import android.annotation.SuppressLint;
 import android.app.Activity;
@@ -60,6 +61,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	private static final int REQ_PICK_GALLERY = 1;
 	
 	private static final int MAX_IMG_COUNT = 6;
+	private static final int MIN_PICTURE_TAKEN_GAP = 500;//user should wait at least 0.5 seconds before taking another picture. 
 	
 	private SensorManager sensorMgr;
 	private Sensor sensor;
@@ -69,15 +71,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private boolean isInitialized = false;
     boolean isFrontCam; //If current camera is facing or front camera.
     boolean isLandscapeMode;
+    private long lastClickTime = 0;
+    
 //    int cameraCurrentlyLocked;
     
     Orien currentOrien = Orien.DEFAULT;
     SensorEvent lastSensorEvent;
     
-    private ArrayList<BXThumbnail> originalList = new ArrayList<BXThumbnail>();
-    private ArrayList<BXThumbnail> deleteList = new ArrayList<BXThumbnail>();
-    private ArrayList<BXThumbnail> imageList = new ArrayList<BXThumbnail>();
-    private List<UploadingCallback> callbacks = new ArrayList<UploadingCallback>();
+    private Vector<BXThumbnail> originalList = new Vector<BXThumbnail>();
+    private Vector<BXThumbnail> deleteList = new Vector<BXThumbnail>();
+    private Vector<BXThumbnail> imageList = new Vector<BXThumbnail>();
+//    private List<UploadingCallback> callbacks = new ArrayList<UploadingCallback>();
 //    private ArrayList<String> imagePaths = new ArrayList<String>();
     
     private OnDeleteListener deleteListener;
@@ -90,7 +94,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private static final int MSG_ORIENTATION_CHANGE = 2;
     private static final int MSG_UPDATE_THUMBNAILS = 3;
     private static final int MSG_UPLOADING_STATUS_UPDATE = 4;
-//    private static final int MSG_FINISH_ME = 5;
     private static final int MSG_PAUSE_ME = 6;
     private static final int MSG_INIT_CAME = 7;
     private static final int MSG_CANCEL_STORE_PIC = 8;
@@ -123,7 +126,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void updateCapState() {
     	boolean enable = imageList.size() < MAX_IMG_COUNT; 
-		findViewById(R.id.cap).setEnabled(enable);
+		findViewById(R.id.cap).setEnabled(enable && isInitialized);
 		findViewById(R.id.pick_gallery).setEnabled(enable);
     }
     
@@ -134,8 +137,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			case MSG_TAKEPIC_DELAY:
 			{
 				BooleanWrapper bW = (BooleanWrapper) msg.obj;
+				if (bW.isTrue) {
+					return;
+				}
+				
 				Camera cam = mCamera;
-				if (!bW.isTrue && cam != null) {
+				if (cam != null) {
+					cam.cancelAutoFocus();
 					cam.takePicture(null, null, mPicture);
 				}
 				break;
@@ -182,6 +190,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				
 				isInitialized = true;
+				Log.d(TAG, "initialize camera done.");
 				updateCapState();
 				break;
 			}
@@ -211,10 +220,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
 				}
 				
-				findViewById(R.id.cap).setEnabled(true);
+				updateCapState();
+				
 				break;
 			case MSG_ORIENTATION_CHANGE:
-				if (isInitialized) {
+				View capV = findViewById(R.id.cap);
+				if (isInitialized && capV != null && capV.isEnabled()) { //If capture button is disabled, do not need auto focus. 
 					autoFocusWhenOrienChange();
 				}
 				break;
@@ -379,7 +390,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				img.setImageBitmap(thumbnail.getThumbnail());
 			}
 			UploadingCallback cbk = new UploadingCallback(img);
-			callbacks.add(cbk);
+//			callbacks.add(cbk);
+			imageRoot.setTag(cbk);
 			ImageUploader.getInstance().registerCallback(thumbnail.getLocalPath(), cbk);
 			
 			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
@@ -396,8 +408,21 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     class UploadingCallback implements ImageUploader.Callback {
     	WeakReference<ImageView> viewRef;
+    	private boolean disable = false;
     	UploadingCallback(ImageView v) {
     		viewRef = new WeakReference<ImageView>(v);
+    	}
+    	
+    	public void disable() {
+    		disable = true;
+    		
+//    		ImageView img = viewRef.get();
+//			if (img != null && handler != null) { //When activity is destroyed, handler will be null.
+//				Message msg = handler.obtainMessage();
+//				msg.what = MSG_CANCEL_UPLOAD;
+//				msg.obj = img;
+//				handler.sendMessage(msg);
+//			}
     	}
     	
 		@Override
@@ -423,6 +448,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 						t.setThumbnail(thumbnail);
 					}
 				}
+			}
+			
+			if (disable) {
+				return;
 			}
 			
 			ImageView img = viewRef.get();
@@ -530,10 +559,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	protected void onDestroy() {
 //		this.handler = null; //Do not handle action any more.
 		
-		for (Callback callback : this.callbacks) {
-			ImageUploader.getInstance().removeCallback(callback);
-		}
-		this.callbacks.clear();
+//		for (Callback callback : this.callbacks) {
+//			ImageUploader.getInstance().removeCallback(callback);
+//		}
+//		this.callbacks.clear();
 		
 		super.onDestroy();
 		Log.d(TAG, "cam destroyed!");
@@ -650,25 +679,47 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	}
 	
 	public void takePic() {
-		Log.w(TAG, "click to take pic " + System.currentTimeMillis());
+		long currentTime = System.currentTimeMillis();
+		Log.w(TAG, "click to take pic " + currentTime);
+		if (!isInitialized) {
+			return;
+		}
+		
+		final long gap = currentTime - lastClickTime;
+		boolean isProcessing = lastClickTime != 0 &&  (gap > 0 ) && gap < MIN_PICTURE_TAKEN_GAP;
+		lastClickTime = currentTime;
+		if (isProcessing) {
+			return;
+		}
+		
 		View capV = findViewById(R.id.cap);
 		capV.setEnabled(false);
+		
 		final BooleanWrapper bWrapper = new BooleanWrapper();
-		mCamera.autoFocus(new AutoFocusCallback() {
-			@Override
-			public void onAutoFocus(boolean focused, Camera cam) {
-				bWrapper.isTrue = true;
-				Camera camera = mCamera;
-				if (camera != null) {
-					camera.takePicture(null, null, mPicture);
-					camera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
+		try {
+			mCamera.autoFocus(new AutoFocusCallback() {
+				@Override
+				public void onAutoFocus(boolean focused, Camera cam) {
+					if (bWrapper.isTrue) {
+						return;
+					}
+					bWrapper.isTrue = true;
+					Camera camera = mCamera;
+					if (camera != null) {
+						camera.takePicture(null, null, mPicture);
+						camera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
+					}
 				}
-			}
-		});
+			});
+		} catch (Throwable t) {
+			//For HTC auto focus fail issue.
+			Log.w(TAG, "auto focus exception : " + t.getMessage());
+		}
+		
 		
 		//For some device, auto focus never return for unknown reason.
 		Message msg = handler.obtainMessage(MSG_TAKEPIC_DELAY, bWrapper);
-		handler.sendMessageDelayed(msg, 2000);
+		handler.sendMessageDelayed(msg, 1500);
 	}
 
 	@Override
@@ -721,11 +772,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		@Override
 		public void onClick(View v) {
 			ViewGroup vp = (ViewGroup) v.getParent();//(ViewGroup) findViewById(R.id.result_parent);
-//			vp.removeView((View) v.getParent());
+			UploadingCallback callback = (UploadingCallback) vp.getTag();
+			if (callback == null) {
+				return;
+			}
+			callback.disable();
+			ImageUploader.getInstance().removeCallback(callback);
 			vp.setTag(null);
 			
 			ImageView img = (ImageView) vp.findViewById(R.id.result_image);
 			img.setImageResource(R.drawable.bg_transparent);
+			vp.findViewById(R.id.loading_status).setVisibility(View.GONE);
 			BXThumbnail thumbnail = (BXThumbnail) v.getTag();
 			deleteImageUri(thumbnail);
 			v.setVisibility(View.INVISIBLE);
@@ -734,6 +791,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			//Append this view to the tail of the child list.
 			ViewGroup imgContainer = (ViewGroup) vp.getParent();
 			imgContainer.removeView(vp);
+			imgContainer.destroyDrawingCache();//Clear the drawing status.
 			imgContainer.addView(vp);
 		}
 	}
@@ -765,8 +823,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		return t;
 	}
 	
-	private void postAppendData(Intent data) {
-		
+	private void postAppendData(final Intent data) {
 		AsyncTask<Uri, Integer, BXThumbnail> task = new AsyncTask<Uri, Integer, BXThumbnail>() {
 
 			@Override
@@ -790,7 +847,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		task.execute(data.getData());
 	}
 	
-	private void postAppendPhoto(byte[] cameraData) {
+	private void postAppendPhoto(final byte[] cameraData) {
 		AsyncTask<byte[], Integer, BXThumbnail> task = new AsyncTask<byte[], Integer, BXThumbnail>() {
 
 			@Override
