@@ -72,6 +72,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     boolean isFrontCam; //If current camera is facing or front camera.
     boolean isLandscapeMode;
     private long lastClickTime = 0;
+    private boolean isCameraLock = false;
     
 //    int cameraCurrentlyLocked;
     
@@ -142,7 +143,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				
 				Camera cam = mCamera;
-				if (cam != null) {
+				if (cam != null && !isCameraLock) {
 					cam.cancelAutoFocus();
 					cam.takePicture(null, null, mPicture);
 				}
@@ -190,6 +191,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				}
 				
 				isInitialized = true;
+				isCameraLock = false;
 				Log.d(TAG, "initialize camera done.");
 				updateCapState();
 				break;
@@ -205,8 +207,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			case MSG_PIC_TAKEN:
 				Camera cam = mCamera;
 				if (isInitialized && cam != null) {
+					Log.d(TAG, "try start another preview!");
 					cam.startPreview();
 				}
+				Log.d(TAG, "start another preview succed!");
 				break;
 			case MSG_SAVE_DONE:
 				BXThumbnail newPicPair = (BXThumbnail)  msg.obj;
@@ -244,6 +248,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				
 			case MSG_UPLOADING_STATUS_UPDATE:
 				Pair<Bitmap, ImageView> p = (Pair<Bitmap, ImageView>) msg.obj;
+				
+				if (p.second.getParent() == null || ((View)p.second.getParent()).getTag() == null) {
+					return;
+				}
+				
+				Log.w(TAG, "start to update view " + p.second.getParent().hashCode());
 				if (p.second != null) {
 					switch (msg.arg1) {
 					case STATE_UPLOADING:
@@ -340,17 +350,20 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private void deleteImageUri(BXThumbnail t) {
     	imageList.remove(t);
     	deleteList.add(t);
+    	if (!originalList.contains(t.getLocalPath())) {
+    		ImageUploader.getInstance().cancel(t.getLocalPath());
+    	}
     	updateCapState();
     }
     
     private ViewGroup findFirstBlankImage(ViewGroup root) {
-    	final int count = root.getChildCount();
-    	for (int i=0; i<count; i++) {
-    		ViewGroup child = (ViewGroup) root.getChildAt(i);
-    		if (child.getTag() == null) {
-    			return child;
-    		}
-    	}
+		final int count = root.getChildCount();
+		for (int i=0; i<count; i++) {
+			ViewGroup child = (ViewGroup) root.getChildAt(i);
+			if (child.getTag() == null) {
+				return child;
+			}
+		}
     	
     	return null;
     }
@@ -646,6 +659,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	    @Override
 	    public void onPictureTaken(byte[] data, Camera camera) {
 
+	    	isCameraLock = false;
 	    	if (!Util.isExternalStorageWriteable()) {
 	    		Toast.makeText(CameraActivity.this, "请检查SD卡状态", Toast.LENGTH_SHORT).show();
 	    		handler.sendEmptyMessage(MSG_CANCEL_STORE_PIC);
@@ -654,7 +668,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	    	
 	    	postAppendPhoto(data);
 	        
-	        handler.sendEmptyMessage(MSG_PIC_TAKEN);
+//	        handler.sendEmptyMessage(MSG_PIC_TAKEN);
 	    }
 	};
 	
@@ -694,9 +708,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		
 		View capV = findViewById(R.id.cap);
 		capV.setEnabled(false);
-		
+		Log.d(TAG, "autofocus before take pitcure");
 		final BooleanWrapper bWrapper = new BooleanWrapper();
 		try {
+			if (isCameraLock) {
+				return;
+			}
+			isCameraLock = true;
 			mCamera.autoFocus(new AutoFocusCallback() {
 				@Override
 				public void onAutoFocus(boolean focused, Camera cam) {
@@ -706,16 +724,18 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					bWrapper.isTrue = true;
 					Camera camera = mCamera;
 					if (camera != null) {
+						Log.d(TAG, "start invoke take picture");
 						camera.takePicture(null, null, mPicture);
+						Log.d(TAG, "take picture invoke return");
 						camera.cancelAutoFocus(); //Avoid deprecate auto-focus notification. 
 					}
 				}
 			});
 		} catch (Throwable t) {
+			isCameraLock = false;
 			//For HTC auto focus fail issue.
 			Log.w(TAG, "auto focus exception : " + t.getMessage());
 		}
-		
 		
 		//For some device, auto focus never return for unknown reason.
 		Message msg = handler.obtainMessage(MSG_TAKEPIC_DELAY, bWrapper);
@@ -790,9 +810,15 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			
 			//Append this view to the tail of the child list.
 			ViewGroup imgContainer = (ViewGroup) vp.getParent();
-			imgContainer.removeView(vp);
+			vp.setVisibility(View.GONE);
 			imgContainer.destroyDrawingCache();//Clear the drawing status.
-			imgContainer.addView(vp);
+			Log.e(TAG, "following view will be remove " + vp.hashCode());
+			imgContainer.removeView(vp);
+			
+			LayoutInflater inflator = LayoutInflater.from(v.getContext());
+			View newV = inflator.inflate(R.layout.single_image_layout, null);
+			imgContainer.addView(newV);
+			Log.d(TAG, "following view will be add " + newV.hashCode());
 		}
 	}
 
@@ -824,6 +850,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	}
 	
 	private void postAppendData(final Intent data) {
+		
 		AsyncTask<Uri, Integer, BXThumbnail> task = new AsyncTask<Uri, Integer, BXThumbnail>() {
 
 			@Override
@@ -848,6 +875,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	}
 	
 	private void postAppendPhoto(final byte[] cameraData) {
+		
+		handler.sendEmptyMessage(MSG_PIC_TAKEN);
 		AsyncTask<byte[], Integer, BXThumbnail> task = new AsyncTask<byte[], Integer, BXThumbnail>() {
 
 			@Override

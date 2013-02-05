@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
+import com.baixing.entity.BXThumbnail;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.imageCache.ImageLoaderManager.DownloadCallback;
 import com.baixing.util.BitmapUtils;
