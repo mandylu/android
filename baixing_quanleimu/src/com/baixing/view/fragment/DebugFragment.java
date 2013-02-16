@@ -16,6 +16,7 @@ import com.baixing.android.api.ApiError;
 import com.baixing.android.api.ApiParams;
 import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.android.api.cmd.HttpGetCommand;
+import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.broadcast.XMPPManager;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Communication;
@@ -30,6 +31,10 @@ import com.quanleimu.activity.R;
  */
 public class DebugFragment extends BaseFragment implements View.OnClickListener, BaseCommand.Callback {
     private Button hostBtn;
+    private EditText pushActionEt;
+    private EditText pushTitleEt;
+    private EditText pushDataEt;
+
     private final int MSG_pushTestSuccess = 101;
     private final int MSG_pushTestFail = 102;
 
@@ -51,15 +56,19 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
         hostBtn.setOnClickListener(this);
         hostBtn.setText(ApiClient.host);
 
-        debugLayout.findViewById(R.id.pushTestBtn).setOnClickListener(this);
+        pushActionEt = (EditText) debugLayout.findViewById(R.id.pushActionEt);
+        pushTitleEt = (EditText) debugLayout.findViewById(R.id.pushTitleEt);
+        pushDataEt = (EditText) debugLayout.findViewById(R.id.pushDataEt);
 
-        TextView xmppTv = (TextView)debugLayout.findViewById(R.id.xmppConTv);
+        Button pushTestBtn = (Button) debugLayout.findViewById(R.id.pushTestBtn);
+        pushTestBtn.setOnClickListener(this);
+
         if (XMPPManager.getInstance(this.getAppContext()).isConnected()) {
-            xmppTv.setText("XMPP已连通");
-            xmppTv.setTextColor(Color.GREEN);
+            pushTestBtn.setText("push");
+            pushTestBtn.setTextColor(Color.GREEN);
         } else {
-            xmppTv.setText("XMPP无法连接");
-            xmppTv.setTextColor(Color.RED);
+            pushTestBtn.setText("XMPP无法连接");
+            pushTestBtn.setTextColor(Color.RED);
         }
 
         ToggleButton showPushBtn = (ToggleButton)debugLayout.findViewById(R.id.showPushBtn);
@@ -121,10 +130,12 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
     }
 
     private void pushTestBtnClicked() {
-        Toast.makeText(getActivity(), "sssssss", 3);
         ApiParams params = new ApiParams();
         params.addParam("type", "push");
-        HttpGetCommand.createCommand(1, "debug", params).execute(this);
+        params.addParam("action", pushActionEt.getText().toString());
+        params.addParam("title", pushTitleEt.getText().toString());
+        params.addParam("data", "{" + pushDataEt.getText().toString() + "}" );
+        HttpPostCommand.createCommand(1, "debug", params).execute(this);
     }
 
 
@@ -142,12 +153,12 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
     protected void handleMessage(Message msg, Activity activity, View rootView) {
         switch (msg.what) {
             case MSG_pushTestSuccess:
-
-                break;
+                Toast.makeText(getActivity(), msg.obj.toString(), 3);
+//                break;
             case MSG_pushTestFail:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
                 builder.setTitle("提示")
-                    .setMessage(msg.obj.toString())
+                    .setMessage( DebugFragment.decode2( msg.obj.toString() ) )
                     .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
                             @Override
                             public void onClick(DialogInterface dialog, int id) {
@@ -158,5 +169,35 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
             default:
                 break;
         }
+    }
+
+    /*
+     * /uXXXX -> 中文
+     */
+    public static String decode2(String s) {
+        StringBuilder sb = new StringBuilder(s.length());
+        char[] chars = s.toCharArray();
+        for (int i = 0; i < chars.length; i++) {
+            char c = chars[i];
+            if (c == '\\' && chars[i + 1] == 'u') {
+                char cc = 0;
+                for (int j = 0; j < 4; j++) {
+                    char ch = Character.toLowerCase(chars[i + 2 + j]);
+                    if ('0' <= ch && ch <= '9' || 'a' <= ch && ch <= 'f') {
+                        cc |= (Character.digit(ch, 16) << (3 - j) * 4);
+                    } else {
+                        cc = 0;
+                        break;
+                    }
+                }
+                if (cc > 0) {
+                    i += 5;
+                    sb.append(cc);
+                    continue;
+                }
+            }
+            sb.append(c);
+        }
+        return sb.toString();
     }
 }

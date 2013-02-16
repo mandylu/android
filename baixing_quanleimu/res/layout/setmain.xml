@@ -235,9 +235,9 @@
 	        <Button
 			        android:layout_width="100dp"
 			        android:layout_height="48dp"
-			        android:text="debug"
 			        android:id="@+id/debugBtn" android:layout_alignParentLeft="true"
-			        android:layout_alignParentTop="true" android:layout_gravity="right" android:visibility="invisible"/>
+			        android:layout_alignParentTop="true" android:layout_gravity="right"
+			        android:background="@android:color/transparent" />
         </LinearLayout>
     </ScrollView>
 

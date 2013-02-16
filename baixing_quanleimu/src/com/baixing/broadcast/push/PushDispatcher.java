@@ -1,10 +1,13 @@
 //liuchong@baixing.com
 package com.baixing.broadcast.push;
 
+import android.app.ActivityManager;
 import android.app.AlertDialog;
 import android.app.Service;
+import android.content.ComponentName;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.util.Log;
 import android.widget.Toast;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
@@ -36,8 +39,9 @@ public class PushDispatcher {
 	
 	public void dispatch(String msgJson)
 	{
+        Log.d("push", msgJson);
         Boolean showDebugPush = (Boolean) Util.loadDataFromLocate(context, "showDebugPush", Boolean.class);
-        if (showDebugPush) {
+        if (showDebugPush != null && showDebugPush) {
             ViewUtil.putOrUpdateNotification(context,
                     NotificationIds.NOTIFICATION_ID_DEBUG,
                     CommonIntentAction.ACTION_NOTIFICATION_DEBUG,
