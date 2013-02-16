@@ -138,6 +138,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 		TencentOpenAPI2.sendStore(mActivity, mAccessToken, mAppid, mOpenId, "_self", bundle, new Callback() {
 			@Override
 			public void onSuccess(final Object obj) {
+				SharingCenter.trackShareResult("qzone", true, null);
 				Context ctx = GlobalDataManager.getInstance().getApplicationContext();
 				if(ctx != null){
 					Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_SUCCEED);
@@ -155,6 +156,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 			   		
 			@Override
 			public void onFail(final int ret, final String msg) {
+				SharingCenter.trackShareResult("qzone", false, "code:" + ret + " msg:" + msg);
 				mActivity.runOnUiThread(new Runnable() {
 					@Override
 					public void run() {
@@ -166,6 +168,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 			   
 			@Override
 			public void onCancel(int flag) {
+				SharingCenter.trackShareResult("qzone", false, "cancel_flag:" + flag);
 			}
 		}, null);
 		Context ctx = GlobalDataManager.getInstance().getApplicationContext();
@@ -238,7 +241,6 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 				TencentOpenAPI.openid(access_token, new Callback() {
 
 					public void onCancel(int flag) {
-						SharingCenter.trackShareResult("qzone", false, "cancel_flag" + flag);
 					}
 
 					@Override
@@ -253,7 +255,6 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 								}
 							}
 						});
-						SharingCenter.trackShareResult("qzone", true, null);
 					}
 
 					@Override
@@ -264,7 +265,6 @@ public class QZoneSharingManager  extends BaseSharingManager implements Callback
 								Toast.makeText(mActivity.getApplicationContext(), msg, 0);
 							}
 						});
-						SharingCenter.trackShareResult("qzone", false, "code:" + ret + " msg:" + msg);
 					}
 				});
 			}

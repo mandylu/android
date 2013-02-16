@@ -29,6 +29,7 @@ public class SharingCenter{
 
 	public static void share2Weibo(BaseActivity activity, Ad ad){
 		release();
+		trackShareStart("weibo");
 //		sm = new WeiboSharingManager(activity);
 		sm = new WeiboSSOSharingManager(activity);
 		registerReceiver(ad);
@@ -37,6 +38,7 @@ public class SharingCenter{
 	
 	public static void share2Weixin(BaseActivity activity, Ad ad){
 		release();
+		trackShareStart("weixin");
 		sm = new WeixinSharingManager(activity);
 		registerReceiver(ad);
 		sm.share(ad);
@@ -44,6 +46,7 @@ public class SharingCenter{
 	
 	public static void share2QZone(BaseActivity activity, Ad ad){
 		release();
+		trackShareStart("qzone");
 		sm = new QZoneSharingManager(activity);
 		registerReceiver(ad);
 		sm.share(ad);
@@ -92,5 +95,14 @@ public class SharingCenter{
 				.append(TrackConfig.TrackMobile.Key.RESULT, success ? TrackConfig.TrackMobile.Value.YES : TrackConfig.TrackMobile.Value.NO);
 		if(!success) e.append(TrackConfig.TrackMobile.Key.FAIL_REASON, failReason);
 		e.end();
+	}
+
+	public static void trackShareStart(String channel) {
+		Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE_START)
+				.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
+				.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, channel)
+				.append(TrackConfig.TrackMobile.Key.ADID, SharingCenter.adId)
+				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, SharingCenter.categoryName)
+				.end();
 	}
 }
