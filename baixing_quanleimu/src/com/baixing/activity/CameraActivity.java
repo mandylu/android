@@ -486,7 +486,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 //		if (VERSION.SDK_INT <= 10) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
-			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
+//			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			setContentView(R.layout.image_selector_land);
 //		}
 //		else

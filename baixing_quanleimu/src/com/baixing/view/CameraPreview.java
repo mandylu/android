@@ -123,6 +123,16 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 			params.setExposureCompensation(mid);
 		}
 		
+//		List<String> flashModes = params.getSupportedFlashModes();
+//		if (flashModes != null) {
+//			for (String mode : flashModes) {
+//				if (Parameters.FLASH_MODE_AUTO.equals(mode)) {
+//					params.setFlashMode(mode);
+//					break;
+//				}
+//			}
+//		}
+		
 		
     	if (isNewSdk) {
     		List<int[]>  r = params.getSupportedPreviewFpsRange();
