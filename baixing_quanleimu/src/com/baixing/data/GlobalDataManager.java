@@ -454,7 +454,7 @@ public class GlobalDataManager implements Observer{
 				version = Util.getVersion(androidContext);
 				PackageManager packageManager = androidContext.getPackageManager();
 				ApplicationInfo ai = packageManager.getApplicationInfo(androidContext.getPackageName(), PackageManager.GET_META_DATA);
-				channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+				channelId = String.valueOf(ai.metaData.get("UMENG_CHANNEL"));
 			}catch(Exception e){
 				e.printStackTrace();
 			}
