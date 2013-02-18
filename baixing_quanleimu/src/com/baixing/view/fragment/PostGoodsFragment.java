@@ -924,6 +924,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			
 			this.appendBeanToLayout(postBean);
 		}
+		
+		
+	}
+	
+	private void showInputMethod() {
+		final View root = this.getView();
+		if (root != null) {
+			root.postDelayed(new Runnable() {
+				public void run() {
+					EditText ed = (EditText) root.findViewById(R.id.description_input);
+					if (ed != null && ed.getText().length() == 0) {
+						ed.requestFocus();
+						InputMethodManager mgr = (InputMethodManager) root.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+						mgr.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
+					}
+				}
+			}, 200);
+		}
 	}
 
 	private void updateImageInfo(View rootView) {
@@ -952,7 +970,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void handleMessage(Message msg, final Activity activity, View rootView) {
+	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
 		hideProgress();
 		
 		switch (msg.what) {
@@ -963,6 +981,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}		
 		case MSG_UPDATE_IMAGE_LIST:{
 			updateImageInfo(rootView);
+			
+			showInputMethod();
+			
 			break;
 		}
 		case PostCommonValues.MSG_GET_META_SUCCEED:{
