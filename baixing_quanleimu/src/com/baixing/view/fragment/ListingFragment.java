@@ -163,6 +163,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 		
 		goodsListLoader = new VadListLoader(getSearchParams(), this, null, new AdList());
+		goodsListLoader.setRuntime(true);
 	}
 	
 	@Override
@@ -201,8 +202,10 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			VadListAdapter adapter = new VadListAdapter(getActivity(), new ArrayList<Ad>(), AdViewHistory.getInstance());
 			lvGoodsList.setAdapter(adapter);
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
-			mRefreshUsingLocal = true;
-			lvGoodsList.fireRefresh();
+			if (!isBack){
+				mRefreshUsingLocal = true;
+				lvGoodsList.fireRefresh();
+			}
 		}
 		
 		
@@ -299,7 +302,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
 			goodsListLoader.setNearby(true);
-			goodsListLoader.setRuntime(false);
+			goodsListLoader.setRuntime(true);
 		}
 		
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {
@@ -582,6 +585,13 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		
 	}
 	
+	private boolean isCurrentCity() {
+		String geoCity = GlobalDataManager.getInstance().getLocationManager().getCurrentCity();
+		String selectCity = GlobalDataManager.getInstance().getCityName();
+		
+		return geoCity != null && geoCity.contains(selectCity);
+	}
+	
 	public void showFilterBar(View root, final List<Filterss> fss)
 	{
 		View[] actionViews = findAllFilterView();
@@ -620,7 +630,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					cItem.id = PostParamsHolder.INVALID_VALUE; //FIXME:  this is special for current location.
 					cItem.txt = "附近500米";
 					
-					CustomizeItem[] cs = isLocation && curLocation != null ? new CustomizeItem[] {cItem} : null; 
+					CustomizeItem[] cs = isLocation && curLocation != null && isCurrentCity() ? new CustomizeItem[] {cItem} : null; 
 
 					Tracker.getInstance().event(BxEvent.LISTING_TOPFILTEROPEN)
 							.append(Key.SECONDCATENAME, categoryEnglishName)
@@ -724,7 +734,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		{
 			goodsListLoader.setNearby(true);
 			goodsListLoader.setParams(getSearchParams());
-			goodsListLoader.setRuntime(false);
+			goodsListLoader.setRuntime(true);
 		}
 	}
 

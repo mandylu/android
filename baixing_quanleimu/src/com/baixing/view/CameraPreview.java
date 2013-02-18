@@ -25,6 +25,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public static final String TAG	= "CameraPreview";
     private SurfaceHolder mHolder;
     private Camera mCamera;
+    private int screenRotation;
 
     public CameraPreview(Context context) {
         super(context);
@@ -45,12 +46,12 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 
     public void surfaceCreated(SurfaceHolder holder) {
         // The Surface has been created, now tell the camera where to draw the preview.
-        try {
-            mCamera.setPreviewDisplay(holder);
-            mCamera.startPreview();
-        } catch (IOException e) {
-            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
-        }
+//        try {
+//            mCamera.setPreviewDisplay(holder);
+//            mCamera.startPreview();
+//        } catch (IOException e) {
+//            Log.d(TAG, "Error setting camera preview: " + e.getMessage());
+//        }
     }
 
     public void surfaceDestroyed(SurfaceHolder holder) {
@@ -76,25 +77,27 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
-        final boolean isNewSdk = VERSION.SDK_INT > 8;
+        final boolean isNewSdk = VERSION.SDK_INT > 10;
         
-        if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
-        	try {
-        		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
-        	}
-        	catch (Throwable t) {
-        		//Ignor this exception.
-        	}
-        }
         
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
             
+//            if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
+//            	try {
+//            		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
+//            	}
+//            	catch (Throwable t) {
+//            		//Ignor this exception.
+//            	}
+//            }
+            
             Parameters param = mCamera.getParameters();
             param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 
             initParam(param, isNewSdk);
-            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), isNewSdk ? h : w, isNewSdk ? w : h);
+//            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), isNewSdk ? h : w, isNewSdk ? w : h);
+            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), w, h);
             if (size != null) {
             	param.setPreviewSize(size.width, size.height);
             }
@@ -110,6 +113,26 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
     private void initParam(Parameters params, boolean isNewSdk) {
 		List<Integer> prevF = params.getSupportedPreviewFormats();
 		params.setPreviewFormat(prevF.get(0));
+
+		final int min = params.getMinExposureCompensation();
+		final int max = params.getMaxExposureCompensation();
+		if (min == 0 && max == 0) {
+			
+		} else {
+			int mid = (params.getMinExposureCompensation() + params.getMaxExposureCompensation() ) /2;
+			params.setExposureCompensation(mid);
+		}
+		
+//		List<String> flashModes = params.getSupportedFlashModes();
+//		if (flashModes != null) {
+//			for (String mode : flashModes) {
+//				if (Parameters.FLASH_MODE_AUTO.equals(mode)) {
+//					params.setFlashMode(mode);
+//					break;
+//				}
+//			}
+//		}
+		
 		
     	if (isNewSdk) {
     		List<int[]>  r = params.getSupportedPreviewFpsRange();
@@ -168,4 +191,5 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         }
         return optimalSize;
     }
+    
 }

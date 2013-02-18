@@ -4,6 +4,7 @@ package com.baixing.util;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
@@ -91,7 +92,18 @@ public class ViewUtil {
 
 		String contentTitle = title == null ? "" : title;
 		String contentText = msg;
-
+		
+		Notification notification = new Notification(icon, tickerText,
+				System.currentTimeMillis());
+		notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
+		if (isPersistant){
+			notification.flags |= Notification.FLAG_NO_CLEAR;
+		}
+		else{
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		}
+		
 		Intent notificationIntent = notificationType == null ? new Intent() : new Intent(notificationType);
 		if(notificationType.equals(Intent.ACTION_VIEW)){
 			if(extras != null){
@@ -102,7 +114,6 @@ public class ViewUtil {
 					String url = obj.getString("url");
 					notificationIntent.setData(Uri.parse(url));
 					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
-					Notification notification = new Notification(icon, tickerText, System.currentTimeMillis());
 					notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
 					mNotificationManager.notify(notificationId, notification);
 					return;
@@ -121,19 +132,6 @@ public class ViewUtil {
 		}
 		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		Notification notification = new Notification(icon, tickerText,
-				System.currentTimeMillis());
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.defaults |= Notification.DEFAULT_VIBRATE;
-		if (isPersistant)
-		{
-			notification.flags |= Notification.FLAG_NO_CLEAR;
-		}
-		else
-		{
-			notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		}
 
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
@@ -211,4 +209,12 @@ public class ViewUtil {
 		return thumbnail;
 	}
 	
+	static public void showToast(final Activity activity, final String msg){
+		activity.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				Toast.makeText(activity, msg, 0).show();
+			}
+		});
+	}
 }

@@ -2,13 +2,14 @@ package com.baixing.sharing;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.sharing.WeiboSSOSharingManager.WeiboAccessTokenWrapper;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.Weibo;
-import com.weibo.sdk.android.WeiboAuthListener;
-import com.weibo.sdk.android.WeiboDialogError;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.WeiboParameters;
-import com.weibo.sdk.android.sso.SsoHandler;
+import com.baixing.sharing.weibo.Oauth2AccessToken;
+import com.baixing.sharing.weibo.Weibo;
+import com.baixing.sharing.weibo.WeiboAuthListener;
+import com.baixing.sharing.weibo.WeiboDialogError;
+import com.baixing.sharing.weibo.WeiboException;
+import com.baixing.sharing.weibo.WeiboParameters;
+import com.baixing.util.ViewUtil;
+//import com.weibo.sdk.android.sso.SsoHandler;
 
 import android.app.Activity;
 import android.content.Intent;
@@ -17,6 +18,8 @@ import android.webkit.CookieManager;
 import android.webkit.CookieSyncManager;
 import android.webkit.WebSettings;
 import android.webkit.WebView;
+
+import com.baixing.sharing.weibo.*;
 
 public class WeiboManagerActivity extends Activity{
 	private SsoHandler mSsoHandler = null;
@@ -37,7 +40,7 @@ public class WeiboManagerActivity extends Activity{
 			@Override
 			public void onCancel() {
 				// TODO Auto-generated method stub
-				
+				finish();
 			}
 
 			@Override
@@ -59,13 +62,13 @@ public class WeiboManagerActivity extends Activity{
 			@Override
 			public void onError(WeiboDialogError arg0) {
 				// TODO Auto-generated method stub
-				
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
 			}
 
 			@Override
 			public void onWeiboException(WeiboException arg0) {
 				// TODO Auto-generated method stub
-				
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
 			}
         	
         });

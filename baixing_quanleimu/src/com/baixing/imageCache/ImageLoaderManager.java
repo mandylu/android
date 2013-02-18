@@ -60,9 +60,9 @@ public class ImageLoaderManager{
 		WeakReference<Bitmap> bitmap = null;//ImageManager.userDefualtHead;
 		
 		//1. try to get from memory cache
-		if(ImageCacheManager.getInstance().contains(url)){
-			bitmap = ImageCacheManager.getInstance().getFromCache(url);
-		}
+//		if(ImageCacheManager.getInstance().contains(url)){
+		bitmap = ImageCacheManager.getInstance().getFromCache(url);
+//		}
 		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
 		}else{//else, try try to load from disk cache
@@ -231,8 +231,12 @@ public class ImageLoaderManager{
 						bundle.putSerializable(EXTRA_IMG_URL, url);
 						bundle.putParcelable(EXTRA_IMG, bitmap.get());
 						handler.sendMessage(msg);
-					}else{						
-						notifyFail(url);
+					}else{
+						Message msg=handler.obtainMessage(MESSAGE_FAIL);
+						Bundle bundle = msg.getData();
+						bundle.putSerializable(EXTRA_IMG_URL, url);
+						handler.sendMessage(msg);						
+//						notifyFail(url);
 					}
 				}
 			}
@@ -404,19 +408,20 @@ public class ImageLoaderManager{
 
 			@Override
 			public void fail(String url) {
-				if(url.equals(view.getTag().toString()) && defaultBmp != null && !inFailStatus)
+				if(url.equals(view.getTag().toString()) && defaultBmp != null && defaultBmp.get() != null && !inFailStatus)
 				{
 					//method #fail(String url) maybe not called on main thread(UI thread), we should make sure the UI update on main thread
-					view.postDelayed(new Runnable() {
-						public void run() {
+//					view.postDelayed(new Runnable() {
+//						public void run() {
 							if(view instanceof ImageView){
 								((ImageView)view).setImageBitmap(defaultBmp.get());//(defaultImgRes);
+								view.invalidate();
 							}else{
 								BitmapDrawable bd = new BitmapDrawable(defaultBmp.get());
 								view.setBackgroundDrawable(bd);//setBackgroundResource(defaultImgRes);
 							}
-						}
-					}, 100);
+//						}
+//					}, 100);
 					inFailStatus = true;
 				}
 			}

@@ -20,7 +20,7 @@
             android:layout_alignParentLeft="true"
             android:layout_alignParentTop="true"
             android:background="#F9991E"
-            android:textSize="@dimen/font_medium"
+            android:textSize="@dimen/font_small"
             android:textColor="#FFFFFF"
             android:gravity="center"
             android:visibility="invisible"

@@ -8,6 +8,7 @@ import java.util.List;
 
 import org.jivesoftware.smack.util.StringUtils;
 
+import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
@@ -332,7 +333,11 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		String title = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE);
 		String description = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DESCRIPTION);
 		final String userNick = TextUtils.isEmpty(detail.getValueByKey("userNick")) ? "匿名" : detail.getValueByKey("userNick");
-		String userInfo ="发布人：" + userNick + "(" + detail.getMetaValueByKey("发布人") + ")";
+		String userInfo ="发布人：" + userNick;// + "(" + detail.getMetaValueByKey("发布人") + ")";
+		String faburen = detail.getMetaValueByKey("发布人");
+		if (!TextUtils.isEmpty(faburen)) {
+			userInfo += "(" + faburen + ")";
+		}
 		
 		if ((title == null || title.length() == 0) && description != null)
 		{
@@ -512,9 +517,14 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		return description;
 	}
 	
+	private Bitmap failBk;
+        
 	@Override
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
-		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext());
+		if(failBk == null){
+			failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+		}
+		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext(), new WeakReference<Bitmap>(failBk));
 		increaseImageCount(url, index);
 	}
 	

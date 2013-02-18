@@ -67,6 +67,19 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onDestroy();
 		isInActiveStack = false;
 	}
+	
+	protected void onNewIntent(Intent intent)
+	{
+		super.onNewIntent(intent);
+		
+		if (Intent.ACTION_MAIN.equals(intent.getAction()) && GlobalDataManager.getInstance().getLastActiveClass() != null) {
+			Intent go = new Intent();
+			go.addCategory(Intent.CATEGORY_LAUNCHER);
+			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
+			
+			startActivity(go);
+		}
+	}
 
 	@Override
 	protected void onPause() {
@@ -108,6 +121,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		}
 		else
 		{
+			jumpToPage();
 			responseOnResume();
 		}
 		
@@ -278,6 +292,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			}
 		}))).start();
 		
+//		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
+//		Profiler.clear();
+		jumpToPage();
+	}
+	
+	private void jumpToPage(){
 		Intent intent = this.getIntent();
 		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
 			if(intent.getBooleanExtra("pagejump", false)){
@@ -286,9 +306,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 				///intent.getExtras()
 			}
 		}
-
-//		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
-//		Profiler.clear();
 	}
 
 	@Override
@@ -309,10 +326,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		setContentView(R.layout.main_activity);
 		onSetRootView(this.findViewById(R.id.root));
 		
-		if (savedInstanceState == null)
-		{
-			findViewById(R.id.splash_cover).setVisibility(View.VISIBLE);
-		}
+		findViewById(R.id.splash_cover).setVisibility(savedInstanceState == null ? View.VISIBLE : View.GONE);
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		
 		splashJob = new SplashJob(this, this);

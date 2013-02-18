@@ -54,6 +54,8 @@ public class GlobalDataManager implements Observer{
     private NetworkCacheManager networkCache;
     private LocationManager locationManager;
     
+    private Class lastActiveCls;
+    
     public final ImageCacheManager getImageManager(){
     	return ImageCacheManager.getInstance();
     }
@@ -81,6 +83,14 @@ public class GlobalDataManager implements Observer{
 	public static boolean needNotifySwitchMode()
 	{
 		return GlobalDataManager.needNotifiySwitchMode;
+	}
+	
+	public void setLastActiveActivity(Class cls) {
+		lastActiveCls = cls;
+	}
+	
+	public Class getLastActiveClass() {
+		return lastActiveCls;
 	}
 	
 	public List<Ad> getListMyStore() {
@@ -444,7 +454,7 @@ public class GlobalDataManager implements Observer{
 				version = Util.getVersion(androidContext);
 				PackageManager packageManager = androidContext.getPackageManager();
 				ApplicationInfo ai = packageManager.getApplicationInfo(androidContext.getPackageName(), PackageManager.GET_META_DATA);
-				channelId = (String)ai.metaData.get("UMENG_CHANNEL");
+				channelId = String.valueOf(ai.metaData.get("UMENG_CHANNEL"));
 			}catch(Exception e){
 				e.printStackTrace();
 			}

@@ -22,6 +22,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.ViewParent;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
@@ -63,6 +64,7 @@ public abstract class BaseFragment extends Fragment  {
 	public static final String ARG_COMMON_REQ_CODE = "reqestCode";
 	public static final String ARG_COMMON_ANIMATION_IN = "inAnimation";
 	public static final String ARG_COMMON_ANIMATION_EXIT = "exitAnimation";
+	public static final String ARG_COMMON_HAS_GLOBAL_TAB = "hasGlobalTabbar";
 	
 	private ProgressDialog pd;
 	
@@ -75,10 +77,11 @@ public abstract class BaseFragment extends Fragment  {
 		return handler;
 	}
 
-	public final class TitleDef{	
+	public static final class TitleDef{
 		private TitleDef() {}
 		public boolean m_visible = true;
 		public String m_leftActionHint = null;
+		public int m_leftActionImage = -1;
 		
 		public String m_title = null;
 		public View m_titleControls = null;
@@ -573,11 +576,17 @@ public abstract class BaseFragment extends Fragment  {
 		}
 		
 		View left = rootView.findViewById(R.id.left_action);
-		left.setOnClickListener(titleActionListener);
+		if (left != null) {
+			left.setOnClickListener(titleActionListener);
+		}
 		View right = rootView.findViewById(R.id.right_action);
-		right.setOnClickListener(titleActionListener);
+		if (right != null) {
+			right.setOnClickListener(titleActionListener);
+		}
 		View search = rootView.findViewById(R.id.search_action);
-		search.setOnClickListener(titleActionListener);
+		if (search != null) {
+			search.setOnClickListener(titleActionListener);
+		}
 		
 		TitleDef title = getTitleDef();
 		
@@ -615,6 +624,11 @@ public abstract class BaseFragment extends Fragment  {
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				left.setVisibility(View.VISIBLE);
 				rootView.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
+				if (title.m_leftActionImage != -1) {
+					ImageView img = (ImageView) rootView.findViewById(R.id.back_icon);
+					img.setImageResource(title.m_leftActionImage);
+				}
+				
 			}else{
 				left.setVisibility(View.GONE);
 				rootView.findViewById(R.id.left_line).setVisibility(View.GONE);
@@ -649,11 +663,14 @@ public abstract class BaseFragment extends Fragment  {
 		}
 	}
 	
-	protected static Bundle createArguments(String title, String backhint)
+	protected final Bundle createArguments(String title, String backhint)
 	{
 		Bundle bundle = new Bundle();
 		if (title != null) bundle.putString(ARG_COMMON_TITLE, title);
 		if (backhint != null) bundle.putString(ARG_COMMON_BACK_HINT, backhint);
+		if (getArguments() != null) {
+			bundle.putBoolean(ARG_COMMON_HAS_GLOBAL_TAB, hasGlobalTab());
+		}
 		return bundle;
 	}
 	
@@ -726,7 +743,7 @@ public abstract class BaseFragment extends Fragment  {
 	
 	public boolean hasGlobalTab()
 	{
-		return true;
+		return getArguments() != null && getArguments().containsKey(ARG_COMMON_HAS_GLOBAL_TAB) ? getArguments().getBoolean(ARG_COMMON_HAS_GLOBAL_TAB) : true;
 	}
 	
 }

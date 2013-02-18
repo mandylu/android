@@ -25,5 +25,14 @@
 
 	<style name="mainActivityTheme" parent="@style/lightTheme">
 	    <item name="android:windowAnimationStyle">@null</item>
-	</style>	
+	</style>
+	
+	<style name="customize_dialog" parent="@android:style/Theme.Dialog">
+    	<item name="android:windowTitleStyle">@style/dialog_title_style</item>
+  	</style>
+  
+	<style name="dialog_title_style" parent="android:Widget.TextView">
+	    <item name="android:textColor">#ffffff</item>
+	    <item name="android:textSize">@dimen/font_large</item>
+	</style>
 </resources>

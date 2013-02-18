@@ -14,6 +14,9 @@ import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.webkit.CookieManager;
+import android.webkit.CookieSyncManager;
+import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.MainActivity;
@@ -23,13 +26,14 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.ImageList;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.sharing.weibo.Oauth2AccessToken;
+import com.baixing.sharing.weibo.SsoHandler;
+import com.baixing.sharing.weibo.Weibo;
+import com.baixing.sharing.weibo.WeiboAuthListener;
+import com.baixing.sharing.weibo.WeiboDialogError;
+import com.baixing.sharing.weibo.WeiboException;
 import com.baixing.util.Util;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.Weibo;
-import com.weibo.sdk.android.WeiboAuthListener;
-import com.weibo.sdk.android.WeiboDialogError;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.sso.SsoHandler;
+import com.baixing.util.ViewUtil;
 
 public class WeiboSSOSharingManager extends BaseSharingManager {
 	public static class WeiboAccessTokenWrapper implements Serializable {
@@ -110,6 +114,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onError(WeiboDialogError e) {
+			ViewUtil.showToast(mActivity, e.getMessage());
 		}
 
 		@Override
@@ -118,13 +123,14 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onWeiboException(WeiboException e) {
+			ViewUtil.showToast(mActivity, e.getMessage());
 		}
 	}
 
 	@Override
 	public void auth() {
 		try {
-			Class sso = Class.forName("com.weibo.sdk.android.sso.SsoHandler");
+			Class sso = Class.forName("com.baixing.sharing.weibo.SsoHandler");
 			authSSO();
 		} catch (ClassNotFoundException e) {
 			authTraditional();
@@ -149,6 +155,10 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 	}
 
 	private void authTraditional() {
+		CookieSyncManager.createInstance(mActivity); 
+	    CookieManager cookieManager = CookieManager.getInstance();
+	    cookieManager.removeAllCookie();
+
 		mWeibo = Weibo.getInstance(kWBBaixingAppKey, "http://www.baixing.com");
 		mWeibo.authorize(mActivity, new AuthDialogListener());
 	}
@@ -204,7 +214,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		Bundle bundle = new Bundle();
 		bundle.putString(WeiboSharingFragment.EXTRA_WEIBO_CONTENT,
-				"我用百姓网App发布了\"" + mAd.getValueByKey("title") + "\"" + "麻烦朋友们帮忙转发一下～ " + mAd.getValueByKey("link"));
+				"我用@百姓网 发布了\"" + mAd.getValueByKey("title") + "\"" + "麻烦朋友们帮忙转发一下～ " + mAd.getValueByKey("link"));
 		bundle.putString(WeiboSharingFragment.EXTRA_PIC_URI,
 				(imgPath == null || imgPath.length() == 0) ? "" : imgPath);
 		bundle.putString(WeiboSharingFragment.EXTRA_ACCESS_TOKEN,

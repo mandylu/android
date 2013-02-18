@@ -68,7 +68,12 @@ public class PostActivity extends BaseTabActivity {
 						personalIntent.setAction(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 						personalIntent.putExtras(bundle);
 						
-						startActivity(personalIntent);					
+						startActivity(personalIntent);
+						
+						BaseFragment current = PostActivity.this.getCurrentFragment();
+						if(current != null && current instanceof PostGoodsFragment){
+							current.finishFragment();
+						}
 					}
 				}
 			};

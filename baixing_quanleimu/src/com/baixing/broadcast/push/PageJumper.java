@@ -90,7 +90,8 @@ public class PageJumper{
 //							bundle.putInt(BaseFragment.ARG_COMMON_REQ_CODE, );
 							bundle.putSerializable("cates", cate);
 							bundle.putBoolean("isPost", false);
-							currentActivity.pushFragment(new SecondCateFragment(), bundle, true);
+							currentActivity.pushFragment(new HomeFragment(), bundle, true);
+							currentActivity.pushFragment(new SecondCateFragment(), bundle, false);
 							return;
 						}
 					}

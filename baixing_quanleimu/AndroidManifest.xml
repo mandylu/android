@@ -29,6 +29,7 @@
 	<uses-permission android:name="android.permission.READ_USER_DICTIONARY"/>
 	<uses-permission android:name="android.permission.WRITE_USER_DICTIONARY"/>
 	<uses-permission android:name="android.permission.WAKE_LOCK"/>
+	<uses-permission android:name="android.permission.WRITE_APN_SETTINGS"/>
 	<uses-feature android:name="android.hardware.camera" />
 	
 	<uses-feature
@@ -38,13 +39,11 @@
 	<application android:icon="@drawable/app_icon" android:name="com.baixing.activity.EntryApplication" android:label="@string/app_name" android:theme="@style/myTheme">
         <meta-data android:name="UMENG_APPKEY" android:value="4f7139155270154a7f000051">
         </meta-data>
-        <meta-data
-            android:name="UMENG_CHANNEL"
-            android:value="androidmarket_umeng" />
-        <meta-data
-            android:name="publishTime"
-            android:value="2012-09-29 11:05" />
-
+        
+        <!-- Warning ::: do not formator following two line.-->
+        <meta-data android:name="UMENG_CHANNEL" android:value="androidmarket_umeng" />
+        <meta-data android:name="publishTime" android:value="2012-09-29 11:05" />
+        
         <activity
             android:name="com.tencent.tauth.TAuthView"
             android:configChanges="keyboardHidden|navigation|orientation"
@@ -106,7 +105,7 @@
             android:launchMode="singleTask"
             android:screenOrientation="portrait">
         </activity>
-       	<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="com.baixing.activity.CameraActivity" android:theme="@style/mainActivityTheme" android:screenOrientation="portrait" android:launchMode="singleTop">
+       	<activity android:configChanges="orientation|keyboardHidden|navigation" android:label="@string/app_name" android:name="com.baixing.activity.CameraActivity" android:theme="@style/mainActivityTheme" android:screenOrientation="landscape" android:launchMode="singleTop">
 			<intent-filter>
 			    <action android:name="com.baixing.action.img.cap" />
 			    <category android:name="android.intent.category.DEFAULT" />

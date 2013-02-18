@@ -49,7 +49,7 @@ public class ImageUploadCommand {
 			httpPost.setEntity(fileEntity);
 
 			HttpResponse response = httpClient.execute(httpPost);
-
+			
 			InputStreamReader reader = new InputStreamReader(response
 					.getEntity().getContent());
 			BufferedReader buffer = new BufferedReader(reader);
@@ -65,7 +65,7 @@ public class ImageUploadCommand {
 			if(url == null) {
 				failReason = "url of json string in response is null";
 			}
-		} catch (Exception e) {
+		} catch (Throwable e) {
 			e.printStackTrace();
 			failReason = e.getMessage();
 		}

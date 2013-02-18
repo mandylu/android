@@ -44,6 +44,7 @@ import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -52,6 +53,7 @@ import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
+import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService;
@@ -60,7 +62,7 @@ import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
-public class PostGoodsFragment extends BaseFragment implements OnClickListener{
+public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
 	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
@@ -113,6 +115,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			
 			if (photoList != null && photoList.size() > 0) {
 				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
+				for(int i = 0; i < photoList.size(); ++ i){
+					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
+				}				
 			}
 			else {
 				firstImage = null;
@@ -252,6 +257,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void onResume() {
 		super.onResume();
+		isActive = true;
 		postLBS.start();
 		if(!editMode) {
 			this.pv = PV.POST;
@@ -268,11 +274,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}
 	}
 	
+	private boolean isActive = false;
 	@Override
 	public void onPause() {
 		postLBS.stop();
 		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
+		isActive = false;
 		super.onPause();
 	}
 
@@ -290,7 +298,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		
 		if (isNewPost) {
 			isNewPost = false;
-			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "下一步");
+			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过拍照");
 		}
 		
 	}	
@@ -372,6 +380,23 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		return GlobalDataManager.getInstance().getCityEnglishName();
 	}
 	
+	private void showGettingMetaProgress(boolean show){
+		for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+			View v = layout_txt.getChildAt(i);
+			if(v == null) continue;
+			View progress = v.findViewById(R.id.metaLoadingBar);
+			if(progress != null){
+				if(show){
+					progress.setVisibility(View.VISIBLE);
+					v.findViewById(R.id.post_next).setVisibility(View.GONE);
+				}else{
+					progress.setVisibility(View.GONE);
+					v.findViewById(R.id.post_next).setVisibility(View.VISIBLE);					
+				}				
+			}
+		}
+	}
+	
 	private void showPost(){
 		if(this.categoryEnglishName == null || categoryEnglishName.length() == 0){
 			deployDefaultLayout();
@@ -392,7 +417,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				return;
 			}
 		}
-		showSimpleProgress();
+//		showSimpleProgress();
+		showGettingMetaProgress(true);
 		postNS.retreiveMetaAsync(cityEnglishName, categoryEnglishName);
 	}
 	
@@ -466,6 +492,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	}
 	
 	private void postAction() {
+		if((this.postList == null || postList.size() == 0) 
+				&& ((this.categoryEnglishName != null && categoryEnglishName.length() > 0)
+						|| (this.categoryName != null && categoryName.length() > 0))){
+			return;
+		}
 		PostUtil.extractInputData(layout_txt, params);
 		setPhoneAndAddress();
 		if(!this.checkInputComplete()){
@@ -639,9 +670,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
-			View v = layout_txt.findViewById(R.id.img_description);
+			View desView = layout_txt.findViewById(R.id.img_description);
+			View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
-			layout_txt.addView(v);
+			layout_txt.addView(desView);
+			if(catView != null){
+				layout_txt.addView(catView);
+			}
 		}
 		postList.clear();
 		
@@ -740,7 +775,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}else if(postBean.getName().equals("价格")){
-			((TextView)layout.findViewById(R.id.postinput)).setHint("价格越低成交越快");
+			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
 		}
 		
 		if(layout != null){
@@ -763,13 +798,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	private void addCategoryItem(){
 		Activity activity = getActivity();
-		if(editMode)return;
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
-		LayoutInflater inflater = LayoutInflater.from(activity);
-		View categoryItem = inflater.inflate(R.layout.item_post_select, null);
+//		LayoutInflater inflater = LayoutInflater.from(activity);
+//		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
 		
+		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
+		if(editMode){
+			layout_txt.removeView(categoryItem);
+			return;
+		}
 		categoryItem.setTag(PostCommonValues.HASH_CONTROL, categoryItem.findViewById(R.id.posthint));//tag
 		((TextView)categoryItem.findViewById(R.id.postshow)).setText("分类");
 		categoryItem.setOnClickListener(new OnClickListener(){
@@ -786,7 +825,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			((TextView)categoryItem.findViewById(R.id.posthint)).setText("请选择分类");
 		}
 		PostUtil.adjustMarginBottomAndHeight(categoryItem);
-		layout_txt.addView(categoryItem);
+//		layout_txt.addView(categoryItem);
 	}
 	
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl){
@@ -885,6 +924,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 			
 			this.appendBeanToLayout(postBean);
 		}
+		
+		
+	}
+	
+	private void showInputMethod() {
+		final View root = this.getView();
+		if (root != null) {
+			root.postDelayed(new Runnable() {
+				public void run() {
+					EditText ed = (EditText) root.findViewById(R.id.description_input);
+					if (ed != null && ed.getText().length() == 0) {
+						ed.requestFocus();
+						InputMethodManager mgr = (InputMethodManager) root.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+						mgr.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
+					}
+				}
+			}, 200);
+		}
 	}
 
 	private void updateImageInfo(View rootView) {
@@ -913,7 +970,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	@SuppressWarnings("unchecked")
 	@Override
-	protected void handleMessage(Message msg, final Activity activity, View rootView) {
+	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
 		hideProgress();
 		
 		switch (msg.what) {
@@ -924,22 +981,36 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		}		
 		case MSG_UPDATE_IMAGE_LIST:{
 			updateImageInfo(rootView);
+			
+			showInputMethod();
+			
 			break;
 		}
-		case PostCommonValues.MSG_GET_META_SUCCEED:
+		case PostCommonValues.MSG_GET_META_SUCCEED:{
+			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+			if(button != null){
+				button.setEnabled(true);
+			}
+
 			postList = (LinkedHashMap<String, PostGoodsBean>)msg.obj;
 			addCategoryItem();
 			buildPostLayout(postList);
 			loadCachedData();
+			this.showGettingMetaProgress(false);
 			break;
+		}
 
 		case PostCommonValues.MSG_GET_META_FAIL:
 			hideProgress();
-			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
-			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);
-			this.reCreateTitle();
-			this.refreshHeader();
-
+			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+			if(button != null){
+				button.setEnabled(false);
+			}
+			addCategoryItem();
+			if(msg.obj != null){
+				Toast.makeText(activity, (String)msg.obj, 0).show();
+			}
+			this.showGettingMetaProgress(false);
 			break;
 		case PostCommonValues.MSG_POST_SUCCEED:
 			hideProgress();
@@ -955,10 +1026,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 				Toast.makeText(activity, message, 0).show();
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
-				resetData(!editMode);
-				Util.deleteDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
-				categoryEnglishName = "";
-				categoryName = "";
+				if(!editMode || (editMode && isActive)){
+					resetData(!editMode);
+					Util.deleteDataFromLocate(this.getActivity(), FILE_LAST_CATEGORY);
+					categoryEnglishName = "";
+					categoryName = "";
+				}
+//				showPost();
 				if(!editMode){
 					showPost();
 					String lp = getArguments().getString("lastPost");
@@ -981,40 +1055,26 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 						activity.sendBroadcast(intent);
 					}
 					doClearUpImages();
-					finishFragment();
+//					finishFragment();
 				}else{
+//					showPost();
 					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 				}
 			}else{
 				postResultFail(message);
-				if(code == 505){
-					AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
-	                bd.setTitle("")
-	                        .setMessage(message)
-	                        .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-	                        	@Override
-	                            public void onClick(DialogInterface dialog, int which) {
-	                                dialog.dismiss();
-	        						if(activity != null){
-	        							resetData(true);
-	        							showPost();
-	        							Bundle args = createArguments(null, null);
-	        							args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-	        							Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-	        							intent.putExtras(args);
-	        							activity.sendBroadcast(intent);							
-	        						}
-	                            }
-	                        });
-	                AlertDialog alert = bd.create();
-	                alert.show();	
+				if(msg.obj != null){
+					handlePostFail((PostResultData)msg.obj);
 				}
 			}
 			break;
 		case PostCommonValues.MSG_POST_FAIL:
 			hideProgress();
 			if(msg.obj != null){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
+				if(msg.obj instanceof String){
+					Toast.makeText(activity, (String)msg.obj, 0).show();
+				}else if(msg.obj instanceof PostResultData){
+					handlePostFail((PostResultData)msg.obj);
+				}
 			}
 			break;
 		case PostCommonValues.MSG_POST_EXCEPTION:
@@ -1032,11 +1092,39 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:			
 			showSimpleProgress();
+			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
+			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
 			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation)msg.obj;
 			break;
+		}
+	}
+	
+	private void handlePostFail(PostResultData result){
+		if(result == null) return;
+		if(result.error == 505){
+			AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+	        bd.setTitle("")
+	                .setMessage(result.message)
+	                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+	                	@Override
+	                    public void onClick(DialogInterface dialog, int which) {
+	                        dialog.dismiss();
+							if(getActivity() != null){
+								resetData(true);
+								showPost();
+								Bundle args = createArguments(null, null);
+								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+								intent.putExtras(args);
+								getActivity().sendBroadcast(intent);							
+							}
+	                    }
+	                });
+	        AlertDialog alert = bd.create();
+	        alert.show();	
 		}
 	}
 
@@ -1083,7 +1171,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
-		title.m_title = "免费发布";//(categoryName == null || categoryName.equals("")) ? "发布" : categoryName;
+		title.m_leftActionImage  = R.drawable.icon_close;
+		title.m_title = "免费发布";
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
@@ -1206,5 +1295,32 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener{
 	
 	public boolean hasGlobalTab() {
 		return false;
+	}
+
+	@Override
+	public void onUploadDone(String imagePath, String serverUrl,
+			Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUploading(String imagePath, Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onUploadFail(String imagePath, Bitmap thumbnail) {
+		// TODO Auto-generated method stub
+		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
+		if(getView() != null && getView().getRootView() != null){
+			getActivity().runOnUiThread(new Runnable(){
+				@Override
+				public void run(){
+					updateImageInfo(getView().getRootView());
+				}
+			});
+		}
 	}
 }

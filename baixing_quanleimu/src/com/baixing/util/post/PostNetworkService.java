@@ -157,22 +157,22 @@ public class PostNetworkService implements ApiListener{
 		if (rawData != null) {
 			try{
 				JSONObject jsonObject = new JSONObject(rawData);
-				boolean isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");
-				String id = jsonObject.getString("id");
 				JSONObject errorJson = jsonObject.getJSONObject("error");
 				int code = errorJson.getInt("code");
 				String message = errorJson.getString("message");
-				
 				PostResultData data = new PostResultData();
 				data.error = code;
 				data.message = message;
-				data.id = id;
-				data.isRegisteredUser = isRegisteredUser;
-				
-				sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
+				data.id = jsonObject.getString("id");
+				data.isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");
+				if(code == 0){									
+					sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
+				}else{
+					sendMessage(PostCommonValues.MSG_POST_FAIL, data);
+				}
 				return;
 			}catch(JSONException e){
-				
+				sendMessage(PostCommonValues.MSG_POST_FAIL, "发布失败");
 			}
 		}
 	}
@@ -214,6 +214,7 @@ public class PostNetworkService implements ApiListener{
 		// TODO Auto-generated method stub
 		if(isretreiveMeta){
 			handleGetMetaMsgBack(rawData);
+			isretreiveMeta = false;
 		}else{
 			handlePostMsgBack(rawData);
 		}
@@ -223,16 +224,15 @@ public class PostNetworkService implements ApiListener{
 	public void onError(ApiError error) {
 		// TODO Auto-generated method stub
 //		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
-		if(error != null){
-			sendMessage(PostCommonValues.MSG_POST_FAIL, error.getMsg());
-		}
+		String msg = "网络错误";//(error == null ? "请求错误" : error.getMsg()); //TODO
+		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
+		sendMessage(msgCode, msg);
 	}
 
 	@Override
 	public void onException(Exception e) {
 		// TODO Auto-generated method stub
-		if(e != null){
-			sendMessage(PostCommonValues.MSG_POST_EXCEPTION, e.getMessage());
-		}
-	}
+		String msg = "网络错误";//(e == null ? "请求错误" : e.getMessage()); //TODO
+		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
+		sendMessage(msgCode, msg);	}
 }

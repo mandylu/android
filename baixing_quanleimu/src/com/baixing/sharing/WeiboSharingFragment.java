@@ -6,11 +6,12 @@ import java.io.IOException;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.sharing.weibo.Oauth2AccessToken;
+import com.baixing.sharing.weibo.RequestListener;
+import com.baixing.sharing.weibo.StatusesAPI;
+import com.baixing.sharing.weibo.WeiboException;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
-import com.weibo.sdk.android.Oauth2AccessToken;
-import com.weibo.sdk.android.WeiboException;
-import com.weibo.sdk.android.api.StatusesAPI;
-import com.weibo.sdk.android.net.RequestListener;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
@@ -76,7 +77,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 				ctx.sendBroadcast(intent);
 			}
 
-			showToast("分享成功");
+			ViewUtil.showToast(getActivity(), "分享成功");
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", true, null);
 		}
 
@@ -86,7 +90,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 			if(mPd != null){
 				mPd.dismiss();
 			}			
-			showToast(arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", false, "code:" + arg0.getStatusCode() + " msg:" + arg0.getMessage());
 		}
 
@@ -96,7 +103,10 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 			if(mPd != null){
 				mPd.dismiss();
 			}
-			showToast(arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			if(mPd != null){
+				mPd.dismiss();
+			}
 			SharingCenter.trackShareResult("weibo", false, " msg:" + arg0.getMessage());
 		}
     	
@@ -105,10 +115,11 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 	private void doShare2Weibo(){
 		Oauth2AccessToken accessToken = new Oauth2AccessToken(mAccessToken, mExpires_in);
 		StatusesAPI statusApi = new StatusesAPI(accessToken);
+		String content = mEdit != null ? mEdit.getText().toString() : "";
 		if(mPicPath == null || mPicPath.length() == 0){
-			statusApi.update(mContent, "", "", new ShareListener());
+			statusApi.update(content, "", "", new ShareListener());
 		}else{
-			statusApi.upload(mContent, mPicPath, "", "", new ShareListener());
+			statusApi.upload(content, mPicPath, "", "", new ShareListener());
 		}
 		mPd = ProgressDialog.show(this.getActivity(), "", "请稍候");
 		mPd.setCancelable(true);
@@ -138,24 +149,13 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
                     .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
                         public void onClick(DialogInterface dialog, int which) {
                             mPiclayout.setVisibility(View.GONE);
+                            mPicPath = "";
                         }
                     }).setNegativeButton(R.string.cancel, null).create();
             dialog.show();
         }
     }
     
-    private void showToast(final String text){
-		this.getActivity().runOnUiThread(new Runnable(){
-			@Override
-			public void run(){
-				Toast.makeText(getActivity(), text, 0).show();
-			}
-		});    
-		if(mPd != null){
-			mPd.dismiss();
-		}
-    }
-
 	@Override
 	protected View onInitializeView(LayoutInflater inflater,
 			ViewGroup container, Bundle savedInstanceState) {
