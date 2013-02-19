@@ -53,7 +53,7 @@
                 android:textSize="18dp"
                 android:textStyle="bold" >
             </Button>
-
+            
             <View
                 android:id="@+id/padding_bottom"
                 android:layout_width="match_parent"

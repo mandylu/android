@@ -11,7 +11,7 @@
     <TextView
         android:id="@+id/postshow"
         android:layout_width="72dip"
-        android:layout_height="fill_parent"
+        android:layout_height="48dip"
         android:gravity="left|center_vertical"
         android:paddingLeft="8dip"
         android:textColor="#838383"
@@ -44,7 +44,8 @@
             android:layout_width="20dip"
             android:layout_height="20dip"
             android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginTop="14dp"
             android:layout_marginRight="8dp"
             android:src="@drawable/icon_location" />
     </RelativeLayout>

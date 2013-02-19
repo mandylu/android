@@ -18,6 +18,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -82,6 +83,10 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private VadListAdapter adapter = null;
 	private UserBean user;
 	private boolean needReloadData = false;
+	private boolean isOnResume = false;
+    /**
+     * 用这几个 static value 区分不同类别“我的信息”
+     */
 
     public final static String TYPE_KEY = "PersonalPostFragment_type_key";
     final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
@@ -256,6 +261,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void onResume() {
 		super.onResume();
+		this.isOnResume = true;
+		Log.d("jjj","WWWW->onresume()");
 		this.rebuildPage(getView(), false);
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
@@ -281,11 +288,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 		rootView.findViewById(R.id.linearListView);
 
-        BxEvent bxEvent = BxEvent.SENT_RESULT;
-        int adsCountValue = 0;
 
 		if(TYPE_MYPOST == currentType){
-            bxEvent = BxEvent.SENT_RESULT;
+//            bxEvent = BxEvent.SENT_RESULT;
 
 			AdList gl = new AdList();
 			gl.setData(listMyPost);
@@ -293,13 +298,24 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			adapter.setList(listMyPost);
 			adapter.notifyDataSetChanged();
 			lvGoodsList.invalidateViews();
-            if (listMyPost != null) {
-                adsCountValue = listMyPost.size();
-            }
-
+//			Bundle bundle = this.getArguments();
+ 
+			if (this.isOnResume) {
+				if (listMyPost != null) {
+					Tracker.getInstance()
+					.pv(PV.MYADS_SENT)
+					.append(Key.ADSCOUNT, listMyPost.size())
+					.end();
+				} else {
+					Tracker.getInstance()
+					.pv(PV.MYADS_SENT)
+					.append(Key.ADSCOUNT, 0)
+					.end();
+				}
+				this.isOnResume = false;
+			}
 		}
 
-        Tracker.getInstance().event(bxEvent).append(Key.ADSCOUNT, adsCountValue).end();
 
 		lvGoodsList.setOnItemClickListener(new AdapterView.OnItemClickListener() {			
 			@Override
@@ -378,17 +394,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			hideProgress();
 			AdList gl = JsonUtil.getGoodsListFromJson(glLoader.getLastJson());
 //			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
-			this.pv = PV.MYADS_SENT;
+//			this.pv = PV.MYADS_SENT;
 			//tracker
 			if (gl == null || gl.getData() == null) {//no ads count
-				Tracker.getInstance()
-				.pv(this.pv)
-				.end();
+				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, 0).end();
 			} else {//ads count
-				Tracker.getInstance()
-				.pv(this.pv)
-				.append(Key.ADSCOUNT, gl.getData().size() + "")
-				.end();
+				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, gl.getData().size()).end();
 			}
 			
 			if (gl == null || gl.getData().size() == 0) {
@@ -494,9 +505,17 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			isRefreshing = false;
 			hideProgress();
 			//tracker
-			Tracker.getInstance()
-//			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
-			.pv(PV.MYADS_SENT)
+//			if (this.isOnResume) {
+//				Tracker.getInstance()
+////			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
+//				.pv(PV.MYADS_SENT)
+//				.append(Key.ADSCOUNT, 0)
+//				.end();
+//				this.isOnResume = false;
+//			}
+			
+			Tracker.getInstance().event(BxEvent.SENT_RESULT)
+			.append(Key.ADSCOUNT, 0)
 			.end();
 			
 			Message msg2 = Message.obtain();
