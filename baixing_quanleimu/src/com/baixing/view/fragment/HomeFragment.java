@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.view.fragment;
 
 import java.lang.ref.WeakReference;
@@ -15,15 +16,16 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
-import com.baixing.entity.FirstStepCate;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
+import com.baixing.activity.BaseFragment;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Category;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
 import com.baixing.widget.CustomizeGridView.GridInfo;
 import com.baixing.widget.CustomizeGridView.ItemClickListener;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class HomeFragment extends BaseFragment implements ItemClickListener{
@@ -74,19 +76,9 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		}
 	}
 
-	public void initTab(TabDef tab){
-		tab.m_visible = true;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_MAINPAGE;
-	}
-
 	@Override
 	public int[] includedOptionMenus() {
 		return new int[]{OPTION_CHANGE_CITY};
-	}
-	
-	@Override
-	public void handleRightAction(){
-		this.pushFragment(new GridCateFragment(), this.getArguments());
 	}
 	
 	@Override
@@ -104,8 +96,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		return true;
 	}
 	
-	private List<WeakReference<Bitmap> > bmpCaches = new ArrayList<WeakReference<Bitmap> >();
-	
 	private void setViewContent(){
 		if(getView() == null) return;
 		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
@@ -119,15 +109,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		for (int i = 0; i < icons.length; i++)
 		{
 			GridInfo gi = new GridInfo();
-			if(bmpCaches.size() <= i){
-				Bitmap bmp = ((BitmapDrawable)getResources().getDrawable(icons[i])).getBitmap(); 
-				bmpCaches.add(new WeakReference<Bitmap>(bmp));
-			}
-			if(bmpCaches.get(i).get() == null){
-				bmpCaches.set(i, new WeakReference<Bitmap>(((BitmapDrawable)getResources().getDrawable(icons[i])).getBitmap()));
-				Log.d("shit", "bitmap null");
-			}
-			gi.img = bmpCaches.get(i).get();
+			gi.img = ImageCacheManager.getInstance().loadBitmapFromResource(icons[i]);//bmpCaches.get(i).get();
 			gi.text = texts[i];
 //			gi.resId = icons[i];
 			gitems.add(gi);
@@ -139,7 +121,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		logCreateView(savedInstanceState);
 
@@ -154,13 +136,13 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 //		//Mobile Track Config入口
 //		TrackConfig.getInstance().getConfig();//获取config
 		
-		String cityName = QuanleimuApplication.getApplication().getCityName();
+		String cityName = GlobalDataManager.getInstance().getCityName();
 		if (null == cityName || "".equals(cityName)) {
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{
 			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
-			titleLabel.setText(QuanleimuApplication.getApplication().getCityName());			
+			titleLabel.setText(GlobalDataManager.getInstance().getCityName());			
 		}
 	}
 	@Override
@@ -193,11 +175,9 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		super.onDestroy();
 	}
 	
-	private boolean isActivated = true;
 	@Override
 	public void onResume(){
 		super.onResume();
-//		isActivated = true;
 		synchronized(HomeFragment.this){
 			setViewContent();
 		}
@@ -206,44 +186,23 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	
 	@Override
 	public void onPause(){
-//		LocationService.getInstance().removeLocationListener(this);
 		super.onPause();
-//		isActivated = false;
-//		final List<Bitmap> tmp = new ArrayList<Bitmap>();
-//		tmp.addAll(bmpCaches);
-//		bmpCaches.clear();
-//		if(this.getView() != null){
-//			getView().postDelayed(new Runnable(){
-//				@Override
-//				public void run(){
-//					synchronized(HomeFragment.this){
-////						if(!isActivated){
-//							for(int i = 0; i < tmp.size(); ++ i){
-//								tmp.get(i).recycle();
-//							}
-//							tmp.clear();
-////						}
-//					}
-//				}
-//			}, 2000);
-//		}
-//		if(glDetail != null){
-//			glDetail.setAdapter(null);
-//		}
 	}
 
 	@Override
 	public void onItemClick(GridInfo info, int index) {	
-		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
-				.getListFirst();
+//		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
+//				.getListFirst();
+		List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
 		if (allCates == null || allCates.size() == 0)
 			return;
 		if (info == null)
 			return;
 		
-		FirstStepCate cate = allCates.get(index);
+//		FirstStepCate cate = allCates.get(index);
+		Category cate = allCates.get(index);
 		Bundle bundle = new Bundle();
-		bundle.putInt(ARG_COMMON_REQ_CODE, this.requestCode);
+		bundle.putInt(ARG_COMMON_REQ_CODE, this.fragmentRequestCode);
 		bundle.putSerializable("cates", cate);
 		bundle.putBoolean("isPost", false);
 		pushFragment(new SecondCateFragment(), bundle);

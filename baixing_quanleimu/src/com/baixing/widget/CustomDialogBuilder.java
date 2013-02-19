@@ -1,3 +1,4 @@
+//xuweiyan@baixing.com
 package com.baixing.widget;
 
 import java.io.Serializable;
@@ -17,20 +18,23 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
-import android.widget.ArrayAdapter;
 import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
-import android.widget.SimpleAdapter;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.baixing.entity.FirstStepCate;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class CustomDialogBuilder {
@@ -168,21 +172,22 @@ public class CustomDialogBuilder {
 					if (isCategoryItem) {//分类模块
 						System.out.println("isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
-						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+//						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
+						List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
 						if (allCates == null || allCates.size() <= pos)
 						{
 							System.out.println("Reload category");
-							QuanleimuApplication.getApplication().loadCategorySync();//reload
-							allCates = QuanleimuApplication.getApplication().getListFirst();//recheck
+							GlobalDataManager.getInstance().loadCategorySync();//reload
+							allCates = GlobalDataManager.getInstance().getFirstLevelCategory();//.getListFirst();//recheck
 							if(allCates == null || allCates.size() <= pos){
 								System.out.println("仁至义尽");
 								return;
 							}
 						}
-						FirstStepCate selectedCate = null;
+						Category selectedCate = null;
 						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
 						for (int i=0; i< allCates.size(); i++) {
-							if (allCates.get(i).name.equals(selText)) {
+							if (allCates.get(i).getName().equals(selText)) {
 								selectedCate = allCates.get(i);
 								break;
 							}
@@ -192,8 +197,8 @@ public class CustomDialogBuilder {
 						backMap.put("tvCategoryName", "返回上一级");
 						backMap.put("tvCategoryEnglishName", "back");
 						secondLevelList.add(backMap);//
-						List<SecondStepCate> children = selectedCate.getChildren();
-						for (SecondStepCate cate : children) {
+						List<Category> children = selectedCate.getChildren();
+						for (Category cate : children) {
 							Map<String,Object> map = new HashMap<String,Object>();
 							map.put("tvCategoryName", cate.getName());
 							map.put("tvCategoryEnglishName", cate.getEnglishName());
@@ -258,8 +263,10 @@ public class CustomDialogBuilder {
 											//configSecondLevel
 											configSecondLevel(cd, lv, secondLevelItems);										}
 									}
-									else
+									else{
+										Toast.makeText(context, "网络连接异常", 0).show();
 										return;
+									}
 									
 									break;
 								}
@@ -276,7 +283,8 @@ public class CustomDialogBuilder {
 							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
 							CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
 							String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
-							(new Thread(new GetMetaDataThread(id,txt))).start();
+//							(new Thread(new GetMetaDataThread(id,txt))).start();
+							sendGetMetaCmd(id, txt);
 						}
 					}//not category over
 					
@@ -341,32 +349,32 @@ public class CustomDialogBuilder {
 		return new CustomDialog(context);
 	}
 	
-	class GetMetaDataThread implements Runnable {
-		private String id;
-		private String txt;
-
-		public GetMetaDataThread(String id, String txt) {
-			this.id = id;
-			this.txt = txt;
-		}
-
-		@Override
-		public void run() {
-			String apiName = "metaobject";
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("objIds=" + id);
-			String url = Communication.getApiUrl(apiName, list);
-			try {
-				json = Communication.getDataByUrl(url, false);
-			} catch (Exception e) {
-				e.printStackTrace();
+	private void sendGetMetaCmd(final String id, final String txt) {
+		ApiParams params = new ApiParams();
+		params.addParam("objIds", id);
+		HttpGetCommand.createCommand(0, "metaobject", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				MultiLevelItem selectedItem = new MultiLevelItem();
+				selectedItem.id = id;
+				selectedItem.txt = txt;
+				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
 			}
-			MultiLevelItem selectedItem = new MultiLevelItem();
-			selectedItem.id = this.id;
-			selectedItem.txt = this.txt;
-			sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
-		}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				json = responseData;
+				
+				MultiLevelItem selectedItem = new MultiLevelItem();
+				selectedItem.id = id;
+				selectedItem.txt = txt;
+				sendMessage(MESSAGE_GET_METAOBJ, selectedItem);
+			}
+		});
 	}
+	
+	
 	class FirstCateAdapter extends BaseAdapter {
 		private List list = null;
 		public FirstCateAdapter(List list) {

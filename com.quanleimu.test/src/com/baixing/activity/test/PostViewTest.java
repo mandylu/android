@@ -33,7 +33,7 @@ public class PostViewTest extends BaixingTestCase {
 	
 	@Test
 	public void testPostChecking() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		//android3.0
 		//home页点击右上方“发布”按钮
 		//选择类目“兼职招聘”>"学生兼职／实习"
@@ -59,7 +59,7 @@ public class PostViewTest extends BaixingTestCase {
 		
 		//android3.0
 		//home页点击右上方“发布”按钮
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		//点击类目“生活服务”>"摄影"
 		String title = postEnterData(postDataSheying);
 		//检查页面title为“发布”

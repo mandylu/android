@@ -9,7 +9,7 @@
 	    android:background="@color/bg_screen"
     	android:focusableInTouchMode="false">
 	    	
- <!--    	<include layout="@layout/tab_with_pager"/> -->
+ <include layout="@layout/common_title"/>
  
  <include layout="@layout/gridcategory"/>
 								    

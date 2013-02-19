@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.widget;
 
 
@@ -26,12 +27,12 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baixing.adapter.GoodsListAdapter;
+import com.baixing.adapter.VadListAdapter;
 import com.baixing.util.Communication;
 import com.quanleimu.activity.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener, OnClickListener {
-
+	
     private static final int TAP_TO_REFRESH = 1;
     private static final int PULL_TO_REFRESH = 2;
     private static final int RELEASE_TO_REFRESH = 3;
@@ -61,6 +62,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     
     private LinearLayout mGapHeaderView = null;
     
+    private boolean showFooter = true;
     private ViewGroup mGetmoreView = null;
     private ViewGroup mNoInfoView = null;
     //private TextView mGetmoreViewText;
@@ -190,6 +192,10 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     }
 
     private void updateFooter(boolean hasMore){
+    	if (!showFooter) {
+    		return;
+    	}
+    	
     	if(mAllowGetMore){
 	    	mHasMore = hasMore;
 	    	if(mHasMore){
@@ -921,4 +927,9 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     		onGetMore();
     	}
 	}
+    
+    public void setAdapter(ListAdapter adapter, boolean showFooter) {
+    	super.setAdapter(adapter);
+    	this.showFooter = showFooter;
+    }
 }

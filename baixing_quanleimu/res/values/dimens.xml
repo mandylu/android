@@ -23,6 +23,8 @@
     <dimen name="font_input_text">16sp</dimen>
     <dimen name="filter_gap">10dp</dimen>
     <dimen name="line_space">6sp</dimen>
+    <dimen name="progress_size_small">10dp</dimen>
+    <dimen name="check_box_size">38dp</dimen>
     
     <!-- personal center -->
     <dimen name="icon_width_small">30dp</dimen>
@@ -39,4 +41,18 @@
     <dimen name="post_marginbottom">8dip</dimen>
     <dimen name="post_item_height">48dip</dimen>
     <dimen name="post_arrow_size">16dip</dimen>
+    
+    <!-- camera -->
+    <dimen name="camera_result_width">90dp</dimen>
+    <dimen name="camera_action_bar_height">48dp</dimen>
+    <dimen name="camera_cap_button_width">84dp</dimen>
+    <dimen name="camera_cap_button_height">36dp</dimen>
+    <dimen name="camera_gallery_width">20dp</dimen>
+    <dimen name="camera_gallery_height">20dp</dimen>
+    <dimen name="camera_action_button_width">65dp</dimen>
+    <dimen name="camera_preview_width">68dp</dimen>
+    <dimen name="camera_preview_gap">22dp</dimen>
+    <dimen name="camera_preview_half_gap">11dp</dimen>
+    <dimen name="camera_del_preview_width">20dp</dimen>
+    <dimen name="camera_preview_board_size">1dp</dimen>
 </resources>

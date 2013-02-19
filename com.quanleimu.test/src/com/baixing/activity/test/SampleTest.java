@@ -74,13 +74,13 @@ public class SampleTest extends BaixingTestCase {
 	
 	@Test
 	public void testPost() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		openPostCategory(0, 0);
 	}
 	
 	@Test 
 	public void testPostData() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		openPostCategory(1, 6);//车辆买卖， 汽车用品
 		//openPostItemByIndex(0);
 		//selectMetaByName("宝山");
@@ -106,7 +106,7 @@ public class SampleTest extends BaixingTestCase {
 	}
 	
 	public void testPostPhoto() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		openPostCategory(3, 2);
 		sleep(1);
 		doClickPostPhoto();
@@ -192,7 +192,7 @@ public class SampleTest extends BaixingTestCase {
 	@Test
 	public void testScrollToNextScreen() throws Exception {
 		logon();
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		openPostFirstCategory(0);
 		AbsListViewElement catListView = findElementById(CATEGORY_SECOND_GRIDVIEW_ID,
 				AbsListViewElement.class);

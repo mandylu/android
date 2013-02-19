@@ -1,6 +1,6 @@
 package com.baixing.view.fragment;
 
-import com.quanleimu.activity.BaseActivity;
+import com.baixing.activity.BaseActivity;
 
 import android.content.DialogInterface;
 import android.os.Bundle;

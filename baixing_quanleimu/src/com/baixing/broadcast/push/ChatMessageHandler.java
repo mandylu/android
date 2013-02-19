@@ -1,19 +1,18 @@
+//liuchong@baixing.com
 package com.baixing.broadcast.push;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.content.Context;
+import android.content.Intent;
+import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.ChatMessage;
 import com.baixing.util.ViewUtil;
-import com.baixing.view.fragment.TalkFragment;
-import com.quanleimu.activity.QuanleimuMainActivity;
-
-import android.content.Context;
-import android.content.Intent;
-import android.os.Bundle;
 
 public class ChatMessageHandler extends PushHandler {
 
@@ -44,12 +43,12 @@ public class ChatMessageHandler extends PushHandler {
 			cxt.sendBroadcast(intent);
 			
 			//Update UI or schedule status bar notification.
-			if (TalkFragment.CURRENT_RECEIVER_TRICKY != null && 
-					msg.getFrom().equals(TalkFragment.CURRENT_RECEIVER_TRICKY))
-			{
-				//TODO: update badge count.
-			}
-			else/* if (!isUIActive(QuanleimuMainActivity.class.getName()))*/
+//			if (TalkFragment.CURRENT_RECEIVER_TRICKY != null && 
+//					msg.getFrom().equals(TalkFragment.CURRENT_RECEIVER_TRICKY))
+//			{
+//				//TODO: update badge count.
+//			}
+//			else/* if (!isUIActive(QuanleimuMainActivity.class.getName()))*/
 			{
 				final String titleText = jsonObj.has("text") ? jsonObj.getString("text") : "私信提醒";
 				Bundle bundle = new Bundle();

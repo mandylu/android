@@ -23,7 +23,7 @@ public class AdViewTest extends BaixingTestCase {
 		
 		//android3.0
 		//首页点击交友活动>女找男
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(6, 1);
 		//检查列表的title view文字部分包含“女找男”
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_NZN);
@@ -40,7 +40,7 @@ public class AdViewTest extends BaixingTestCase {
 			
 		//android3.0
 	    //进入类目车辆买卖>二手轿车
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(1, 0);
 		//检查列表的title view文字部分包含"二手轿车"
 		ViewElement v = findElementByText(TEST_DATA_CATEGORY_QICHE);
@@ -63,16 +63,19 @@ public class AdViewTest extends BaixingTestCase {
 		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
 		if (tv != null) {
+			TextViewElement tv2 = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+			String adtitle = tv2.getText();
 			//点击地图查看
 			tv.doClick();
 			sleep(1);
-			assertElementByText(TEST_DATA_CATEGORY_QICHE);
+			assertNoElementByText(TEST_DATA_CATEGORY_QICHE);
 			//检查页面title包含当前地区地点文字“金桥”
 			String area = tv.getText();
 			tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 			assertNotNull(tv);
-			boolean found = false;
-			assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);
+			//boolean found = false;
+			//assertTrue("not found area:" + area, area.indexOf(tv.getText()) != -1);
+			assertTrue(!adtitle.equals(area));
 		}
 		//点击返回
 		goBack();

@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.broadcast;
 
 /**
@@ -10,4 +11,5 @@ public interface NotificationIds {
 	int NOTIFICATION_XMPP_CONNECTION_STATUS = 2001;
 	int NOTIFICATION_ID_BXINFO = 3001;
 	int NOTIFICATION_ID_UPGRADE = 4001;
+	int NOTIFICATION_ID_JUMPURL = 5001;
 }

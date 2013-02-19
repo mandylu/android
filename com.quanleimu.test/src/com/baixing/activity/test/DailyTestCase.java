@@ -97,7 +97,7 @@ public class DailyTestCase extends BaixingTestCase {
 		openAdWithPic(true);
 		//Check AdView
 		assertElementByText("adlisting ershoujiaoche adview price title not found", ADVIEW_PRICE_TEXT);
-		assertElementByText("adlisting ershoujiaoche adview favorite title not found", AD_FAVORITE_BUTTON_TEXT);
+		assertElementByTexts(AD_FAVORITE_BUTTON_TEXT + "@" + AD_FAVORITE_CANCEL_TEXT, false);
 		
 		goBack();
 		
@@ -136,7 +136,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为带图片展示
@@ -150,7 +150,7 @@ public class DailyTestCase extends BaixingTestCase {
 		//点击返回
 		goBack();
 		//点击浏览信息
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		//点击物品交易>台式电脑
 		openCategoryByIndex(0, 4);
 		//检查listing信息为不带图片展示
@@ -214,19 +214,19 @@ public class DailyTestCase extends BaixingTestCase {
 	@Test
 	public void testPost1() throws Exception {
 		logon();
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(random(3), random(10));
 	}
 	
 	@Test
 	public void testPost2() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(3 + random(3), random(10));
 	}
 	
 	@Test
 	public void testPost3() throws Exception {
-		openTabbar(TAB_ID_POST);
+		openTabbar(TAB_ID_POST_TEXT);
 		postByIndex(6 + random(4), random(10));
 	}
 	
@@ -320,17 +320,21 @@ public class DailyTestCase extends BaixingTestCase {
 		//提取当前信息的地区地点信息，如“浦东金桥”
 		TextViewElement tv = findDetailViewMetaByName(AD_DETAIL_META_AREA_TEXT);
 		assertNotNull(tv);
+		TextViewElement tv2 = findElementById(VIEW_TITLE_ID, TextViewElement.class);
+		String adtitle = tv2.getText();
 		//点击地图查看
 		tv.doClick();
 		sleep(3);
 		assertNoElementByText("checkListing " + firstCategory + ":" + categoryName + " checkMap error", 
 				categoryName);
+		assertNoElementByText(AD_DETAIL_META_AREA_TEXT);
 		//检查页面title包含当前地区地点文字“金桥”
 		String area = tv.getText();
 		tv = findElementById(VIEW_TITLE_ID, TextViewElement.class);
 		assertNotNull(tv);
-		boolean found = false;
-		assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
+		assertTrue(!adtitle.equals(area));
+		//boolean found = false;
+		//assertTrue("checkListing " + firstCategory + ":" + categoryName + " checkMap not found area:" + area, area.indexOf(tv.getText()) != -1);
 		goBack();
 	}
 	

@@ -2,6 +2,8 @@ package com.baixing.entity;
 
 import java.io.Serializable;
 
+import com.fasterxml.jackson.annotation.JsonIgnore;
+
 public class ImageList implements Serializable{
 	
 	/**
@@ -21,18 +23,47 @@ public class ImageList implements Serializable{
 	public String getSmall() {
 		return small;
 	}
+	
+	@JsonIgnore
+	public String[] getSmallArray() {
+		return parseForArray(small);
+	}
+	
 	public void setSmall(String small) {
 		this.small = small;
 	}
+	
 	public String getBig() {
 		return big;
 	}
+	
+	@JsonIgnore
+	public String[] getBigArray() {
+		return parseForArray(big);
+	}
+	
+	private String[] parseForArray(String str) {
+		if (str != null) {
+			String[] list = str.split(",");
+			return list;
+		}
+		
+		return null;
+	}
+	
 	public void setBig(String big) {
 		this.big = big;
 	}
+	
 	public String getResize180() {
 		return resize180;
 	}
+	
+	@JsonIgnore
+	public String[] getResize180Array() {
+		return parseForArray(resize180);
+	}
+	
 	public void setResize180(String resize180) {
 		this.resize180 = resize180;
 	}

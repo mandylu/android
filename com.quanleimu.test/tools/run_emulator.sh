@@ -39,7 +39,7 @@ wait_for_boot_complete()
     result=$(adb -s emulator-$port shell getprop dev.bootcomplete)
     result_test=${result:0:1}
     i=`expr "$i + 1" | bc`;
-    if [ $i -ge 300 ];then
+    if [ $i -ge 240 ];then
     	break;
     fi
   done
@@ -60,6 +60,10 @@ else
 	emulator -avd $emulator -port $port -sdcard $imgpath/$emulator.img &
 	wait_for_boot_complete
 	echo "Device emulator-$port connected."
+	adb kill-server;
+	sleep 1;
+	adb start-server;
+	sleep 3;
 	adb -s emulator-$port wait-for-device
 	sleep 60;
 fi

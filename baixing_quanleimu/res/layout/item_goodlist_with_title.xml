@@ -4,14 +4,34 @@
     android:layout_height="match_parent"
     android:descendantFocusability="blocksDescendants"
     android:orientation="vertical" >
-    <include layout="@layout/filter_indicator_title"/>
-    
-    <include layout="@layout/item_goodslist"/>
-    
-    <View     
+
+    <include layout="@layout/filter_indicator_title" />
+
+    <RelativeLayout
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content" >
+
+        <include layout="@layout/item_goodslist" />
+
+        <TextView
+            android:id="@+id/sharedTag"
+            android:layout_width="60dip"
+            android:layout_height="20dip"
+            android:layout_alignParentLeft="true"
+            android:layout_alignParentTop="true"
+            android:background="#F9991E"
+            android:textSize="@dimen/font_small"
+            android:textColor="#FFFFFF"
+            android:gravity="center"
+            android:visibility="invisible"
+            android:text="已转发" >
+        </TextView>
+    </RelativeLayout>
+
+    <View
         android:id="@+id/vad_divider"
         android:layout_width="match_parent"
-   		android:layout_height="1dp"
+        android:layout_height="1dp"
         android:background="@drawable/list_divider" >
     </View>
 

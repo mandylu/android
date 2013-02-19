@@ -5,7 +5,6 @@ import java.util.List;
 import android.app.Activity;
 import android.content.Context;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
@@ -14,20 +13,18 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.AdapterView;
+import android.widget.AdapterView.OnItemClickListener;
 import android.widget.Button;
 import android.widget.EditText;
 import android.widget.ListView;
-import android.widget.AdapterView.OnItemClickListener;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.BXAlphabetSortableAdapter;
-import com.baixing.adapter.CheckableAdapter;
-import com.baixing.adapter.CommonItemAdapter;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
+import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
+import com.baixing.adapter.CommonItemAdapter;
 import com.quanleimu.activity.R;
 
 public class SelectionSearchFragment extends BaseFragment implements View.OnClickListener{
@@ -59,7 +56,7 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.selectionsearch, null);
 	
@@ -134,11 +131,6 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 	public void initTitle(TitleDef title){
 		title.m_visible = false;
 	}
-	
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 
 
 	@Override
@@ -146,9 +138,6 @@ public class SelectionSearchFragment extends BaseFragment implements View.OnClic
 		switch(v.getId())
 		{
 			case R.id.btnCancel:
-//				if(m_viewInfoListener != null){
-//					m_viewInfoListener.onBack();
-//				}
 				finishFragment();
 				break;
 		}

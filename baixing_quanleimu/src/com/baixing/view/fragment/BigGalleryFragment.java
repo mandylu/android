@@ -24,38 +24,37 @@ import android.os.Environment;
 import android.os.Message;
 import android.provider.MediaStore;
 import android.provider.MediaStore.Images;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.Gallery;
 import android.widget.ImageView;
-import android.widget.ImageView.ScaleType;
 import android.widget.Toast;
 
-import com.baixing.entity.GoodsDetail;
-import com.baixing.imageCache.SimpleImageLoader;
+import com.baixing.activity.BaseFragment;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
+import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
 import com.baixing.widget.ViewFlow;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
+class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	
-	public static final int MSG_HIDE_TITLE = 1;
-	public static final int MSG_SHOW_TITLE = 2;
+	private static final int MSG_HIDE_TITLE = 1;
+	private static final int MSG_SHOW_TITLE = 2;
 	
 	//int index = 0;
-	public static int MSG_GALLERY_BACK = 0xFFFF0001;
+	static int MSG_GALLERY_BACK = 0xFFFF0001;
 	private int postIndex = -1;
-	public GoodsDetail goodsDetail;
-	public List<String> listUrl = new ArrayList<String>();
-	private WeakReference<Bitmap> mb;
+	private Ad goodsDetail;
+	private List<String> listUrl = new ArrayList<String>();
+//	private WeakReference<Bitmap> mb;
 //	private HashMap<String, byte[]> imageData;
 	private boolean exit = false;
 	
@@ -76,7 +75,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		super.onCreate(savedInstanceState);
 		Bundle bundle = getArguments();
 		postIndex = bundle.getInt("postIndex");
-		goodsDetail = (GoodsDetail) bundle.getSerializable("goodsDetail");
+		goodsDetail = (Ad) bundle.getSerializable("goodsDetail");
 	}
 
 
@@ -89,21 +88,17 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 //		Log.d("hahaha", "hahaha,  biggalleryFragment onCreateView");
-		QuanleimuApplication.getImageLoader().enableSampleSize();
+//		ImageCacheManager.getInstance().enableSampleSize(true);
 		View v = inflater.inflate(R.layout.biggallery, null);
 		
 		try {
 			if(goodsDetail.getImageList().getBig() == null || goodsDetail.getImageList().getBig().equals(""))
 			{
-//				if(null != m_viewInfoListener){
-					TitleDef title = getTitleDef();
-					title.m_title = "0/0";
-					refreshHeader();
-//					m_viewInfoListener.onTitleChanged(title);
-//				}
+				TitleDef title = getTitleDef();
+				title.m_title = "0/0";
 				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
 			}
 			else
@@ -125,7 +120,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				
 				BitmapFactory.Options o =  new BitmapFactory.Options();
                 o.inPurgeable = true;
-                mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(),R.drawable.loading_210_black, o));  
+//                mb = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.loading_210_black, -1, -1);  
                 
 				ViewFlow vfCoupon = (ViewFlow)v.findViewById(R.id.vfCoupon);
 				
@@ -149,39 +144,26 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 		
 		title.m_rightActionHint = "保存";
 	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
 	
 	@Override
-	public void onDestroyView(){
+	public void onViewDestory(View rootView){
 //		ViewFlow vf = ((ViewFlow)this.getView().findViewById(R.id.vfCoupon));
-        ((ViewFlow)this.getView().findViewById(R.id.vfCoupon)).finalize();
+        ((ViewFlow)rootView.findViewById(R.id.vfCoupon)).finalize();
 //        Log.d("hahaha", "hahaha,  biggalleryFragment onDestroyView");
         
 //        goodsDetail = null;
-        QuanleimuApplication.getImageLoader().disableSampleSize();
-  		SimpleImageLoader.Cancel(listUrl);
+//        ImageCacheManager.getInstance().enableSampleSize(false);
+  		ImageLoaderManager.getInstance().Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
 //  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					QuanleimuApplication.getImageLoader().forceRecycle(url);
+  					ImageCacheManager.getInstance().forceRecycle(url, true);
 //  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
   		}
-//  		listUrl = null;
-//  		System.gc();
-        
-        if(mb != null && mb.get() != null)
-        {
-            mb.get().recycle();
-            mb = null;
-        }
-        
-        super.onDestroyView();
 	}
 	
 	
@@ -240,19 +222,17 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	    {
 	    	super.onResume();
 	    	this.pv = PV.VIEWADPIC;
-	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
+	    	Tracker.getInstance().pv(this.pv).append(Key.ADID, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)).append(Key.SECONDCATENAME, goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME)).end();
 
-	    	QuanleimuApplication.getImageLoader().enableSampleSize();
-			if (null == mb || mb.get() == null) {
-				BitmapFactory.Options o = new BitmapFactory.Options();
-				o.inPurgeable = true;
-				mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(), R.drawable.loading_210_black, o));
-			}
+//	    	ImageCacheManager.getInstance().enableSampleSize(true);
+//			if (null == mb || mb.get() == null) {
+//				BitmapFactory.Options o = new BitmapFactory.Options();
+//				o.inPurgeable = true;
+//				mb = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getResources(), R.drawable.loading_210_black, o));
+//			}
 	    }
 	    
-	    public void onStackTop()
-	    {
-	    }
+	    
 	    
 	    @Override
 	    public void handleRightAction(){
@@ -266,10 +246,10 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 //	    		return;
 //	    	}
 //	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
-	    	String filePath = SimpleImageLoader.getFileInDiskCache(path);
+	    	String filePath = ImageCacheManager.getInstance().getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
-	    	String title = goodsDetail.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
+	    	String title = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
 
 	        int index = filePath.lastIndexOf("/");
 	        String fileName = filePath.substring(index+1)+".png";
@@ -345,19 +325,16 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	        
 	    }
 
-	    class GalleryImageAdapter extends BaseAdapter implements ViewFlow.ViewLazyInitializeListener
+	    private class GalleryImageAdapter extends BaseAdapter implements ViewFlow.ViewLazyInitializeListener
 	    {
-	        private Context context;
-
 	        private List<String> imageUrls;
 
 	        private int position = 0;
-
+	        private Bitmap failBk;
 	 //       private final ExecutorService pool;
 
-	        public GalleryImageAdapter(Context c, List<String> imageUrls)
+	        private GalleryImageAdapter(Context c, List<String> imageUrls)
 	        {
-	            this.context = c;
 	            this.imageUrls = imageUrls;
 
 	        }
@@ -402,10 +379,16 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				if(null == imageView.getTag() || !imageView.getTag().equals(imageUrls.get(position)))
 				{	
 //					imageView.setImageBitmap(mb);
-					imageView.setImageDrawable(getResources().getDrawable(R.drawable.bg_transparent));
+//					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent));
 					
-				    SimpleImageLoader.showImg(imageView, imageUrls.get(position), (String)imageView.getTag(), getAppContext());
-		            imageView.setTag(imageUrls.get(position));
+					if(failBk == null){
+						failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+					}
+					String prevTag = (String) imageView.getTag();
+					imageView.setTag(imageUrls.get(position));
+				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), 
+				    		prevTag, getAppContext(), new WeakReference<Bitmap>(failBk));
+		            
 				}
 
 //	            return imageView;
@@ -455,7 +438,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 				if(position - index >= 0)
 					urls.add(listUrl.get(position-index));				
 			}
-			SimpleImageLoader.AdjustPriority(urls);		
+			ImageLoaderManager.getInstance().AdjustPriority(urls);		
 		}
 
 		@Override

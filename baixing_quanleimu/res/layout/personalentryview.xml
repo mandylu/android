@@ -4,6 +4,7 @@
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
     
+     
     <include layout="@layout/persongridfactory"/>
 
 <!--     <ScrollView

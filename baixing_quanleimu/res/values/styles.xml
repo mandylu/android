@@ -1,5 +1,5 @@
 <?xml version="1.0" encoding="UTF-8"?> 
-<resources> 
+<resources xmlns:android="http://schemas.android.com/apk/res/android"> 
     <style name="CustomDialogStyle" parent="@android:style/Theme.Dialog"> 
         <item name="android:windowBackground">@color/dialogbackgournd</item> 
         <item name="android:windowNoTitle">true</item>
@@ -12,4 +12,27 @@
     <style name="TitleText" parent="@android:style/TextAppearance.DialogWindowTitle"> 
         <item name="android:textColor">#ffff0000</item> 
     </style> 
+	<style name="AnimationActivity" parent="@android:style/Animation.Activity">
+		<item name="android:activityOpenEnterAnimation">@anim/zoom_enter</item><!-- 当前activity打开时，进入的activity的动画 -->
+		<item name="android:activityOpenExitAnimation">@null</item><!-- 当前activity打开时，退出的activity的动画 -->
+		<item name="android:activityCloseEnterAnimation">@null</item><!-- 当前activity关闭时，进入的activity的动画 -->
+		<item name="android:activityCloseExitAnimation">@anim/zoom_exit</item><!-- 当前activity关闭时，退出的activity的动画 -->
+	</style>
+
+	<style name="ThemeActivity">
+		<item name="android:windowAnimationStyle">@style/AnimationActivity</item>
+	</style>    
+
+	<style name="mainActivityTheme" parent="@style/lightTheme">
+	    <item name="android:windowAnimationStyle">@null</item>
+	</style>
+	
+	<style name="customize_dialog" parent="@android:style/Theme.Dialog">
+    	<item name="android:windowTitleStyle">@style/dialog_title_style</item>
+  	</style>
+  
+	<style name="dialog_title_style" parent="android:Widget.TextView">
+	    <item name="android:textColor">#ffffff</item>
+	    <item name="android:textSize">@dimen/font_large</item>
+	</style>
 </resources>

@@ -6,10 +6,9 @@ import java.util.LinkedHashMap;
 import java.util.List;
 
 import android.app.Activity;
-import android.app.ProgressDialog;
 import android.os.Bundle;
-import android.os.Handler;
 import android.os.Message;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -18,17 +17,18 @@ import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListAdapter;
 import android.widget.ListView;
 
-import com.baixing.adapter.CheckableAdapter;
-import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXHeader;
 import com.baixing.adapter.BXAlphabetSortableAdapter.BXPinyinSortItem;
+import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
+import com.baixing.adapter.CommonItemAdapter;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.ApiClient.Api;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.Communication;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class MultiLevelSelectionFragment extends BaseFragment {
@@ -63,13 +63,6 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		title.m_title = this.title;
 		title.m_leftActionHint = "返回";
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
 	
 	@Override
 	public void onPause() {
@@ -131,7 +124,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
 		View v = inflater.inflate(R.layout.post_othersview, null);
@@ -177,7 +170,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 								MultiLevelItem nItem = new MultiLevelItem();
 								nItem.id = MultiLevelSelectionFragment.this.id;
 								nItem.txt = MultiLevelSelectionFragment.this.title;
-								finishFragment(requestCode, nItem);
+								finishFragment(fragmentRequestCode, nItem);
 //								m_viewInfoListener.onBack(message, nItem);
 								return;
 //							}
@@ -243,7 +236,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 							"全部" : MultiLevelSelectionFragment.this.title;
 					//MultiLevelSelectionFragment.this.title.equals("请选择") ? "全部" : MultiLevelSelectionFragment.this.title;
 //					m_viewInfoListener.onBack(message, nItem);
-					finishFragment(requestCode, nItem);
+					finishFragment(fragmentRequestCode, nItem);
 					return;
 				}
 				if(hasNextLevel){
@@ -253,10 +246,10 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 								: (MultiLevelItem)adapter.getItem(position);
 								
 						if (isMunisipality(item.txt)) { // TODO: levels:"sheng,city"时，直辖市没有下一级了。 @zhongjiawu
-							finishFragment(requestCode, item);
+							finishFragment(fragmentRequestCode, item);
 						} else {
 							Bundle bundle = createArguments(item.txt, null);
-							bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+							bundle.putInt(ARG_COMMON_REQ_CODE, fragmentRequestCode);
 							bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
 							bundle.putString("metaId", item.id);
 							bundle.putString("selectedValue", selectedValue);
@@ -277,7 +270,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //					if(null != m_viewInfoListener){
 //						m_viewInfoListener.onBack(message, mItem);
 //					}
-					finishFragment(requestCode, mItem);
+					finishFragment(fragmentRequestCode, mItem);
 				}
 			}
 		});		
@@ -292,13 +285,17 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		@Override
 		public void run() {
 			String apiName = "metaobject";
-			ArrayList<String> list = new ArrayList<String>();
-			list.add("objIds=" + id);
-			String url = Communication.getApiUrl(apiName, list);
+//			ArrayList<String> list = new ArrayList<String>();
+			ApiParams params = new ApiParams();
+			params.addParam("objIds", id);
+//			list.add("objIds=" + id);
 			try {
-				json = Communication.getDataByUrl(url, false);
+//				String url = Communication.getApiUrl(apiName, list);
+				json = ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
+//				json = Communication.getDataByUrl(url, false);
 			} catch (Exception e) {
-				e.printStackTrace();
+//				e.printStackTrace();
+				Log.d("QLM", "fail to get meta object, caused by " + e.getMessage());
 			}
 			sendMessage(MESSAGE_GET_METAOBJ, null);
 		}
@@ -309,7 +306,7 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 		if(message == SelectionSearchFragment.MSG_SELECTIONVIEW_BACK){
 			if(adapter instanceof CommonItemAdapter && obj instanceof MultiLevelItem){
 				Bundle bundle = createArguments(((MultiLevelItem)obj).txt, null);
-				bundle.putInt(ARG_COMMON_REQ_CODE, requestCode);
+				bundle.putInt(ARG_COMMON_REQ_CODE, fragmentRequestCode);
 				bundle.putInt("maxLevel", MultiLevelSelectionFragment.this.remainLevel - 1);
 				bundle.putString("metaId", ((MultiLevelItem)obj).id);
 				pushFragment(new MultiLevelSelectionFragment(), bundle);
@@ -322,14 +319,14 @@ public class MultiLevelSelectionFragment extends BaseFragment {
 //				if(null != m_viewInfoListener){
 //					m_viewInfoListener.onBack(this.message, mItem);
 //				}
-				finishFragment(requestCode, mItem);
+				finishFragment(fragmentRequestCode, mItem);
 			}
 			return;
 		}
 //		if(this.m_viewInfoListener != null){
 //			this.m_viewInfoListener.onBack(message, obj);
 //		}
-		finishFragment(requestCode, obj);
+		finishFragment(fragmentRequestCode, obj);
 	}
 	
 	public boolean hasGlobalTab()

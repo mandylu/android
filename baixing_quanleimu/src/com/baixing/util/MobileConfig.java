@@ -9,12 +9,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
+import com.baixing.android.api.ApiParams;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication.BXHttpException;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class MobileConfig {
 	private JSONObject json = null;
@@ -28,7 +32,7 @@ public class MobileConfig {
 	}
 	
 	private MobileConfig() {
-		Context context = QuanleimuApplication.getApplication().getApplicationContext();
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
 		Pair<Long, String> p = Util.loadJsonAndTimestampFromLocate(context, "mobile_config");
 		String jsonString = p.second;
 		if (jsonString == null || jsonString.length() == 0) {
@@ -85,7 +89,7 @@ public class MobileConfig {
     public boolean hasNewVersion() {
         try {
             String serverVersion = json.getString("serverVersion");
-            return (Version.compare(serverVersion, QuanleimuApplication.version) == 1);
+            return (Version.compare(serverVersion, GlobalDataManager.getInstance().getVersion()) == 1);
         } catch (JSONException e) {
             return false;
         }
@@ -102,30 +106,26 @@ public class MobileConfig {
 			String apiName = "mobile_config";
 
 			Pair<Long, String> p = 
-					Util.loadJsonAndTimestampFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config");
+					Util.loadJsonAndTimestampFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config");
 			if (System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
 				return;
 			}
 			
-			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+//			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
-				String content = Communication.getDataByUrl(url, true);
+				String content = ApiClient.getInstance().invokeApi(Api.createGet(apiName), new ApiParams());//
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
-					Util.saveJsonAndTimestampToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
+					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);
 					
 //			        if (MobileConfig.this.hasNewVersion()) {			        	
 //			            UpdateHelper.getInstance().checkNewVersion(QuanleimuApplication.getApplication().getApplicationContext());
 //			        }
 				}
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-			} catch (IOException e) {
-				e.printStackTrace();
-			} catch (BXHttpException e) {
-				e.printStackTrace();
-			} catch (JSONException e) {
-				e.printStackTrace();
+			}
+			catch (Throwable t)
+			{
+				Log.e("QLM", "get mobile config faild. caused by " + t.getMessage());
 			}
 			finally
 			{

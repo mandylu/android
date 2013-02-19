@@ -1,8 +1,5 @@
 package com.baixing.view.fragment;
 
-import java.util.Timer;
-import java.util.TimerTask;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -10,7 +7,6 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -19,13 +15,18 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
+import com.baixing.android.api.cmd.HttpPostCommand;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ParameterHolder;
-import com.baixing.util.Tracker;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
 import com.quanleimu.activity.R;
 
 
@@ -65,11 +66,8 @@ public class ForgetPassFragment extends BaseFragment {
 		title.m_title = "找回密码";
 		title.m_leftActionHint = "返回";
 	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootV = inflater.inflate(R.layout.forget_password, null);
@@ -165,33 +163,34 @@ public class ForgetPassFragment extends BaseFragment {
         getCodeBtn.setEnabled(false);
         lessTimeTv.setVisibility(View.VISIBLE);
 
-        ParameterHolder params = new ParameterHolder();
-        params.addParameter("mobile", mobileEt.getText());
+//        ParameterHolder params = new ParameterHolder();
+        ApiParams params = new ApiParams();
+        params.addParam("mobile", mobileEt.getText().toString());
+//        params.addParameter("mobile", mobileEt.getText());
 
-        Communication.executeAsyncGetTask("sendsmscode", params, new Communication.CommandListener() {
-
-            @Override
-            public void onServerResponse(String serverMessage) {
-                try {
-                    JSONObject obj = new JSONObject(serverMessage).getJSONObject("error");
-                    if (!"0".equals(obj.getString("code"))) {
-                    	postEnableGetCodeBtn();
-                        sendMessage(MSG_SENT_CODE_ERROR, obj.getString("message"));
-                    } else  {
-                        sendMessage(MSG_SENT_CODE_FINISH, null);
-                    }
-                } catch (JSONException e) {
-                	postEnableGetCodeBtn();
-                    sendMessage(MSG_SENT_CODE_ERROR, "网络异常");
-                }
-
-            }
-
-            @Override
-            public void onException(Exception ex) {
-                sendMessage(MSG_NETWORK_ERROR, "网络异常");
-            }
-        });
+        HttpGetCommand.createCommand(0, "sendsmscode", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				 sendMessage(MSG_NETWORK_ERROR, "网络异常");
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				 try {
+	                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
+	                    if (!"0".equals(obj.getString("code"))) {
+	                    	postEnableGetCodeBtn();
+	                        sendMessage(MSG_SENT_CODE_ERROR, obj.getString("message"));
+	                    } else  {
+	                        sendMessage(MSG_SENT_CODE_FINISH, null);
+	                    }
+	                } catch (JSONException e) {
+	                	postEnableGetCodeBtn();
+	                    sendMessage(MSG_SENT_CODE_ERROR, "网络异常");
+	                }
+			}
+		});
     }
 
     private void doPostNewPwdAction() {
@@ -199,17 +198,22 @@ public class ForgetPassFragment extends BaseFragment {
             return;
         }
 
-        ParameterHolder params = new ParameterHolder();
-        params.addParameter("mobile", mobileEt.getText());
-        params.addParameter("code", codeEt.getText());
-        params.addParameter("password", newPwdEt.getText());
-
-        Communication.executeAsyncGetTask("resetpassword", params, new Communication.CommandListener() {
-
-            @Override
-            public void onServerResponse(String serverMessage) {
+        ApiParams params = new ApiParams();
+        params.addParam("mobile", mobileEt.getText().toString());
+        params.addParam("code", codeEt.getText().toString());
+        params.addParam("password", newPwdEt.getText().toString());
+        
+        HttpPostCommand.createCommand(0, "resetpassword", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				sendMessage(MSG_NETWORK_ERROR, "网络异常");
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
                 try {
-                    JSONObject obj = new JSONObject(serverMessage).getJSONObject("error");
+                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
                     if (!"0".equals(obj.getString("code"))) {
                         sendMessage(MSG_POST_ERROR, obj.getString("message"));
                     } else  {
@@ -220,12 +224,7 @@ public class ForgetPassFragment extends BaseFragment {
                 }
 
             }
-
-            @Override
-            public void onException(Exception ex) {
-                sendMessage(MSG_NETWORK_ERROR, "网络异常");
-            }
-        });
+		});
     }
 
     @Override

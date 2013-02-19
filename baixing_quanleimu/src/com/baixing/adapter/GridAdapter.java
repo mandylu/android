@@ -1,7 +1,9 @@
+//liuchong@baixing.com
 package com.baixing.adapter;  
   
 import java.util.List;  
 
+import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
   
 import android.content.Context;  
@@ -97,7 +99,7 @@ public class GridAdapter extends BaseAdapter {
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageResource(info.imgResourceId);
+            holder.imageBtn.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(info.imgResourceId));
             holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  

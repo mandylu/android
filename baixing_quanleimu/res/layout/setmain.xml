@@ -1,147 +1,236 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent"
-                android:background="@color/bg_screen">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen" >
+
+    <include layout="@layout/common_title" />
 
     <ScrollView
-            android:layout_width="fill_parent"
-            android:layout_height="fill_parent"
-            android:layout_marginBottom="5dip">
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearTop"
+        android:layout_marginBottom="5dip" >
 
         <LinearLayout
-                android:orientation="vertical"
-                android:layout_width="fill_parent"
-                android:layout_height="fill_parent">
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
             <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" >
+
+                <View
+                    android:id="@+id/lineView"
                     android:layout_width="fill_parent"
-                    android:layout_height="@dimen/set_table_height" android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp">
-                <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="5dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/base_green" android:layout_alignParentBottom="true"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="系统设置"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textColor="@color/base_green" android:textSize="@dimen/set_table_header_text_height"/>
-            </RelativeLayout>
-            <RelativeLayout android:layout_width="fill_parent" android:layout_height="@dimen/set_table_height"
-                            android:id="@+id/setFlowOptimize" android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp" android:clickable="true"
-                            android:background="@drawable/list_selector">
-                <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="流量优化设置"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/set_table_item_text_height"
-                        android:id="@+id/textView1"/>
+                    android:layout_height="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/base_green" />
 
                 <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="图片模式"
-                        android:id="@+id/setFlowOptimizeTw"
-                        android:layout_alignParentLeft="false"
-                        android:layout_alignTop="@+id/textView1"
-                        android:layout_alignParentRight="true"
-                        android:layout_marginRight="10dp"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="系统设置"
+                    android:textColor="@color/base_green"
+                    android:textSize="@dimen/set_table_header_text_height" />
             </RelativeLayout>
-            <RelativeLayout android:layout_width="fill_parent" android:layout_height="@dimen/set_table_height"
-                            android:id="@+id/setBindID" android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp" android:clickable="true"
-                            android:background="@drawable/list_selector">
-                <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="@string/label_login"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/set_table_item_text_height" android:id="@+id/setBindIdtextView"/>
-            </RelativeLayout>
+
             <RelativeLayout
+                android:id="@+id/setFlowOptimize"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
                     android:layout_width="fill_parent"
-                    android:layout_height="@dimen/set_table_height" android:layout_marginLeft="10dp"
-                    android:layout_marginRight="10dp">
-                <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="5dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/base_green" android:layout_alignParentBottom="true"/>
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
                 <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="其它设置"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textColor="@color/base_green" android:textSize="@dimen/set_table_header_text_height"/>
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="流量优化设置"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/setFlowOptimizeTw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView1"
+                    android:layout_marginRight="10dp"
+                    android:text="图片模式" />
             </RelativeLayout>
-            <RelativeLayout android:layout_width="fill_parent" android:layout_height="@dimen/set_table_height"
-                            android:id="@+id/setCheckUpdate" android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp" android:clickable="true"
-                            android:background="@drawable/list_selector">
+
+            <RelativeLayout
+                android:id="@+id/bindSharingAccount"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
                 <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
-                <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="检查更新"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/set_table_item_text_height"/>
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView                    
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="绑定转发帐号"
+                    android:textSize="@dimen/set_table_item_text_height" />
             </RelativeLayout>
-            <RelativeLayout android:layout_width="fill_parent" android:layout_height="@dimen/set_table_height"
-                            android:id="@+id/setAbout" android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp" android:clickable="true"
-                            android:background="@drawable/list_selector">
+
+            <RelativeLayout
+                android:id="@+id/setBindID"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
                 <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
                 <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="关于"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/set_table_item_text_height"/>
+                    android:id="@+id/setBindIdtextView"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/label_login"
+                    android:textSize="@dimen/set_table_item_text_height" />
             </RelativeLayout>
-            <RelativeLayout android:layout_width="fill_parent" android:layout_height="@dimen/set_table_height"
-                            android:id="@+id/setFeedback" android:layout_marginLeft="10dp"
-                            android:layout_marginRight="10dp" android:clickable="true"
-                            android:background="@drawable/list_selector">
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" >
+
                 <View
-                        android:id="@+id/lineView"
-                        android:layout_width="fill_parent"
-                        android:layout_height="1dp"
-                        android:layout_centerVertical="true"
-                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/base_green" />
+
                 <TextView
-                        android:layout_width="wrap_content"
-                        android:layout_height="wrap_content"
-                        android:text="反馈"
-                        android:layout_centerVertical="true" android:layout_marginLeft="10dp"
-                        android:textSize="@dimen/set_table_item_text_height"/>
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="其它设置"
+                    android:textColor="@color/base_green"
+                    android:textSize="@dimen/set_table_header_text_height" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/setCheckUpdate"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="检查更新"
+                    android:textSize="@dimen/set_table_item_text_height" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/setAbout"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="关于"
+                    android:textSize="@dimen/set_table_item_text_height" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/setFeedback"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="反馈"
+                    android:textSize="@dimen/set_table_item_text_height" />
             </RelativeLayout>
         </LinearLayout>
     </ScrollView>

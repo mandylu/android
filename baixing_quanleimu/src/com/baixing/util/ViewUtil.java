@@ -1,36 +1,30 @@
+//liuchong@baixing.com
 package com.baixing.util;
 
-import java.io.File;
-
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.broadcast.NotificationIds;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsDetail.EDATAKEYS;
-import com.baixing.view.fragment.LoginFragment;
-import com.quanleimu.activity.R;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
-import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
-import android.app.AlertDialog.Builder;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.Build;
 import android.os.Bundle;
-import android.os.Environment;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
-import android.provider.MediaStore;
 import android.view.View;
-import android.view.View.OnClickListener;
-import android.view.WindowManager;
-import android.widget.Button;
-import android.widget.LinearLayout;
 import android.widget.Toast;
+
+import com.baixing.activity.BaiduMapActivity;
+import com.baixing.activity.BaseActivity;
+import com.baixing.broadcast.NotificationIds;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.quanleimu.activity.R;
 
 /**
  * 
@@ -98,30 +92,46 @@ public class ViewUtil {
 
 		String contentTitle = title == null ? "" : title;
 		String contentText = msg;
-
+		
+		Notification notification = new Notification(icon, tickerText,
+				System.currentTimeMillis());
+		notification.defaults |= Notification.DEFAULT_SOUND;
+		notification.defaults |= Notification.DEFAULT_VIBRATE;
+		if (isPersistant){
+			notification.flags |= Notification.FLAG_NO_CLEAR;
+		}
+		else{
+			notification.flags |= Notification.FLAG_AUTO_CANCEL;
+		}
+		
 		Intent notificationIntent = notificationType == null ? new Intent() : new Intent(notificationType);
+		if(notificationType.equals(Intent.ACTION_VIEW)){
+			if(extras != null){
+				String data = extras.getString("data");
+				JSONObject obj;
+				try {
+					obj = new JSONObject(data);
+					String url = obj.getString("url");
+					notificationIntent.setData(Uri.parse(url));
+					PendingIntent contentIntent = PendingIntent.getActivity(context, 0, notificationIntent, 0);
+					notification.setLatestEventInfo(context, contentTitle, contentText, contentIntent);
+					mNotificationManager.notify(notificationId, notification);
+					return;
+				} catch (JSONException e) {
+					// TODO Auto-generated catch block
+					e.printStackTrace();
+				}
+			}
+		}
 		if (extras != null)
 		{
 			notificationIntent.putExtras(extras);
 		}
 		if(notificationId == NotificationIds.NOTIFICATION_ID_BXINFO){
-			notificationIntent.putExtra("fromNotification", true);
+			notificationIntent.putExtra("pagejump", true);
 		}
 		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0,
 				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
-
-		Notification notification = new Notification(icon, tickerText,
-				System.currentTimeMillis());
-		notification.defaults |= Notification.DEFAULT_SOUND;
-		notification.defaults |= Notification.DEFAULT_VIBRATE;
-		if (isPersistant)
-		{
-			notification.flags |= Notification.FLAG_NO_CLEAR;
-		}
-		else
-		{
-			notification.flags |= Notification.FLAG_AUTO_CANCEL;
-		}
 
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);
@@ -129,34 +139,64 @@ public class ViewUtil {
 		mNotificationManager.notify(notificationId, notification);
 	}
 	
-	public static void startMapForAds(Context context, GoodsDetail ad) {
-		final String latV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LAT);
-		final String lonV = ad.getValueByKey(GoodsDetail.EDATAKEYS.EDATAKEYS_LON);
-		String query = null;
-		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+	public static void startMapForAds(Context context, Ad ad) {
+		
+		if (ad == null)
 		{
-			query = latV + "," + lonV;
-		}
-		else
-		{
-			String area = ad.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
-			String address = ad.getMetaValueByKey("具体地点");
-			if (address != null && address.trim().length() > 0)
-			{
-				query = address.trim();
-			}
-			else if (area != null && area.trim().length() > 0)
-			{
-				query = area.trim();
-			}
+            Toast.makeText(context, "无信息无法显示地图", 1).show();
+			return;
 		}
 		
-		if (query != null)
-		{
-			Intent intent = new Intent(Intent.ACTION_VIEW);
-			intent.setData(Uri.parse("http://maps.google.com/?q=" + query));
-			context.startActivity(intent);
-		}
+//		if(keepSilent) { //FIXME:
+//            Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
+//            return;
+//        }
+		
+		final BaseActivity baseActivity = (BaseActivity)context; //FIXME: should not be activity.
+		if (baseActivity != null){
+			if (Build.VERSION.SDK_INT >  16)//Fix baidu map SDK crash on android4.2 device.
+			{
+				final String latV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+				final String lonV = ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
+				String query = null;
+				if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+				{
+					query = latV + "," + lonV;
+				}
+				else
+				{
+					String area = ad.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+					String address = ad.getMetaValueByKey("具体地点");
+					if (address != null && address.trim().length() > 0)
+					{
+						query = address.trim();
+					}
+					else if (area != null && area.trim().length() > 0)
+					{
+						query = area.trim();
+					}
+				}
+				
+				if (query != null)
+				{
+					Intent intent = new Intent(Intent.ACTION_VIEW);
+					intent.setData(Uri.parse("http://maps.google.com/?q=" + query));
+					context.startActivity(intent);
+				}
+			}
+			else
+			{
+				Bundle bundle = new Bundle();
+				bundle.putSerializable("detail", ad);
+				baseActivity.getIntent().putExtras(bundle);
+				
+				baseActivity.getIntent().setClass(baseActivity, BaiduMapActivity.class);
+				baseActivity.startActivity(baseActivity.getIntent());
+			}
+			
+		} else {
+            Toast.makeText(context, "显示地图失败", Toast.LENGTH_SHORT).show();
+        }
 	}
 	
 	static public Bitmap createThumbnail(Bitmap srcBmp, int thumbHeight)
@@ -169,4 +209,12 @@ public class ViewUtil {
 		return thumbnail;
 	}
 	
+	static public void showToast(final Activity activity, final String msg){
+		activity.runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				Toast.makeText(activity, msg, 0).show();
+			}
+		});
+	}
 }

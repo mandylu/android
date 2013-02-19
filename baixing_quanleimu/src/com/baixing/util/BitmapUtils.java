@@ -1,3 +1,4 @@
+//xumengyi@baixing.com
 /*
  * Copyright (C) 2012 The Android Open Source Project
  *
@@ -15,7 +16,6 @@
  */
 
 package com.baixing.util;
-
 import android.annotation.SuppressLint;
 import android.app.Activity;
 import android.app.ActivityManager;
@@ -23,27 +23,43 @@ import android.content.Context;
 import android.database.Cursor;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
+import android.graphics.Matrix;
 import android.graphics.Bitmap.CompressFormat;
+import android.media.ExifInterface;
 import android.net.Uri;
 import android.os.Build;
 import android.os.Environment;
 import android.os.StatFs;
 import android.provider.MediaStore;
+import android.util.DisplayMetrics;
+import android.util.Log;
+import android.util.Pair;
 import android.view.WindowManager;
+import android.widget.Toast;
 
 import java.io.File;
+import java.io.FileInputStream;
 import java.io.FileNotFoundException;
 import java.io.FileOutputStream;
-import java.io.InputStream;
+import java.io.IOException;
 
-import com.quanleimu.activity.QuanleimuApplication;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.BXThumbnail;
 
 /**
  * Class containing some static utility methods.
  */
 public class BitmapUtils {
+	public static final String TAG = "BitmapUtils";
+	
+	public static final int DEFAULT_THUMBNAIL_WIDTH = 200;
+	public static final int DEFAULT_THUMBNAIL_HEIGHT = 200;
 	
     private static boolean useSampleSize = false;
+    
+    public static boolean useSampleSize(){
+    	return useSampleSize;
+    }
     
     public static void enableSampleSize(boolean b){
     	useSampleSize = b;
@@ -186,81 +202,31 @@ public class BitmapUtils {
 //        return Build.VERSION.SDK_INT >= Build.VERSION_CODES.HONEYCOMB;
 //    }
 	
-	public static Bitmap decodeSampledBitmapFromFile(String fileName) {
+
 	
-		if(null == fileName)	return null;
-		if(!(new File(fileName)).exists()) return null;
-		
-	    // First decode with inJustDecodeBounds=true to check dimensions
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    if(useSampleSize){
-			_Rect rc = new _Rect();
-			rc.width = 200;
-			rc.height = 200;
-			WindowManager wm = 
-					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
-			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
-			
-		    options.inJustDecodeBounds = true;
-		    BitmapFactory.decodeFile(fileName,options);
 	
-		    // Calculate inSampleSize
-		    options.inSampleSize = calculateInSampleSize(options, rc.width, rc.height);
-	    }
-	    else{
-	    	options.inSampleSize = 1;
-	    }
-	    
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    options.inPurgeable = true;
-	    return BitmapFactory.decodeFile(fileName, options);
-	}
-	
-	public static Bitmap decodeSampledBitmapFromFile(InputStream stream){
-	
-	    // First decode with inJustDecodeBounds=true to check dimensions
-	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    if(useSampleSize){	    	
-			_Rect rc = new _Rect();
-			rc.width = 200;
-			rc.height = 200;
-			WindowManager wm = 
-					(WindowManager)QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
-			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
-			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
-			
-		    options.inJustDecodeBounds = true;
-		    BitmapFactory.decodeStream(stream);
-	
-		    // Calculate inSampleSize
-		    options.inSampleSize = calculateInSampleSize(options, rc.width, rc.height);
-	    }
-	    else{
-	    	options.inSampleSize = 1;
-	    }
-	    
-	    // Decode bitmap with inSampleSize set
-	    options.inJustDecodeBounds = false;
-	    options.inPurgeable = true;
-	    return BitmapFactory.decodeStream(stream);
-	}
-	
-	public static int calculateInSampleSize(
-            BitmapFactory.Options options, int reqWidth, int reqHeight) {
-	    // Raw height and width of image
-	    final int height = options.outHeight;
+	public static int calculateInSampleSize(BitmapFactory.Options options, int reqWidth, int reqHeight) {
+		if(reqWidth <= 0 && reqHeight <= 0){
+			Context ctx = GlobalDataManager.getInstance().getApplicationContext();
+			if(ctx != null){
+				WindowManager wm = (WindowManager) ctx.getSystemService(Context.WINDOW_SERVICE);
+				DisplayMetrics metrics = new DisplayMetrics();
+				wm.getDefaultDisplay().getMetrics(metrics);
+				reqWidth = metrics.widthPixels;
+				reqHeight = metrics.heightPixels;
+			}
+		}
+		final int height = options.outHeight;
 	    final int width = options.outWidth;
 	    int inSampleSize = 1;
 	
 	    if (height > reqHeight || width > reqWidth) {
-	        inSampleSize = Math.round((float)height / (float)reqHeight);
-	        int t = Math.round((float)width / (float)reqWidth);
-	        if(t > inSampleSize) inSampleSize = t;
-	        
+	        if (width > height) {
+	            inSampleSize = Math.round((float)height / (float)reqHeight);
+	        } else {
+	            inSampleSize = Math.round((float)width / (float)reqWidth);
+	        }
 	    }
-	    
 	    return inSampleSize;
 	}
 	
@@ -285,7 +251,7 @@ public class BitmapUtils {
 		return thumbnail;
 	}
 
-	public static Bitmap getBitmap(String path)
+	private static Bitmap getBitmap(String path)
 	{
 		Bitmap currentBmp = null;
 		if (path != null) {
@@ -316,42 +282,7 @@ public class BitmapUtils {
 		return null;
 	}
 	
-	public static String saveBitmapToSdCard(String path,String name,Bitmap bitmap) {
-		String res = null;
-		FileOutputStream fos = null; 
-		if (Environment.getExternalStorageState() != null) {
-			try {
-				File p = new File("/sdcard/" + "deviceTool"); // ����Ŀ¼
-				File s = new File("/sdcard/" + "deviceTool" + "/" + path); // ����Ŀ¼
-				File f = new File("/sdcard/" + "deviceTool" + "/" + path + "/" + name + ".png"); // �����ļ�
-				if (!p.exists()) {
-					p.mkdir();
-				}
-				if (!s.exists()) {
-					s.mkdir();
-				}
-				if (!f.exists()) {
-					f.createNewFile();
-				}
-				fos = new FileOutputStream(f);
-				
-				bitmap.compress(CompressFormat.JPEG, 100, fos);
-				fos.close();
-				res = f.getAbsolutePath();
-			} catch (FileNotFoundException e) {
-				res = "û���ҵ��ļ�";
-				e.printStackTrace();
-			} catch (Exception e) {
-				res = "SD��δ��װ";
-				e.printStackTrace();
-			}
-		}else{
-			res = "��SD��";
-		}
-		return res;
-	}
-	
-	private static int getClosestResampleSize(int cx, int cy, int maxDim)
+	public static int getClosestResampleSize(int cx, int cy, int maxDim)
     {
         int max = Math.max(cx, cy);
         
@@ -365,10 +296,20 @@ public class BitmapUtils {
             }
         }
         
-        if (resample > 0)
+        if (resample > 1)
         {
+        	//For fucking LenovoA60 device: only 1, 2, 4, 8, 16, 32 ... works on this device.
+			if (resample < 4) {
+				resample = 2;
+			} else if (resample < 8) {
+				resample = 4;
+			} else {
+				resample = 8;
+			}          
+
             return resample;
         }
+        
         return 1;
     }
 	
@@ -387,6 +328,172 @@ public class BitmapUtils {
 		String ret = cursor.getString(column_index);
 //		cursor.close();
 		return ret;
+	}
+	
+	private static File getOutputMediaFile() {
+		String dir = Environment.getExternalStorageDirectory().getAbsolutePath() + "/bx/";
+		File dirF = new File(dir);
+		dirF.mkdirs();
+		
+//		return new File(Environment.getExternalStorageDirectory(), "bx_" + System.currentTimeMillis() + ".jpg");
+		return new File(dirF, "bx_" + System.currentTimeMillis() + ".jpg");
+	}
+	
+	public static final BXThumbnail copyAndCreateThrmbnail(String sourceFile, Context context) {
+		String savedPath = getOutputMediaFile().getAbsolutePath();
+		if (savedPath == null) {
+			return null;
+		}
+		
+		Bitmap source = null;
+		try {
+			FileOutputStream fos = new FileOutputStream(savedPath);
+			
+			BitmapFactory.Options options = new BitmapFactory.Options();
+			options.inPurgeable = true;
+			options.inJustDecodeBounds = true;
+			
+			BitmapFactory.decodeFile(sourceFile, options);
+			
+			options.inJustDecodeBounds = false;
+			options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
+			
+			source = BitmapFactory.decodeFile(sourceFile, options);
+			
+			source.compress(CompressFormat.JPEG, 100, fos);
+			
+			fos.close();
+		}
+		catch (Throwable t) {
+			Log.e(TAG, "copy image failed." + t.getMessage());
+		}
+		finally {
+			if (source != null) {
+//				try {
+//					ExifInterface original = new ExifInterface(sourceFile);
+//					ExifInterface target = new ExifInterface(savedPath);
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				//TODO: copy EXIF.
+				
+			}
+		}
+		
+		if (source == null) {
+			return null;
+		}
+
+		try {
+			Bitmap bp = Bitmap.createScaledBitmap(source, DEFAULT_THUMBNAIL_WIDTH, DEFAULT_THUMBNAIL_HEIGHT, true);
+			
+			source.recycle();
+			return BXThumbnail.createThumbnail(savedPath, bp);
+		} catch (Throwable t) {
+			return BXThumbnail.createThumbnail(savedPath, source);
+		}
+	}
+	
+	/**
+	 * Save the data to persist data and then return the thumbnail.
+	 * 
+	 * @param data
+	 * @param rotation value range [0, 360]. Target image data should  rotate this degree when saved to file.
+	 * @param context 
+	 * @param isMirror if true, an mirror transform should be added when saving the target data.
+	 * @return return the saved file path and thumbnail which can be shown to user.
+	 */
+	public static final BXThumbnail saveAndCreateThumbnail(byte[] data, int rotation, Context context, boolean isMirror) {
+		String savedPath = getOutputMediaFile().getAbsolutePath();
+		if (savedPath == null) {
+			return null;
+		}
+		
+		Bitmap source = null;
+		try {
+            FileOutputStream fos = new FileOutputStream(savedPath);
+            
+            BitmapFactory.Options options = new BitmapFactory.Options();
+            options.inPurgeable = true;
+            options.inJustDecodeBounds = true;
+            
+            BitmapFactory.decodeByteArray(data, 0, data.length, options);
+            
+            options.inJustDecodeBounds = false;
+            options.inSampleSize = getClosestResampleSize(options.outWidth, options.outHeight, 600);
+            
+            source = BitmapFactory.decodeByteArray(data, 0, data.length, options);//Bitmap.createScaledBitmap(bitmap, 200, 200, false);
+            
+            source.compress(CompressFormat.JPEG, 100, fos);
+            fos.flush();
+            fos.close();
+        } catch (FileNotFoundException e) {
+            Log.d(TAG, "File not found: " + e.getMessage());
+        } catch (IOException e) {
+            Log.d(TAG, "Error accessing file: " + e.getMessage());
+        } catch (Throwable t) {
+        	Log.d(TAG, "other exception when processing image." + t.getMessage());
+        }
+		
+		if (source == null) {
+			return null;
+		}
+        
+        BitmapFactory.Options opts = new BitmapFactory.Options();
+        opts.inPurgeable = true;
+        
+		try {
+			Matrix m = new Matrix();
+			if (isMirror) {
+				m.setValues(new float[] {-1, 0, 0, 
+										 0, 1, 0, 
+										 0, 0, 1});
+			}
+			m.postRotate(rotation);
+			float scaleW = (float)DEFAULT_THUMBNAIL_WIDTH / (float) source.getWidth();
+			float scaleH = (float) DEFAULT_THUMBNAIL_HEIGHT / (float) source.getHeight();
+			m.postScale(scaleW, scaleH);
+
+			Bitmap out = Bitmap.createBitmap(source, 0, 0, source.getWidth(), source.getHeight(), m, false);
+			return BXThumbnail.createThumbnail(savedPath, out);
+		} catch (Throwable e) {
+			Log.d(TAG, "save and create image failed " + e.getMessage());
+		}
+		finally {
+			 ExifInterface exif = null;
+				try {
+					exif = new ExifInterface(savedPath);
+				} catch (IOException e) {
+					e.printStackTrace();
+				}
+				if (exif != null) {
+					exif.setAttribute(ExifInterface.TAG_ORIENTATION, getExifOrientation(rotation));
+					
+					try {
+						exif.saveAttributes();
+					} catch (IOException e) {
+						//Igonr exception
+					}
+				}
+		}
+		
+		return null;
+	}
+	
+	private static String getExifOrientation(int degree) {
+		switch (degree) {
+		case 0:
+			return "" + ExifInterface.ORIENTATION_NORMAL;
+		case 90:
+			return "" + ExifInterface.ORIENTATION_ROTATE_90;
+		case 180:
+			return "" + ExifInterface.ORIENTATION_ROTATE_180;
+		case 270:
+			return "" + ExifInterface.ORIENTATION_ROTATE_270;
+			default:
+				return "" + ExifInterface.ORIENTATION_UNDEFINED;
+		}
 	}
 
 }

@@ -1,7 +1,5 @@
 package com.baixing.view.fragment;
 
-import java.net.URLEncoder;
-import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
@@ -10,7 +8,6 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -25,20 +22,27 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.entity.SecondStepCate;
+import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Tracker;
 import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
-public class SearchFragment extends BaseFragment {
+public class SearchFragment extends BaseFragment implements Callback {
 
+	private static final int NETWOTK_REQ_SEARACH_CAT = 100;
+	
 //	private static final int REQ_SELECT_SEARCH_CATEGORY = 147;
 	private static final int MSG_SEARCH_RESULT = 1;
 	private static final int MSG_START_SERACH = 2;
@@ -71,7 +75,7 @@ public class SearchFragment extends BaseFragment {
 
 	public String searchContent = "";
 
-	List<Pair<SecondStepCate, Integer>> categoryResultCountList;
+	List<Pair<Category, Integer>> categoryResultCountList;
 
 //	private List<String> listRemark = new ArrayList<String>();
 
@@ -89,16 +93,11 @@ public class SearchFragment extends BaseFragment {
 	public void handleSearch() {
 		Bundle args = createArguments(null, null);
 		args.putInt(ARG_COMMON_REQ_CODE, REQ_GETKEYWORD);
-		pushFragment(new KeywordSelector(), args);
-	}
-
-
-	public void initTab(TabDef tab) {
-		tab.m_visible = false;
+		pushFragment(new KeywordSelectFragment(), args);
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 
 		View rootV = inflater.inflate(R.layout.search, null);
@@ -124,7 +123,7 @@ public class SearchFragment extends BaseFragment {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int arg2,
 					long arg3) {
-				SecondStepCate cate = (SecondStepCate) arg1.getTag();
+				Category cate = (Category) arg1.getTag();
 
 				final Bundle bundle = new Bundle();
 				bundle.putString("searchContent", searchContent);
@@ -133,7 +132,7 @@ public class SearchFragment extends BaseFragment {
 				bundle.putString("categoryEnglishName", cate.getEnglishName());
 				
 				
-				if (!QuanleimuApplication.isTextMode() && QuanleimuApplication.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)
@@ -142,24 +141,24 @@ public class SearchFragment extends BaseFragment {
 						
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							QuanleimuApplication.setTextMode(false);
-							pushFragment(new GetGoodFragment(), bundle);
+							GlobalDataManager.setTextMode(false);
+							pushFragment(new ListingFragment(), bundle);
 						}
 					})
 					.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener() {
 
 						@Override
 						public void onClick(DialogInterface dialog, int which) {
-							QuanleimuApplication.setTextMode(true);
+							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
-							pushFragment(new GetGoodFragment(), bundle);
+							pushFragment(new ListingFragment(), bundle);
 						}
 						
 					}).create().show();
 				}
 				else
 				{
-					pushFragment(new GetGoodFragment(), bundle);
+					pushFragment(new ListingFragment(), bundle);
 				}
 				
 			}
@@ -170,13 +169,11 @@ public class SearchFragment extends BaseFragment {
 	
 	@Override
 	public void onStackTop(boolean isBack) {
-		Log.d("ooo","searchfragment->onstacktop,isBack"+isBack);
 		if (isBack)
 		{
 			this.showSearchResult(false);
 		}
 		else if (null == searchContent || searchContent.length() == 0) {
-			
 			handleSearch();
 		}
 	}
@@ -189,14 +186,13 @@ public class SearchFragment extends BaseFragment {
 	@Override
 	public void onResume() {
 		super.onResume();
-		Log.d("ooo","searchfragment->onresume");
-//		if (searchContent.equals(""))
-//			Tracker.getInstance().pv(PV.SEARCH).end();
+
+		if (searchContent.equals(""))
+			Tracker.getInstance().pv(PV.SEARCH).end();
 	}
 
 	@Override
 	protected void onFragmentBackWithData(int requestCode, Object result) {
-		Log.d("ooo","searchfragment->onfragmentbackwithdata");
 		if (requestCode == REQ_GETKEYWORD) {
 			if (result == null && (categoryResultCountList == null || categoryResultCountList.size() == 0))
 			{
@@ -223,14 +219,15 @@ public class SearchFragment extends BaseFragment {
 	 * 
 	 */
 	private void showSearchResult(boolean search) {
-		
+		this.pv = PV.SEARCHRESULTCATEGORY;
+		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 
 		this.hideSoftKeyboard();
 		if (search)
 		{
 //			this.showProgress("消息", "搜索中...", true);
 			this.sendMessage(MSG_START_SERACH, null);
-			new Thread(new SearchCategoryListThread()).start();
+			searchCategory();
 		}
 		else
 		{
@@ -269,60 +266,37 @@ public class SearchFragment extends BaseFragment {
 				lvSearchResultList.setAdapter(adapter);
 				
 				resultCatesCount = categoryResultCountList.size();
-				for (Pair<SecondStepCate, Integer> pair : categoryResultCountList)
+				for (Pair<Category, Integer> pair : categoryResultCountList)
 				{
 					totalAdsCount += pair.second;
 					maxAdsCount = Math.max(maxAdsCount, pair.second);
 				}
-				Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY)
-				.append(Key.SEARCHKEYWORD, searchContent)
-				.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
-				.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
-				.end();
-				
 			}
+			
+			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
+					.append(Key.SEARCHKEYWORD, searchContent)
+					.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
+					.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
+					.append(Key.MAXCATE_ADSCOUNT, ""+maxAdsCount).end();
 			
 			this.hideProgress();
 			break;
 		}
 	}
 	
-	
-
-	class SearchCategoryListThread implements Runnable {
-		@Override
-		public void run() {
-			String apiName = "ad_search";
-			List<String> parameters = new ArrayList<String>();
-			parameters.add("query="
-					+ URLEncoder.encode(SearchFragment.this.searchContent));
-		    parameters.add("cityEnglishName=" + URLEncoder.encode(QuanleimuApplication.getApplication().getCityEnglishName()));
-			String apiUrl = Communication.getApiUrl(apiName, parameters);
-			try {
-				String json = Communication.getDataByUrl(apiUrl, true);
-				categoryResultCountList = JsonUtil
-						.parseAdSearchCategoryCountResult(json);
-			} catch (Exception e) {
-				categoryResultCountList = null;
-				Log.e(TAG, e.getMessage()==null?"网络请求失败":e.getMessage());
-				getActivity().runOnUiThread(new Runnable(){
-					@Override
-					public void run(){
-						Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
-								Toast.LENGTH_SHORT).show();
-					}
-				});
-			}
-			SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
-					categoryResultCountList);			
-		}
+	private void searchCategory() {
+		ApiParams params = new ApiParams();
+		params.addParam("query", searchContent);
+		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		
+		HttpGetCommand.createCommand(NETWOTK_REQ_SEARACH_CAT, "ad_search", params).execute(this);
 	}
-
-	class ResultListAdapter extends ArrayAdapter<Pair<SecondStepCate, Integer>> {
-		List<Pair<SecondStepCate, Integer>> objects;
+	
+	class ResultListAdapter extends ArrayAdapter<Pair<Category, Integer>> {
+		List<Pair<Category, Integer>> objects;
 
 		public ResultListAdapter(Context context, int textViewResourceId,
-				List<Pair<SecondStepCate, Integer>> objects) {
+				List<Pair<Category, Integer>> objects) {
 			super(context, textViewResourceId, objects);
 			this.objects = objects;
 		}
@@ -339,7 +313,7 @@ public class SearchFragment extends BaseFragment {
 					.findViewById(R.id.tvCategoryName);
 			TextView tvCategoryCount = (TextView) convertView
 					.findViewById(R.id.tvCategoryCount);
-			Pair<SecondStepCate, Integer> pair = objects.get(position);
+			Pair<Category, Integer> pair = objects.get(position);
 			convertView.setTag(pair.first);
 			tvCategoryName.setText(pair.first.getName());
 			tvCategoryCount.setText(String.format("(%d)",
@@ -357,6 +331,38 @@ public class SearchFragment extends BaseFragment {
 	public int getExitAnimation()
 	{
 		return getArguments() == null ? R.anim.zoom_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, R.anim.zoom_exit);
+	}
+
+	private void handleCategoryResult(String responseData) {
+		categoryResultCountList = JsonUtil
+				.parseAdSearchCategoryCountResult(responseData);
+		SearchFragment.this.sendMessage(MSG_SEARCH_RESULT,
+				categoryResultCountList);	
+	}
+	
+	private void handleCategorySearchFail(ApiError error) {
+		categoryResultCountList = null;
+		getActivity().runOnUiThread(new Runnable(){
+			@Override
+			public void run(){
+				if(loadingView != null){
+					loadingView.setVisibility(View.GONE);
+				}
+				
+				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
+						Toast.LENGTH_SHORT).show();
+			}
+		});
+	}
+	
+	@Override
+	public void onNetworkDone(int requstCode, String responseData) {
+		handleCategoryResult(responseData);
+	}
+
+	@Override
+	public void onNetworkFail(int requstCode, ApiError error) {
+		handleCategorySearchFail(error);
 	}
 
 }

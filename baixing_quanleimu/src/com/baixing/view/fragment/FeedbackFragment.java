@@ -20,14 +20,16 @@ import android.widget.EditText;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseFragment;
+import com.baixing.android.api.ApiClient;
+import com.baixing.android.api.ApiClient.Api;
+import com.baixing.android.api.ApiParams;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
-import com.baixing.util.Helper;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 
@@ -49,10 +51,6 @@ public class FeedbackFragment extends BaseFragment {
 		title.m_rightActionHint = "确定";
 		title.m_title = getArguments() != null && getArguments().containsKey(ARG_COMMON_TITLE) ? getArguments().getString(ARG_COMMON_TITLE) : "反馈信息";
 	}
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
 	@Override
 	public int[] excludedOptionMenus() {
 		return new int[]{OPTION_FEEDBACK};
@@ -81,7 +79,7 @@ public class FeedbackFragment extends BaseFragment {
 		}
 	}
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View rootView = inflater.inflate(R.layout.opinionback, null);
 		
@@ -164,8 +162,7 @@ public class FeedbackFragment extends BaseFragment {
 			break;
 		}
 	}
-
-
+	
 	class FeedbackThread implements Runnable {
 		@Override
 		public void run() {
@@ -174,17 +171,21 @@ public class FeedbackFragment extends BaseFragment {
 			// url = url + "&content="+URLEncoder.encode(content)
 			// +"&androidUniqueIdentifier="+phoneMark+"&mobile="+mobile;
 			String apiName = -1 == opinionType ? "feedback" : (0 == opinionType ? "report" : "appeal");
-			ArrayList<String> list = new ArrayList<String>();
-
-			list.add("mobile=" + mobile);
-			list.add((-1 != opinionType ? "description=" : "feedback=") + URLEncoder.encode(content));
-			if(-1 != opinionType){
-				list.add("adId=" + adId);
+//			ArrayList<String> list = new ArrayList<String>();
+			ApiParams params = new ApiParams();
+			params.addParam("mobile", mobile);
+			if (opinionType == -1) {
+				params.addParam("feedback", content);
 			}
+			else {
+				params.addParam("description", content);
+				params.addParam("adId", adId);
+			}
+			
 
-			String url = Communication.getApiUrl(apiName, list);
 			try {
-				result = Communication.getDataByUrl(url, true);
+//				String url = Communication.getApiUrl(apiName, list);
+				result = ApiClient.getInstance().invokeApi(Api.createPost(apiName), params);//Communication.getDataByUrl(url, true);
 				if (result != null) {
 //					myHandler.sendEmptyMessage(0);
 					sendMessage(0, null);
@@ -193,11 +194,11 @@ public class FeedbackFragment extends BaseFragment {
 					sendMessage(1, null);
 				}
 			} catch (UnsupportedEncodingException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 				
 			} catch (IOException e) {
-				QuanleimuApplication.getApplication().getErrorHandler().sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block

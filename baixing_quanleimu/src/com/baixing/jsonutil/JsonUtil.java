@@ -1,10 +1,10 @@
+//xumengyi@baixing.com
 package com.baixing.jsonutil;
 
 import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Map;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,21 +13,18 @@ import org.json.JSONObject;
 import android.util.Log;
 import android.util.Pair;
 
-import com.baixing.database.ChatMessageDatabase;
-import com.baixing.entity.AllCates;
+import com.baixing.entity.Category;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filters;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.FirstStepCate;
-import com.baixing.entity.GoodsDetail;
-import com.baixing.entity.GoodsList;
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.entity.HotData;
 import com.baixing.entity.HotList;
 import com.baixing.entity.ImageList;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.SecondStepCate;
 import com.baixing.entity.labels;
 import com.baixing.entity.values;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -259,154 +256,13 @@ public class JsonUtil {
 		return listHot;
 	}
 
-	static AllCates allCates = null;
-	
-	private static AllCates getAllCatesFromJsonByJackson(String jsonData){
-		if(allCates != null) return allCates;
-		allCates = new AllCates();
-		try {
-			JsonFactory factory = new JsonFactory();
-			JsonParser parser = factory.createJsonParser(jsonData);
-			while (parser.nextToken() != JsonToken.END_OBJECT){
-				String currentName = parser.getCurrentName();
-				if(currentName == null){
-					continue;
-				}
-				if(currentName.equals("name")){
-					parser.nextToken();
-					allCates.setName(parser.getText());
-				}else if(currentName.equals("englishName")){
-					parser.nextToken();
-					allCates.setEnglishName(parser.getText());
-				}else if(currentName.equals("children")){
-					JsonToken jt = parser.nextToken();///start_array
-					List<FirstStepCate> firsts = new ArrayList<FirstStepCate>();
-					while(jt != JsonToken.END_ARRAY){
-						if(jt != JsonToken.START_OBJECT){
-							jt = parser.nextToken();
-							continue;
-						}
-						jt = parser.nextToken();///start_object
-						FirstStepCate firstStepCate = new FirstStepCate();
-						while(jt != JsonToken.END_OBJECT){
-							
-							String flName = parser.getCurrentName();
-							if(flName.equals("name")){
-								jt = parser.nextToken();
-								firstStepCate.setName(parser.getText());
-							}else if(flName.equals("englishName")){
-								jt = parser.nextToken();
-								firstStepCate.setEnglishName(parser.getText());
-							}else if(flName.equals("parentEnglishName")){
-								jt = parser.nextToken();
-								firstStepCate.setParentEnglishName(parser.getText());
-							}else if(flName.equals("children")){
-								jt = parser.nextToken();//start_array
-								List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
-									
-								while(jt != JsonToken.END_ARRAY){
-									if(jt != JsonToken.START_OBJECT){
-										jt = parser.nextToken();
-										continue;
-									}
-									SecondStepCate secStepCate = new SecondStepCate();
-									jt = parser.nextToken();//start_object
-									while(jt != JsonToken.END_OBJECT){
-										String secName = parser.getCurrentName();
-										jt = parser.nextToken();
-										String text = parser.getText();
-										if(secName.equals("name")){
-											secStepCate.setName(text);
-										}else if(secName.equals("englishName")){
-											secStepCate.setEnglishName(text);
-										}else if(secName.equals("parentEnglishName")){
-											secStepCate.setParentEnglishName(text);
-										}
-										jt = parser.nextToken();
-									}
-									jt = parser.nextToken();
-									listSecond.add(secStepCate);
-								}
-								firstStepCate.setChildren(listSecond);
-							}
-							jt = parser.nextToken();
-						}
-						firsts.add(firstStepCate);
-					}
-					allCates.setChildren(firsts);
-				}
-			}
-	
-		}catch(JsonParseException e){
-			allCates = null;
-			e.printStackTrace();
-		}catch(IOException e){
-			// TODO Auto-generated catch block
-			allCates = null;
-			e.printStackTrace();
-		}
-		return allCates; 
-	}
-	
-	// 获取所有类目列表
-	public static AllCates getAllCatesFromJson(String jsonData) {
-//		long t1 = System.currentTimeMillis();
-		return getAllCatesFromJsonByJackson(jsonData);
-//		static final AllCates allCates = null;
-//		if(allCates != null) return allCates;
-//		try {
-//			allCates = new AllCates();
-//			JSONObject jsonObj = new JSONObject(jsonData);
-//			allCates.setName(jsonObj.getString("name"));
-//			allCates.setEnglishName(jsonObj.getString("englishName"));
-//
-//			JSONArray jsonA = new JSONArray(jsonObj.getString("children"));
-//			List<FirstStepCate> listFirst = new ArrayList<FirstStepCate>();
-//			for (int i = 0; i < jsonA.length(); i++) {
-//				FirstStepCate firstStepCate = new FirstStepCate();
-//				JSONObject jsonFirstStepCate = jsonA.getJSONObject(i);
-//				firstStepCate.setName(jsonFirstStepCate.getString("name"));
-//				firstStepCate.setEnglishName(jsonFirstStepCate
-//						.getString("englishName"));
-//				firstStepCate.setParentEnglishName(jsonFirstStepCate
-//						.getString("parentEnglishName"));
-//
-//				JSONArray jsonB = new JSONArray(
-//						jsonFirstStepCate.getString("children"));
-//				List<SecondStepCate> listSecond = new ArrayList<SecondStepCate>();
-//				for (int j = 0; j < jsonB.length(); j++) {
-//					SecondStepCate secondStepCate = new SecondStepCate();
-//					JSONObject jsonSecondStepCate = jsonB.getJSONObject(j);
-//
-//					secondStepCate
-//							.setName(jsonSecondStepCate.getString("name"));
-//					secondStepCate.setEnglishName(jsonSecondStepCate
-//							.getString("englishName"));
-//					secondStepCate.setParentEnglishName(jsonSecondStepCate
-//							.getString("parentEnglishName"));
-//
-//					listSecond.add(secondStepCate);
-//				}
-//				firstStepCate.setChildren(listSecond);
-//
-//				listFirst.add(firstStepCate);
-//			}
-//			allCates.setChildren(listFirst);
-//		} catch (JSONException e1) {
-//			// TODO Auto-generated catch block
-//			allCates = null;
-//			e1.printStackTrace();
-//		}
-//		return allCates;
-	}
-	
-	
-	public static GoodsList getGoodsListFromJsonByJackson(String jsonData){
+	public static AdList getGoodsListFromJsonByJackson(String jsonData){
 		JsonFactory factory = new JsonFactory();
-		GoodsList goodsList = new GoodsList();
-		List<GoodsDetail> list = new ArrayList<GoodsDetail>();
+		AdList goodsList = new AdList();
+		List<Ad> list = new ArrayList<Ad>();
 		try{
 			JsonParser parser = factory.createJsonParser(jsonData);
+			JsonToken tmpToken;
 			while (parser.nextToken() != JsonToken.END_OBJECT) {
 				String fieldname = parser.getCurrentName();
 				if(fieldname == null) continue;
@@ -416,7 +272,7 @@ public class JsonUtil {
 					while(jt != JsonToken.END_ARRAY){
 						jt = parser.nextToken();///start_object
 						
-						GoodsDetail detail = new GoodsDetail();
+						Ad detail = new Ad();
 						while(jt != JsonToken.END_OBJECT){
 							String fname = parser.getCurrentName();
 							if(fname == null){
@@ -532,164 +388,8 @@ public class JsonUtil {
 	}
 
 	// 获取附近的Goods信息
-	public static GoodsList getGoodsListFromJson(String jsonData) {
-		long t1 = System.currentTimeMillis();
+	public static AdList getGoodsListFromJson(String jsonData) {
 		return getGoodsListFromJsonByJackson(jsonData);
-//		long t2 = System.currentTimeMillis();
-//		Log.d("times: ", "hahahaha:  " + (t2 - t1));
-//		GoodsList goodsList = new GoodsList();
-//		if(jsonData == null) return goodsList;
-//		JSONObject jsonObj;
-//		try {
-//			jsonObj = new JSONObject(jsonData);
-//			goodsList.setCount(jsonObj.getInt("count"));
-//			List<GoodsDetail> list = new ArrayList<GoodsDetail>();
-//			JSONArray jsonArray = new JSONArray();
-//			try {
-//				jsonArray = jsonObj.getJSONArray("data");
-//				for (int i = 0; i < jsonArray.length(); i++) {
-//					
-//					JSONObject jsonGoods = jsonArray.optJSONObject(i);
-//					GoodsDetail goodsDetail = new GoodsDetail();
-//
-//					JSONArray names = jsonGoods.names();
-//					for(int j = 0; j < names.length(); ++ j){
-//						Object subObj = jsonGoods.get(names.getString(j));
-//						if(subObj != null){
-//							String value = null;
-//							if(subObj.getClass().equals(String.class) && ((String)subObj).length() > 0){
-//								value = (String)subObj;								
-//							}
-//							else if(subObj.getClass().equals(Integer.class)){
-//								value = ((Integer)subObj).toString();
-//							}else if(subObj.getClass().equals(Double.class)){
-//								value = ((Double)subObj).toString();
-//							}else if(subObj.getClass().equals(Float.class)){
-//								value = ((Float)subObj).toString();
-//							}else{
-//								if(names.getString(j).endsWith("_s")){
-//									if(subObj.getClass().equals(JSONArray.class)){
-//										value = "";
-//										JSONArray _sAry = (JSONArray)subObj;
-//										if(_sAry != null){
-//											for(int t = 0; t < _sAry.length(); ++ t){
-//												String[] subStrings = _sAry.get(t).toString().split(":");
-//												if(subStrings.length == 2){
-//													int firstIndex = -1;
-//													int lastIndex = subStrings[1].length() - 1;
-//													for(int s = 0; s < subStrings[1].length(); ++ s){
-//														if(firstIndex == -1){
-//															if(subStrings[1].charAt(s) != '{'
-//																	&& subStrings[1].charAt(s) != '}'
-//																	&& subStrings[1].charAt(s) != '"'){
-//																firstIndex = s;
-//															}
-//														}
-//														else{
-//															if(subStrings[1].charAt(s) == '{'
-//																	|| subStrings[1].charAt(s) == '}'
-//																	|| subStrings[1].charAt(s) == '"'){
-//																lastIndex = s;
-//																break;
-//															}
-//														}
-//													}
-//													if(t > 0){
-//														value += ",";
-//													}
-//													value += subStrings[1].substring(firstIndex, lastIndex);
-//												}
-//											}
-//										}
-//									}
-//								}
-//								Log.println(0, "in JsonUtil ", "unknown jason value type!!!!!");
-//							}
-//								
-//							goodsDetail.setValueByKey(names.getString(j), value);
-//						}						
-//					}
-//
-//					// 为ImageList赋值
-//					JSONObject jsonImages = null;
-//					ImageList imageList = new ImageList();
-//					try {
-//						jsonImages = jsonGoods.getJSONObject("images");
-//					} catch (Exception e2) {
-//						jsonImages = null;
-//					}
-//					if (jsonImages == null) {
-//						imageList = null;
-//					} else {
-//						try {
-//							JSONArray bigAry = jsonImages.getJSONArray("big");
-//							if(bigAry != null){
-//								String bigStr = "";
-//								for(int s = 0; s < bigAry.length(); ++ s){
-//									bigStr += "," + bigAry.getString(s);
-//								}
-//								if(!bigStr.equals("") && bigStr.charAt(0) == ','){
-//									bigStr = bigStr.substring(1);
-//								}
-//								imageList.setBig(bigStr);
-//							}
-////							imageList.setBig(jsonImages.getJSONArray("big").toString());
-////							imageList.setBig(jsonImages.get("big").toString());
-//						} catch (Exception e1) {
-//							imageList.setBig("");
-//						}
-//						try {
-//							JSONArray resize180Ary = jsonImages.getJSONArray("resize180");
-//							if(resize180Ary != null){
-//								String r180Str = "";
-//								for(int s = 0; s < resize180Ary.length(); ++ s){
-//									r180Str += "," + resize180Ary.getString(s);
-//								}
-//								if(!r180Str.equals("") && r180Str.charAt(0) == ','){
-//									r180Str = r180Str.substring(1);
-//								}
-//								imageList.setResize180(r180Str);
-//							}
-//							
-////							imageList.setResize180(jsonImages.getString("resize180"));
-//						} catch (Exception e1) {
-//							imageList.setResize180("");
-//						}
-//					}
-//
-//					goodsDetail.setImageList(imageList);
-//
-//					ArrayList<String> metas = new ArrayList<String>();
-//					JSONArray jsonMeta;
-//					try {
-//						jsonMeta = jsonGoods.getJSONArray("metaData");
-//					} catch (Exception e1) {
-//						jsonMeta = null;
-//					}
-//					if (jsonMeta == null || jsonMeta.length() == 0) {
-//						metas = null;
-//					} else {
-//						for (int j = 0; j < jsonMeta.length(); j++) {
-//							String meta = jsonMeta.get(j).toString();
-//							//String a[] = meta.split(" ");
-//							metas.add(meta);
-//							//map.put(a[0], a[1]);
-//						}
-//					}
-//					goodsDetail.setMetaData(metas);
-//					list.add(goodsDetail);
-//
-//				}
-//			} catch (Exception e) {
-//				e.printStackTrace();
-//			}
-//			goodsList.setData(list);
-//		} catch (JSONException e) {
-//			e.printStackTrace();
-//		}
-//		long t3 = System.currentTimeMillis();
-//		Log.d("previous time: ", "hahahaha prev:  " + (t3 - t2));
-//		return goodsList;
 	}
 
 	public static Filters getFilters(String jsonData) {
@@ -905,7 +605,7 @@ public class JsonUtil {
 					postGoods.setLabels(llist);
 				}
 
-				postList.put(postGoods.getDisplayName(), postGoods);
+				postList.put(postGoods.getName(), postGoods);
 				// filters.setFilterssList(list);
 			}
 		} catch (JSONException e) {
@@ -921,9 +621,9 @@ public class JsonUtil {
 	 * {count: 10, data: [	["chongwujiaoyi","狗狗",	180284]	] }
 	 * </pre>
 	 */
-	public static List<Pair<SecondStepCate, Integer>> parseAdSearchCategoryCountResult(String jsonData)
+	public static List<Pair<Category, Integer>> parseAdSearchCategoryCountResult(String jsonData)
 	{
-		List<Pair<SecondStepCate, Integer>> categoryCountList = new ArrayList<Pair<SecondStepCate, Integer>>(8);
+		List<Pair<Category, Integer>> categoryCountList = new ArrayList<Pair<Category, Integer>>(8);
 		try {
 			JSONObject json = new JSONObject(jsonData);
 			JSONArray data = json.getJSONArray("data");
@@ -934,10 +634,10 @@ public class JsonUtil {
 				String name = categoryResult.getString(1);
 				int count = categoryResult.getInt(2);
 				
-				SecondStepCate secondCate = new SecondStepCate();
+				Category secondCate = new Category();
 				secondCate.setEnglishName(englishName);
 				secondCate.setName(name);
-				categoryCountList.add(new Pair<SecondStepCate, Integer>(secondCate, count));
+				categoryCountList.add(new Pair<Category, Integer>(secondCate, count));
 			}
 			
 		} catch (JSONException e) {
@@ -946,5 +646,90 @@ public class JsonUtil {
 		
 		return categoryCountList;
 		
+	}
+	
+	
+	public static Category loadCategoryTree(String jsonData){
+		Category root = new Category();
+		try {
+			JsonFactory factory = new JsonFactory();
+			JsonParser parser = factory.createJsonParser(jsonData);
+			while (parser.nextToken() != JsonToken.END_OBJECT){
+				String currentName = parser.getCurrentName();
+				if(currentName == null){
+					continue;
+				}
+				if(currentName.equals("name")){
+					parser.nextToken();
+					root.setName(parser.getText());
+				}else if(currentName.equals("englishName")){
+					parser.nextToken();
+					root.setEnglishName(parser.getText());
+				}else if(currentName.equals("children")){
+					JsonToken jt = parser.nextToken();///start_array
+					while(jt != JsonToken.END_ARRAY){
+						if(jt != JsonToken.START_OBJECT){
+							jt = parser.nextToken();
+							continue;
+						}
+						jt = parser.nextToken();///start_object
+						Category firstStepCate = new Category();
+						while(jt != JsonToken.END_OBJECT){
+							
+							String flName = parser.getCurrentName();
+							if(flName.equals("name")){
+								jt = parser.nextToken();
+								firstStepCate.setName(parser.getText());
+							}else if(flName.equals("englishName")){
+								jt = parser.nextToken();
+								firstStepCate.setEnglishName(parser.getText());
+							}else if(flName.equals("parentEnglishName")){
+								jt = parser.nextToken();
+								firstStepCate.setParentEnglishName(parser.getText());
+							}else if(flName.equals("children")){
+								jt = parser.nextToken();//start_array
+								
+								while(jt != JsonToken.END_ARRAY){
+									if(jt != JsonToken.START_OBJECT){
+										jt = parser.nextToken();
+										continue;
+									}
+									
+									Category secStepCate = new Category();
+									jt = parser.nextToken();//start_object
+									while(jt != JsonToken.END_OBJECT){
+										String secName = parser.getCurrentName();
+										jt = parser.nextToken();
+										String text = parser.getText();
+										if(secName.equals("name")){
+											secStepCate.setName(text);
+										}else if(secName.equals("englishName")){
+											secStepCate.setEnglishName(text);
+										}else if(secName.equals("parentEnglishName")){
+											secStepCate.setParentEnglishName(text);
+										}
+										jt = parser.nextToken();
+									}
+									jt = parser.nextToken();
+									firstStepCate.addChild(secStepCate);
+								}
+							}
+							jt = parser.nextToken();
+						}
+						root.addChild(firstStepCate);
+					}
+				}
+			}
+	
+		}catch(JsonParseException e){
+			Log.d("BX_JSON", "invalid category json.");
+			return null;
+		}catch(IOException e){
+//			e.printStackTrace();
+			Log.d("BX_JSON", "IOException when parse category.");
+			return null;
+		}
+		
+		return root;
 	}
 }

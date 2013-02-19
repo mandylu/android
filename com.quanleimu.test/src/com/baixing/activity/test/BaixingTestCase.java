@@ -1,6 +1,8 @@
 package com.baixing.activity.test;
 
 import java.io.File;
+import java.lang.reflect.Constructor;
+import java.lang.reflect.InvocationTargetException;
 import java.util.ArrayList;
 import java.util.Random;
 import java.util.Timer;
@@ -45,7 +47,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void logout() throws Exception {
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		openMyGridByText(MY_SETTING_BUTTON_TEXT);
 		if (findElementByText(MY_LOGIN_BUTTON_TEXT) != null) {
 			goBack();
@@ -61,7 +63,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void logon() throws Exception {
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		openMyGridByText(MY_SETTING_BUTTON_TEXT);
 		ViewElement v = findElementByText(MY_LOGIN_BUTTON_TEXT);
 		if (v == null) {
@@ -79,7 +81,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 			
 			loginBtn.doClick();
 			try {
-				assertEquals(true, waitForText(MY_LOGON_SUCCESS_MESSAGE, 5000));
+				assertEquals(true, waitForText(MY_LOGOUT_BUTTON_TEXT, 5000));
 			} catch (Exception ex) {
 				assertTrue("登录出现错误", false);
 			}
@@ -130,11 +132,12 @@ public class BaixingTestCase extends BxBaseTestCase {
 			TextViewElement tv = lv.getChildByIndex(secondIndex + 1, TextViewElement.class);
 			if (tv == null) {
 				ViewGroupElement gv = lv.getChildByIndex(secondIndex + 1, ViewGroupElement.class);
-				gv.doClick();
+				assertNotNull(gv);
 				tv = findTextView(gv);
+				gv.doClick();
+			} else {
+				tv.doClick();
 			}
-			//TextViewElement tv = findTextView(gv);
-			tv.doClick();
 			sleep(2);
 			if (tv != null) return tv;
 		}
@@ -349,6 +352,24 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		return null;
 	}
+	
+	public TextViewElement findMetaValueViewByName(String displayName, int index) throws Exception {
+		//TextViewElement dtv = findMetaByName(POST_SCROLLVIEW_PARENT_ID, displayName);
+		//assertNotNull(dtv);
+		while(index < 20) {
+			try {
+				TextViewElement tv = findTextMetaByIndex(index++, displayName);
+				if (tv != null) {
+					return tv;
+				}
+			} catch (IndexOutOfBoundsException e) {
+				Log.i(LOG_TAG, "setOtherMetaByName:IndexOutOfBoundsException" + index);
+				break;
+			}
+		}
+		return null;
+	}
+	
 	public void doClickPostPhoto() throws Exception {
 		ViewGroupElement df = findElementById(POST_FORM_MARK_ID, ViewGroupElement.class);
 		assertNotNull(df);
@@ -695,17 +716,23 @@ public class BaixingTestCase extends BxBaseTestCase {
 			goBack();
 			goBack();
 			return false;
+		} else {
+			TextViewElement tv = findElementByText("确定", 0, true);
+			if (tv != null) {
+				tv.doClick();
+				sleep(1);
+			}
 		}
 		return true;
 	}
 	
 	public void openHomeCategoryByIndex(int index) throws Exception {
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		boolean hv = findElementByTexts(HOME_MARK_TEXTS);
 		int i = 0;
 		while(!hv && i++ < 5) {
 			goBack();
-			openTabbar(TAB_ID_HOME_V3);
+			openTabbar(TAB_ID_HOME_TEXT);
 			hv = findElementByTexts(HOME_MARK_TEXTS);
 		}
 		assertTrue(hv);
@@ -757,31 +784,23 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public ViewGroupElement openAdByItemIndex(int index) throws Exception {
-		return openAdByItemIndex(index, AD_VIEWLIST_ID);
+		return openAdByItemIndex(null, index);
 	}
-	public ViewGroupElement openAdByItemIndex(int index, String viewListId) throws Exception {
-		ViewGroupElement avi = findElementById(AD_VIEWLIST_MARK_ID, index, ViewGroupElement.class);
-		if (avi != null) {
-			ViewElement v = avi.findElementById(AD_VIEWLIST_ITEM_TITLE_ID);
-			if (v == null) return null;
-			v = avi.findElementById(AD_VIEWLIST_ITEM_DATE_ID);
-			if (v == null) return null;
-			avi.doClick();
-			sleep(1);
+	
+	public ViewGroupElement openAdByItemIndex(AbsListViewElement lv, int index) throws Exception {
+		ViewElement v = clickListViewByIndex(lv, index);
+		if (v != null) {
+			return castObject(v, ViewGroupElement.class);
 		}
-		return avi;
+		return null;
 	}
 	
-	public ViewGroupElement openAdByIndex(int index) throws Exception {
-		return openAdByIndex(index, AD_VIEWLIST_ID);
+	public ViewGroupElement openAdByIndex(AbsListViewElement lv, int index) throws Exception {
+		return openAdByItemIndex(lv, index);
 	}
 	
-	public ViewGroupElement openAdByIndex(int index, String viewListId) throws Exception {
-		return openAdByIndex(index, viewListId, null);
-	}
-	
-	public ViewGroupElement openAdByIndex(int index, String viewListId, AbsListViewElement avl) throws Exception {
-		/*ViewGroupElement avi = avl.getChildByIndex(0, ViewGroupElement.class);
+	/*public ViewGroupElement openAdByIndex(int index, String viewListId, AbsListViewElement avl) throws Exception {
+		ViewGroupElement avi = avl.getChildByIndex(0, ViewGroupElement.class);
 		int i = 0;
 		int j = 0;
 		while (avi != null) {
@@ -803,7 +822,6 @@ public class BaixingTestCase extends BxBaseTestCase {
 			}
 			avi = avl.getChildByIndex(++j, ViewGroupElement.class);
 		}
-		*/
 		int indexSize = 6;
 		int pageSize = (int) (index / indexSize); //每页6个
 		int i = 1;
@@ -842,14 +860,15 @@ public class BaixingTestCase extends BxBaseTestCase {
 		}
 		return avi;
 	}
+	*/
 	
 	public BXViewGroupElement showAd(int firstCatIndex, int secondCatIndex, int index) throws Exception {
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		logon();
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(firstCatIndex, secondCatIndex);
 		sleep(1);
-		assertNotNull(openAdByIndex(index));
+		assertNotNull(openAdByIndex(null, index));
 		BXViewGroupElement detailView = findElementById(AD_DETAILVIEW_ID,
 				BXViewGroupElement.class);
 		return detailView;
@@ -929,29 +948,40 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public ViewElement scrollAdListViewToFooter() throws Exception {
-		BXViewGroupElement lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
-		assertNotNull("adlisting ershoujiaoche listView not found", lv);
-		return scrollAdListViewToFooter(lv);
+		return scrollAdListViewToFooter(null);
 	}
 	
-	public ViewElement scrollAdListViewToFooter(BXViewGroupElement lv) throws Exception {
+	public ViewElement scrollAdListViewToFooter(AbsListViewElement lv) throws Exception {
+		if (lv == null) lv = findListView();
+		assertNotNull(lv);
+		//BXViewGroupElement bv = findElementById(lv.getId(), BXViewGroupElement.class);
+		BXViewGroupElement bv = castObject(lv, BXViewGroupElement.class);
+		assertNotNull("adlisting ershoujiaoche listView not found", lv);
 
+		//TextViewElement tv = findTextView("点击加载下30条", false);
+		//assertNotNull(tv);
 		//检查底部提示：点击载入下30条
 		//向下拖动
 		//向下浏览30个信息
-		int from = lv.getHeight() / 2 + lv.getHeight() /3;
+		int from = bv.getHeight() / 2 + bv.getHeight() /3;
 		for(int i = 0; i < 50; i++) {
-			//lv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
-			//assertNotNull(lv);
-			lv.scrollByY(from, from - ((i < 14) ? 200 : 50));
+			//bv = findElementById(AD_VIEWLIST_ID, BXViewGroupElement.class);
+			//assertNotNull(bv);
+			bv.scrollByY(from, from - ((i < 14) ? 200 : 50));
 			//if (i < 8) continue;
-			ViewElement v = findElementById(AD_VIEWLIST_MORE_ID);
+			//ViewElement v = findTextView("点击加载下30条");//findElementById(tv.getId());
+			ViewElement v = findElementByText("点击加载下30条");
 			if (v != null) {
 				//检查底部提示：点击载入下30条
 				Log.i(LOG_TAG, "testViewListing:more click");
 			    //向下拖动
 				//检查底部提示：点击载入下30条
 				return v;
+			} else {
+				v = findElementByText("正在加载更多，请耐心等待");
+				if (v != null) {
+					return v;
+				}
 			}
 		}
 		return null;
@@ -1005,7 +1035,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void openMyGridByText(String text) throws Exception {
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		TextViewElement textView = null;
 		//textView = getGridItemByText(text, CATEGORY_GRIDVIEW_ID);
 		textView = findElementByText(text);
@@ -1113,6 +1143,11 @@ public class BaixingTestCase extends BxBaseTestCase {
 		} else {
 			goBack();
 			sleep(2);
+			ViewElement t = findElementByText("确定", 0, true);
+			if (t != null ) {
+				t.doClick();
+				sleep(1);
+			}
 			//列表上的 DELETE UPDATE 小按钮
 			int i = 0;
 			while(true) {
@@ -1128,12 +1163,20 @@ public class BaixingTestCase extends BxBaseTestCase {
 				if (i++ > 20) break;
 			}
 			sleep(1);
-			ViewElement delButton = findElementByText(MY_VIEWLIST_DELETE_BUTTON_TEXT, 0, true);
+			ViewElement delButton = findElementByText("删除", 0, true);
 			if (delButton != null) {
 				if (findElementByText(MSGBOX_CANCEL_TEXT, 0, true) != null 
-						&& findElementByText(MSGBOX_OPT_TITLE, 0, true) != null) {
+						&& findElementByText("操作", 0, true) != null) {
 					delButton.doClick();
 					sleep(1);
+					if (findElementByText(MSGBOX_CANCEL_TEXT, 0, true) != null 
+							&& findElementByText("提醒", 0, true) != null) {
+						delButton = findElementByText("确定", 0, true);
+						if (delButton != null) {
+							delButton.doClick();
+							sleep(1);
+						}
+					}
 				}
 			}
 		}
@@ -1188,7 +1231,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public void setAdListingViewType(String viewType) throws Exception {
-		openTabbar(TAB_ID_MY_V3);
+		openTabbar(TAB_ID_MY_TEXT);
 		openMyGridByText(MY_SETTING_BUTTON_TEXT);
 		selectMetaByName(null, MY_SETTING_VIETTYPE_TEXT);
 		//点击图片模式
@@ -1264,7 +1307,7 @@ public class BaixingTestCase extends BxBaseTestCase {
 	}
 	
 	public TextViewElement savePhoto(int first, int second) throws Exception {
-		openTabbar(TAB_ID_HOME_V3);
+		openTabbar(TAB_ID_HOME_TEXT);
 		openCategoryByIndex(first, second);
 
 		sleep(3);

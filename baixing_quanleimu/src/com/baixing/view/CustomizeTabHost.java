@@ -1,9 +1,11 @@
+//liuchong@baixing.com
 package com.baixing.view;
 
 import java.io.Serializable;
 
 import org.jivesoftware.smackx.pubsub.GetItemsRequest;
 
+import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
 
 import android.app.Activity;
@@ -94,7 +96,13 @@ public final class CustomizeTabHost implements Serializable
     	{
     		this.setTabText(i, tabLabels[i]);
     		this.setTabIcon(i, tabIconsRes[i]);
-    		getTabItem(i).setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
+    		if (i==currentFocusIndex) {
+    			getTabItem(i).setBackgroundColor(res.getColor(R.color.tab_bg_select));
+    		}
+    		else {
+    			getTabItem(i).setBackgroundResource(R.drawable.bg_camera_header);
+    		}
+//    		getTabItem(i).setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
     	}
     }
     
@@ -119,7 +127,7 @@ public final class CustomizeTabHost implements Serializable
     	}
     	else
     	{
-    		icon.setImageResource(res.getRes(index == this.currentFocusIndex));
+    		icon.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex)));
     	}
     }
     
@@ -220,7 +228,13 @@ public final class CustomizeTabHost implements Serializable
     		this.setTabIcon(i, tabIconsRes[i]);
     		
     		//Tab bg
-    		tabItem.setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
+    		if (i==currentFocusIndex) {
+    			tabItem.setBackgroundColor(res.getColor(R.color.tab_bg_select));
+    		}
+    		else {
+    			tabItem.setBackgroundResource(R.drawable.bg_camera_header);
+    		}
+//    		tabItem.setBackgroundColor(res.getColor(i==currentFocusIndex ? R.color.tab_bg_select : R.color.tab_bg));
     	}
     	
     }

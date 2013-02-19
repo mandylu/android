@@ -1,3 +1,4 @@
+//xuweiyan@baixing.com
 package com.baixing.widget;
 
 import android.app.Dialog;
@@ -20,7 +21,7 @@ public class CustomDialog extends Dialog {
 	
 	public CustomDialog(Context context) {
 //		super(context);
-		super(context);
+		super(context, R.style.customize_dialog);
 		this.context = context;
 	}
 	

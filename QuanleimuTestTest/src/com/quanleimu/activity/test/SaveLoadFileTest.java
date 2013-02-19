@@ -2,18 +2,22 @@ package com.quanleimu.activity.test;
 
 import java.io.File;
 import java.lang.ref.WeakReference;
+import java.lang.reflect.Array;
 import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
 import java.util.List;
 
 import android.content.Context;
 import android.test.AndroidTestCase;
 import android.util.Pair;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.entity.GoodsDetail;
+import com.baixing.entity.Ad;
 import com.baixing.entity.UserBean;
 import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
+import com.fasterxml.jackson.databind.ObjectMapper;
 
 public class SaveLoadFileTest extends AndroidTestCase {
 	public void setUp()
@@ -138,31 +142,32 @@ public class SaveLoadFileTest extends AndroidTestCase {
 	
 	public void testSaveAndLoadFav()
 	{
-		QuanleimuApplication.context = new WeakReference<Context>(getContext());
+		GlobalDataManager.context = new WeakReference<Context>(getContext());
 		
 		final String fileName = System.currentTimeMillis()+ "";
 		
 		final int count = 5;
-		GoodsDetail[] detail = new GoodsDetail[count];
+		Ad[] detail = new Ad[count];
 		for (int i=0; i<count; i++)
 		{
-			detail[i] = new GoodsDetail();
+			detail[i] = new Ad();
 			detail[i].setDistance(i);
-			QuanleimuApplication.getApplication().addFav(detail[i]);
+			GlobalDataManager.getInstance().addFav(detail[i]);
 		}
 
-		List<GoodsDetail> list = QuanleimuApplication.getApplication().getListMyStore();
+		List<Ad> list = GlobalDataManager.getInstance().getListMyStore();
 		assertEquals(count, list.size());
 		Util.saveDataToLocate(getContext(), fileName, list);
+
 		
-		GoodsDetail[] result = (GoodsDetail[]) Util.loadDataFromLocate(getContext(), fileName, GoodsDetail[].class);
+		Ad[] result = (Ad[]) Util.loadDataFromLocate(getContext(), fileName, Ad[].class);
 		assertEquals(count, result.length);
+		
 		for (int i=0; i<count;i++)
 		{
-			assertEquals(result[i], detail[i]);
-			assertEquals(result[i].getDistance(), detail[i].getDistance());
+			assertEquals(list.get(i), result[i]);
+			assertEquals(list.get(i).getDistance(), result[i].getDistance());
 		}
-		
-		
 	}
+	
 }

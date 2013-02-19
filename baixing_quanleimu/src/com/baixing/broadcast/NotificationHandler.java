@@ -1,10 +1,17 @@
+//liuchong@baixing.com
 package com.baixing.broadcast;
+
+import org.json.JSONObject;
 
 import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.net.Uri;
+import android.os.Bundle;
 
-import com.quanleimu.activity.QuanleimuMainActivity;
+import com.baixing.activity.MainActivity;
+import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.Tracker;
 
 
 /**
@@ -25,12 +32,12 @@ public class NotificationHandler extends BroadcastReceiver {
 //    		handleBXInfoMessage(context, intent);
     		startApp(context, intent);
     	}
-    	
     }
     
     private void startApp(Context context, Intent outerIntent)
     {
-		Intent goMain = new Intent(context, QuanleimuMainActivity.class);
+		Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.PUSH_STARTAPP).end();
+		Intent goMain = new Intent(context, MainActivity.class);
 		goMain.putExtras(outerIntent);
 		goMain.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP|Intent.FLAG_ACTIVITY_NEW_TASK|Intent.FLAG_ACTIVITY_NO_HISTORY);
 		goMain.putExtras(outerIntent);

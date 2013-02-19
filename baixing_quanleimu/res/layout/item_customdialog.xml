@@ -12,13 +12,11 @@
         />
     <CheckBox
             android:id="@+id/checkitem"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:layout_alignParentRight="true"
-            android:layout_centerVertical="true"
-            android:button="@drawable/list_checkboxselector"
+            android:layout_width="@dimen/check_box_size"
+            android:layout_height="@dimen/check_box_size"
             android:clickable="false"
             android:focusable="false"
             android:focusableInTouchMode="false" >
     </CheckBox>
+            <!-- android:button="@drawable/list_checkboxselector" -->
 </LinearLayout>

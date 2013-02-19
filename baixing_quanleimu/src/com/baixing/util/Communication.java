@@ -30,10 +30,10 @@ import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.util.Log;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.quanleimu.activity.QuanleimuApplication;
 
 public class Communication implements Comparator<String> {
 
@@ -53,8 +53,13 @@ public class Communication implements Comparator<String> {
 	 public static String apiUrl = "http://www.baixing.com/api/mobile.";
 	 
 	 public static boolean isWifiConnection() {
+		 
+		 if (GlobalDataManager.getInstance() == null || GlobalDataManager.getInstance().getApplicationContext() == null) {
+			 return false;
+		 }
+		 
 		ConnectivityManager connectivityManager = 
-				(ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
+				(ConnectivityManager) GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null
 				&& activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
@@ -64,7 +69,7 @@ public class Communication implements Comparator<String> {
 	}
 
 	public static boolean isNetworkActive() {
-		ConnectivityManager connectivityManager = (ConnectivityManager) QuanleimuApplication.getApplication().getApplicationContext()
+		ConnectivityManager connectivityManager = (ConnectivityManager) GlobalDataManager.getInstance().getApplicationContext()
 				.getSystemService(Context.CONNECTIVITY_SERVICE);
 		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
 		if (activeNetInfo != null) {
@@ -73,6 +78,7 @@ public class Communication implements Comparator<String> {
 		return false;
 	}
 	
+	@Deprecated
 	public static String getApiUrl(String apiName, List<String> parameters) {
 		String url = apiUrl + apiName + "/?" + getPostParameters(parameters);
 		Log.d("Communication", url);
@@ -89,14 +95,14 @@ public class Communication implements Comparator<String> {
 		 * if(MyApplication.udid.equals("") ||
 		 * MyApplication.version.equals("")){ getudid(); getversion(); }
 		 */
-		list.add("udid=" + Util.getDeviceUdid(QuanleimuApplication.getApplication().getApplicationContext()));
-		list.add("version=" + Util.getVersion(QuanleimuApplication.getApplication().getApplicationContext()));
+		list.add("udid=" + Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()));
+		list.add("version=" + Util.getVersion(GlobalDataManager.getInstance().getApplicationContext()));
 		list.add("api_key=" + apiKey);
-		list.add("channel=" + QuanleimuApplication.channelId);
+		list.add("channel=" + GlobalDataManager.getInstance().getChannelId());
 		list.add("timestamp=" + getTimeStamp());
-		list.add("userId=" + Util.getMyId(QuanleimuApplication.getApplication().getApplicationContext()) );
-		if(QuanleimuApplication.getApplication() != null){
-			list.add("city=" + QuanleimuApplication.getApplication().getCityEnglishName());
+		list.add("userId=" + GlobalDataManager.getInstance().getAccountManager().getMyId(GlobalDataManager.getInstance().getApplicationContext()) );
+		if(GlobalDataManager.getInstance() != null){
+			list.add("city=" + GlobalDataManager.getInstance().getCityEnglishName());
 		}
 		
 		Collections.sort(list, COMPARATOR);
@@ -328,11 +334,11 @@ public class Communication implements Comparator<String> {
 	}
 	
 	private static void registerDevice(HttpClient httpClient){
-		UserBean currentUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", UserBean.class);
+		UserBean currentUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", UserBean.class);
 		if(currentUser == null){
-			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", UserBean.class);
+			UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
 			if(anonymousUser != null){
-				Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", anonymousUser);
+				Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", anonymousUser);
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, anonymousUser);
 				return;
 			}
@@ -368,8 +374,8 @@ public class Communication implements Comparator<String> {
 //					user.
 //					user.setPhone(userObj.getString("mobile"));
 					
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "user", user);
-					Util.saveDataToLocate(QuanleimuApplication.getApplication().getApplicationContext(), "anonymousUser", user);
+					Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", user);
+					Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", user);
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_USER_CREATE, user);
 				} 
 				return;
@@ -435,39 +441,16 @@ public class Communication implements Comparator<String> {
 		if(shutdown){
 //			Profiler.markStart("REQ_STORE");
 			httpClient.getConnectionManager().shutdown();
-			QuanleimuApplication.putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
+			GlobalDataManager.getInstance().getNetworkCacheManager().putCacheNetworkRequest(Util.extractUrlWithoutSecret(url), result);
 //			Profiler.markEnd("REQ_STORE");
 		}
 		return result;
 	}
 	
-	// get提交数据方法
-	public static String getDataByUrl(HttpClient httpClient, String url,
-			E_DATA_POLICY dataPolicy) throws UnsupportedEncodingException,
-			IOException, BXHttpException {
-
-		if (/* E_DATA_POLICY.E_DATA_POLICY_PREFER_LOCAL == dataPolicy || */E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy) {
-			String cached = getCacheRequestIfExist(url);
-			if (E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL == dataPolicy
-					|| cached != null)
-				return cached;
-		}
-//		Profiler.markStart("REG_USER");
-		registerDevice(httpClient);
-//		Profiler.markEnd("REG_USER");
-		
-//		Profiler.markStart("REQ_");
-		String result =  doRequest(httpClient, url, true);
-//		Profiler.markEnd("REQ_");
-		
-//		Profiler.dump();
-		return result;
-	}
-
 	public static String getCacheRequestIfExist(String url) {
 		String extractedUrl = Util.extractUrlWithoutSecret(url);
-		String result = QuanleimuApplication
-				.getCacheNetworkRequest(extractedUrl);
+		String result = GlobalDataManager
+				.getInstance().getNetworkCacheManager().getCacheNetworkRequest(extractedUrl);
 		if (result != null && !result.equals("")) {
 			return result;
 		}
@@ -546,7 +529,7 @@ public class Communication implements Comparator<String> {
 			if ((temp.startsWith("[") && temp.endsWith("]")) || 
 					(temp.startsWith("{") && temp.endsWith("}")))
 			{
-				QuanleimuApplication.putCacheNetworkRequest(
+				GlobalDataManager.getInstance().getNetworkCacheManager().putCacheNetworkRequest(
 						Util.extractUrlWithoutSecret(url), temp);
 			}
 		}
@@ -702,10 +685,24 @@ public class Communication implements Comparator<String> {
 		return o1.compareTo(o2);
 	}
 
+	/**
+	 * @deprecated
+	 * 
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	public static void executeAsyncGetTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
 		executeAsyncTask(false, apiName, params, listener);
 	}
 	
+	/**
+	 * @deprecated
+	 * @param isGet
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	private static void executeAsyncTask(final boolean isGet, final String apiName, final ParameterHolder params, final CommandListener listener) {
 		Thread t = new Thread(
 				new Runnable() {
@@ -731,6 +728,12 @@ public class Communication implements Comparator<String> {
 	
 	}
 	
+	/**
+	 * @deprecated
+	 * @param apiName
+	 * @param params
+	 * @param listener
+	 */
 	public static void executeAsyncPostTask(final String apiName, final ParameterHolder params, final CommandListener listener) {
 		
 		executeAsyncTask(false, apiName, params, listener);

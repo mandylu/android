@@ -11,11 +11,9 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.ListView;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.CheckableAdapter;
 import com.baixing.adapter.CheckableAdapter.CheckableItem;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.BaseFragment.TabDef;
-import com.quanleimu.activity.BaseFragment.TitleDef;
 import com.quanleimu.activity.R;
 
 public class OtherPropertiesFragment extends BaseFragment {
@@ -56,7 +54,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 	}
 	
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		View v = inflater.inflate(R.layout.post_othersview, null);
 
@@ -72,7 +70,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 				adapter.setList(others);
 				if(singleSelection){
 //					m_viewInfoListener.onBack(message, position);
-					finishFragment(requestCode, position);
+					finishFragment(fragmentRequestCode, position);
 				}
 			}
 		});
@@ -93,7 +91,7 @@ public class OtherPropertiesFragment extends BaseFragment {
 			if(lists.length() > 0){
 				lists = lists.substring(1);
 			}
-			finishFragment(requestCode, lists);
+			finishFragment(fragmentRequestCode, lists);
 //			m_viewInfoListener.onBack(message, lists);
 //		}
 	}
@@ -107,14 +105,5 @@ public class OtherPropertiesFragment extends BaseFragment {
 			title.m_rightActionHint = "完成";
 		}
 	}
-	
-	@Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-		tab.m_tabSelected = ETAB_TYPE.ETAB_TYPE_PUBLISH;
-	}
-	
-	
-	
 	
 }

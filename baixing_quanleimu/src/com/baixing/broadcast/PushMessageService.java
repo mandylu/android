@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.broadcast;
 
 
@@ -10,24 +11,24 @@ import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
 import android.content.IntentFilter;
-import android.os.Build;
 import android.os.Handler;
 import android.os.HandlerThread;
 import android.os.IBinder;
 import android.os.Looper;
 import android.os.Message;
+import android.util.Log;
 
+import com.baixing.android.api.ApiError;
+import com.baixing.android.api.ApiParams;
+import com.baixing.android.api.cmd.BaseCommand.Callback;
+import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.broadcast.push.PushDispatcher;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
-import com.baixing.util.Communication;
-import com.baixing.util.ParameterHolder;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.TraceUtil;
-import com.baixing.util.Util;
-import com.quanleimu.activity.QuanleimuApplication;
-import android.util.Log;
 
 /**
  * 
@@ -85,8 +86,8 @@ public class PushMessageService extends Service implements Observer
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		
-		if(QuanleimuApplication.context == null){
-			QuanleimuApplication.context = new WeakReference<Context>(this);
+		if(GlobalDataManager.context == null){
+			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
 		HandlerThread thread = new HandlerThread(SERVICE_THREAD_NAME);
 		thread.start();
@@ -281,11 +282,13 @@ public class PushMessageService extends Service implements Observer
     
     private void registeDevice(BroadcastReceiver receiver, UserBean userBean)
     {
-		RegisterCommandListener cmdListener = new RegisterCommandListener();
-		ParameterHolder parameters = new ParameterHolder();
-		String userId = userBean == null ? Util.getMyId(this) : userBean.getId();
+//		ParameterHolder parameters = new ParameterHolder();
+		ApiParams params = new ApiParams();
+		
+		String userId = userBean == null ? GlobalDataManager.getInstance().getAccountManager().getMyId(this) : userBean.getId();
 		if (userId != null) {
-			parameters.addParameter("userId", userId);
+//			parameters.addParameter("userId", userId);
+			params.addParam("userId", userId);
 		}
 		
 		if (receiver != null)
@@ -293,28 +296,27 @@ public class PushMessageService extends Service implements Observer
 			this.unregisterReceiver(receiver);
 		}
     	
-		Communication.executeAsyncGetTask("tokenupdate", parameters, cmdListener);
+		HttpGetCommand.createCommand(0, "tokenupdate", params).execute(new Callback() {
+			
+			@Override
+			public void onNetworkFail(int requstCode, ApiError error) {
+				final BroadcastReceiver receiver = new BroadcastReceiver() {
+					public void onReceive(Context arg0, Intent arg1) {
+						registeDevice(this, null);
+					}
+				};
+				PushMessageService.this.registerReceiver(receiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_XMPP_CONNECTED));
+			
+			}
+			
+			@Override
+			public void onNetworkDone(int requstCode, String responseData) {
+				Log.d(TAG, "updatetoken succed " + responseData);				
+			}
+		});
 		
     }
     
-    class RegisterCommandListener implements Communication.CommandListener
-    {
-    	
-		public void onServerResponse(String serverMessage) {
-			Log.d(TAG, "updatetoken succed " + serverMessage);
-		}
-
-		@Override
-		public void onException(Exception ex) {
-			final BroadcastReceiver receiver = new BroadcastReceiver() {
-				public void onReceive(Context arg0, Intent arg1) {
-					registeDevice(this, null);
-				}
-			};
-			PushMessageService.this.registerReceiver(receiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_XMPP_CONNECTED));
-		}
-    	
-    }
 	@Override
 	public void update(Observable observable, Object data) {
 		if (data instanceof IBxNotification)

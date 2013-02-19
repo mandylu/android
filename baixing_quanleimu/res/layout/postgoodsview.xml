@@ -4,16 +4,18 @@
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
     android:background="@color/bg_screen" >
-
+	<include layout="@layout/common_title"/>
+	
     <ScrollView
         android:id="@+id/goodscontent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
+        android:layout_below="@+id/linearTop"
         android:clickable="true"
         android:focusableInTouchMode="true"
-        android:paddingRight="@dimen/post_padding"
-        android:paddingLeft="@dimen/post_padding"
         android:paddingBottom="@dimen/post_padding"
+        android:paddingLeft="@dimen/post_padding"
+        android:paddingRight="@dimen/post_padding"
         android:scrollbars="none" >
 
         <LinearLayout
@@ -34,6 +36,10 @@
                 <include
                     android:id="@+id/img_description"
                     layout="@layout/post_image_description_layout" />
+
+                <include
+                    android:id="@+id/categoryItem"
+                    layout="@layout/item_post_category" />
             </LinearLayout>
 
             <Button
@@ -54,7 +60,6 @@
                 android:layout_height="0dp"
                 android:visibility="invisible" />
         </LinearLayout>
-
     </ScrollView>
 
     <LinearLayout

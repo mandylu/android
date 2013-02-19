@@ -1,3 +1,4 @@
+//liuchong@baixing.com
 package com.baixing.broadcast.push;
 
 import org.json.JSONObject;
@@ -16,9 +17,9 @@ public class PushDispatcher {
 	{
 		this.context = context;
 		handlers = new PushHandler[] {
-				new ChatMessageHandler(context),
 				new BXInfoHandler(context),
-                new PushUpdateHandler(context)
+                new PushUpdateHandler(context),
+				new UrlHandler(context)
 		};
 	}
 	
@@ -29,12 +30,12 @@ public class PushDispatcher {
 		try
 		{
 			JSONObject jsonObj = new JSONObject(msgJson);
-			if (jsonObj == null || !jsonObj.has("type"))
+			if (jsonObj == null || !jsonObj.has("a"))
 			{
 				return;
 			}
 			
-			final String type = jsonObj.getString("type");
+			final String type = jsonObj.getString("a");
 			for (PushHandler h : handlers)
 			{
 				if (h.acceptMessage(type))

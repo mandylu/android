@@ -10,16 +10,16 @@ import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.Toast;
 
+import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
-import com.baixing.util.Tracker;
 import com.baixing.util.Util;
-import com.baixing.util.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.TrackConfig.TrackMobile.Key;
-import com.baixing.util.TrackConfig.TrackMobile.PV;
-import com.quanleimu.activity.BaseActivity;
-import com.quanleimu.activity.BaseFragment;
-import com.quanleimu.activity.QuanleimuApplication;
 import com.quanleimu.activity.R;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
@@ -79,7 +79,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		title.m_leftActionHint = "返回";
 		
 		title.m_visible = true;
-		title.m_leftActionStyle = EBUTT_STYLE.EBUTT_STYLE_BACK;
 		title.m_rightActionHint = "注册";
 //		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登录";
@@ -95,13 +94,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
         super.handleRightAction();
         onRegisterClicked();
     }
-
-    @Override
-	public void initTab(TabDef tab){
-		tab.m_visible = false;
-	}
-	
-	
 
 	@Override
 	public void onResume() {
@@ -151,7 +143,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 
 	@Override
-	public View onCreateView(LayoutInflater inflater, ViewGroup container,
+	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
