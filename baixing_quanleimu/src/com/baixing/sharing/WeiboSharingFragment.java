@@ -36,22 +36,9 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class WeiboSharingFragment extends BaseFragment implements OnClickListener{
-    private TextView mTextNum;
-//    private Button mSend;
-    private EditText mEdit;
-    private FrameLayout mPiclayout;
-
-    private String mPicPath = "";
-    private String mContent = "";
+public class WeiboSharingFragment extends BaseSharingFragment implements OnClickListener{
     private String mAccessToken = "";
     private String mExpires_in = "";
-
-
-    public static final String EXTRA_WEIBO_CONTENT = "com.weibo.android.content";
-    public static final String EXTRA_PIC_URI = "com.weibo.android.pic.uri";
-    public static final String EXTRA_ACCESS_TOKEN = "com.weibo.android.accesstoken";
-    public static final String EXTRA_EXPIRES_IN = "com.weibo.android.expires";
 
     public static final int WEIBO_MAX_LENGTH = 140;
     
@@ -129,106 +116,23 @@ public class WeiboSharingFragment extends BaseFragment implements OnClickListene
 	public void handleRightAction(){
 		doShare2Weibo();
 	}
-
-    @Override
-    public void onClick(View v) {
-        int viewId = v.getId();
-
-        if (viewId == R.id.ll_text_limit_unit) {
-            Dialog dialog = new AlertDialog.Builder(this.getActivity()).setTitle("注意")
-                    .setMessage("是否要删除这条微博？")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            mEdit.setText("");
-                        }
-                    }).setNegativeButton(R.string.cancel, null).create();
-            dialog.show();
-        } else if (viewId == R.id.ivDelPic) {
-            Dialog dialog = new AlertDialog.Builder(this.getActivity()).setTitle("注意")
-                    .setMessage("是否删除图片？")
-                    .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                        public void onClick(DialogInterface dialog, int which) {
-                            mPiclayout.setVisibility(View.GONE);
-                            mPicPath = "";
-                        }
-                    }).setNegativeButton(R.string.cancel, null).create();
-            dialog.show();
-        }
-    }
     
 	@Override
 	protected View onInitializeView(LayoutInflater inflater,
 			ViewGroup container, Bundle savedInstanceState) {
 		// TODO Auto-generated method stub
-        View layout = inflater.inflate(R.layout.share_mblog_view, null);
 
         Bundle bundle = this.getArguments();
         if(bundle != null){
-	        mPicPath = bundle.getString(EXTRA_PIC_URI);
-	        mContent = bundle.getString(EXTRA_WEIBO_CONTENT);
 	        mAccessToken = bundle.getString(EXTRA_ACCESS_TOKEN);
 	        mExpires_in = bundle.getString(EXTRA_EXPIRES_IN);
         }
-
-        LinearLayout total = (LinearLayout) layout.findViewById(R.id.ll_text_limit_unit);
-        total.setOnClickListener(this);
-        mTextNum = (TextView) layout.findViewById(R.id.tv_text_limit);
-        ImageView picture = (ImageView) layout.findViewById(R.id.ivDelPic);
-        picture.setOnClickListener(this);
-
-        mEdit = (EditText) layout.findViewById(R.id.etEdit);
-        mEdit.addTextChangedListener(new TextWatcher() {
-            public void afterTextChanged(Editable s) {
-            }
-
-            public void beforeTextChanged(CharSequence s, int start, int count, int after) {
-            }
-
-            public void onTextChanged(CharSequence s, int start, int before, int count) {
-                String mText = mEdit.getText().toString();
-                int len = mText.length();
-                View right = getView() != null && getView().getRootView() != null ? 
-                		getView().getRootView().findViewById(R.id.right_action) : null;
-                if (len <= WEIBO_MAX_LENGTH) {
-                    len = WEIBO_MAX_LENGTH - len;
-//                    mTextNum.setTextColor(R.color.text_num_gray);                   
-                    if(right != null){
-                        right.setEnabled(true);
-                    }
-                } else {
-                    len = len - WEIBO_MAX_LENGTH;
-
-                    mTextNum.setTextColor(Color.RED);
-                    if(right != null){
-                        right.setEnabled(false);
-                    }
-                }
-                mTextNum.setText(String.valueOf(len));
-            }
-        });
-        mEdit.setText(mContent);
-        mPiclayout = (FrameLayout) layout.findViewById(R.id.flPic);
-        if (TextUtils.isEmpty(this.mPicPath)) {
-            mPiclayout.setVisibility(View.GONE);
-        } else {
-            mPiclayout.setVisibility(View.VISIBLE);
-            File file = new File(mPicPath);
-            if (file.exists()) {
-                Bitmap pic = BitmapFactory.decodeFile(this.mPicPath);
-                ImageView image = (ImageView) layout.findViewById(R.id.ivImage);
-                image.setImageBitmap(pic);
-            } else {
-                mPiclayout.setVisibility(View.GONE);
-            }
-        }		
-		return layout;
+		return super.onInitializeView(inflater, container, savedInstanceState);
 	}
 
 	public void initTitle(TitleDef title){
-		title.m_visible = true;
-		title.m_leftActionHint = "返回";
+		super.initTitle(title);
 		title.m_title = "新浪微博";
-		title.m_rightActionHint = "发布";
 	}
 
 }
