@@ -19,6 +19,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Communication.BXHttpException;
+import com.baixing.util.PerformEvent.Event;
 
 public class MobileConfig {
 	private JSONObject json = null;
@@ -108,6 +109,7 @@ public class MobileConfig {
 			Pair<Long, String> p = 
 					Util.loadJsonAndTimestampFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config");
 			if (System.currentTimeMillis() / 1000 - p.first <= 24 * 3600){
+				PerformanceTracker.stamp(Event.E_LoadConfig_Less_24);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 				return;
 			}
 			
@@ -131,6 +133,7 @@ public class MobileConfig {
 			{
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_CONFIGURATION_UPDATE, null);
 			}
+			PerformanceTracker.stamp(Event.E_Leave_MobileConfigThread);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		}
 		
 	}

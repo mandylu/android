@@ -55,6 +55,8 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
@@ -97,6 +99,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_MyAd_OnCreate);
 		super.onCreate(savedInstanceState);
 		
         final Bundle arguments = getArguments();
@@ -165,6 +168,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(!isBack || needReloadData){
+			PerformanceTracker.stamp(Event.E_MyAd_FireRefresh);
 			lvGoodsList.fireRefresh();
 			needReloadData = false;
 		}
@@ -260,6 +264,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onResume() {
+		PerformanceTracker.stamp(Event.E_MyAdShowup);
 		super.onResume();
 		this.isOnResume = true;
 		Log.d("jjj","WWWW->onresume()");
@@ -388,6 +393,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;
 		}
 		case MSG_MYPOST:
+			PerformanceTracker.stamp(Event.E_MyPost_Got);
 			isRefreshing = false;
 //		case MSG_INVERIFY:
 //		case MSG_DELETED:
@@ -433,6 +439,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			doShare();
+			PerformanceTracker.stamp(Event.E_MyPost_Got_Handled);
 			break;
 		case VadListLoader.MSG_FIRST_FAIL:
 		case VadListLoader.MSG_EXCEPTION:{
@@ -834,6 +841,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
 		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
+		PerformanceTracker.stamp(Event.E_MyAdStartFetching);
 		glLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 		isRefreshing = true;
 	}

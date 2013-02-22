@@ -14,6 +14,8 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.CityList;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.util.MobileConfig;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 
 /**
@@ -37,6 +39,7 @@ public class UpdateCityAndCatCommand implements Callback {
 
 	public void execute(){
 		//check and update city list.
+		PerformanceTracker.stamp(Event.E_Begin_UpdateCityAndCat);
 		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(this.context, "cityjson");
 		long timestamp = pair.first;
 		String content = pair.second;
@@ -70,12 +73,13 @@ public class UpdateCityAndCatCommand implements Callback {
 				Util.saveJsonAndTimestampToLocate(context, "cityjson", responseData, cityUpdateTime);							
 				GlobalDataManager.getInstance().updateCityList(cityList);
 			}
+			PerformanceTracker.stamp(Event.E_UpdateCity_Done);
 			break;
 		case NETWORK_REQ_GET_CATEGORY_LIST:
 			if (!TextUtils.isEmpty(responseData)) {
 				Util.saveJsonAndTimestampToLocate(context, "saveFirstStepCate", responseData, cateUpdateTime);
 			}
-
+			PerformanceTracker.stamp(Event.E_UpdateCat_Done);
 			break;
 		}
 	}
@@ -83,6 +87,7 @@ public class UpdateCityAndCatCommand implements Callback {
 	@Override
 	public void onNetworkFail(int requstCode, ApiError error) {
 		Log.e("QLM", "fail to update " + (requstCode == NETWORK_REQ_GET_CATEGORY_LIST ? "categoty list" : "city list"));
+		PerformanceTracker.stamp(Event.E_UpdateCityAndCat_FAIL);
 	}
 
 	

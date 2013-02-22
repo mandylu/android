@@ -32,6 +32,8 @@ import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.widget.EditUsernameDialogFragment;
 import com.quanleimu.activity.R;
@@ -85,6 +87,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_Profile_OnCreate);
 		super.onCreate(savedInstanceState);
 		this.getArguments();
 		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
@@ -166,6 +169,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 
 	@Override
 	public void onResume() {
+		PerformanceTracker.stamp(Event.E_Profile_ShowUp);
 		super.onResume();
 		this.pv = PV.MY;
 		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, GlobalDataManager.getInstance().getAccountManager().isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
