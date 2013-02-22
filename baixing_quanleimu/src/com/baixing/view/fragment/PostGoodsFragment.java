@@ -51,6 +51,8 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
@@ -125,24 +127,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
-
-//		FragmentManager fm = getActivity().getSupportFragmentManager();
-//
-//		Fragment fg = fm.getFragment(this.imgSelBundle, "imageFragment");
-//		if(fg != null && (fg instanceof ImageSelectionDialog)){
-//			this.imgSelDlg = (ImageSelectionDialog)fg;
-//		}
-//		if(this.imgSelDlg != null &&
-//				(requestCode == CommonIntentAction.PhotoReqCode.PHOTOHRAPH
-//				|| requestCode == CommonIntentAction.PhotoReqCode.PHOTOZOOM
-//				|| requestCode == PHOTORESOULT)){
-//			imgSelDlg.setMsgOutHandler(handler);
-//			if(imgSelBundle == null){
-//				imgSelBundle = new Bundle();
-//			}
-//			imgSelDlg.setMsgOutBundle(this.imgSelBundle);
-//			imgSelDlg.onActivityResult(requestCode, resultCode, data);
-//		}
     }
     
     private void initWithCategoryNames(String categoryNames) {
@@ -502,13 +486,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if(!this.checkInputComplete()){
 			return;
 		}
+		PerformanceTracker.stamp(Event.E_Start_PostAction);
 		String detailLocationValue = params.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
 			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+			PerformanceTracker.stamp(Event.E_PostAction_Direct_Start);
 			postAd(detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 			this.showSimpleProgress();
+			PerformanceTracker.stamp(Event.E_PostAction_GetLocation_Start);
 			postLBS.retreiveLocation(GlobalDataManager.getInstance().cityName, getFilledLocation());			
 		}
 	}
@@ -579,6 +566,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
 		bmpUrls.clear();
 		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
+		PerformanceTracker.stamp(Event.E_Post_Request_Sent);
 		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
 	}
 
@@ -1013,6 +1001,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			this.showGettingMetaProgress(false);
 			break;
 		case PostCommonValues.MSG_POST_SUCCEED:
+			PerformanceTracker.stamp(Event.E_POST_SUCCEEDED);
 			hideProgress();
 			
 			doClearUpImages();
@@ -1044,7 +1033,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					args.putString("lastPost", lp);
 					
 					args.putString("cateEnglishName", categoryEnglishName);
-					args.putBoolean(KEY_IS_EDITPOST, editMode);
+					args.putBoolean(KEY_IS_EDITPOST, editMode); 
 					
 					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
 					if(activity != null){							
@@ -1052,6 +1041,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						
 						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 						intent.putExtras(args);
+						PerformanceTracker.stamp(Event.E_Post_Send_Success_Broadcast);
 						activity.sendBroadcast(intent);
 					}
 					doClearUpImages();
@@ -1090,7 +1080,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
-		case PostCommonValues.MSG_GEOCODING_FETCHED:			
+		case PostCommonValues.MSG_GEOCODING_FETCHED:
+			Event evt = msg.what == MSG_GEOCODING_TIMEOUT ? Event.E_GeoCoding_Timeout : Event.E_GeoCoding_Fetched;
+			PerformanceTracker.stamp(evt);
 			showSimpleProgress();
 			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
 			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);

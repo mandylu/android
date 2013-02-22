@@ -22,6 +22,8 @@ import com.baixing.entity.Category;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
 import com.baixing.widget.CustomizeGridView.GridInfo;
@@ -177,11 +179,15 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	
 	@Override
 	public void onResume(){
+		PerformanceTracker.stamp(Event.E_HomeFragment_Showup);
 		super.onResume();
 		synchronized(HomeFragment.this){
 			setViewContent();
 		}
 		Tracker.getInstance().pv(PV.HOME).end();
+		
+		PerformanceTracker.stamp(Event.E_HomeFragment_Showup_done);
+		PerformanceTracker.flush();
 	}
 	
 	@Override
