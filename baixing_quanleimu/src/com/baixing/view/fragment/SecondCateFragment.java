@@ -26,6 +26,8 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
@@ -99,6 +101,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 		if (cate == null || cate.getChildren() == null
 				|| cate.getChildren().size() <= arg2)
 			return;
+		PerformanceTracker.stamp(Event.E_Category_Clicked);
 		Category secCate = cate.getChildren().get(arg2);
 		if (!isPost) {
 			final Bundle bundle = createArguments(secCate.getName(), "返回");
@@ -120,6 +123,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
 							GlobalDataManager.setTextMode(false);
+							PerformanceTracker.stamp(Event.E_Start_ListingFragment);
 							pushFragment(new ListingFragment(), bundle);
 						}
 					})
@@ -130,6 +134,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.YES).end();
 							GlobalDataManager.setTextMode(true);
 							ViewUtil.postShortToastMessage(getView(), R.string.label_warning_switch_succed, 100);
+							PerformanceTracker.stamp(Event.E_Start_ListingFragment);
 							pushFragment(new ListingFragment(), bundle);
 						}
 						
@@ -137,6 +142,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 				}
 				else
 				{
+					PerformanceTracker.stamp(Event.E_Start_ListingFragment);
 					pushFragment(new ListingFragment(), bundle);
 				}
 			}

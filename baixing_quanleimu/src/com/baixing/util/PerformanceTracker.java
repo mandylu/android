@@ -82,6 +82,7 @@ public class PerformanceTracker{
 	}
 	
 	public static void stamp(PerformEvent.Event event){//, String file, int line, long timestamp){
+		StackTraceElement[] elements = Thread.currentThread().getStackTrace();
 		getInstance().record(event + "," + Thread.currentThread().getStackTrace()[3].getFileName() + "," + Thread.currentThread().getStackTrace()[3].getLineNumber() + "," + String.valueOf(System.currentTimeMillis()));
 	}
 }

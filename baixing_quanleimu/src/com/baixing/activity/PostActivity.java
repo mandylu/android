@@ -13,6 +13,8 @@ import android.view.View;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
 
@@ -59,7 +61,7 @@ public class PostActivity extends BaseTabActivity {
 
 					if (action.equals(CommonIntentAction.ACTION_BROADCAST_POST_FINISH)) {
 						Bundle bundle = intent.getExtras();
-						
+						PerformanceTracker.stamp(Event.E_GetPostSuccessBroadcast);
 						Intent personalIntent = new Intent();
 						personalIntent.setClass(PostActivity.this, PersonalActivity.class);
 						personalIntent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);

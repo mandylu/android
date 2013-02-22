@@ -46,6 +46,8 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
 import com.baixing.view.AdViewHistory;
@@ -142,6 +144,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	public void onCreate(Bundle savedInstanceState)
 	{
+		PerformanceTracker.stamp(Event.E_ListingFrag_begin);
 		super.onCreate(savedInstanceState);
 		
 		this.categoryEnglishName = getArguments().getString("categoryEnglishName");
@@ -164,10 +167,12 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		
 		goodsListLoader = new VadListLoader(getSearchParams(), this, null, new AdList());
 		goodsListLoader.setRuntime(true);
+		PerformanceTracker.stamp(Event.E_ListingFrag_create_end);
 	}
 	
 	@Override
 	public void onResume() {
+		PerformanceTracker.stamp(Event.E_Listing_Showup);
 		super.onResume();
 		if (actType != null && actType.equals("search"))//from headersearch
 		{	
@@ -204,6 +209,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 //			goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
 			if (!isBack){
 				mRefreshUsingLocal = true;
+				PerformanceTracker.stamp(Event.E_FireRefresh_OnShowup);
 				lvGoodsList.fireRefresh();
 			}
 		}
@@ -273,7 +279,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		logCreateView(savedInstanceState);
-		
+		PerformanceTracker.stamp(Event.E_InitListingFragView_Begin);
 		View v = inflater.inflate(R.layout.goodslist, null);
 		
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
@@ -332,7 +338,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				if(categoryName != null) getArguments().putString("categoryName", categoryName);
 			}
 		}
-		
+		PerformanceTracker.stamp(Event.E_InitListingFragView_End);
 		return v;
 	
 	}
@@ -424,6 +430,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	@Override
 	public void onRefresh() {
+		PerformanceTracker.stamp(Event.E_Listing_StartFetching);
 		goodsListLoader.startFetching(true, mRefreshUsingLocal ? Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL : Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);	
 		mRefreshUsingLocal = false;
 	}
@@ -448,8 +455,11 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			}
 			break;
 		case VadListLoader.MSG_FINISH_GET_FIRST:
+			PerformanceTracker.stamp(Event.E_Listing_Got_First);
 			if(goodsListLoader == null) break;
+			PerformanceTracker.stamp(Event.E_Listing_Start_ParseJson);
 			AdList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
+			PerformanceTracker.stamp(Event.E_Listing_End_ParseJson);
 			goodsListLoader.setGoodsList(goodsList);
 
 			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
@@ -497,7 +507,8 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				//goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
 
 			hideProgress();
-
+			PerformanceTracker.stamp(Event.E_Listing_Got_First_Leave);
+			PerformanceTracker.flush();
 			break;
 		case VadListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
