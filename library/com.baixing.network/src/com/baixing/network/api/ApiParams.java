@@ -4,8 +4,10 @@ package com.baixing.network.api;
 import java.io.Serializable;
 import java.util.HashMap;
 import java.util.Map;
-import java.util.Set;
 import java.util.Map.Entry;
+import java.util.Set;
+
+import com.baixing.network.NetworkUtil;
 
 /**
  * 
@@ -120,19 +122,20 @@ public class ApiParams implements Serializable {
 		return sb.toString();
 	}
 	
-//	public void appendUserInfo(UserBean user) {
-//		if (user == null) {
-//			return;
-//		}
-//		this.addParam("mobile", user.getPhone());
-//		this.addParam("userToken", ApiClient.generateUsertoken(user.getPassword()));
-//	}
-//	
-//    static public void makeupUserInfoParams(UserBean user, List<String> params){
-//		if(user != null && params != null){
-//			params.add("mobile=" + user.getPhone());
-//			params.add("userToken=" + ApiClient.generateUsertoken(user.getPassword()));
-//		}    	
-//    }
-
+	/**
+	 * Set authentication information to request parameters.
+	 * 
+	 * @param account user account used to login.
+	 * @param password password of the specified account.
+	 */
+	public void appendAuthInfo(String account, String password) {
+		this.addParam("mobile", account);
+		this.addParam("userToken", generateUsertoken(password));
+	}
+	
+	static private String generateUsertoken(String password) {
+		String password1 = NetworkUtil.getMD5(password.trim());
+		password1 += password;
+		return NetworkUtil.getMD5(password1);
+	}
 }

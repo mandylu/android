@@ -11,6 +11,7 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.network.NetworkUtil;
 import com.baixing.network.impl.GetRequest;
 import com.baixing.network.impl.HttpNetworkConnector;
 import com.baixing.network.impl.IHttpRequest;
@@ -119,27 +120,10 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		
 		
 		allParams.addParam(ApiParams.KEY_TIMESTAMP, (System.currentTimeMillis() / 1000) + "");
-		String md5String = getMD5(allParams.toString() + API_SECRET);
+		String md5String = NetworkUtil.getMD5(allParams.toString() + API_SECRET);
 		allParams.addParam(ApiParams.KEY_ACCESSTOKEN, md5String);
 		
 		return allParams.getParams();
-	}
-	
-	private static String getMD5(String str) {
-		byte[] source = str.getBytes();
-		try {
-			MessageDigest md5 = MessageDigest.getInstance("MD5");
-			md5.update(source);
-
-			StringBuilder sb = new StringBuilder();
-			for (byte b : md5.digest()) {
-				sb.append(String.format("%02x", b));
-			}
-			return sb.toString();
-		} catch (Exception e) {
-			e.printStackTrace();
-		}
-		return null;
 	}
 	
 	public void cancel() {
