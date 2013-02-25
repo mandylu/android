@@ -1,23 +1,16 @@
 //liuchong@baixing.com
 package com.baixing.broadcast.push;
 
-import android.app.ActivityManager;
-import android.app.AlertDialog;
-import android.app.Service;
-import android.content.ComponentName;
-import android.content.DialogInterface;
-import android.os.Bundle;
-import android.util.Log;
-import android.widget.Toast;
-import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.broadcast.NotificationIds;
-import com.baixing.util.Communication;
-import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
-import com.quanleimu.activity.R;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.broadcast.NotificationIds;
+import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 
 /**
  * 

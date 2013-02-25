@@ -5,12 +5,12 @@ import java.util.List;
 import org.json.JSONException;
 import org.json.JSONObject;
 import com.baixing.activity.BaseActivity;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.VadListLoader;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.ListingFragment;
@@ -105,7 +105,7 @@ public class PageJumper{
 				JSONObject obj = new JSONObject(data);
 				ApiParams param = new ApiParams();
 				param.addParam("query", "id:" + obj.getString("id"));
-				String result = ApiClient.getInstance().invokeApi(ApiClient.Api.createGet("ad_list"), param);
+				String result = BaseApiCommand.createCommand("ad_list", true, param).executeSync(currentActivity);
 				AdList gl = JsonUtil.getGoodsListFromJson(result);
 				if(gl != null && gl.getData() != null && gl.getData().size() > 0){
 					VadListLoader glLoader = new VadListLoader(null, null, null, gl);

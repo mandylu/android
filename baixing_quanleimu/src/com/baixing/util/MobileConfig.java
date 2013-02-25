@@ -2,8 +2,6 @@ package com.baixing.util;
 
 import java.io.IOException;
 import java.io.InputStream;
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -12,13 +10,11 @@ import android.content.Context;
 import android.util.Log;
 import android.util.Pair;
 
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.Communication.BXHttpException;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.PerformEvent.Event;
 
 public class MobileConfig {
@@ -115,7 +111,7 @@ public class MobileConfig {
 			
 //			String url = Communication.getApiUrl(apiName, new ArrayList<String>());
 			try {
-				String content = ApiClient.getInstance().invokeApi(Api.createGet(apiName), new ApiParams());//
+				String content = BaseApiCommand.createCommand(apiName, true, null).executeSync(GlobalDataManager.getInstance().getApplicationContext());//ApiClient.getInstance().invokeApi(Api.createGet(apiName), new ApiParams());//
 				if (content != null && content.length() > 0) {
 					MobileConfig.this.json = new JSONObject(content);
 					Util.saveJsonAndTimestampToLocate(GlobalDataManager.getInstance().getApplicationContext(), "mobile_config", content, System.currentTimeMillis()/1000);

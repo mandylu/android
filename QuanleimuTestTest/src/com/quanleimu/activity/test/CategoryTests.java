@@ -2,7 +2,7 @@ package com.quanleimu.activity.test;
 
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.util.Communication;
+import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
 import android.test.AndroidTestCase;
@@ -19,7 +19,7 @@ public class CategoryTests extends AndroidTestCase {
 		Pair<Long, String> pair = Util.loadDataAndTimestampFromAssets(this.getContext(), "cateJson.txt");
 		
 		String json = pair.second;
-		Category root = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
+		Category root = JsonUtil.loadCategoryTree(TextUtil.decodeUnicode(json));
 		assertEquals("root", root.getEnglishName());
 		assertEquals("所有类目", root.getName());
 		assertNull(root.getParent());
@@ -32,7 +32,7 @@ public class CategoryTests extends AndroidTestCase {
 		Pair<Long, String> pair = Util.loadDataAndTimestampFromAssets(this.getContext(), "cateJson.txt");
 		
 		String json = pair.second;
-		Category root = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
+		Category root = JsonUtil.loadCategoryTree(TextUtil.decodeUnicode(json));
 
 		//First level check
 		Category ershou = root.findCategoryByEnglishName("ershou");
@@ -52,7 +52,7 @@ public class CategoryTests extends AndroidTestCase {
 		Pair<Long, String> pair = Util.loadDataAndTimestampFromAssets(this.getContext(), "cateJson.txt");
 		
 		String json = pair.second;
-		Category root = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
+		Category root = JsonUtil.loadCategoryTree(TextUtil.decodeUnicode(json));
 		
 		//First level find.
 		Category ershou = root.findChildByName("物品交易");

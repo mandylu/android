@@ -1,7 +1,6 @@
 package com.baixing.view.fragment;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
@@ -19,18 +18,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.tracking.Tracker;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.LoginUtil;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -265,7 +263,8 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 			params.addParam("userId", user.getId());
 			
 			try {
-				String upJson = ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
+				String upJson = BaseApiCommand.createCommand(apiName, true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+						//ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
 				if (!TextUtils.isEmpty(upJson)) {
 					UserProfile profile = UserProfile.from(upJson);
 					if (getActivity() != null)

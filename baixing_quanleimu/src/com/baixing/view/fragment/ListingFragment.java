@@ -27,24 +27,21 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.ImageList;
-import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -59,7 +56,7 @@ import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
 
-public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener,BaseCommand.Callback, VadListLoader.Callback {
+public class ListingFragment extends BaseFragment implements OnScrollListener, PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener,Callback, VadListLoader.Callback {
 
 	public static final int MSG_UPDATE_FILTER = 1000;
 	
@@ -247,7 +244,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		params.addParam("categoryEnglishName", categoryEnglishName);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		HttpGetCommand.createCommand(MSG_UPDATE_FILTER, "category_meta_filter", params).execute(this);
+		BaseApiCommand.createCommand("category_meta_filter", true, params).execute(getActivity(), this);
 	}
 	
 	private ApiParams getSearchParams()
@@ -423,15 +420,16 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	@Override
 	public void onGetMore() {
-		goodsListLoader.startFetching(false, ((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
-												Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
-												Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+//		goodsListLoader.startFetching(false, ((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == goodsListLoader.getDataStatus()) ? 
+//												Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE :
+//												Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+		goodsListLoader.startFetching(getAppContext(), false, VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getDataStatus());
 	}
 
 	@Override
 	public void onRefresh() {
 		PerformanceTracker.stamp(Event.E_Listing_StartFetching);
-		goodsListLoader.startFetching(true, mRefreshUsingLocal ? Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL : Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);	
+		goodsListLoader.startFetching(getAppContext(), true, mRefreshUsingLocal);
 		mRefreshUsingLocal = false;
 	}
 
@@ -448,7 +446,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		case VadListLoader.MSG_FIRST_FAIL:
 			if(goodsListLoader == null) break;
 			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
-				goodsListLoader.startFetching(true, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE);
+				goodsListLoader.startFetching(getAppContext(), true, false);
 			else{
 				Toast.makeText(getActivity(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
 				hideProgress();
@@ -755,23 +753,21 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 	}
 
 	@Override
-	public void onNetworkDone(int requstCode, String responseData) {
-		switch (requstCode) {
-		case MSG_UPDATE_FILTER:
-			if (responseData != null) {
-				Util.saveJsonAndTimestampToLocate(getAppContext(), 
-						"saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), 
-						responseData, System.currentTimeMillis()/1000);
-				
-				listFilterss = JsonUtil.getFilters(responseData).getFilterssList();
-				sendMessage(MSG_UPDATE_FILTER, responseData);
-			}
-			break;
+	public void onNetworkDone(String apiName, String responseData) {
+
+		if ("category_meta_filter".equals(apiName) && responseData != null) {
+			Util.saveJsonAndTimestampToLocate(getAppContext(), "saveFilterss"
+					+ categoryEnglishName
+					+ GlobalDataManager.getInstance().getCityEnglishName(),
+					responseData, System.currentTimeMillis() / 1000);
+
+			listFilterss = JsonUtil.getFilters(responseData).getFilterssList();
+			sendMessage(MSG_UPDATE_FILTER, responseData);
 		}
 	}
 
 	@Override
-	public void onNetworkFail(int requstCode, ApiError error) {
+	public void onNetworkFail(String apiName, ApiError error) {
 		
 	}
 

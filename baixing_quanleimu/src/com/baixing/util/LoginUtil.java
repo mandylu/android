@@ -1,9 +1,5 @@
 package com.baixing.util;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -16,15 +12,14 @@ import android.widget.Button;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.HttpPostCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.Tracker;
@@ -80,7 +75,7 @@ public class LoginUtil implements View.OnClickListener{
 				pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
 				pd.setCancelable(true);
 				pd.show();
-				sendLoginCmd(account, password);
+				sendLoginCmd(v.getContext(), account, password);
 			}
 		}
         else if(v.getId() == R.id.loginForgetPwdBtn){
@@ -161,16 +156,16 @@ public class LoginUtil implements View.OnClickListener{
 		}
 	}
 	
-	private void sendLoginCmd(String account, String password) {
+	private void sendLoginCmd(Context cxt, String account, String password) {
 		ApiParams params = new ApiParams();
 		params.addParam("mobile", account);
 		params.addParam("nickname", account);
 		params.addParam("password", password.trim());
 		
-		HttpPostCommand.createCommand(0, "user_login", params).execute(new Callback() {
+		BaseApiCommand.createCommand("user_login", false, params).execute(cxt, new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				if(pd != null){
 					pd.dismiss();
 				}
@@ -181,7 +176,7 @@ public class LoginUtil implements View.OnClickListener{
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				if (responseData != null) {
 					parseLoginResponse(responseData);
 					if(pd != null){

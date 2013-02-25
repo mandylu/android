@@ -1,8 +1,6 @@
 //xumengyi@baixing.com
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,11 +29,6 @@ import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.PersonalActivity;
 import com.baixing.adapter.VadListAdapter;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
@@ -47,13 +40,17 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.LogData;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -183,7 +180,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         v.findViewById(R.id.linearType).setVisibility(View.GONE);  // 禁用掉 已发布、审核中、已删除 tabView，后续删除
 		
 		try {
-			if (!Communication.isNetworkActive()) {
+			if (!NetworkUtil.isNetworkActive(v.getContext())) {
 				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			}
 		} catch (Exception e) {
@@ -741,7 +738,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     	
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
         if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-        	params.appendUserInfo(user);
+        	params.appendAuthInfo(user.getPhone(), user.getPassword());//(user);
         }
         params.addParam("adId", adId);
         params.addParam("rt", 1);
@@ -750,15 +747,15 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         }
         json = null;
         showSimpleProgress();
-        HttpPostCommand.createCommand(0, "ad_refresh", params).execute(new Callback() {
+        BaseApiCommand.createCommand("ad_refresh", true, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 //				hideProgress();
 				json = responseData;
 				try {
@@ -789,19 +786,19 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     	params.addParam("adId", id);
     	params.addParam("rt", 1);
     	if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-    		params.appendUserInfo(user);
+    		params.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
     	
-    	HttpPostCommand.createCommand(0, "ad_delete", params).execute(new Callback() {
+    	BaseApiCommand.createCommand("ad_delete", false, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				hideProgress();
 				sendMessage(MSG_DELETE_POST_FAIL, null);
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				json = responseData;
 				hideProgress();
 				Message msg = Message.obtain();//handler.obtainMessage();
@@ -842,7 +839,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader.setParams(params);
 		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		PerformanceTracker.stamp(Event.E_MyAdStartFetching);
-		glLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+		glLoader.startFetching(getAppContext(), true, msg, msg, msg, !NetworkUtil.isNetworkActive(getAppContext()));
 		isRefreshing = true;
 	}
 	

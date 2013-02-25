@@ -1,8 +1,6 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
@@ -11,7 +9,6 @@ import java.util.Map;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -24,19 +21,17 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.HttpGetCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Filterss;
 import com.baixing.entity.values;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.tracking.Tracker;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
@@ -49,8 +44,10 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	private static final int MSG_UPDATE_KEYWORD = 3;
 	public static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	
-	private static final int REQ_REQUEST_FILTER = 1;
-	private static final int REQ_REQUEST_FILTER_SILENT = 2;
+//	private static final int REQ_REQUEST_FILTER = 1;
+//	private static final int REQ_REQUEST_FILTER_SILENT = 2;
+	
+	private boolean isSilentMode = false;
 	
 	// 定义变量
 	private EditText ed_sift;
@@ -214,7 +211,8 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		params.addParam("categoryEnglishName", categoryEnglishName);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		HttpGetCommand.createCommand(isSilent ? REQ_REQUEST_FILTER_SILENT : REQ_REQUEST_FILTER, "category_meta_filter", params).execute(this);
+		isSilentMode = isSilent;
+		BaseApiCommand.createCommand("category_meta_filter", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 	}
 	
 	private void loadSiftFrame(View rootView)
@@ -452,23 +450,15 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	}
 
 	@Override
-	public void onNetworkDone(int requstCode, String responseData) {
-		if (REQ_REQUEST_FILTER == requstCode) {
+	public void onNetworkDone(String apiName, String responseData) {
+		if (!isSilentMode) {
 			Util.saveJsonAndTimestampToLocate(FilterFragment.this.getAppContext(), "saveFilterss"+categoryEnglishName+GlobalDataManager.getInstance().getCityEnglishName(), responseData, System.currentTimeMillis()/1000);
 			sendMessage(MSG_LOAD_DATA_SUCCED, null);
 		}
 	}
 
 	@Override
-	public void onNetworkFail(int requstCode, ApiError error) {
-		switch (requstCode) {
-		case REQ_REQUEST_FILTER:
-		case REQ_REQUEST_FILTER_SILENT:
-			sendMessage(MSG_LOAD_DATA_FAILD, null);
-			break;
-
-		default:
-			break;
-		}
+	public void onNetworkFail(String apiName, ApiError error) {
+		sendMessage(MSG_LOAD_DATA_FAILD, null);
 	}
 }

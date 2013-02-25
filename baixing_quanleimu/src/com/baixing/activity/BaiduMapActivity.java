@@ -31,14 +31,13 @@ import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.PoiOverlay;
 import com.baidu.mapapi.Projection;
-import com.baixing.android.api.WebUtils;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.drawable;
@@ -127,7 +126,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 							latV, lonV);
 					
 					try{
-						String baiduJsn = WebUtils.doGet(BaiduMapActivity.this, baiduUrl, null);//Communication.getDataByUrlGet(baiduUrl);
+						String baiduJsn = NetworkCommand.doGet(BaiduMapActivity.this, baiduUrl);
 						JSONObject js = new JSONObject(baiduJsn);
 						Object errorCode = js.get("error");
 						if(errorCode instanceof Integer && (Integer)errorCode == 0){
@@ -171,15 +170,13 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 					if(!city.equals("")){
 						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
 						try{
-							String googleJsn = Communication.getDataByUrlGet(googleUrl);
+							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
 							String[] info = googleJsn.split(",");
 							if(info != null && info.length == 4){
 								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
 								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
 								applyToMap(x, y);
 							}
-						}catch(UnsupportedEncodingException e){
-							e.printStackTrace();
 						}catch(Exception e){
 							e.printStackTrace();
 						}

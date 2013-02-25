@@ -53,6 +53,9 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		this.apiName = apiName;
 		this.apiParams = params;
 		this.isGet = isGetRequest;
+		if (apiParams == null) {
+			apiParams = new ApiParams();
+		}
 	}
 	
 	public static BaseApiCommand createCommand(String apiName, boolean isGet, ApiParams params) {
@@ -70,6 +73,10 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		commonParams.addParam(ApiParams.KEY_CHANNEL, channel);
 		commonParams.addParam(ApiParams.KEY_CITY, city);
 		commonParams.addParam(ApiParams.KEY_APIKEY, API_KEY);
+	}
+	
+	public static void addCommonParams(String key, String value) {
+		commonParams.addParam(key, value);
 	}
 	
 	public void execute(Context context, Callback callback) {

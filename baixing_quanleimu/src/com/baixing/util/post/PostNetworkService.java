@@ -1,32 +1,32 @@
 //xumengyi@baixing.com
 package com.baixing.util.post;
 
-import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+
 import org.json.JSONException;
 import org.json.JSONObject;
-import com.baixing.data.GlobalDataManager;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiListener;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.entity.BXLocation;
-import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.UserBean;
-import com.baixing.jsonutil.JsonUtil;
-import com.baixing.util.ErrorHandler;
-import com.baixing.util.Util;
+
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
-public class PostNetworkService implements ApiListener{
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.BXLocation;
+import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.UserBean;
+import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.util.ErrorHandler;
+import com.baixing.util.Util;
+
+public class PostNetworkService implements Callback{
 	private Handler handler;
 	private String city;
 	private String category;
@@ -49,7 +49,8 @@ public class PostNetworkService implements ApiListener{
 		ApiParams param = new ApiParams();
 		param.addParam("categoryEnglishName", categoryEnglishName);
 		param.addParam("cityEnglishName", (cityEnglishName == null ? GlobalDataManager.getInstance().getCityEnglishName() : cityEnglishName));
-		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
+//		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
+		BaseApiCommand.createCommand(apiName, false, param).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 		isretreiveMeta = true;
 	}
 	
@@ -73,7 +74,7 @@ public class PostNetworkService implements ApiListener{
 		}
 
 		if(registered){
-			apiParam.appendUserInfo(user);
+			apiParam.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
 		Pair<Double, Double> coorGoogle = PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
 		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
@@ -120,7 +121,8 @@ public class PostNetworkService implements ApiListener{
 			}
 		}
 		
-		ApiClient.getInstance().remoteCall(Api.createPost(apiName), apiParam, this);
+//		ApiClient.getInstance().remoteCall(Api.createPost(apiName), apiParam, this);
+		BaseApiCommand.createCommand(apiName, false, apiParam).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 		isretreiveMeta = false;
 	}
 	
@@ -210,29 +212,19 @@ public class PostNetworkService implements ApiListener{
 	}
 
 	@Override
-	public void onComplete(JSONObject json, String rawData) {
-		// TODO Auto-generated method stub
+	public void onNetworkDone(String apiName, String responseData) {
 		if(isretreiveMeta){
-			handleGetMetaMsgBack(rawData);
+			handleGetMetaMsgBack(responseData);
 			isretreiveMeta = false;
 		}else{
-			handlePostMsgBack(rawData);
+			handlePostMsgBack(responseData);
 		}
 	}
 
 	@Override
-	public void onError(ApiError error) {
-		// TODO Auto-generated method stub
-//		sendMessage(ErrorHandler.ERROR_SERVICE_UNAVAILABLE, null);
+	public void onNetworkFail(String apiName, ApiError error) {
 		String msg = "网络错误";//(error == null ? "请求错误" : error.getMsg()); //TODO
 		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
 		sendMessage(msgCode, msg);
 	}
-
-	@Override
-	public void onException(Exception e) {
-		// TODO Auto-generated method stub
-		String msg = "网络错误";//(e == null ? "请求错误" : e.getMessage()); //TODO
-		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
-		sendMessage(msgCode, msg);	}
 }

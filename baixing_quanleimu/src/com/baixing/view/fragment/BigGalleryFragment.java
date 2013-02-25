@@ -40,7 +40,7 @@ import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
+import com.baixing.util.TextUtil;
 import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.R;
 
@@ -104,7 +104,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 			else
 			{
 				String b = goodsDetail.getImageList().getBig();//).substring(1, (goodsDetail.getImageList().getBig()).length()-1);
-				b = Communication.replace(b);
+				b = TextUtil.filterString(b, new char[] {'\\', '"'});//Communication.replace(b);
 				if(b.contains(","))
 				{
 					String[] c = b.split(",");

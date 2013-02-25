@@ -16,7 +16,6 @@ import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
@@ -218,7 +217,7 @@ class EditAdFragment extends PostGoodsFragment{
 			
 			String big = (goodsDetail.getImageList().getBig());
 			if(big != null && big.length() > 0){
-				big = Communication.replace(big);
+				big = com.baixing.util.TextUtil.filterString(big, new char[] {'\\', '"'});
 				String[] cbig = big.split(",");
 				for(int i = 0; i < cbig.length; ++ i){
 					this.bmpUrls.add(cbig[i]);

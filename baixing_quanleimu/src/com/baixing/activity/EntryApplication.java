@@ -3,8 +3,9 @@ package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
 
-import com.baixing.android.api.ApiClient;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.ApiConfiguration;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 
@@ -25,13 +26,22 @@ public class EntryApplication extends Application {
 
 		//Init api.
 		GlobalDataManager mangerInstance = GlobalDataManager.getInstance();
-		ApiClient.getInstance().init(mangerInstance.getApplicationContext(),
+//		ApiClient.getInstance().init(mangerInstance.getApplicationContext(),
+//				Util.getDeviceUdid(mangerInstance.getApplicationContext()),
+//				mangerInstance.getAccountManager().getMyId(mangerInstance.getApplicationContext()),
+//				mangerInstance.getVersion(), 
+//				mangerInstance.getChannelId(),
+//				mangerInstance.getCityEnglishName(),
+//				GlobalDataManager.getInstance().getNetworkCacheManager());
+		ApiConfiguration.config("www.baixing.com", GlobalDataManager
+				.getInstance().getNetworkCacheManager(), "api_mobile_android",
+				"c6dd9d408c0bcbeda381d42955e08a3f");
+		BaseApiCommand.init(
 				Util.getDeviceUdid(mangerInstance.getApplicationContext()),
-				mangerInstance.getAccountManager().getMyId(mangerInstance.getApplicationContext()),
-				mangerInstance.getVersion(), 
-				mangerInstance.getChannelId(),
-				mangerInstance.getCityEnglishName(),
-				GlobalDataManager.getInstance().getNetworkCacheManager());
+				mangerInstance.getAccountManager().getMyId(
+						mangerInstance.getApplicationContext()),
+				mangerInstance.getVersion(), mangerInstance.getChannelId(),
+				mangerInstance.getCityEnglishName());
 	}
 
 	/* (non-Javadoc)

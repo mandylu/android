@@ -175,8 +175,8 @@ public class Communication implements Comparator<String> {
 				i++;
 			}
 		}
+		
 		return sb.toString();
-
 	}
 
 	// 替换特殊字符

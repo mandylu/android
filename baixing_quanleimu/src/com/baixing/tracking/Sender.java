@@ -13,14 +13,10 @@ import android.content.Context;
 import android.os.Environment;
 import android.util.Log;
 
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiListener;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.cmd.BaseCommand;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.util.Communication;
+import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.GzipUtil;
 import com.baixing.util.Util;
 
@@ -89,7 +85,7 @@ public class Sender implements Runnable{
 	}
 	
 	private boolean isSendingReady() {
-		return Communication.isNetworkActive();
+		return NetworkUtil.isNetworkActive(context);
 	}
 	
 	private boolean checkQueueFull() {
@@ -167,16 +163,17 @@ public class Sender implements Runnable{
 		return list.get(0);
 	}
 	
-	public static boolean executeSyncPostTask(final String apiName, final String jsonStr) {
-		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
-		url += "&json=";
-		url += jsonStr;
+	private static boolean executeSyncPostTask(Context cxt, final String apiName, final String jsonStr) {
+//		String url = Communication.getApiUrl(apiName, new ArrayList<String>());
+//		url += "&json=";
+//		url += jsonStr;
 		
-//		ApiParams params = new ApiParams();
-//		params.addParam("json", jsonStr);
+		ApiParams params = new ApiParams();
+		params.zipRequest = true;
+		params.addParam("json", jsonStr);
 		try {
 			Log.d("sender", "try sending");
-			String result = Communication.getDataByGzipUrl(url, true);//ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);//
+			String result = BaseApiCommand.createCommand(apiName, false, params).executeSync(cxt);//Communication.getDataByGzipUrl(url, true);//ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);//
 			Log.d("response",result);
 			JSONObject error = new JSONObject(result);
 			int code = (Integer) error.getJSONObject("error").get("code");
@@ -191,7 +188,7 @@ public class Sender implements Runnable{
 	
 	private boolean sendList(final String jsonStr) {//流量统计:统计每次上传成功的字节数
 		Log.d("sendlistfunction",jsonStr);
-		boolean succed = Sender.executeSyncPostTask(apiName, jsonStr);
+		boolean succed = Sender.executeSyncPostTask(context, apiName, jsonStr);
 		if (succed)
 			try {
 				dataSize += GzipUtil.compress(jsonStr).getBytes().length;

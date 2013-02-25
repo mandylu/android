@@ -18,16 +18,16 @@ import android.os.Looper;
 import android.os.Message;
 import android.util.Log;
 
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.TraceUtil;
 
 /**
@@ -296,10 +296,10 @@ public class PushMessageService extends Service implements Observer
 			this.unregisterReceiver(receiver);
 		}
     	
-		HttpGetCommand.createCommand(0, "tokenupdate", params).execute(new Callback() {
+		BaseApiCommand.createCommand("tokenupdate", true, params).execute(this, new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				final BroadcastReceiver receiver = new BroadcastReceiver() {
 					public void onReceive(Context arg0, Intent arg1) {
 						registeDevice(this, null);
@@ -310,7 +310,7 @@ public class PushMessageService extends Service implements Observer
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				Log.d(TAG, "updatetoken succed " + responseData);				
 			}
 		});

@@ -2,8 +2,6 @@ package com.baixing.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
-import java.net.URLEncoder;
-import java.util.ArrayList;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,13 +19,11 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
@@ -185,7 +181,7 @@ public class FeedbackFragment extends BaseFragment {
 
 			try {
 //				String url = Communication.getApiUrl(apiName, list);
-				result = ApiClient.getInstance().invokeApi(Api.createPost(apiName), params);//Communication.getDataByUrl(url, true);
+				result = BaseApiCommand.createCommand(apiName, false, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());//ApiClient.getInstance().invokeApi(Api.createPost(apiName), params);//Communication.getDataByUrl(url, true);
 				if (result != null) {
 //					myHandler.sendEmptyMessage(0);
 					sendMessage(0, null);
@@ -193,13 +189,6 @@ public class FeedbackFragment extends BaseFragment {
 //					myHandler.sendEmptyMessage(1);
 					sendMessage(1, null);
 				}
-			} catch (UnsupportedEncodingException e) {
-				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-				hideProgress();
-				
-			} catch (IOException e) {
-				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-				hideProgress();
 			} catch (Exception e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();

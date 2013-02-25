@@ -37,11 +37,6 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -50,8 +45,11 @@ import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
@@ -614,7 +612,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		ApiParams params = new ApiParams();
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			params.appendUserInfo(user);
+			params.appendAuthInfo(user.getPhone(), user.getPassword());//(user);
 		}
 		params.addParam("rt", 1);
 		
@@ -632,8 +630,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			params.addParam("query", "id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		}
 			
-		BaseCommand cmd = HttpGetCommand.createCommand(request.reqCode, request.apiName, params);
-		cmd.execute(this);
+		BaseApiCommand cmd = BaseApiCommand.createCommand(request.apiName, false, params);
+		cmd.execute(getActivity(), this);
 	}
 
 	@Override
@@ -892,11 +890,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			mHolder.startFecthingMore();
 		} else {
 			mListLoader
-					.startFetching(
+					.startFetching(getAppContext(),
 							false,
-							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
-									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
-									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+							(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE != mListLoader
+									.getDataStatus()));
 		}
 	}
 
@@ -962,13 +959,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 
 	@Override
-	public void onNetworkDone(int requstCode, String responseData) {
+	public void onNetworkDone(String apiName, String responseData) {
 		json = responseData;
-		sendMessage(requstCode, null);
+		int msgId = "ad_refresh".equals(apiName) ? MSG_REFRESH : ("ad_delete".equals(apiName) ? MSG_DELETE : MSG_UPDATE);
+		sendMessage(msgId, null);
 	}
 
 	@Override
-	public void onNetworkFail(int requstCode, ApiError error) {
+	public void onNetworkFail(String apiName, ApiError error) {
 		ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 		hideProgress();
 		

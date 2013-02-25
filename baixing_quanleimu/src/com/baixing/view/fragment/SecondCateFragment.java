@@ -20,12 +20,12 @@ import android.widget.SimpleAdapter;
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
+import com.baixing.network.NetworkUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.ViewUtil;
@@ -112,7 +112,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 				finishFragment(fragmentRequestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
-				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !NetworkUtil.isWifiConnection(arg0.getContext()))
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)

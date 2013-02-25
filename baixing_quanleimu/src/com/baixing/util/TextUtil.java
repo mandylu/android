@@ -138,12 +138,70 @@ public class TextUtil
         }
         return string;
     }
+    
+    public static String filterString(String source, char[] filterList) {
+
+		if (null == source || " ".equals(source)) {
+			return source;
+		}
+		
+		StringBuffer sb = new StringBuffer();
+		int i = 0;
+		while (i < source.length()) {
+			if (contains(filterList, source.charAt(i))) {
+				i++;
+			} else {
+				sb.append(source.charAt(i));
+				i++;
+			}
+		}
+		
+		return sb.toString();
+    }
+    
+    private static boolean contains(char[] list, char c) {
+    	for (char l : list) {
+    		if (l == c) {
+    			return true;
+    		}
+    	}
+    	
+    	return false;
+    }
 
     public static String decimalFormat(double data)
     {
         DecimalFormat decimal = new DecimalFormat("##.0");
         return decimal.format(data);
     }
+    
+    public static String decodeUnicode(String source) {
+		if (null == source || " ".equals(source)) {
+			return source;
+		}
+		StringBuffer sb = new StringBuffer();
+		int i = 0;
+		while (i < source.length()) {
+			if (source.charAt(i) == '\\') {
+				if (source.charAt(i + 1) == 'u') {
+					int j = Integer
+							.parseInt(source.substring(i + 2, i + 6), 16);
+					sb.append((char) j);
+					i += 6;
+				} else {
+					sb.append(source.charAt(i));
+					i++;
+					sb.append(source.charAt(i));
+					i++;
+				}
+			} else {
+				sb.append(source.charAt(i));
+				i++;
+			}
+		}
+		
+		return sb.toString();
+	}
     
     public static String filterXml(String message)
     {

@@ -16,11 +16,19 @@ public class ApiConfiguration {
 		BaseApiCommand.API_KEY = apiKey;//"api_mobile_android";
 		BaseApiCommand.API_SECRET = apiSecret;//"c6dd9d408c0bcbeda381d42955e08a3f";
 		
+		setHost(apiHost);
+		
+		HttpNetworkConnector.cacheProxy = proxy;
+	}
+	
+	public static final void setHost(String apiHost) {
 		if (apiHost != null) {
 			BaseApiCommand.HOST = apiHost;
 			FileUploadCommand.HOST = apiHost;
 		}
-		
-		HttpNetworkConnector.cacheProxy = proxy;
+	}
+	
+	public static final String getHost() {
+		return BaseApiCommand.HOST;
 	}
 }

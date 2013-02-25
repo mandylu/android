@@ -1,5 +1,8 @@
 package com.baixing.network;
 
+import android.content.Context;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 
 public class NetworkUtil {
 	public static String getMD5(String targetStr) {
@@ -27,4 +30,30 @@ public class NetworkUtil {
 		
 		return s;
 	}
+	
+	public static boolean isWifiConnection(Context context) {
+		 if (context == null) {
+			 return false;
+		 }
+		 
+		ConnectivityManager connectivityManager = 
+				(ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+		if (activeNetInfo != null
+				&& activeNetInfo.getType() == ConnectivityManager.TYPE_WIFI) {
+			return true;
+		}
+		
+		return false;
+	}
+	
+	public static boolean isNetworkActive(Context context) {
+		ConnectivityManager connectivityManager = (ConnectivityManager) context.getSystemService(Context.CONNECTIVITY_SERVICE);
+		NetworkInfo activeNetInfo = connectivityManager.getActiveNetworkInfo();
+		if (activeNetInfo != null) {
+			return true;
+		}
+		return false;
+	}
+	
 }

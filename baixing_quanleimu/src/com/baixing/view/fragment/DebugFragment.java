@@ -9,17 +9,21 @@ import android.os.Message;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.*;
+import android.widget.Button;
+import android.widget.CompoundButton;
+import android.widget.EditText;
+import android.widget.RelativeLayout;
+import android.widget.TextView;
+import android.widget.Toast;
+import android.widget.ToggleButton;
+
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.HttpGetCommand;
-import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.broadcast.XMPPManager;
-import com.baixing.data.GlobalDataManager;
-import com.baixing.util.Communication;
+import com.baixing.network.api.ApiConfiguration;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
@@ -29,7 +33,7 @@ import com.quanleimu.activity.R;
  * Date: 13-1-30
  * Time: AM10:02
  */
-public class DebugFragment extends BaseFragment implements View.OnClickListener, BaseCommand.Callback {
+public class DebugFragment extends BaseFragment implements View.OnClickListener, Callback {
     private Button hostBtn;
     private EditText pushActionEt;
     private EditText pushTitleEt;
@@ -54,7 +58,7 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
 
         hostBtn = (Button)debugLayout.findViewById(R.id.hostBtn);
         hostBtn.setOnClickListener(this);
-        hostBtn.setText(ApiClient.host);
+        hostBtn.setText(ApiConfiguration.getHost());
 
         pushActionEt = (EditText) debugLayout.findViewById(R.id.pushActionEt);
         pushTitleEt = (EditText) debugLayout.findViewById(R.id.pushTitleEt);
@@ -116,8 +120,9 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
         builder.setTitle("选择 api")
             .setItems(hosts, new DialogInterface.OnClickListener() {
                 public void onClick(DialogInterface dialog, int which) {
-                    ApiClient.host = hosts[which].toString();
-                    hostBtn.setText(ApiClient.host);
+//                    ApiClient.host = hosts[which].toString();
+                	ApiConfiguration.setHost(hosts[which].toString());
+                    hostBtn.setText(ApiConfiguration.getHost());
                     dialog.dismiss();
                 }
             })
@@ -135,17 +140,18 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
         params.addParam("action", pushActionEt.getText().toString());
         params.addParam("title", pushTitleEt.getText().toString());
         params.addParam("data", "{" + pushDataEt.getText().toString() + "}" );
-        HttpPostCommand.createCommand(1, "debug", params).execute(this);
+//        HttpPostCommand.createCommand(1, "debug", params).execute(this);
+        BaseApiCommand.createCommand("debug", false, params).execute(getActivity(), this);
     }
 
 
     @Override
-    public void onNetworkDone(int requstCode, String responseData) {
+    public void onNetworkDone(String apiName, String responseData) {
         sendMessage(MSG_pushTestSuccess, responseData);
     }
 
     @Override
-    public void onNetworkFail(int requstCode, ApiError error) {
+    public void onNetworkFail(String apiName, ApiError error) {
         sendMessage(MSG_pushTestFail, error);
     }
 

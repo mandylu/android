@@ -9,7 +9,7 @@ import android.util.Pair;
 
 import com.baixing.network.impl.HttpNetworkConnector.IResponseHandler;
 
-class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>> {
+public final class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>> {
 
 	private ByteArrayBuffer buf = new ByteArrayBuffer(4096);
 	@Override
