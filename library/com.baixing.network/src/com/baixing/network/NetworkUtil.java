@@ -56,4 +56,8 @@ public class NetworkUtil {
 		return false;
 	}
 	
+	public static long getTimeStamp() {
+		return System.currentTimeMillis()/1000;
+	}
+	
 }

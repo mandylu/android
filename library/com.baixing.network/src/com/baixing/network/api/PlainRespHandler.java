@@ -9,9 +9,13 @@ import android.util.Pair;
 
 import com.baixing.network.impl.HttpNetworkConnector.IResponseHandler;
 
-public final class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>> {
+public class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>> {
 
-	private ByteArrayBuffer buf = new ByteArrayBuffer(4096);
+	private ByteArrayBuffer buf;// = new ByteArrayBuffer(4096);
+	
+	public PlainRespHandler() {
+	}
+	
 	@Override
 	public Pair<Boolean, String> networkError(int respCode, String serverMessage) {
 		return createResponse(false, serverMessage);
@@ -24,6 +28,9 @@ public final class PlainRespHandler implements IResponseHandler<Pair<Boolean, St
 
 	@Override
 	public void handlePartialData(byte[] partOfResponseData, int len) {
+		if (buf == null) {
+			buf = new ByteArrayBuffer(4096);
+		}
 		if (len > 0) buf.append(partOfResponseData, 0, len);
 	}
 

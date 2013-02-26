@@ -2,7 +2,12 @@
 package com.baixing.network.api;
 
 import java.io.Serializable;
+import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Enumeration;
 import java.util.HashMap;
+import java.util.Iterator;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -120,6 +125,23 @@ public class ApiParams implements Serializable {
 		}
 		
 		return sb.toString();
+	}
+	
+	public String toUrlParams()
+	{
+		StringBuffer buf = new StringBuffer();
+		Iterator<String> keys = params.keySet().iterator();
+		while (keys.hasNext())
+		{
+			String key = keys.next();
+			buf.append(key).append("=").append(URLEncoder.encode(params.get(key))).append("&");
+		}
+		
+		if (buf.length() > 0) {
+			buf.deleteCharAt(buf.length()-1);
+		}
+		
+		return buf.toString();
 	}
 	
 	/**

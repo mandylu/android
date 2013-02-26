@@ -84,7 +84,8 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		
 		if (connector != null) {
 			this.callback = callback;
-			connector.sendHttpRequest(context, request, new PlainRespHandler(), this);
+			PlainRespHandler handler = new PlainRespHandler();
+			connector.sendHttpRequest(context, request, handler, this);
 		}
 	}
 	
@@ -126,8 +127,8 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		}
 		
 		
-		allParams.addParam(ApiParams.KEY_TIMESTAMP, (System.currentTimeMillis() / 1000) + "");
-		String md5String = NetworkUtil.getMD5(allParams.toString() + API_SECRET);
+		allParams.addParam(ApiParams.KEY_TIMESTAMP, NetworkUtil.getTimeStamp() + "");
+		String md5String = NetworkUtil.getMD5(allParams.toUrlParams() + API_SECRET);
 		allParams.addParam(ApiParams.KEY_ACCESSTOKEN, md5String);
 		
 		return allParams.getParams();
