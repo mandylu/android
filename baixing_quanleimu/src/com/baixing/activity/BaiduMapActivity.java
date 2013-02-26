@@ -53,7 +53,7 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 import org.json.JSONObject;
-        
+          
 public class BaiduMapActivity extends MapActivity implements LocationListener{
 
 		// 授权Key
