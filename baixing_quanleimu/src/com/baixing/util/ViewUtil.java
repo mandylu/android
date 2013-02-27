@@ -16,6 +16,7 @@ import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,7 +46,10 @@ public class ViewUtil {
 		parent.postDelayed(new Runnable() {
 
 			public void run() {
-				Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT).show();
+//				Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT).show();
+				Toast t = Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 			
 		}, delayTime);
@@ -63,7 +67,9 @@ public class ViewUtil {
 		parent.postDelayed(new Runnable() {
 
 			public void run() {
-				Toast.makeText(parent.getContext(), resId, Toast.LENGTH_SHORT).show();
+				Toast t = Toast.makeText(parent.getContext(), resId, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 			
 		}, delayTime);
@@ -213,7 +219,9 @@ public class ViewUtil {
 		activity.runOnUiThread(new Runnable(){
 			@Override
 			public void run(){
-				Toast.makeText(activity, msg, 0).show();
+				Toast t = Toast.makeText(activity, msg, 0);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 		});
 	}

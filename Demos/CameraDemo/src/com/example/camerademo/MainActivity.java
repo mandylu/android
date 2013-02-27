@@ -19,13 +19,17 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
+import android.view.animation.Animation;
+import android.view.animation.RotateAnimation;
 import android.widget.ImageView;
 import android.widget.TextView;
+import android.widget.Toast;
 
 import com.example.camerademo.util.BitmapUtil;
 /**
@@ -83,10 +87,54 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 				}
 				
 				autoFocusWhenOrienChange();
+				rotateView(R.id.cap, getRotateDegree(currentOrien));
+				
+				Toast t = Toast.makeText(MainActivity.this, "Screen rotated to " + currentOrien.des, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 		}
     	
     };
+    
+    private float getRotateDegree(Orien ori) {
+    	switch(ori) {
+    	case TOP_UP:
+    		return 0;
+    	case RIGHT_UP:
+    		return 90;
+    	case BOTTOM_UP:
+    		return 180;
+    	case LEFT_UP:
+    		return -90;
+    	}
+    	
+    	return 0;
+    }
+    
+    private void rotateView(int id, float degree) {
+    	
+    		View targetView = findViewById(id);
+    		
+    		float startDegree = 0.0f;
+    		Float lastDegree = (Float) targetView.getTag();
+    		if (lastDegree != null) {
+    			startDegree = lastDegree.floatValue();
+    		}
+    	
+    	 	Animation an = new RotateAnimation(0.0f, degree, targetView.getWidth()/2, targetView.getHeight()/2);
+
+    	    // Set the animation's parameters
+    	    an.setDuration(3000);               // duration in ms
+    	    an.setRepeatCount(0);                // -1 = infinite repeated
+    	    an.setRepeatMode(Animation.REVERSE); // reverses each repeat
+    	    an.setFillAfter(true);               // keep rotation after animation
+
+    	    // Aply animation to image view
+    	    targetView.startAnimation(an);//.setAnimation(an);
+    	    targetView.setTag(new Float(degree));
+    	    
+    }
     
     private void appendResultImage(Bitmap bp) {
     	
