@@ -33,7 +33,7 @@ public class FileUploadTest extends AndroidTestCase {
 		}
 		
 		try {
-			Context testContext = getContext().createPackageContext("com.baixing.network.test",
+			Context testContext = getContext().createPackageContext("com.quanleimu.activity.test",
 	                Context.CONTEXT_IGNORE_SECURITY);
 			
 			jpegFile = null;

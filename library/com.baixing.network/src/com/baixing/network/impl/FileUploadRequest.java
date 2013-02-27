@@ -67,7 +67,7 @@ public class FileUploadRequest extends BaseHttpRequest {
 	}
 
 	@Override
-	public void writeContent(OutputStream out) {
+	public int writeContent(OutputStream out) {
 
 		StringBuffer boundary = new StringBuffer();
 		boundary = boundary.append("--");
@@ -76,7 +76,7 @@ public class FileUploadRequest extends BaseHttpRequest {
 		
 		
 		boolean firstTime = true;
-		
+		int contentLen = 0;
 		try {
 			FileInputStream ins = new FileInputStream(filePath);
 			byte[] buffer = new byte[4096];
@@ -89,19 +89,27 @@ public class FileUploadRequest extends BaseHttpRequest {
 					boundary = boundary.append("Content-Disposition: form-data; name=\"file\"; filename=" + "\"iphonefile." + fileSuffix + "\"\r\n");//TODO: does file name matters?
 					boundary = boundary.append("Content-Type: " + fileMime + "\r\n\r\n");
 					
-					out.write(boundary.toString().getBytes());
+					byte[] boundaryStart = boundary.toString().getBytes();
+					out.write(boundaryStart);
 					firstTime = false;
+					contentLen += boundaryStart.length;
 				}
 				
 				if (count > 0) {
 					out.write(buffer, 0, count);
+					contentLen += count;
 				}
 			} while (count > 0);
 			ins.close();
-			out.write(("\r\n--" + BOUNDARY + "--\r\n").getBytes());
+			
+			byte[] boundaryEnd = ("\r\n--" + BOUNDARY + "--\r\n").getBytes();
+			out.write(boundaryEnd);
+			contentLen += boundaryEnd.length;
 		} catch (Throwable t) {
 			//Ignor exceptions.
 		}
+		
+		return contentLen;
 	}
 
 	@Override

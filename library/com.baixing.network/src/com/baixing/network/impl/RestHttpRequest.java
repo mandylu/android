@@ -2,6 +2,10 @@ package com.baixing.network.impl;
 
 import java.io.UnsupportedEncodingException;
 import java.net.URLEncoder;
+import java.util.ArrayList;
+import java.util.Collection;
+import java.util.Collections;
+import java.util.List;
 import java.util.Map;
 import java.util.Map.Entry;
 import java.util.Set;
@@ -44,12 +48,15 @@ public abstract class RestHttpRequest extends BaseHttpRequest {
 //		}
 
 		StringBuilder query = new StringBuilder();
-		Set<Entry<String, String>> entries = params.entrySet();
+//		Set<Entry<String, String>> entries = params.entrySet();
 		boolean hasParam = false;
-
-		for (Entry<String, String> entry : entries) {
-			String name = entry.getKey();
-			String value = entry.getValue();
+//		Set<String> keySet = params.keySet();
+		List<String> keyList = new ArrayList<String>(params.keySet());
+		Collections.sort(keyList);
+		
+		for (String key : keyList) {
+			String name = key;//entry.getKey();
+			String value = params.get(key);//entry.getValue();
 			// 忽略参数名或参数值为空的参数
 			if (!TextUtils.isEmpty(name) && !TextUtils.isEmpty(value)) {
 				if (hasParam) {
@@ -65,9 +72,6 @@ public abstract class RestHttpRequest extends BaseHttpRequest {
 					Log.w(TAG, "fail to encoded parameter [key, value]:[" + name + "," + value + "] with charset " + charset);
 				}
 				query.append(name).append("=").append(encodedValue);
-//				query.append(URLEncoder.encode(name + "=" + value));
-//				query.append(name).append("=").append(value);
-//				query.append(urlEncode(name + "=" + value));
 			}
 		}
 

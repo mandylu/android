@@ -34,6 +34,7 @@ import android.text.TextUtils;
 import android.util.Pair;
 
 import com.baixing.network.ICacheProxy;
+import com.baixing.network.NetworkProfiler;
 import com.baixing.network.impl.IHttpRequest.CACHE_POLICY;
 
 /**
@@ -125,9 +126,37 @@ public class HttpNetworkConnector {
 		HttpURLConnection connection = null;
 		Object businessResponse = null;
 		
+		final String targetUrl = request.getUrl();
+		//Try to load data from cache.
+		if (request.getCachePolicy() == CACHE_POLICY.CACHE_PREF_CACHE) { //If cache available, return it.
+			if (cacheProxy != null) {
+				String cacheData = cacheProxy.onLoad(targetUrl);
+				
+				if (cacheData != null) {
+					try {
+						if (!request.isCanceled()) {
+							byte[] data = cacheData.getBytes(DEFAULT_CHARSET);
+							responseHandler.handlePartialData(data, data.length);
+							
+							businessResponse = responseHandler.handleResponseEnd(DEFAULT_CHARSET);
+							listener.onRequestDone(businessResponse);
+						}
+						
+						return;
+					} catch (Throwable t) {
+						//Ignor.
+					}
+				}
+			}
+		}
+		
+		int requestSize = 0;
+		int responseSize = 0;
+		
 		try {
+			NetworkProfiler.startUrl(targetUrl);
 			//Setup connection
-			connection = getConnection(context, new URL(request.getUrl()), request.isGetRequest(), request.getContentType());
+			connection = getConnection(context, new URL(targetUrl), request.isGetRequest(), request.getContentType());
 			if (listener != null) listener.onConnectionStart();
 			
 			//Step 1 : send data
@@ -143,25 +172,9 @@ public class HttpNetworkConnector {
 				connection.setReadTimeout((int) this.readTimeout);
 				
 				OutputStream os = connection.getOutputStream();
-				request.writeContent(os);
-			}  else {
-				if (request.getCachePolicy() == CACHE_POLICY.CACHE_PREF_CACHE) { //If cache available, return it.
-					if (cacheProxy != null) {
-						String cacheData = cacheProxy.onLoad(request.getUrl());
-						
-						if (cacheData != null) {
-							if (!request.isCanceled()) {
-								byte[] data = cacheData.getBytes(DEFAULT_CHARSET);
-								responseHandler.handlePartialData(data, data.length);
-								
-								businessResponse = responseHandler.handleResponseEnd(DEFAULT_CHARSET);
-								listener.onRequestDone(businessResponse);
-							}
-							
-							return;
-						}
-					}
-				}
+				requestSize += request.writeContent(os);
+			} else {
+				requestSize += targetUrl.length();
 			}
 			
 			//Step 2 : read response data.
@@ -187,7 +200,7 @@ public class HttpNetworkConnector {
 					return;
 				}
 				
-				
+				responseSize += totalLen;
 				ByteArrayOutputStream cacheOs =  request.getCachePolicy() != CACHE_POLICY.CACHE_NOT_CACHEABLE ? new ByteArrayOutputStream() : null;
 				byte[] buffer = new byte[READ_BUFFER_SIZE];
 				int count = input.read(buffer);
@@ -208,7 +221,7 @@ public class HttpNetworkConnector {
 				}
 
 				if (cacheOs != null) {
-					if (cacheProxy != null) cacheProxy.onSave(request.getUrl(), cacheOs.toString()); 
+					if (cacheProxy != null) cacheProxy.onSave(targetUrl, cacheOs.toString()); 
 					cacheOs.close();
 				}
 
@@ -243,6 +256,8 @@ public class HttpNetworkConnector {
 			if (connection != null) {
 				connection.disconnect();
 			}
+			
+			NetworkProfiler.endUrl(targetUrl, requestSize, responseSize, "canceled:"+request.isCanceled());
 		}
 		
 		if (!request.isCanceled()) {

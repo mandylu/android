@@ -60,8 +60,8 @@ public class GetRequest extends RestHttpRequest {
 	}
 
 	@Override
-	public void writeContent(OutputStream out) {
-		//TODO: get method do not need write.
+	public int writeContent(OutputStream out) {
+		return 0;
 	}
 
 

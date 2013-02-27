@@ -22,10 +22,10 @@ public class ZippedPostRequest extends PostRequest {
 //		return "text/plain";
 	}
 	
-	public void writeContent(OutputStream out) {
+	public int writeContent(OutputStream out) {
 		final String params = getFormatParams();
 		if (params == null) {
-			return;
+			return 0;
 		}
 		
 		try {
@@ -38,9 +38,13 @@ public class ZippedPostRequest extends PostRequest {
 			
 			out.write(content);
 			out.flush();
+			
+			return content.length;
 		} catch (IOException e) {
 			Log.d(TAG, "exception when write data to outputstream." + e.getMessage());
 		}
+		
+		return 0;
 	}
 
 }

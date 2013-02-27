@@ -24,8 +24,13 @@ public interface IHttpRequest {
 	public List<Pair<String, String>> getHeaders();
 	public String getContentType();
 	public boolean isGetRequest();
-//	public InputStream getContentStream();
-	public void writeContent(OutputStream out);
+	/**
+	 * write the http request content to the target output stream and return the content length.
+	 * 
+	 * @param out target output stream
+	 * @return
+	 */
+	public int writeContent(OutputStream out);
 	public CACHE_POLICY getCachePolicy();
 	public void cancel();
 	public boolean isCanceled();

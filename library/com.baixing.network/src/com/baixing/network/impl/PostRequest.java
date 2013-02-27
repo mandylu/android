@@ -31,19 +31,24 @@ public class PostRequest extends RestHttpRequest {
 	}
 
 	@Override
-	public void writeContent(OutputStream out) {
+	public int writeContent(OutputStream out) {
 		String params = getFormatParams();
 		
 		if (params == null) {
-			return;
+			return 0;
 		}
 		
 		try {
-			out.write(params.getBytes());
+			byte[] buf = params.getBytes();
+			out.write(buf);
 			out.flush();
+			
+			return buf.length;
 		} catch (IOException e) {
 			Log.d(TAG, "exception when write data to outputstream." + e.getMessage());
 		}
+		
+		return 0;
 	}
 
 }
