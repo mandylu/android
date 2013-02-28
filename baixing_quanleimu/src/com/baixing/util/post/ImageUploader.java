@@ -1,15 +1,22 @@
 package com.baixing.util.post;
 
 
+import java.io.File;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.graphics.Bitmap;
 
-import com.baixing.entity.BXThumbnail;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.imageCache.ImageLoaderManager.DownloadCallback;
+import com.baixing.network.api.FileUploadCommand;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.Value;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
 
 public class ImageUploader implements DownloadCallback {
@@ -215,11 +222,30 @@ public class ImageUploader implements DownloadCallback {
 				
 				if(img.imagePath != null){
 					String result = null;
+					String url = null;
+					String failReason = null;
+					long timeInMill = 0;
 					try {
-						result = new ImageUploadCommand(img.imagePath).doUpload();//Communication.uploadPicture(currentBmp);
-					}
-					catch (Throwable t) {
+						
+						long startTime = System.currentTimeMillis();
+						result = FileUploadCommand.create(img.imagePath).doUpload(activity);//new ImageUploadCommand(img.imagePath).doUpload();//Communication.uploadPicture(currentBmp);
+						timeInMill = System.currentTimeMillis() - startTime;
+						
+						JSONObject obj = new JSONObject(result);
+						url = obj.getString("url");
+						if(url == null) {
+							failReason = "url of json string in response is null";
+						}
+						
+					} catch (Throwable t) {
 						//Fail
+					} finally {
+						Tracker.getInstance().event(BxEvent.POST_IMAGEUPLOAD)
+						.append(Key.RESULT, url != null ? Value.YES : Value.NO)
+						.append(Key.FAIL_REASON, failReason)
+						.append(Key.SIZEINBYTES, new File(img.imagePath).length())
+						.append(Key.UPLOADSECONDS, timeInMill / 1000.0)
+						.end();
 					}
 					
 					if (result != null) {
