@@ -1,16 +1,24 @@
 //liuchong@baixing.com
 package com.baixing.activity;
 
+import java.io.File;
+import java.io.IOException;
 import java.lang.ref.WeakReference;
+import java.util.Calendar;
+import java.util.Date;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.NetworkProfiler;
 import com.baixing.network.api.ApiConfiguration;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
 import android.app.Application;
 import android.content.Context;
+import android.content.pm.ApplicationInfo;
+import android.os.Environment;
 
 public class EntryApplication extends Application {
 
@@ -42,6 +50,12 @@ public class EntryApplication extends Application {
 						mangerInstance.getApplicationContext()),
 				mangerInstance.getVersion(), mangerInstance.getChannelId(),
 				mangerInstance.getCityEnglishName());
+		
+		if ((this.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0 ) {
+			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());
+			File f = new File(Environment.getExternalStorageDirectory(),  datePrefix + "_bxnt.txt");
+			NetworkProfiler.endable(f.getAbsolutePath());
+		}
 	}
 
 	/* (non-Javadoc)

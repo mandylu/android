@@ -27,6 +27,7 @@ import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.Ad;
+import com.baixing.network.NetworkProfiler;
 import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
@@ -355,6 +356,9 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 		    	
 		    	instanceList.remove(this.hashCode());
 		    	GlobalDataManager.resetApplication();//FIXME: check if application instance is needed after user press "exit" button.
+		    	
+		    	NetworkProfiler.flush();
+		    	
 				BaseTabActivity.this.finish();
 		    }
 		});

@@ -15,7 +15,9 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Map;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
@@ -192,19 +194,39 @@ public class HttpNetworkConnector {
 				}
 				
 				long cursor = 0;
-				final long totalLen = input.available();
+				final long totalLen = getResponseLen(connection.getHeaderField("Content-Length"), input.available());
 				if (!request.isCanceled()) {
 					if (listener != null) listener.onReceiveData(cursor, totalLen); 
 				}
 				else {
 					return;
 				}
+				/*-------debug info-------
+				if (targetUrl.startsWith("http://tu.baixing.net")) {
+					StringBuffer buf = new StringBuffer();
+					Map<String, List<String>> headers = connection.getHeaderFields();
+					Iterator<String> keys = headers.keySet().iterator();
+					while (keys.hasNext()) {
+						String key = keys.next();
+						List<String> value = headers.get(key);
+						buf.append(key);
+						for (String v : value) {
+							buf.append(",").append(v);
+						}
+						buf.append("\r\n");
+					}
+					
+					buf.toString();
+				}
+				//-----------------*/
 				
 				responseSize += totalLen;
 				ByteArrayOutputStream cacheOs =  request.getCachePolicy() != CACHE_POLICY.CACHE_NOT_CACHEABLE ? new ByteArrayOutputStream() : null;
 				byte[] buffer = new byte[READ_BUFFER_SIZE];
+				int totalReadCount = 0;
 				int count = input.read(buffer);
 				while (count > 0) {
+					totalReadCount += count;
 					responseHandler.handlePartialData(buffer, count);
 					if (cacheOs != null) {
 						cacheOs.write(buffer, 0, count);
@@ -219,6 +241,8 @@ public class HttpNetworkConnector {
 					}
 					count = input.read(buffer);
 				}
+				
+				if (totalLen < totalReadCount) responseSize = totalReadCount;
 
 				if (cacheOs != null) {
 					if (cacheProxy != null) cacheProxy.onSave(targetUrl, cacheOs.toString()); 
@@ -339,6 +363,16 @@ public class HttpNetworkConnector {
 		public void checkServerTrusted(X509Certificate[] chain, String authType)
 				throws CertificateException {
 		}
+	}
+	
+	private static int getResponseLen(String contentLen, int defaultValue) {
+		try {
+			return Integer.valueOf(contentLen);
+		} catch(Throwable t) {
+			
+		}
+		
+		return defaultValue;
 	}
 	
 	private static String getResponseCharset(String ctype) {
