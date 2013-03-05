@@ -107,12 +107,12 @@
             android:paddingRight="@dimen/camera_preview_half_gap"
             android:gravity="left|center_vertical"
             android:orientation="horizontal" >
+            <!--<include layout="@layout/single_image_layout"/>
             <include layout="@layout/single_image_layout"/>
             <include layout="@layout/single_image_layout"/>
             <include layout="@layout/single_image_layout"/>
             <include layout="@layout/single_image_layout"/>
-            <include layout="@layout/single_image_layout"/>
-            <include layout="@layout/single_image_layout"/>
+            <include layout="@layout/single_image_layout"/>-->
         </LinearLayout>
     </HorizontalScrollView>
 

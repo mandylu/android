@@ -360,17 +360,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	updateCapState();
     }
     
-    private ViewGroup findFirstBlankImage(ViewGroup root) {
-		final int count = root.getChildCount();
-		for (int i=0; i<count; i++) {
-			ViewGroup child = (ViewGroup) root.getChildAt(i);
-			if (child.getTag() == null) {
-				return child;
-			}
-		}
-    	
-    	return null;
-    }
+//    private ViewGroup findFirstBlankImage(ViewGroup root) {
+//		final int count = root.getChildCount();
+//		for (int i=0; i<count; i++) {
+//			ViewGroup child = (ViewGroup) root.getChildAt(i);
+//			if (child.getTag() == null) {
+//				return child;
+//			}
+//		}
+//    	
+//    	return null;
+//    }
     
     
     private boolean appendResultImage(BXThumbnail thumbnail) {
@@ -380,11 +380,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	
     	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
-    	
-    	ViewGroup imageRoot = findFirstBlankImage(vp);
-    	if (imageRoot == null) {
-    		return false; // you should nerver encounter this case.
-    	}
+    	LayoutInflater inflater = LayoutInflater.from(vp.getContext());
+    	ViewGroup imageRoot = (ViewGroup) inflater.inflate(R.layout.single_image_layout, null);
+//    	ViewGroup imageRoot = findFirstBlankImage(vp);
+//    	if (imageRoot == null) {
+//    		return false; // you should nerver encounter this case.
+//    	}
+    	vp.addView(imageRoot);
     	imageRoot.setTag(thumbnail.getLocalPath());
 		
 		final View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
@@ -823,10 +825,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			Log.e(TAG, "following view will be remove " + vp.hashCode());
 			imgContainer.removeView(vp);
 			
-			LayoutInflater inflator = LayoutInflater.from(v.getContext());
-			View newV = inflator.inflate(R.layout.single_image_layout, null);
-			imgContainer.addView(newV);
-			Log.d(TAG, "following view will be add " + newV.hashCode());
+//			LayoutInflater inflator = LayoutInflater.from(v.getContext());
+//			View newV = inflator.inflate(R.layout.single_image_layout, null);
+//			imgContainer.addView(newV);
+//			Log.d(TAG, "following view will be add " + newV.hashCode());
 		}
 	}
 
