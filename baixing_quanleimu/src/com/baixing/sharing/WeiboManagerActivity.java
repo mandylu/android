@@ -62,13 +62,13 @@ public class WeiboManagerActivity extends Activity{
 			@Override
 			public void onError(WeiboDialogError arg0) {
 				// TODO Auto-generated method stub
-				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage(), true);
 			}
 
 			@Override
 			public void onWeiboException(WeiboException arg0) {
 				// TODO Auto-generated method stub
-				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage());
+				ViewUtil.showToast(WeiboManagerActivity.this, arg0.getMessage(), true);
 			}
         	
         });

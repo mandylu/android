@@ -26,6 +26,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.PersonalProfileFragment;
 import com.quanleimu.activity.R;
 
@@ -96,7 +97,7 @@ public class EditUsernameDialogFragment extends DialogFragment {
     private void updateUsername() {
         final EditText editUsernameEt = (EditText) getDialog().findViewById(R.id.dialog_edit_username_et);
         if (editUsernameEt.getText().toString().trim().length() <= 0) {
-            Toast.makeText(getActivity(), "请输入用户名", 1).show();
+            ViewUtil.showToast(getActivity(), "请输入用户名", false);
             return;
         }
 

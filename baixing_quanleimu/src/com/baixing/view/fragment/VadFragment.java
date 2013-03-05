@@ -368,13 +368,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(), "收藏成功", 3).show();
+			ViewUtil.showToast(getActivity(), "收藏成功", true);
 		}
 		else  {
 			List<Ad> favList = GlobalDataManager.getInstance().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
-			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
+			ViewUtil.showToast(this.getActivity(), "取消收藏", true);
 		}
 	}
 	
@@ -496,7 +496,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		case MSG_REFRESH:
 			if(json == null){
-				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
+				ViewUtil.showToast(activity, "刷新失败，请稍后重试！", false);
 				break;
 			}
 			try {
@@ -506,7 +506,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				int code = js.getInt("code");
 				if (code == 0) {
 					executeModify(REQUEST_TYPE.REQUEST_TYPE_UPDATE, 0);
-					Toast.makeText(getActivity(), message, 0).show();
+					ViewUtil.showToast(getActivity(), message, false);
 				}else if(2 == code){
 					hideProgress();
 					new AlertDialog.Builder(getActivity()).setTitle("提醒")
@@ -530,7 +530,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 				}else {
 					hideProgress();
-					Toast.makeText(getActivity(), message, 0).show();
+					ViewUtil.showToast(getActivity(), message, false);
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -589,10 +589,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						finishFragment(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					}
 //					finish();
-					Toast.makeText(activity, message, 0).show();
+					ViewUtil.showToast(activity, message, false);
 				} else {
 					// 删除失败
-					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
+					ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
 					finishFragment();
 				}
 			} catch (JSONException e) {
@@ -776,7 +776,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void showMap() {
 		VadLogger.trackShowMapEvent(detail);
 		if (keepSilent) { // FIXME:
-			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
+			ViewUtil.showToast(getActivity(), "当前无法显示地图", false);
 			return;
 		}
 		else

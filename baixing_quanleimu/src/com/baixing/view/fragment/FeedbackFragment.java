@@ -26,6 +26,7 @@ import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 
@@ -141,7 +142,7 @@ public class FeedbackFragment extends BaseFragment {
 				JSONObject json = jsonObject.getJSONObject("error");
 				int code = json.getInt("code");
 				String message = json.getString("message");
-				Toast.makeText(activity, message, Toast.LENGTH_SHORT).show();
+				ViewUtil.showToast(getActivity(), message, false);
 				if (code == 0)
 				{
 					finishFragment();
@@ -152,8 +153,7 @@ public class FeedbackFragment extends BaseFragment {
 			
 			break;
 		case 1:
-			Toast.makeText(activity, "提交失败！", Toast.LENGTH_SHORT)
-			.show();
+			ViewUtil.showToast(activity, "提交失败！", false);
 			
 			break;
 		}
@@ -204,8 +204,7 @@ public class FeedbackFragment extends BaseFragment {
 		content = etOpinion.getText().toString().trim();
 		String contact = ((TextView)getView().findViewById(R.id.et_contact)).getText().toString().trim();
 		if (content.equals("")) {
-			Toast.makeText(getActivity(), "内容不能为空",
-					Toast.LENGTH_SHORT).show();
+			ViewUtil.showToast(getActivity(), "内容不能为空",false);
 		} else {
 			if(contact != null && !contact.equals("")){
 				content += "    联系方式: " + contact;

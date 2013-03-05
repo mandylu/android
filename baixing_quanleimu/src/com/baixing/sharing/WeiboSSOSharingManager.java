@@ -114,7 +114,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onError(WeiboDialogError e) {
-			ViewUtil.showToast(mActivity, e.getMessage());
+			ViewUtil.showToast(mActivity, e.getMessage(), false);
 		}
 
 		@Override
@@ -123,7 +123,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 		@Override
 		public void onWeiboException(WeiboException e) {
-			ViewUtil.showToast(mActivity, e.getMessage());
+			ViewUtil.showToast(mActivity, e.getMessage(), false);
 		}
 	}
 

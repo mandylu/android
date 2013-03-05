@@ -64,7 +64,7 @@ public class WeiboSharingFragment extends BaseSharingFragment implements OnClick
 				ctx.sendBroadcast(intent);
 			}
 
-			ViewUtil.showToast(getActivity(), "分享成功");
+			ViewUtil.showToast(getActivity(), "分享成功", false);
 			if(mPd != null){
 				mPd.dismiss();
 			}
@@ -77,7 +77,7 @@ public class WeiboSharingFragment extends BaseSharingFragment implements OnClick
 			if(mPd != null){
 				mPd.dismiss();
 			}			
-			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage(), true);
 			if(mPd != null){
 				mPd.dismiss();
 			}
@@ -90,7 +90,7 @@ public class WeiboSharingFragment extends BaseSharingFragment implements OnClick
 			if(mPd != null){
 				mPd.dismiss();
 			}
-			ViewUtil.showToast(getActivity(), arg0.getMessage());
+			ViewUtil.showToast(getActivity(), arg0.getMessage(), true);
 			if(mPd != null){
 				mPd.dismiss();
 			}

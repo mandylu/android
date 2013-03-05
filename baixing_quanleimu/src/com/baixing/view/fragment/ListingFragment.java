@@ -47,6 +47,7 @@ import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
 import com.baixing.view.FilterUtil.CustomizeItem;
@@ -448,7 +449,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			if(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE == goodsListLoader.getRequestDataStatus())
 				goodsListLoader.startFetching(getAppContext(), true, false);
 			else{
-				Toast.makeText(getActivity(), "没有符合条件的结果，请重新输入！", Toast.LENGTH_LONG).show();
+				ViewUtil.showToast(getActivity(), "没有符合条件的结果，请重新输入！", true);
 				hideProgress();
 			}
 			break;

@@ -34,6 +34,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.view.fragment.LoginFragment;
@@ -351,7 +352,7 @@ public abstract class BaseFragment extends Fragment  {
 	                    public void onClick(DialogInterface dialogInterface, int i) {
 	                        Util.logout();
 	                        BaseFragment.this.sendMessage(MSG_USER_LOGOUT, null);
-	                        Toast.makeText(getAppContext(), "已退出", Toast.LENGTH_SHORT).show();
+	                        ViewUtil.showToast(getActivity(), "已退出", false);
 	                    }
 	                })
 	                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

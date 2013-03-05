@@ -54,6 +54,7 @@ import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
@@ -421,7 +422,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(this.detailLocation != null && locationView != null){
 				setDetailLocationControl(detailLocation);
 			}else if(detailLocation == null){
-				Toast.makeText(this.getActivity(), "无法获得当前位置", 0).show();
+				ViewUtil.showToast(getActivity(), "无法获得当前位置", false);
 			}
 			break;
 		case R.id.myImg:
@@ -503,7 +504,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 
 	private boolean checkInputComplete() {
 		if(this.categoryEnglishName == null || this.categoryEnglishName.equals("")){
-			Toast.makeText(this.getActivity(), "请选择分类" ,0).show();
+			ViewUtil.showToast(getActivity(), "请选择分类", false);
 			popupCategorySelectionDialog();
 			return false;
 		}
@@ -518,14 +519,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						|| (postGoodsBean.getUnit() != null && params.getData(postGoodsBean.getName()).equals(postGoodsBean.getUnit()))){
 					if(postGoodsBean.getName().equals("images"))continue;
 					postResultFail("please entering " + postGoodsBean.getDisplayName() + "!");
-					Toast.makeText(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
+					ViewUtil.showToast(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", false);
 					return false;
 				}
 			}
 		}
 		
 		if (ImageUploader.getInstance().hasPendingJob()) {
-			Toast.makeText(this.getActivity(), "图片上传中", Toast.LENGTH_SHORT).show();
+			ViewUtil.showToast(getActivity(), "图片上传中", false);
 			return false;
 		}
 		
@@ -1009,7 +1010,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			}
 			addCategoryItem();
 			if(msg.obj != null){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
+				ViewUtil.showToast(activity, (String)msg.obj, false);
 			}
 			this.showGettingMetaProgress(false);
 			break;
@@ -1025,7 +1026,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			int code = ((PostResultData)msg.obj).error;
 			if (!id.equals("") && code == 0) {
 				postResultSuccess();
-				Toast.makeText(activity, message, 0).show();
+				ViewUtil.showToast(activity, message, false);
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
 				if(!editMode || (editMode && isActive)){
@@ -1074,7 +1075,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			hideProgress();
 			if(msg.obj != null){
 				if(msg.obj instanceof String){
-					Toast.makeText(activity, (String)msg.obj, 0).show();
+					ViewUtil.showToast(activity, (String)msg.obj, false);
 				}else if(msg.obj instanceof PostResultData){
 					handlePostFail((PostResultData)msg.obj);
 				}
@@ -1082,7 +1083,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		case PostCommonValues.MSG_POST_EXCEPTION:
 			hideProgress();
-			Toast.makeText(activity, "网络连接异常", 0).show();
+			ViewUtil.showToast(activity, "网络连接异常", false);
 			break;
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();

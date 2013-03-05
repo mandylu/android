@@ -8,6 +8,7 @@ import android.widget.Toast;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
+import com.baixing.util.ViewUtil;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
@@ -45,7 +46,7 @@ public class SplashJob {
 
 		try {
 			if (parentActivity.checkConnection() == false) {
-				Toast.makeText(parentActivity, "网络连接异常", 3).show();
+				ViewUtil.showToast(parentActivity, "网络连接异常", false);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block

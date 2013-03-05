@@ -48,6 +48,7 @@ import com.baixing.util.BitmapUtils;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.view.CameraPreview;
@@ -225,7 +226,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 						addImageUri(newPicPair);
 					}
 				} else {
-					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
+					ViewUtil.showToast(CameraActivity.this, "获取照片失败", false);
 				}
 				
 				updateCapState();
@@ -671,7 +672,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	    	isCameraLock = false;
 	    	if (!Util.isExternalStorageWriteable()) {
-	    		Toast.makeText(CameraActivity.this, "请检查SD卡状态", Toast.LENGTH_SHORT).show();
+	    		ViewUtil.showToast(CameraActivity.this, "请检查SD卡状态", false);
 	    		handler.sendEmptyMessage(MSG_CANCEL_STORE_PIC);
 	    		return;
 	    	}
@@ -900,7 +901,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
 		        if (!full) {
-		        	Toast.makeText(CameraActivity.this, "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", Toast.LENGTH_SHORT).show();
+		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
 		        }
 			}
 		};

@@ -39,6 +39,7 @@ import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.util.LocationService;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.drawable;
 import com.quanleimu.activity.R.id;
@@ -73,17 +74,14 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			
 			@Override
 			public void onGetNetworkState(int iError) {
-				Toast.makeText(context,
-						"您的网络出错啦！", Toast.LENGTH_LONG).show();
+				ViewUtil.showToast((BaiduMapActivity)context, "您的网络出错啦！", true);
 			}
 
 			@Override
 			public void onGetPermissionState(int iError) {
 				if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
 					// 授权Key错误：
-					Toast.makeText(context,
-							"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
-							.show();
+					ViewUtil.showToast((BaiduMapActivity)context, "请在BMapApiDemoApp.java文件输入正确的授权Key！", true);
 					this.m_bKeyRight = false;
 				}
 			}

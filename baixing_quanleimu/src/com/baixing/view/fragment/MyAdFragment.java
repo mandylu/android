@@ -456,7 +456,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;
 		case MSG_DELETE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
+			ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
 			break;
 		case MSG_DELETE_POST_SUCCESS:
 			hideProgress();
@@ -478,6 +478,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //					refList = listDeleted;
 //				}
 				if(refList == null) break;
+				String msgToShow = "删除失败,请稍后重试！";
 				if (code == 0) {
 					for(int i = 0; i < refList.size(); ++ i){
 						if(refList.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)deletedId)){
@@ -491,10 +492,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
-					Toast.makeText(activity, message, 0).show();
-				} else {
-					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
-				}
+					msgToShow = message;
+				} 
+				ViewUtil.showToast(activity, msgToShow, false);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -503,7 +503,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;	
 		case MSG_RESTORE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
+			ViewUtil.showToast(activity, "恢复失败,请稍后重试！", false);
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			isRefreshing = false;

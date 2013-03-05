@@ -33,6 +33,7 @@ import com.baixing.util.LoginUtil;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.EditUsernameDialogFragment;
 import com.quanleimu.activity.R;
 
@@ -212,18 +213,18 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
             reloadUser(getView());
 			break;			
 		case MSG_LOGINFAIL:
+			String msgToShow = "登录未成功，请稍后重试！";
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
-			}else{
-				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
+				msgToShow = (String)msg.obj;
 			}
+			ViewUtil.showToast(activity, msgToShow, false);
 			break;
         case MSG_SHOW_PROGRESS:
             showSimpleProgress();
             break;
         case MSG_SHOW_TOAST:
             hideProgress();
-            Toast.makeText(activity, msg.obj.toString(), 1).show();
+            ViewUtil.showToast(activity, msg.obj.toString(), false);
             break;
 		case MSG_GETPERSONALADS:
 			break;

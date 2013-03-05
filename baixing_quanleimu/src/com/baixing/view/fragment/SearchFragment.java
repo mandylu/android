@@ -348,8 +348,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 					loadingView.setVisibility(View.GONE);
 				}
 				
-				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
-						Toast.LENGTH_SHORT).show();
+				ViewUtil.showToast(getActivity(), "网络请求失败,请稍后重试", false);
 			}
 		});
 	}

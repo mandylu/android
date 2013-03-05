@@ -20,6 +20,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
@@ -159,7 +160,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		super.onFragmentBackWithData(resultCode, result);
 
 		if(resultCode == REQ_CODE_RESET_PASS){
-			Toast.makeText(getActivity(), "重置密码成功，请重新登录", 3).show();
+			ViewUtil.showToast(getActivity(), "重置密码成功，请重新登录", true);
 		}
 		else if (resultCode == REQ_CODE_REGISTER)
 		{
@@ -180,9 +181,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		switch (msg.what) {
 		case MSG_LOGINSUCCESS:
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
+				ViewUtil.showToast(activity, (String)msg.obj, false);
 			}else{
-				Toast.makeText(activity, "登陆成功", 0).show();
+				ViewUtil.showToast(activity, "登陆成功", false);
 			}
 			if(this.getArguments() != null && getArguments().containsKey(KEY_RETURN_CODE)){
 				this.finishFragment(getArguments().getInt(KEY_RETURN_CODE), null);
@@ -194,11 +195,11 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			}
 			break;
 		case MSG_LOGINFAIL:
+			String msgToShow = "登录未成功，请稍后重试！";
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
-			}else{
-				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
+				msgToShow =  (String)msg.obj;
 			}
+			ViewUtil.showToast(activity, msgToShow, false);
 			break;
 		case MSG_NEWREGISTERVIEW:
 //			m_viewInfoListener.onNewView(new RegisterView(LoginView.this.getContext()));
@@ -210,7 +211,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			break;
 		case 10:
 			hideProgress();
-			Toast.makeText(getActivity(), "网络连接失败，请检查设置！", 3).show();
+			ViewUtil.showToast(getActivity(), "网络连接失败，请检查设置！", true);
 			break;
 		}
 	}
