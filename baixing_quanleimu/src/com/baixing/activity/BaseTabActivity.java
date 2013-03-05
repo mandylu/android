@@ -33,6 +33,8 @@ import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.LocationService;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.ShortcutUtil;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
@@ -398,6 +400,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 			intent.setClass(this, MainActivity.class);
 			break;
 		case TAB_INDEX_POST:
+			PerformanceTracker.stamp(Event.E_Start_PostActivity);
 			BaseFragment bf = this.getCurrentFragment();
 			if(bf != null && (bf instanceof ListingFragment)){
 				intent.putExtra(PostGoodsFragment.KEY_INIT_CATEGORY, ((ListingFragment)bf).getCategoryNames());

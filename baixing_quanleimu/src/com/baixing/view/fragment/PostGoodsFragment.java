@@ -149,6 +149,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@SuppressWarnings("unchecked")
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_PGFrag_OnCreate_Start);
 		super.onCreate(savedInstanceState);
 		
 		if (savedInstanceState != null) {
@@ -312,7 +313,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		}
 //		imgSelDlg.setMsgOutBundle(imgSelBundle);
 //		imgSelDlg.show(getFragmentManager(), null);
-		
+		PerformanceTracker.stamp(Event.E_Send_Camera_Bootup);
 		Intent backIntent = new Intent();
 		backIntent.setClass(getActivity(), getActivity().getClass());
 		

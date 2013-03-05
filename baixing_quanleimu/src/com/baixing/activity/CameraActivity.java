@@ -45,6 +45,8 @@ import com.baixing.entity.BXThumbnail;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
@@ -174,6 +176,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				break;
 			}
 			case MSG_INIT_CAME : {
+				PerformanceTracker.stamp(Event.E_Start_Init_Camera);
 				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
@@ -194,6 +197,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				isCameraLock = false;
 				Log.d(TAG, "initialize camera done.");
 				updateCapState();
+				PerformanceTracker.stamp(Event.E_End_Init_Camera);
 				break;
 			}
 			case MSG_RESUME_ME:{
@@ -480,6 +484,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_CameraActivity_OnCreate_Start);
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
@@ -535,6 +540,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		}
 		
 		handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
+		PerformanceTracker.stamp(Event.E_CameraActivity_OnCreate_Leave);
 //		Profiler.markEnd("cameOnCreate");
 	}
 	
@@ -626,6 +632,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+		PerformanceTracker.stamp(Event.E_CameraActivity_onResume);
 		GlobalDataManager.getInstance().setLastActiveActivity(this.getClass());
 		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
 //		Profiler.markStart("cameOnResume");
