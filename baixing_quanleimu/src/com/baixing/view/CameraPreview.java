@@ -77,21 +77,21 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         // set preview size and make any resize, rotate or
         // reformatting changes here
         
-        final boolean isNewSdk = VERSION.SDK_INT > 10;
+        final boolean isNewSdk = VERSION.SDK_INT >= 14;
         
         
         // start preview with new settings
         try {
             mCamera.setPreviewDisplay(mHolder);
             
-//            if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
-//            	try {
-//            		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
-//            	}
-//            	catch (Throwable t) {
-//            		//Ignor this exception.
-//            	}
-//            }
+            if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
+            	try {
+            		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
+            	}
+            	catch (Throwable t) {
+            		//Ignor this exception.
+            	}
+            }
             
             Parameters param = mCamera.getParameters();
             param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 
