@@ -60,7 +60,17 @@ public class PerformEvent{
 		E_MyAdShowup("myAd_showup"),
 		E_MyPost_Got("myAd_post_got"),
 		E_MyPost_Got_Handled("myAd_post_got_handled"),
-		E_MyAdStartFetching("myad_start_fetching");
+		E_MyAdStartFetching("myad_start_fetching"),
+		E_Start_PostActivity("start_postActivity"),
+		E_PostActivity_OnCreate_Begin("post_activity_oncreate_begin"),
+		E_PostActivity_OnCreate_Leave("post_activity_oncreate_leave"),
+		E_PGFrag_OnCreate_Start("pgFragment_oncreate_start"),
+		E_Send_Camera_Bootup("send_camera_boot_up"),
+		E_CameraActivity_OnCreate_Leave("camera_activity_oncreate_leave"),
+		E_CameraActivity_OnCreate_Start("camera_activity_oncreate_start"),
+		E_CameraActivity_onResume("camera_activity_onresume"),
+		E_Start_Init_Camera("start_camera_init"),
+		E_End_Init_Camera("end_camera_init");
 		String event;
 		Event(String event){
 			this.event = event;

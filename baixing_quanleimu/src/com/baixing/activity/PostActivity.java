@@ -24,6 +24,7 @@ public class PostActivity extends BaseTabActivity {
 	
 	@Override
 	public void onCreate(Bundle savedBundle){
+		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Begin);
 		super.onCreate(savedBundle);
 		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
 			GlobalDataManager.context = new WeakReference<Context>(this);
@@ -49,6 +50,7 @@ public class PostActivity extends BaseTabActivity {
 		
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		initTitleAction();
+		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
 	}
 	
 	private void registerBroadcast(){
