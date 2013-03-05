@@ -254,7 +254,7 @@ public class ImageCacheManager{
 		imageDiskLruCache.put(key, bmp);
 	}
 	
-	private static Bitmap decodeSampledBitmapFromFile(InputStream stream){
+	private static Bitmap decodeSampledBitmapFromFile(String file){
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -268,8 +268,9 @@ public class ImageCacheManager{
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			
 		    options.inJustDecodeBounds = true;
-		    BitmapFactory.decodeStream(stream);
-	
+//		    BitmapFactory.decodeStream(stream, null, options);//.decodeStream(stream);
+		    BitmapFactory.decodeFile(file, options);
+		    
 		    // Calculate inSampleSize
 		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
 	    }
@@ -280,7 +281,8 @@ public class ImageCacheManager{
 	    // Decode bitmap with inSampleSize set
 	    options.inJustDecodeBounds = false;
 	    options.inPurgeable = true;
-	    return BitmapFactory.decodeStream(stream);
+//	    return BitmapFactory.decodeStream(stream, null, options);
+	    return BitmapFactory.decodeFile(file, options);
 	}
 	
 	
@@ -302,13 +304,13 @@ public class ImageCacheManager{
 	        boolean succed = cmd.doDownload(context, new File(targetFile));
 	        if (succed) {
 	        	enableSampleSize(true);
-	        	bitmapRet = decodeSampledBitmapFromFile(new FileInputStream(new File(targetFile)));
+	        	bitmapRet = decodeSampledBitmapFromFile(/*new FileInputStream(new File(targetFile))*/targetFile);
 	        	enableSampleSize(false);
 	        }
 	        
 	        
 	        if(null != imageDiskLruCache && bitmapRet != null){
-        		imageDiskLruCache.put(key, bitmapRet);
+	        	imageDiskLruCache.put(key, bitmapRet, targetFile);
 //	           	httpClient.getConnectionManager().shutdown();
 //	           	httpClient = null;
 //	           	enableSampleSize(true);
