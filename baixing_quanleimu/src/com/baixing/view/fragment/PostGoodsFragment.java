@@ -765,6 +765,18 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}else if(postBean.getName().equals("价格")){
 			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
+		}else if(postBean.getName().equals("faburen")){
+			List<String> labels = postBean.getLabels();
+			List<String> values = postBean.getValues();
+ 			if(labels != null){
+				for(int i = 0; i < labels.size(); ++ i){
+					if(labels.get(i).equals("个人")){
+						((TextView)layout.findViewById(R.id.posthint)).setText(labels.get(i));
+						params.put(postBean.getName(), labels.get(i), values.get(i));
+					}
+				}
+			}
+//			
 		}
 		
 		if(layout != null){
