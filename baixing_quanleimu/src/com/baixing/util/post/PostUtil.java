@@ -6,6 +6,7 @@ import android.content.Context;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnFocusChangeListener;
 import android.view.ViewGroup;
 import android.widget.CheckBox;
 import android.widget.EditText;
@@ -144,7 +145,26 @@ public class PostUtil{
 		return match;
 	}	
 	
-	static public ViewGroup createItemByPostBean(PostGoodsBean postBean,Context context){
+	public static class BorderChangeListener implements OnFocusChangeListener{
+		private Context context;
+		private View rootView;
+		public BorderChangeListener(Context context, View root){
+			this.context = context;
+			this.rootView = root;
+		}
+		@Override
+		public void onFocusChange(View view, boolean hasFocus) {
+			// TODO Auto-generated method stub
+			if(hasFocus){
+				rootView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.post_box_focus));
+			}else{
+				rootView.setBackgroundDrawable(context.getResources().getDrawable(R.drawable.post_box));
+			}
+		}
+		
+	}
+	
+	static public ViewGroup createItemByPostBean(PostGoodsBean postBean, Context context){
 		ViewGroup layout = null;
 		if (postBean.getControlType().equals("input")) {
 			LayoutInflater inflater = LayoutInflater.from(context);
@@ -155,6 +175,8 @@ public class PostUtil{
 			((TextView)v.findViewById(R.id.postshow)).setText(postBean.getDisplayName());
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
+			text.setOnFocusChangeListener(new BorderChangeListener(context, v));
+
 			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
 			v.setTag(PostCommonValues.HASH_CONTROL, text);
 			if(postBean.getNumeric() != 0){
@@ -202,7 +224,7 @@ public class PostUtil{
 			((TextView)v.findViewById(R.id.postdescriptionshow)).setText(postBean.getDisplayName());
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
-
+			descriptionEt.setOnFocusChangeListener(new BorderChangeListener(context, v));
 //			if(postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION))//description is builtin keyword
 //			{
 //				String personalMark = GlobalDataManager.getInstance().getPersonMark();

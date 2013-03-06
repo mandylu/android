@@ -3,7 +3,7 @@
     android:id="@+id/postgoodslayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen" >
+    android:background="#f5f5f5" >
 	<include layout="@layout/common_title"/>
 	
     <ScrollView

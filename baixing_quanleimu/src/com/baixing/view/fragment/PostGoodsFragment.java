@@ -519,6 +519,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					if(postGoodsBean.getName().equals("images"))continue;
 					postResultFail("please entering " + postGoodsBean.getDisplayName() + "!");
 					Toast.makeText(this.getActivity(), "请填写" + postGoodsBean.getDisplayName() + "!", 0).show();
+					this.changeFocusAfterPostError(postGoodsBean.getDisplayName());
 					return false;
 				}
 			}
@@ -859,6 +860,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						return false;
 					}
 				});
+				text.setOnFocusChangeListener(new PostUtil.BorderChangeListener(this.getActivity(), v));
 
 				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
@@ -1077,6 +1079,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					Toast.makeText(activity, (String)msg.obj, 0).show();
 				}else if(msg.obj instanceof PostResultData){
 					handlePostFail((PostResultData)msg.obj);
+					postResultFail(((PostResultData)msg.obj).message);
 				}
 			}
 			break;
@@ -1107,7 +1110,44 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 	
-	private void handlePostFail(PostResultData result){
+	private void changeFocusAfterPostError(String errMsg){
+		if(postList == null) return;
+		Set<String> keys = postList.keySet();
+		if(keys == null) return;
+		for(String key : keys){
+			PostGoodsBean bean = postList.get(key);
+			if(errMsg.contains(bean.getDisplayName())){
+				for(int j = 0; j < layout_txt.getChildCount(); ++ j){
+					final View child = layout_txt.getChildAt(j);
+					if(child != null){
+						PostGoodsBean tag = (PostGoodsBean)child.getTag(PostCommonValues.HASH_POST_BEAN);
+						if(tag != null && tag.getName().equals(postList.get(key).getName())){
+							View et = child.findViewById(R.id.postinput);
+							if(et == null){
+								et = child.findViewById(R.id.description_input);
+							}
+							if(et != null){
+								final View inputView = et;
+								inputView.postDelayed(new Runnable(){
+									@Override
+									public void run(){
+										inputView.requestFocus();
+										InputMethodManager inputMgr = 
+												(InputMethodManager) inputView.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
+										inputMgr.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);									
+									}
+								}, 100);
+							}
+							return;
+						}
+					}
+				}
+			}
+		}
+
+	}
+	
+	private void handlePostFail(final PostResultData result){
 		if(result == null) return;
 		if(result.error == 505){
 			AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
@@ -1124,7 +1164,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
 								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 								intent.putExtras(args);
-								getActivity().sendBroadcast(intent);							
+								getActivity().sendBroadcast(intent);
 							}
 	                    }
 	                });
