@@ -44,7 +44,7 @@
     
     <!-- camera -->
     <dimen name="camera_result_width">90dp</dimen>
-    <dimen name="camera_action_bar_height">48dp</dimen>
+    <dimen name="camera_action_bar_height">60dp</dimen>
     <dimen name="camera_cap_button_width">84dp</dimen>
     <dimen name="camera_cap_button_height">36dp</dimen>
     <dimen name="camera_gallery_width">20dp</dimen>

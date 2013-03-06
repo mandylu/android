@@ -284,7 +284,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		if (isNewPost) {
 			isNewPost = false;
-			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过拍照");
+			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过\n拍照");
 		}
 		
 	}	
