@@ -223,7 +223,7 @@ public class PostNetworkService implements Callback{
 
 	@Override
 	public void onNetworkFail(String apiName, ApiError error) {
-		String msg = "网络错误";//(error == null ? "请求错误" : error.getMsg()); //TODO
+		String msg = error == null ? "网络错误" : error.getMsg();
 		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
 		sendMessage(msgCode, msg);
 	}

@@ -1078,6 +1078,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(msg.obj != null){
 				if(msg.obj instanceof String){
 					ViewUtil.showToast(activity, (String)msg.obj, false);
+					this.changeFocusAfterPostError((String)msg.obj);
 				}else if(msg.obj instanceof PostResultData){
 					handlePostFail((PostResultData)msg.obj);
 					postResultFail(((PostResultData)msg.obj).message);
