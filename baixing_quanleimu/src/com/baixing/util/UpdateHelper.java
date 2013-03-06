@@ -64,7 +64,7 @@ public class UpdateHelper {
     private void handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_NETWORK_ERROR:
-                Toast.makeText(activity, msg.obj.toString(), 1).show();
+                ViewUtil.showToast(activity, msg.obj.toString(), false);
                 break;
             case MSG_DOWNLOAD_APP:
                 updateAppDownload();

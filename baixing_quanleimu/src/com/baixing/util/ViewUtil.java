@@ -216,18 +216,25 @@ public class ViewUtil {
 		return thumbnail;
 	}
 	
-	static public void showToast(final Activity activity, final String msg, final boolean longDuration){
-		if (activity == null || msg == null) {
+	static public void showToast(final Context context, final String msg, final boolean longDuration){
+		if (context == null || msg == null) {
 			return;
 		}
 		
-		activity.runOnUiThread(new Runnable(){
+		Runnable task = new Runnable(){
 			@Override
 			public void run(){
-				Toast t = Toast.makeText(activity, msg, longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
+				Toast t = Toast.makeText(context, msg, longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
 				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
 				t.show();
 			}
-		});
+		};
+		
+		if (context instanceof Activity) {
+			((Activity) context).runOnUiThread(task);
+		} else {
+			task.run();
+		}
+		
 	}
 }

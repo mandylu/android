@@ -32,6 +32,7 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.activity.R;
 
@@ -262,7 +263,7 @@ public class CustomDialogBuilder {
 											configSecondLevel(cd, lv, secondLevelItems);										}
 									}
 									else{
-										Toast.makeText(context, "网络连接异常", 0).show();
+										ViewUtil.showToast(context, "网络连接异常", false);
 										return;
 									}
 									

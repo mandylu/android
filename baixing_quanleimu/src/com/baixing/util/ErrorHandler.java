@@ -81,8 +81,10 @@ public class ErrorHandler extends Handler{
 			}
 		}		
 		
-		if(null != strToast && 0 != strToast.length())
-			Toast.makeText(this.context, strToast, Toast.LENGTH_SHORT).show();
+		if(null != strToast && 0 != strToast.length()) {
+			ViewUtil.showToast(this.context, strToast, false);
+		}
+		
 		
 		if(null != msg.getCallback()){
 			msg.getCallback().run();
