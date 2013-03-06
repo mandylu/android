@@ -491,6 +491,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
+		String nextBtnLabel = getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL);
 		if (VERSION.SDK_INT < 14) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
@@ -501,6 +502,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		{
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setContentView(R.layout.image_selector);
+			nextBtnLabel = nextBtnLabel.replace("\n", "");
 		}
 					
 		
@@ -509,9 +511,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		findViewById(R.id.finish_cap).setOnClickListener(this);
 		findViewById(R.id.cap).setEnabled(false);//Do not let user take pitcure before initialize.
 		
-		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL)) {
+		if (nextBtnLabel != null) {
 			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
-			nextLabel.setText(getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL));
+			nextLabel.setText(nextBtnLabel);
 		}
 		
 		//Sensor to update current orientation. 
