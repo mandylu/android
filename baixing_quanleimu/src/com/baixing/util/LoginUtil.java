@@ -93,7 +93,7 @@ public class LoginUtil implements View.OnClickListener{
 			.append(Key.REGISTER_RESULT_STATUS, false)
 			.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
 			.end();
-			Toast.makeText(view.getContext(), "账号不能为空！", 0).show();
+			ViewUtil.showToast(view.getContext(), "账号不能为空！", false);
 			return false;
 		} else if (password == null || password.trim().equals("")) {
 			Tracker.getInstance()
@@ -101,7 +101,7 @@ public class LoginUtil implements View.OnClickListener{
 			.append(Key.REGISTER_RESULT_STATUS, false)
 			.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
 			.end();
-			Toast.makeText(view.getContext(), "密码不能为空！", 0).show();
+			ViewUtil.showToast(view.getContext(), "密码不能为空！", false);
 			return false;
 		}
 		return true;

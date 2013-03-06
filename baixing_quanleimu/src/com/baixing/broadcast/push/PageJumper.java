@@ -12,6 +12,7 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.HomeFragment;
 import com.baixing.view.fragment.ListingFragment;
 import com.baixing.view.fragment.MyAdFragment;
@@ -68,8 +69,7 @@ public class PageJumper{
 					}
 				}
 			} catch (JSONException e) {
-				// TODO Auto-generated catch block
-				Toast.makeText(currentActivity, "数据错误", 0).show();
+				ViewUtil.showToast(currentActivity, "数据错误", false);
 				e.printStackTrace();
 			}
 		}else if(pageName.equals(PAGE_CATEGORY)){

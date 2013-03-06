@@ -48,6 +48,7 @@ import com.baixing.util.BitmapUtils;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.view.CameraPreview;
@@ -155,7 +156,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			{
 				isInitialized = false;
 				sensorMgr.unregisterListener(CameraActivity.this);
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}
@@ -177,7 +178,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			}
 			case MSG_INIT_CAME : {
 				PerformanceTracker.stamp(Event.E_Start_Init_Camera);
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}
@@ -225,7 +226,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 						addImageUri(newPicPair);
 					}
 				} else {
-					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
+					ViewUtil.showToast(CameraActivity.this, "获取照片失败", false);
 				}
 				
 				updateCapState();
@@ -360,17 +361,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	updateCapState();
     }
     
-    private ViewGroup findFirstBlankImage(ViewGroup root) {
-		final int count = root.getChildCount();
-		for (int i=0; i<count; i++) {
-			ViewGroup child = (ViewGroup) root.getChildAt(i);
-			if (child.getTag() == null) {
-				return child;
-			}
-		}
-    	
-    	return null;
-    }
+//    private ViewGroup findFirstBlankImage(ViewGroup root) {
+//		final int count = root.getChildCount();
+//		for (int i=0; i<count; i++) {
+//			ViewGroup child = (ViewGroup) root.getChildAt(i);
+//			if (child.getTag() == null) {
+//				return child;
+//			}
+//		}
+//    	
+//    	return null;
+//    }
     
     
     private boolean appendResultImage(BXThumbnail thumbnail) {
@@ -380,11 +381,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	
     	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
-    	
-    	ViewGroup imageRoot = findFirstBlankImage(vp);
-    	if (imageRoot == null) {
-    		return false; // you should nerver encounter this case.
-    	}
+    	LayoutInflater inflater = LayoutInflater.from(vp.getContext());
+    	ViewGroup imageRoot = (ViewGroup) inflater.inflate(R.layout.single_image_layout, null);
+//    	ViewGroup imageRoot = findFirstBlankImage(vp);
+//    	if (imageRoot == null) {
+//    		return false; // you should nerver encounter this case.
+//    	}
+    	vp.addView(imageRoot);
     	imageRoot.setTag(thumbnail.getLocalPath());
 		
 		final View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
@@ -488,16 +491,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
-//		if (VERSION.SDK_INT <= 10) {
+		if (VERSION.SDK_INT < 14) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			setContentView(R.layout.image_selector_land);
-//		}
-//		else
-//		{
-//			setContentView(R.layout.image_selector);
-//		}
+		}
+		else
+		{
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			setContentView(R.layout.image_selector);
+		}
 					
 		
 		//Take picture action.
@@ -668,7 +672,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	    	isCameraLock = false;
 	    	if (!Util.isExternalStorageWriteable()) {
-	    		Toast.makeText(CameraActivity.this, "请检查SD卡状态", Toast.LENGTH_SHORT).show();
+	    		ViewUtil.showToast(CameraActivity.this, "请检查SD卡状态", false);
 	    		handler.sendEmptyMessage(MSG_CANCEL_STORE_PIC);
 	    		return;
 	    	}
@@ -822,10 +826,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			Log.e(TAG, "following view will be remove " + vp.hashCode());
 			imgContainer.removeView(vp);
 			
-			LayoutInflater inflator = LayoutInflater.from(v.getContext());
-			View newV = inflator.inflate(R.layout.single_image_layout, null);
-			imgContainer.addView(newV);
-			Log.d(TAG, "following view will be add " + newV.hashCode());
+//			LayoutInflater inflator = LayoutInflater.from(v.getContext());
+//			View newV = inflator.inflate(R.layout.single_image_layout, null);
+//			imgContainer.addView(newV);
+//			Log.d(TAG, "following view will be add " + newV.hashCode());
 		}
 	}
 
@@ -897,7 +901,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
 		        if (!full) {
-		        	Toast.makeText(CameraActivity.this, "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", Toast.LENGTH_SHORT).show();
+		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
 		        }
 			}
 		};

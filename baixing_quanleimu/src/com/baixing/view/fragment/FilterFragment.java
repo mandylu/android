@@ -33,6 +33,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
@@ -389,7 +390,7 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 		case MSG_LOAD_DATA_FAILD:
 			hideProgress();
 			
-			Toast.makeText(activity, "服务当前不可用，请稍后重试！", Toast.LENGTH_SHORT).show();
+			ViewUtil.showToast(activity, "服务当前不可用，请稍后重试！", false);
 			break;
 		case MSG_UPDATE_KEYWORD:
 			((TextView) rootView.findViewById(R.id.edsift))

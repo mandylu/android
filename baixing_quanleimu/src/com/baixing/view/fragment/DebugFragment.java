@@ -25,6 +25,7 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 /**
@@ -159,7 +160,7 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
     protected void handleMessage(Message msg, Activity activity, View rootView) {
         switch (msg.what) {
             case MSG_pushTestSuccess:
-                Toast.makeText(getActivity(), msg.obj.toString(), 3);
+                ViewUtil.showToast(getActivity(), msg.obj.toString(), false);
 //                break;
             case MSG_pushTestFail:
                 AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());

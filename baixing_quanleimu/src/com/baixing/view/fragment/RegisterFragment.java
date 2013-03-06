@@ -27,6 +27,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 public class RegisterFragment extends BaseFragment {
@@ -74,30 +75,37 @@ public class RegisterFragment extends BaseFragment {
 	}
 	
 	private boolean check() {
-		if (accoutnEt.getText().toString().trim().equals("")) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
-			.end();
-			Toast.makeText(getActivity(), "账号不能为空！", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (passwordEt.getText().toString().trim().equals("")) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
-			.end();
-			Toast.makeText(getActivity(), "密码不能为空！", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
-			.end();
-			Toast.makeText(getActivity(), "密码不一致！", Toast.LENGTH_SHORT).show();
-			return false;
+		String msgToShow = null;
+		try {
+			if (accoutnEt.getText().toString().trim().equals("")) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
+				.end();
+				msgToShow = "账号不能为空！";
+				return false;
+			} else if (passwordEt.getText().toString().trim().equals("")) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
+				.end();
+				msgToShow = "密码不能为空！";
+				return false;
+			} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
+				.end();
+				msgToShow = "密码不一致！";
+				return false;
+			}
+		} finally {
+			if (msgToShow != null) {
+				ViewUtil.showToast(getActivity(), msgToShow, false);
+			}
 		}
 		return true;
 	}
@@ -155,7 +163,7 @@ public class RegisterFragment extends BaseFragment {
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
 				String message = json.getString("message");
-				Toast.makeText(activity, message, 0).show();
+				ViewUtil.showToast(activity, message, false);
 				if (!id.equals("")) { // 注册成功
 					//tracker
 					Tracker.getInstance()
@@ -193,7 +201,7 @@ public class RegisterFragment extends BaseFragment {
 			}
 			break;
 		case 2:
-			Toast.makeText(activity, "注册未成功，请稍后重试！", 3).show();
+			ViewUtil.showToast(activity, "注册未成功，请稍后重试！", true);
 			//tracker
 			Tracker.getInstance()
 			.event(BxEvent.REGISTER_SUBMIT)

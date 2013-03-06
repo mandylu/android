@@ -5,6 +5,7 @@ import org.json.JSONObject;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.util.ViewUtil;
 import com.tencent.tauth.Constants;
 import com.tencent.tauth.Tencent;
 
@@ -56,7 +57,7 @@ public class QZoneSharingFragment extends BaseSharingFragment implements OnClick
 							if(code == 0){
 								finishFragment();
 							}
-							Toast.makeText(getActivity(), msgShow, 0).show();
+							ViewUtil.showToast(getActivity(), msgShow, false);
 						}
 					});
 					if(0 == code){

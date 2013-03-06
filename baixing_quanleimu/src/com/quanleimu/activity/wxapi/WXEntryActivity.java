@@ -11,6 +11,7 @@ import com.baixing.activity.PersonalActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.sharing.SharingCenter;
+import com.baixing.util.ViewUtil;
 import com.tencent.mm.sdk.openapi.*;
 import com.tencent.mm.sdk.platformtools.Log;
 
@@ -149,7 +150,7 @@ public class WXEntryActivity extends Activity implements IWXAPIEventHandler{
 			SharingCenter.trackShareResult("weixin", false, result);
 			break;
 		}
-		Toast.makeText(this, result, 3).show();
+		ViewUtil.showToast(this, result, true);
 		finish();
 	}
 }
