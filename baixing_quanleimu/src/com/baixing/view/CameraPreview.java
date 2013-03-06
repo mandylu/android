@@ -97,7 +97,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
             param.setPictureFormat(ImageFormat.JPEG); //Picture format should be set to JPEG. 
             initParam(param, isNewSdk);
 //            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), isNewSdk ? h : w, isNewSdk ? w : h);
-            Size size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), w, h);
+            Size size = param.getPreviewSize();
+            if (size == null) {
+            	size = getOptimalPreviewSize(param.getSupportedPreviewSizes(), w, h);
+            } 
             if (size != null) {
             	param.setPreviewSize(size.width, size.height);
             }
