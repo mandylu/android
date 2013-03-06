@@ -156,7 +156,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			{
 				isInitialized = false;
 				sensorMgr.unregisterListener(CameraActivity.this);
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}
@@ -178,7 +178,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			}
 			case MSG_INIT_CAME : {
 				PerformanceTracker.stamp(Event.E_Start_Init_Camera);
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}

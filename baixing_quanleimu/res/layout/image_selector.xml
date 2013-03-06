@@ -81,6 +81,10 @@
         android:layout_above="@+id/cap_result_list"
         android:layout_below="@+id/RelativeLayout1"
         android:layout_centerHorizontal="true" >
+        
+        <FrameLayout android:id="@+id/camera_root"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
 
         <TextView
             android:id="@+id/cam_not_available_tip"
@@ -90,6 +94,16 @@
             android:text="@string/warning_camera_in_use"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone" />
+        
+        <ImageView android:id="@+id/cam_focus_area"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="30dp"
+            android:layout_marginBottom="30dp"
+            android:background="@drawable/camera_focusboard"
+            />
     </FrameLayout>
 
     <HorizontalScrollView
