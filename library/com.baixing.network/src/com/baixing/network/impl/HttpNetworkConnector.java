@@ -258,7 +258,7 @@ public class HttpNetworkConnector {
 
 				businessResponse = responseHandler.handleResponseEnd(charset);
 				
-				listener.onRequestDone(businessResponse);
+//				listener.onRequestDone(businessResponse);
 			} else {
 				if (isGzip) {
 					es = new GZIPInputStream(es);
