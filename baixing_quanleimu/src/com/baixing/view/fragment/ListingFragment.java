@@ -542,9 +542,10 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				goodsListLoader.setHasMore(false);
 			} else {
 				List<Ad> listCommonGoods =  moreGoodsList.getData();
-				for(int i=0;i<listCommonGoods.size();i++)
-				{
-					goodsListLoader.getGoodsList().getData().add(listCommonGoods.get(i));
+				if(goodsListLoader.getGoodsList().getData() == null){
+					goodsListLoader.getGoodsList().setData(listCommonGoods);
+				}else{
+					goodsListLoader.getGoodsList().getData().addAll(listCommonGoods);
 				}
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
 				
