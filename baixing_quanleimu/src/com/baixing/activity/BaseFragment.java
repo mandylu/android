@@ -29,6 +29,7 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -625,9 +626,11 @@ public abstract class BaseFragment extends Fragment  {
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				left.setVisibility(View.VISIBLE);
 				rootView.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
-				if (title.m_leftActionImage != -1) {
-					ImageView img = (ImageView) rootView.findViewById(R.id.back_icon);
+				ImageView img = (ImageView) rootView.findViewById(R.id.back_icon);
+				if (title.m_leftActionImage != -1) {					
 					img.setImageResource(title.m_leftActionImage);
+				}else{
+					img.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_back));
 				}
 				
 			}else{
