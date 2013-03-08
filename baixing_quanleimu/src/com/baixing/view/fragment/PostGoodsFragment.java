@@ -26,25 +26,26 @@ import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.EditText;
+import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
+import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -66,6 +67,10 @@ import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
+	
+	private static final int IMG_STATE_UPLOADING = 1;
+	private static final int IMG_STATE_UPLOADED = 2;
+	private static final int IMG_STATE_FAIL = 3;
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
 	static final public String KEY_INIT_CATEGORY = "cateNames";
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
@@ -83,6 +88,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
+	private static final int MSG_IMAGE_STATE_CHANGE = 14;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
@@ -409,8 +415,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	@Override
-	public void onClick(View v) {
+	public void onClick(final View v) {
 		switch(v.getId()){
+		case R.id.delete_btn:
+			final String img = (String) v.getTag();
+			
+			this.showAlert(null, "是否删除该照片", new DialogAction(R.string.yes) {
+				public void doAction() {
+					ImageUploader.getInstance().cancel(img);
+					if (photoList.remove(img)) {
+						ViewGroup parent = (ViewGroup) getView().findViewById(R.id.image_list_parent);
+						View v = findImageViewByTag(img);
+						if (v != null) parent.removeView(v); 
+						showAddImageButton(parent, LayoutInflater.from(v.getContext()), true);
+					}
+				}
+			}, null);
+			
+			break;
 		case R.id.iv_post_finish:
 			Tracker.getInstance()
 			.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
@@ -425,7 +447,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				ViewUtil.showToast(this.getActivity(), "无法获得当前位置", false);
 			}
 			break;
-		case R.id.myImg:
+//		case R.id.myImg:
+		case R.id.add_post_image:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
 //			if(!editMode){
@@ -678,7 +701,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				this.doClearUpImages();
 				this.bmpUrls.clear();
 				
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
+//				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
 				
 				params.remove(PostCommonValues.STRING_DESCRIPTION);
 				params.remove("价格");
@@ -868,8 +891,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				v.setTag(PostCommonValues.HASH_CONTROL, text);
 				v.setOnClickListener(this);
 				
-				v.findViewById(R.id.myImg).setOnClickListener(this);
-				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
+//				v.findViewById(R.id.myImg).setOnClickListener(this);
+//				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
 				this.updateImageInfo(layout_txt);
 			}			
 		}
@@ -949,27 +972,60 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 
 	private void updateImageInfo(View rootView) {
-		if(rootView != null){
-			ImageView iv = (ImageView)rootView.findViewById(R.id.myImg);
-			if (iv != null && firstImage != null) {
-				iv.setImageBitmap(this.firstImage);
-			}
-			else if (iv != null) {
-				iv.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
+		if (rootView != null) {
+			ViewGroup list = (ViewGroup) rootView.findViewById(R.id.image_list_parent);
+			list.removeAllViews();
+			
+			LayoutInflater inflator = LayoutInflater.from(rootView.getContext());
+			for (String img : this.photoList) {
+				View imgParent = inflator.inflate(R.layout.post_image, null);
+				imgParent.setTag(img);
+				
+				imgParent.setOnClickListener(this);
+				imgParent.setId(R.id.delete_btn);
+				
+				final int margin = (int) getResources().getDimension(R.dimen.post_img_margin);
+				final int wh = (int) getResources().getDimension(R.dimen.post_img_size);
+				MarginLayoutParams layParams = new MarginLayoutParams(wh + margin, wh + 2 * margin);
+				layParams.setMargins(0, margin, margin, margin);
+				list.addView(imgParent, layParams);
+				
+				ImageUploader.getInstance().registerCallback(img, this);
 			}
 			
-			TextView tv = (TextView) rootView.findViewById(R.id.imgCout);
-			if(tv != null){
-				int containerCount = photoList == null ? 0 : photoList.size();
-				if(containerCount > 0){
-					tv.setText(String.valueOf(containerCount));
-					tv.setVisibility(View.VISIBLE);
-				}else{
-					tv.setVisibility(View.INVISIBLE);
-				}
+			if (this.photoList == null || this.photoList.size() < 6) {
+				showAddImageButton(list, inflator, false);
 			}
 		}
+	}
+	
+	
+	private void showAddImageButton(ViewGroup parent, LayoutInflater inflator, boolean scroolNow) {
 		
+		try {
+			View addBtn = parent.getChildAt(parent.getChildCount()-1);
+			if (addBtn != null && addBtn.getId() == R.id.add_post_image) {
+				return ;
+			}
+			
+			addBtn = inflator.inflate(R.layout.post_image, null);
+			((ImageView)addBtn.findViewById(R.id.result_image)).setImageResource(R.drawable.btn_add_picture);
+			addBtn.setOnClickListener(this);
+			addBtn.setId(R.id.add_post_image);
+			
+			final int margin = (int) getResources().getDimension(R.dimen.post_img_margin);
+			final int wh = (int) getResources().getDimension(R.dimen.post_img_size);
+			MarginLayoutParams layParams = new MarginLayoutParams(wh, wh + 2 * margin);
+			layParams.setMargins(0, margin, 0, margin);
+			parent.addView(addBtn, layParams);
+		} finally {
+			final HorizontalScrollView hs = (HorizontalScrollView) parent.getParent();
+			hs.postDelayed(new Runnable() {
+				public void run() {
+					hs.scrollBy(1000, 0);
+				}
+			}, scroolNow ? 0 : 300);
+		}
 	}
 	
 	@SuppressWarnings("unchecked")
@@ -978,6 +1034,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		hideProgress();
 		
 		switch (msg.what) {
+		case MSG_IMAGE_STATE_CHANGE: {
+			BXThumbnail img = (BXThumbnail) msg.obj;
+			int state = msg.arg1;
+			ViewGroup imgParent = (ViewGroup) this.findImageViewByTag(img.getLocalPath());
+			if (imgParent != null) {
+				ImageView imgView = (ImageView) imgParent.findViewById(R.id.result_image);
+				View loadingState = imgParent.findViewById(R.id.loading_status);
+				if (state == IMG_STATE_UPLOADING || state == IMG_STATE_UPLOADED) {
+					imgView.setImageBitmap(img.getThumbnail());
+					loadingState.setVisibility(state == IMG_STATE_UPLOADING ? View.VISIBLE : View.INVISIBLE);
+				} else {
+					imgView.setImageResource(R.drawable.icon_load_fail);
+					loadingState.setVisibility(View.GONE);
+				}
+			}
+			
+			break;
+		}
 		case MSG_DIALOG_BACK_WITH_DATA:{
 			Bundle bundle = (Bundle)msg.obj;
 			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE), bundle.getSerializable("lastChoise"));
@@ -1348,19 +1422,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@Override
 	public void onUploadDone(String imagePath, String serverUrl,
 			Bitmap thumbnail) {
-		// TODO Auto-generated method stub
-		
+		Message msg = this.handler.obtainMessage(MSG_IMAGE_STATE_CHANGE, IMG_STATE_UPLOADED, 0, BXThumbnail.createThumbnail(imagePath, thumbnail));
+		handler.sendMessage(msg);
 	}
 
 	@Override
 	public void onUploading(String imagePath, Bitmap thumbnail) {
-		// TODO Auto-generated method stub
-		
+		Message msg = this.handler.obtainMessage(MSG_IMAGE_STATE_CHANGE, IMG_STATE_UPLOADING, 0, BXThumbnail.createThumbnail(imagePath, thumbnail));
+		handler.sendMessage(msg);
 	}
 
 	@Override
 	public void onUploadFail(String imagePath, Bitmap thumbnail) {
-		// TODO Auto-generated method stub
+		Message msg = this.handler.obtainMessage(MSG_IMAGE_STATE_CHANGE, IMG_STATE_FAIL, 0, BXThumbnail.createThumbnail(imagePath, thumbnail));
+		handler.sendMessage(msg);
+		
 		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
 		if(getView() != null && getView().getRootView() != null){
 			getActivity().runOnUiThread(new Runnable(){
@@ -1370,5 +1446,20 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				}
 			});
 		}
+	}
+	
+	private View findImageViewByTag(String imagePath) {
+		ViewGroup root = (ViewGroup) this.getView().findViewById(R.id.image_list_parent);
+		
+		int c = root.getChildCount();
+		
+		for (int i=0; i<c; i++) {
+			View child = root.getChildAt(i);
+			if (imagePath.equals(child.getTag())) {
+				return child;
+			}
+		}
+		
+		return null;
 	}
 }

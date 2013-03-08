@@ -41,6 +41,8 @@
     <dimen name="post_marginbottom">8dip</dimen>
     <dimen name="post_item_height">48dip</dimen>
     <dimen name="post_arrow_size">16dip</dimen>
+    <dimen name="post_img_size">72dp</dimen>
+    <dimen name="post_img_margin">10dp</dimen>
     
     <!-- camera -->
     <dimen name="camera_result_width">90dp</dimen>

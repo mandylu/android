@@ -1,6 +1,6 @@
 <?xml version="1.0" encoding="utf-8"?>
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-    android:layout_width="wrap_content"
+    android:layout_width="fill_parent"
     android:layout_height="wrap_content"
     android:layout_gravity="center_horizontal"
     android:layout_marginBottom="8dip"
@@ -10,16 +10,15 @@
 
     <RelativeLayout
         android:padding="8dip"
-        android:layout_width="wrap_content"
+        android:layout_width="fill_parent"
         android:layout_height="wrap_content"
         android:orientation="horizontal" >
 
         <EditText
             android:id="@+id/description_input"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
+            android:layout_width="fill_parent"
+            android:layout_height="74dip"
             android:layout_alignParentLeft="true"
-            android:layout_toLeftOf="@+id/myImg"
             android:background="@null"
             android:ellipsize="end"
             android:gravity="left|top"
@@ -32,7 +31,7 @@
             android:textSize="@dimen/font_medium" >
         </EditText>
 
-        <ImageView
+        <!--ImageView
             android:id="@+id/myImg"
             android:layout_width="74dip"
             android:layout_height="74dip"
@@ -40,10 +39,10 @@
             android:layout_alignParentTop="true"
             android:background="@drawable/btn_add_picture"
             android:scaleType="centerCrop" >
-        </ImageView>
+        </ImageView-->
     </RelativeLayout>
 
-    <TextView
+    <!--TextView
         android:id="@+id/imgCout"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
@@ -58,6 +57,6 @@
         android:textColor="#FFFFFF"
         android:textStyle="bold"
         android:visibility="invisible" >
-    </TextView>
+    </TextView-->
 
 </RelativeLayout>

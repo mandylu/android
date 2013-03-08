@@ -370,6 +370,43 @@ public abstract class BaseFragment extends Fragment  {
 		return super.onOptionsItemSelected(item);
 	}
 	
+	protected void showAlert(String title, String message, final DialogAction positiveAction, final DialogAction negativeAction) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		if (title != null) {
+			builder.setTitle(title);
+		}
+		
+		if (message != null) {
+			builder.setMessage(message);
+		}
+		
+		if (positiveAction != null) {
+			builder.setPositiveButton(positiveAction.actioLabel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                	positiveAction.doAction();
+                }
+            });
+		}
+		
+		if (negativeAction != null) {
+			builder.setNegativeButton(negativeAction.actioLabel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                	negativeAction.doAction();
+                }
+            });
+		} else {
+			builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+		}
+		
+		builder.create().show();
+	}
+	
 	
 	/**
 	 * this called before <code>onStart</code> and after <code>onCreateView</code>
@@ -748,6 +785,19 @@ public abstract class BaseFragment extends Fragment  {
 	public boolean hasGlobalTab()
 	{
 		return getArguments() != null && getArguments().containsKey(ARG_COMMON_HAS_GLOBAL_TAB) ? getArguments().getBoolean(ARG_COMMON_HAS_GLOBAL_TAB) : true;
+	}
+	
+	protected abstract class DialogAction {
+		String actioLabel;
+		public DialogAction(String label) {
+			this.actioLabel = label;
+		}
+		
+		public DialogAction(int labelId) {
+			this.actioLabel = BaseFragment.this.getString(labelId);
+		}
+		
+		public abstract void doAction();
 	}
 	
 }

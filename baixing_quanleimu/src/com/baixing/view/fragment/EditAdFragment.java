@@ -207,13 +207,13 @@ class EditAdFragment extends PostGoodsFragment{
 				}
 			}
 			
-			if(listUrl.size() > 0){
-				ImageLoaderManager.getInstance().showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
-				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
-			}else{
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
-			}
+//			if(listUrl.size() > 0){
+//				ImageLoaderManager.getInstance().showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
+//				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
+//				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
+//			}else{
+//				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
+//			}
 			
 			String big = (goodsDetail.getImageList().getBig());
 			if(big != null && big.length() > 0){
