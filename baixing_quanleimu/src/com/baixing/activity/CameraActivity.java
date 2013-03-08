@@ -510,6 +510,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		findViewById(R.id.cap).setOnClickListener(this);
 		findViewById(R.id.finish_cap).setOnClickListener(this);
 		findViewById(R.id.cap).setEnabled(false);//Do not let user take pitcure before initialize.
+		findViewById(R.id.cam_focus_area).setOnClickListener(this);
 		
 		if (nextBtnLabel != null) {
 			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
@@ -693,6 +694,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			break;
 		case R.id.finish_cap:
 			finishTakenPic();
+			break;
+		case R.id.cam_focus_area:
+			if (mCamera != null) {
+				mCamera.autoFocus(null);
+			}
 			break;
 		}
 	}
