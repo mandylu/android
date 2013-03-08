@@ -167,6 +167,11 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		
 		request = null; //Set request to null.
 		
+		if (response == null) {
+			fail("unknown error, response is null");
+			return;
+		}
+		
 		Pair<Boolean, String> result = (Pair<Boolean, String>) response;
 		final String decodedResponse = decodeUnicode(result.second);
 		if (result.first) {
@@ -177,12 +182,15 @@ public final class BaseApiCommand implements IRequestStatusListener {
 				callback.onNetworkFail(apiName, error);
 			}
 		} else {
-			ApiError error = new ApiError();
-			error.setMsg(decodedResponse);
-			
-			callback.onNetworkFail(apiName, error);
+			fail(decodedResponse);
 		}
+	}
+	
+	private void fail(String message) {
+		ApiError error = new ApiError();
+		error.setMsg(message);
 		
+		callback.onNetworkFail(apiName, error);
 	}
 	
 	private ApiError parseForError(String response) {

@@ -46,7 +46,7 @@ public class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>>
 	}
 	
 	private Pair<Boolean, String> createResponse(boolean succed, String responseData) {
-		Pair p = new Pair(Boolean.valueOf(succed), responseData);
+		Pair p = new Pair(Boolean.valueOf(succed), responseData != null ? responseData : "");
 		buf.clear();
 		return p;
 	}
