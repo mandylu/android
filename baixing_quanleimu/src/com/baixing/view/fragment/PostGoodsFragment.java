@@ -102,7 +102,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
     private PostNetworkService postNS;
     
     protected ArrayList<String> photoList = new ArrayList<String>();
-    private Bitmap firstImage = null;
+//    private Bitmap firstImage = null;
     protected boolean isNewPost = true;
     private boolean finishRightNow = false;
     
@@ -122,15 +122,15 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				photoList.addAll(result);
 			}
 			
-			if (photoList != null && photoList.size() > 0) {
-				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
-				for(int i = 0; i < photoList.size(); ++ i){
-					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
-				}				
-			}
-			else {
-				firstImage = null;
-			}
+//			if (photoList != null && photoList.size() > 0) {
+//				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
+//				for(int i = 0; i < photoList.size(); ++ i){
+//					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
+//				}				
+//			}
+//			else {
+//				firstImage = null;
+//			}
 		}
 		
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
@@ -213,7 +213,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private void doClearUpImages() {
 		//Clear the upload image list.
 		this.photoList.clear();
-		this.firstImage = null;
+//		this.firstImage = null;
 		ImageUploader.getInstance().clearAll();
 	}
 
@@ -1437,15 +1437,15 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		Message msg = this.handler.obtainMessage(MSG_IMAGE_STATE_CHANGE, IMG_STATE_FAIL, 0, BXThumbnail.createThumbnail(imagePath, thumbnail));
 		handler.sendMessage(msg);
 		
-		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
-		if(getView() != null && getView().getRootView() != null){
-			getActivity().runOnUiThread(new Runnable(){
-				@Override
-				public void run(){
-					updateImageInfo(getView().getRootView());
-				}
-			});
-		}
+//		firstImage = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
+//		if(getView() != null && getView().getRootView() != null){
+//			getActivity().runOnUiThread(new Runnable(){
+//				@Override
+//				public void run(){
+//					updateImageInfo(getView().getRootView());
+//				}
+//			});
+//		}
 	}
 	
 	private View findImageViewByTag(String imagePath) {
