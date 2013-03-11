@@ -38,7 +38,7 @@ public class PlainRespHandler implements IResponseHandler<Pair<Boolean, String>>
 	public Pair<Boolean, String> handleResponseEnd(String charset) {
 		String response = "";
 		try {
-			response = new String(buf.toByteArray(), charset);
+			response = buf == null ? "" : new String(buf.toByteArray(), charset);
 		} catch (UnsupportedEncodingException e) {
 			Log.e("PlainResponseHandler", "fail to decode response " + e.getMessage());
 		}

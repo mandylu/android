@@ -33,7 +33,9 @@
                 android:focusableInTouchMode="true"
                 android:orientation="vertical" >
 				
-                <include layout="@layout/post_image_list"/>
+                <include
+                    android:id="@+id/image_list" 
+                    layout="@layout/post_image_list"/>
                 
                 <include
                     android:id="@+id/img_description"

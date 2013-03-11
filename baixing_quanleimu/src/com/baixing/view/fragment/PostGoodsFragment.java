@@ -684,9 +684,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
+			View imgView = layout_txt.findViewById(R.id.image_list);
 			View desView = layout_txt.findViewById(R.id.img_description);
 			View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
+			layout_txt.addView(imgView);
 			layout_txt.addView(desView);
 			if(catView != null){
 				layout_txt.addView(catView);
@@ -974,6 +976,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private void updateImageInfo(View rootView) {
 		if (rootView != null) {
 			ViewGroup list = (ViewGroup) rootView.findViewById(R.id.image_list_parent);
+			if (list == null) {
+				return;
+			}
 			list.removeAllViews();
 			
 			LayoutInflater inflator = LayoutInflater.from(rootView.getContext());
@@ -1450,6 +1455,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private View findImageViewByTag(String imagePath) {
 		ViewGroup root = (ViewGroup) this.getView().findViewById(R.id.image_list_parent);
+		if (root == null) {
+			return null;
+		}
 		
 		int c = root.getChildCount();
 		
