@@ -248,9 +248,9 @@ public class ImageUploader implements DownloadCallback {
 						.end();
 					}
 					
-					if (result != null) {
+					if (url != null) {
 						img.state = ImageState.SYNC;
-						img.serverUrl = result;
+						img.serverUrl = url;
 						notifyState(img);
 					}
 					else {

@@ -365,7 +365,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(categoryEnglishName.equals(names[0])) return;
 		}
 		initWithCategoryNames(cateNames);
-		resetData(true);
+		resetData(false);
 		Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, cateNames);
 		this.showPost();
 	}
