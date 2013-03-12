@@ -251,7 +251,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onResume();
 		isActive = true;
 		postLBS.start();
-		if(!editMode && !isNewPost && !finishRightNow) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
+		//Disable on version 3.2.1
+		if(!editMode /*&& !isNewPost && !finishRightNow*/) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
 			this.pv = PV.POST;
 			Tracker.getInstance()
 			.pv(this.pv)
