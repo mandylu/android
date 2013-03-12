@@ -26,6 +26,8 @@ public interface IBxNotificationNames
      */
     public static final String NOTIFICATION_LOGOUT = "note.logout";
     
+    public static final String NOTIFICATION_PROFILE_UPDATE = "note.profileupdate";
+    
     /**
      * Post when : user add / remove an favorite.
      */

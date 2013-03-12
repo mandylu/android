@@ -6,6 +6,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.app.ProgressDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Handler;
@@ -18,6 +19,7 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.entity.UserProfile;
+import com.baixing.message.BxMessageCenter;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -27,7 +29,6 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
-import com.baixing.view.fragment.PersonalProfileFragment;
 import com.quanleimu.activity.R;
 
 /**
@@ -38,8 +39,14 @@ import com.quanleimu.activity.R;
  * To change this template use File | Settings | File Templates.
  */
 public class EditUsernameDialogFragment extends DialogFragment {
+	
+	public static interface ICallback {
+		public void onEditSucced(String newUserName);
+	}
 
-    public Handler handler;
+//    public Handler handler;
+	
+	public ICallback callback;
 
     private UserProfile userProfile;
 
@@ -101,38 +108,48 @@ public class EditUsernameDialogFragment extends DialogFragment {
             return;
         }
 
+        final String newUserName = editUsernameEt.getText().toString();
         ApiParams params = new ApiParams();
-        params.addParam("nickname", editUsernameEt.getText().toString());
+        params.addParam("nickname", newUserName);
         params.addParam("userId", userProfile.userId);
-        Message msg = handler.obtainMessage();
-        msg.what = PersonalProfileFragment.MSG_SHOW_PROGRESS;
-        handler.sendMessage(msg);
+//        Message msg = handler.obtainMessage();
+//        msg.what = PersonalProfileFragment.MSG_SHOW_PROGRESS;
+//        handler.sendMessage(msg);
+        final ProgressDialog pr = ProgressDialog.show(getActivity(), getString(R.string.dialog_title_info), getString(R.string.dialog_message_waiting));
+        pr.show();
+        
         
         BaseApiCommand.createCommand("user_profile_update", false, params).execute(editUsernameEt.getContext(), new Callback() {
 			
 			@Override
 			public void onNetworkFail(String apiName, ApiError error) {
-                Message msg = handler.obtainMessage();
-                msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
-                msg.obj = "网络异常，请稍后再试";
-                handler.sendMessage(msg);
+//                Message msg = handler.obtainMessage();
+//                msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
+//                msg.obj = "网络异常，请稍后再试";
+//                handler.sendMessage(msg);
+				String errorMsg = "网络异常，请稍后再试";
+				pr.dismiss();
+				ViewUtil.showToast(getActivity(), errorMsg, false);
                 Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                         .append(Key.EDIT_PROFILE_STATUS, false)
-                        .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                        .append(Key.EDIT_RPOFILE_FAIL_REASON, errorMsg)
                         .end();
             }
 			
 			@Override
 			public void onNetworkDone(String apiName, String responseData) {
-                Message msg = handler.obtainMessage();
+//                Message msg = handler.obtainMessage();
                 try {
                     JSONObject obj = new JSONObject(responseData).getJSONObject("error");
                     if (!"0".equals(obj.getString("code"))) {
-                        msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
-                        msg.obj = obj.get("message");
+//                        msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
+//                        msg.obj = obj.get("message");
+                    	pr.dismiss();
+                    	String errorMsg = (String) obj.get("message");
+                    	ViewUtil.showToast(getActivity(), errorMsg, false);
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, false)
-                                .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                                .append(Key.EDIT_RPOFILE_FAIL_REASON, errorMsg)
                                 .end();
                     } else {
 //                        Util.clearData(getActivity(), "userProfile");
@@ -143,19 +160,24 @@ public class EditUsernameDialogFragment extends DialogFragment {
                     		Util.saveDataToLocate(activity, "userProfile", userProfile);
                     	}
                     
-                        msg.what = PersonalProfileFragment.MSG_EDIT_USERNAME_SUCCESS;
+//                        msg.what = PersonalProfileFragment.MSG_EDIT_USERNAME_SUCCESS;
+                    	pr.dismiss();
+                    	callback.onEditSucced(newUserName);
                         Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                                 .append(Key.EDIT_PROFILE_STATUS, true)
                                 .end();
+                        EditUsernameDialogFragment.this.dismiss();
                     }
-                    handler.sendMessage(msg);
+//                    handler.sendMessage(msg);
                 } catch (JSONException e) {
-                    msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
-                    msg.obj = "请求失败";
-                    handler.sendMessage(msg);
+                	pr.dismiss();
+//                    msg.what = PersonalProfileFragment.MSG_SHOW_TOAST;
+                    String errorMsg = "请求失败";
+//                    handler.sendMessage(msg);
+                    ViewUtil.showToast(getActivity(), errorMsg, false);
                     Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
                             .append(Key.EDIT_PROFILE_STATUS, false)
-                            .append(Key.EDIT_RPOFILE_FAIL_REASON, msg.obj.toString())
+                            .append(Key.EDIT_RPOFILE_FAIL_REASON, errorMsg)
                             .end();
                 }
 
