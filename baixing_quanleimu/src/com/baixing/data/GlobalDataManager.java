@@ -459,6 +459,8 @@ public class GlobalDataManager implements Observer {
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_NEW_PASSWORD);
 	}
 	
 	public Context getApplicationContext(){
@@ -479,6 +481,11 @@ public class GlobalDataManager implements Observer {
 				if (cxt != null)
 				{
 					accountManager.refreshAndGetMyId(cxt);
+				}
+			} else if (IBxNotificationNames.NOTIFICATION_NEW_PASSWORD.equals(note.getName())){
+				Context cxt = context.get();
+				if (cxt != null) {
+					accountManager.updatePassword(cxt, (String) note.getObject());
 				}
 			}
 		}

@@ -54,6 +54,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 	private static final int MSG_NEWREGISTERVIEW = 7;
 	private static final int MSG_FORGETPASSWORDVIEW = 8;
 	private static final int MSG_ANONYMOUS_USER = 9;
+	private static final int MSG_LOGIN_STATUS_CHANGE = 10;
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
@@ -201,6 +202,10 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_LOGIN_STATUS_CHANGE:
+			Boolean login = (Boolean) msg.obj;
+			rootView.findViewById(R.id.rl_login).setVisibility(login.booleanValue() ? View.GONE : View.VISIBLE);
+			break;
 		case MSG_FORGETPASSWORDVIEW:
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));
 			break;
@@ -385,11 +390,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 				up = null;
 				reloadUser(getView());
 				
-				if (getView() != null) {
-					boolean isLogin = IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName());
-					View loginV = getView().findViewById(R.id.rl_login);
-					loginV.setVisibility(isLogin ? View.GONE : View.VISIBLE);
-				}
+				sendMessage(MSG_LOGIN_STATUS_CHANGE, IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName()) ? Boolean.TRUE : Boolean.FALSE);
 			} else if (IBxNotificationNames.NOTIFICATION_PROFILE_UPDATE.equals(note.getName())) {
 				up = (UserProfile) note.getObject();
 			}

@@ -16,6 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.UserBean;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -77,6 +81,13 @@ public class ForgetPassFragment extends BaseFragment {
         newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
         rePwdEt = (EditText)rootV.findViewById(R.id.forgetPwdRePwdEt);
         postBtn = (Button)rootV.findViewById(R.id.forgetPwdPostBtn);
+        
+        boolean isLoginUser = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
+        mobileEt.setEnabled(!isLoginUser);
+        if (isLoginUser) {
+        	UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+        	mobileEt.setText(user.getPhone());
+        }
 
         getCodeBtn.setOnClickListener(new View.OnClickListener() {
             @Override
@@ -196,10 +207,12 @@ public class ForgetPassFragment extends BaseFragment {
             return;
         }
 
+        final String mobile = mobileEt.getText().toString();
+        final String pass = newPwdEt.getText().toString();
         ApiParams params = new ApiParams();
-        params.addParam("mobile", mobileEt.getText().toString());
+        params.addParam("mobile", mobile);
         params.addParam("code", codeEt.getText().toString());
-        params.addParam("password", newPwdEt.getText().toString());
+        params.addParam("password", pass);
         
         BaseApiCommand.createCommand("resetpassword", false, params).execute(getActivity(), new Callback() {
 			
@@ -216,6 +229,7 @@ public class ForgetPassFragment extends BaseFragment {
                         sendMessage(MSG_POST_ERROR, obj.getString("message"));
                     } else  {
                         sendMessage(MSG_POST_FINISH, obj.getString("message"));
+                        BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_NEW_PASSWORD, pass);
                     }
                 } catch (JSONException e) {
                     sendMessage(MSG_POST_ERROR, "网络异常");

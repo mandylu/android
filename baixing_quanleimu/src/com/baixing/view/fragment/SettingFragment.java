@@ -57,6 +57,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setChangeUserName)).setOnClickListener(this);
+        ((RelativeLayout) setmain.findViewById(R.id.resetPassword)).setOnClickListener(this);
         ((Button) setmain.findViewById(R.id.debugBtn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -75,7 +76,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         
         refreshUI(setmain);
         
-        if (profile == null && GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
+        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
+        if (profile == null && isLogin) {
         	loadProfile();
 		}
 
@@ -136,7 +138,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.GONE);
         }
         
-
+        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
+        ((RelativeLayout) rootView.findViewById(R.id.resetPassword)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
+        ((RelativeLayout) rootView.findViewById(R.id.bindSharingAccount)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
+        
     }
 
 
@@ -189,7 +194,10 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         		EditUsernameDialogFragment editUserDlg = new EditUsernameDialogFragment();
                 editUserDlg.callback = this;
                 editUserDlg.show(getFragmentManager(), null);
-        	break;
+                break;
+        	case R.id.resetPassword:
+        		pushFragment(new ForgetPassFragment(), createArguments(null, null));
+        		break;
             case R.id.setFlowOptimize:
                 showFlowOptimizeDialog();
                 Tracker.getInstance().event(BxEvent.SETTINGS_PICMODE).end();

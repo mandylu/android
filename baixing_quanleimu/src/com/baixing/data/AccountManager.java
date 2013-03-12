@@ -64,6 +64,13 @@ public class AccountManager {
 
 		return currentUser == null ? null : currentUser.getId();
 	}
+	
+	public void updatePassword(Context cxt, String password) {
+		if (currentUser != null) {
+			currentUser.setPassword(password);
+			Util.saveDataToLocate(cxt, "user", currentUser);
+		}
+	}
 
 	public String refreshAndGetMyId(Context context) {
 		currentUser = null;
