@@ -1222,6 +1222,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 										inputMgr.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);									
 									}
 								}, 100);
+							} else {
+								child.postDelayed(new Runnable() {
+									public void run() {
+										child.performClick();
+									}
+								}, 100);
 							}
 							return;
 						}
