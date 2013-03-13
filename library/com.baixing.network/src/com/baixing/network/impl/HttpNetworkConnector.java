@@ -37,6 +37,7 @@ import android.util.Pair;
 
 import com.baixing.network.ICacheProxy;
 import com.baixing.network.NetworkProfiler;
+import com.baixing.network.NetworkUtil;
 import com.baixing.network.impl.IHttpRequest.CACHE_POLICY;
 
 /**
@@ -273,9 +274,17 @@ public class HttpNetworkConnector {
 			}
 			
 		} catch (MalformedURLException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			Exception ex = new Exception("请求URL出错, " + e.getMessage());
+			businessResponse = responseHandler.handleException(ex);
 		} catch (IOException e) {
-			e.printStackTrace();
+//			e.printStackTrace();
+			String msg = "网络连接出错，请稍后重试";
+			if (!NetworkUtil.isNetworkActive(context)) {
+				msg = "网络连接失败，没有可用的网络连接";
+			}
+			Exception ex = new Exception(msg);
+			businessResponse = responseHandler.handleException(ex);
 		} finally {
 			if (connection != null) {
 				connection.disconnect();
