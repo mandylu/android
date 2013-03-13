@@ -247,7 +247,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, R.string.tip_camera_before_post, Toast.LENGTH_LONG).show();
+					ViewUtil.showToast(CameraActivity.this, getString(R.string.tip_camera_before_post), true);
 				}
 				break;
 				
