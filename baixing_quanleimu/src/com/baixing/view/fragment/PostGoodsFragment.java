@@ -976,7 +976,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 
-	private void updateImageInfo(View rootView) {
+	final protected void updateImageInfo(View rootView) {
 		if (rootView != null) {
 			ViewGroup list = (ViewGroup) rootView.findViewById(R.id.image_list_parent);
 			if (list == null) {

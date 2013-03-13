@@ -147,6 +147,7 @@ class EditAdFragment extends PostGoodsFragment{
 	protected void buildPostLayout(HashMap<String, PostGoodsBean> pl){
 		super.buildPostLayout(pl);
 		editPostUI();
+		super.updateImageInfo(layout_txt);
 	}
 	
 	private void editPostUI() {
