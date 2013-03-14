@@ -522,7 +522,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			postAd(detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
-			this.showSimpleProgress();
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			PerformanceTracker.stamp(Event.E_PostAction_GetLocation_Start);
 			postLBS.retreiveLocation(GlobalDataManager.getInstance().cityName, getFilledLocation());			
 		}
@@ -1184,7 +1184,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
 			Event evt = msg.what == MSG_GEOCODING_TIMEOUT ? Event.E_GeoCoding_Timeout : Event.E_GeoCoding_Fetched;
 			PerformanceTracker.stamp(evt);
-			showSimpleProgress();
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
 			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
 			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
