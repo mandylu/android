@@ -27,6 +27,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
+import com.baixing.adapter.VadListAdapter.GroupItem;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
@@ -436,8 +437,12 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 	private void updateData(VadListAdapter adapter, List<Ad> data)
 	{
-		adapter.setList(data, isSerchNearBy() ? FilterUtil.createDistanceGroup(data, this.curLocation, new int[] {500, 1500}) : 
-			FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data) );
+		if(isSerchNearBy()){
+			List<GroupItem> gi = FilterUtil.createDistanceGroupAndResortAds(data, this.curLocation, new int[] {500, 1500});
+			adapter.setList(data, gi);
+		}else{
+			adapter.setList(data, FilterUtil.createFilterGroup(listFilterss, filterParamHolder, data));
+		}
 	}
 	
 	@Override

@@ -94,20 +94,20 @@ public class FilterUtil {
 		return groups;
 	}
 	
-	public static List<VadListAdapter.GroupItem> createDistanceGroup(List<Ad> ls, BXLocation currentLocation, int[] conditions)
+	public static List<VadListAdapter.GroupItem> createDistanceGroupAndResortAds(List<Ad> ls, BXLocation currentLocation, int[] conditions)
 	{
-		List<Ad> detailList = new ArrayList<Ad>();
-		detailList.addAll(ls);
+		List<Ad> retList = new ArrayList<Ad>();
+//		detailList.addAll(ls);
 		List<VadListAdapter.GroupItem> groups = new ArrayList<VadListAdapter.GroupItem>();
 		
 		for (int i=0; i<conditions.length; i++)
 		{
 			int count = 0;
-			for (int j=0; j<detailList.size();)
+			for (int j=0; j<ls.size(); ++ j)
 			{
 				float results[] = {0.0f, 0.0f, 0.0f};
-				String lat = detailList.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
-				String lon = detailList.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
+				String lat = ls.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
+				String lon = ls.get(j).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
 				
 				double latD = 0;
 				double lonD = 0;
@@ -126,25 +126,16 @@ public class FilterUtil {
 					Location.distanceBetween(latD, lonD, currentLocation.fLat, currentLocation.fLon, results);
 				}
 				
-				if (results[0] > conditions[i])
+				if (results[0] <= conditions[i])
 				{
-					Log.d("LIST", "find first item distance > " + conditions[i] + " " + detailList.get(j).getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
-					break;
+					Log.d("LIST", "find first item distance > " + conditions[i] + " " + ls.get(j).getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+					retList.add(ls.get(j));
+					ls.remove(j);
+					++ count;					
 				}
 
-				detailList.remove(j);
-				count ++;
-				
-				
-//				if (results[i] != 0.0 && results[i] < conditions[i])
-//				{
-//					count++;
-//					detailList.remove(j);
-//				}
-//				else
-//				{
-//					j++;
-//				}
+//				ls.remove(j);
+//				count ++;
 			}
 			
 			
@@ -158,15 +149,17 @@ public class FilterUtil {
 			}
 		}
 		
-		if (detailList.size() > 0)
+		if (ls.size() > 0)
 		{
 			GroupItem item = new GroupItem();
-			item.resultCount = detailList.size();
+			item.resultCount = ls.size();
 			item.filterHint =  getDisplayDistance(conditions[conditions.length-1]) + "以外的信息";
 			groups.add(item);
 			Log.d("LIST", "group:" +item.filterHint + "(" + item.resultCount + " of " + ls.size());
 		}
-		
+		retList.addAll(ls);
+		ls.clear();
+		ls.addAll(retList);
 		return groups;
 	}
 	

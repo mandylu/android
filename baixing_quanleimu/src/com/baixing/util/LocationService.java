@@ -8,6 +8,7 @@ import android.location.Location;
 import android.util.Log;
 
 import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.CoordinateConvert;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.MKAddrInfo;
 import com.baidu.mapapi.MKBusLineResult;
@@ -194,7 +195,7 @@ public class LocationService{
 			if(location != null){
 				
 				//纠偏以后的经纬度  
-//				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));  
+//				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
 //				
 //				//Log.d("LocationService", "gps encrypted from("+location.getLatitude()+", "+location.getLongitude()+") to ("+point.getLatitudeE6()/1000000.0+", "+point.getLongitudeE6()/1000000.0+") !!");
 //				
@@ -203,8 +204,8 @@ public class LocationService{
 //				location.setLatitude(27.900383);
 //				location.setLongitude(112.577883);
 				
-//				location.setLatitude(31.391158);
-//				location.setLongitude(120.983797);
+//				location.setLatitude(31.2003035367813);
+//				location.setLongitude(121.4337409607871);
 				lastKnownLocation = location;
 				
 				for(BXLocationServiceListener listener : userListeners){
@@ -252,7 +253,8 @@ public class LocationService{
 		}
 		//mkSearch = new MKSearch();
 		mkLocationManager = bMapManager.getLocationManager();
-		mkLocationManager.requestLocationUpdates(locationListener);
+		mkLocationManager.setLocationCoordinateType(MKLocationManager.MK_COORDINATE_WGS84);
+		mkLocationManager.requestLocationUpdates(locationListener);		
 		bMapManager.start();
 	}
 }
