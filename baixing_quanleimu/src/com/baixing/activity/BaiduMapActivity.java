@@ -18,6 +18,7 @@ import android.widget.Toast;
 import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.CoordinateConvert;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.LocationListener;
 import com.baidu.mapapi.MKEvent;
@@ -207,12 +208,16 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 					
 					List<Overlay> overlays = mapView.getOverlays();
 					if (overlays != null){
-						overlays.add(new MyLocationOverlays(endGeoPoint));
+						overlays.add(new MyPositionOverlays(endGeoPoint));
 					}
 					
-					MKLocationManager locationManager = manager.getLocationManager();	        
+					MKLocationManager locationManager = manager.getLocationManager();
+					locationManager.setLocationCoordinateType(MKLocationManager.MK_COORDINATE_WGS84);
 					Location location = locationManager.getLocationInfo();
 					if (location != null){
+						GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+						location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+						location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
 						updateMyLocationOverlay(location);
 					} else{
 						locationManager.requestLocationUpdates(BaiduMapActivity.this);
@@ -249,7 +254,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
         MapController mapController = mapView.getController();
         Location location = LocationService.getInstance().getLastKnownLocation();
         if(location != null){
-	        GeoPoint gp = new GeoPoint((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));
+			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+			GeoPoint gp = new GeoPoint((int)(point.getLatitudeE6()), (int)(point.getLongitudeE6()));
+//	        GeoPoint gp = new GeoPoint((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));			
 	        mapController.setCenter(gp);
         }
         mapView.setBuiltInZoomControls(true);
@@ -377,10 +384,10 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 //		}		
 //	}
 	
-	class MyLocationOverlays extends Overlay {
+	class MyPositionOverlays extends Overlay {
 		GeoPoint geoPoint;
 
-		public MyLocationOverlays(GeoPoint geoPoint) {
+		public MyPositionOverlays(GeoPoint geoPoint) {
 			super();
 			this.geoPoint = geoPoint;
 		}
@@ -410,6 +417,10 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		{
 			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
 		}
+		GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+		location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+		location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
+
 		this.updateMyLocationOverlay(location);
 		mBMapMan.getLocationManager().removeUpdates(this);
 	}
