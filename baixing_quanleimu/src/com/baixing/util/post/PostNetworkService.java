@@ -76,9 +76,13 @@ public class PostNetworkService implements Callback{
 		if(registered){
 			apiParam.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
-		Pair<Double, Double> coorGoogle = PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
-		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
-		apiParam.addParam("lng", String.valueOf(coorGoogle.second));
+		Pair<Double, Double> geo = 
+				PostLocationService.getGeoFromBaidu(params.get(PostCommonValues.STRING_DETAIL_POSITION), GlobalDataManager.getInstance().cityName); 
+//				PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
+		if (geo != null && geo.first != 0 && geo.second != 0) {
+			apiParam.addParam("lat", String.valueOf(geo.first));
+			apiParam.addParam("lng", String.valueOf(geo.second));
+		}
 
 		Set<String> keys = params.keySet();
 		if(keys != null){
