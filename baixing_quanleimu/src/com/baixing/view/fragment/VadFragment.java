@@ -77,6 +77,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private static final int MSG_UPDATE = 6;
 	private static final int MSG_DELETE = 7;
 	private static final int MSG_LOAD_AD_EVENT = 8;
+	private static final int MSG_NETWORK_FAIL = 9;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
@@ -509,6 +510,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
+		case MSG_NETWORK_FAIL:
+			String apiName = (String) msg.obj;
+			if ("ad_delete".equals(apiName) && detail != null && !detail.isValidMessage()) {
+				finishFragment();
+			}
+			break;
 		case MSG_LOAD_AD_EVENT: {
 			Pair<Integer, Object> data = (Pair<Integer, Object>)msg.obj;
 			processEvent(data.first.intValue(), data.second);
@@ -980,6 +987,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		} else {
 			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			hideProgress();
+			
+			this.sendMessage(MSG_NETWORK_FAIL, apiName);
 		}
 		
 	}
