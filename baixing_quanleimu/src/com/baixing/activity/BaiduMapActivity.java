@@ -9,7 +9,10 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import org.jivesoftware.smack.util.Base64;
+
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -40,6 +43,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.util.LocationService;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostLocationService;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.drawable;
 import com.quanleimu.activity.R.id;
@@ -166,18 +170,23 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
 					String city = GlobalDataManager.getInstance().cityName;
 					if(!city.equals("")){
-						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-						try{
-							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
-							String[] info = googleJsn.split(",");
-							if(info != null && info.length == 4){
-								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
-								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-								applyToMap(x, y);
-							}
-						}catch(Exception e){
-							e.printStackTrace();
+						final String address = detail.getMetaValueByKey("具体地点");
+						Pair<Double, Double> point = PostLocationService.getGeoFromBaidu(TextUtils.isEmpty(address) ? city : address, city);
+						if (point != null && point.first != 0 && point.second != 0) {
+							applyToMap(String.valueOf(point.first), String.valueOf(point.second));
 						}
+//						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+//						try{
+//							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
+//							String[] info = googleJsn.split(",");
+//							if(info != null && info.length == 4){
+//								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
+//								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+//								applyToMap(x, y);
+//							}
+//						}catch(Exception e){
+//							e.printStackTrace();
+//						}
 					}	
 	            }
 			});
