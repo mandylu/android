@@ -43,10 +43,27 @@ public class QZoneSharingFragment extends BaseSharingFragment implements OnClick
 			}
 			if(mTencent != null && mTencent.isSessionValid() && mTencent.getOpenId() != null){
 				mTencent.setOpenId(mTencent.getOpenId() + mTencent.getOpenId());
-		        JSONObject result = mTencent.request(Constants.GRAPH_ADD_SHARE, bundle, Constants.HTTP_POST);
-		        if(mPd != null){
-		        	mPd.dismiss();
+		        JSONObject result = null;
+		        try{
+		        	result = mTencent.request(Constants.GRAPH_ADD_SHARE, bundle, Constants.HTTP_POST);
+		        }catch(Exception e){
+//		        	ViewUtil.showToast(getActivity(), e.getMessage(), false);
 		        }
+		        final boolean succeed = result != null;
+	        	getActivity().runOnUiThread(new Runnable(){
+	        		@Override
+	        		public void run(){
+	    		        if(!succeed){
+	    		        	ViewUtil.showToast(getActivity(), "分享失败", false);
+	    		        }
+	    		        if(mPd != null){
+	    		        	mPd.dismiss();
+	    		        }
+	        		}
+	        	});
+	        	if(!succeed){
+	        		return;
+	        	}
 		        try {
 					final int code = result.getInt("ret");
 					String msg = code == 0 ? "分享成功" : "分享失败";
