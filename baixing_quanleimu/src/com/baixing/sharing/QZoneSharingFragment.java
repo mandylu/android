@@ -96,6 +96,10 @@ public class QZoneSharingFragment extends BaseSharingFragment implements OnClick
 
 	@Override
 	public void handleRightAction(){
+		if(mEdit == null || mEdit.getText() == null || mEdit.getText().length() == 0){
+			ViewUtil.showToast(getActivity(), "内容不能为空", false);
+			return;
+		}
 		((new Thread(new Runnable(){
 			@Override
 			public void run(){
