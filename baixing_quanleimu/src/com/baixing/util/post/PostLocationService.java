@@ -11,6 +11,8 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
+import com.baidu.mapapi.CoordinateConvert;
+import com.baidu.mapapi.GeoPoint;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
@@ -87,7 +89,13 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 		if(!this.gettingLocationFromBaidu) return;
 		// TODO Auto-generated method stub
 		if(!inreverse && location != null && (location.subCityName == null || location.subCityName.equals(""))){
-			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
+			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.fLat*1e6), (int)(location.fLon*1e6))));
+//			GeoPoint gp = new GeoPoint((int)(point.getLatitudeE6()), (int)(point.getLongitudeE6()));
+			float transferredLat = (float) (1.0d*point.getLatitudeE6()/1e6);
+			float transferredLon = (float)(1.0d*point.getLongitudeE6()/1e6); 
+
+//			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
+			LocationService.getInstance().reverseGeocode(transferredLat, transferredLon, this);			
 			inreverse = true;
 		}else{
 			Message msg = Message.obtain();
