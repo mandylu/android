@@ -171,23 +171,18 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
 					String city = GlobalDataManager.getInstance().cityName;
 					if(!city.equals("")){
-						final String address = detail.getMetaValueByKey("具体地点");
-						Pair<Double, Double> point = PostLocationService.getGeoFromBaidu(TextUtils.isEmpty(address) ? city : address, city);
-						if (point != null && point.first != 0 && point.second != 0) {
-							applyToMap(String.valueOf(point.first), String.valueOf(point.second));
+						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
+						try{
+							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
+							String[] info = googleJsn.split(",");
+							if(info != null && info.length == 4){
+								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
+								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
+								applyToMap(x, y);
+							}
+						}catch(Exception e){
+							e.printStackTrace();
 						}
-//						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-//						try{
-//							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
-//							String[] info = googleJsn.split(",");
-//							if(info != null && info.length == 4){
-//								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
-//								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-//								applyToMap(x, y);
-//							}
-//						}catch(Exception e){
-//							e.printStackTrace();
-//						}
 					}	
 	            }
 			});

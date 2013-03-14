@@ -24,6 +24,7 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 
 public class PostNetworkService implements Callback{
@@ -76,13 +77,13 @@ public class PostNetworkService implements Callback{
 		if(registered){
 			apiParam.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
-		Pair<Double, Double> geo = 
-				PostLocationService.getGeoFromBaidu(params.get(PostCommonValues.STRING_DETAIL_POSITION), GlobalDataManager.getInstance().cityName); 
-//				PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
-		if (geo != null && geo.first != 0 && geo.second != 0) {
-			apiParam.addParam("lat", String.valueOf(geo.first));
-			apiParam.addParam("lng", String.valueOf(geo.second));
+		if(address != null){
+			apiParam.addParam("lat", String.valueOf(address.fGeoCodedLat));
+			apiParam.addParam("lng", String.valueOf(address.fGeoCodedLon));
 		}
+//		BXLocation loc = LocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
+//		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
+//		apiParam.addParam("lng", String.valueOf(coorGoogle.second));
 
 		Set<String> keys = params.keySet();
 		if(keys != null){

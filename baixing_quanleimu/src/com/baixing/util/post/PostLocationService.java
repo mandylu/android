@@ -38,49 +38,20 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);
 	}
 	
-	public boolean retreiveLocation(String city, String addr){
-		this.gettingLocationFromBaidu = true;
-		return LocationService.getInstance().geocode(addr, city, this);
-	}
-	
-	static public Pair<Double, Double> retreiveCoorFromGoogle(String addr){
-		if(addr == null || addr.equals("")){
-			return new Pair<Double, Double>((double)0, (double)0);
-		}
-		String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", URLEncoder.encode(addr));
-		try{
-			String googleJsn = NetworkCommand.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl);//Communication.getDataByUrlGet(googleUrl);
-//			String googleJsn = WebUtils.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl, null);//Communication.getDataByUrlGet(googleUrl);
-			String[] info = googleJsn.split(",");
-			if(info != null && info.length == 4){
-				return new Pair<Double, Double>(Double.parseDouble(info[2]), Double.parseDouble(info[3]));
+	public boolean retreiveLocation(final String city, final String addr){
+		((new Thread(new Runnable(){
+			@Override
+			public void run(){
+				BXLocation loc = LocationService.retreiveCoorFromGoogle(city + addr);
+				Message msg = Message.obtain();
+				msg.what = PostCommonValues.MSG_GEOCODING_FETCHED;
+				msg.obj = loc;
+				handler.sendMessage(msg);
 			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return new Pair<Double, Double>((double)0, (double)0);
-	}
-	
-	static public Pair<Double, Double> getGeoFromBaidu(String addr, String city) {
-		if(addr == null || addr.equals("")){
-			return new Pair<Double, Double>((double)0, (double)0);
-		}
-		try{
-			String sub = String.format("address=%s&output=json&key=736C4435847CB7D20DD1131064E35E8941C934F5&city=%s", URLEncoder.encode(addr), URLEncoder.encode(city));
-			String url = "http://api.map.baidu.com/geocoder?" + sub;
-			String response = NetworkCommand.doGet(GlobalDataManager.getInstance().getApplicationContext(), url);
-			
-			JSONObject json = new JSONObject(response);
-			if ("OK".equals(json.getString("status"))) {
-				JSONObject locObj = json.getJSONObject("result").getJSONObject("location");
-				if(locObj != null){
-					return new Pair<Double, Double>(locObj.getDouble("lat"), locObj.getDouble("lng"));
-				}
-			}
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return new Pair<Double, Double>((double)0, (double)0);
+		}))).start();
+		return true;
+//		this.gettingLocationFromBaidu = true;
+//		return LocationService.getInstance().geocode(addr, city, this);
 	}
 	
 	@Override
