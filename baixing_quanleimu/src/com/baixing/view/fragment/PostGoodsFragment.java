@@ -957,7 +957,35 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			this.appendBeanToLayout(postBean);
 		}
 		
-		
+		this.showInputMethod();
+	}
+	
+	private View searchEditText(View parent, int resourceId){
+		View v = parent.findViewById(resourceId);
+		if(v != null && v instanceof EditText){
+			if(((EditText)v).getText() == null || ((EditText)v).getText().length() == 0){
+				return v;
+			}
+		}
+		return null;
+	}
+	
+	private View getEmptyEditText(){
+		View edit = null;
+		for(int i = 0; i < layout_txt.getChildCount(); ++  i){
+			View child = layout_txt.getChildAt(i);
+			if(child == null) continue;
+			edit = searchEditText(child, R.id.description_input);
+			if(edit != null){
+				break;
+			}
+			edit = searchEditText(child, R.id.postinput);
+			if(edit != null){
+				break;
+			}
+			edit = null;
+		}
+		return edit;
 	}
 	
 	private void showInputMethod() {
@@ -965,8 +993,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (root != null) {
 			root.postDelayed(new Runnable() {
 				public void run() {
-					EditText ed = (EditText) root.findViewById(R.id.description_input);
-					if (ed != null && ed.getText().length() == 0) {
+//					EditText ed = (EditText) root.findViewById(R.id.description_input);
+					View ed = getEmptyEditText();
+					if (ed != null){// && ed.getText().length() == 0) {
 						ed.requestFocus();
 						InputMethodManager mgr = (InputMethodManager) root.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 						mgr.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
