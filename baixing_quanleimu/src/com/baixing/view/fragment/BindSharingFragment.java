@@ -90,6 +90,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 	public void onPause(){
 		if(authReceiver != null){
 			getActivity().unregisterReceiver(authReceiver);
+			authReceiver = null;
 		}
 		super.onPause();
 	}
