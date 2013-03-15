@@ -1290,6 +1290,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	                });
 	        AlertDialog alert = bd.create();
 	        alert.show();	
+		}else if(result.message != null && !result.message.equals("")){
+			ViewUtil.showToast(getActivity(), result.message, false);
 		}
 	}
 

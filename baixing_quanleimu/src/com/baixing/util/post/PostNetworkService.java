@@ -231,8 +231,10 @@ public class PostNetworkService implements Callback{
 		PostResultData data = null;
 		if(error != null){
 			data = new PostResultData();
-			data.error = Integer.valueOf(error.getErrorCode());
-			data.message = error.getMsg();
+			if(error.getErrorCode() != null){
+				data.error = Integer.valueOf(error.getErrorCode());
+			}
+			data.message = error.getMsg() == null ? "网络错误" : error.getMsg();
 		}
 
 		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
