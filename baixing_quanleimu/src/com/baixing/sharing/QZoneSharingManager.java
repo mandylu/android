@@ -260,6 +260,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements IUiListe
 			Util.saveDataToLocate(mActivity, STRING_OPENID, mOpenId);
 			Util.saveDataToLocate(mActivity, STRING_EXPIRES_IN, mExpires_in);
 			handler.sendEmptyMessage(MSG_AUTO_SUCCEED);
+			mActivity.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_QZONE_AUTH_SUCCESS));
 		}catch(JSONException e){
 			
 		}

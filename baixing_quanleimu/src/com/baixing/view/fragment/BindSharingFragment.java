@@ -1,7 +1,11 @@
 package com.baixing.view.fragment;
 
 import android.app.AlertDialog;
+import android.content.BroadcastReceiver;
+import android.content.Context;
 import android.content.DialogInterface;
+import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -14,6 +18,7 @@ import android.widget.TextView;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.BaseFragment.TitleDef;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.sharing.BaseSharingManager;
 import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.sharing.WeiboSSOSharingManager;
@@ -81,6 +86,14 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 		setBindingStatus();
 	}
 	
+	@Override
+	public void onPause(){
+		if(authReceiver != null){
+			getActivity().unregisterReceiver(authReceiver);
+		}
+		super.onPause();
+	}
+	
 	enum BindType{
 		BindType_Weibo,
 		BindType_QZone
@@ -113,6 +126,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 	}
 
 	private BaseSharingManager sharingMgr = null;
+	private BroadcastReceiver authReceiver = null;
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
@@ -135,6 +149,17 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 				}
 				sharingMgr = new QZoneSharingManager(getActivity());
 				sharingMgr.auth();
+				if(authReceiver == null){
+					authReceiver = new BroadcastReceiver(){
+
+						@Override
+						public void onReceive(Context context, Intent intent) {
+							// TODO Auto-generated method stub
+							setBindingStatus();
+						}
+					};
+				}
+				getActivity().registerReceiver(authReceiver, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_QZONE_AUTH_SUCCESS));
 			}
 		}
 	}
