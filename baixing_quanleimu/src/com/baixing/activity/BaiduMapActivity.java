@@ -38,6 +38,7 @@ import com.baidu.mapapi.Projection;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.BXLocation;
 import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -116,7 +117,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	private void setTargetCoordinate(final Ad detail){
 		final String latV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
 		final String lonV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
-		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && !latV.equals("0.0") 
+				&& lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0") && !lonV.equals("0.0"))
 		{
 //			final double lat = Double.valueOf(latV);
 //			final double lon = Double.valueOf(lonV);
@@ -170,19 +172,14 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	            public void run() {
 	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
 					String city = GlobalDataManager.getInstance().cityName;
-					if(!city.equals("")){
-						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-						try{
-							String googleJsn =NetworkCommand.doGet(BaiduMapActivity.this, googleUrl);// Communication.getDataByUrlGet(googleUrl);
-							String[] info = googleJsn.split(",");
-							if(info != null && info.length == 4){
-								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
-								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-								applyToMap(x, y);
-							}
-						}catch(Exception e){
-							e.printStackTrace();
-						}
+					String address = city + detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+					
+					if(!address.equals("")){
+						BXLocation bxloc = LocationService.retreiveCoorFromGoogle(address);
+//						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", address);
+						String x = String.valueOf((int)(bxloc.fGeoCodedLat * 1e6));
+						String y = String.valueOf((int)(bxloc.fGeoCodedLon * 1e6));
+						applyToMap(x, y);
 					}	
 	            }
 			});
