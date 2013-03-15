@@ -1123,7 +1123,15 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			}
 			addCategoryItem();
 			if(msg.obj != null){
-				ViewUtil.showToast(activity, (String)msg.obj, false);
+				String mesg = "";
+				if(msg.obj instanceof PostResultData){
+					mesg = ((PostResultData)msg.obj).message;
+				}else if(msg.obj instanceof String){
+					mesg = (String)msg.obj;
+				}
+				if(!mesg.equals("")){
+					ViewUtil.showToast(activity, mesg, false);
+				}
 			}
 			this.showGettingMetaProgress(false);
 			break;
