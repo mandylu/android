@@ -5,10 +5,12 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Stack;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
 import android.text.Editable;
 import android.text.TextWatcher;
 import android.util.Pair;
@@ -38,6 +40,7 @@ import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
 public class CityChangeFragment extends BaseFragment  implements LocationManager.onLocationFetchedListener, View.OnClickListener {
+	private final int MSG_LOCATING_TIMEOUT = 0xf0f0f0f0;
 	// 定义控件名
 	public ScrollView parentView;
 	
@@ -343,10 +346,27 @@ public class CityChangeFragment extends BaseFragment  implements LocationManager
 	}
 	
 	@Override
-	public void onStackTop(boolean isBack) {
-		GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
+	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
+		hideProgress();		
+		if(msg.what == MSG_LOCATING_TIMEOUT){
+			if(!located){
+				View rView = getView();
+				if (rView != null){
+					TextView tvGPSCityName = (TextView) rView.findViewById(R.id.tvGPSCityName);
+					if(tvGPSCityName != null){
+						tvGPSCityName.setText("定位失败");
+					}
+				}
+			}
+		}
 	}
 	
+	@Override
+	public void onStackTop(boolean isBack) {
+		GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
+		this.sendMessageDelay(MSG_LOCATING_TIMEOUT, null, 3000);
+	}
+		
 	@Override
 	public void onResume() {
 		this.pv = PV.SELECTCITY;
