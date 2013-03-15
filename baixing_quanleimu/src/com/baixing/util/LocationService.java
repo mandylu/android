@@ -270,7 +270,7 @@ public class LocationService{
 		if(addr == null || addr.equals("")){
 			return ret; 
 		}		
-		String googleUrl = String.format("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false", URLEncoder.encode(addr));
+		String googleUrl = String.format("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false&language=\"zh-CN\"", URLEncoder.encode(addr));
 		try{
 			String googleJsn = NetworkCommand.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl);//Communication.getDataByUrlGet(googleUrl);
 			JSONObject jsonObj = new JSONObject(googleJsn);

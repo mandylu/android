@@ -356,6 +356,7 @@ public class HttpNetworkConnector {
 		conn.setRequestProperty("Accept", "text/xml,text/javascript,text/html");
 		conn.setRequestProperty("User-Agent", USER_AGENT);
 		conn.setRequestProperty("Content-Type", ctype);
+		conn.setRequestProperty("Accept-Language", "zh-CN, en-us, en");
 		conn.setRequestProperty("Accept-Encoding", "gzip");//support gzip
 		return conn;
 	}
