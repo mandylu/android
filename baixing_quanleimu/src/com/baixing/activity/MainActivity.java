@@ -53,19 +53,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super();
 	}
 	
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.e(TAG, "activity on activity result.");
-		BaseFragment fragment = getCurrentFragment();
-		if(fragment != null){
-			fragment.onActivityResult(requestCode, resultCode, data);
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	
-	}
-
-	
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();

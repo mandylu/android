@@ -336,7 +336,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     		ImageUploader.getInstance().cancel(t.getLocalPath());
     	}
     	
-    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+//    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
 		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
@@ -346,11 +346,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
 		bundle.putParcelable(CommonIntentAction.EXTRA_COMMON_DATA, data);
 		
-		backIntent.putExtras(bundle);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		this.startActivity(backIntent);
-//		handler.sendEmptyMessageDelayed(MSG_FINISH_ME, 50);
+		setResult(Activity.RESULT_OK,data);
 		this.finish();
+		
+		
+//		backIntent.putExtras(bundle);
+//		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		this.startActivity(backIntent);
+//		this.finish();
     }
     
     private void deleteImageUri(BXThumbnail t) {
