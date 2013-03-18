@@ -251,7 +251,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onResume();
 		isActive = true;
 		postLBS.start();
-		if(!editMode && !isNewPost && !finishRightNow) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
+		//Disable on version 3.2.1
+		if(!editMode /*&& !isNewPost && !finishRightNow*/) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
 			this.pv = PV.POST;
 			Tracker.getInstance()
 			.pv(this.pv)
@@ -521,7 +522,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			postAd(detailLocation);
 		}else{
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
-			this.showSimpleProgress();
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			PerformanceTracker.stamp(Event.E_PostAction_GetLocation_Start);
 			postLBS.retreiveLocation(GlobalDataManager.getInstance().cityName, getFilledLocation());			
 		}
@@ -956,7 +957,35 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			this.appendBeanToLayout(postBean);
 		}
 		
-		
+		this.showInputMethod();
+	}
+	
+	private View searchEditText(View parent, int resourceId){
+		View v = parent.findViewById(resourceId);
+		if(v != null && v instanceof EditText){
+			if(((EditText)v).getText() == null || ((EditText)v).getText().length() == 0){
+				return v;
+			}
+		}
+		return null;
+	}
+	
+	private View getEmptyEditText(){
+		View edit = null;
+		for(int i = 0; i < layout_txt.getChildCount(); ++  i){
+			View child = layout_txt.getChildAt(i);
+			if(child == null) continue;
+			edit = searchEditText(child, R.id.description_input);
+			if(edit != null){
+				break;
+			}
+			edit = searchEditText(child, R.id.postinput);
+			if(edit != null){
+				break;
+			}
+			edit = null;
+		}
+		return edit;
 	}
 	
 	private void showInputMethod() {
@@ -964,8 +993,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (root != null) {
 			root.postDelayed(new Runnable() {
 				public void run() {
-					EditText ed = (EditText) root.findViewById(R.id.description_input);
-					if (ed != null && ed.getText().length() == 0) {
+//					EditText ed = (EditText) root.findViewById(R.id.description_input);
+					View ed = getEmptyEditText();
+					if (ed != null){// && ed.getText().length() == 0) {
 						ed.requestFocus();
 						InputMethodManager mgr = (InputMethodManager) root.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 						mgr.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
@@ -975,7 +1005,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 
-	private void updateImageInfo(View rootView) {
+	final protected void updateImageInfo(View rootView) {
 		if (rootView != null) {
 			ViewGroup list = (ViewGroup) rootView.findViewById(R.id.image_list_parent);
 			if (list == null) {
@@ -1093,7 +1123,15 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			}
 			addCategoryItem();
 			if(msg.obj != null){
-				ViewUtil.showToast(activity, (String)msg.obj, false);
+				String mesg = "";
+				if(msg.obj instanceof PostResultData){
+					mesg = ((PostResultData)msg.obj).message;
+				}else if(msg.obj instanceof String){
+					mesg = (String)msg.obj;
+				}
+				if(!mesg.equals("")){
+					ViewUtil.showToast(activity, mesg, false);
+				}
 			}
 			this.showGettingMetaProgress(false);
 			break;
@@ -1183,7 +1221,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
 			Event evt = msg.what == MSG_GEOCODING_TIMEOUT ? Event.E_GeoCoding_Timeout : Event.E_GeoCoding_Fetched;
 			PerformanceTracker.stamp(evt);
-			showSimpleProgress();
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
 			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
 			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
@@ -1221,6 +1259,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 										inputMgr.showSoftInput(inputView, InputMethodManager.SHOW_IMPLICIT);									
 									}
 								}, 100);
+							} else {
+								child.postDelayed(new Runnable() {
+									public void run() {
+										child.performClick();
+									}
+								}, 100);
 							}
 							return;
 						}
@@ -1254,6 +1298,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	                });
 	        AlertDialog alert = bd.create();
 	        alert.show();	
+		}else if(result.message != null && !result.message.equals("")){
+			ViewUtil.showToast(getActivity(), result.message, false);
 		}
 	}
 

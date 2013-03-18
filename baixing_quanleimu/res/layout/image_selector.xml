@@ -104,6 +104,14 @@
             android:layout_marginBottom="30dp"
             android:background="@drawable/camera_focusboard"
             />
+        
+        <View android:id="@+id/cam_glint_area"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:visibility="invisible">
+            
+        </View>
     </FrameLayout>
 
     <HorizontalScrollView
