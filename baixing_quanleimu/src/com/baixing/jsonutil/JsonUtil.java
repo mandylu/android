@@ -506,6 +506,12 @@ public class JsonUtil {
 				PostGoodsBean postGoods = new PostGoodsBean();
 
 				try {
+					postGoods.setMaxlength(jsonObject.getInt("maxlength"));
+				} catch (Throwable t) {
+					postGoods.setMaxlength(-1);
+				}
+				
+				try {
 					postGoods.setUnit(jsonObject.getString("unit"));
 				} catch (Exception e1) {
 					postGoods.setUnit("");

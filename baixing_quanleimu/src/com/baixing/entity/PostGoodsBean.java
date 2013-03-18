@@ -15,6 +15,7 @@ public class PostGoodsBean implements Serializable{
 	private String unit;
 	private String controlType;
 	private int numeric;
+	private int maxlength;
 	private String required;
 	private String displayName;
 	private String name;
@@ -41,6 +42,14 @@ public class PostGoodsBean implements Serializable{
 		return subMeta;
 	}
 	
+	public int getMaxlength() {
+		return maxlength;
+	}
+
+	public void setMaxlength(int maxlength) {
+		this.maxlength = maxlength;
+	}
+
 	public String getUnit() {
 		return unit;
 	}
