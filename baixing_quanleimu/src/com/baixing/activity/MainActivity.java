@@ -23,6 +23,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
+import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.AutoRegisterService;
@@ -362,7 +363,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		if (!this.isChangingTab) {
 			Log.d("ddd","onstart");
 			
-			Tracker.getInstance().event(BxEvent.APP_START).end();
+			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.USERID, GlobalDataManager.getInstance().getCityEnglishName()).end();
 			Tracker.getInstance().save();
 			Sender.getInstance().notifySendMutex();
 		}

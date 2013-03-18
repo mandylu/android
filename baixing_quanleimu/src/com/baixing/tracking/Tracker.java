@@ -57,6 +57,8 @@ public class Tracker {
 		data.append(Key.TIMESTAMP, String.valueOf(timestamp_ms/1000));
 		data.append(Key.TIMESTAMP_MS, String.valueOf(timestamp_ms));
 		data.append(Key.URL, url.getName());
+		data.append(Key.USERID, GlobalDataManager.getInstance().getAccountManager().getMyId(
+				GlobalDataManager.getInstance().getApplicationContext()));
 		return data;
 	}
 	
@@ -68,6 +70,8 @@ public class Tracker {
 		data.append(Key.TIMESTAMP, String.valueOf(timestamp_ms/1000));
 		data.append(Key.TIMESTAMP_MS, String.valueOf(timestamp_ms));
 		data.append(Key.EVENT, event.getName());
+		data.append(Key.USERID, GlobalDataManager.getInstance().getAccountManager().getMyId(
+				GlobalDataManager.getInstance().getApplicationContext()));
 		return data;
 	}
 	
