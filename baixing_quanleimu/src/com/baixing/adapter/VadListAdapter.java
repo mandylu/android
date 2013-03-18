@@ -27,7 +27,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
-import com.baixing.util.Communication;
+import com.baixing.network.NetworkUtil;
 import com.baixing.util.TextUtil;
 import com.baixing.view.AdViewHistory;
 import com.baixing.widget.AnimatingImageView;
@@ -102,7 +102,7 @@ public class VadListAdapter extends BaseAdapter {
 		super();
 		this.context = context;
 		this.list = list;
-		showImage = !GlobalDataManager.isTextMode() || Communication.isWifiConnection();
+		showImage = !GlobalDataManager.isTextMode() || NetworkUtil.isWifiConnection(context);
 		vadHistory = adViewHistory;
 	}
 	
@@ -300,7 +300,7 @@ public class VadListAdapter extends BaseAdapter {
 					String b = (list.get(position).getImageList().getSquare());
 //						.substring(1, (list.get(position).getImageList()
 //								.getResize180()).length() - 1);
-					b = Communication.replace(b);
+					b = com.baixing.util.TextUtil.filterString(b, new char[] {'\\', '"'});// .replace(b);
 			
 					if (b.contains(",")) {
 						String[] c = b.split(",");

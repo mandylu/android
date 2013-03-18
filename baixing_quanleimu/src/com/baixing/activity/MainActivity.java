@@ -25,7 +25,11 @@ import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
+import com.baixing.util.AutoRegisterService;
 import com.baixing.util.LocationService;
+import com.baixing.util.PerformEvent;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.view.fragment.HomeFragment;
 import com.quanleimu.activity.R;
@@ -238,7 +242,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 
 	@Override
 	public void onJobDone() {
-		
+		PerformanceTracker.stamp(Event.E_Handle_Jobdone);
 		//Start server when application is start.
 		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		startPush.putExtra("updateToken", true);
@@ -251,7 +255,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			GlobalDataManager.update = true;
             //去掉幽梦旧sdk 更新调用
 		}
-		
+		PerformanceTracker.stamp(Event.E_Start_HomeFragment);
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
 			this.pushFragment(new HomeFragment(), bundle, true);
@@ -295,6 +299,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //		Toast.makeText(this, Profiler.dump(), Toast.LENGTH_LONG).show();
 //		Profiler.clear();
 		jumpToPage();
+		
+		PerformanceTracker.stamp(Event.E_Handle_Jobdone_End);
 	}
 	
 	private void jumpToPage(){
@@ -312,6 +318,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	protected void onCreate(Bundle savedInstanceState) {
 //		Profiler.markStart("maincreate");
 //		Debug.startMethodTracing();
+		PerformanceTracker.stamp(Event.E_MainActivity_Begin_Create);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		super.onCreate(savedInstanceState);
 		ImageLoaderManager.initImageLoader();
 		GlobalDataManager.context = new WeakReference<Context>(this);
@@ -347,6 +354,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //        if (MobileConfig.getInstance().isUseUmengUpdate()) {
 //            UmengUpdateAgent.update(this);
 //        }
+        PerformanceTracker.stamp(Event.E_MainActivity_End_Create);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 	}
 	
 	@Override
@@ -358,6 +366,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			Tracker.getInstance().save();
 			Sender.getInstance().notifySendMutex();
 		}
+		
+		AutoRegisterService.start();
 
 		super.onStart();
 	}

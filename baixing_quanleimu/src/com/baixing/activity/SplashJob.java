@@ -8,6 +8,9 @@ import android.widget.Toast;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.util.LocationService;
 import com.baixing.util.MobileConfig;
+import com.baixing.util.ViewUtil;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 
 public class SplashJob {
@@ -31,6 +34,7 @@ public class SplashJob {
 	
 	public void doSplashWork()
 	{
+		PerformanceTracker.stamp(Event.E_DoSplash_Begin);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		if (isJobStarted || isJobDone)
 		{
 			return;  //Avoid deprecate start.
@@ -42,7 +46,7 @@ public class SplashJob {
 
 		try {
 			if (parentActivity.checkConnection() == false) {
-				Toast.makeText(parentActivity, "网络连接异常", 3).show();
+				ViewUtil.showToast(parentActivity, "网络连接异常", false);
 			}
 		} catch (Exception e) {
 			// TODO Auto-generated catch block
@@ -50,6 +54,7 @@ public class SplashJob {
 		}
 		
 		new Thread(new LoadConfigTask()).start();
+		PerformanceTracker.stamp(Event.E_Call_LoadConfigTask);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 	}
 	
 	
@@ -83,8 +88,12 @@ public class SplashJob {
 			
 			if(1 == record1 && 1 == record2 && 1 == record3){
 				isJobDone = true;
+				PerformanceTracker.stamp(Event.E_End_Init_Data);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());E_Begin_ReadCategory
+				PerformanceTracker.stamp(Event.E_Init_Image_Mgr);
 				GlobalDataManager.getInstance().getImageManager();
+				PerformanceTracker.stamp(Event.E_Init_Image_Mgr_Done);
 				jobListener.onJobDone();
+				
 			}
 		}
 	};
@@ -98,8 +107,10 @@ public class SplashJob {
 
 		@Override
 		public void run() {
+			PerformanceTracker.stamp(Event.E_Begin_ReadCategory);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 			GlobalDataManager.getInstance().loadCategorySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_ALLCATEGORY_LIST);
+			PerformanceTracker.stamp(Event.E_End_ReadCategory);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		}
 	}
 	
@@ -108,6 +119,7 @@ public class SplashJob {
 		public void run() {
 			try
 			{
+				PerformanceTracker.stamp(Event.E_SyncMobileConfig_Begin);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 				MobileConfig.getInstance().syncMobileConfig();
 			}
 			catch(Throwable t)
@@ -116,6 +128,7 @@ public class SplashJob {
 			}
 			finally
 			{
+				PerformanceTracker.stamp(Event.E_Begin_Init_Data);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 				new Thread(new ReadCityListThread()).start();
 				new Thread(new ReadInfoThread()).start();
 				new Thread(new ReadCateListThread()).start();
@@ -128,8 +141,10 @@ public class SplashJob {
 		
 		@Override
 		public void run() {
+			PerformanceTracker.stamp(Event.E_Begin_ReadCity);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 			GlobalDataManager.getInstance().loadCitySync();
 			myHandler.sendEmptyMessage(MSG_LOAD_CITY_LIST);
+			PerformanceTracker.stamp(Event.E_End_ReadCity);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());			
 		}
 	}
 
@@ -140,8 +155,10 @@ public class SplashJob {
 		@SuppressWarnings("unchecked")
 		@Override
 		public void run() { 
+			PerformanceTracker.stamp(Event.E_Begin_ReadPersonalInfo);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 			GlobalDataManager.getInstance().loadPersonalSync();
 			myHandler.sendEmptyMessage(MSG_LOAD_HISTORY_STORED);
+			PerformanceTracker.stamp(Event.E_End_ReadPersonalInfo);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		}
 
 	}

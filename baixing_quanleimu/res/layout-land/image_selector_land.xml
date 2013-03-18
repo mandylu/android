@@ -11,7 +11,10 @@
         android:layout_centerHorizontal="true"
         android:layout_toLeftOf="@+id/bottom_line"
         >
-
+ 		<FrameLayout android:id="@+id/camera_root"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"/>
+ 		
         <TextView
             android:id="@+id/cam_not_available_tip"
             android:layout_width="fill_parent"
@@ -20,6 +23,24 @@
             android:text="@string/warning_camera_in_use"
             android:textAppearance="?android:attr/textAppearanceMedium"
             android:visibility="gone" />
+        
+        <ImageView android:id="@+id/cam_focus_area"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginLeft="20dp"
+            android:layout_marginRight="20dp"
+            android:layout_marginTop="20dp"
+            android:layout_marginBottom="20dp"
+            android:layout_gravity="center"
+            android:background="@drawable/camera_focusboard"
+            />
+        <View android:id="@+id/cam_glint_area"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:background="#ffffff"
+            android:visibility="invisible">
+            
+        </View>
     </FrameLayout>
     
     <LinearLayout
@@ -43,12 +64,6 @@
                 android:paddingTop="@dimen/camera_preview_half_gap"
                 android:paddingBottom="@dimen/camera_preview_half_gap"
                 android:orientation="vertical" >
-                <include layout="@layout/single_image_layout"/>
-                <include layout="@layout/single_image_layout"/>
-                <include layout="@layout/single_image_layout"/>
-                <include layout="@layout/single_image_layout"/>
-                <include layout="@layout/single_image_layout"/>
-                <include layout="@layout/single_image_layout"/>
             </LinearLayout>
         </ScrollView>
 

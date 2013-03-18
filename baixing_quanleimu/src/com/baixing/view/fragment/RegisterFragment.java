@@ -1,8 +1,5 @@
 package com.baixing.view.fragment;
 
-import java.io.UnsupportedEncodingException;
-import java.util.ArrayList;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -17,21 +14,20 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 public class RegisterFragment extends BaseFragment {
@@ -79,30 +75,37 @@ public class RegisterFragment extends BaseFragment {
 	}
 	
 	private boolean check() {
-		if (accoutnEt.getText().toString().trim().equals("")) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
-			.end();
-			Toast.makeText(getActivity(), "账号不能为空！", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (passwordEt.getText().toString().trim().equals("")) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
-			.end();
-			Toast.makeText(getActivity(), "密码不能为空！", Toast.LENGTH_SHORT).show();
-			return false;
-		} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
-			Tracker.getInstance()
-			.event(BxEvent.REGISTER_SUBMIT)
-			.append(Key.REGISTER_RESULT_STATUS, false)
-			.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
-			.end();
-			Toast.makeText(getActivity(), "密码不一致！", Toast.LENGTH_SHORT).show();
-			return false;
+		String msgToShow = null;
+		try {
+			if (accoutnEt.getText().toString().trim().equals("")) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "account is empty!")
+				.end();
+				msgToShow = "账号不能为空！";
+				return false;
+			} else if (passwordEt.getText().toString().trim().equals("")) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "password is empty!")
+				.end();
+				msgToShow = "密码不能为空！";
+				return false;
+			} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
+				Tracker.getInstance()
+				.event(BxEvent.REGISTER_SUBMIT)
+				.append(Key.REGISTER_RESULT_STATUS, false)
+				.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
+				.end();
+				msgToShow = "密码不一致！";
+				return false;
+			}
+		} finally {
+			if (msgToShow != null) {
+				ViewUtil.showToast(getActivity(), msgToShow, false);
+			}
 		}
 		return true;
 	}
@@ -116,15 +119,15 @@ public class RegisterFragment extends BaseFragment {
 		params.addParam("password", passwordEt.getText().toString());
 		params.addParam("isRegister", 1);
 		
-		HttpPostCommand.createCommand(0, "user_register", params).execute(new Callback() {
+		BaseApiCommand.createCommand("user_register", false, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				sendMessage(2, error == null ? "注册失败"  : error.getMsg());
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				json = responseData;
 				if (json != null) {
 					sendMessage(1, null);
@@ -160,7 +163,7 @@ public class RegisterFragment extends BaseFragment {
 				}
 				JSONObject json = jsonObject.getJSONObject("error");
 				String message = json.getString("message");
-				Toast.makeText(activity, message, 0).show();
+				ViewUtil.showToast(activity, message, false);
 				if (!id.equals("")) { // 注册成功
 					//tracker
 					Tracker.getInstance()
@@ -198,7 +201,7 @@ public class RegisterFragment extends BaseFragment {
 			}
 			break;
 		case 2:
-			Toast.makeText(activity, "注册未成功，请稍后重试！", 3).show();
+			ViewUtil.showToast(activity, "注册未成功，请稍后重试！", true);
 			//tracker
 			Tracker.getInstance()
 			.event(BxEvent.REGISTER_SUBMIT)

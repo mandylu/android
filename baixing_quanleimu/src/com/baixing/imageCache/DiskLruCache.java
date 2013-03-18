@@ -176,6 +176,21 @@ class DiskLruCache {
         }
     }
     
+
+    /**
+     * Add a bitmap to the disk cache.
+     *
+     * @param key A unique identifier for the bitmap.
+     * @param data The bitmap to store.
+     */
+    public void put(String key, Bitmap data, String file) {
+        synchronized (mLinkedHashMap) {
+                	Log.d("bitmap", "bitmap, diskLruCache:put:  " + key);
+                    put(key, file);
+                    flushCache();
+        }
+    }
+    
     public void put(String key, InputStream in){
         synchronized (mLinkedHashMap) {
             /*if (mLinkedHashMap.get(key) == null)*/ {	
@@ -449,8 +464,8 @@ class DiskLruCache {
         try {
             // Use URLEncoder to ensure we have a valid filename, a tad hacky but it will do for
             // this example
-            return cacheDir.getAbsolutePath() + File.separator +
-                    CACHE_FILENAME_PREFIX + URLEncoder.encode(key.replace("*", ""), "UTF-8");
+            return new File(cacheDir.getAbsolutePath() + File.separator +
+                    CACHE_FILENAME_PREFIX + URLEncoder.encode(key.replace("*", ""), "UTF-8")).getAbsolutePath();
         } catch (final UnsupportedEncodingException e) {
             Log.e(TAG, "createFilePath - " + e);
         }

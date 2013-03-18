@@ -9,7 +9,10 @@ import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
 import org.jivesoftware.smack.util.Base64;
+
+import android.text.TextUtils;
 import android.util.Log;
+import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
@@ -18,6 +21,7 @@ import android.widget.Toast;
 import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.CoordinateConvert;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.LocationListener;
 import com.baidu.mapapi.MKEvent;
@@ -31,15 +35,17 @@ import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
 import com.baidu.mapapi.PoiOverlay;
 import com.baidu.mapapi.Projection;
-import com.baixing.android.api.WebUtils;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.BXLocation;
+import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.util.Communication;
 import com.baixing.util.LocationService;
+import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostLocationService;
 import com.quanleimu.activity.R;
 import com.quanleimu.activity.R.drawable;
 import com.quanleimu.activity.R.id;
@@ -53,7 +59,7 @@ import java.util.List;
 import java.util.zip.Inflater;
 
 import org.json.JSONObject;
-
+          
 public class BaiduMapActivity extends MapActivity implements LocationListener{
 
 		// 授权Key
@@ -74,17 +80,14 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 			
 			@Override
 			public void onGetNetworkState(int iError) {
-				Toast.makeText(context,
-						"您的网络出错啦！", Toast.LENGTH_LONG).show();
+				ViewUtil.showToast((BaiduMapActivity)context, "您的网络出错啦！", true);
 			}
 
 			@Override
 			public void onGetPermissionState(int iError) {
 				if (iError == MKEvent.ERROR_PERMISSION_DENIED) {
 					// 授权Key错误：
-					Toast.makeText(context,
-							"请在BMapApiDemoApp.java文件输入正确的授权Key！", Toast.LENGTH_LONG)
-							.show();
+					ViewUtil.showToast((BaiduMapActivity)context, "请在BMapApiDemoApp.java文件输入正确的授权Key！", true);
 					this.m_bKeyRight = false;
 				}
 			}
@@ -114,7 +117,8 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	private void setTargetCoordinate(final Ad detail){
 		final String latV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LAT);
 		final String lonV = detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_LON);
-		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0"))
+		if(latV != null && !latV.equals("false") && !latV.equals("") && !latV.equals("0") && !latV.equals("0.0") 
+				&& lonV != null && !lonV.equals("false") && !lonV.equals("") && !lonV.equals("0") && !lonV.equals("0.0"))
 		{
 //			final double lat = Double.valueOf(latV);
 //			final double lon = Double.valueOf(lonV);
@@ -127,7 +131,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 							latV, lonV);
 					
 					try{
-						String baiduJsn = WebUtils.doGet(BaiduMapActivity.this, baiduUrl, null);//Communication.getDataByUrlGet(baiduUrl);
+						String baiduJsn = NetworkCommand.doGet(BaiduMapActivity.this, baiduUrl);
 						JSONObject js = new JSONObject(baiduJsn);
 						Object errorCode = js.get("error");
 						if(errorCode instanceof Integer && (Integer)errorCode == 0){
@@ -168,21 +172,14 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	            public void run() {
 	            	if(GlobalDataManager.getInstance().getApplicationContext() == null) return;
 					String city = GlobalDataManager.getInstance().cityName;
-					if(!city.equals("")){
-						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", city);
-						try{
-							String googleJsn = Communication.getDataByUrlGet(googleUrl);
-							String[] info = googleJsn.split(",");
-							if(info != null && info.length == 4){
-								String x = Integer.toString((int)(Double.parseDouble(info[2]) * 1E6));
-								String y = Integer.toString((int)(Double.parseDouble(info[3]) * 1E6));
-								applyToMap(x, y);
-							}
-						}catch(UnsupportedEncodingException e){
-							e.printStackTrace();
-						}catch(Exception e){
-							e.printStackTrace();
-						}
+					String address = city + detail.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
+					
+					if(!address.equals("")){
+						BXLocation bxloc = LocationService.retreiveCoorFromGoogle(address);
+//						String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", address);
+						String x = String.valueOf((int)(bxloc.fGeoCodedLat * 1e6));
+						String y = String.valueOf((int)(bxloc.fGeoCodedLon * 1e6));
+						applyToMap(x, y);
 					}	
 	            }
 			});
@@ -212,12 +209,16 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 					
 					List<Overlay> overlays = mapView.getOverlays();
 					if (overlays != null){
-						overlays.add(new MyLocationOverlays(endGeoPoint));
+						overlays.add(new MyPositionOverlays(endGeoPoint));
 					}
 					
-					MKLocationManager locationManager = manager.getLocationManager();	        
+					MKLocationManager locationManager = manager.getLocationManager();
+					locationManager.setLocationCoordinateType(MKLocationManager.MK_COORDINATE_WGS84);
 					Location location = locationManager.getLocationInfo();
 					if (location != null){
+						GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+						location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+						location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
 						updateMyLocationOverlay(location);
 					} else{
 						locationManager.requestLocationUpdates(BaiduMapActivity.this);
@@ -254,7 +255,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
         MapController mapController = mapView.getController();
         Location location = LocationService.getInstance().getLastKnownLocation();
         if(location != null){
-	        GeoPoint gp = new GeoPoint((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));
+			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+			GeoPoint gp = new GeoPoint((int)(point.getLatitudeE6()), (int)(point.getLongitudeE6()));
+//	        GeoPoint gp = new GeoPoint((int)(location.getLatitude() * 1E6), (int)(location.getLongitude() * 1E6));			
 	        mapController.setCenter(gp);
         }
         mapView.setBuiltInZoomControls(true);
@@ -382,10 +385,10 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 //		}		
 //	}
 	
-	class MyLocationOverlays extends Overlay {
+	class MyPositionOverlays extends Overlay {
 		GeoPoint geoPoint;
 
-		public MyLocationOverlays(GeoPoint geoPoint) {
+		public MyPositionOverlays(GeoPoint geoPoint) {
 			super();
 			this.geoPoint = geoPoint;
 		}
@@ -415,6 +418,10 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		{
 			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
 		}
+		GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+		location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+		location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
+
 		this.updateMyLocationOverlay(location);
 		mBMapMan.getLocationManager().removeUpdates(this);
 	}

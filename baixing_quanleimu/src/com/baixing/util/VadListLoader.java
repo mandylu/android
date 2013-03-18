@@ -1,20 +1,16 @@
-//liuchong@baixing.com
 package com.baixing.util;
 
 import java.io.Serializable;
 
-import org.json.JSONObject;
-
+import android.content.Context;
 import android.util.Log;
 
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiListener;
-import com.baixing.android.api.ApiParams;
 import com.baixing.entity.AdList;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 
-public class VadListLoader implements Serializable{
+public class  VadListLoader implements Serializable{
 	
 	/**
 	 * 
@@ -155,24 +151,24 @@ public class VadListLoader implements Serializable{
 		this.isNearby = isNearby;
 	}
 	
-	public void startFetching(boolean isFirst, Communication.E_DATA_POLICY dataPolicy_){
+	public void startFetching(Context context, boolean isFirst, boolean useCache){
 		cancelFetching();
 		
-		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
+		mStatusListdataRequesting = (useCache ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
 
-		currentCommand = new GetListCommand(dataPolicy_, isNearby, isUserList);		
+		currentCommand = new GetListCommand(context, isNearby, isUserList, useCache);		
 		currentCommand.run();
 	}	
 	
-	public void startFetching(boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, Communication.E_DATA_POLICY dataPolicy_){
+	public void startFetching(Context context, boolean isFirst, int msgGotFirst, int msgGotMore, int msgNoMore, boolean useCache){
 		cancelFetching();
 		
-		mStatusListdataRequesting = ((dataPolicy_==Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
+		mStatusListdataRequesting = (useCache ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
-		currentCommand = new GetListCommand(msgGotFirst, msgGotMore, msgNoMore, dataPolicy_, isNearby, isUserList);		
+		currentCommand = new GetListCommand(context, msgGotFirst, msgGotMore, msgNoMore, useCache, isNearby, isUserList);		
 		currentCommand.run();
 	}
 	
@@ -186,29 +182,33 @@ public class VadListLoader implements Serializable{
 		this.isUserList = isUserList;
 	}
 	
-	class GetListCommand implements Runnable, ApiListener {
+	class GetListCommand implements Runnable, BaseApiCommand.Callback {
 		private int msgFirst = VadListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = VadListLoader.MSG_FINISH_GET_MORE;
 		private int msgNoMore = VadListLoader.MSG_NO_MORE;
-		private Communication.E_DATA_POLICY dataPolicy = Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL;
+//		private Communication.E_DATA_POLICY dataPolicy = Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL;
+		private boolean useCache;
+		private Context context;
 		
 		private boolean mCancel = false;
 		private boolean isNearby = false;
 		private boolean isUserList = false;
 		
-		GetListCommand(Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
-			dataPolicy = dataPolicy_;
+		GetListCommand(Context cxt, boolean isNearby, boolean isUserList, boolean useCache){
+			this.useCache = useCache;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
+			this.context = cxt;
 		}
 		
-		GetListCommand(int errFirst, int errMore, int errNoMore, Communication.E_DATA_POLICY dataPolicy_, boolean isNearby, boolean isUserList){
+		GetListCommand(Context cxt, int errFirst, int errMore, int errNoMore, boolean useCache, boolean isNearby, boolean isUserList){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
-			dataPolicy = dataPolicy_;
+			this.useCache = useCache;
 			this.isNearby = isNearby;
 			this.isUserList = isUserList;
+			this.context = cxt;
 		}
 		
 		public void cancel(){
@@ -246,9 +246,8 @@ public class VadListLoader implements Serializable{
 				return;
 			}
 			ApiParams list = new ApiParams();
-			if(this.dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL){
-				list.useCache = true;
-			}
+			list.useCache = this.useCache;
+			
 			if(params != null){
 				list.setParams(params.getParams());
 			}
@@ -273,12 +272,12 @@ public class VadListLoader implements Serializable{
 			}
 			
 			String method = this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName);
-			ApiClient.getInstance().remoteCall(Api.createGet(method), list, this);
+//			ApiClient.getInstance().remoteCall(Api.createGet(method), list, this);
+			BaseApiCommand.createCommand(method, true, list).execute(context, this);
 		}
 		
-		
-		public void onComplete(JSONObject json, String rawData){
-			mLastJson = rawData;
+		public void onNetworkDone(String apiName, String responseData) {
+			mLastJson = responseData;
 			if (mLastJson != null && !mLastJson.equals("")) {
 				if (!mIsFirst) {
 					if(callback != null){
@@ -292,10 +291,12 @@ public class VadListLoader implements Serializable{
 					}
 				}
 				
-				//only when data is valid, do we need to update listdata status
-				VadListLoader.this.mStatusListdataExisting = (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
-														E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
-														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	VadListLoader.this.mStatusListdataExisting;
+				//only when data is valid, do we need to update listdata status //FIXME: need to chech refector result.
+				VadListLoader.this.mStatusListdataExisting = useCache ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE
+						: E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE;
+//						(dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE/* || dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE*/) ?
+//														E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE : (dataPolicy == Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL) ?
+//														E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : 	VadListLoader.this.mStatusListdataExisting;
 			} else {
 				if(!mIsFirst){
 					if(callback != null){
@@ -308,17 +309,17 @@ public class VadListLoader implements Serializable{
 				}
 			}
 			
+		
 		}
-		public void onError(ApiError error){
-			
-		}
-		public void onException(Exception e){
+		
+		public void onNetworkFail(String apiName, ApiError error) {
 			if(!mCancel){
 				if(callback != null){
 					callback.onRequestComplete(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 				}
 			}
 		}
+		
 	}
 	
 }

@@ -14,18 +14,17 @@ import android.widget.AdapterView;
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.adapter.VadListAdapter.GroupItem;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserProfile;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
@@ -97,7 +96,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		View v = inflater.inflate(R.layout.user_adlist, null);
 		
 		try {
-			if (!Communication.isNetworkActive()) {
+			if (!NetworkUtil.isNetworkActive(v.getContext())) {
 				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			}
 		} catch (Exception e) {
@@ -199,17 +198,17 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		
 		ApiParams params = new ApiParams();
 		params.addParam("userId", userId);
-		BaseCommand cmd = HttpGetCommand.createCommand(0, "user_profile", params);
-		cmd.execute(new Callback() {
+		BaseApiCommand cmd = BaseApiCommand.createCommand("user_profile", true, params);
+		cmd.execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				userProfile = null;
 				handler.sendEmptyMessage(MSG_UPDATE_PROFILE);
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				userProfile = UserProfile.from(responseData);
 				handler.sendEmptyMessage(MSG_UPDATE_PROFILE);
 			}
@@ -255,7 +254,7 @@ public class UserAdFragment extends BaseFragment implements PullToRefreshListVie
 		listLoader.setRows(30);
 		listLoader.setParams(params);
 		int msg = MSG_LIST_UPDATE;
-		listLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+		listLoader.startFetching(getAppContext(), true, msg, msg, msg,!NetworkUtil.isNetworkActive(getAppContext()));
 	}
 
 }

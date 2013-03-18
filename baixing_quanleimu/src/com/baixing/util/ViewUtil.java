@@ -12,10 +12,12 @@ import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
 import android.os.PowerManager.WakeLock;
+import android.view.Gravity;
 import android.view.View;
 import android.widget.Toast;
 
@@ -45,7 +47,10 @@ public class ViewUtil {
 		parent.postDelayed(new Runnable() {
 
 			public void run() {
-				Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT).show();
+//				Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT).show();
+				Toast t = Toast.makeText(parent.getContext(), message, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 			
 		}, delayTime);
@@ -63,7 +68,9 @@ public class ViewUtil {
 		parent.postDelayed(new Runnable() {
 
 			public void run() {
-				Toast.makeText(parent.getContext(), resId, Toast.LENGTH_SHORT).show();
+				Toast t = Toast.makeText(parent.getContext(), resId, Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
 			
 		}, delayTime);
@@ -209,12 +216,25 @@ public class ViewUtil {
 		return thumbnail;
 	}
 	
-	static public void showToast(final Activity activity, final String msg){
-		activity.runOnUiThread(new Runnable(){
+	static public void showToast(final Context context, final String msg, final boolean longDuration){
+		if (context == null || msg == null) {
+			return;
+		}
+		
+		Runnable task = new Runnable(){
 			@Override
 			public void run(){
-				Toast.makeText(activity, msg, 0).show();
+				Toast t = Toast.makeText(context, msg, longDuration ? Toast.LENGTH_LONG : Toast.LENGTH_SHORT);
+				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+				t.show();
 			}
-		});
+		};
+		
+		if (context instanceof Activity) {
+			((Activity) context).runOnUiThread(task);
+		} else {
+			task.run();
+		}
+		
 	}
 }

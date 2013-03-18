@@ -34,9 +34,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
@@ -45,9 +47,11 @@ import com.baixing.entity.BXThumbnail;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
-import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.view.CameraPreview;
 import com.quanleimu.activity.R;
 /**
@@ -153,7 +157,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			{
 				isInitialized = false;
 				sensorMgr.unregisterListener(CameraActivity.this);
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}
@@ -174,7 +178,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				break;
 			}
 			case MSG_INIT_CAME : {
-				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent);
+				PerformanceTracker.stamp(Event.E_Start_Init_Camera);
+				ViewGroup cameraP = (ViewGroup) findViewById(R.id.camera_parent).findViewById(R.id.camera_root);
 				if (mPreview != null) {
 					cameraP.removeView(mPreview);
 				}
@@ -194,6 +199,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				isCameraLock = false;
 				Log.d(TAG, "initialize camera done.");
 				updateCapState();
+				PerformanceTracker.stamp(Event.E_End_Init_Camera);
 				break;
 			}
 			case MSG_RESUME_ME:{
@@ -221,7 +227,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 						addImageUri(newPicPair);
 					}
 				} else {
-					Toast.makeText(CameraActivity.this, "获取照片失败", Toast.LENGTH_SHORT).show();
+					ViewUtil.showToast(CameraActivity.this, "获取照片失败", false);
 				}
 				
 				updateCapState();
@@ -242,7 +248,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, R.string.tip_camera_before_post, Toast.LENGTH_LONG).show();
+					ViewUtil.showToast(CameraActivity.this, getString(R.string.tip_camera_before_post), true);
 				}
 				break;
 				
@@ -356,17 +362,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	updateCapState();
     }
     
-    private ViewGroup findFirstBlankImage(ViewGroup root) {
-		final int count = root.getChildCount();
-		for (int i=0; i<count; i++) {
-			ViewGroup child = (ViewGroup) root.getChildAt(i);
-			if (child.getTag() == null) {
-				return child;
-			}
-		}
-    	
-    	return null;
-    }
+//    private ViewGroup findFirstBlankImage(ViewGroup root) {
+//		final int count = root.getChildCount();
+//		for (int i=0; i<count; i++) {
+//			ViewGroup child = (ViewGroup) root.getChildAt(i);
+//			if (child.getTag() == null) {
+//				return child;
+//			}
+//		}
+//    	
+//    	return null;
+//    }
     
     
     private boolean appendResultImage(BXThumbnail thumbnail) {
@@ -376,11 +382,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	}
     	
     	ViewGroup vp = (ViewGroup) this.findViewById(R.id.result_parent);
-    	
-    	ViewGroup imageRoot = findFirstBlankImage(vp);
-    	if (imageRoot == null) {
-    		return false; // you should nerver encounter this case.
-    	}
+    	LayoutInflater inflater = LayoutInflater.from(vp.getContext());
+    	ViewGroup imageRoot = (ViewGroup) inflater.inflate(R.layout.single_image_layout, null);
+//    	ViewGroup imageRoot = findFirstBlankImage(vp);
+//    	if (imageRoot == null) {
+//    		return false; // you should nerver encounter this case.
+//    	}
+    	vp.addView(imageRoot);
     	imageRoot.setTag(thumbnail.getLocalPath());
 		
 		final View deleteCmd = imageRoot.findViewById(R.id.delete_preview);
@@ -480,29 +488,34 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
 	@Override
 	protected void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_CameraActivity_OnCreate_Start);
 		super.onCreate(savedInstanceState);
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
-//		if (VERSION.SDK_INT <= 10) {
+		String nextBtnLabel = getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL);
+		if (VERSION.SDK_INT < 14) {
 			isLandscapeMode = true;
 			this.getWindow().addFlags(WindowManager.LayoutParams.FLAG_FULLSCREEN);
 //			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_LANDSCAPE);
 			setContentView(R.layout.image_selector_land);
-//		}
-//		else
-//		{
-//			setContentView(R.layout.image_selector);
-//		}
+		}
+		else
+		{
+			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
+			setContentView(R.layout.image_selector);
+			nextBtnLabel = nextBtnLabel.replace("\n", "");
+		}
 					
 		
 		//Take picture action.
 		findViewById(R.id.cap).setOnClickListener(this);
 		findViewById(R.id.finish_cap).setOnClickListener(this);
 		findViewById(R.id.cap).setEnabled(false);//Do not let user take pitcure before initialize.
+		findViewById(R.id.cam_focus_area).setOnClickListener(this);
 		
-		if (this.getIntent().hasExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL)) {
+		if (nextBtnLabel != null) {
 			TextView nextLabel = (TextView) findViewById(R.id.right_btn_txt);
-			nextLabel.setText(getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL));
+			nextLabel.setText(nextBtnLabel);
 		}
 		
 		//Sensor to update current orientation. 
@@ -535,6 +548,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		}
 		
 		handler.sendEmptyMessageDelayed(MSG_UPDATE_THUMBNAILS, 500);
+		PerformanceTracker.stamp(Event.E_CameraActivity_OnCreate_Leave);
 //		Profiler.markEnd("cameOnCreate");
 	}
 	
@@ -626,6 +640,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	protected void onResume() {
+		PerformanceTracker.stamp(Event.E_CameraActivity_onResume);
 		GlobalDataManager.getInstance().setLastActiveActivity(this.getClass());
 		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
 //		Profiler.markStart("cameOnResume");
@@ -661,7 +676,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	    	isCameraLock = false;
 	    	if (!Util.isExternalStorageWriteable()) {
-	    		Toast.makeText(CameraActivity.this, "请检查SD卡状态", Toast.LENGTH_SHORT).show();
+	    		ViewUtil.showToast(CameraActivity.this, "请检查SD卡状态", false);
 	    		handler.sendEmptyMessage(MSG_CANCEL_STORE_PIC);
 	    		return;
 	    	}
@@ -680,6 +695,11 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			break;
 		case R.id.finish_cap:
 			finishTakenPic();
+			break;
+		case R.id.cam_focus_area:
+			if (mCamera != null) {
+				mCamera.autoFocus(null);
+			}
 			break;
 		}
 	}
@@ -724,6 +744,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					bWrapper.isTrue = true;
 					Camera camera = mCamera;
 					if (camera != null) {
+						startGlint();
 						Log.d(TAG, "start invoke take picture");
 						camera.takePicture(null, null, mPicture);
 						Log.d(TAG, "take picture invoke return");
@@ -740,6 +761,31 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		//For some device, auto focus never return for unknown reason.
 		Message msg = handler.obtainMessage(MSG_TAKEPIC_DELAY, bWrapper);
 		handler.sendMessageDelayed(msg, 1500);
+	}
+	
+	private void startGlint() {
+		final View v = findViewById(R.id.cam_glint_area);
+		v.setVisibility(View.VISIBLE);
+		Animation glint = AnimationUtils.loadAnimation(this, R.anim.glint);
+		glint.setAnimationListener(new AnimationListener() {
+			
+			@Override
+			public void onAnimationStart(Animation animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				v.setVisibility(View.GONE);
+			}
+		});
+		v.startAnimation(glint);
+		
 	}
 
 	@Override
@@ -815,10 +861,10 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			Log.e(TAG, "following view will be remove " + vp.hashCode());
 			imgContainer.removeView(vp);
 			
-			LayoutInflater inflator = LayoutInflater.from(v.getContext());
-			View newV = inflator.inflate(R.layout.single_image_layout, null);
-			imgContainer.addView(newV);
-			Log.d(TAG, "following view will be add " + newV.hashCode());
+//			LayoutInflater inflator = LayoutInflater.from(v.getContext());
+//			View newV = inflator.inflate(R.layout.single_image_layout, null);
+//			imgContainer.addView(newV);
+//			Log.d(TAG, "following view will be add " + newV.hashCode());
 		}
 	}
 
@@ -890,7 +936,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
 		        if (!full) {
-		        	Toast.makeText(CameraActivity.this, "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", Toast.LENGTH_SHORT).show();
+		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
 		        }
 			}
 		};

@@ -4,7 +4,7 @@ package com.baixing.data;
 import java.util.ArrayList;
 import java.util.List;
 
-import com.baixing.android.api.ApiClient;
+import com.baixing.network.ICacheProxy;
 import com.baixing.util.Util;
 
 import android.content.Context;
@@ -13,7 +13,7 @@ import android.database.SQLException;
 import android.database.sqlite.SQLiteDatabase;
 import android.util.Pair;
 
-public class NetworkCacheManager implements ApiClient.CacheProxy {
+public class NetworkCacheManager implements ICacheProxy {
 	
 	protected final List<Pair<String, String>> storeList = new ArrayList<Pair<String,String>>();
 	private BXDatabaseHelper dbManager = null;
@@ -145,6 +145,7 @@ public class NetworkCacheManager implements ApiClient.CacheProxy {
 			db.close();
 		}
 	}
+	
 
 	//from ApiClient.CacheProxy
 	public void onSave(String url, String jsonStr){

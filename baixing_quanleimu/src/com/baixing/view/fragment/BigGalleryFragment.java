@@ -40,7 +40,8 @@ import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
+import com.baixing.util.TextUtil;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.R;
 
@@ -99,12 +100,12 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 			{
 				TitleDef title = getTitleDef();
 				title.m_title = "0/0";
-				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
+				ViewUtil.showToast(getActivity(), getString(R.string.dialog_message_image_load_error), false);
 			}
 			else
 			{
 				String b = goodsDetail.getImageList().getBig();//).substring(1, (goodsDetail.getImageList().getBig()).length()-1);
-				b = Communication.replace(b);
+				b = TextUtil.filterString(b, new char[] {'\\', '"'});//Communication.replace(b);
 				if(b.contains(","))
 				{
 					String[] c = b.split(",");
@@ -271,7 +272,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	        try{
 	        	uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 	        }catch(Exception e){
-	        	Toast.makeText(getActivity(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+	        	ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可>_<", true);
 	        	return;
 	        }
 
@@ -301,10 +302,10 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 	            	scannerConnection.scanFile(mediaFileName, "image/png");
 	            }
 //	            Toast.makeText(getActivity(), "成功！！您可以到手机相册查看该图 ^_^ \n也可以直接找文件："+mediaFileName, Toast.LENGTH_LONG).show();
-	            Toast.makeText(getActivity(), "图片已保存到相册", Toast.LENGTH_LONG).show();
+	            ViewUtil.showToast(getActivity(), "图片已保存到相册", true);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            Toast.makeText(getActivity(), "保存失败,请检查SD卡是否可>_<", Toast.LENGTH_LONG).show();
+	            ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可>_<", true);
 	        }finally{
 	        	if(outStream != null){
 	        		try {

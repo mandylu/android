@@ -16,7 +16,6 @@ import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.Communication;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
@@ -148,6 +147,7 @@ class EditAdFragment extends PostGoodsFragment{
 	protected void buildPostLayout(HashMap<String, PostGoodsBean> pl){
 		super.buildPostLayout(pl);
 		editPostUI();
+		super.updateImageInfo(layout_txt);
 	}
 	
 	private void editPostUI() {
@@ -208,17 +208,17 @@ class EditAdFragment extends PostGoodsFragment{
 				}
 			}
 			
-			if(listUrl.size() > 0){
-				ImageLoaderManager.getInstance().showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
-				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
-			}else{
-				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
-			}
+//			if(listUrl.size() > 0){
+//				ImageLoaderManager.getInstance().showImg(layout_txt.findViewById(R.id.myImg), listUrl.get(0), "", getActivity());
+//				((TextView)layout_txt.findViewById(R.id.imgCout)).setText(String.valueOf(listUrl.size()));
+//				layout_txt.findViewById(R.id.imgCout).setVisibility(View.VISIBLE);
+//			}else{
+//				layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
+//			}
 			
 			String big = (goodsDetail.getImageList().getBig());
 			if(big != null && big.length() > 0){
-				big = Communication.replace(big);
+				big = com.baixing.util.TextUtil.filterString(big, new char[] {'\\', '"'});
 				String[] cbig = big.split(",");
 				for(int i = 0; i < cbig.length; ++ i){
 					this.bmpUrls.add(cbig[i]);

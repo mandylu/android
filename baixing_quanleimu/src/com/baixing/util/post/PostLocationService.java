@@ -2,16 +2,21 @@
 package com.baixing.util.post;
 
 import java.io.UnsupportedEncodingException;
+import java.net.URLEncoder;
+
+import org.apache.http.client.entity.UrlEncodedFormEntity;
+import org.json.JSONObject;
 
 import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
-import com.baixing.android.api.WebUtils;
+import com.baidu.mapapi.CoordinateConvert;
+import com.baidu.mapapi.GeoPoint;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.data.LocationManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.util.Communication;
+import com.baixing.network.NetworkCommand;
 import com.baixing.util.LocationService;
 import com.baixing.util.LocationService.BXRgcListener;
 
@@ -33,29 +38,20 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);
 	}
 	
-	public boolean retreiveLocation(String city, String addr){
-		this.gettingLocationFromBaidu = true;
-		return LocationService.getInstance().geocode(addr, city, this);
-	}
-	
-	static public Pair<Double, Double> retreiveCoorFromGoogle(String addr){
-		if(addr == null || addr.equals("")){
-			return new Pair<Double, Double>((double)0, (double)0);
-		}
-		String googleUrl = String.format("http://maps.google.com/maps/geo?q=%s&output=csv", addr);
-		try{
-			String googleJsn = Communication.getDataByUrlGet(googleUrl);
-//			String googleJsn = WebUtils.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl, null);//Communication.getDataByUrlGet(googleUrl);
-			String[] info = googleJsn.split(",");
-			if(info != null && info.length == 4){
-				return new Pair<Double, Double>(Double.parseDouble(info[2]), Double.parseDouble(info[3]));
+	public boolean retreiveLocation(final String city, final String addr){
+		((new Thread(new Runnable(){
+			@Override
+			public void run(){
+				BXLocation loc = LocationService.retreiveCoorFromGoogle(city + addr);
+				Message msg = Message.obtain();
+				msg.what = PostCommonValues.MSG_GEOCODING_FETCHED;
+				msg.obj = loc;
+				handler.sendMessage(msg);
 			}
-		}catch(UnsupportedEncodingException e){
-			e.printStackTrace();
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return new Pair<Double, Double>((double)0, (double)0);
+		}))).start();
+		return true;
+//		this.gettingLocationFromBaidu = true;
+//		return LocationService.getInstance().geocode(addr, city, this);
 	}
 	
 	@Override
@@ -64,7 +60,13 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 		if(!this.gettingLocationFromBaidu) return;
 		// TODO Auto-generated method stub
 		if(!inreverse && location != null && (location.subCityName == null || location.subCityName.equals(""))){
-			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
+			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.fLat*1e6), (int)(location.fLon*1e6))));
+//			GeoPoint gp = new GeoPoint((int)(point.getLatitudeE6()), (int)(point.getLongitudeE6()));
+			float transferredLat = (float) (1.0d*point.getLatitudeE6()/1e6);
+			float transferredLon = (float)(1.0d*point.getLongitudeE6()/1e6); 
+
+//			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
+			LocationService.getInstance().reverseGeocode(transferredLat, transferredLon, this);			
 			inreverse = true;
 		}else{
 			Message msg = Message.obtain();

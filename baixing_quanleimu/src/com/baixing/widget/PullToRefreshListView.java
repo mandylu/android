@@ -6,7 +6,6 @@ import android.content.Context;
 import android.content.res.TypedArray;
 import android.graphics.Canvas;
 import android.util.AttributeSet;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.VelocityTracker;
@@ -27,8 +26,7 @@ import android.widget.ProgressBar;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baixing.adapter.VadListAdapter;
-import com.baixing.util.Communication;
+import com.baixing.network.NetworkUtil;
 import com.quanleimu.activity.R;
 
 public class PullToRefreshListView extends ListView implements OnScrollListener, OnClickListener {
@@ -199,7 +197,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
     	if(mAllowGetMore){
 	    	mHasMore = hasMore;
 	    	if(mHasMore){
-	    		boolean showProgress = Communication.isWifiConnection();
+	    		boolean showProgress = NetworkUtil.isWifiConnection(this.getContext());
 	    		updateFooterTip(!showProgress ? R.string.click_to_get_more : R.string.scrolldown_to_getmore, showProgress);
 	    	}else{
 	    		updateFooterTip(R.string.scrolldown_to_getmore_nomore, false);
@@ -650,7 +648,7 @@ public class PullToRefreshListView extends ListView implements OnScrollListener,
                 // Initiate the refresh
             	mGetMoreState = GETTING_MORE;
             	updateFooter(mHasMore);
-            	if(Communication.isWifiConnection()) {
+            	if(NetworkUtil.isWifiConnection(this.getContext())) {
             		mGetmoreView.setOnClickListener(null);
             		onGetMore();
             	}

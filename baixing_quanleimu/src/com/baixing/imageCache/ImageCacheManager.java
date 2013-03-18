@@ -3,31 +3,27 @@ package com.baixing.imageCache;
 
 import java.io.File;
 import java.io.FileInputStream;
-import java.io.FileNotFoundException;
-import java.io.IOException;
 import java.io.InputStream;
 import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
+
 import org.apache.http.HttpException;
-import org.apache.http.HttpResponse;
-import org.apache.http.client.HttpClient;
-import org.apache.http.client.methods.HttpGet;
+
 import android.app.ActivityManager;
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.support.v4.util.LruCache;
-import android.util.DisplayMetrics;
 import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.FileDownloadCommand;
 import com.baixing.util.BitmapUtils;
-import com.baixing.util.NetworkProtocols;
-import com.baixing.util.TextUtil;
 import com.baixing.util.BitmapUtils._Rect;
+import com.baixing.util.TextUtil;
 public class ImageCacheManager{
 	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
 	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
@@ -258,7 +254,7 @@ public class ImageCacheManager{
 		imageDiskLruCache.put(key, bmp);
 	}
 	
-	private static Bitmap decodeSampledBitmapFromFile(InputStream stream){
+	private static Bitmap decodeSampledBitmapFromFile(String file){
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
@@ -272,8 +268,9 @@ public class ImageCacheManager{
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			
 		    options.inJustDecodeBounds = true;
-		    BitmapFactory.decodeStream(stream);
-	
+//		    BitmapFactory.decodeStream(stream, null, options);//.decodeStream(stream);
+		    BitmapFactory.decodeFile(file, options);
+		    
 		    // Calculate inSampleSize
 		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
 	    }
@@ -284,38 +281,48 @@ public class ImageCacheManager{
 	    // Decode bitmap with inSampleSize set
 	    options.inJustDecodeBounds = false;
 	    options.inPurgeable = true;
-	    return BitmapFactory.decodeStream(stream);
+//	    return BitmapFactory.decodeStream(stream, null, options);
+	    return BitmapFactory.decodeFile(file, options);
 	}
 	
 	
 	public Bitmap downloadImg(String urlStr) throws HttpException{
-		HttpClient httpClient = null;
-        InputStream bis = null;
+//		HttpClient httpClient = null;
+//        InputStream bis = null;
         Bitmap bitmapRet = null;
         
 		try
 		{
-			httpClient = NetworkProtocols.getInstance().getHttpClient();
-	        
-	        HttpGet httpGet = new HttpGet(urlStr); 
-	        HttpResponse response = httpClient.execute(httpGet);	
+//			httpClient = NetworkProtocols.getInstance().getHttpClient();
+//	        
+//	        HttpGet httpGet = new HttpGet(urlStr); 
+//	        HttpResponse response = httpClient.execute(httpGet);	
 	        
 	        String key = TextUtil.getMD5(urlStr);
-	        if(null != imageDiskLruCache){
-	           	imageDiskLruCache.put(key, response.getEntity().getContent());
-	           	
-	           	httpClient.getConnectionManager().shutdown();
-	           	httpClient = null;
-	           	enableSampleSize(true);
-	           	bitmapRet = imageDiskLruCache.get(key);
-	           	enableSampleSize(false);
-	        }else{
-	    		
-	    		InputStream inputStream = response.getEntity().getContent();
-	    		enableSampleSize(true);
-	    		bitmapRet = decodeSampledBitmapFromFile(inputStream);
-	    		enableSampleSize(false);
+	        final String targetFile = imageDiskLruCache.createFilePath(key);
+	        FileDownloadCommand cmd = new  FileDownloadCommand(urlStr);
+	        boolean succed = cmd.doDownload(context, new File(targetFile));
+	        if (succed) {
+	        	enableSampleSize(true);
+	        	bitmapRet = decodeSampledBitmapFromFile(/*new FileInputStream(new File(targetFile))*/targetFile);
+	        	enableSampleSize(false);
 	        }
+	        
+	        
+	        if(null != imageDiskLruCache && bitmapRet != null){
+	        	imageDiskLruCache.put(key, bitmapRet, targetFile);
+//	           	httpClient.getConnectionManager().shutdown();
+//	           	httpClient = null;
+//	           	enableSampleSize(true);
+//	           	bitmapRet = imageDiskLruCache.get(key);
+	        }
+//	        else{
+//	    		
+//	    		InputStream inputStream = response.getEntity().getContent();
+//	    		enableSampleSize(true);
+//	    		bitmapRet = decodeSampledBitmapFromFile(inputStream);
+//	    		enableSampleSize(false);
+//	        }
             
             return bitmapRet;
 		}
@@ -323,23 +330,23 @@ public class ImageCacheManager{
 		}
 		finally
 		{			
-			try
-			{
-				if(null != httpClient){
-					httpClient.getConnectionManager().shutdown();
-				}
-				
-				if(null != bis)
-				{
-					bis.close();
-				}				    				
-			}
-			catch (IOException e)
-			{
-				e.printStackTrace();
-			}catch(Exception e){
-				
-			}
+//			try
+//			{
+//				if(null != httpClient){
+//					httpClient.getConnectionManager().shutdown();
+//				}
+//				
+//				if(null != bis)
+//				{
+//					bis.close();
+//				}				    				
+//			}
+//			catch (IOException e)
+//			{
+//				e.printStackTrace();
+//			}catch(Exception e){
+//				
+//			}
 		} 
 		
 		return null;

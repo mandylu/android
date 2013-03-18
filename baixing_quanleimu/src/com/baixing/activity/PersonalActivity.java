@@ -8,13 +8,15 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiParams;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.entity.AdList;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.VadListLoader;
 import com.baixing.view.fragment.MyAdFragment;
 import com.baixing.view.fragment.PersonalProfileFragment;
@@ -36,8 +38,10 @@ public class PersonalActivity extends BaseTabActivity {
 				extras.putBoolean(CommonIntentAction.ACTION_BROADCAST_POST_FINISH, true);
 				if(this.getSupportFragmentManager().getBackStackEntryCount() > 1 
 						&& !(getCurrentFragment() instanceof MyAdFragment)){
+					PerformanceTracker.stamp(Event.E_JumpAfterPost_PushProfile);
 					pushFragment(new PersonalProfileFragment(), bundle, true);
 				}
+				PerformanceTracker.stamp(Event.E_JumpAfterPost_PushMyAd);
 				pushFragment(new MyAdFragment(), extras, false);
 			}		
 		}
@@ -45,6 +49,7 @@ public class PersonalActivity extends BaseTabActivity {
 	
 	@Override
 	public void onCreate(Bundle savedBundle){
+		PerformanceTracker.stamp(Event.E_PersonalActivity_onCreate);
 		super.onCreate(savedBundle);
 		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
 			GlobalDataManager.context = new WeakReference<Context>(this);
@@ -99,7 +104,7 @@ public class PersonalActivity extends BaseTabActivity {
 					pd.setCancelable(false);
 					pd.show();
 					try {
-						String result = ApiClient.getInstance().invokeApi(ApiClient.Api.createGet("ad_list"), param);
+						String result = BaseApiCommand.createCommand("ad_list", true, param).executeSync(PersonalActivity.this);//ApiClient.getInstance().invokeApi(ApiClient.Api.createGet("ad_list"), param);
 						AdList gl = JsonUtil.getGoodsListFromJson(result);
 						if(gl != null){
 							VadListLoader glLoader = new VadListLoader(null, null, null, gl);

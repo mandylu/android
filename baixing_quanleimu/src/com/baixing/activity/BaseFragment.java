@@ -29,11 +29,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.CityChangeFragment;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.view.fragment.LoginFragment;
@@ -351,7 +353,7 @@ public abstract class BaseFragment extends Fragment  {
 	                    public void onClick(DialogInterface dialogInterface, int i) {
 	                        Util.logout();
 	                        BaseFragment.this.sendMessage(MSG_USER_LOGOUT, null);
-	                        Toast.makeText(getAppContext(), "已退出", Toast.LENGTH_SHORT).show();
+	                        ViewUtil.showToast(getActivity(), "已退出", false);
 	                    }
 	                })
 	                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
@@ -366,6 +368,43 @@ public abstract class BaseFragment extends Fragment  {
 		.append(Key.FRAGMENT, this.getClass().toString())
 		.append(Key.MENU_ACTION_TYPE, action).end(); 		
 		return super.onOptionsItemSelected(item);
+	}
+	
+	protected void showAlert(String title, String message, final DialogAction positiveAction, final DialogAction negativeAction) {
+		AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+		if (title != null) {
+			builder.setTitle(title);
+		}
+		
+		if (message != null) {
+			builder.setMessage(message);
+		}
+		
+		if (positiveAction != null) {
+			builder.setPositiveButton(positiveAction.actioLabel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                	positiveAction.doAction();
+                }
+            });
+		}
+		
+		if (negativeAction != null) {
+			builder.setNegativeButton(negativeAction.actioLabel, new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                	negativeAction.doAction();
+                }
+            });
+		} else {
+			builder.setNegativeButton("取消", new DialogInterface.OnClickListener() {
+                @Override
+                public void onClick(DialogInterface dialogInterface, int i) {
+                }
+            });
+		}
+		
+		builder.create().show();
 	}
 	
 	
@@ -624,9 +663,11 @@ public abstract class BaseFragment extends Fragment  {
 			if(null != title.m_leftActionHint && !title.m_leftActionHint.equals("")){
 				left.setVisibility(View.VISIBLE);
 				rootView.findViewById(R.id.left_line).setVisibility(View.VISIBLE);
-				if (title.m_leftActionImage != -1) {
-					ImageView img = (ImageView) rootView.findViewById(R.id.back_icon);
+				ImageView img = (ImageView) rootView.findViewById(R.id.back_icon);
+				if (title.m_leftActionImage != -1) {					
 					img.setImageResource(title.m_leftActionImage);
+				}else{
+					img.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_back));
 				}
 				
 			}else{
@@ -744,6 +785,19 @@ public abstract class BaseFragment extends Fragment  {
 	public boolean hasGlobalTab()
 	{
 		return getArguments() != null && getArguments().containsKey(ARG_COMMON_HAS_GLOBAL_TAB) ? getArguments().getBoolean(ARG_COMMON_HAS_GLOBAL_TAB) : true;
+	}
+	
+	protected abstract class DialogAction {
+		String actioLabel;
+		public DialogAction(String label) {
+			this.actioLabel = label;
+		}
+		
+		public DialogAction(int labelId) {
+			this.actioLabel = BaseFragment.this.getString(labelId);
+		}
+		
+		public abstract void doAction();
 	}
 	
 }

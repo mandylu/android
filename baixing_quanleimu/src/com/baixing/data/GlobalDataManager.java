@@ -13,12 +13,7 @@ import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
 import android.util.Pair;
-import android.widget.Toast;
 
-import com.baidu.mapapi.MKEvent;
-import com.baidu.mapapi.MKGeneralListener;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiParams;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
@@ -29,10 +24,12 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.Communication;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
-public class GlobalDataManager implements Observer{
+public class GlobalDataManager implements Observer {
 	public static final String kWBBaixingAppKey = "3747392969";
 	public static final String kWBBaixingAppSecret = "ff394d0df1cfc41c7d89ce934b5aa8fc";
 	public static WeakReference<Context> context;	
@@ -361,7 +358,7 @@ public class GlobalDataManager implements Observer{
 	public void setCityEnglishName(String cityEnglishName) {
 		this.cityEnglishName = cityEnglishName;
 		
-		ApiClient.getInstance().addCommonParam(ApiParams.KEY_CITY, this.cityEnglishName);
+		BaseApiCommand.addCommonParams(ApiParams.KEY_CITY, this.cityEnglishName);
 	}
 	
 	public String queryCategoryDisplayName(String englishName){
@@ -497,7 +494,7 @@ public class GlobalDataManager implements Observer{
 		
 		String json = pair.second;
 		if (json != null && json.length() > 0) {
-			this.allCategory = JsonUtil.loadCategoryTree(Communication.decodeUnicode(json));
+			this.allCategory = JsonUtil.loadCategoryTree(TextUtil.decodeUnicode(json));
 		}
 	
 	}

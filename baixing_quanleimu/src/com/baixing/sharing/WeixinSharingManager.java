@@ -28,7 +28,8 @@ import com.tencent.mm.sdk.openapi.WXTextObject;
 import com.tencent.mm.sdk.openapi.WXWebpageObject;
 
 class WeixinSharingManager extends BaseSharingManager{
-	static private final String WX_APP_ID = "wx862b30c868401dbc";
+//	static private final String WX_APP_ID = "wx862b30c868401dbc";
+	static private final String WX_APP_ID = "wx488dcea3081f1a46";
 //	static private final String WX_APP_ID = "wx47a12013685c6d3b";//debug
 	private Activity mActivity;
 	private IWXAPI mApi;

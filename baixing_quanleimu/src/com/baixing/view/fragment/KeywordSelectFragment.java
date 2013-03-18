@@ -59,8 +59,7 @@ public class KeywordSelectFragment extends BaseFragment {
 				{
 					String searchContent = etSearch.getText().toString().trim();
 					if (searchContent.equals("")) {
-						Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT)
-								.show();
+						ViewUtil.showToast(getActivity(), "搜索内容不能为空", false);
 					} else {
 						finishFragment(fragmentRequestCode, searchContent);
 					}
@@ -224,8 +223,7 @@ public class KeywordSelectFragment extends BaseFragment {
 		.end();
 		
 		if (searchContent.equals("")) {
-			Toast.makeText(getActivity(), "搜索内容不能为空", Toast.LENGTH_SHORT)
-					.show();
+			ViewUtil.showToast(getActivity(), "搜索内容不能为空", false);
 		} else {
 			
 			addToListRemark(searchContent);

@@ -6,14 +6,11 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
-import org.jivesoftware.smack.util.StringUtils;
-
 import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,13 +26,10 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.baixing.adapter.VadImageAdapter;
-import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
-import com.baixing.util.Communication;
-import com.baixing.util.TextUtil;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
@@ -446,7 +440,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			listUrl = new ArrayList<String>();
 			String b = (goodDetail.getImageList().getResize180());//.substring(1, (goodDetail.getImageList().getResize180()).length()-1);
 			if(b == null) return listUrl;
-			b = Communication.replace(b);
+			b = com.baixing.util.TextUtil.filterString(b, new char[] {'\\', '"'});//Communication.replace(b);
 			String[] c = b.split(",");
 			for(int i=0;i<c.length;i++) 
 			{

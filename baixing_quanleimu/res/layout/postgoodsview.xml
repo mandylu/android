@@ -3,7 +3,7 @@
     android:id="@+id/postgoodslayout"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen" >
+    android:background="#f5f5f5" >
 	<include layout="@layout/common_title"/>
 	
     <ScrollView
@@ -32,7 +32,11 @@
                 android:clickable="true"
                 android:focusableInTouchMode="true"
                 android:orientation="vertical" >
-
+				
+                <include
+                    android:id="@+id/image_list" 
+                    layout="@layout/post_image_list"/>
+                
                 <include
                     android:id="@+id/img_description"
                     layout="@layout/post_image_description_layout" />

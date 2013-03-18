@@ -21,6 +21,7 @@ public class CommonIntentAction
 	public static final String EXTRA_JUMP_PAGENAME = "extra.common.jump.pagename";
 	public static final String EXTRA_JUMP_DATA = "extra.common.jump.data";
 	
+	public static final String ACTION_BROADCAST_QZONE_AUTH_SUCCESS = "com.baixing.action.qzone.auth.success";
 	/**
 	 * Status bar notification actions.
 	 */
@@ -29,6 +30,7 @@ public class CommonIntentAction
 	public static final String ACTION_NOTIFICATION_BXINFO = "com.baixing.action.notify.bxinfo";
 	public static final String ACTION_NOTIFICATION_UPGRADE = "com.baixing.action.notify.upgrade";
 	public static final String ACTION_NOTIFICATION_JUMPURL = "com.baixing.action.notify.jumpurl";
+    public static final String ACTION_NOTIFICATION_DEBUG = "com.baixing.action.notify.debug";
 	
 	/**
 	 * Common extra key.

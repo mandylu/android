@@ -9,6 +9,5 @@
 	    	android:id="@+id/ivGoods" 
 	    	android:layout_width="106dp"
 	    	android:paddingLeft="4dp" 
-	    	android:paddingRight="4dp"
-	    	android:src="@drawable/moren"/>
+	    	android:paddingRight="4dp"/>
 </LinearLayout>

@@ -232,6 +232,12 @@
                     android:text="反馈"
                     android:textSize="@dimen/set_table_item_text_height" />
             </RelativeLayout>
+	        <Button
+			        android:layout_width="100dp"
+			        android:layout_height="48dp"
+			        android:id="@+id/debugBtn" android:layout_alignParentLeft="true"
+			        android:layout_alignParentTop="true" android:layout_gravity="right"
+			        android:background="@android:color/transparent" />
         </LinearLayout>
     </ScrollView>
 

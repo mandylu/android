@@ -16,12 +16,12 @@ import android.app.NotificationManager;
 import android.app.Notification;
 import android.app.PendingIntent;
 
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiListener;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
@@ -30,7 +30,7 @@ import android.net.ConnectivityManager;
 import android.content.BroadcastReceiver;
 import android.content.IntentFilter;
 
-public class BXNotificationService extends Service implements ApiListener {
+public class BXNotificationService extends Service implements Callback {
 	private static final int HELLO_ID = 0x11223344;
 	private static final int MSG_CHECK_UPDATE = 1;
 	private static final int MSG_PUSH_RETURN = 2;
@@ -91,7 +91,8 @@ public class BXNotificationService extends Service implements ApiListener {
 			list.addParam("pushCode", URLEncoder.encode(new String(timeObj)));
 		}
 
-		ApiClient.getInstance().remoteCall(ApiClient.Api.createPost(method), list, this);
+		BaseApiCommand.createCommand(method, true, list).execute(this, this);
+//		ApiClient.getInstance().remoteCall(ApiClient.Api.createPost(method), list, this);
 	}
 	
 	Handler myHandler = new Handler() {
@@ -199,22 +200,14 @@ public class BXNotificationService extends Service implements ApiListener {
 	}
 
 	@Override
-	public void onComplete(JSONObject json, String rawData) {
-		// TODO Auto-generated method stub
-		this.json = rawData;
+	public void onNetworkDone(String apiName, String responseData) {
+		this.json = responseData;
 		myHandler.sendEmptyMessage(MSG_PUSH_RETURN);
-			
 	}
 
 	@Override
-	public void onError(ApiError error) {
-		// TODO Auto-generated method stub
+	public void onNetworkFail(String apiName, ApiError error) {
 		myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
-	}
-
-	@Override
-	public void onException(Exception e) {
-		// TODO Auto-generated method stub
-		myHandler.sendEmptyMessage(ErrorHandler.ERROR_NETWORK_UNAVAILABLE);
+		
 	}
 }

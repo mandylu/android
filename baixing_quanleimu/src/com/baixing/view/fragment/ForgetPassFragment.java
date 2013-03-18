@@ -16,17 +16,15 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
-import com.baixing.android.api.cmd.HttpPostCommand;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
-import com.baixing.util.ParameterHolder;
+import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 
@@ -106,7 +104,7 @@ public class ForgetPassFragment extends BaseFragment {
 			.append(Key.REGISTER_RESULT_STATUS, false)
 			.append(Key.REGISTER_RESULT_FAIL_REASON, "mobile number not 11 bits!")
 			.end();
-            Toast.makeText(getActivity(), "请输入11位手机号", 1).show();
+            ViewUtil.showToast(getActivity(), "请输入11位手机号", false);
             return false;
         }
         return true;
@@ -138,7 +136,7 @@ public class ForgetPassFragment extends BaseFragment {
 			.append(Key.REGISTER_RESULT_STATUS, false)
 			.append(Key.REGISTER_RESULT_FAIL_REASON, tip)
 			.end();
-            Toast.makeText(getActivity(), tip, 1).show();
+            ViewUtil.showToast(getActivity(), tip, false);
             return false;
         }
 
@@ -168,15 +166,15 @@ public class ForgetPassFragment extends BaseFragment {
         params.addParam("mobile", mobileEt.getText().toString());
 //        params.addParameter("mobile", mobileEt.getText());
 
-        HttpGetCommand.createCommand(0, "sendsmscode", params).execute(new Callback() {
+        BaseApiCommand.createCommand("sendsmscode", true, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				 sendMessage(MSG_NETWORK_ERROR, "网络异常");
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				 try {
 	                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
 	                    if (!"0".equals(obj.getString("code"))) {
@@ -203,15 +201,15 @@ public class ForgetPassFragment extends BaseFragment {
         params.addParam("code", codeEt.getText().toString());
         params.addParam("password", newPwdEt.getText().toString());
         
-        HttpPostCommand.createCommand(0, "resetpassword", params).execute(new Callback() {
+        BaseApiCommand.createCommand("resetpassword", false, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				sendMessage(MSG_NETWORK_ERROR, "网络异常");
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
                 try {
                     JSONObject obj = new JSONObject(responseData).getJSONObject("error");
                     if (!"0".equals(obj.getString("code"))) {
@@ -238,7 +236,7 @@ public class ForgetPassFragment extends BaseFragment {
 
         switch (msg.what) {
             case MSG_NETWORK_ERROR:
-                Toast.makeText(getActivity(), showMsg, 1).show();
+                ViewUtil.showToast(getActivity(), showMsg, false);
                 //tracker
                 Tracker.getInstance()
                 .event(BxEvent.FORGETPASSWORD_SENDCODE_RESULT)
@@ -247,7 +245,7 @@ public class ForgetPassFragment extends BaseFragment {
                 .end();
                 break;
             case MSG_SENT_CODE_ERROR:
-                Toast.makeText(getActivity(), showMsg, 1).show();
+                ViewUtil.showToast(getActivity(), showMsg, false);
                 getCodeBtn.setEnabled(true);
               //tracker
                 Tracker.getInstance()
@@ -257,7 +255,7 @@ public class ForgetPassFragment extends BaseFragment {
                 .end();
                 break;
             case MSG_SENT_CODE_FINISH:
-                Toast.makeText(getActivity(), "一分钟后可再次获取", 1).show();
+                ViewUtil.showToast(getActivity(), "一分钟后可再次获取", false);
                 disableGetCodeBtn();
               //tracker
                 Tracker.getInstance()
@@ -266,7 +264,7 @@ public class ForgetPassFragment extends BaseFragment {
                 .end();
                 break;
             case MSG_POST_FINISH:
-                Toast.makeText(getActivity(), showMsg, 1).show();
+                ViewUtil.showToast(getActivity(), showMsg, false);
                 finishFragment();
               //tracker
                 Tracker.getInstance()
@@ -275,7 +273,7 @@ public class ForgetPassFragment extends BaseFragment {
                 .end();
                 break;
             case MSG_POST_ERROR:
-                Toast.makeText(getActivity(), showMsg, 1).show();
+                ViewUtil.showToast(getActivity(), showMsg, false);
               //tracker
                 Tracker.getInstance()
                 .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)

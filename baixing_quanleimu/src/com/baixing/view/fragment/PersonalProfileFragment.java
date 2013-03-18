@@ -1,7 +1,6 @@
 package com.baixing.view.fragment;
 
 import java.text.SimpleDateFormat;
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.Locale;
 import java.util.Observable;
@@ -19,20 +18,22 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiClient;
-import com.baixing.android.api.ApiClient.Api;
-import com.baixing.android.api.ApiParams;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.tracking.Tracker;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.LoginUtil;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
 import com.baixing.widget.EditUsernameDialogFragment;
 import com.quanleimu.activity.R;
 
@@ -85,6 +86,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_Profile_OnCreate);
 		super.onCreate(savedInstanceState);
 		this.getArguments();
 		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
@@ -166,6 +168,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 
 	@Override
 	public void onResume() {
+		PerformanceTracker.stamp(Event.E_Profile_ShowUp);
 		super.onResume();
 		this.pv = PV.MY;
 		Tracker.getInstance().pv(PV.MY).append(Key.ISLOGIN, GlobalDataManager.getInstance().getAccountManager().isUserLogin()).append(Key.USERID, user!=null ? user.getId() : null).end();
@@ -210,18 +213,18 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
             reloadUser(getView());
 			break;			
 		case MSG_LOGINFAIL:
+			String msgToShow = "登录未成功，请稍后重试！";
 			if(msg.obj != null && msg.obj instanceof String){
-				Toast.makeText(activity, (String)msg.obj, 0).show();
-			}else{
-				Toast.makeText(activity, "登录未成功，请稍后重试！", 0).show();
+				msgToShow = (String)msg.obj;
 			}
+			ViewUtil.showToast(activity, msgToShow, false);
 			break;
         case MSG_SHOW_PROGRESS:
             showSimpleProgress();
             break;
         case MSG_SHOW_TOAST:
             hideProgress();
-            Toast.makeText(activity, msg.obj.toString(), 1).show();
+            ViewUtil.showToast(activity, msg.obj.toString(), false);
             break;
 		case MSG_GETPERSONALADS:
 			break;
@@ -261,7 +264,8 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 			params.addParam("userId", user.getId());
 			
 			try {
-				String upJson = ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
+				String upJson = BaseApiCommand.createCommand(apiName, true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+						//ApiClient.getInstance().invokeApi(Api.createGet(apiName), params);
 				if (!TextUtils.isEmpty(upJson)) {
 					UserProfile profile = UserProfile.from(upJson);
 					if (getActivity() != null)

@@ -1,13 +1,19 @@
 package com.baixing.util;
 
+import java.net.URLEncoder;
 import java.util.ArrayList;
 import java.util.List;
+
+import org.json.JSONArray;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.location.Location;
 import android.util.Log;
+import android.util.Pair;
 
 import com.baidu.mapapi.BMapManager;
+import com.baidu.mapapi.CoordinateConvert;
 import com.baidu.mapapi.GeoPoint;
 import com.baidu.mapapi.MKAddrInfo;
 import com.baidu.mapapi.MKBusLineResult;
@@ -19,7 +25,9 @@ import com.baidu.mapapi.MKSearchListener;
 import com.baidu.mapapi.MKSuggestionResult;
 import com.baidu.mapapi.MKTransitRouteResult;
 import com.baidu.mapapi.MKWalkingRouteResult;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
+import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.Tracker;
@@ -194,7 +202,7 @@ public class LocationService{
 			if(location != null){
 				
 				//纠偏以后的经纬度  
-//				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));  
+//				GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
 //				
 //				//Log.d("LocationService", "gps encrypted from("+location.getLatitude()+", "+location.getLongitude()+") to ("+point.getLatitudeE6()/1000000.0+", "+point.getLongitudeE6()/1000000.0+") !!");
 //				
@@ -203,8 +211,8 @@ public class LocationService{
 //				location.setLatitude(27.900383);
 //				location.setLongitude(112.577883);
 				
-//				location.setLatitude(31.391158);
-//				location.setLongitude(120.983797);
+//				location.setLatitude(31.2003035367813);
+//				location.setLongitude(121.4337409607871);
 				lastKnownLocation = location;
 				
 				for(BXLocationServiceListener listener : userListeners){
@@ -252,8 +260,68 @@ public class LocationService{
 		}
 		//mkSearch = new MKSearch();
 		mkLocationManager = bMapManager.getLocationManager();
-		mkLocationManager.requestLocationUpdates(locationListener);
+		mkLocationManager.setLocationCoordinateType(MKLocationManager.MK_COORDINATE_WGS84);
+		mkLocationManager.requestLocationUpdates(locationListener);		
 		bMapManager.start();
+	}
+	
+	static public BXLocation retreiveCoorFromGoogle(String addr){
+		BXLocation ret = new BXLocation();
+		if(addr == null || addr.equals("")){
+			return ret; 
+		}		
+		String googleUrl = String.format("http://maps.googleapis.com/maps/api/geocode/json?address=%s&sensor=false&language=\"zh-CN\"", URLEncoder.encode(addr));
+		try{
+			String googleJsn = NetworkCommand.doGet(GlobalDataManager.getInstance().getApplicationContext(), googleUrl);//Communication.getDataByUrlGet(googleUrl);
+			JSONObject jsonObj = new JSONObject(googleJsn);
+			if(jsonObj != null && jsonObj.getString("status").equals("OK")){
+				JSONArray aryResults = jsonObj.getJSONArray("results");
+				if(aryResults != null){
+					JSONObject result = aryResults.getJSONObject(0);
+					if(result != null){
+						String formatAddr = result.getString("formatted_address");
+						ret.detailAddress = formatAddr;
+						
+						JSONObject geo = result.getJSONObject("geometry");
+						if(geo != null){
+							JSONObject jsonLocation = geo.getJSONObject("location");
+							if(jsonLocation != null){
+								String lat = jsonLocation.getString("lat");
+								String lng = jsonLocation.getString("lng");
+								ret.fGeoCodedLat = Float.valueOf(lat);
+								ret.fGeoCodedLon = Float.valueOf(lng);
+								ret.geocoded = true;
+								ret.fLat = ret.fGeoCodedLat;
+								ret.fLon = ret.fGeoCodedLon;
+							}
+						}
+						
+						JSONArray addresses = result.getJSONArray("address_components");
+						if(addresses != null){
+							for(int i = 0; i < addresses.length(); ++ i){
+								JSONObject add = addresses.getJSONObject(i);
+								if(add == null) continue;
+								JSONArray types = add.getJSONArray("types");
+								if(types != null){
+									String value = add.getString("long_name");
+									if(types.getString(0).equals("sublocality")){
+										ret.subCityName = value;
+									}else if(types.getString(0).equals("locality")){
+										ret.cityName = value;
+									}else if(types.getString(0).equals("administrative_area_level_1")){
+										ret.adminArea = value;
+									}
+								}
+							}
+						}
+					}
+				}
+				
+			}
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return ret;
 	}
 }
 

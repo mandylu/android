@@ -20,7 +20,6 @@ import android.widget.ImageView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
-import com.baixing.broadcast.BXNotificationService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
@@ -29,15 +28,17 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.tracking.Tracker;
+import com.baixing.network.api.ApiParams;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.*;
+import com.baixing.tracking.Tracker;
+import com.baixing.util.ErrorHandler;
+import com.baixing.util.Util;
+import com.baixing.util.VadListLoader;
 import com.baixing.widget.PullToRefreshListView;
 import com.baixing.widget.PullToRefreshListView.E_GETMORE;
 import com.quanleimu.activity.R;
-import com.baixing.android.api.ApiParams;
 
 public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRefreshListView.OnRefreshListener, PullToRefreshListView.OnGetmoreListener, VadFragment.IListHolder, VadListLoader.Callback, Observer {
 //    private boolean isFav = false;
@@ -409,9 +410,12 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
         glLoader.setRows(ITEMS_PER_REQUEST);
 
         if (isGetMore)
-            glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);//trick:: param0 is set to true to avoid setting of "start=n>0"
+//            glLoader.startFetching(true, msgGotMore, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);//trick:: param0 is set to true to avoid setting of "start=n>0"
+        	glLoader.startFetching(getAppContext(), true, msgGotMore, msgGotMore, msgNoMore, false);
         else
-            glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
+        	glLoader.startFetching(getAppContext(), true, msgGotFirst, msgGotMore, msgNoMore, false);
+//            glLoader.startFetching(true, msgGotFirst, msgGotMore, msgNoMore, Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE);
+        	
     }
 
     @Override

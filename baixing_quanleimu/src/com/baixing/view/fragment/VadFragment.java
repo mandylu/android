@@ -37,11 +37,6 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -50,8 +45,11 @@ import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
@@ -74,11 +72,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 //	private static int NETWORK_REQ_DELETE = 1;
 //	private static int NETWORK_REQ_REFRESH = 2;
 //	private static int NETWORK_REQ_UPDATE = 3;
-	
+	private static final int MSG_REFRESH_CONFIRM = 4;
 	private static final int MSG_REFRESH = 5;
 	private static final int MSG_UPDATE = 6;
 	private static final int MSG_DELETE = 7;
 	private static final int MSG_LOAD_AD_EVENT = 8;
+	private static final int MSG_NETWORK_FAIL = 9;
+	private static final int MSG_FINISH_FRAGMENT = 10;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
@@ -370,13 +370,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			}
 						
 			updateTitleBar(getTitleDef());
-			Toast.makeText(GlobalDataManager.getInstance().getApplicationContext(), "收藏成功", 3).show();
+			ViewUtil.showToast(getActivity(), "收藏成功", true);
 		}
 		else  {
 			List<Ad> favList = GlobalDataManager.getInstance().removeFav(detail);
 			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
 			updateTitleBar(getTitleDef());
-			Toast.makeText(this.getActivity(), "取消收藏", 3).show();
+			ViewUtil.showToast(this.getActivity(), "取消收藏", true);
 		}
 	}
 	
@@ -486,19 +486,51 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 
+	private void popRefresh(String message) {
+		new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		.setMessage(message)
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				showSimpleProgress();
+				executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1);
+				dialog.dismiss();
+			}
+		})
+		.setNegativeButton(
+	     "取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();							
+			}
+		})
+	     .show();
+	}
 	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
+		case MSG_NETWORK_FAIL:
+			ViewUtil.showToast(getActivity(), (String) msg.obj, true);
+			break;
+		case MSG_FINISH_FRAGMENT:
+			finishFragment();
+			break;
 		case MSG_LOAD_AD_EVENT: {
 			Pair<Integer, Object> data = (Pair<Integer, Object>)msg.obj;
 			processEvent(data.first.intValue(), data.second);
 			break;
 		}
+		case MSG_REFRESH_CONFIRM: {
+			ApiError error = (ApiError) msg.obj;
+			hideProgress();
+			this.popRefresh(error.getMsg());
+			break;
+		}
 		case MSG_REFRESH:
 			if(json == null){
-				Toast.makeText(activity, "刷新失败，请稍后重试！", 0).show();
+				ViewUtil.showToast(activity, "刷新失败，请稍后重试！", false);
 				break;
 			}
 			try {
@@ -508,31 +540,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				int code = js.getInt("code");
 				if (code == 0) {
 					executeModify(REQUEST_TYPE.REQUEST_TYPE_UPDATE, 0);
-					Toast.makeText(getActivity(), message, 0).show();
+					ViewUtil.showToast(getActivity(), message, false);
 				}else if(2 == code){
 					hideProgress();
-					new AlertDialog.Builder(getActivity()).setTitle("提醒")
-					.setMessage(message)
-					.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							showSimpleProgress();
-							executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1);
-							dialog.dismiss();
-						}
-					})
-					.setNegativeButton(
-				     "取消", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();							
-						}
-					})
-				     .show();
-
+					popRefresh(message);
 				}else {
 					hideProgress();
-					Toast.makeText(getActivity(), message, 0).show();
+					ViewUtil.showToast(getActivity(), message, false);
 				}
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
@@ -591,10 +605,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						finishFragment(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					}
 //					finish();
-					Toast.makeText(activity, message, 0).show();
+					ViewUtil.showToast(activity, message, false);
 				} else {
 					// 删除失败
-					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
+					ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
 					finishFragment();
 				}
 			} catch (JSONException e) {
@@ -614,7 +628,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		ApiParams params = new ApiParams();
 		UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
 		if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-			params.appendUserInfo(user);
+			params.appendAuthInfo(user.getPhone(), user.getPassword());//(user);
 		}
 		params.addParam("rt", 1);
 		
@@ -632,8 +646,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			params.addParam("query", "id:" + detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
 		}
 			
-		BaseCommand cmd = HttpGetCommand.createCommand(request.reqCode, request.apiName, params);
-		cmd.execute(this);
+		BaseApiCommand cmd = BaseApiCommand.createCommand(request.apiName, false, params);
+		cmd.execute(getActivity(), this);
 	}
 
 	@Override
@@ -778,7 +792,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void showMap() {
 		VadLogger.trackShowMapEvent(detail);
 		if (keepSilent) { // FIXME:
-			Toast.makeText(getActivity(), "当前无法显示地图", 1).show();
+			ViewUtil.showToast(getActivity(), "当前无法显示地图", false);
 			return;
 		}
 		else
@@ -892,11 +906,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			mHolder.startFecthingMore();
 		} else {
 			mListLoader
-					.startFetching(
+					.startFetching(getAppContext(),
 							false,
-							((VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE == mListLoader
-									.getDataStatus()) ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_CACHEABLE
-									: Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL));
+							(VadListLoader.E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE != mListLoader
+									.getDataStatus()));
 		}
 	}
 
@@ -962,15 +975,25 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 
 	@Override
-	public void onNetworkDone(int requstCode, String responseData) {
+	public void onNetworkDone(String apiName, String responseData) {
 		json = responseData;
-		sendMessage(requstCode, null);
+		int msgId = "ad_refresh".equals(apiName) ? MSG_REFRESH : ("ad_delete".equals(apiName) ? MSG_DELETE : MSG_UPDATE);
+		sendMessage(msgId, null);
 	}
 
 	@Override
-	public void onNetworkFail(int requstCode, ApiError error) {
-		ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-		hideProgress();
+	public void onNetworkFail(String apiName, ApiError error) {
+		if ("ad_refresh".equals(apiName) && "2".equals(error.getErrorCode())) {
+			sendMessage(MSG_REFRESH_CONFIRM, error);
+		} else {
+//			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			hideProgress();
+			
+			this.sendMessage(MSG_NETWORK_FAIL, error.getMsg());
+			if ("ad_delete".equals(apiName) && detail != null && !detail.isValidMessage()) {
+				sendMessage(MSG_FINISH_FRAGMENT, null);
+			}
+		}
 		
 	}
 	

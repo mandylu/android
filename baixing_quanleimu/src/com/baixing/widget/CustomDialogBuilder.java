@@ -24,16 +24,15 @@ import android.widget.ListView;
 import android.widget.TextView;
 import android.widget.Toast;
 
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.util.Communication;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.activity.R;
 
@@ -264,7 +263,7 @@ public class CustomDialogBuilder {
 											configSecondLevel(cd, lv, secondLevelItems);										}
 									}
 									else{
-										Toast.makeText(context, "网络连接异常", 0).show();
+										ViewUtil.showToast(context, "网络连接异常", false);
 										return;
 									}
 									
@@ -352,10 +351,10 @@ public class CustomDialogBuilder {
 	private void sendGetMetaCmd(final String id, final String txt) {
 		ApiParams params = new ApiParams();
 		params.addParam("objIds", id);
-		HttpGetCommand.createCommand(0, "metaobject", params).execute(new Callback() {
+		BaseApiCommand.createCommand("metaobject", true, params).execute(context, new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				MultiLevelItem selectedItem = new MultiLevelItem();
 				selectedItem.id = id;
 				selectedItem.txt = txt;
@@ -363,7 +362,7 @@ public class CustomDialogBuilder {
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				json = responseData;
 				
 				MultiLevelItem selectedItem = new MultiLevelItem();

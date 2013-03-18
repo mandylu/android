@@ -1,8 +1,6 @@
 //xumengyi@baixing.com
 package com.baixing.view.fragment;
 
-import java.io.IOException;
-import java.io.UnsupportedEncodingException;
 import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
@@ -31,11 +29,6 @@ import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.PersonalActivity;
 import com.baixing.adapter.VadListAdapter;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpPostCommand;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
@@ -47,14 +40,20 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.LogData;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
@@ -97,6 +96,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
+		PerformanceTracker.stamp(Event.E_MyAd_OnCreate);
 		super.onCreate(savedInstanceState);
 		
         final Bundle arguments = getArguments();
@@ -165,6 +165,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void onStackTop(boolean isBack) {
 		if(!isBack || needReloadData){
+			PerformanceTracker.stamp(Event.E_MyAd_FireRefresh);
 			lvGoodsList.fireRefresh();
 			needReloadData = false;
 		}
@@ -179,7 +180,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         v.findViewById(R.id.linearType).setVisibility(View.GONE);  // 禁用掉 已发布、审核中、已删除 tabView，后续删除
 		
 		try {
-			if (!Communication.isNetworkActive()) {
+			if (!NetworkUtil.isNetworkActive(v.getContext())) {
 				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
 			}
 		} catch (Exception e) {
@@ -260,6 +261,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void onResume() {
+		PerformanceTracker.stamp(Event.E_MyAdShowup);
 		super.onResume();
 		this.isOnResume = true;
 		Log.d("jjj","WWWW->onresume()");
@@ -388,6 +390,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;
 		}
 		case MSG_MYPOST:
+			PerformanceTracker.stamp(Event.E_MyPost_Got);
 			isRefreshing = false;
 //		case MSG_INVERIFY:
 //		case MSG_DELETED:
@@ -433,6 +436,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
 			doShare();
+			PerformanceTracker.stamp(Event.E_MyPost_Got_Handled);
 			break;
 		case VadListLoader.MSG_FIRST_FAIL:
 		case VadListLoader.MSG_EXCEPTION:{
@@ -452,7 +456,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;
 		case MSG_DELETE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
+			ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
 			break;
 		case MSG_DELETE_POST_SUCCESS:
 			hideProgress();
@@ -474,6 +478,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //					refList = listDeleted;
 //				}
 				if(refList == null) break;
+				String msgToShow = "删除失败,请稍后重试！";
 				if (code == 0) {
 					for(int i = 0; i < refList.size(); ++ i){
 						if(refList.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals((String)deletedId)){
@@ -487,10 +492,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					adapter.setList(refList);						
 					adapter.notifyDataSetChanged();
 					lvGoodsList.invalidateViews();
-					Toast.makeText(activity, message, 0).show();
-				} else {
-					Toast.makeText(activity, "删除失败,请稍后重试！", 0).show();
-				}
+					msgToShow = message;
+				} 
+				ViewUtil.showToast(activity, msgToShow, false);
 			} catch (JSONException e) {
 				// TODO Auto-generated catch block
 				e.printStackTrace();
@@ -499,7 +503,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			break;	
 		case MSG_RESTORE_POST_FAIL:
 			hideProgress();
-			Toast.makeText(activity, "恢复失败,请稍后重试！", 0).show();
+			ViewUtil.showToast(activity, "恢复失败,请稍后重试！", false);
 			break;
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			isRefreshing = false;
@@ -734,7 +738,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     	
         UserBean user = (UserBean) Util.loadDataFromLocate(this.getActivity(), "user", UserBean.class);
         if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-        	params.appendUserInfo(user);
+        	params.appendAuthInfo(user.getPhone(), user.getPassword());//(user);
         }
         params.addParam("adId", adId);
         params.addParam("rt", 1);
@@ -743,15 +747,20 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         }
         json = null;
         showSimpleProgress();
-        HttpPostCommand.createCommand(0, "ad_refresh", params).execute(new Callback() {
+        BaseApiCommand.createCommand("ad_refresh", true, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
-				sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
+			public void onNetworkFail(String apiName, ApiError error) {
+				if (error != null && "ad_refresh".equals(apiName) && error.getErrorCode() != null && "2".equals(error.getErrorCode())) {
+	            	Pair<String, String> p = new Pair<String, String>(error.getMsg(), adId);
+	            	sendMessage(MSG_ASK_REFRESH, p);
+				}else{
+					sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
+				}
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 //				hideProgress();
 				json = responseData;
 				try {
@@ -782,19 +791,19 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     	params.addParam("adId", id);
     	params.addParam("rt", 1);
     	if(user != null && user.getPhone() != null && !user.getPhone().equals("")){
-    		params.appendUserInfo(user);
+    		params.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
     	
-    	HttpPostCommand.createCommand(0, "ad_delete", params).execute(new Callback() {
+    	BaseApiCommand.createCommand("ad_delete", false, params).execute(getActivity(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				hideProgress();
 				sendMessage(MSG_DELETE_POST_FAIL, null);
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 				json = responseData;
 				hideProgress();
 				Message msg = Message.obtain();//handler.obtainMessage();
@@ -834,7 +843,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
 		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
-		glLoader.startFetching(true, msg, msg, msg,Communication.isNetworkActive() ? Communication.E_DATA_POLICY.E_DATA_POLICY_NETWORK_UNCACHEABLE : Communication.E_DATA_POLICY.E_DATA_POLICY_ONLY_LOCAL);
+		PerformanceTracker.stamp(Event.E_MyAdStartFetching);
+		glLoader.startFetching(getAppContext(), true, msg, msg, msg, !NetworkUtil.isNetworkActive(getAppContext()));
 		isRefreshing = true;
 	}
 	

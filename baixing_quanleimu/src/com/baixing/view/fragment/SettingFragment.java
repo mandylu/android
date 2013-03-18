@@ -3,9 +3,12 @@ package com.baixing.view.fragment;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.text.method.DateTimeKeyListener;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 import android.widget.Toast;
@@ -22,8 +25,12 @@ import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 
+import java.util.Date;
+
 public class SettingFragment extends BaseFragment implements View.OnClickListener {
     private UserBean user;
+    private long debugShowFlagTime = 0;
+    private long debugShowFlag = 0;
 
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
@@ -36,6 +43,21 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
+        ((Button) setmain.findViewById(R.id.debugBtn)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+                long nowTime = System.currentTimeMillis();
+                if (nowTime - debugShowFlagTime > 1000) {
+                    debugShowFlagTime = nowTime;
+                    debugShowFlag = 0;
+                } else {
+                    debugShowFlag++;
+                    if (debugShowFlag>1) {
+                        pushFragment(new DebugFragment(), null);
+                    }
+                }
+            }
+        });
 
 //		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
 //		AccessToken token = null;
@@ -126,7 +148,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Util.logout();
                         refreshUI(getView());
-                        Toast.makeText(getAppContext(), "已退出", 1).show();
+                        ViewUtil.showToast(getActivity(), "已退出", false);
                         Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CONFIRM).end();
                     }
                 })
@@ -169,22 +191,23 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onUpdateReturned(int updateStatus,UpdateResponse updateInfo) {
                     	if(getActivity() == null) return;
+                    	String msgToShow = null;
                         switch (updateStatus) {
                             case 0: // has update
                                 UmengUpdateAgent.showUpdateDialog(getActivity(), updateInfo);
                                 break;
                             case 1: // has no update
-                                Toast.makeText(getActivity(), "你所使用的就是最新版本", Toast.LENGTH_SHORT)
-                                        .show();
+                            	msgToShow = "你所使用的就是最新版本";
                                 break;
                             case 2: // none wifi
-                                Toast.makeText(getActivity(), "为了节省您的流量，请在wifi下更新", Toast.LENGTH_SHORT)
-                                        .show();
+                               msgToShow =  "为了节省您的流量，请在wifi下更新";
                                 break;
                             case 3: // time out
-                                Toast.makeText(getActivity(), "网络超时，请检查网络", Toast.LENGTH_SHORT)
-                                        .show();
+                                msgToShow = "网络超时，请检查网络";
                                 break;
+                        }
+                        if (msgToShow != null) {
+                        	ViewUtil.showToast(getActivity(), msgToShow, false);
                         }
                     }
                 });
@@ -202,7 +225,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
             	pushFragment(new BindSharingFragment(), createArguments("绑定转发帐号", null));
             	break;
             default:
-                Toast.makeText(getAppContext(), "no action", 1).show();
+                ViewUtil.showToast(getActivity(), "no action", false);
                 break;
         }
         // 手机号码
@@ -302,7 +325,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                         refreshUI(getView());
                         dialog.dismiss();
                         String tip =getResources().getStringArray(R.array.item_flow_optimize)[i];
-                        Toast.makeText(getActivity(), "已切换至" + tip, 1).show();
+                        ViewUtil.showToast(getActivity(), "已切换至" + tip, false);
                     }
                 })
                 .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {

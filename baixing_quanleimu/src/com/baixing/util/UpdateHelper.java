@@ -12,11 +12,11 @@ import android.os.Handler;
 import android.os.Message;
 import android.widget.Toast;
 
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.quanleimu.activity.R;
 
 /**
@@ -64,7 +64,7 @@ public class UpdateHelper {
     private void handleMessage(Message msg) {
         switch (msg.what) {
             case MSG_NETWORK_ERROR:
-                Toast.makeText(activity, msg.obj.toString(), 1).show();
+                ViewUtil.showToast(activity, msg.obj.toString(), false);
                 break;
             case MSG_DOWNLOAD_APP:
                 updateAppDownload();
@@ -113,15 +113,15 @@ public class UpdateHelper {
         pd = ProgressDialog.show(activity, "提示", "请稍候...");
         pd.show();
         
-        HttpGetCommand.createCommand(0, "check_version", params).execute(new Callback() {
+        BaseApiCommand.createCommand("check_version", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), new Callback() {
 			
 			@Override
-			public void onNetworkFail(int requstCode, ApiError error) {
+			public void onNetworkFail(String apiName, ApiError error) {
 				sendMessage(MSG_NETWORK_ERROR, "网络异常");				
 			}
 			
 			@Override
-			public void onNetworkDone(int requstCode, String responseData) {
+			public void onNetworkDone(String apiName, String responseData) {
 
                 try {
                     JSONObject respond = new JSONObject(responseData);

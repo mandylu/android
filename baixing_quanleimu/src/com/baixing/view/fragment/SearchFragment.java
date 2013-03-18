@@ -23,19 +23,18 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.android.api.ApiError;
-import com.baixing.android.api.ApiParams;
-import com.baixing.android.api.cmd.BaseCommand;
-import com.baixing.android.api.cmd.BaseCommand.Callback;
-import com.baixing.android.api.cmd.HttpGetCommand;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.Communication;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
@@ -132,7 +131,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 				bundle.putString("categoryEnglishName", cate.getEnglishName());
 				
 				
-				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !Communication.isWifiConnection())
+				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !NetworkUtil.isWifiConnection(arg0.getContext()))
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
 					builder.setTitle(R.string.dialog_title_info)
@@ -289,7 +288,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 		params.addParam("query", searchContent);
 		params.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
 		
-		HttpGetCommand.createCommand(NETWOTK_REQ_SEARACH_CAT, "ad_search", params).execute(this);
+		BaseApiCommand.createCommand("ad_search", true, params).execute(getActivity(), this);
 	}
 	
 	class ResultListAdapter extends ArrayAdapter<Pair<Category, Integer>> {
@@ -342,26 +341,27 @@ public class SearchFragment extends BaseFragment implements Callback {
 	
 	private void handleCategorySearchFail(ApiError error) {
 		categoryResultCountList = null;
-		getActivity().runOnUiThread(new Runnable(){
+		loadingView.post(new Runnable(){
 			@Override
 			public void run(){
 				if(loadingView != null){
 					loadingView.setVisibility(View.GONE);
 				}
 				
-				Toast.makeText(getActivity(), "网络请求失败,请稍后重试",
-						Toast.LENGTH_SHORT).show();
+				if(loadingView.getContext() != null){
+					ViewUtil.showToast(loadingView.getContext(), "网络请求失败,请稍后重试", false);
+				}
 			}
 		});
 	}
 	
 	@Override
-	public void onNetworkDone(int requstCode, String responseData) {
+	public void onNetworkDone(String apiName, String responseData) {
 		handleCategoryResult(responseData);
 	}
 
 	@Override
-	public void onNetworkFail(int requstCode, ApiError error) {
+	public void onNetworkFail(String apiName, ApiError error) {
 		handleCategorySearchFail(error);
 	}
 

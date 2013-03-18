@@ -767,7 +767,10 @@ public class ViewFlow extends AdapterView<Adapter> {
 			
 			// Add new view to buffer			
 			for(int newBufferIndex = mCurrentAdapterIndex + mLoadedViews.size() - mCurrentBufferIndex; newBufferIndex < mAdapter.getCount() && mLoadedViews.size() < 2*mSideBuffer+1; newBufferIndex++){
-				mLoadedViews.addLast(makeAndAddView(newBufferIndex, true));
+				View vLast = makeAndAddView(newBufferIndex, true);
+				if(vLast != null){
+					mLoadedViews.addLast(vLast);
+				}
 			}	
 			
 		} else { // to the left
@@ -844,6 +847,7 @@ public class ViewFlow extends AdapterView<Adapter> {
 
 	private View makeAndAddView(int position, boolean addToEnd, View convertView) {
 		View view = mAdapter.getView(position, convertView, this);
+		if(view == null) return null;
 		return setupChild(view, addToEnd, view == convertView);
 	}
 
