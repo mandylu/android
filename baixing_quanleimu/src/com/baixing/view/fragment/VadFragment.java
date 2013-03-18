@@ -72,11 +72,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 //	private static int NETWORK_REQ_DELETE = 1;
 //	private static int NETWORK_REQ_REFRESH = 2;
 //	private static int NETWORK_REQ_UPDATE = 3;
-	
+	private static final int MSG_REFRESH_CONFIRM = 4;
 	private static final int MSG_REFRESH = 5;
 	private static final int MSG_UPDATE = 6;
 	private static final int MSG_DELETE = 7;
 	private static final int MSG_LOAD_AD_EVENT = 8;
+	private static final int MSG_NETWORK_FAIL = 9;
+	private static final int MSG_FINISH_FRAGMENT = 10;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
 
@@ -484,14 +486,46 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 
+	private void popRefresh(String message) {
+		new AlertDialog.Builder(getActivity()).setTitle("提醒")
+		.setMessage(message)
+		.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				showSimpleProgress();
+				executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1);
+				dialog.dismiss();
+			}
+		})
+		.setNegativeButton(
+	     "取消", new DialogInterface.OnClickListener() {
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				dialog.cancel();							
+			}
+		})
+	     .show();
+	}
 	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
 		switch (msg.what) {
+		case MSG_NETWORK_FAIL:
+			ViewUtil.showToast(getActivity(), (String) msg.obj, true);
+			break;
+		case MSG_FINISH_FRAGMENT:
+			finishFragment();
+			break;
 		case MSG_LOAD_AD_EVENT: {
 			Pair<Integer, Object> data = (Pair<Integer, Object>)msg.obj;
 			processEvent(data.first.intValue(), data.second);
+			break;
+		}
+		case MSG_REFRESH_CONFIRM: {
+			ApiError error = (ApiError) msg.obj;
+			hideProgress();
+			this.popRefresh(error.getMsg());
 			break;
 		}
 		case MSG_REFRESH:
@@ -509,25 +543,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					ViewUtil.showToast(getActivity(), message, false);
 				}else if(2 == code){
 					hideProgress();
-					new AlertDialog.Builder(getActivity()).setTitle("提醒")
-					.setMessage(message)
-					.setPositiveButton("确定", new DialogInterface.OnClickListener() {							
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							showSimpleProgress();
-							executeModify(REQUEST_TYPE.REQUEST_TYPE_REFRESH, 1);
-							dialog.dismiss();
-						}
-					})
-					.setNegativeButton(
-				     "取消", new DialogInterface.OnClickListener() {
-						@Override
-						public void onClick(DialogInterface dialog, int which) {
-							dialog.cancel();							
-						}
-					})
-				     .show();
-
+					popRefresh(message);
 				}else {
 					hideProgress();
 					ViewUtil.showToast(getActivity(), message, false);
@@ -967,8 +983,17 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public void onNetworkFail(String apiName, ApiError error) {
-		ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
-		hideProgress();
+		if ("ad_refresh".equals(apiName) && "2".equals(error.getErrorCode())) {
+			sendMessage(MSG_REFRESH_CONFIRM, error);
+		} else {
+//			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			hideProgress();
+			
+			this.sendMessage(MSG_NETWORK_FAIL, error.getMsg());
+			if ("ad_delete".equals(apiName) && detail != null && !detail.isValidMessage()) {
+				sendMessage(MSG_FINISH_FRAGMENT, null);
+			}
+		}
 		
 	}
 	

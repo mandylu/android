@@ -24,6 +24,7 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.LocationService;
 import com.baixing.util.Util;
 
 public class PostNetworkService implements Callback{
@@ -76,9 +77,13 @@ public class PostNetworkService implements Callback{
 		if(registered){
 			apiParam.appendAuthInfo(user.getPhone(), user.getPassword());//.appendUserInfo(user);
 		}
-		Pair<Double, Double> coorGoogle = PostLocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
-		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
-		apiParam.addParam("lng", String.valueOf(coorGoogle.second));
+		if(address != null){
+			apiParam.addParam("lat", String.valueOf(address.fGeoCodedLat));
+			apiParam.addParam("lng", String.valueOf(address.fGeoCodedLon));
+		}
+//		BXLocation loc = LocationService.retreiveCoorFromGoogle(params.get(PostCommonValues.STRING_DETAIL_POSITION));
+//		apiParam.addParam("lat", String.valueOf(coorGoogle.first));
+//		apiParam.addParam("lng", String.valueOf(coorGoogle.second));
 
 		Set<String> keys = params.keySet();
 		if(keys != null){
@@ -223,8 +228,16 @@ public class PostNetworkService implements Callback{
 
 	@Override
 	public void onNetworkFail(String apiName, ApiError error) {
-		String msg = error == null ? "网络错误" : error.getMsg();
+		PostResultData data = null;
+		if(error != null){
+			data = new PostResultData();
+			if(error.getErrorCode() != null){
+				data.error = Integer.valueOf(error.getErrorCode());
+			}
+			data.message = error.getMsg() == null ? "网络错误" : error.getMsg();
+		}
+
 		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
-		sendMessage(msgCode, msg);
+		sendMessage(msgCode, error == null ? "网络错误" : data);
 	}
 }

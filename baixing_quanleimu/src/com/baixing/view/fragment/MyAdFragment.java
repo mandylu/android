@@ -751,7 +751,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			
 			@Override
 			public void onNetworkFail(String apiName, ApiError error) {
-				sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
+				if (error != null && "ad_refresh".equals(apiName) && error.getErrorCode() != null && "2".equals(error.getErrorCode())) {
+	            	Pair<String, String> p = new Pair<String, String>(error.getMsg(), adId);
+	            	sendMessage(MSG_ASK_REFRESH, p);
+				}else{
+					sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
+				}
 			}
 			
 			@Override

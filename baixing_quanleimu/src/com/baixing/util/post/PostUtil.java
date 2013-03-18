@@ -3,6 +3,7 @@ package com.baixing.util.post;
 
 import java.util.List;
 import android.content.Context;
+import android.text.InputFilter;
 import android.text.InputType;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -176,6 +177,13 @@ public class PostUtil{
 
 			EditText text = (EditText)v.findViewById(R.id.postinput);
 			text.setOnFocusChangeListener(new BorderChangeListener(context, v));
+			
+			final int maxLen = postBean.getMaxlength();
+			if (maxLen > 0) {
+				InputFilter[] fArray = new InputFilter[1];
+				fArray[0] = new InputFilter.LengthFilter(maxLen);
+				text.setFilters(fArray);
+			}
 
 			v.setTag(PostCommonValues.HASH_POST_BEAN, postBean);
 			v.setTag(PostCommonValues.HASH_CONTROL, text);
@@ -225,6 +233,12 @@ public class PostUtil{
 
 			EditText descriptionEt = (EditText)v.findViewById(R.id.postdescriptioninput);
 			descriptionEt.setOnFocusChangeListener(new BorderChangeListener(context, v));
+			final int maxLen = postBean.getMaxlength();
+			if (maxLen > 0) {
+				InputFilter[] fArray = new InputFilter[1];
+				fArray[0] = new InputFilter.LengthFilter(maxLen);
+				descriptionEt.setFilters(fArray);
+			}
 //			if(postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION))//description is builtin keyword
 //			{
 //				String personalMark = GlobalDataManager.getInstance().getPersonMark();

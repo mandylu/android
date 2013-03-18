@@ -9,6 +9,8 @@ import android.content.Context;
 import android.location.Location;
 import android.util.Pair;
 
+import com.baidu.mapapi.CoordinateConvert;
+import com.baidu.mapapi.GeoPoint;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.CityDetail;
 import com.baixing.util.LocationService;
@@ -117,8 +119,11 @@ public class LocationManager implements LocationService.BXLocationServiceListene
 		newLocation.fLon = (float)location_.getLongitude();
 		
 		setLocation(newLocation);
-		
-		LocationService.getInstance().reverseGeocode(newLocation.fLat, newLocation.fLon, new LocationService.BXRgcListener() {
+		GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location_.getLatitude()*1e6), (int)(location_.getLongitude()*1e6))));
+		float transferredLat = (float) (1.0d*point.getLatitudeE6()/1e6);
+		float transferredLon = (float)(1.0d*point.getLongitudeE6()/1e6); 
+
+		LocationService.getInstance().reverseGeocode(transferredLat, transferredLon, new LocationService.BXRgcListener() {
 			
 			@Override
 			public void onRgcUpdated(BXLocation location) {

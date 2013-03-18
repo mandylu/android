@@ -34,9 +34,11 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.LayoutParams;
 import android.view.WindowManager;
+import android.view.animation.Animation;
+import android.view.animation.Animation.AnimationListener;
+import android.view.animation.AnimationUtils;
 import android.widget.ImageView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
@@ -50,7 +52,6 @@ import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
-import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.view.CameraPreview;
 import com.quanleimu.activity.R;
 /**
@@ -247,7 +248,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					
 				}
 				else {
-					Toast.makeText(CameraActivity.this, R.string.tip_camera_before_post, Toast.LENGTH_LONG).show();
+					ViewUtil.showToast(CameraActivity.this, getString(R.string.tip_camera_before_post), true);
 				}
 				break;
 				
@@ -335,7 +336,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     		ImageUploader.getInstance().cancel(t.getLocalPath());
     	}
     	
-    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+//    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
 		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
 		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
@@ -345,11 +346,14 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
 		bundle.putParcelable(CommonIntentAction.EXTRA_COMMON_DATA, data);
 		
-		backIntent.putExtras(bundle);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		this.startActivity(backIntent);
-//		handler.sendEmptyMessageDelayed(MSG_FINISH_ME, 50);
+		setResult(Activity.RESULT_OK,data);
 		this.finish();
+		
+		
+//		backIntent.putExtras(bundle);
+//		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		this.startActivity(backIntent);
+//		this.finish();
     }
     
     private void deleteImageUri(BXThumbnail t) {
@@ -743,6 +747,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 					bWrapper.isTrue = true;
 					Camera camera = mCamera;
 					if (camera != null) {
+						startGlint();
 						Log.d(TAG, "start invoke take picture");
 						camera.takePicture(null, null, mPicture);
 						Log.d(TAG, "take picture invoke return");
@@ -759,6 +764,31 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		//For some device, auto focus never return for unknown reason.
 		Message msg = handler.obtainMessage(MSG_TAKEPIC_DELAY, bWrapper);
 		handler.sendMessageDelayed(msg, 1500);
+	}
+	
+	private void startGlint() {
+		final View v = findViewById(R.id.cam_glint_area);
+		v.setVisibility(View.VISIBLE);
+		Animation glint = AnimationUtils.loadAnimation(this, R.anim.glint);
+		glint.setAnimationListener(new AnimationListener() {
+			
+			@Override
+			public void onAnimationStart(Animation animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationRepeat(Animation animation) {
+				
+			}
+			
+			@Override
+			public void onAnimationEnd(Animation animation) {
+				v.setVisibility(View.GONE);
+			}
+		});
+		v.startAnimation(glint);
+		
 	}
 
 	@Override

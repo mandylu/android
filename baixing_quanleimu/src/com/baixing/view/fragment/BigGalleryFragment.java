@@ -100,7 +100,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 			{
 				TitleDef title = getTitleDef();
 				title.m_title = "0/0";
-				Toast.makeText(getActivity(), R.string.dialog_message_image_load_error, 3).show();
+				ViewUtil.showToast(getActivity(), getString(R.string.dialog_message_image_load_error), false);
 			}
 			else
 			{
