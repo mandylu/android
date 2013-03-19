@@ -185,6 +185,32 @@ public class GlobalDataManager implements Observer {
 		return listMyPost;
 	}
 	
+	public void updateMyAd(Ad ad) {
+		if (listMyPost == null) {
+			listMyPost = new ArrayList<Ad>();
+		}
+		
+		try {
+			int index = -1;
+			for (int i=0; i<listMyPost.size(); i++) {
+				Ad a = listMyPost.get(i);
+				if (a.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID).equals(ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))) {
+					index = i;
+					break;
+				}
+			}
+			
+			if (index != -1) {
+				listMyPost.add(index, ad);
+				listMyPost.remove(index+1);
+			} else {
+				listMyPost.add(ad);
+			}
+		} catch (Throwable t) {
+			
+		}
+	}
+	
 	public boolean isMyAd(String adId) {
 		if(null != listMyPost && null != adId){
 			for(int i = 0; i < listMyPost.size(); ++ i){

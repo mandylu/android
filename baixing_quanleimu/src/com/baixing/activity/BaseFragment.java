@@ -503,11 +503,15 @@ public abstract class BaseFragment extends Fragment  {
 	
 	protected final void hideSoftKeyboard()
 	{
-		View currentRoot = getView();
+		final View currentRoot = getView();
 		if (currentRoot != null)
 		{
-			InputMethodManager mgr = (InputMethodManager) this.getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-			mgr.hideSoftInputFromWindow(currentRoot.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+			final InputMethodManager mgr = (InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+			currentRoot.postDelayed(new Runnable() {
+				public void run() {
+					mgr.hideSoftInputFromWindow(currentRoot.getWindowToken(), InputMethodManager.HIDE_NOT_ALWAYS);
+				}
+			}, 100);
 		}
 	}
 

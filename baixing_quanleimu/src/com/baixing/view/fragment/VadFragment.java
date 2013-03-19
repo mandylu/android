@@ -656,9 +656,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		title.m_rightActionHint = "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
 			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
-					this.mListLoader.getGoodsList().getData().size();			
+					this.mListLoader.getGoodsList().getData().size();	
 		}
 		title.m_visible = true;
+		
+		title.m_leftActionImage = getArguments() != null && "close".equalsIgnoreCase(getArguments().getString(ARG_COMMON_BACK_HINT)) ? R.drawable.icon_close : R.drawable.icon_back;
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
 		title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 

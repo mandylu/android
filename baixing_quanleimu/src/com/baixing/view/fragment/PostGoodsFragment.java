@@ -11,6 +11,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -39,14 +40,19 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.activity.PersonalActivity;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.network.api.ApiError;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -55,6 +61,7 @@ import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
+import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
@@ -89,6 +96,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	private static final int MSG_IMAGE_STATE_CHANGE = 14;
+	private static final int MSG_GET_AD_FAIL = 15;
+	private static final int MSG_GET_AD_SUCCED = 16;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
@@ -1072,6 +1081,37 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		hideProgress();
 		
 		switch (msg.what) {
+		case MSG_GET_AD_SUCCED:
+			this.hideSoftKeyboard();
+			this.hideProgress();
+			try {
+				AdList gl = JsonUtil.getGoodsListFromJson((String) msg.obj);
+				if(gl != null && gl.getData() != null && gl.getData().size() > 0){
+					
+					GlobalDataManager.getInstance().updateMyAd(gl.getData().get(0));
+					
+					VadListLoader glLoader = new VadListLoader(null, null, null, gl);
+					glLoader.setGoodsList(gl);
+					glLoader.setHasMore(false);		
+					Bundle bundle2 = createArguments("", "close");
+					bundle2.putSerializable("loader", glLoader);
+					bundle2.putInt("index", 0);
+					bundle2.putInt(ARG_COMMON_ANIMATION_IN, 0);
+					bundle2.putInt(ARG_COMMON_ANIMATION_EXIT, 0);
+					this.pushAndFinish(new VadFragment(), bundle2);
+				} else {
+					this.hideProgress();
+					this.finishFragment();
+				}
+			} catch (Exception e) {
+				e.printStackTrace();
+			}
+			break;
+		case MSG_GET_AD_FAIL:
+			this.hideProgress();
+			this.hideSoftKeyboard();
+			this.finishFragment();//FIXME: should tell user network fail.
+			break;
 		case MSG_IMAGE_STATE_CHANGE: {
 			BXThumbnail img = (BXThumbnail) msg.obj;
 			int state = msg.arg1;
@@ -1159,27 +1199,28 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				}
 //				showPost();
 				if(!editMode){
-					showPost();
-					String lp = getArguments().getString("lastPost");
-					if(lp != null && !lp.equals("")){
-						lp += "," + id;
-					}else{
-						lp = id;
-					}
-					args.putString("lastPost", lp);
-					
-					args.putString("cateEnglishName", categoryEnglishName);
-					args.putBoolean(KEY_IS_EDITPOST, editMode); 
-					
-					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
-					if(activity != null){							
-						args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-						
-						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-						intent.putExtras(args);
-						PerformanceTracker.stamp(Event.E_Post_Send_Success_Broadcast);
-						activity.sendBroadcast(intent);
-					}
+					handlePostSucced(id);
+//					showPost();
+//					String lp = getArguments().getString("lastPost");
+//					if(lp != null && !lp.equals("")){
+//						lp += "," + id;
+//					}else{
+//						lp = id;
+//					}
+//					args.putString("lastPost", lp);
+//					
+//					args.putString("cateEnglishName", categoryEnglishName);
+//					args.putBoolean(KEY_IS_EDITPOST, editMode); 
+//					
+//					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
+//					if(activity != null){							
+//						args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+//						
+//						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+//						intent.putExtras(args);
+//						PerformanceTracker.stamp(Event.E_Post_Send_Success_Broadcast);
+//						activity.sendBroadcast(intent);
+//					}
 					doClearUpImages();
 //					finishFragment();
 				}else{
@@ -1467,6 +1508,24 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
             }
 			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
 		}		
+	}
+	
+	private void handlePostSucced(String adId) {
+		ApiParams param = new ApiParams();
+//		param.addParam("query", "id:" + adId);
+		param.addParam("rt", 1);
+		param.addParam("rows", 1);
+		this.showProgress("", "正在获取您发布信息的状态，请耐心等候", false);
+		
+		BaseApiCommand.createCommand("ad_user_list", true, param).execute(getActivity(), new BaseApiCommand.Callback() {
+			public void onNetworkFail(String apiName, ApiError error) {
+				PostGoodsFragment.this.sendMessage(MSG_GET_AD_FAIL, "");
+			}
+			
+			public void onNetworkDone(String apiName, String responseData) {
+				PostGoodsFragment.this.sendMessage(MSG_GET_AD_SUCCED, responseData);
+			}
+		});
 	}
 	
 	public boolean hasGlobalTab() {
