@@ -67,8 +67,8 @@ public abstract class RestHttpRequest extends BaseHttpRequest {
 
 				String encodedValue = "";//URLEncoder.encode(value);
 				try {
-					encodedValue = URLEncoder.encode(value, charset);
-				} catch (UnsupportedEncodingException e) {
+					encodedValue = URLEncoder.encode(value);//URLEncoder.encode(value, charset);//
+				} catch (Throwable e) {
 					Log.w(TAG, "fail to encoded parameter [key, value]:[" + name + "," + value + "] with charset " + charset);
 				}
 				query.append(name).append("=").append(encodedValue);

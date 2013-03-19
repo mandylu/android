@@ -34,7 +34,7 @@ public class ZippedPostRequest extends PostRequest {
 			GZIPOutputStream gzip = new GZIPOutputStream(bo);   
 			gzip.write(params.getBytes());
 			gzip.close(); 
-		    byte[] content = bo.toByteArray();
+		    byte[] content = bo.toByteArray();//bo.toString(charset).getBytes();
 			
 			out.write(content);
 			out.flush();
