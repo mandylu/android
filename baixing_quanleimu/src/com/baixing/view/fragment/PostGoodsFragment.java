@@ -72,6 +72,7 @@ import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	
@@ -1199,7 +1200,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				}
 //				showPost();
 				if(!editMode){
-					handlePostSucced(id);
+					handlePostFinish(id);
 //					showPost();
 //					String lp = getArguments().getString("lastPost");
 //					if(lp != null && !lp.equals("")){
@@ -1327,15 +1328,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	                	@Override
 	                    public void onClick(DialogInterface dialog, int which) {
 	                        dialog.dismiss();
-							if(getActivity() != null){
-								resetData(true);
-								showPost();
-								Bundle args = createArguments(null, null);
-								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-								intent.putExtras(args);
-								getActivity().sendBroadcast(intent);
-							}
+//							if(getActivity() != null){
+//								resetData(true);
+//								showPost();
+//								Bundle args = createArguments(null, null);
+//								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
+//								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
+//								intent.putExtras(args);
+//								getActivity().sendBroadcast(intent);
+//							}
+	                        handlePostFinish(result.id);
 	                    }
 	                });
 	        AlertDialog alert = bd.create();
@@ -1510,11 +1512,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}		
 	}
 	
-	private void handlePostSucced(String adId) {
+	private void handlePostFinish(String adId) {
 		ApiParams param = new ApiParams();
-//		param.addParam("query", "id:" + adId);
+		param.addParam("newAdIds", adId);
+		param.addParam("start", 0);
 		param.addParam("rt", 1);
 		param.addParam("rows", 1);
+		param.addParam("wanted", 0);
+		param.addParam("status", 3);
 		this.showProgress("", "正在获取您发布信息的状态，请耐心等候", false);
 		
 		BaseApiCommand.createCommand("ad_user_list", true, param).execute(getActivity(), new BaseApiCommand.Callback() {

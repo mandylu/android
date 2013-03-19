@@ -162,8 +162,21 @@ public class PostNetworkService implements Callback{
 	
 	private void handlePostMsgBack(String rawData){
 		if (rawData != null) {
+			PostResultData data = this.parseResult(rawData);
+			if(data != null && data.error == 0){									
+				sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
+			}else if (data != null) {
+				sendMessage(PostCommonValues.MSG_POST_FAIL, data);
+			} else {
+				sendMessage(PostCommonValues.MSG_POST_FAIL, "发布失败");
+			}
+		}
+	}
+	
+	private PostResultData parseResult(String response) {
+		if (response != null) {
 			try{
-				JSONObject jsonObject = new JSONObject(rawData);
+				JSONObject jsonObject = new JSONObject(response);
 				JSONObject errorJson = jsonObject.getJSONObject("error");
 				int code = errorJson.getInt("code");
 				String message = errorJson.getString("message");
@@ -172,16 +185,14 @@ public class PostNetworkService implements Callback{
 				data.message = message;
 				data.id = jsonObject.getString("id");
 				data.isRegisteredUser = jsonObject.getBoolean("contactIsRegisteredUser");
-				if(code == 0){									
-					sendMessage(PostCommonValues.MSG_POST_SUCCEED, data);
-				}else{
-					sendMessage(PostCommonValues.MSG_POST_FAIL, data);
-				}
-				return;
+				
+				return data;
 			}catch(JSONException e){
-				sendMessage(PostCommonValues.MSG_POST_FAIL, "发布失败");
+				//
 			}
 		}
+		
+		return null;
 	}
 
 //	private String replaceTitleToDescription(String msg) {
@@ -230,11 +241,14 @@ public class PostNetworkService implements Callback{
 	public void onNetworkFail(String apiName, ApiError error) {
 		PostResultData data = null;
 		if(error != null){
-			data = new PostResultData();
-			if(error.getErrorCode() != null){
-				data.error = Integer.valueOf(error.getErrorCode());
+			data = parseResult(error.getServerResponse());
+			if (data == null) {
+				data = new PostResultData();
+				if(error.getErrorCode() != null){
+					data.error = Integer.valueOf(error.getErrorCode());
+				}
+				data.message = error.getMsg() == null ? "网络错误" : error.getMsg();
 			}
-			data.message = error.getMsg() == null ? "网络错误" : error.getMsg();
 		}
 
 		int msgCode = isretreiveMeta ? PostCommonValues.MSG_GET_META_FAIL : PostCommonValues.MSG_POST_FAIL;
