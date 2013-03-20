@@ -148,7 +148,7 @@ public class FeedbackFragment extends BaseFragment {
 					finishFragment();
 				}
 			}catch(JSONException e){
-				e.printStackTrace();
+				ViewUtil.showToast(activity, result == null ? "提交失败！" : result, false);
 			}
 			
 			break;
