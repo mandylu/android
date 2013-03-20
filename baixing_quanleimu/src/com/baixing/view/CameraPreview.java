@@ -25,7 +25,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
 	public static final String TAG	= "CameraPreview";
     private SurfaceHolder mHolder;
     private Camera mCamera;
-    private int screenRotation;
+    private boolean rotateDisplay;
 
     public CameraPreview(Context context) {
         super(context);
@@ -35,6 +35,10 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         mHolder.addCallback(this);
         // deprecated setting, but required on Android versions prior to 3.0
         mHolder.setType(SurfaceHolder.SURFACE_TYPE_PUSH_BUFFERS);
+    }
+    
+    public void setRotateDisplay(boolean rotateDisplay) {
+    	this.rotateDisplay = rotateDisplay;
     }
     
     public void setCamera(Camera camera) {
@@ -84,7 +88,7 @@ public class CameraPreview extends SurfaceView implements SurfaceHolder.Callback
         try {
             mCamera.setPreviewDisplay(mHolder);
             
-            if (isNewSdk) { //Set orientation on ZTEV880 will cause preview not display well.
+            if (rotateDisplay) { //Set orientation on ZTEV880 will cause preview not display well.
             	try {
             		mCamera.setDisplayOrientation(90);//By design, we use landscape mode. For SDK level <== 8, MUST use landscape mode; for SDK level >8 can set display rotation by 90 degree to using portrait mode.
             	}
