@@ -132,11 +132,10 @@ public class LoginUtil implements View.OnClickListener{
 				// user.setPhone(accoutnEt.getText().toString());
 				String password = ((TextView) view.findViewById(R.id.et_password))
 						.getText().toString();
-				user.setPassword(password);
+				user.setPassword(password, true);
 				GlobalDataManager.getInstance()
 						.setMobile(user.getPhone());
 				Util.saveDataToLocate(view.getContext(), "user", user);
-				GlobalDataManager.getInstance().getAccountManager().reloadUser();
 				GlobalDataManager.getInstance().setPhoneNumber(user.getPhone());
 				BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
 				

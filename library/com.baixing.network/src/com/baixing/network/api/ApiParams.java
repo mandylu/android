@@ -156,7 +156,7 @@ public class ApiParams implements Serializable {
 	}
 	
 	static private String generateUsertoken(String password) {
-		String password1 = NetworkUtil.getMD5(password.trim());
+		String password1 = password;//NetworkUtil.getMD5(password.trim());//UserBean's password has been changed to MD5 already
 		password1 += BaseApiCommand.API_SECRET;
 		return NetworkUtil.getMD5(password1);
 	}

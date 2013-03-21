@@ -40,7 +40,7 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.PersonalActivity;
+import com.baixing.anonymous.AnonymousLogic;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
@@ -71,6 +71,8 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
+import com.baixing.widget.EditUsernameDialogFragment;
+import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 import com.tencent.mm.sdk.platformtools.Log;
 
@@ -206,7 +208,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		this.postLBS = new PostLocationService(this.handler);
-		postNS =  new PostNetworkService(handler);
+		postNS = PostNetworkService.getInstance();
+		postNS.setHandler(handler);
 	}
 		
 	@Override
@@ -297,6 +300,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			           scroll.fullScroll(View.FOCUS_DOWN);              
 			    }
 			});
+			if(doingLogin){
+				doingLogin = false;
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
+			}
 		}
 		
 		if (isNewPost) {
@@ -607,7 +615,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		bmpUrls.clear();
 		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
 		PerformanceTracker.stamp(Event.E_Post_Request_Sent);
-		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
+		this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
+		
+		String phone = mapParams.get("contact");
+		UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(curUser != null && curUser.getPhone() != null && curUser.getPhone().length() > 0){
+			phone = curUser.getPhone();
+		}
+		postNS.doRegisterAndVerify(phone);
 	}
 
 	private int getLineCount() {
@@ -1079,7 +1094,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
-		hideProgress();
+		if(msg.what != PostCommonValues.MSG_GPS_LOC_FETCHED){
+			hideProgress();
+		}
 		
 		switch (msg.what) {
 		case MSG_GET_AD_SUCCED:
@@ -1272,8 +1289,27 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation)msg.obj;
 			break;
+		case PostCommonValues.MSG_POST_NEED_LOGIN:
+			this.pushFragment(new LoginFragment(), createArguments("登录", ""));
+			doingLogin = true;
+			break;
+		case PostCommonValues.MSG_VERIFY_FAIL:
+			VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+				
+				@Override
+				public void onReVerify(String mobile) {
+					// TODO Auto-generated method stub
+					showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+					postNS.onOutActionDone(PostCommonValues.ACTION_POSt_NEED_REVERIIFY, mobile);
+				}
+			});
+//            editUserDlg.callback = this;
+            dlg.show(getFragmentManager(), null);
+
+			break;
 		}
 	}
+	private boolean doingLogin = false;
 	
 	private void changeFocusAfterPostError(String errMsg){
 		if(postList == null) return;
