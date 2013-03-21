@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="18dp" >
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:singleLine="false"
+        android:textColor="#FFFFFF"
+        android:text="可能是手机号码不对或网络太堵了，请重新验证。短信免费，仅按照运营商资费收取"
+        android:textSize="@dimen/font_medium" >
+    </TextView>
+
+    <EditText
+        android:layout_marginTop="20dip"
+        android:id="@+id/dialog_phone_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_bg"
+        android:editable="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:gravity="center_vertical|left"
+        android:hint="当前手机号码"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="@color/common_edit_text_color"
+        android:textSize="@dimen/font_input_text" />
+
+</LinearLayout>

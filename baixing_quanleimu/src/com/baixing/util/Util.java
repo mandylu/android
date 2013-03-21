@@ -900,5 +900,17 @@ public class Util {
     	
     	return DEVICE_ID;
 
-    }	
+    }
+    
+    public static String getDevicePhoneNumber(){
+        TelephonyManager mTelephonyMgr = (TelephonyManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String number = null;
+        if(mTelephonyMgr != null){
+        	number = mTelephonyMgr.getLine1Number();
+        	if(number != null && number.length() >= 11){
+        		number = number.substring(number.length() - 11);
+        	}
+        }
+        return number;
+    }
 }

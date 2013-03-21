@@ -174,7 +174,7 @@ public class RegisterFragment extends BaseFragment {
 					UserBean user = new UserBean();
 					user.setId(usrId);
 					user.setPhone(accoutnEt.getText().toString());
-					user.setPassword(passwordEt.getText().toString());
+					user.setPassword(passwordEt.getText().toString(), true);
 					GlobalDataManager.getInstance().setMobile(user.getPhone());
 					GlobalDataManager.getInstance().setPhoneNumber(user.getPhone());
 					Util.saveDataToLocate(activity, "user", user);

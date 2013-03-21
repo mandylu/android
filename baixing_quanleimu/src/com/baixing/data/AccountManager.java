@@ -67,7 +67,7 @@ public class AccountManager {
 	
 	public void updatePassword(Context cxt, String password) {
 		if (currentUser != null) {
-			currentUser.setPassword(password);
+			currentUser.setPassword(password, true);
 			Util.saveDataToLocate(cxt, "user", currentUser);
 		}
 	}
@@ -79,7 +79,7 @@ public class AccountManager {
 		return currentUser == null ? null : currentUser.getId();
 	}
 
-	public UserBean reloadUser() {
+	private UserBean reloadUser() {
 		UserBean user = (UserBean) Util.loadDataFromLocate(GlobalDataManager
 				.getInstance().getApplicationContext(), "user", UserBean.class);
 		return user;
