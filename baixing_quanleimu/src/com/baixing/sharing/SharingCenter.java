@@ -36,10 +36,10 @@ public class SharingCenter{
 		sm.share(ad);
 	}
 	
-	public static void share2Weixin(BaseActivity activity, Ad ad){
+	public static void share2Weixin(BaseActivity activity, Ad ad, boolean friends){
 		release();
 		trackShareStart("weixin");
-		sm = new WeixinSharingManager(activity);
+		sm = new WeixinSharingManager(activity, friends);
 		registerReceiver(ad);
 		sm.share(ad);
 	}
