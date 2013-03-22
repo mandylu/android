@@ -61,6 +61,11 @@ public class Util {
 	public static String qq_access_secret="";
 	
 //	private static String currentUserId;
+	
+	public static boolean isLoggable() {
+		return new File(Environment.getExternalStorageDirectory()
+				+ "/baixing_debug_log_crl.dat").exists();
+	}
 
 	private static String getSdCardRoot() {
 		String path = Environment.getExternalStorageDirectory().getAbsolutePath();

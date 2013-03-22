@@ -51,7 +51,7 @@ public class EntryApplication extends Application {
 				mangerInstance.getVersion(), mangerInstance.getChannelId(),
 				mangerInstance.getCityEnglishName());
 		
-		if ((this.getApplicationInfo().flags & ApplicationInfo.FLAG_DEBUGGABLE) != 0 ) {
+		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());
 			File f = new File(Environment.getExternalStorageDirectory(),  datePrefix + "_bxnt.txt");
 			NetworkProfiler.endable(f.getAbsolutePath());
