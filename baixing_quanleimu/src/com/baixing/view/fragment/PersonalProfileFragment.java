@@ -396,5 +396,10 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 			}
 		}
 	}
+	@Override
+	public void onVerifyFailed(String message) {
+		// TODO Auto-generated method stub
+		
+	}
 
 }

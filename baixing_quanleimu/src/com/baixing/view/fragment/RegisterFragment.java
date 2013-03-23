@@ -1,5 +1,14 @@
 package com.baixing.view.fragment;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -14,8 +23,12 @@ import android.widget.EditText;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.anonymous.AccountService;
+import com.baixing.anonymous.AnonymousNetworkListener;
+import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiError;
@@ -28,10 +41,13 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostCommonValues;
+import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
+import com.tencent.mm.algorithm.Base64;
 
-public class RegisterFragment extends BaseFragment {
-	private EditText accoutnEt, passwordEt,repasswordEt;
+public class RegisterFragment extends BaseFragment implements AnonymousNetworkListener {
+	private EditText accoutnEt, passwordEt;
     private Button registerBtn;
     final public static int MSG_REGISTER_SUCCESS = 101;
 	public String backPageName = "";
@@ -44,8 +60,11 @@ public class RegisterFragment extends BaseFragment {
 		View v = inflater.inflate(R.layout.register, null);
 		
 		accoutnEt = (EditText) v.findViewById(R.id.accountEt);
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey("defaultNumber")){
+			accoutnEt.setText(bundle.getString("defaultNumber"));
+		}
 		passwordEt = (EditText) v.findViewById(R.id.passwordEt);
-		repasswordEt = (EditText) v.findViewById(R.id.repasswordEt);
         registerBtn = (Button) v.findViewById(R.id.registerBtn);
 
         registerBtn.setOnClickListener(new View.OnClickListener() {
@@ -93,14 +112,6 @@ public class RegisterFragment extends BaseFragment {
 				.end();
 				msgToShow = "密码不能为空！";
 				return false;
-			} else if (!repasswordEt.getText().toString().equals(passwordEt.getText().toString())) {
-				Tracker.getInstance()
-				.event(BxEvent.REGISTER_SUBMIT)
-				.append(Key.REGISTER_RESULT_STATUS, false)
-				.append(Key.REGISTER_RESULT_FAIL_REASON, "password not matches repassword!")
-				.end();
-				msgToShow = "密码不一致！";
-				return false;
 			}
 		} finally {
 			if (msgToShow != null) {
@@ -114,28 +125,32 @@ public class RegisterFragment extends BaseFragment {
 	// 13564852977//{"id":{"nickname":"API_2130603956","userId":"79703763"},"error":{"message":"用户注册成功","code":0}}
 	
 	private void sendRegisterCmd() {
-		ApiParams params = new ApiParams();
-		params.addParam("mobile", accoutnEt.getText().toString());
-		params.addParam("password", passwordEt.getText().toString());
-		params.addParam("isRegister", 1);
-		
-		BaseApiCommand.createCommand("user_register", false, params).execute(getActivity(), new Callback() {
-			
-			@Override
-			public void onNetworkFail(String apiName, ApiError error) {
-				sendMessage(2, error == null ? "注册失败"  : error.getMsg());
-			}
-			
-			@Override
-			public void onNetworkDone(String apiName, String responseData) {
-				json = responseData;
-				if (json != null) {
-					sendMessage(1, null);
-				} else {
-					sendMessage(2, "response json is null!");
-				}
-			}
-		});
+		AccountService.getInstance().initStatus(accoutnEt.getText().toString());
+		AccountService.getInstance().initPassword(passwordEt.getText().toString());
+		AccountService.getInstance().setActionListener(this);
+		AccountService.getInstance().start(BaseAnonymousLogic.Status_UnRegistered);
+//		ApiParams params = new ApiParams();
+//		params.addParam("mobile", accoutnEt.getText().toString());
+//		params.addParam("password", passwordEt.getText().toString());
+//		params.addParam("isRegister", 1);
+//		
+//		BaseApiCommand.createCommand("user_register", false, params).execute(getActivity(), new Callback() {
+//			
+//			@Override
+//			public void onNetworkFail(String apiName, ApiError error) {
+//				sendMessage(2, error == null ? "注册失败"  : error.getMsg());
+//			}
+//			
+//			@Override
+//			public void onNetworkDone(String apiName, String responseData) {
+//				json = responseData;
+//				if (json != null) {
+//					sendMessage(1, null);
+//				} else {
+//					sendMessage(2, "response json is null!");
+//				}
+//			}
+//		});
 	}
 	
 	@Override
@@ -230,6 +245,123 @@ public class RegisterFragment extends BaseFragment {
 		this.finishFragment(requestCode, result);
 		//TODO:
 	}
+	
+    static private byte[] decript(byte[] encryptedData, byte[] key)
+            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
+	    SecretKeySpec k = new SecretKeySpec(key, "AES");
+	    c.init(Cipher.DECRYPT_MODE, k);
+	    return c.doFinal(encryptedData);
+    }
 
 	
+    static private String getDecryptedPassword(String encryptedPwd){
+		try{
+			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
+			key = key.substring(0, 16);
+			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
+			String str = new String(pwd);
+			return str;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+    }
+
+    
+	private void doLoginAfterPostSucceedSync(){
+		String mobile = accoutnEt.getText().toString();
+		if(mobile == null || mobile.length() == 0) return;
+		UserBean bean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(bean != null && bean.getPhone() != null && bean.getPhone().equals(mobile)){
+			return;
+		}
+		ApiParams param = new ApiParams();
+		param.addParam("mobile", mobile);
+//		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
+		String json = BaseApiCommand.createCommand("getUser", false, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+		try{
+			JSONObject obj = new JSONObject(json);
+			if(obj != null){
+				JSONObject error = obj.getJSONObject("error");
+				if(error != null){
+					String code = error.getString("code");
+					if(code != null && code.equals("0")){
+						String password = obj.getString("password");
+						String nickname = obj.getString("nickname");
+						String id = obj.getString("id");
+						UserBean loginBean = new UserBean();
+						loginBean.setId(id);
+						loginBean.setPhone(mobile);
+						String decPwd = getDecryptedPassword(password);
+						loginBean.setPassword(decPwd, false);
+						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
+						UserProfile profile = new UserProfile();
+						profile.mobile = mobile;
+						profile.nickName = nickname;
+						profile.userId = id;
+						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
+						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
+					}
+				}
+			}
+		}catch(JSONException e){
+			e.printStackTrace();
+		}
+
+	}
+
+	private String verifyCode; 
+	@Override
+	public void onActionDone(String action, ResponseData response) {
+		// TODO Auto-generated method stub
+		if(action.equals(AccountService.Action_Done)){
+			doLoginAfterPostSucceedSync();
+			this.getView().postDelayed(new Runnable(){
+				@Override
+				public void run(){
+					finishFragment();
+				}
+			}, 0);
+		}else{
+			if(!response.success){
+				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
+						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+					VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+						
+						@Override
+						public void onReVerify(String mobile) {
+							// TODO Auto-generated method stub
+							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+							AccountService.getInstance().start();
+						}
+
+						@Override
+						public void onSendVerifyCode(String code) {
+							// TODO Auto-generated method stub
+							verifyCode = code;
+							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+							AccountService.getInstance().start();						
+						}
+					});
+					dlg.show(getFragmentManager(), null);
+				}else{
+					this.hideProgress();
+					ViewUtil.showToast(getAppContext(), response.message, false);
+				}
+			}
+		}		
+	}
+
+	@Override
+	public void beforeActionDone(String action, ApiParams outParams) {
+		// TODO Auto-generated method stub
+		if(action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null){
+			outParams.addParam("verifyCode", verifyCode);
+			verifyCode = null;
+		}else if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) || action.equals(BaseAnonymousLogic.Action_Register)){
+			outParams.addParam("password", passwordEt.getText().toString());
+		}
+	}
 }

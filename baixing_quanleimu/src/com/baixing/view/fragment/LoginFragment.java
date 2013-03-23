@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
@@ -21,6 +22,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
@@ -149,6 +151,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
 		
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey("defaultNumber")){
+			((TextView)llLoginRoot.findViewById(R.id.et_account)).setText(bundle.getString("defaultNumber"));
+		}
 		loginHelper = new LoginUtil(llLoginRoot, this);
 		
 		return llLoginRoot;
@@ -219,6 +225,27 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	public boolean hasGlobalTab()
 	{
 		return false;
+	}
+	@Override
+	public void onVerifyFailed(String message) {
+		// TODO Auto-generated method stub
+		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			
+			@Override
+			public void onReVerify(String mobile) {
+				// TODO Auto-generated method stub
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify("");
+			}
+
+			@Override
+			public void onSendVerifyCode(String code) {
+				// TODO Auto-generated method stub				
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify(code);
+			}
+		});
+		dlg.show(getFragmentManager(), null);
 	}
 
 }

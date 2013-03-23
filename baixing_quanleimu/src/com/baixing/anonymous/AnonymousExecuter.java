@@ -28,7 +28,7 @@ public class AnonymousExecuter implements Callback{
 	private BroadcastReceiver smsReceiver = null;
 	private boolean waitingForVerifyCode = false;
 	
-	public String retreiveAccountStatusSync(String mobile){
+	static public String retreiveAccountStatusSync(String mobile){
 		ApiParams param = new ApiParams();
 		param.addParam("mobile", mobile);
 		String retStatus = "";
@@ -44,11 +44,11 @@ public class AnonymousExecuter implements Callback{
 					if(code != null){
 						Integer intCode = Integer.valueOf(code);
 						if(intCode == 1){
-							retStatus = AnonymousLogic.Status_UnRegistered;
+							retStatus = BaseAnonymousLogic.Status_UnRegistered;
 						}else if(intCode == 2){
-							retStatus = AnonymousLogic.Status_Registered_Verified;
+							retStatus = BaseAnonymousLogic.Status_Registered_Verified;
 						}else if(intCode == 3){
-							retStatus = AnonymousLogic.Status_Registered_UnVerified;
+							retStatus = BaseAnonymousLogic.Status_Registered_UnVerified;
 						}
 					}
 				}
@@ -65,15 +65,36 @@ public class AnonymousExecuter implements Callback{
 	}
 	
 	public void executeAction(String action, String mobile){
-		if(action.equals(AnonymousLogic.Action_AutoVerifiy)){
-			doAutoVerify(mobile);
-		}else if(action.equals(AnonymousLogic.Action_Login)){
-//			throw new Exception("login should never happen here"); 
-//			doLogin(mobile, "");
-		}else if(action.equals(AnonymousLogic.Action_Register)){
-			doRegister(mobile);
-		}else if(action.equals(AnonymousLogic.Action_Verifiy)){
-			requestVerifyCode(mobile);
+		if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy)){
+			ApiParams params = new ApiParams();
+			if(listener != null){
+				listener.beforeActionDone(BaseAnonymousLogic.Action_AutoVerifiy, params);
+			}
+			doAutoVerify(mobile, params);
+		}else if(action.equals(BaseAnonymousLogic.Action_Login)){
+			ApiParams params = new ApiParams();
+			if(listener != null){
+				listener.beforeActionDone(BaseAnonymousLogic.Action_Login, params);
+			}		
+			String pwd = params.hasParam("password") ? params.getParam("password") : "";
+			doLogin(mobile, pwd);
+		}else if(action.equals(BaseAnonymousLogic.Action_Register)){
+			ApiParams params = new ApiParams();
+			if(listener != null){
+				listener.beforeActionDone(BaseAnonymousLogic.Action_Register, params);
+			}			
+			doRegister(mobile, params);
+		}else if(action.equals(BaseAnonymousLogic.Action_Verify)){
+			ApiParams params = new ApiParams();
+			if(listener != null){
+				listener.beforeActionDone(BaseAnonymousLogic.Action_Verify, params);
+			}	
+			String code = params.getParam("verifyCode");
+			if(code != null && code.length() > 0){
+				this.doVerify(mobile, code);
+			}else{
+				requestVerifyCode(mobile, params);	
+			}			
 		}
 	}
 	
@@ -84,9 +105,10 @@ public class AnonymousExecuter implements Callback{
 		BaseApiCommand.createCommand("user_login", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);		
 	}
 	
-	private void doAutoVerify(String mobile){
+	private void doAutoVerify(String mobile, ApiParams param){
 		ApiParams params = new ApiParams();
 		params.addParam("mobile", mobile);
+		params.addAll(param.getParams());
 		BaseApiCommand.createCommand("autoVerify", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 	}
 	
@@ -105,7 +127,7 @@ public class AnonymousExecuter implements Callback{
 					AnonymousNetworkListener.ResponseData data = new AnonymousNetworkListener.ResponseData();
 					data.success = false;
 					data.message = "验证超时";
-					listener.onActionDone(AnonymousLogic.Action_Verifiy, data);
+					listener.onActionDone(BaseAnonymousLogic.Action_Verify, data);
 				}
 				if(smsReceiver != null){
 					GlobalDataManager.getInstance().getApplicationContext().unregisterReceiver(smsReceiver);
@@ -116,14 +138,10 @@ public class AnonymousExecuter implements Callback{
 		}
 	};
 	
-	private void doRegister(String mobile){
+	private void doRegister(String mobile, ApiParams param){
 		ApiParams params = new ApiParams();
-		params.addParam("mobile", mobile);
-		
-        Random generator = new Random();
-        int pwd = generator.nextInt();
-
-		params.addParam("password", String.valueOf(pwd));
+		params.addParam("mobile", mobile);		
+		params.addAll(param.getParams());
 		BaseApiCommand.createCommand("user_register", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);		
 	}
 	
@@ -134,9 +152,10 @@ public class AnonymousExecuter implements Callback{
 		BaseApiCommand.createCommand("verifyMobile", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);		
 	}
 	
-	private void requestVerifyCode(final String mobile){
+	private void requestVerifyCode(final String mobile, ApiParams param){
 		ApiParams params = new ApiParams();
 		params.addParam("mobile", mobile);
+		params.addAll(param.getParams());
 		BaseApiCommand.createCommand("sendsmscode", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 		if(smsReceiver == null){
 			smsReceiver = new BroadcastReceiver(){
@@ -150,7 +169,13 @@ public class AnonymousExecuter implements Callback{
 						if(smsMessage != null){
 							int index = smsMessage.indexOf("验证码为");
 							if(index > 0){
-								verifyCode = smsMessage.substring(index + 4, index + 10);								
+								verifyCode = smsMessage.substring(index + 4, index + 10);
+								if(listener != null){
+									ResponseData response = new ResponseData();
+									response.success = true;
+									response.message = verifyCode;
+									listener.onActionDone(BaseAnonymousLogic.Action_SendSMS, response);
+								}
 							}
 						}
 						doVerify(mobile, verifyCode);
@@ -192,13 +217,13 @@ public class AnonymousExecuter implements Callback{
 	private static String getPairAction(String apiName){
 		String pair = "";
 		if(apiName.equals("autoVerify")){
-			pair = AnonymousLogic.Action_AutoVerifiy;
+			pair = BaseAnonymousLogic.Action_AutoVerifiy;
 		}else if(apiName.equals("verifyMobile")){			
-			pair = AnonymousLogic.Action_Verifiy;
+			pair = BaseAnonymousLogic.Action_Verify;
 		}else if(apiName.equals("user_login")){
-			pair = AnonymousLogic.Action_Login;
+			pair = BaseAnonymousLogic.Action_Login;
 		}else if(apiName.equals("user_register")){
-			pair = AnonymousLogic.Action_Register;
+			pair = BaseAnonymousLogic.Action_Register;
 		}
 		return pair;
 	}
@@ -215,7 +240,7 @@ public class AnonymousExecuter implements Callback{
 			String pair = getPairAction(apiName);
 			if(pair != null && pair.length() > 0){
 				if(listener != null){
-					listener.onActionDone(AnonymousLogic.Action_AutoVerifiy, response);
+					listener.onActionDone(pair, response);
 				}		
 			}
 		}

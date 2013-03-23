@@ -40,7 +40,7 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.anonymous.AnonymousLogic;
+import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
@@ -300,8 +300,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			           scroll.fullScroll(View.FOCUS_DOWN);              
 			    }
 			});
-			if(doingLogin){
-				doingLogin = false;
+			if(doingAccountCheck){
+				doingAccountCheck = false;
 				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
 			}
@@ -1267,7 +1267,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		case PostCommonValues.MSG_POST_EXCEPTION:
 			hideProgress();
-			ViewUtil.showToast(activity, "网络连接异常", false);
+			if(msg.obj != null && msg.obj instanceof String){
+				ViewUtil.showToast(activity, (String)msg.obj, false);
+			}else{
+				ViewUtil.showToast(activity, "网络连接异常", false);
+			}
 			break;
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();
@@ -1290,8 +1294,20 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			detailLocation = (BXLocation)msg.obj;
 			break;
 		case PostCommonValues.MSG_POST_NEED_LOGIN:
-			this.pushFragment(new LoginFragment(), createArguments("登录", ""));
-			doingLogin = true;
+			Bundle tmpBundle = createArguments("登录", "");
+			if(msg.obj != null){
+				tmpBundle.putString("defaultNumber", (String)msg.obj);
+			}
+			this.pushFragment(new LoginFragment(), tmpBundle);
+			doingAccountCheck = true;
+			break;
+		case PostCommonValues.MSG_POST_NEED_REGISTER:
+			Bundle tmpRegBundle = createArguments("", "");
+			if(msg.obj != null){
+				tmpRegBundle.putString("defaultNumber", (String)msg.obj);
+			}		
+			this.pushFragment(new RegisterFragment(), tmpRegBundle);
+			doingAccountCheck = true;
 			break;
 		case PostCommonValues.MSG_VERIFY_FAIL:
 			VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
@@ -1300,7 +1316,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				public void onReVerify(String mobile) {
 					// TODO Auto-generated method stub
 					showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-					postNS.onOutActionDone(PostCommonValues.ACTION_POSt_NEED_REVERIIFY, mobile);
+					postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, null);
+				}
+
+				@Override
+				public void onSendVerifyCode(String code) {
+					// TODO Auto-generated method stub
+					showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+					postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, code);
 				}
 			});
 //            editUserDlg.callback = this;
@@ -1309,7 +1332,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		}
 	}
-	private boolean doingLogin = false;
+	private boolean doingAccountCheck = false;
 	
 	private void changeFocusAfterPostError(String errMsg){
 		if(postList == null) return;

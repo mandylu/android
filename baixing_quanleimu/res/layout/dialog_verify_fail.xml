@@ -10,7 +10,7 @@
         android:layout_height="wrap_content"
         android:singleLine="false"
         android:textColor="#FFFFFF"
-        android:text="可能是手机号码不对或网络太堵了，请重新验证。短信免费，仅按照运营商资费收取"
+        android:text="请手动输入短信验证码。短信会根据网络状况有延迟，如未收到，请点击重新验证免费获取验证码"
         android:textSize="@dimen/font_medium" >
     </TextView>
 

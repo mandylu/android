@@ -22,8 +22,9 @@ import android.os.Handler;
 import android.os.Message;
 import android.util.Pair;
 
+import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousExecuter;
-import com.baixing.anonymous.AnonymousLogic;
+import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
@@ -39,16 +40,14 @@ import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
+import com.baixing.widget.VerifyFailDialog;
+import com.quanleimu.activity.R;
 import com.tencent.mm.algorithm.Base64;
 
 public class PostNetworkService implements Callback, AnonymousNetworkListener{
 	private Handler handler;
 	private String city;
 	private String category;
-	private AnonymousLogic anonyLogic;
-	private AnonymousExecuter anonyExecuter;
-	private Pair<String, String> nextActionAndStatus;
-	private String currentStatus;
 	private String mobile;
 	private PostParams postParams;
 	
@@ -94,53 +93,36 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 		BaseApiCommand.createCommand(apiName, false, param).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 	}
 	
-	private void initExecuter(){
-		if(anonyExecuter == null){
-			anonyExecuter = new AnonymousExecuter();
-			anonyExecuter.setCallback(this);
-		}		
-	}
-	
-	public String getAccountStatus(String mobile){
-		initExecuter();
-		return anonyExecuter.retreiveAccountStatusSync(mobile);
-	}
-	
-	private boolean isUserLoginned(){
-		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-		if(user != null && user.getPhone() != null && user.getPhone().equals(mobile)){
-			return true;
-		}
-		return false;
-	}
-	
-	public void doRegisterAndVerify(final String mobile){
-		initExecuter();
-		this.mobile = mobile;
-		String accountStatus = getAccountStatus(mobile);
-		String deviceNumber = Util.getDevicePhoneNumber();
-		String phoneStatus = (deviceNumber != null && deviceNumber.contains(mobile)) ? 
-				AnonymousLogic.Status_Number_Available : AnonymousLogic.Status_Number_UnAvailable;
-		anonyLogic = new AnonymousLogic(accountStatus, phoneStatus);
-		nextActionAndStatus = anonyLogic.getActionAndNextStatus();
-		currentStatus = anonyLogic.getCurrentStatus();
-		if(phoneStatus.equals(AnonymousLogic.Status_Number_Available)){
-			this.mobile = deviceNumber;
-		}
-		if(nextActionAndStatus != null){
-			if(nextActionAndStatus.first.equals(AnonymousLogic.Action_Post)){
-				doPost();
-			}else if(nextActionAndStatus.first.equals(AnonymousLogic.Action_Login)){
-				if(isUserLoginned()){
-					ResponseData response = new ResponseData();
-					response.success = true;
-					response.message = "登陆成功";
-					this.onActionDone(AnonymousLogic.Action_Login, response);
+	public void doRegisterAndVerify(String mobile){		
+		UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(curUser != null && curUser.getPhone() != null){
+			String curUserStatus = AnonymousExecuter.retreiveAccountStatusSync(curUser.getPhone());
+			if(curUserStatus != null && curUserStatus.equals(BaseAnonymousLogic.Status_Registered_Verified)){
+				this.doPost();
+			}else{
+				AccountService.getInstance().initStatus(curUser.getPhone());
+				AccountService.getInstance().setActionListener(this);
+				AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified);
+//				TODO start verify
+			}
+		}else{
+			String checkMobile = mobile;
+			String deviceNumber = Util.getDevicePhoneNumber();
+			if(deviceNumber != null && deviceNumber.length() == 11){
+				checkMobile = deviceNumber;
+			}
+			String status = AnonymousExecuter.retreiveAccountStatusSync(checkMobile);
+			if(status != null){
+				if(status.equals(BaseAnonymousLogic.Status_UnRegistered)){
+					sendMessage(PostCommonValues.MSG_POST_NEED_REGISTER, checkMobile);
+				}else if(status.equals(BaseAnonymousLogic.Status_Registered_Verified)
+						|| status.equals(BaseAnonymousLogic.Status_Registered_UnVerified)){
+					sendMessage(PostCommonValues.MSG_POST_NEED_LOGIN, checkMobile);
 				}else{
-					sendMessage(PostCommonValues.MSG_POST_NEED_LOGIN, null);
+					sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, null);
 				}
 			}else{
-				anonyExecuter.executeAction(nextActionAndStatus.first, this.mobile);
+				sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, null);	
 			}
 		}
 	}	
@@ -148,9 +130,9 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 	private void doPost(){
 		if(postParams == null) return;
 		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-		if(user == null || user.getPhone() == null || !user.getPhone().equals(mobile)){
-			doLoginAfterPostSucceedSync();
-		}
+//		if(user == null || user.getPhone() == null || !user.getPhone().equals(mobile)){
+//			doLoginAfterPostSucceedSync();
+//		}
 		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if(user != null){
 			postParams.params.removeParam("mobile");
@@ -405,43 +387,40 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 		sendMessage(msgCode, error == null ? "网络错误" : data);
 	}
 	
+	private String verifyCode;
 	public void onOutActionDone(int action, String data){
 		if(action == PostCommonValues.ACTION_POST_NEED_LOGIN_DONE){
-			UserBean ub = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-			ResponseData response = new ResponseData();
-			if(ub != null && ub.getPhone() != null && ub.getPhone().equals(this.mobile)){
-				response.success = true;
-				onActionDone(AnonymousLogic.Action_Login, response);
-			}else{
-				response.success = false;
-			}				
-		}else if(action == PostCommonValues.ACTION_POSt_NEED_REVERIIFY){
-			if(data != null && data.length() > 0){
-				mobile = data;
-			}
-			this.doRegisterAndVerify(mobile);
+			doPost();
+		}else if(action == PostCommonValues.ACTION_POST_NEED_REVERIIFY){
+			verifyCode = data;
+			AccountService.getInstance().setActionListener(this);
+			AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified);
 		}
 	}
 
 	@Override
 	public void onActionDone(String action, ResponseData response) {
 		// TODO Auto-generated method stub
-		if(response.success){
-			if(nextActionAndStatus != null && nextActionAndStatus.second != null){
-				currentStatus = nextActionAndStatus.second;
-				anonyLogic.setCurrentStatus(currentStatus);
-				nextActionAndStatus = this.anonyLogic.getActionAndNextStatus();
-				if(nextActionAndStatus != null){
-					if(nextActionAndStatus.first.equals(AnonymousLogic.Action_Post)){
-						doPost();
-					}else{
-						this.anonyExecuter.executeAction(nextActionAndStatus.first, mobile);
-					}
+		if(action.equals(AccountService.Action_Done)){
+			doPost();
+		}else{
+			if(!response.success){
+				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
+						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+					sendMessage(PostCommonValues.MSG_VERIFY_FAIL, null);
+				}else{
+					sendMessage(PostCommonValues.MSG_POST_EXCEPTION, response.message);
 				}
 			}
-		}else{
-			sendMessage(PostCommonValues.MSG_VERIFY_FAIL, mobile);
-			anonyLogic.setCurrentStatus(AnonymousLogic.Status_Initialization);
-		}
+		}				
+	}
+
+	@Override
+	public void beforeActionDone(String action, ApiParams outParams) {
+		// TODO Auto-generated method stub
+		if(action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null){
+			outParams.addParam("verifyCode", verifyCode);
+			verifyCode = null;
+		}		
 	}
 }

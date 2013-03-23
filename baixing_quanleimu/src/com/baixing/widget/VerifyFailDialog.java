@@ -14,6 +14,7 @@ import android.widget.EditText;
 public class VerifyFailDialog extends DialogFragment{
 	public static interface VerifyListener{
 		void onReVerify(String mobile);
+		void onSendVerifyCode(String code);
 	}
 	
 	private VerifyListener listener;
@@ -37,9 +38,11 @@ public class VerifyFailDialog extends DialogFragment{
                     	}
                     }
                 })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
+                .setNegativeButton("确定", new DialogInterface.OnClickListener() {
                     public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
+                    	if(listener != null){
+                    		listener.onSendVerifyCode(editPhoneEt.getText().toString());
+                    	}
                     }
                 });
         AlertDialog dialog = builder.create();

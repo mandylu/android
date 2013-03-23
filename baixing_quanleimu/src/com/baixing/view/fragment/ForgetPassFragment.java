@@ -16,6 +16,10 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.anonymous.AccountService;
+import com.baixing.anonymous.AnonymousExecuter;
+import com.baixing.anonymous.AnonymousNetworkListener;
+import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
@@ -29,26 +33,22 @@ import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ViewUtil;
+import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
 
-public class ForgetPassFragment extends BaseFragment {
+public class ForgetPassFragment extends BaseFragment implements AnonymousNetworkListener {
 	
     private EditText mobileEt;
-    private Button getCodeBtn;
-    private TextView lessTimeTv;
-    private EditText codeEt;
     private EditText newPwdEt;
-    private EditText rePwdEt;
+    private EditText codeEt;
     private Button postBtn;
 
     private CountDownTimer countTimer;
 
     final private int MSG_NETWORK_ERROR = 0;
-    final private int MSG_SENT_CODE_FINISH = 2;
     final private int MSG_POST_FINISH = 3;
     final private int MSG_POST_ERROR = 1;
-    final private int MSG_SENT_CODE_ERROR = 4;
 
 	@Override
 	public void onResume() {
@@ -75,31 +75,22 @@ public class ForgetPassFragment extends BaseFragment {
 		View rootV = inflater.inflate(R.layout.forget_password, null);
 
         mobileEt = (EditText)rootV.findViewById(R.id.forgetPwdMobileEt);
-        getCodeBtn = (Button)rootV.findViewById(R.id.forgetPwdGetCodeBtn);
-        lessTimeTv = (TextView)rootV.findViewById(R.id.forgetPwdLessTimeTv);
-        codeEt = (EditText)rootV.findViewById(R.id.forgetPwdCodeEt);
         newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
-        rePwdEt = (EditText)rootV.findViewById(R.id.forgetPwdRePwdEt);
         postBtn = (Button)rootV.findViewById(R.id.forgetPwdPostBtn);
+        codeEt = (EditText)rootV.findViewById(R.id.forgetPwdCodeEt);
         
-        boolean isLoginUser = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
-        mobileEt.setEnabled(!isLoginUser);
-        if (isLoginUser) {
-        	UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-        	mobileEt.setText(user.getPhone());
-        }
-
-        getCodeBtn.setOnClickListener(new View.OnClickListener() {
-            @Override
-            public void onClick(View view) {
-                doGetCodeAction();
-            }
-        });
-
         postBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                doPostNewPwdAction();
+                if (checkAllInputs() == false) {
+                    return;
+                }
+                showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+            	if(codeEt.getText() != null && codeEt.getText().length() > 0){
+            		doReset();
+            	}else{
+            		doPostNewPwdAction();
+            	}
             }
         });
 
@@ -127,20 +118,12 @@ public class ForgetPassFragment extends BaseFragment {
         }
 
         String tip = null;
-        String code = codeEt.getText().toString();
         String newPwd = newPwdEt.getText().toString();
-        String rePwd = rePwdEt.getText().toString();
 
-        if (code.length() <= 0) {
-            tip = "请输入验证码";
-        } else if (newPwd.length() <= 0) {
+        if (newPwd.length() <= 0) {
             tip = "请输入新密码";
-        } else if (rePwd.length() <= 0) {
-            tip = "请输入确认密码";
-        } else if (newPwd.equals(rePwd) == false) {
-            tip = "请确保确认密码与新密码一致";
         }
-
+        
         if (tip != null) {
         	Tracker.getInstance()
 			.event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
@@ -153,90 +136,24 @@ public class ForgetPassFragment extends BaseFragment {
 
         return true;
     }
-    private void postEnableGetCodeBtn()
-    {
-    	postBtn.post(new Runnable() {
-			
-			@Override
-			public void run() {
-				getCodeBtn.setEnabled(true);
-		        lessTimeTv.setVisibility(View.GONE);
-			}
-		});
-    }
 
-    private void doGetCodeAction() {
-        if (checkMobile() == false) {
-            return;
-        }
-        getCodeBtn.setEnabled(false);
-        lessTimeTv.setVisibility(View.VISIBLE);
-
-//        ParameterHolder params = new ParameterHolder();
-        ApiParams params = new ApiParams();
-        params.addParam("mobile", mobileEt.getText().toString());
-//        params.addParameter("mobile", mobileEt.getText());
-
-        BaseApiCommand.createCommand("sendsmscode", true, params).execute(getActivity(), new Callback() {
-			
-			@Override
-			public void onNetworkFail(String apiName, ApiError error) {
-				 sendMessage(MSG_NETWORK_ERROR, "网络异常");
-			}
-			
-			@Override
-			public void onNetworkDone(String apiName, String responseData) {
-				 try {
-	                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
-	                    if (!"0".equals(obj.getString("code"))) {
-	                    	postEnableGetCodeBtn();
-	                        sendMessage(MSG_SENT_CODE_ERROR, obj.getString("message"));
-	                    } else  {
-	                        sendMessage(MSG_SENT_CODE_FINISH, null);
-	                    }
-	                } catch (JSONException e) {
-	                	postEnableGetCodeBtn();
-	                    sendMessage(MSG_SENT_CODE_ERROR, "网络异常");
-	                }
-			}
-		});
-    }
-
-    private void doPostNewPwdAction() {
-        if (checkAllInputs() == false) {
-            return;
-        }
-
+    private void doPostNewPwdAction() {        
         final String mobile = mobileEt.getText().toString();
-        final String pass = newPwdEt.getText().toString();
-        ApiParams params = new ApiParams();
-        params.addParam("mobile", mobile);
-        params.addParam("code", codeEt.getText().toString());
-        params.addParam("password", pass);
-        
-        BaseApiCommand.createCommand("resetpassword", false, params).execute(getActivity(), new Callback() {
-			
-			@Override
-			public void onNetworkFail(String apiName, ApiError error) {
-				sendMessage(MSG_NETWORK_ERROR, "网络异常");
-			}
-			
-			@Override
-			public void onNetworkDone(String apiName, String responseData) {
-                try {
-                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
-                    if (!"0".equals(obj.getString("code"))) {
-                        sendMessage(MSG_POST_ERROR, obj.getString("message"));
-                    } else  {
-                        sendMessage(MSG_POST_FINISH, obj.getString("message"));
-                        BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_NEW_PASSWORD, pass);
-                    }
-                } catch (JSONException e) {
-                    sendMessage(MSG_POST_ERROR, "网络异常");
-                }
+//        final String pass = newPwdEt.getText().toString();
 
-            }
-		});
+		String status = AnonymousExecuter.retreiveAccountStatusSync(mobile);
+		if(status != null && (status.equals(BaseAnonymousLogic.Status_Registered_UnVerified)
+								|| status.equals(BaseAnonymousLogic.Status_Registered_Verified))){
+			AccountService.getInstance().initStatus(mobile);
+			AccountService.getInstance().setActionListener(this);
+			AccountService.getInstance().start(status, BaseAnonymousLogic.Status_ForgetPwd);
+		}else{
+			this.hideProgress();
+			ViewUtil.showToast(this.getAppContext(), "帐号未注册", false);
+		}
+
+
+        
     }
 
     @Override
@@ -258,25 +175,7 @@ public class ForgetPassFragment extends BaseFragment {
                 .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
                 .end();
                 break;
-            case MSG_SENT_CODE_ERROR:
-                ViewUtil.showToast(getActivity(), showMsg, false);
-                getCodeBtn.setEnabled(true);
-              //tracker
-                Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
-                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, false)
-                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_FAIL_REASON, (String)msg.obj)
-                .end();
-                break;
-            case MSG_SENT_CODE_FINISH:
-                ViewUtil.showToast(getActivity(), "一分钟后可再次获取", false);
-                disableGetCodeBtn();
-              //tracker
-                Tracker.getInstance()
-                .event(BxEvent.FORGETPASSWORD_SENDCODE_RESULT)
-                .append(Key.FORGETPASSWORD_SENDCODE_RESULT_STATUS, true)
-                .end();
-                break;
+
             case MSG_POST_FINISH:
                 ViewUtil.showToast(getActivity(), showMsg, false);
                 finishFragment();
@@ -297,38 +196,69 @@ public class ForgetPassFragment extends BaseFragment {
                 break;
         }
     }
-
-    private void disableGetCodeBtn() {
-        getCodeBtn.setEnabled(false);
-        getCodeBtn.setText("验证码发送成功");
-        countTimer = new CountDownTimer(60000,1000) {
-			
-			@Override
-			public void onTick(final long millisUntilFinished) {
-				lessTimeTv.post(new Runnable() {
-					public void run()
-					{
-						lessTimeTv.setText(Integer.toString((int) (millisUntilFinished/1000)));
-					}
-				});
-			}
-			
-			@Override
-			public void onFinish() {
-				getCodeBtn.post(new Runnable() {
-					public void run() {
-						getCodeBtn.setEnabled(true);
-						lessTimeTv.setText("");
-						lessTimeTv.setVisibility(View.GONE);
-						getCodeBtn.setText("获取验证码");
-					}
-				});
-			}
-		}.start();
-    }
     
     public boolean hasGlobalTab()
 	{
 		return false;
+	}
+    
+    private void doReset(){
+		ApiParams params = new ApiParams();
+		params.addParam("mobile", mobileEt.getText().toString());
+		params.addParam("password", newPwdEt.getText().toString());
+		params.addParam("code", codeEt.getText().toString());
+
+    	BaseApiCommand.createCommand("resetpassword", false, params).execute(getActivity(), new Callback() {
+			
+			@Override
+			public void onNetworkFail(String apiName, ApiError error) {
+				hideProgress();
+				sendMessage(MSG_NETWORK_ERROR, (error == null || error.getMsg() == null ) ? "网络异常" : error.getMsg());
+			}
+			
+			@Override
+			public void onNetworkDone(String apiName, String responseData) {
+				hideProgress();
+                try {
+                    JSONObject obj = new JSONObject(responseData).getJSONObject("error");
+                    if (!"0".equals(obj.getString("code"))) {
+                        sendMessage(MSG_POST_ERROR, obj.getString("message"));
+                    } else  {
+                        sendMessage(MSG_POST_FINISH, obj.getString("message"));
+                        BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_NEW_PASSWORD, newPwdEt.getText().toString());
+                    }
+                } catch (JSONException e) {
+                    sendMessage(MSG_POST_ERROR, "网络异常");
+                }
+
+            }
+		});
+    }
+
+	@Override
+	public void onActionDone(String action, ResponseData response) {
+		// TODO Auto-generated method stub
+		if(action.equals(AccountService.Action_Done)){
+			doReset();    
+		}else{
+			if(!response.success){
+				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
+						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+					hideProgress();
+					sendMessage(MSG_NETWORK_ERROR, response.message);
+				}else{
+					hideProgress();
+					ViewUtil.showToast(this.getAppContext(), response.message, false);
+				}
+			}else if(action.equals(BaseAnonymousLogic.Action_SendSMS)){
+				if(response.success){
+					codeEt.setText(response.message);
+				}
+			}
+		}		
+	}
+	
+	@Override
+	public void beforeActionDone(String action, ApiParams outParams) {
 	}
 }
