@@ -529,7 +529,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			return;
 		}
 		PostUtil.extractInputData(layout_txt, params);
-		setPhoneAndAddress();
+		
+		if(getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
+			params.put("contact", 
+					GlobalDataManager.getInstance().getPhoneNumber(),
+					GlobalDataManager.getInstance().getPhoneNumber());
+			params.put(PostCommonValues.STRING_DETAIL_POSITION, 
+					GlobalDataManager.getInstance().getAddress(), 
+					GlobalDataManager.getInstance().getAddress());
+		}else{
+			setPhoneAndAddress();
+		}
 		if(!this.checkInputComplete()){
 			return;
 		}
@@ -760,6 +770,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			resetData(false);
 			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
 			this.showPost();
+		}else if(message == ContactAndAddressDetailFragment.MSG_RET_CODE){
+			if(layout_txt.findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
+				((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
+				((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
+			}
 		}
 		PostUtil.fetchResultFromViewBack(message, obj, layout_txt, params);
 	}
@@ -928,13 +943,57 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			}			
 		}
 		
+		String prevPhone = GlobalDataManager.getInstance().getPhoneNumber();
+		String prevAddress = GlobalDataManager.getInstance().getAddress();
+		boolean phoneAndAddrExist = prevPhone != null && prevPhone.length() > 0 && prevAddress != null && prevAddress.length() > 0;
+		
 		for(int i = 0; i < PostCommonValues.fixedItemNames.length; ++ i){
 			if(pm.containsKey(PostCommonValues.fixedItemNames[i]) && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DESCRIPTION)){
+				if(!phoneAndAddrExist || 
+						(!PostCommonValues.fixedItemNames[i].equals("contact") && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION)))
 				this.appendBeanToLayout(pm.get(PostCommonValues.fixedItemNames[i]));
 			}else if(!pm.containsKey(PostCommonValues.fixedItemNames[i])){
 				params.remove(PostCommonValues.fixedItemNames[i]);
 			}
 		}
+		
+		if(phoneAndAddrExist){
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
+			setPhoneAndAddrLayout();
+		}else{
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.GONE);
+		}
+	}
+	
+	private void setPhoneAndAddrLayout(){
+		((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
+		((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
+		getView().findViewById(R.id.btn_contact).setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Bundle temp = createArguments("填写联系方式", "");
+				temp.putString("edittype", "contact");
+				pushFragment(new ContactAndAddressDetailFragment(), temp);
+			}
+			
+		});
+		getView().findViewById(R.id.btn_address).setOnClickListener(new OnClickListener(){
+
+			@Override
+			public void onClick(View v) {
+				// TODO Auto-generated method stub
+				Bundle temp = createArguments("填写交易地点", "");
+				temp.putString("edittype", "address");
+				if(detailLocation != null){
+					temp.putSerializable("location", detailLocation);
+				}
+				pushFragment(new ContactAndAddressDetailFragment(), temp);
+			}
+			
+		});
+		
 	}
 	
 	private void addHiddenItemsToParams(){
