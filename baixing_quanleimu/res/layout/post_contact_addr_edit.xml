@@ -1,0 +1,75 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <include layout="@layout/common_title" />
+
+    <RelativeLayout
+        android:id="@+id/edit_post_location"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="15dip"
+        android:background="@drawable/post_box"
+        android:minHeight="48dip" >
+
+        <EditText
+            android:id="@+id/postinput"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_centerVertical="true"
+            android:layout_toLeftOf="@+id/location"
+            android:background="@null"
+            android:ellipsize="end"
+            android:hint="填写地点或点击按钮定位"
+            android:inputType="textMultiLine"
+            android:paddingLeft="@dimen/post_padding"
+            android:singleLine="false"
+            android:textColor="@drawable/list_titleselector"
+            android:textColorHint="#d1d0ca"
+            android:textSize="@dimen/font_medium" >
+        </EditText>
+
+        <ImageView
+            android:id="@+id/location"
+            android:layout_width="20dip"
+            android:layout_height="20dip"
+            android:layout_alignParentRight="true"
+            android:layout_alignParentTop="true"
+            android:layout_marginRight="8dp"
+            android:layout_marginTop="14dp"
+            android:src="@drawable/icon_location" />
+    </RelativeLayout>
+
+    <LinearLayout
+        android:id="@+id/ll_contact"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginLeft="10dip"
+        android:layout_marginRight="10dip"
+        android:layout_marginTop="15dip"
+        android:background="@drawable/post_box"
+        android:orientation="horizontal" >
+
+        <EditText
+            android:id="@+id/contact_edit"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="@null"
+            android:ellipsize="end"
+            android:gravity="left|center_vertical"
+            android:hint="手机／QQ／座机等联系方式（必填）"
+            android:minHeight="48dip"
+            android:paddingLeft="@dimen/post_padding"
+            android:paddingRight="5dip"
+            android:singleLine="true"
+            android:textColor="@drawable/list_titleselector"
+            android:textColorHint="#d1d0ca"
+            android:textSize="@dimen/font_medium" >
+        </EditText>
+    </LinearLayout>
+
+</LinearLayout>
