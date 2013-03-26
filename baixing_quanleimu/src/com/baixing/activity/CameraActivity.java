@@ -319,17 +319,21 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void cancelTakenPic() {
     	onCancelEdit();
-    	int resultCode = getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED);
+    	int resultCode = getIntent() != null && getIntent().getExtras() != null ? 
+    			getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED) : Activity.RESULT_CANCELED;
     	
-    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+//    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
+//		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
 		
-		backIntent.putExtras(bundle);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		this.startActivity(backIntent);
+		Intent data = new Intent();
+		
+		data.putExtras(bundle);
+		data.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		this.startActivity(backIntent);
+		this.setResult(resultCode);
 		this.finish();
     }
     
@@ -342,9 +346,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	
 //    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
+//		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
 		
 		Intent data = new Intent();
 		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
