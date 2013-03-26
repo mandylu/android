@@ -914,6 +914,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			protected void onPostExecute(BXThumbnail result) {
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
+		        showOneMoreMsg();
 			}
 		};
 		
@@ -933,15 +934,19 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-				boolean full = (MAX_IMG_COUNT -1) == imageList.size();
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
-		        if (!full) {
-		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
-		        }
+		        showOneMoreMsg();
 			}
 		};
 		task.execute(cameraData);
+	}
+	
+	private void showOneMoreMsg() {
+		boolean full = (MAX_IMG_COUNT -1) == imageList.size();
+		if (!full) {
+        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
+        }
 	}
 	
 	
