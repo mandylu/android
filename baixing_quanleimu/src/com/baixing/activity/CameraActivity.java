@@ -522,7 +522,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		{
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setContentView(R.layout.image_selector);
-			nextBtnLabel = nextBtnLabel.replace("\n", "");
+			if (nextBtnLabel != null) {
+				nextBtnLabel = nextBtnLabel.replace("\n", "");
+			}
 		}
 					
 		
