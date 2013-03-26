@@ -117,7 +117,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //    private Bitmap firstImage = null;
     protected boolean isNewPost = true;
     private boolean finishRightNow = false;
-    
+    private long lastClickPostTime = 0;
     @Override
 	public void onActivityResult(final int requestCode, final int resultCode, final Intent data) {
 		if (resultCode == NONE) {
@@ -458,8 +458,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case R.id.iv_post_finish:
 			Tracker.getInstance()
 			.event(!editMode ? BxEvent.POST_POSTBTNCONTENTCLICKED:BxEvent.EDITPOST_POSTBTNCONTENTCLICKED)
-			.append(Key.SECONDCATENAME, categoryEnglishName).end();			
-			this.postAction();
+			.append(Key.SECONDCATENAME, categoryEnglishName).end();	
+			if (Math.abs(System.currentTimeMillis() - lastClickPostTime) > 500) {
+				this.postAction();
+				lastClickPostTime = System.currentTimeMillis();
+			}
 			break;
 		case R.id.location:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
