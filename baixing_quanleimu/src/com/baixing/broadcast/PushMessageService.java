@@ -142,7 +142,7 @@ public class PushMessageService extends Service implements Observer
 ////                Log.w("onStartCommand() null intent with Gingerbread or higher");
 //            }
             
-            registeDevice(null, null);
+//            registeDevice(null, null);
             return START_STICKY;
         }
 //        Log.i("onStartCommand(): Intent " + intent.getAction());
@@ -158,10 +158,10 @@ public class PushMessageService extends Service implements Observer
             sendToServiceHandler(startId, intent);
         }
         
-        if (intent.getBooleanExtra("updateToken", false))
-        {
-        	registeDevice(null, null); //
-        }
+//        if (intent.getBooleanExtra("updateToken", false))
+//        {
+//        	registeDevice(null, null); //
+//        }
         TraceUtil.trace(TAG, "onStartCommand finish.");
         return START_STICKY;
     }
