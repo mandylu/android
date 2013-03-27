@@ -63,10 +63,18 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		
 		accoutnEt = (EditText) v.findViewById(R.id.accountEt);
 		Bundle bundle = this.getArguments();
+		boolean defaultNum = false;
 		if(bundle != null && bundle.containsKey("defaultNumber")){
 			String number = bundle.getString("defaultNumber");
 			if(Util.isValidMobile(number)){
 				accoutnEt.setText(number);
+				defaultNum = true;
+			}
+		}
+		if(!defaultNum){
+			String deviceNum = Util.getDevicePhoneNumber();
+			if(deviceNum != null && Util.isValidMobile(deviceNum)){
+				accoutnEt.setText(deviceNum);
 			}
 		}
 		passwordEt = (EditText) v.findViewById(R.id.passwordEt);
