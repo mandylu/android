@@ -228,6 +228,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 	@Override
 	public void onVerifyFailed(String message) {
+		hideProgress();
 		// TODO Auto-generated method stub
 		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
 			

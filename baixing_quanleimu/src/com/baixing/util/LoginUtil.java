@@ -217,23 +217,28 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 			});
 		}else{
 			if(!response.success){
+				if(pd != null){
+					pd.dismiss();
+				}				
 				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
 						|| action.equals(BaseAnonymousLogic.Action_Verify)){					
 					if(listener != null){
 						listener.onVerifyFailed(response.message);
 					}
 				}else{
-					if(pd != null){
-						pd.dismiss();
-					}
 					ViewUtil.showToast(view.getContext(), response.message, false);
 				}
+			}else if(action.equals(BaseAnonymousLogic.Action_SendSMS)){
+				verifyCode = response.message;
 			}
 		}
 	}
 	
 	public void reVerify(String code){
 		verifyCode = code;
+		pd = ProgressDialog.show(LoginUtil.this.view.getContext(), "提示", "请稍候...");
+		pd.setCancelable(true);
+		pd.show();
 		sendLoginCmd(GlobalDataManager.getInstance().getApplicationContext(), this.account, this.password);
 	}
 
