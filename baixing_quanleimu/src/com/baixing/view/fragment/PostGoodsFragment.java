@@ -265,7 +265,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		isActive = true;
 		postLBS.start();
 		//Disable on version 3.2.1
-		if(!editMode /*&& !isNewPost && !finishRightNow*/) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
+		if(!editMode && !isNewPost && !finishRightNow) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
 			this.pv = PV.POST;
 			Tracker.getInstance()
 			.pv(this.pv)
@@ -277,6 +277,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			finishRightNow = false;
 			doClearUpImages();
 			finishFragment();
+		}
+		
+		if (isNewPost) {
+			isNewPost = false;
 		}
 	}
 	
@@ -303,7 +307,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		if (isNewPost) {
-			isNewPost = false;
 			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过\n拍照");
 		} else {
 			
