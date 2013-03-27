@@ -90,8 +90,19 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 	@Override
 	public void handleRightAction(){
 		if(isContact){
+			String text = ((TextView)getView().findViewById(R.id.contact_edit)).getText().toString();
+			if(text == null || text.length() == 0){
+				ViewUtil.showToast(getAppContext(), "联系方式不能为空", false);
+				return;
+			}
 			GlobalDataManager.getInstance().setPhoneNumber(((TextView)getView().findViewById(R.id.contact_edit)).getText().toString());
 		}else{
+			String text = ((TextView)getView().findViewById(R.id.postinput)).getText().toString();
+			if(text == null || text.length() == 0){
+				ViewUtil.showToast(getAppContext(), "地址不能为空", false);
+				return;
+			}
+			
 			GlobalDataManager.getInstance().setAddress(((TextView)getView().findViewById(R.id.postinput)).getText().toString());
 		}
 		this.finishFragment();
