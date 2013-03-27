@@ -78,7 +78,12 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 	
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
-		title.m_title = "找回密码";
+		Bundle bundle = getArguments();
+		if(bundle != null && bundle.containsKey(ARG_COMMON_TITLE)){
+			title.m_title = bundle.getString(ARG_COMMON_TITLE);
+		}else{
+			title.m_title = "找回密码";
+		}
 		title.m_leftActionHint = "返回";
 	}
 	@Override
