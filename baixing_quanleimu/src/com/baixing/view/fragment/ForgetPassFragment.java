@@ -185,7 +185,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 			}
 		}else{
 			this.hideProgress();
-			ViewUtil.showToast(this.getAppContext(), "帐号未注册", false);
+			ViewUtil.showToast(this.getAppContext(), status.length() == 0 ? "请求失败" : "帐号未注册", false);
 		}
 
 
