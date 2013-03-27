@@ -17,6 +17,7 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.InputFilter;
@@ -49,6 +50,7 @@ import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -949,31 +951,50 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			}			
 		}
 		
-		String prevPhone = GlobalDataManager.getInstance().getPhoneNumber();
-		String prevAddress = GlobalDataManager.getInstance().getAddress();
-		boolean phoneAndAddrExist = prevPhone != null && prevPhone.length() > 0 && prevAddress != null && prevAddress.length() > 0;
-		
 		for(int i = 0; i < PostCommonValues.fixedItemNames.length; ++ i){
 			if(pm.containsKey(PostCommonValues.fixedItemNames[i]) && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DESCRIPTION)){
-				if(!phoneAndAddrExist || 
-						(!PostCommonValues.fixedItemNames[i].equals("contact") && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION)))
+				if((!PostCommonValues.fixedItemNames[i].equals("contact") && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION)))
 				this.appendBeanToLayout(pm.get(PostCommonValues.fixedItemNames[i]));
 			}else if(!pm.containsKey(PostCommonValues.fixedItemNames[i])){
 				params.remove(PostCommonValues.fixedItemNames[i]);
 			}
 		}
 		
-		if(phoneAndAddrExist){
-			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
-			setPhoneAndAddrLayout();
-		}else{
-			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.GONE);
-		}
+		getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
+		setPhoneAndAddrLayout();
 	}
 	
 	private void setPhoneAndAddrLayout(){
-		((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
-		((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
+		String phone = GlobalDataManager.getInstance().getPhoneNumber();
+		int phoneResId;
+		if(phone == null || phone.length() == 0){
+			((Button)getView().findViewById(R.id.btn_contact)).setText("联系方式");
+			phoneResId = R.drawable.icon_post_call_disable;
+		}else{
+			((Button)getView().findViewById(R.id.btn_contact)).setText(phone);
+			phoneResId = R.drawable.icon_post_call;
+		}
+		Bitmap img = ImageCacheManager.getInstance().loadBitmapFromResource(phoneResId);
+		BitmapDrawable bd = new BitmapDrawable(img);
+		bd.setBounds(0, 0, img.getWidth(), img.getHeight());
+		((Button)getView().findViewById(R.id.btn_contact)).setCompoundDrawables( bd, null, null, null );
+		
+		String address = GlobalDataManager.getInstance().getAddress();
+		int addressResId;
+		if(address == null || address.length() == 0){
+			addressResId = R.drawable.icon_location_disable;
+			((Button)getView().findViewById(R.id.btn_address)).setText("交易地点");
+		}else{
+			addressResId = R.drawable.icon_location;
+			((Button)getView().findViewById(R.id.btn_address)).setText(address);
+		}
+		Bitmap imgAddr = ImageCacheManager.getInstance().loadBitmapFromResource(addressResId);
+		BitmapDrawable bdAddr = new BitmapDrawable(imgAddr);
+		bdAddr.setBounds(0, 0, imgAddr.getWidth(), imgAddr.getHeight());
+		((Button)getView().findViewById(R.id.btn_address)).setCompoundDrawables( bdAddr, null, null, null );
+		
+		
+		
 		getView().findViewById(R.id.btn_contact).setOnClickListener(new OnClickListener(){
 
 			@Override
