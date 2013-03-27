@@ -24,7 +24,7 @@
         android:enabled="true"
         android:focusable="true"
         android:gravity="center_vertical|left"
-        android:hint="当前手机号码"
+        android:hint="请输入验证码"
         android:inputType="text"
         android:singleLine="true"
         android:textColor="@color/common_edit_text_color"
