@@ -203,6 +203,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
+	public void onStackTop(boolean isBack) {
+		if (this.isVadPreview() && detail != null && detail.isValidMessage()) {
+			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
+		}
+	}
+	
+	
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
@@ -354,6 +361,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			return true;	
 		}
 		return false;
+	}
+	
+	private boolean isVadPreview() {
+		return getArguments() != null && getArguments().getBoolean("isVadPreview", false);
+	}
+	
+	public void handleRightAction() {
+		this.finishFragment();
 	}
 	
 	private void handleStoreBtnClicked(){
@@ -652,8 +667,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public void initTitle(TitleDef title){
-		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
+		title.m_leftActionHint = isVadPreview() ? "" : "返回";
+		title.m_rightActionHint = isVadPreview() ? "完成" : "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
 			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
 					this.mListLoader.getGoodsList().getData().size();	
