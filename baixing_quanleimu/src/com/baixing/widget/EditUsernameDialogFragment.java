@@ -128,6 +128,9 @@ public class EditUsernameDialogFragment extends DialogFragment {
 //                msg.obj = "网络异常，请稍后再试";
 //                handler.sendMessage(msg);
 				String errorMsg = "网络异常，请稍后再试";
+				if(error != null && error.getMsg() != null){
+					errorMsg = error.getMsg();
+				}
 				pr.dismiss();
 				ViewUtil.showToast(getActivity(), errorMsg, false);
                 Tracker.getInstance().event(BxEvent.EDITPROFILE_SAVE)
