@@ -196,7 +196,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 editUserDlg.show(getFragmentManager(), null);
                 break;
         	case R.id.resetPassword:
-        		pushFragment(new ForgetPassFragment(), createArguments(null, null));
+        		Bundle b = createArguments("修改密码", null);
+        		b.putString(ForgetPassFragment.Forget_Type, "edit");
+        		pushFragment(new ForgetPassFragment(), b);
         		break;
             case R.id.setFlowOptimize:
                 showFlowOptimizeDialog();

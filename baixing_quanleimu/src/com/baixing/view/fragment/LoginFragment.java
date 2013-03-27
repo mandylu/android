@@ -28,8 +28,6 @@ import com.quanleimu.activity.R;
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
 	
 	public static final int MSG_LOGIN_SUCCESS = 0x1234FFFF;
-	private static final int REQ_CODE_RESET_PASS = 1;
-	private static final int REQ_CODE_REGISTER = 2;
 	
 	public String backPageName = "back";
 	public String categoryEnglishName = "";
@@ -166,18 +164,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	protected void onFragmentBackWithData(int resultCode, Object result) {
 		super.onFragmentBackWithData(resultCode, result);
 
-		if(resultCode == REQ_CODE_RESET_PASS){
-			ViewUtil.showToast(getActivity(), "重置密码成功，请重新登录", true);
-		}
-		else if (resultCode == REQ_CODE_REGISTER)
-		{
-//			UserBean user = (UserBean) Util.loadDataFromLocate(getAppContext(), "user", UserBean.class);
-			
-			handleRightAction();
-		} else if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS) {
+		if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS || resultCode == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED) {
             finishFragment(resultCode, result);
-        }
-	
+        }	
 	}
 
 	@Override
@@ -214,7 +203,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			break;
 		case MSG_FORGETPASSWORDVIEW:
 //			m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
-			pushFragment(new ForgetPassFragment(), createArguments(null, null));
+			Bundle bundle = createArguments("找回密码", null);
+			bundle.putString(ForgetPassFragment.Forget_Type, "forget");
+			pushFragment(new ForgetPassFragment(), bundle);
 			break;
 		case 10:
 			hideProgress();

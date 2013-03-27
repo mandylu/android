@@ -1,5 +1,14 @@
 package com.baixing.view.fragment;
 
+import java.security.InvalidKeyException;
+import java.security.NoSuchAlgorithmException;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -22,6 +31,7 @@ import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiError;
@@ -32,17 +42,20 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
+import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
+import com.tencent.mm.algorithm.Base64;
 
 
 public class ForgetPassFragment extends BaseFragment implements AnonymousNetworkListener {
-	
+	public static final String Forget_Type = "forget_type";///"forget", "edit"
+	public static final int MSG_FORGET_PWD_SUCCEED = 0xfff10001;
     private EditText mobileEt;
     private EditText newPwdEt;
-    private EditText codeEt;
     private Button postBtn;
+    private boolean isForgetType = false;
 
     private CountDownTimer countTimer;
 
@@ -75,22 +88,35 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 		View rootV = inflater.inflate(R.layout.forget_password, null);
 
         mobileEt = (EditText)rootV.findViewById(R.id.forgetPwdMobileEt);
-        newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
         postBtn = (Button)rootV.findViewById(R.id.forgetPwdPostBtn);
-        codeEt = (EditText)rootV.findViewById(R.id.forgetPwdCodeEt);
+        Bundle bundle = getArguments();
+        if(bundle != null && bundle.containsKey(Forget_Type)){
+        	if(bundle.getString(Forget_Type).equals("forget")){
+        		rootV.findViewById(R.id.forgetPwdNewPwdEt).setVisibility(View.GONE);
+        		postBtn.setText("找回密码");
+        		isForgetType = true;
+        	}else{
+        		mobileEt.setVisibility(View.GONE);
+        		newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
+        		postBtn.setText("修改密码");
+        		isForgetType = false;
+        	}
+        }
+        
+        
         
         postBtn.setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View view) {
-                if (checkAllInputs() == false) {
+                if (isForgetType && checkAllInputs() == false) {
                     return;
                 }
                 showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-            	if(codeEt.getText() != null && codeEt.getText().length() > 0){
-            		doReset();
-            	}else{
-            		doPostNewPwdAction();
-            	}
+                if(isForgetType){
+                	doPostNewPwdAction();
+                }else{
+                	doReset();
+                }    
             }
         });
 
@@ -116,6 +142,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
         if (checkMobile() == false) {
             return false;
         }
+        if(this.isForgetType) return true;
 
         String tip = null;
         String newPwd = newPwdEt.getText().toString();
@@ -146,7 +173,11 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 								|| status.equals(BaseAnonymousLogic.Status_Registered_Verified))){
 			AccountService.getInstance().initStatus(mobile);
 			AccountService.getInstance().setActionListener(this);
-			AccountService.getInstance().start(status, BaseAnonymousLogic.Status_ForgetPwd);
+			if(verifyCode == null || verifyCode.length() == 0){
+				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_ForgetPwd);
+			}else{
+				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_CodeReceived);
+			}
 		}else{
 			this.hideProgress();
 			ViewUtil.showToast(this.getAppContext(), "帐号未注册", false);
@@ -178,7 +209,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 
             case MSG_POST_FINISH:
                 ViewUtil.showToast(getActivity(), showMsg, false);
-                finishFragment();
+                finishFragment(MSG_FORGET_PWD_SUCCEED, null);
               //tracker
                 Tracker.getInstance()
                 .event(BxEvent.FORGETPASSWORD_RESETPASSWORD_RESULT)
@@ -201,12 +232,90 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 	{
 		return false;
 	}
+    static private byte[] decript(byte[] encryptedData, byte[] key)
+            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
+	    SecretKeySpec k = new SecretKeySpec(key, "AES");
+	    c.init(Cipher.DECRYPT_MODE, k);
+	    return c.doFinal(encryptedData);
+    }
+    
+    static private String getDecryptedPassword(String encryptedPwd){
+		try{
+			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
+			key = key.substring(0, 16);
+			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
+			String str = new String(pwd);
+			return str;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+    }
+    
+    private void doRetreive(){
+		final String mobile = mobileEt.getText().toString();
+		ApiParams param = new ApiParams();
+		param.addParam("mobile", mobile);
+//		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
+		BaseApiCommand.createCommand("getUser", false, param).execute(GlobalDataManager.getInstance().getApplicationContext(), new Callback(){
+
+			@Override
+			public void onNetworkDone(String apiName, String responseData) {
+				// TODO Auto-generated method stub
+				try{
+					JSONObject obj = new JSONObject(responseData);
+					if(obj != null){
+						JSONObject error = obj.getJSONObject("error");
+						if(error != null){
+							String code = error.getString("code");
+							if(code != null && code.equals("0")){
+								String password = obj.getString("password");
+								String nickname = obj.getString("nickname");
+								String id = obj.getString("id");
+								UserBean loginBean = new UserBean();
+								loginBean.setId(id);
+								loginBean.setPhone(mobile);
+								String decPwd = getDecryptedPassword(password);
+								loginBean.setPassword(decPwd, false);
+								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
+								UserProfile profile = new UserProfile();
+								profile.mobile = mobile;
+								profile.nickName = nickname;
+								profile.userId = id;
+								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
+								BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
+								sendMessage(MSG_POST_FINISH, error.getString("message"));
+							}else{
+								sendMessage(MSG_POST_ERROR, error.getString("message"));
+							}
+						}
+					}
+				}catch(JSONException e){
+					e.printStackTrace();
+					sendMessage(MSG_POST_ERROR, "网络异常");
+				}				
+			}
+
+			@Override
+			public void onNetworkFail(String apiName, ApiError error) {
+				// TODO Auto-generated method stub
+				hideProgress();
+				sendMessage(MSG_NETWORK_ERROR, (error == null || error.getMsg() == null ) ? "网络异常" : error.getMsg());
+			}
+			
+		});
+
+    }
     
     private void doReset(){
 		ApiParams params = new ApiParams();
-		params.addParam("mobile", mobileEt.getText().toString());
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(user == null || user.getPhone() == null) return;
+		params.addParam("mobile", user.getPhone());
 		params.addParam("password", newPwdEt.getText().toString());
-		params.addParam("code", codeEt.getText().toString());
+		params.addParam("code", verifyCode);
 
     	BaseApiCommand.createCommand("resetpassword", true, params).execute(getActivity(), new Callback() {
 			
@@ -234,25 +343,44 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
             }
 		});
     }
+    
+    private String verifyCode;
 
 	@Override
 	public void onActionDone(String action, ResponseData response) {
 		// TODO Auto-generated method stub
 		if(action.equals(AccountService.Action_Done)){
-			doReset();    
+			doRetreive();
 		}else{
 			if(!response.success){
 				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
 						|| action.equals(BaseAnonymousLogic.Action_Verify)){
 					hideProgress();
-					sendMessage(MSG_NETWORK_ERROR, response.message);
+					VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+						
+						@Override
+						public void onReVerify(String mobile) {
+							// TODO Auto-generated method stub
+							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+							doPostNewPwdAction();
+						}
+
+						@Override
+						public void onSendVerifyCode(String code) {
+							// TODO Auto-generated method stub				
+//							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+							verifyCode = code;
+							doPostNewPwdAction();
+						}
+					});
+					dlg.show(getFragmentManager(), null);
 				}else{
 					hideProgress();
 					ViewUtil.showToast(this.getAppContext(), response.message, false);
 				}
 			}else if(action.equals(BaseAnonymousLogic.Action_SendSMS)){
 				if(response.success){
-					codeEt.setText(response.message);
+					verifyCode = response.message;
 				}
 			}
 		}		
@@ -260,5 +388,8 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 	
 	@Override
 	public void beforeActionDone(String action, ApiParams outParams) {
+		if(action.equals(BaseAnonymousLogic.Action_Verify)){
+			outParams.addParam("verifyCode", verifyCode);
+		}
 	}
 }

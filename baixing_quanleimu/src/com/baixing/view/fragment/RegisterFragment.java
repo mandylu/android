@@ -344,7 +344,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 								// TODO Auto-generated method stub
 								verifyCode = code;
 								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-								AccountService.getInstance().start();						
+								AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered, BaseAnonymousLogic.Status_CodeReceived);						
 							}
 						});
 						dlg.show(getFragmentManager(), null);
