@@ -152,7 +152,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		
 		Bundle bundle = this.getArguments();
 		if(bundle != null && bundle.containsKey("defaultNumber")){
-			((TextView)llLoginRoot.findViewById(R.id.et_account)).setText(bundle.getString("defaultNumber"));
+			String number = bundle.getString("defaultNumber");
+			if(Util.isValidMobile(number)){
+				((TextView)llLoginRoot.findViewById(R.id.et_account)).setText(number);
+			}
 		}
 		loginHelper = new LoginUtil(llLoginRoot, this);
 		

@@ -20,6 +20,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
@@ -63,7 +64,10 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		accoutnEt = (EditText) v.findViewById(R.id.accountEt);
 		Bundle bundle = this.getArguments();
 		if(bundle != null && bundle.containsKey("defaultNumber")){
-			accoutnEt.setText(bundle.getString("defaultNumber"));
+			String number = bundle.getString("defaultNumber");
+			if(Util.isValidMobile(number)){
+				accoutnEt.setText(number);
+			}
 		}
 		passwordEt = (EditText) v.findViewById(R.id.passwordEt);
         registerBtn = (Button) v.findViewById(R.id.registerBtn);

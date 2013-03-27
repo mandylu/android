@@ -22,6 +22,8 @@ import java.security.MessageDigest;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -917,5 +919,12 @@ public class Util {
         	}
         }
         return number;
+    }
+    
+    public static boolean isValidMobile(String mobile){
+    	Pattern p = Pattern.compile("^(13[0-9]|15[0|3|6|7|8|9]|18[8|9])\\d{8}$");
+        Matcher matcher = p.matcher(mobile);  
+        System.out.println(matcher.matches() + "---");
+        return matcher.matches();    	
     }
 }
