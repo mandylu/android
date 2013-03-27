@@ -264,7 +264,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onResume();
 		isActive = true;
 		postLBS.start();
-		//Disable on version 3.2.1
 		if(!editMode && !isNewPost && !finishRightNow) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
 			this.pv = PV.POST;
 			Tracker.getInstance()
@@ -932,7 +931,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					@Override
 					public boolean onTouch(View v, MotionEvent event) {
 						if (event.getAction() == MotionEvent.ACTION_DOWN) {
-							Tracker.getInstance().event((editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DESCRIPTION).end();
+							Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DESCRIPTION).end();
 						}
 						return false;
 					}
