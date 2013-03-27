@@ -319,17 +319,21 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void cancelTakenPic() {
     	onCancelEdit();
-    	int resultCode = getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED);
+    	int resultCode = getIntent() != null && getIntent().getExtras() != null ? 
+    			getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED) : Activity.RESULT_CANCELED;
     	
-    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
+//    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
+//		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
 		
-		backIntent.putExtras(bundle);
-		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
-		this.startActivity(backIntent);
+		Intent data = new Intent();
+		
+		data.putExtras(bundle);
+		data.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+//		this.startActivity(backIntent);
+		this.setResult(resultCode);
 		this.finish();
     }
     
@@ -342,9 +346,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     	
 //    	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
-		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
-		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
+//		bundle.putBoolean(CommonIntentAction.EXTRA_COMMON_IS_THIRD_PARTY, true);
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
+//		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
 		
 		Intent data = new Intent();
 		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
@@ -522,7 +526,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		{
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setContentView(R.layout.image_selector);
-			nextBtnLabel = nextBtnLabel.replace("\n", "");
+			if (nextBtnLabel != null) {
+				nextBtnLabel = nextBtnLabel.replace("\n", "");
+			}
 		}
 					
 		
@@ -914,6 +920,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			protected void onPostExecute(BXThumbnail result) {
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
+		        showOneMoreMsg();
 			}
 		};
 		
@@ -933,15 +940,19 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-				boolean full = (MAX_IMG_COUNT -1) == imageList.size();
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
-		        if (!full) {
-		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
-		        }
+		        showOneMoreMsg();
 			}
 		};
 		task.execute(cameraData);
+	}
+	
+	private void showOneMoreMsg() {
+		boolean full = (MAX_IMG_COUNT -1) == imageList.size();
+		if (!full) {
+        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
+        }
 	}
 	
 	
