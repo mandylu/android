@@ -405,8 +405,7 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 			doPost();
 		}else{
 			if(!response.success){
-				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
-						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+				if(action.equals(BaseAnonymousLogic.Action_Verify)){
 					sendMessage(PostCommonValues.MSG_VERIFY_FAIL, null);
 				}else{
 					sendMessage(PostCommonValues.MSG_POST_EXCEPTION, response.message);

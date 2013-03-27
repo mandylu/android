@@ -353,8 +353,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 			doRetreive();
 		}else{
 			if(!response.success){
-				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
-						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+				if(action.equals(BaseAnonymousLogic.Action_Verify)){
 					hideProgress();
 					VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
 						

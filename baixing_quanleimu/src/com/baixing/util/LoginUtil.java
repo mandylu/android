@@ -220,8 +220,7 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 				if(pd != null){
 					pd.dismiss();
 				}				
-				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
-						|| action.equals(BaseAnonymousLogic.Action_Verify)){					
+				if(action.equals(BaseAnonymousLogic.Action_Verify)){					
 					if(listener != null){
 						listener.onVerifyFailed(response.message);
 					}

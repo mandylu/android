@@ -344,13 +344,25 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 						profile.userId = id;
 						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
 						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
+						this.getView().postDelayed(new Runnable(){
+							@Override
+							public void run(){
+								finishFragment(MSG_REGISTER_SUCCESS, null);
+							}
+						}, 0);
+						return;
 					}
 				}
 			}
 		}catch(JSONException e){
 			e.printStackTrace();
 		}
-
+		this.getView().postDelayed(new Runnable(){
+			@Override
+			public void run(){
+				finishFragment();
+			}
+		}, 0);
 	}
 
 	private String verifyCode; 
@@ -361,16 +373,9 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		// TODO Auto-generated method stub
 		if(action.equals(AccountService.Action_Done)){
 			doLoginAfterPostSucceedSync();
-			this.getView().postDelayed(new Runnable(){
-				@Override
-				public void run(){
-					finishFragment();
-				}
-			}, 0);
 		}else{
 			if(!response.success){
-				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
-						|| action.equals(BaseAnonymousLogic.Action_Verify)){
+				if(action.equals(BaseAnonymousLogic.Action_Verify)){
 						showVerifyDlg();
 //						dlgShowing = true;
 				}else{
