@@ -31,6 +31,7 @@ public class AnonymousExecuter implements Callback{
 	static public String retreiveAccountStatusSync(String mobile){
 		ApiParams param = new ApiParams();
 		param.addParam("mobile", mobile);
+		param.addParam("nickname", mobile);
 		String retStatus = "";
 		String result = BaseApiCommand.createCommand(checkStatusApi, true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 		if(result == null) return retStatus;
@@ -107,6 +108,7 @@ public class AnonymousExecuter implements Callback{
 	private void doLogin(String mobile, String password){
 		ApiParams params = new ApiParams();
 		params.addParam("mobile", mobile);
+		params.addParam("nickname", mobile);
 		params.addParam("password", password);
 		BaseApiCommand.createCommand("user_login", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);		
 	}
