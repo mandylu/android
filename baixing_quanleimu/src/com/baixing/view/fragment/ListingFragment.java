@@ -140,6 +140,11 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			lvGoodsList.fireRefresh();
 		}
 	}
+	
+	public ListingFragment() {
+		defaultEnterAnim = 0;
+		defaultExitAnim = 0;
+	}
 
 	public void onCreate(Bundle savedInstanceState)
 	{

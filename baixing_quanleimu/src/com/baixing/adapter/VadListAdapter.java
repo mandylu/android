@@ -403,7 +403,7 @@ public class VadListAdapter extends BaseAdapter {
 		holder.tvDes.setTypeface(null, Typeface.BOLD);
 		if (vadHistory != null && vadHistory.isReaded(detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)))
 		{
-			holder.tvDes.setTextColor(context.getResources().getColor(R.color.vad_meta_label));
+			holder.tvDes.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
 		}	
 		else
 		{

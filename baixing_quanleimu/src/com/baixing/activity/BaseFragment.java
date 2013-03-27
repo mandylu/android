@@ -75,6 +75,9 @@ public abstract class BaseFragment extends Fragment  {
 	protected Handler handler;
 	private View.OnClickListener titleActionListener;
 	
+	protected int defaultEnterAnim = R.anim.right_to_left_enter;
+	protected int defaultExitAnim = R.anim.left_to_right_exit;
+	
 	public Handler getHandler() {
 		return handler;
 	}
@@ -141,12 +144,12 @@ public abstract class BaseFragment extends Fragment  {
 	
 	public int getEnterAnimation()
 	{
-		return getArguments() == null ? R.anim.right_to_left_enter : getArguments().getInt(ARG_COMMON_ANIMATION_IN, R.anim.right_to_left_enter);
+		return getArguments() == null ? R.anim.right_to_left_enter : getArguments().getInt(ARG_COMMON_ANIMATION_IN, defaultEnterAnim);
 	}
 	
 	public int getExitAnimation()
 	{
-		return getArguments() == null ? R.anim.left_to_right_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, R.anim.left_to_right_exit);
+		return getArguments() == null ? R.anim.left_to_right_exit : getArguments().getInt(ARG_COMMON_ANIMATION_EXIT, defaultExitAnim);
 	}
 
 	@Override

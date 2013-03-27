@@ -1174,9 +1174,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					VadListLoader glLoader = new VadListLoader(null, null, null, gl);
 					glLoader.setGoodsList(gl);
 					glLoader.setHasMore(false);		
-					Bundle bundle2 = createArguments("", "close");
+					Bundle bundle2 = createArguments(null, null);
 					bundle2.putSerializable("loader", glLoader);
 					bundle2.putInt("index", 0);
+					bundle2.putBoolean("isVadPreview", Boolean.TRUE);
 					bundle2.putInt(ARG_COMMON_ANIMATION_IN, 0);
 					bundle2.putInt(ARG_COMMON_ANIMATION_EXIT, 0);
 					this.pushAndFinish(new VadFragment(), bundle2);
