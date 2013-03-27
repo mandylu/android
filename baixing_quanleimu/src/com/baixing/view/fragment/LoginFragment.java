@@ -27,6 +27,7 @@ import com.quanleimu.activity.R;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
 	
+	public static final int MSG_LOGIN_SUCCESS = 0x1234FFFF;
 	private static final int REQ_CODE_RESET_PASS = 1;
 	private static final int REQ_CODE_REGISTER = 2;
 	
@@ -174,7 +175,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			
 			handleRightAction();
 		} else if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS) {
-            finishFragment();
+            finishFragment(resultCode, result);
         }
 	
 	}
@@ -197,7 +198,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt("defaultPageIndex", 1);
 //				((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
-				this.finishFragment();
+				this.finishFragment(MSG_LOGIN_SUCCESS, null);
 			}
 			break;
 		case MSG_LOGINFAIL:

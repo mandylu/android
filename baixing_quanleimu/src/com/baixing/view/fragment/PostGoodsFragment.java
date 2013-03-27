@@ -300,11 +300,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			           scroll.fullScroll(View.FOCUS_DOWN);              
 			    }
 			});
-			if(doingAccountCheck){
-				doingAccountCheck = false;
-				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
-			}
 		}
 		
 		if (isNewPost) {
@@ -777,6 +772,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			if(layout_txt.findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
 				((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
 				((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
+			}
+		}else if(message == RegisterFragment.MSG_REGISTER_SUCCESS || message == LoginFragment.MSG_LOGIN_SUCCESS){
+			if(doingAccountCheck){
+				doingAccountCheck = false;
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
 			}
 		}
 		PostUtil.fetchResultFromViewBack(message, obj, layout_txt, params);
