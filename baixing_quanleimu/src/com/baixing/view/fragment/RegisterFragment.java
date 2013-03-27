@@ -24,6 +24,7 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.anonymous.AccountService;
+import com.baixing.anonymous.AnonymousAccountLogic;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
@@ -328,28 +329,32 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 			if(!response.success){
 				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
 						|| action.equals(BaseAnonymousLogic.Action_Verify)){
-					VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
-						
-						@Override
-						public void onReVerify(String mobile) {
-							// TODO Auto-generated method stub
-							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-							AccountService.getInstance().start();
-						}
-
-						@Override
-						public void onSendVerifyCode(String code) {
-							// TODO Auto-generated method stub
-							verifyCode = code;
-							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-							AccountService.getInstance().start();						
-						}
-					});
-					dlg.show(getFragmentManager(), null);
+					if(getFragmentManager() != null){
+						VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+							
+							@Override
+							public void onReVerify(String mobile) {
+								// TODO Auto-generated method stub
+								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+								AccountService.getInstance().start();
+							}
+	
+							@Override
+							public void onSendVerifyCode(String code) {
+								// TODO Auto-generated method stub
+								verifyCode = code;
+								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+								AccountService.getInstance().start();						
+							}
+						});
+						dlg.show(getFragmentManager(), null);
+					}
 				}else{
 					this.hideProgress();
 					ViewUtil.showToast(getAppContext(), response.message, false);
 				}
+			}else if(action.equals(AnonymousAccountLogic.Action_SendSMS)){
+				verifyCode = response.message;
 			}
 		}		
 	}

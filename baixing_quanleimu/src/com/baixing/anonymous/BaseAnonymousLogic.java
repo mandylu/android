@@ -15,6 +15,7 @@ public class BaseAnonymousLogic{
 	static public final String Status_Verified = "VD";
 	static public final String Status_Loginned = "LD";
 	static public final String Status_ForgetPwd = "FPWD";
+	static public final String Status_CodeReceived = "CRD";
 	static public final String Action_AutoVerifiy = "A_AV";
 	static public final String Action_Verify = "A_V";
 	static public final String Action_Register = "A_R";

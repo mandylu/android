@@ -208,7 +208,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 		params.addParam("password", newPwdEt.getText().toString());
 		params.addParam("code", codeEt.getText().toString());
 
-    	BaseApiCommand.createCommand("resetpassword", false, params).execute(getActivity(), new Callback() {
+    	BaseApiCommand.createCommand("resetpassword", true, params).execute(getActivity(), new Callback() {
 			
 			@Override
 			public void onNetworkFail(String apiName, ApiError error) {

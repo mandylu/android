@@ -84,17 +84,23 @@ public class AnonymousExecuter implements Callback{
 				listener.beforeActionDone(BaseAnonymousLogic.Action_Register, params);
 			}			
 			doRegister(mobile, params);
+		}else if(action.equals(BaseAnonymousLogic.Action_SendSMS)){
+			ApiParams params = new ApiParams();
+			if(listener != null){
+				listener.beforeActionDone(BaseAnonymousLogic.Action_SendSMS, params);
+			}				
+			requestVerifyCode(mobile, params);
 		}else if(action.equals(BaseAnonymousLogic.Action_Verify)){
 			ApiParams params = new ApiParams();
 			if(listener != null){
 				listener.beforeActionDone(BaseAnonymousLogic.Action_Verify, params);
 			}	
 			String code = params.getParam("verifyCode");
-			if(code != null && code.length() > 0){
+//			if(code != null && code.length() > 0){
 				this.doVerify(mobile, code);
-			}else{
-				requestVerifyCode(mobile, params);	
-			}			
+//			}else{
+//				requestVerifyCode(mobile, params);	
+//			}			
 		}
 	}
 	
@@ -178,7 +184,7 @@ public class AnonymousExecuter implements Callback{
 								}
 							}
 						}
-						doVerify(mobile, verifyCode);
+//						doVerify(mobile, verifyCode);
 						waitingForVerifyCode = false;
 					}
 				}
