@@ -1270,7 +1270,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			int code = ((PostResultData)msg.obj).error;
 			if (!id.equals("") && code == 0) {
 				postResultSuccess();
-				ViewUtil.showToast(activity, message, false);
+				ViewUtil.showToast(activity, message, true);
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
 				if(!editMode || (editMode && isActive)){
