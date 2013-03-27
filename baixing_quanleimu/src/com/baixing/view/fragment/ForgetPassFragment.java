@@ -7,6 +7,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -78,6 +79,12 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
         newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
         postBtn = (Button)rootV.findViewById(R.id.forgetPwdPostBtn);
         codeEt = (EditText)rootV.findViewById(R.id.forgetPwdCodeEt);
+        
+        UserBean bean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+        String phone = bean == null ? null : bean.getPhone();
+        if (!TextUtils.isEmpty(phone)) {
+        	mobileEt.setText(phone);
+        }
         
         postBtn.setOnClickListener(new View.OnClickListener() {
             @Override
