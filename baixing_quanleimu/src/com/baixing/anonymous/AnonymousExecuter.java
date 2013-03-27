@@ -172,6 +172,7 @@ public class AnonymousExecuter implements Callback{
 				public void onReceive(Context context, Intent intent) {
 					// TODO Auto-generated method stub
 					if(waitingForVerifyCode && intent.getAction() != null && intent.getAction().equals(CommonIntentAction.ACTION_BROADCAST_SMS)){
+						waitingForVerifyCode = false;
 						String smsMessage = intent.getStringExtra("msg");
 						String verifyCode = "";
 						if(smsMessage != null){
@@ -186,8 +187,7 @@ public class AnonymousExecuter implements Callback{
 								}
 							}
 						}
-//						doVerify(mobile, verifyCode);
-						waitingForVerifyCode = false;
+//						doVerify(mobile, verifyCode);						
 					}
 				}
 				

@@ -231,12 +231,40 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 			break;
 		}
 	}
+	
+	private void showVerifyDlg(){
+		if(getFragmentManager() != null){
+			if(verifyDlg == null){
+				verifyDlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+					
+					@Override
+					public void onReVerify(String mobile) {
+						// TODO Auto-generated method stub
+						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+						AccountService.getInstance().start();
+					}
+
+					@Override
+					public void onSendVerifyCode(String code) {
+						// TODO Auto-generated method stub
+						verifyCode = code;
+						showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+						AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified, BaseAnonymousLogic.Status_CodeReceived);						
+					}
+				});
+			}
+			verifyDlg.show(getFragmentManager(), null);
+		}
+	}
 
 	@Override
 	public void onResume(){
 		super.onResume();
 		this.pv = PV.REGISTER;
 		Tracker.getInstance().pv(this.pv).end();
+//		if(dlgShowing){
+//
+//		}
 	}
 	
 	@Override
@@ -318,6 +346,8 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 	}
 
 	private String verifyCode; 
+	private VerifyFailDialog verifyDlg;
+//	private boolean dlgShowing = false;
 	@Override
 	public void onActionDone(String action, ResponseData response) {
 		// TODO Auto-generated method stub
@@ -333,30 +363,13 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 			if(!response.success){
 				if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
 						|| action.equals(BaseAnonymousLogic.Action_Verify)){
-					if(getFragmentManager() != null){
-						VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
-							
-							@Override
-							public void onReVerify(String mobile) {
-								// TODO Auto-generated method stub
-								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-								AccountService.getInstance().start();
-							}
-	
-							@Override
-							public void onSendVerifyCode(String code) {
-								// TODO Auto-generated method stub
-								verifyCode = code;
-								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-								AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered, BaseAnonymousLogic.Status_CodeReceived);						
-							}
-						});
-						dlg.show(getFragmentManager(), null);
-					}
+						showVerifyDlg();
+//						dlgShowing = true;
 				}else{
 					this.hideProgress();
 					ViewUtil.showToast(getAppContext(), response.message, false);
 				}
+				
 			}else if(action.equals(AnonymousAccountLogic.Action_SendSMS)){
 				verifyCode = response.message;
 			}
