@@ -48,7 +48,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //	private boolean isRestoring;
 	private SplashJob splashJob;
 	private BroadcastReceiver msgListener;
-	
+	private List<Runnable> resumeTask = new ArrayList<Runnable>(); 
 	
 	public MainActivity(){
 		super();
@@ -64,12 +64,17 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	{
 		super.onNewIntent(intent);
 		
-		if (Intent.ACTION_MAIN.equals(intent.getAction()) && GlobalDataManager.getInstance().getLastActiveClass() != null) {
-			Intent go = new Intent();
-			go.addCategory(Intent.CATEGORY_LAUNCHER);
-			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
-			
-			startActivity(go);
+		if (Intent.ACTION_MAIN.equals(intent.getAction())) {
+			resumeTask.add(new Runnable() {
+				public void run() {
+					deprecatSelect(TAB_INDEX_CAT);
+				}
+			});
+//			Intent go = new Intent();
+//			go.addCategory(Intent.CATEGORY_LAUNCHER);
+//			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
+//			
+//			startActivity(go);
 		}
 	}
 
@@ -116,6 +121,11 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			jumpToPage();
 			responseOnResume();
 		}
+		
+		for (Runnable task : resumeTask) {
+			task.run();
+		}
+		resumeTask.clear();
 		
 //		Profiler.markEnd("mainresume");
 		
