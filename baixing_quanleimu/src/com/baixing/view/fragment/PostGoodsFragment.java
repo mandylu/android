@@ -1444,6 +1444,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			showVerifyDlg();
 
 			break;
+		case PostCommonValues.MSG_ACCOUNT_CHECK_FAIL:
+			if(msg.obj != null && msg.obj instanceof String){
+				ViewUtil.showToast(activity, (String)msg.obj, false);
+			}
+			break;
 		}
 	}
 	

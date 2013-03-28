@@ -32,7 +32,7 @@ public class AnonymousExecuter implements Callback{
 		ApiParams param = new ApiParams();
 		param.addParam("mobile", mobile);
 		param.addParam("nickname", mobile);
-		String retStatus = "";
+		String retStatus = "请求失败";
 		String result = BaseApiCommand.createCommand(checkStatusApi, true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 		if(result == null) return retStatus;
 		JSONObject obj;
@@ -50,6 +50,8 @@ public class AnonymousExecuter implements Callback{
 							retStatus = BaseAnonymousLogic.Status_Registered_Verified;
 						}else if(intCode == 3){
 							retStatus = BaseAnonymousLogic.Status_Registered_UnVerified;
+						}else{
+							retStatus = error.getString("message");
 						}
 					}
 				}

@@ -119,10 +119,10 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 						|| status.equals(BaseAnonymousLogic.Status_Registered_UnVerified)){
 					sendMessage(PostCommonValues.MSG_POST_NEED_LOGIN, checkMobile);
 				}else{
-					sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, null);
+					sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, status);
 				}
 			}else{
-				sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, null);	
+				sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, status);	
 			}
 		}
 	}	

@@ -177,7 +177,7 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 			if(pd != null){
 				pd.dismiss();
 			}
-			ViewUtil.showToast(view.getContext(), status.length() == 0 ? "请求失败" : "帐号未注册", false);
+			ViewUtil.showToast(view.getContext(), status.equals(BaseAnonymousLogic.Status_UnRegistered) ? "帐号未注册" : status, false);
 		}
 	}
 
