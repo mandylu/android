@@ -1,9 +1,11 @@
 package com.baixing.view.fragment;
 
+import android.content.Context;
 import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
+import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
 import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
@@ -32,6 +34,39 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 			title.m_title = bundle.getString(ARG_COMMON_TITLE);					
 		}		
 	}
+	
+	@Override
+	public void onResume(){
+		super.onResume();
+		final View input = isContact ? getView().findViewById(R.id.contact_edit) : getView().findViewById(R.id.postinput);
+		if(input != null){
+			input.postDelayed(new Runnable(){
+				@Override
+				public void run(){
+					input.requestFocus();
+					InputMethodManager inputMgr = 
+							(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
+					inputMgr.showSoftInput(input, InputMethodManager.SHOW_FORCED);
+				}			
+			}, 100);
+		}
+	}
+	
+	static private String getLocationSummary(BXLocation location){
+		String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
+        		((location.subCityName == null || location.subCityName.equals("")) ?
+						"" 
+						: location.subCityName)
+				: location.detailAddress;
+        if(address == null || address.length() == 0) return "";
+        if(location.adminArea != null && location.adminArea.length() > 0){
+        	address = address.replaceFirst(location.adminArea, "");
+        }
+        if(location.cityName != null && location.cityName.length() > 0){
+        	address = address.replaceFirst(location.cityName, "");
+        }
+        return address;
+	}
 
 	@Override
 	protected View onInitializeView(LayoutInflater inflater,
@@ -49,7 +84,14 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 				}else if(bundle.getString("edittype").equals("address")){
 					isContact = false;
 					llEdit.findViewById(R.id.ll_contact).setVisibility(View.GONE);
-					((TextView)llEdit.findViewById(R.id.postinput)).setText(GlobalDataManager.getInstance().getAddress());
+					String adr = GlobalDataManager.getInstance().getAddress();
+					if(adr == null || adr.length() == 0){
+						if(bundle.containsKey("location")){
+							BXLocation location = (BXLocation)bundle.getSerializable("location");
+							adr = getLocationSummary(location);
+						}
+					}
+					((TextView)llEdit.findViewById(R.id.postinput)).setText(adr);
 					llEdit.findViewById(R.id.location).setOnClickListener(new OnClickListener(){
 
 						@Override
@@ -57,18 +99,7 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 							// TODO Auto-generated method stub
 							if(bundle.containsKey("location")){
 								BXLocation location = (BXLocation)bundle.getSerializable("location");
-								String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
-					            		((location.subCityName == null || location.subCityName.equals("")) ?
-												"" 
-												: location.subCityName)
-										: location.detailAddress;
-					            if(address == null || address.length() == 0) return;
-					            if(location.adminArea != null && location.adminArea.length() > 0){
-					            	address = address.replaceFirst(location.adminArea, "");
-					            }
-					            if(location.cityName != null && location.cityName.length() > 0){
-					            	address = address.replaceFirst(location.cityName, "");
-					            }
+								String address = getLocationSummary(location);
 								((TextView)llEdit.findViewById(R.id.postinput)).setText(address);
 							}else{
 								llEdit.postDelayed(new Runnable(){

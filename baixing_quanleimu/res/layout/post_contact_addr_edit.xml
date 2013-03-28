@@ -62,6 +62,7 @@
             android:ellipsize="end"
             android:gravity="left|center_vertical"
             android:hint="手机／QQ／座机等联系方式（必填）"
+            android:inputType="number"
             android:minHeight="48dip"
             android:paddingLeft="@dimen/post_padding"
             android:paddingRight="5dip"
