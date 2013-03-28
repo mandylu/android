@@ -254,28 +254,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 	{
 		return false;
 	}
-    static private byte[] decript(byte[] encryptedData, byte[] key)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
-	    SecretKeySpec k = new SecretKeySpec(key, "AES");
-	    c.init(Cipher.DECRYPT_MODE, k);
-	    return c.doFinal(encryptedData);
-    }
-    
-    static private String getDecryptedPassword(String encryptedPwd){
-		try{
-			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
-			key = key.substring(0, 16);
-			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
-			String str = new String(pwd);
-			return str;
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return null;
-    }
-    
+
     private void doRetreive(){
 		final String mobile = mobileEt.getText().toString();
 		ApiParams param = new ApiParams();
@@ -300,7 +279,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 								UserBean loginBean = new UserBean();
 								loginBean.setId(id);
 								loginBean.setPhone(mobile);
-								String decPwd = getDecryptedPassword(password);
+								String decPwd = Util.getDecryptedPassword(password);
 								loginBean.setPassword(decPwd, false);
 								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
 								UserProfile profile = new UserProfile();

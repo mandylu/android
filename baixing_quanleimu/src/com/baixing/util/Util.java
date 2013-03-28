@@ -18,12 +18,20 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -52,6 +60,7 @@ import com.baixing.message.IBxNotificationNames;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.tencent.mm.algorithm.Base64;
 public class Util {
 	
 	public static final String TAG = "QLM";
@@ -926,5 +935,27 @@ public class Util {
         Matcher matcher = p.matcher(mobile);  
         System.out.println(matcher.matches() + "---");
         return matcher.matches();    	
+    }
+    
+    static private byte[] decript(byte[] encryptedData, byte[] key)
+            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
+	    SecretKeySpec k = new SecretKeySpec(key, "AES");
+	    c.init(Cipher.DECRYPT_MODE, k);
+	    return c.doFinal(encryptedData);
+    }
+    
+    static public String getDecryptedPassword(String encryptedPwd){
+		try{
+			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
+			key = key.substring(0, 16);
+			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
+			String str = new String(pwd);
+			return str;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
     }
 }

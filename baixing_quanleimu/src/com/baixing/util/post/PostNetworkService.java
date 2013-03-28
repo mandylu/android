@@ -244,31 +244,6 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 		return null;
 	}
 	
-    static private byte[] decript(byte[] encryptedData, byte[] key)
-            throws NoSuchAlgorithmException, NoSuchPaddingException,
-            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
-	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
-	    SecretKeySpec k = new SecretKeySpec(key, "AES");
-	    c.init(Cipher.DECRYPT_MODE, k);
-	    return c.doFinal(encryptedData);
-    }
-    
-//	secret "c6dd9d408c0bcbeda381d42955e08a3f" android
-//	secret "f93bfd64405a641a7c8447fc50e55d6e" ios
-
-    static private String getDecryptedPassword(String encryptedPwd){
-		try{
-			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
-			key = key.substring(0, 16);
-			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
-			String str = new String(pwd);
-			return str;
-		}catch(Exception e){
-			e.printStackTrace();
-		}
-		return null;
-    }
-	
 	private void handlePostMsgBack(String rawData){
 		if (rawData != null) {
 			PostResultData data = this.parseResult(rawData);
