@@ -117,24 +117,39 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 		return llEdit;
 	}
 	
-	@Override
-	public void handleRightAction(){
+	private boolean saveContent(boolean finish){
 		if(isContact){
 			String text = ((TextView)getView().findViewById(R.id.contact_edit)).getText().toString();
 			if(text == null || text.length() == 0 || text.trim().length() == 0){
-				ViewUtil.showToast(getAppContext(), "联系方式不能为空", false);
-				return;
+				if(finish){
+					ViewUtil.showToast(getAppContext(), "联系方式不能为空", false);
+				}
+				return false;
 			}
 			GlobalDataManager.getInstance().setPhoneNumber(((TextView)getView().findViewById(R.id.contact_edit)).getText().toString());
 		}else{
 			String text = ((TextView)getView().findViewById(R.id.postinput)).getText().toString();
 			if(text == null || text.length() == 0){
-				ViewUtil.showToast(getAppContext(), "地址不能为空", false);
-				return;
+				if(finish){
+					ViewUtil.showToast(getAppContext(), "地址不能为空", false);
+				}
+				return false;
 			}
 			
 			GlobalDataManager.getInstance().setAddress(((TextView)getView().findViewById(R.id.postinput)).getText().toString());
 		}
+		return true;
+	}
+	
+	@Override
+	public boolean handleBack(){
+		saveContent(false);
+		return false;
+	}
+	
+	@Override
+	public void handleRightAction(){
+		if(!saveContent(true)) return;
 		this.finishFragment();
 	}
 	
