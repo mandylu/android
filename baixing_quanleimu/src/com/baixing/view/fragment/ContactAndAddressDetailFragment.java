@@ -90,7 +90,7 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 	public void handleRightAction(){
 		if(isContact){
 			String text = ((TextView)getView().findViewById(R.id.contact_edit)).getText().toString();
-			if(text == null || text.length() == 0){
+			if(text == null || text.length() == 0 || text.trim().length() == 0){
 				ViewUtil.showToast(getAppContext(), "联系方式不能为空", false);
 				return;
 			}
