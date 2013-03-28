@@ -282,6 +282,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (isNewPost) {
 			isNewPost = false;
 		}
+		
+		paused = false;
+		if(needShowDlg){
+			this.showVerifyDlg();
+			needShowDlg = false;
+		}
+		
 	}
 	
 	private boolean isActive = false;
@@ -292,6 +299,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		setPhoneAndAddress();
 		isActive = false;
 		super.onPause();
+		paused = true;
 	}
 
 	@Override
@@ -1426,28 +1434,41 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			doingAccountCheck = true;
 			break;
 		case PostCommonValues.MSG_VERIFY_FAIL:
-			VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
-				
-				@Override
-				public void onReVerify(String mobile) {
-					// TODO Auto-generated method stub
-					showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-					postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, null);
-				}
-
-				@Override
-				public void onSendVerifyCode(String code) {
-					// TODO Auto-generated method stub
-					showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-					postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, code);
-				}
-			});
-//            editUserDlg.callback = this;
-            dlg.show(getFragmentManager(), null);
+			showVerifyDlg();
 
 			break;
 		}
 	}
+	
+	private void showVerifyDlg(){
+    	if(this.paused){
+    		needShowDlg = true;
+    		return;
+    	}
+
+		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			
+			@Override
+			public void onReVerify(String mobile) {
+				// TODO Auto-generated method stub
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, null);
+			}
+
+			@Override
+			public void onSendVerifyCode(String code) {
+				// TODO Auto-generated method stub
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, code);
+			}
+		});
+//        editUserDlg.callback = this;
+        dlg.show(getFragmentManager(), null);
+	}
+	
+	private boolean paused = false;
+	private boolean needShowDlg = false;
+	 
 	private boolean doingAccountCheck = false;
 	
 	private void changeFocusAfterPostError(String errMsg){

@@ -68,6 +68,11 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 		this.pv = PV.FORGETPASSWORD;
 		Tracker.getInstance().pv(this.pv).end();
 		super.onResume();
+		paused = false;
+		if(needShowDlg){
+			this.showVerifyDlg();
+			needShowDlg = false;
+		}
 	}
 	
 	public void onDestory()
@@ -349,6 +354,41 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
     }
     
     private String verifyCode;
+    private boolean paused = false;
+    private boolean needShowDlg = false;
+    
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	paused = true;
+    }
+    
+    private void showVerifyDlg(){
+    	if(this.paused){
+    		needShowDlg = true;
+    		return;
+    	}
+    	VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			
+			@Override
+			public void onReVerify(String mobile) {
+				// TODO Auto-generated method stub
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				doPostNewPwdAction();
+			}
+
+			@Override
+			public void onSendVerifyCode(String code) {
+				// TODO Auto-generated method stub				
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				verifyCode = code;
+				doPostNewPwdAction();
+			}
+		});
+		dlg.show(getFragmentManager(), null);  
+		needShowDlg = false;
+    }
+    
 
 	@Override
 	public void onActionDone(String action, ResponseData response) {
@@ -359,24 +399,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 			if(!response.success){
 				if(action.equals(BaseAnonymousLogic.Action_Verify)){
 					hideProgress();
-					VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
-						
-						@Override
-						public void onReVerify(String mobile) {
-							// TODO Auto-generated method stub
-							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-							doPostNewPwdAction();
-						}
-
-						@Override
-						public void onSendVerifyCode(String code) {
-							// TODO Auto-generated method stub				
-//							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-							verifyCode = code;
-							doPostNewPwdAction();
-						}
-					});
-					dlg.show(getFragmentManager(), null);
+					showVerifyDlg();
 				}else{
 					hideProgress();
 					ViewUtil.showToast(this.getAppContext(), response.message, false);

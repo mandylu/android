@@ -240,7 +240,21 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		}
 	}
 	
+	@Override
+	public void onPause(){
+		super.onPause();
+		paused = true;
+	}
+	
+    private boolean paused = false;
+    private boolean needShowDlg = false;
+	
 	private void showVerifyDlg(){
+    	if(this.paused){
+    		needShowDlg = true;
+    		return;
+    	}
+
 		if(getFragmentManager() != null){
 			if(verifyDlg == null){
 				verifyDlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
@@ -270,9 +284,11 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		super.onResume();
 		this.pv = PV.REGISTER;
 		Tracker.getInstance().pv(this.pv).end();
-//		if(dlgShowing){
-//
-//		}
+		paused = false;
+		if(needShowDlg){
+			this.showVerifyDlg();
+			needShowDlg = false;
+		}		
 	}
 	
 	@Override

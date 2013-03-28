@@ -96,12 +96,51 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
         super.handleRightAction();
         onRegisterClicked();
     }
+    
+    private boolean paused = false;
+    private boolean needShowDlg = false;
+ 
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	paused = true;
+    }
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		this.pv = PV.LOGIN;
 		Tracker.getInstance().pv(PV.LOGIN).end();
+		paused = false;
+		if(needShowDlg){
+			this.showVerifyDlg();
+			needShowDlg = false;
+		}		
+	}
+	
+	private void showVerifyDlg(){
+    	if(this.paused){
+    		needShowDlg = true;
+    		return;
+    	}
+
+		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			
+			@Override
+			public void onReVerify(String mobile) {
+				// TODO Auto-generated method stub
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify("");
+			}
+
+			@Override
+			public void onSendVerifyCode(String code) {
+				// TODO Auto-generated method stub				
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify(code);
+			}
+		});
+		dlg.show(getFragmentManager(), null);		
 	}
 	
 	
@@ -225,27 +264,14 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	{
 		return false;
 	}
+	
+	
+	
 	@Override
 	public void onVerifyFailed(String message) {
 		hideProgress();
 		// TODO Auto-generated method stub
-		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
-			
-			@Override
-			public void onReVerify(String mobile) {
-				// TODO Auto-generated method stub
-//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-				loginHelper.reVerify("");
-			}
-
-			@Override
-			public void onSendVerifyCode(String code) {
-				// TODO Auto-generated method stub				
-//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
-				loginHelper.reVerify(code);
-			}
-		});
-		dlg.show(getFragmentManager(), null);
+		showVerifyDlg();
 	}
 
 }
