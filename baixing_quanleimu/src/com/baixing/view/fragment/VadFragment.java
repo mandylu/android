@@ -110,6 +110,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 	}
 	
+	
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
@@ -206,6 +207,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public void onStackTop(boolean isBack) {
 		if (this.isVadPreview() && detail != null && detail.isValidMessage()) {
 			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
+			getArguments().putBoolean("autoShared", true);
 		}
 	}
 	
@@ -364,7 +366,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	}
 	
 	private boolean isVadPreview() {
-		return getArguments() != null && getArguments().getBoolean("isVadPreview", false);
+		return getArguments() != null && getArguments().getBoolean("isVadPreview", false) && !getArguments().getBoolean("autoShared", false);
 	}
 	
 	public void handleRightAction() {

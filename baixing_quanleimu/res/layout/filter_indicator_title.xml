@@ -40,6 +40,7 @@
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/textView2"
         android:textColor="@color/vad_group_title"
+        android:visibility="gone"
         android:text="1000" />
     
      <TextView
@@ -50,6 +51,7 @@
         android:layout_centerVertical="true"
         android:layout_alignParentRight="true"
         android:textColor="@color/vad_group_title"
+        android:visibility="gone"
         android:text="条" />
 
 </RelativeLayout>
