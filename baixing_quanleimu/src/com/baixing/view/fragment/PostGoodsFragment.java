@@ -538,7 +538,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			return;
 		}
 		PostUtil.extractInputData(layout_txt, params);
-		
+		String contentAdr = ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
+		String contentContact = ((Button)getView().findViewById(R.id.btn_contact)).getText().toString();
+		if(contentAdr != null && contentAdr.length() > 0){
+			GlobalDataManager.getInstance().setAddress(contentAdr);
+		}
+		if(contentContact != null && contentContact.length() > 0){
+			GlobalDataManager.getInstance().setPhoneNumber(contentContact);
+		}
 		if(getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
 			params.put("contact", 
 					GlobalDataManager.getInstance().getPhoneNumber(),

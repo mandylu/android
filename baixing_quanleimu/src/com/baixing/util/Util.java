@@ -818,7 +818,7 @@ public class Util {
 		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
         GlobalDataManager.getInstance().getAccountManager().logout();
 		
-		GlobalDataManager.getInstance().setPhoneNumber("");
+//		GlobalDataManager.getInstance().setPhoneNumber("");
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
