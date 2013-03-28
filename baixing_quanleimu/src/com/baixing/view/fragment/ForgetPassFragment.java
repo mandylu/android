@@ -100,6 +100,20 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
         		rootV.findViewById(R.id.forgetPwdNewPwdEt).setVisibility(View.GONE);
         		postBtn.setText("找回密码");
         		isForgetType = true;
+        		
+        		boolean defaultNum = false;
+        		if(bundle.containsKey("defaultNumber")){
+        			String number = bundle.getString("defaultNumber");
+        			mobileEt.setText(number);
+        			defaultNum = true;
+        		}
+        		if(!defaultNum){
+        			String deviceNum = Util.getDevicePhoneNumber();
+        			if(deviceNum != null && Util.isValidMobile(deviceNum)){
+        				mobileEt.setText(deviceNum);
+        			}
+        		}
+        		
         	}else{
         		mobileEt.setVisibility(View.GONE);
         		newPwdEt = (EditText)rootV.findViewById(R.id.forgetPwdNewPwdEt);
@@ -203,6 +217,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 
         switch (msg.what) {
             case MSG_NETWORK_ERROR:
+            	hideProgress();
                 ViewUtil.showToast(getActivity(), showMsg, false);
                 //tracker
                 Tracker.getInstance()
@@ -213,6 +228,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
                 break;
 
             case MSG_POST_FINISH:
+            	hideProgress();
                 ViewUtil.showToast(getActivity(), showMsg, false);
                 finishFragment(MSG_FORGET_PWD_SUCCEED, null);
               //tracker
@@ -222,6 +238,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
                 .end();
                 break;
             case MSG_POST_ERROR:
+            	hideProgress();
                 ViewUtil.showToast(getActivity(), showMsg, false);
               //tracker
                 Tracker.getInstance()
@@ -279,6 +296,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 								String password = obj.getString("password");
 								String nickname = obj.getString("nickname");
 								String id = obj.getString("id");
+								String createdTime = obj.getString("createdTime");
 								UserBean loginBean = new UserBean();
 								loginBean.setId(id);
 								loginBean.setPhone(mobile);
@@ -289,6 +307,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 								profile.mobile = mobile;
 								profile.nickName = nickname;
 								profile.userId = id;
+								profile.createTime = createdTime;
 								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
 								BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
 								sendMessage(MSG_POST_FINISH, error.getString("message"));
@@ -320,6 +339,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 		if(user == null || user.getPhone() == null) return;
 		params.addParam("mobile", user.getPhone());
 		params.addParam("password", newPwdEt.getText().toString());
+		params.addParam("curpassword", user.getPassword());
 		params.addParam("code", verifyCode);
 
     	BaseApiCommand.createCommand("resetpassword", true, params).execute(getActivity(), new Callback() {

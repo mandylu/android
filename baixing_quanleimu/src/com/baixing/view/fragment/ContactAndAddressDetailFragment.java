@@ -25,7 +25,6 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 	public void initTitle(TitleDef title){
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
-		title.m_leftActionImage  = R.drawable.icon_close;
 		
 		title.m_rightActionHint = "完成";
 		Bundle bundle = getArguments();

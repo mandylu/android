@@ -208,6 +208,10 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 //			m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
 			Bundle bundle = createArguments("找回密码", null);
 			bundle.putString(ForgetPassFragment.Forget_Type, "forget");
+			String phone = ((TextView)getView().findViewById(R.id.et_account)).getText().toString();
+			if(phone != null && phone.length() > 0 && Util.isValidMobile(phone)){
+				bundle.putString("defaultNumber", phone);
+			}
 			pushFragment(new ForgetPassFragment(), bundle);
 			break;
 		case 10:

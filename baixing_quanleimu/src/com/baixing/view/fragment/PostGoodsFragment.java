@@ -107,7 +107,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
 	protected Bundle imgSelBundle = null;
-	private View locationView = null;
 	private BXLocation detailLocation = null;
     protected List<String> bmpUrls = new ArrayList<String>();
     private EditText etDescription = null;
@@ -463,14 +462,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				lastClickPostTime = System.currentTimeMillis();
 			}
 			break;
-		case R.id.location:
-			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
-			if(this.detailLocation != null && locationView != null){
-				setDetailLocationControl(detailLocation);
-			}else if(detailLocation == null){
-				ViewUtil.showToast(this.getActivity(), "无法获得当前位置", false);
-			}
-			break;
+//		case R.id.location:
+//			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
+//			if(this.detailLocation != null && locationView != null){
+//				setDetailLocationControl(detailLocation);
+//			}else if(detailLocation == null){
+//				ViewUtil.showToast(this.getActivity(), "无法获得当前位置", false);
+//			}
+//			break;
 //		case R.id.myImg:
 		case R.id.add_post_image:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
@@ -777,7 +776,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
 				((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
 			}
-		}else if(message == RegisterFragment.MSG_REGISTER_SUCCESS || message == LoginFragment.MSG_LOGIN_SUCCESS){
+		}else if(message == RegisterFragment.MSG_REGISTER_SUCCESS 
+				|| message == LoginFragment.MSG_LOGIN_SUCCESS
+				|| message == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED){
 			if(doingAccountCheck){
 				doingAccountCheck = false;
 				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
@@ -819,16 +820,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			layout.setLayoutParams(lp);
 		}
 
-		if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-			layout.findViewById(R.id.location).setOnClickListener(this);
-			((TextView)layout.findViewById(R.id.postinput)).setHint("填写或点击按钮定位");
-			locationView = layout;
-			
-			String address = GlobalDataManager.getInstance().getAddress();
-			if(address != null && address.length() > 0){
-				((TextView)layout.findViewById(R.id.postinput)).setText(address);
-			}
-		}else if(postBean.getName().equals("contact") && layout != null){
+//		if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
+//			layout.findViewById(R.id.location).setOnClickListener(this);
+//			((TextView)layout.findViewById(R.id.postinput)).setHint("填写或点击按钮定位");
+//			locationView = layout;
+//			
+//			String address = GlobalDataManager.getInstance().getAddress();
+//			if(address != null && address.length() > 0){
+//				((TextView)layout.findViewById(R.id.postinput)).setText(address);
+//			}
+//		}else 
+		if(postBean.getName().equals("contact") && layout != null){
 			etContact = ((EditText)layout.getTag(PostCommonValues.HASH_CONTROL));
 			((TextView)layout.findViewById(R.id.postinput)).setHint("手机或座机");
 			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
@@ -964,36 +966,59 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		setPhoneAndAddrLayout();
 	}
 	
+	private void setPhoneAndAddrLeftIcon(){
+		Button pBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_contact);
+		Button aBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_address);
+		if(aBtn == null || pBtn == null) return;
+		String text = pBtn.getText().toString();
+		int resId;
+		if(text != null && text.length() > 0){
+			resId = R.drawable.icon_post_call;
+		}else{
+			resId = R.drawable.icon_post_call_disable;
+		}
+		
+		Bitmap img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		BitmapDrawable bd = new BitmapDrawable(img);
+		bd.setBounds(0, 0, 45, 45);
+		
+		pBtn.setCompoundDrawables(bd, null, null, null);
+		
+		text = aBtn.getText().toString();
+		if(text != null && text.length() > 0){
+			resId = R.drawable.icon_location;
+		}else{
+			resId = R.drawable.icon_location_disable;
+		}
+	
+		img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		bd = new BitmapDrawable(img);
+		bd.setBounds(0, 0, 45, 45);
+		
+		aBtn.setCompoundDrawables(bd, null, null, null);
+
+	}
+	
 	private void setPhoneAndAddrLayout(){
 		String phone = GlobalDataManager.getInstance().getPhoneNumber();
-		int phoneResId;
 		if(phone == null || phone.length() == 0){
-			((Button)getView().findViewById(R.id.btn_contact)).setText("联系方式");
-			phoneResId = R.drawable.icon_post_call_disable;
+			((Button)getView().findViewById(R.id.btn_contact)).setHint("联系方式");
 		}else{
 			((Button)getView().findViewById(R.id.btn_contact)).setText(phone);
-			phoneResId = R.drawable.icon_post_call;
 		}
-		Bitmap img = ImageCacheManager.getInstance().loadBitmapFromResource(phoneResId);
-		BitmapDrawable bd = new BitmapDrawable(img);
-		bd.setBounds(0, 0, img.getWidth(), img.getHeight());
-		((Button)getView().findViewById(R.id.btn_contact)).setCompoundDrawables( bd, null, null, null );
 		
 		String address = GlobalDataManager.getInstance().getAddress();
-		int addressResId;
 		if(address == null || address.length() == 0){
-			addressResId = R.drawable.icon_location_disable;
-			((Button)getView().findViewById(R.id.btn_address)).setText("交易地点");
+			if(detailLocation != null){
+				this.setDetailLocationControl(detailLocation);
+			}else{
+				((Button)getView().findViewById(R.id.btn_address)).setHint("交易地点");
+			}
 		}else{
-			addressResId = R.drawable.icon_location;
 			((Button)getView().findViewById(R.id.btn_address)).setText(address);
 		}
-		Bitmap imgAddr = ImageCacheManager.getInstance().loadBitmapFromResource(addressResId);
-		BitmapDrawable bdAddr = new BitmapDrawable(imgAddr);
-		bdAddr.setBounds(0, 0, imgAddr.getWidth(), imgAddr.getHeight());
-		((Button)getView().findViewById(R.id.btn_address)).setCompoundDrawables( bdAddr, null, null, null );
 		
-		
+		setPhoneAndAddrLeftIcon();
 		
 		getView().findViewById(R.id.btn_contact).setOnClickListener(new OnClickListener(){
 
@@ -1379,6 +1404,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation)msg.obj;
+			Button addrBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_address);
+			if(addrBtn != null && (addrBtn.getText() == null || addrBtn.getText().length() == 0)){
+				setDetailLocationControl(detailLocation);
+			}
 			break;
 		case PostCommonValues.MSG_POST_NEED_LOGIN:
 			Bundle tmpBundle = createArguments("登录", "");
@@ -1641,7 +1670,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private void setDetailLocationControl(BXLocation location){
 		if(location == null) return;
-		if(locationView != null && locationView.findViewById(R.id.postinput) != null){
+		Button addrBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_address);
+		if(addrBtn != null){
 			String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
             		((location.subCityName == null || location.subCityName.equals("")) ?
 							"" 
@@ -1654,7 +1684,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
             if(location.cityName != null && location.cityName.length() > 0){
             	address = address.replaceFirst(location.cityName, "");
             }
-			((TextView)locationView.findViewById(R.id.postinput)).setText(address);
+            addrBtn.setText(address);
+            
+            setPhoneAndAddrLeftIcon();
 		}		
 	}
 	

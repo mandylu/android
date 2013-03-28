@@ -269,47 +269,6 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 		return null;
     }
 	
-	private void doLoginAfterPostSucceedSync(){
-		if(mobile == null || mobile.length() == 0) return;
-		UserBean bean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-		if(bean != null && bean.getPhone() != null && bean.getPhone().equals(mobile)){
-			return;
-		}
-		ApiParams param = new ApiParams();
-		param.addParam("mobile", this.mobile);
-//		ApiClient.getInstance().remoteCall(Api.createPost(apiName), param, this);
-		String json = BaseApiCommand.createCommand("getUser", false, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
-		try{
-			JSONObject obj = new JSONObject(json);
-			if(obj != null){
-				JSONObject error = obj.getJSONObject("error");
-				if(error != null){
-					String code = error.getString("code");
-					if(code != null && code.equals("0")){
-						String password = obj.getString("password");
-						String nickname = obj.getString("nickname");
-						String id = obj.getString("id");
-						UserBean loginBean = new UserBean();
-						loginBean.setId(id);
-						loginBean.setPhone(mobile);
-						String decPwd = getDecryptedPassword(password);
-						loginBean.setPassword(decPwd, false);
-						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
-						UserProfile profile = new UserProfile();
-						profile.mobile = mobile;
-						profile.nickName = nickname;
-						profile.userId = id;
-						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
-						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
-					}
-				}
-			}
-		}catch(JSONException e){
-			e.printStackTrace();
-		}
-
-	}
-	
 	private void handlePostMsgBack(String rawData){
 		if (rawData != null) {
 			PostResultData data = this.parseResult(rawData);

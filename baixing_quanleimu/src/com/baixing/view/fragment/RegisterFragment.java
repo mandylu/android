@@ -331,6 +331,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 					if(code != null && code.equals("0")){
 						String password = obj.getString("password");
 						String nickname = obj.getString("nickname");
+						String createdTime = obj.getString("createdTime");
 						String id = obj.getString("id");
 						UserBean loginBean = new UserBean();
 						loginBean.setId(id);
@@ -342,6 +343,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 						profile.mobile = mobile;
 						profile.nickName = nickname;
 						profile.userId = id;
+						profile.createTime = createdTime;
 						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
 						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
 						this.getView().postDelayed(new Runnable(){

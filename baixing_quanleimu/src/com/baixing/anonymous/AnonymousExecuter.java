@@ -184,9 +184,14 @@ public class AnonymousExecuter implements Callback{
 									response.success = true;
 									response.message = verifyCode;
 									listener.onActionDone(BaseAnonymousLogic.Action_SendSMS, response);
+									return;
 								}
 							}
 						}
+						ResponseData response = new ResponseData();
+						response.success = false;
+						response.message = "验证码获取失败";
+						listener.onActionDone(BaseAnonymousLogic.Action_SendSMS, response);
 //						doVerify(mobile, verifyCode);						
 					}
 				}

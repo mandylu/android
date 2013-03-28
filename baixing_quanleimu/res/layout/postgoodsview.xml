@@ -47,45 +47,61 @@
                     layout="@layout/item_post_category" />
             </LinearLayout>
 
-            <RelativeLayout
+            <LinearLayout
                 android:id="@+id/ll_contactAndAddress"
                 android:layout_width="fill_parent"
                 android:layout_height="wrap_content"
                 android:layout_marginBottom="5dip"
                 android:orientation="horizontal" >
 
-                <Button
-                    android:id="@+id/btn_contact"
-                    android:layout_width="150dip"
-                    android:layout_height="49dip"
-                    android:layout_alignParentLeft="true"
-                    android:layout_weight="1"
-                    android:background="@drawable/bg_post_contact_addr"
-                    android:drawableLeft="@drawable/icon_post_call"
-                    android:drawablePadding="3dip"
-                    android:hint="联系方式"
-                    android:paddingRight="3dip"
-                    android:singleLine="true"
-                    android:textColor="#838383"
-                    android:textSize="@dimen/font_medium" >
-                </Button>
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
 
-                <Button
-                    android:id="@+id/btn_address"
-                    android:layout_width="150dip"
-                    android:layout_height="49dip"
-                    android:layout_alignParentRight="true"
-                    android:layout_marginLeft="5dip"
-                    android:background="@drawable/bg_post_contact_addr"
-                    android:drawableLeft="@drawable/icon_location"
-                    android:drawablePadding="3dip"
-                    android:paddingRight="3dip"
-                    android:singleLine="true"
-                    android:text="交易地点"
-                    android:textColor="#838383"
-                    android:textSize="@dimen/font_medium" >
-                </Button>
-            </RelativeLayout>
+                    <Button
+                        android:id="@+id/btn_contact"
+                        android:layout_width="142dip"
+                        android:layout_height="40dip"
+                        android:layout_alignParentRight="true"
+                        android:layout_marginRight="5dip"
+                        android:background="@drawable/bg_post_contact_addr"
+                        android:drawableLeft="@drawable/icon_post_call"
+                        android:drawablePadding="5dip"
+                        android:gravity="left|center_vertical"
+                        android:hint="联系方式"
+                        android:paddingLeft="15dip"
+                        android:paddingRight="3dip"
+                        android:singleLine="true"
+                        android:textColor="#838383"
+                        android:textSize="@dimen/font_medium" >
+                    </Button>
+                </RelativeLayout>
+
+                <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1" >
+
+                    <Button
+                        android:id="@+id/btn_address"
+                        android:layout_width="142dip"
+                        android:layout_height="40dip"
+                        android:layout_alignParentLeft="true"
+                        android:layout_marginLeft="5dip"
+                        android:background="@drawable/bg_post_contact_addr"
+                        android:drawableLeft="@drawable/icon_location"
+                        android:drawablePadding="5dip"
+                        android:gravity="left|center_vertical"
+                        android:hint="交易地点"
+                        android:paddingLeft="15dip"
+                        android:paddingRight="3dip"
+                        android:singleLine="true"
+                        android:textColor="#838383"
+                        android:textSize="@dimen/font_medium" >
+                    </Button>
+                </RelativeLayout>
+            </LinearLayout>
 
             <Button
                 android:id="@+id/iv_post_finish"
