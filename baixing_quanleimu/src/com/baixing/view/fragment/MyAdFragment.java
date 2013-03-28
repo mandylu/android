@@ -821,7 +821,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		if(currentType == TYPE_MYPOST){
-			title.m_title = "我的信息";
+			title.m_title = "已发布信息";
 		}
 		title.m_visible = true;
 	}
