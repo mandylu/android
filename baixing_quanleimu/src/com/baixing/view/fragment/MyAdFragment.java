@@ -204,7 +204,15 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		
 		lvGoodsList.setOnRefreshListener(this);	
 		
-		Bundle bundle = this.getArguments();
+		Bundle bundle = null;
+		Activity act = getActivity();
+		if(act != null){
+			Intent intent = act.getIntent();
+			if(intent != null){
+				bundle = intent.getExtras();
+			}
+		}
+//		Bundle bundle = this.getArguments();
 		if(bundle != null){
 //			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
 //				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
@@ -834,7 +842,11 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			params.addParam("userId", user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
-			Bundle bundle = this.getArguments();
+			Bundle bundle = null;
+			if(getActivity() != null && getActivity().getIntent() != null){
+				bundle = getActivity().getIntent().getExtras();
+			}
+//			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.addParam("newAdIds", bundle.getString("lastPost"));
 			}

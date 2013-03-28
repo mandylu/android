@@ -1351,7 +1351,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //				showPost();
 				handlePostFinish(id);
 				if(!editMode){
-					
+					Activity act = getActivity();
+					if(act != null){
+						Intent intent = act.getIntent();
+						if(intent != null){
+							intent.putExtra("forceUpdate", true);
+							intent.putExtra("lastPost", id);
+						}
+					}
 //					showPost();
 //					String lp = getArguments().getString("lastPost");
 //					if(lp != null && !lp.equals("")){
