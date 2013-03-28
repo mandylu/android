@@ -55,6 +55,7 @@ import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostCommonValues;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.vad.VadLogger;
 import com.baixing.view.vad.VadPageController;
@@ -500,6 +501,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}else if(BigGalleryFragment.MSG_GALLERY_BACK == requestCode){
 //			Log.d("haha", "hahaha,   from gallery back");
 			galleryReturned = true;
+		}else if(PostCommonValues.MSG_POST_EDIT_SUCCEED == requestCode){
+			if(result != null){
+				this.mListLoader = (VadListLoader) ((Bundle)result).getSerializable("loader");
+				int index = ((Bundle)result).getInt("index", 0);
+				detail = mListLoader.getGoodsList().getData().get(index);
+				this.notifyPageDataChange(false);
+			}
 		}
 	}
 

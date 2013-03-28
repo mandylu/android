@@ -12,6 +12,7 @@ public class PostCommonValues {
 	static public final int MSG_VERIFY_FAIL = 0xFFFF0F16;
 	static public final int MSG_POST_NEED_REGISTER = 0xFFFF0F18;
 	static public final int MSG_ACCOUNT_CHECK_FAIL = 0xFFFF0F19;
+	static public final int MSG_POST_EDIT_SUCCEED = 0xFFFF0F20;
 	static public final int ACTION_POST_NEED_LOGIN_DONE = 0x11110F00;
 	static public final int ACTION_POST_NEED_REVERIIFY = 0x11110F01;
 	public static final String STRING_AREA = "地区";

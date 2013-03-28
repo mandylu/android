@@ -80,15 +80,18 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 				if(bundle.getString("edittype").equals("contact")){
 					isContact = true;
 					llEdit.findViewById(R.id.edit_post_location).setVisibility(View.GONE);
-					((TextView)llEdit.findViewById(R.id.contact_edit)).setText(GlobalDataManager.getInstance().getPhoneNumber());
+					String value = GlobalDataManager.getInstance().getPhoneNumber();
+					if(value == null || value.length() == 0 && bundle.containsKey("defaultValue")){
+						value = bundle.getString("defaultValue");
+					}
+					((TextView)llEdit.findViewById(R.id.contact_edit)).setText(value);
 				}else if(bundle.getString("edittype").equals("address")){
 					isContact = false;
 					llEdit.findViewById(R.id.ll_contact).setVisibility(View.GONE);
 					String adr = GlobalDataManager.getInstance().getAddress();
 					if(adr == null || adr.length() == 0){
-						if(bundle.containsKey("location")){
-							BXLocation location = (BXLocation)bundle.getSerializable("location");
-							adr = getLocationSummary(location);
+						if(bundle.containsKey("defaultValue")){							
+							adr = bundle.getString("defaultValue");
 						}
 					}
 					((TextView)llEdit.findViewById(R.id.postinput)).setText(adr);

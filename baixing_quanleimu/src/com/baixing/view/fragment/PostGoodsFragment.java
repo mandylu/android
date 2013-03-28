@@ -981,7 +981,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		setPhoneAndAddrLayout();
 	}
 	
-	private void setPhoneAndAddrLeftIcon(){
+	protected void setPhoneAndAddrLeftIcon(){
 		Button pBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_contact);
 		Button aBtn = getView() == null ? null : (Button)getView().findViewById(R.id.btn_address);
 		if(aBtn == null || pBtn == null) return;
@@ -1042,6 +1042,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				// TODO Auto-generated method stub
 				Bundle temp = createArguments("填写联系方式", "");
 				temp.putString("edittype", "contact");
+				temp.putString("defaultValue", ((Button)getView().findViewById(R.id.btn_contact)).getText().toString());
 				pushFragment(new ContactAndAddressDetailFragment(), temp);
 			}
 			
@@ -1053,6 +1054,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				// TODO Auto-generated method stub
 				Bundle temp = createArguments("填写交易地点", "");
 				temp.putString("edittype", "address");
+				temp.putString("defaultValue", ((Button)getView().findViewById(R.id.btn_address)).getText().toString());
 				if(detailLocation != null){
 					temp.putSerializable("location", detailLocation);
 				}
@@ -1240,10 +1242,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					Bundle bundle2 = createArguments(null, null);
 					bundle2.putSerializable("loader", glLoader);
 					bundle2.putInt("index", 0);
-					bundle2.putBoolean("isVadPreview", Boolean.TRUE);
-					bundle2.putInt(ARG_COMMON_ANIMATION_IN, 0);
-					bundle2.putInt(ARG_COMMON_ANIMATION_EXIT, 0);
-					this.pushAndFinish(new VadFragment(), bundle2);
+					if(!editMode){
+						bundle2.putBoolean("isVadPreview", Boolean.TRUE);
+						bundle2.putInt(ARG_COMMON_ANIMATION_IN, 0);
+						bundle2.putInt(ARG_COMMON_ANIMATION_EXIT, 0);
+						this.pushAndFinish(new VadFragment(), bundle2);
+					}else{
+						finishFragment(PostCommonValues.MSG_POST_EDIT_SUCCEED, bundle2);
+					}
 				} else {
 					this.hideProgress();
 					this.finishFragment();
@@ -1343,8 +1349,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					categoryName = "";
 				}
 //				showPost();
+				handlePostFinish(id);
 				if(!editMode){
-					handlePostFinish(id);
+					
 //					showPost();
 //					String lp = getArguments().getString("lastPost");
 //					if(lp != null && !lp.equals("")){
@@ -1368,10 +1375,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //					}
 					doClearUpImages();
 //					finishFragment();
-				}else{
-//					showPost();
-					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
 				}
+//				else{
+//					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
+//				}
 			}else{
 				postResultFail(message);
 				if(msg.obj != null){
