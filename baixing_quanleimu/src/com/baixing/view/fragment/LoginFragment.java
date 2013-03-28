@@ -141,6 +141,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			}
 		});
 		dlg.show(getFragmentManager(), null);		
+		needShowDlg = false;
 	}
 	
 	

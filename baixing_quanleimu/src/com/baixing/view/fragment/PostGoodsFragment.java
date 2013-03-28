@@ -1464,6 +1464,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		});
 //        editUserDlg.callback = this;
         dlg.show(getFragmentManager(), null);
+        needShowDlg = false;
 	}
 	
 	private boolean paused = false;

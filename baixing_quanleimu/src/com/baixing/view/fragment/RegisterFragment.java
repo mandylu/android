@@ -277,6 +277,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 			}
 			verifyDlg.show(getFragmentManager(), null);
 		}
+		needShowDlg = false;
 	}
 
 	@Override
