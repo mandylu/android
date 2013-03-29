@@ -62,6 +62,7 @@ import com.baixing.view.vad.VadPageController;
 import com.baixing.view.vad.VadPageController.ActionCallback;
 import com.baixing.widget.ContextMenuItem;
 import com.quanleimu.activity.R;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback {
 
@@ -503,10 +504,24 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			galleryReturned = true;
 		}else if(PostCommonValues.MSG_POST_EDIT_SUCCEED == requestCode){
 			if(result != null){
-				this.mListLoader = (VadListLoader) ((Bundle)result).getSerializable("loader");
-				int index = ((Bundle)result).getInt("index", 0);
-				detail = mListLoader.getGoodsList().getData().get(index);
-				this.notifyPageDataChange(false);
+				Ad newDetail = (Ad) result;
+				detail = newDetail;
+				try {
+					AdList list = this.mListLoader.getGoodsList();
+					List<Ad> dataList = list.getData();
+					for (int i=0; i<dataList.size(); i++) {
+						Ad ad = dataList.get(i);
+						if (ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(newDetail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))) {
+							dataList.add(i, newDetail);
+							dataList.remove(i+1);
+							break;
+						}
+					}
+				} catch (Throwable t) {
+					Log.d(TAG, "error when update ad in adlist. " + t.getMessage());
+				} finally {
+					this.notifyPageDataChange(false);
+				}
 			}
 		}
 	}
