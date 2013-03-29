@@ -373,9 +373,16 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		ft.commit();
 		
 		if (popSucceed && entryCount <= 1) {
-			finish();
+			onFragmentEmpty();
 		}
 		return popSucceed;
+	}
+	
+	/**
+	 * Notify when all the fragment within the stack are pop out.
+	 */
+	protected void onFragmentEmpty() {
+		finish();
 	}
 	
 	@Override

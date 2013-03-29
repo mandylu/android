@@ -37,7 +37,7 @@
         android:name="android.hardware.camera.autofocus"
         android:required="false" />
 
-    <application android:name="com.baixing.activity.EntryApplication" android:allowTaskReparenting="true" android:icon="@drawable/app_icon" android:label="@string/app_name" android:theme="@style/myTheme" >
+    <application android:name="com.baixing.activity.EntryApplication" android:allowTaskReparenting="false" android:icon="@drawable/app_icon" android:label="@string/app_name" android:theme="@style/myTheme" >
         <meta-data android:name="UMENG_APPKEY" android:value="4f7139155270154a7f000051" ></meta-data>
         
         <!-- Warning ::: do not formator following two line.-->
@@ -127,7 +127,7 @@
             android:name="com.baixing.activity.PersonalActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/mainActivityTheme"
             android:windowSoftInputMode="adjustResize" >
@@ -139,7 +139,7 @@
             android:name="com.baixing.activity.PostActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
-            android:launchMode="singleTop"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/mainActivityTheme"
             android:windowSoftInputMode="adjustResize" >
@@ -151,7 +151,7 @@
             android:name="com.baixing.activity.MainActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
-            android:launchMode="singleTask"
+            android:launchMode="singleInstance"
             android:screenOrientation="portrait"
             android:theme="@style/mainActivityTheme"
             android:windowSoftInputMode="adjustResize" >

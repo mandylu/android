@@ -54,6 +54,13 @@ public class PostActivity extends BaseTabActivity {
 		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
 	}
 	
+	protected void onFragmentEmpty() {
+		
+		this.afterChange(TAB_INDEX_CAT);
+		finish();
+	}
+	
+	
 	private void registerBroadcast(){
 		IntentFilter intentFilter = new IntentFilter(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
 		if(postReceiver == null){

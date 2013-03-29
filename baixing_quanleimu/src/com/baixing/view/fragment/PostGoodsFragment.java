@@ -362,8 +362,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		if (loc != null) {
 //			goIntent.putExtra("location", loc);
 //		}
-//		getActivity().startActivity(goIntent);
-		getActivity().startActivityForResult(goIntent, 0);
+		getActivity().startActivity(goIntent);
+//		getActivity().startActivityForResult(goIntent, 0);
 	}
 
 	private void deployDefaultLayout(){
