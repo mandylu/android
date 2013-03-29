@@ -29,7 +29,7 @@ public class VerifyFailDialog extends DialogFragment{
         View v = inflater.inflate(R.layout.dialog_verify_fail, null);
         final EditText editPhoneEt = (EditText) v.findViewById(R.id.dialog_phone_et);
         builder.setView(v)
-                .setTitle("验证失败")
+        		.setTitle("验证失败")
                 .setPositiveButton("重新验证", new Dialog.OnClickListener() {
                     @Override
                     public void onClick(DialogInterface d, int which) {
@@ -46,6 +46,7 @@ public class VerifyFailDialog extends DialogFragment{
                     }
                 });
         AlertDialog dialog = builder.create();
+        dialog.setCanceledOnTouchOutside(false);
         return dialog;
 	}
 	
