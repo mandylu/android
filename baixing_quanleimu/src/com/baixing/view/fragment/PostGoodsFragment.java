@@ -1248,7 +1248,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						bundle2.putInt(ARG_COMMON_ANIMATION_EXIT, 0);
 						this.pushAndFinish(new VadFragment(), bundle2);
 					}else{
-						finishFragment(PostCommonValues.MSG_POST_EDIT_SUCCEED, bundle2);
+						finishFragment(PostCommonValues.MSG_POST_EDIT_SUCCEED, gl.getData().get(0));
 					}
 				} else {
 					this.hideProgress();
@@ -1745,7 +1745,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		param.addParam("rt", 1);
 		param.addParam("rows", 1);
 		param.addParam("wanted", 0);
-		param.addParam("status", 3);
+//		param.addParam("status", 3);
 		this.showProgress("", "正在获取您发布信息的状态，请耐心等候", false);
 		
 		BaseApiCommand.createCommand("ad_user_list", true, param).execute(getActivity(), new BaseApiCommand.Callback() {
