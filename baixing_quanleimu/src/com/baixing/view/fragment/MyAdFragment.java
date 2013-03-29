@@ -74,6 +74,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     private final int MSG_SHOW_BIND_DIALOG = 11;
     private final int MSG_REFRESH_FAIL = 12;
     private final int MSG_ASK_REFRESH = 13;
+    private final int MSG_UPDATE_LIST = 14;
 
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -369,6 +370,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_UPDATE_LIST: {
+			if (adapter != null) {
+				adapter.notifyDataSetChanged();
+			}
+			break;
+		}
 		case MSG_ASK_REFRESH: {
 			hideProgress();
 			final Pair<String, String> p = (Pair<String, String>) msg.obj;
@@ -912,10 +919,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				user = (UserBean) note.getObject();
 				filterOutAd(listMyPost, user);
 				needReloadData = true;
-				if (adapter != null)
-				{
-					adapter.notifyDataSetChanged();
-				}
 			}
 		}		
 	}
