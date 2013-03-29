@@ -204,7 +204,7 @@ public class GlobalDataManager implements Observer {
 				listMyPost.add(index, ad);
 				listMyPost.remove(index+1);
 			} else {
-				listMyPost.add(ad);
+				listMyPost.add(0, ad);
 			}
 		} catch (Throwable t) {
 			
