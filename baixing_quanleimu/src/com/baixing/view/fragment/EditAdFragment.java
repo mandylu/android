@@ -10,6 +10,8 @@ import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -30,6 +32,11 @@ class EditAdFragment extends PostGoodsFragment{
 		editMode = true;
 		super.onCreate(savedInstanceState);				
 		goodsDetail = (Ad) getArguments().getSerializable("goodsDetail");
+		
+		String strArea = goodsDetail.getValueByKey(PostCommonValues.STRING_DETAIL_POSITION);
+
+		GlobalDataManager.getInstance().setAddress(strArea);
+		GlobalDataManager.getInstance().setPhoneNumber(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
 	}
 	
 	@Override
@@ -229,12 +236,9 @@ class EditAdFragment extends PostGoodsFragment{
 		
 		String btnAddr = ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
 		if(btnAddr == null || btnAddr.length() == 0){
-			String strArea = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
-			String[] areas = strArea.split(",");
-			if(areas.length >= 2){
-				((Button)getView().findViewById(R.id.btn_address)).setText(areas[areas.length - 1]);
-				setPhoneAndAddrLeftIcon();
-			}
+			String strArea = goodsDetail.getValueByKey(PostCommonValues.STRING_DETAIL_POSITION);
+			((Button)getView().findViewById(R.id.btn_address)).setText(strArea);
+			setPhoneAndAddrLeftIcon();
 		}
 		
 		String btnCall = ((Button)getView().findViewById(R.id.btn_contact)).getText().toString();

@@ -606,20 +606,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private String getFilledLocation(){
-		String toRet = "";
-		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-			View v = layout_txt.getChildAt(m);
-			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
-			if(bean == null) continue;
-			if(bean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
-				if(tv != null && !tv.getText().toString().equals("")){
-					toRet = tv.getText().toString();
-				}
-				break;
-			}
-		}
-		return toRet;
+		return ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
+//		String toRet = "";
+//		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
+//			View v = layout_txt.getChildAt(m);
+//			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
+//			if(bean == null) continue;
+//			if(bean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
+//				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
+//				if(tv != null && !tv.getText().toString().equals("")){
+//					toRet = tv.getText().toString();
+//				}
+//				break;
+//			}
+//		}
+//		return toRet;
 	}
 	
 	protected void mergeParams(HashMap<String, String> list){}
