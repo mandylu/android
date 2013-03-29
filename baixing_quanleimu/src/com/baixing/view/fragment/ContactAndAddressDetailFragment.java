@@ -46,7 +46,7 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 					input.requestFocus();
 					InputMethodManager inputMgr = 
 							(InputMethodManager) getActivity().getSystemService(Context.INPUT_METHOD_SERVICE);
-					inputMgr.showSoftInput(input, InputMethodManager.SHOW_FORCED);
+					inputMgr.showSoftInput(input, InputMethodManager.SHOW_IMPLICIT);
 				}			
 			}, 100);
 		}
@@ -153,6 +153,7 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 	@Override
 	public void handleRightAction(){
 		if(!saveContent(true)) return;
+//		this.hideSoftKeyboard();
 		this.finishFragment();
 	}
 	
