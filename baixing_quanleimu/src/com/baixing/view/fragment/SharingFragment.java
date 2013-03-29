@@ -46,7 +46,7 @@ class SharingFragment extends DialogFragment{
 					if(wxInstalled){
 						SharingCenter.share2Weixin((BaseActivity)getActivity(), mAd, false);						
 					}else{
-						SharingCenter.share2QZone((BaseActivity)getActivity(), mAd);
+						SharingCenter.share2Weibo((BaseActivity)getActivity(), mAd);
 					}					
 					break;
 				case 2:
