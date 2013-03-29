@@ -64,17 +64,17 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	{
 		super.onNewIntent(intent);
 		
-		if (Intent.ACTION_MAIN.equals(intent.getAction())) {
-			resumeTask.add(new Runnable() {
-				public void run() {
-					deprecatSelect(TAB_INDEX_CAT);
-				}
-			});
-//			Intent go = new Intent();
+		if (Intent.ACTION_MAIN.equals(intent.getAction()) && GlobalDataManager.getInstance().getLastActiveClass() != null) {
+//			resumeTask.add(new Runnable() {
+//				public void run() {
+//					deprecatSelect(TAB_INDEX_CAT);
+//				}
+//			});
+			Intent go = new Intent();
 //			go.addCategory(Intent.CATEGORY_LAUNCHER);
-//			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
-//			
-//			startActivity(go);
+			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
+			go.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+			startActivity(go);
 		}
 	}
 
