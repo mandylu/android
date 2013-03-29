@@ -70,7 +70,7 @@ public class PostUtil{
 			if (postGoodsBean.getControlType().equals("input") 
 					|| postGoodsBean.getControlType().equals("textarea")) {
 				EditText et = (EditText)vg.getChildAt(i).getTag(PostCommonValues.HASH_CONTROL);
-				if(et != null){
+				if(et != null && et.getText() != null && et.getText().toString().trim().length() > 0){
 					params.put(postGoodsBean.getName(),  et.getText().toString(), et.getText().toString());
 				}
 			}
