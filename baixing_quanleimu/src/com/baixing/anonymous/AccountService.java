@@ -106,9 +106,10 @@ public class AccountService implements AnonymousNetworkListener{
 		if(accountStatus == null || accountStatus.length() == 0){
 			accountStatus = getAccountStatus(mobile);
 		}
-		String deviceNumber = Util.getDevicePhoneNumber();
-		String phoneStatus = (deviceNumber != null && deviceNumber.contains(mobile)) ? 
-				BaseAnonymousLogic.Status_Number_Available : BaseAnonymousLogic.Status_Number_UnAvailable;
+//		String deviceNumber = Util.getDevicePhoneNumber();
+//		String phoneStatus = (deviceNumber != null && deviceNumber.contains(mobile)) ? 
+//				BaseAnonymousLogic.Status_Number_Available : BaseAnonymousLogic.Status_Number_UnAvailable;
+		String phoneStatus = BaseAnonymousLogic.Status_Number_UnAvailable;
 		anonyLogic = new AnonymousAccountLogic(accountStatus, phoneStatus);
 		if(initLogicStatus != null && initLogicStatus.length() > 0 ){
 			anonyLogic.setCurrentStatus(initLogicStatus);
