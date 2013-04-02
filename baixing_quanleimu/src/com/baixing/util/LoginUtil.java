@@ -172,7 +172,11 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 		String status = AnonymousExecuter.retreiveAccountStatusSync(account);
 		if(status != null && (status.equals(BaseAnonymousLogic.Status_Registered_UnVerified)
 								|| status.equals(BaseAnonymousLogic.Status_Registered_Verified))){
-			AccountService.getInstance().start(status);
+			if(this.verifyCode != null && verifyCode.length() > 0){
+				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_CodeReceived);
+			}else{
+				AccountService.getInstance().start(status);
+			}
 		}else{
 			if(pd != null){
 				pd.dismiss();
