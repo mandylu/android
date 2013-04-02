@@ -200,7 +200,8 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 			if(verifyCode == null || verifyCode.length() == 0){
 				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_ForgetPwd);
 			}else{
-				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_CodeReceived);
+//				AccountService.getInstance().start(status, BaseAnonymousLogic.Status_CodeReceived);
+				AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified, BaseAnonymousLogic.Status_CodeReceived);
 			}
 		}else{
 			this.hideProgress();
