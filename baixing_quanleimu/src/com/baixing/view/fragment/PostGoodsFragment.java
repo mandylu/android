@@ -11,7 +11,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -41,7 +40,6 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
@@ -50,7 +48,6 @@ import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -73,10 +70,8 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
-import com.baixing.widget.EditUsernameDialogFragment;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
-import com.tencent.mm.sdk.platformtools.Log;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	
@@ -88,7 +83,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final String KEY_IS_EDITPOST = "isEditPost"; 
 	static final String KEY_CATE_ENGLISHNAME = "cateEnglishName";
-	static final private String KEY_IMG_BUNDLE = "key_image_bundle";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final int MSG_POST_SUCCEED = 0xF0000010; 
 	protected String categoryEnglishName = "";
@@ -96,7 +90,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
 	private static final int NONE = 0;
-	private static final int PHOTORESOULT = 3;
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
@@ -106,7 +99,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
-	protected Bundle imgSelBundle = null;
 	private BXLocation detailLocation = null;
     protected List<String> bmpUrls = new ArrayList<String>();
     private EditText etDescription = null;
@@ -115,7 +107,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
     private PostNetworkService postNS;
     
     protected ArrayList<String> photoList = new ArrayList<String>();
-//    private Bitmap firstImage = null;
     protected boolean isNewPost = true;
     private boolean finishRightNow = false;
     private long lastClickPostTime = 0;
@@ -134,16 +125,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				ArrayList<String> result = data.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 				photoList.addAll(result);
 			}
-			
-//			if (photoList != null && photoList.size() > 0) {
-//				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
-//				for(int i = 0; i < photoList.size(); ++ i){
-//					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
-//				}				
-//			}
-//			else {
-//				firstImage = null;
-//			}
 		}
 		
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
@@ -184,20 +165,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (savedInstanceState != null){
 			postList.putAll( (HashMap<String, PostGoodsBean>)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
-//			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
 			photoList.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
-			imgHeight = savedInstanceState.getInt("imgHeight");
-			imgSelBundle = savedInstanceState.getBundle(KEY_IMG_BUNDLE);
 		}
-		
-		if(imgSelBundle == null){
-			imgSelBundle =  new Bundle();
-		}
-
-//		if(imgSelDlg == null){ //FIXME: remove 
-//			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
-//			imgSelDlg.setMsgOutHandler(handler);
-//		}
 		
 		String appPhone = GlobalDataManager.getInstance().getPhoneNumber();
 		if(!editMode && (appPhone == null || appPhone.length() == 0)){
@@ -220,24 +189,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
 		outState.putSerializable("listUrl", photoList);
-		outState.putInt("imgHeight", imgHeight);
-		outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
 	}
 	
 	private void doClearUpImages() {
 		//Clear the upload image list.
 		this.photoList.clear();
-//		this.firstImage = null;
 		ImageUploader.getInstance().clearAll();
 	}
 
 	@Override
 	public boolean handleBack() {
-//		if(imgSelDlg != null)
-//			if(imgSelDlg.handleBack()){
-//				return true;
-//		}		
-//		return super.handleBack();
 		AlertDialog.Builder builder = new Builder(getActivity());
 		builder.setMessage("退出发布？");
 		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
@@ -316,10 +277,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		if (isNewPost) {
 			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过\n拍照");
-		} else {
-			
 		}
-		
 	}	
 
 	@Override
@@ -342,11 +300,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	protected void startImgSelDlg(final int cancelResultCode, String finishActionLabel){
-//		if(container != null){
-//			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
-//		}
-//		imgSelDlg.setMsgOutBundle(imgSelBundle);
-//		imgSelDlg.show(getFragmentManager(), null);
 		PerformanceTracker.stamp(Event.E_Send_Camera_Bootup);
 		Intent backIntent = new Intent();
 		backIntent.setClass(getActivity(), getActivity().getClass());
@@ -358,12 +311,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
 		goIntent.putExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL, finishActionLabel);
 		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, cancelResultCode);
-//		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
-//		if (loc != null) {
-//			goIntent.putExtra("location", loc);
-//		}
 		getActivity().startActivity(goIntent);
-//		getActivity().startActivityForResult(goIntent, 0);
 	}
 
 	private void deployDefaultLayout(){
@@ -470,15 +418,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				lastClickPostTime = System.currentTimeMillis();
 			}
 			break;
-//		case R.id.location:
-//			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
-//			if(this.detailLocation != null && locationView != null){
-//				setDetailLocationControl(detailLocation);
-//			}else if(detailLocation == null){
-//				ViewUtil.showToast(this.getActivity(), "无法获得当前位置", false);
-//			}
-//			break;
-//		case R.id.myImg:
 		case R.id.add_post_image:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
@@ -607,20 +546,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private String getFilledLocation(){
 		return ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
-//		String toRet = "";
-//		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-//			View v = layout_txt.getChildAt(m);
-//			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
-//			if(bean == null) continue;
-//			if(bean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-//				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
-//				if(tv != null && !tv.getText().toString().equals("")){
-//					toRet = tv.getText().toString();
-//				}
-//				break;
-//			}
-//		}
-//		return toRet;
 	}
 	
 	protected void mergeParams(HashMap<String, String> list){}
@@ -830,35 +755,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			layout.setOnClickListener(this);
 		}
 
-		if(layout != null && !postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-			ViewGroup.LayoutParams lp = layout.getLayoutParams();
-			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
-			layout.setLayoutParams(lp);
-		}
-
-//		if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-//			layout.findViewById(R.id.location).setOnClickListener(this);
-//			((TextView)layout.findViewById(R.id.postinput)).setHint("填写或点击按钮定位");
-//			locationView = layout;
-//			
-//			String address = GlobalDataManager.getInstance().getAddress();
-//			if(address != null && address.length() > 0){
-//				((TextView)layout.findViewById(R.id.postinput)).setText(address);
-//			}
-//		}else 
-		if(postBean.getName().equals("contact") && layout != null){
-			etContact = ((EditText)layout.getTag(PostCommonValues.HASH_CONTROL));
-			((TextView)layout.findViewById(R.id.postinput)).setHint("手机或座机");
-			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-			String phone = GlobalDataManager.getInstance().getPhoneNumber();
-			if(editMode){
-				etContact.setText(getAdContact());
-			}else{
-				if(phone != null && phone.length() > 0){
-					etContact.setText(phone);
-				}
-			}
-		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
+		if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}else if(postBean.getName().equals("价格")){
 			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
@@ -873,7 +770,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					}
 				}
 			}
-//			
 		}
 		
 		if(layout != null){
@@ -895,13 +791,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void addCategoryItem(){
-		Activity activity = getActivity();
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
-//		LayoutInflater inflater = LayoutInflater.from(activity);
-//		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
-		
 		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
 		if(editMode){
 			layout_txt.removeView(categoryItem);
@@ -1335,7 +1227,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			doClearUpImages();
 			
 			String id = ((PostResultData)msg.obj).id;
-			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;
 			String message = ((PostResultData)msg.obj).message;
 			int code = ((PostResultData)msg.obj).error;
 			if (!id.equals("") && code == 0) {
@@ -1360,33 +1251,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 							intent.putExtra("lastPost", id);
 						}
 					}
-//					showPost();
-//					String lp = getArguments().getString("lastPost");
-//					if(lp != null && !lp.equals("")){
-//						lp += "," + id;
-//					}else{
-//						lp = id;
-//					}
-//					args.putString("lastPost", lp);
-//					
-//					args.putString("cateEnglishName", categoryEnglishName);
-//					args.putBoolean(KEY_IS_EDITPOST, editMode); 
-//					
-//					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
-//					if(activity != null){							
-//						args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-//						
-//						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-//						intent.putExtras(args);
-//						PerformanceTracker.stamp(Event.E_Post_Send_Success_Broadcast);
-//						activity.sendBroadcast(intent);
-//					}
 					doClearUpImages();
-//					finishFragment();
 				}
-//				else{
-//					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-//				}
 			}else{
 				postResultFail(message);
 				if(msg.obj != null){
@@ -1418,10 +1284,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();
 			ErrorHandler.getInstance().handleMessage(msg);
-//			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
-//			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
-//			this.reCreateTitle();
-//			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
@@ -1552,15 +1414,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	                	@Override
 	                    public void onClick(DialogInterface dialog, int which) {
 	                        dialog.dismiss();
-//							if(getActivity() != null){
-//								resetData(true);
-//								showPost();
-//								Bundle args = createArguments(null, null);
-//								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-//								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-//								intent.putExtras(args);
-//								getActivity().sendBroadcast(intent);
-//							}
 	                        handlePostFinish(result.id);
 	                    }
 	                });
@@ -1571,8 +1424,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 
-	private int imgHeight = 0;
-	
 	////to fix stupid system error. all text area will be the same content after app is brought to front when activity not remain is checked
 	private void setInputContent(){		
 		if(layout_txt == null) return;

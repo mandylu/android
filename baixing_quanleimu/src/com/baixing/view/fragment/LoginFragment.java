@@ -32,10 +32,6 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	public String backPageName = "back";
 	public String categoryEnglishName = "";
 	static public final String KEY_RETURN_CODE ="login_return_code";////the value should be int
-	
-	private boolean bingo;
-	
-	private LoginUtil.LoginListener listener;
 	private LoginUtil loginHelper;
 	private static final int MSG_LOGINFAIL = 1;
 	private static final int MSG_LOGINSUCCESS = 2;
@@ -75,14 +71,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	}
 	@Override
 	public void initTitle(TitleDef title){
-//		if(null != backPageName)
-//			title.m_leftActionHint = this.backPageName;
-//		else
-		title.m_leftActionHint = "返回";
-		
+		title.m_leftActionHint = "返回";		
 		title.m_visible = true;
 		title.m_rightActionHint = "注册";
-//		title.m_rightActionStyle = EBUTT_STYLE.EBUTT_STYLE_NORMAL;
 		title.m_title = "登录";
 	}
 
