@@ -185,6 +185,32 @@ public class GlobalDataManager implements Observer {
 		return listMyPost;
 	}
 	
+	public void updateMyAd(Ad ad) {
+		if (listMyPost == null) {
+			listMyPost = new ArrayList<Ad>();
+		}
+		
+		try {
+			int index = -1;
+			for (int i=0; i<listMyPost.size(); i++) {
+				Ad a = listMyPost.get(i);
+				if (a.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID).equals(ad.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))) {
+					index = i;
+					break;
+				}
+			}
+			
+			if (index != -1) {
+				listMyPost.add(index, ad);
+				listMyPost.remove(index+1);
+			} else {
+				listMyPost.add(0, ad);
+			}
+		} catch (Throwable t) {
+			
+		}
+	}
+	
 	public boolean isMyAd(String adId) {
 		if(null != listMyPost && null != adId){
 			for(int i = 0; i < listMyPost.size(); ++ i){
@@ -459,6 +485,8 @@ public class GlobalDataManager implements Observer {
 		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_USER_CREATE);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_NEW_PASSWORD);
 	}
 	
 	public Context getApplicationContext(){
@@ -479,6 +507,11 @@ public class GlobalDataManager implements Observer {
 				if (cxt != null)
 				{
 					accountManager.refreshAndGetMyId(cxt);
+				}
+			} else if (IBxNotificationNames.NOTIFICATION_NEW_PASSWORD.equals(note.getName())){
+				Context cxt = context.get();
+				if (cxt != null) {
+					accountManager.updatePassword(cxt, (String) note.getObject());
 				}
 			}
 		}

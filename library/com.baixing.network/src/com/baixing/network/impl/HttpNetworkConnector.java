@@ -277,7 +277,7 @@ public class HttpNetworkConnector {
 //			e.printStackTrace();
 			Exception ex = new Exception("请求URL出错, " + e.getMessage());
 			businessResponse = responseHandler.handleException(ex);
-		} catch (IOException e) {
+		} catch (Throwable e) {
 //			e.printStackTrace();
 			String msg = "网络连接出错，请稍后重试";
 			if (!NetworkUtil.isNetworkActive(context)) {

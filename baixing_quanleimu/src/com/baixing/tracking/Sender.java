@@ -197,8 +197,7 @@ public class Sender implements Runnable{
 				e.printStackTrace();
 			}
 		
-		if (succed && new File(Environment.getExternalStorageDirectory()
-				+ "/baixing_debug_log_crl.dat").exists()) {
+		if (succed && Util.isLoggable()) {
 			try {
 				JSONArray array = new JSONArray(jsonStr);
 				for (int i = 0; i < array.length(); i++) {

@@ -97,6 +97,7 @@ public class TrackConfig implements Observer {
 			SIZEINBYTES("sizeInBytes","字节数大小"),
 			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
 			SHARE_FROM("shareFrom", "分享发起页"),
+			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			;
 			private String name;

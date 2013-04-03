@@ -9,6 +9,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -31,7 +32,11 @@ import android.widget.ImageView;
 import android.widget.TextView;
 import android.widget.Toast;
 
+import com.example.camerademo.util.AccelerometerSensorDetector;
 import com.example.camerademo.util.BitmapUtil;
+import com.example.camerademo.util.OrientationSensorDetector;
+import com.example.camerademo.util.RotationDetector;
+import com.example.camerademo.util.RotationDetector.Orien;
 /**
  * 
  * @author liuchong
@@ -48,27 +53,19 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 //    int cameraCurrentlyLocked;
     
     Orien currentOrien = Orien.DEFAULT;
-    SensorEvent lastSensorEvent;
-    
+    RotationDetector detector = new RotationDetector() {
+		
+		@Override
+		public Orien updateSensorEvent(SensorEvent sensorEvent) {
+			return Orien.DEFAULT;
+		}
+	};
+	
     private OnDeleteListener deleteListener;
     
     public static final int MSG_SAVE_DONE = 1;
     public static final int MSG_ORIENTATION_CHANGE = 2;
     
-    
-    public static enum Orien {
-    	DEFAULT("DEFAULT",0),
-    	TOP_UP("TOP_UP", 90),
-    	RIGHT_UP("RIGHT_UP", 0),
-    	BOTTOM_UP("BOTTOM_UP", 270),
-    	LEFT_UP("LEFT_UP", 180);
-    	String des = "";
-    	int orientationDegree;
-    	private Orien(String des, int degree) {
-    		this.des = des;
-    		this.orientationDegree = degree;
-    	}
-    }
     
     Handler handler = new Handler() {
 		@Override
@@ -87,11 +84,16 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 				}
 				
 				autoFocusWhenOrienChange();
-				rotateView(R.id.cap, getRotateDegree(currentOrien));
+
+				Parameters params = mCamera.getParameters();
+				params.setRotation(currentOrien.orientationDegree);
+				mCamera.setParameters(params);
 				
-				Toast t = Toast.makeText(MainActivity.this, "Screen rotated to " + currentOrien.des, Toast.LENGTH_SHORT);
-				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
-				t.show();
+//				rotateView(R.id.cap, getRotatesDegree(currentOrien));
+//				
+//				Toast t = Toast.makeText(MainActivity.this, "Screen rotated to " + currentOrien.des, Toast.LENGTH_SHORT);
+//				t.setGravity(Gravity.CENTER_VERTICAL|Gravity.CENTER_HORIZONTAL, 0, 0);
+//				t.show();
 			}
 		}
     	
@@ -152,10 +154,7 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 		
 		img.setImageBitmap(/*cropBitmap(bp, currentOrien)*/bp);
 		
-		SensorEvent event = lastSensorEvent; //For debug, update the orientation indicator.
-		if (event != null) {
-			orienTxt.setText(currentOrien.des + this.valueOf(event.values));
-		}
+		orienTxt.setText(currentOrien.des);
 		
 		try
 		{
@@ -176,7 +175,18 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 		
 		//Sensor to update current orientation.
 		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		
+		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		
+		if (sensor != null) {
+			detector = new AccelerometerSensorDetector();
+		} else {
+			sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+			if (sensor != null) {
+				detector = new OrientationSensorDetector();
+			} 
+		}
+		
 		
 		deleteListener = new OnDeleteListener();
 	}
@@ -261,7 +271,7 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 	            return;
 	        }
 
-	        Bitmap bp = BitmapUtil.saveAndCreateBitmap(data, currentOrien.orientationDegree, MainActivity.this, pictureFile.getAbsolutePath(), isFrontCam);
+	        Bitmap bp = BitmapUtil.saveAndCreateBitmap(data, /*currentOrien.orientationDegree*/0, MainActivity.this, pictureFile.getAbsolutePath(), isFrontCam);
 	        
 	        Message msg = handler.obtainMessage(MSG_SAVE_DONE, bp);
 	        handler.sendMessage(msg);
@@ -304,42 +314,14 @@ public class MainActivity extends Activity implements OnClickListener, SensorEve
 
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
-		if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-			lastSensorEvent = sensorEvent;
-			float pitch = sensorEvent.values[1];
-			float roll = sensorEvent.values[2];
-			
-			Orien newOrien = updateOrien(pitch, roll);
-			if (newOrien != null && currentOrien != newOrien) {
-				Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
-				currentOrien = newOrien;
-				handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
-			}
-				
+		
+		Orien newOrien = detector.updateSensorEvent(sensorEvent);
+		if (!currentOrien.equals(newOrien)) {
+			currentOrien = newOrien;
+			handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
 		}
 	}
 	
-	private Orien updateOrien(float pitch, float roll) {
-		if ((pitch < -45 && pitch > -135) || 
-				(roll >= -15 && roll <= 15 && pitch >= -45 && pitch <= 0)) { //When roll is very small, most likely phone is top up.Do not consider bottom up case because no body will do that.
-			return Orien.TOP_UP;
-		}
-		
-		if (pitch > 45 && pitch < 135) {
-			return Orien.BOTTOM_UP;
-		}
-		
-		if (roll > 45) {
-			return Orien.RIGHT_UP;
-		}
-		
-		if (roll < -45 || 
-				(roll > -45 && roll < 0 && (pitch > -15 && pitch < 15))) { //When pitch is very small and roll is negative.
-			return Orien.LEFT_UP;
-		}
-		
-		return Orien.DEFAULT;
-	}
 	
 //	private Bitmap cropBitmap(Bitmap bp, Orien orientation) {
 //		Matrix m = new Matrix();

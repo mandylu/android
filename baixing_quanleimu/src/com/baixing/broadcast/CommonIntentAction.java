@@ -15,6 +15,8 @@ public class CommonIntentAction
 	public static final String ACTION_BROADCAST_POST_FINISH = "com.baixing.action.fisish.post";
 	public static final String EXTRA_MSG_FINISHED_POST = "extra.post.info";
 	
+	public static final String ACTION_BROADCAST_SMS = "com.baixing.action.sms";
+	
 	public static final String ACTION_BROADCAST_XMPP_CONNECTED = "com.baixing.action.xmpp.connected";
 	
 	public static final String ACTION_BROADCAST_JUMP = "com.baixing.action.jump";

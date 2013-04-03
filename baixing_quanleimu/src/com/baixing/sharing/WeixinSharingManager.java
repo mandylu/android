@@ -33,8 +33,10 @@ class WeixinSharingManager extends BaseSharingManager{
 //	static private final String WX_APP_ID = "wx47a12013685c6d3b";//debug
 	private Activity mActivity;
 	private IWXAPI mApi;
-	public WeixinSharingManager(Activity activity){
+	private boolean friends = true;
+	public WeixinSharingManager(Activity activity, boolean friends){
 		mActivity = activity;
+		this.friends = friends;
 		mApi = WXAPIFactory.createWXAPI(mActivity, WX_APP_ID, false);
 		mApi.registerApp(WX_APP_ID);
 	}
@@ -96,7 +98,7 @@ class WeixinSharingManager extends BaseSharingManager{
 		SendMessageToWX.Req req = new SendMessageToWX.Req();
 		req.transaction = String.valueOf(System.currentTimeMillis());
 		req.message = msg;
-		if(mApi.getWXAppSupportAPI() >= 0x21020001){
+		if(mApi.getWXAppSupportAPI() >= 0x21020001 && friends){
 			req.scene = SendMessageToWX.Req.WXSceneTimeline;
 		}
 		mApi.sendReq(req);

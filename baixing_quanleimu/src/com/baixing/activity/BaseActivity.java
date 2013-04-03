@@ -258,9 +258,19 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		{
 			bundle = new Bundle();
 		}
-		
-		
 	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		Log.e(TAG, "activity on activity result.");
+		BaseFragment fragment = getCurrentFragment();
+		if(fragment != null){
+			fragment.onActivityResult(requestCode, resultCode, data);
+		}
+		super.onActivityResult(requestCode, resultCode, data);
+	
+	}
+
 
 	@Override
 	public void onClick(View v) {
@@ -363,9 +373,16 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		ft.commit();
 		
 		if (popSucceed && entryCount <= 1) {
-			finish();
+			onFragmentEmpty();
 		}
 		return popSucceed;
+	}
+	
+	/**
+	 * Notify when all the fragment within the stack are pop out.
+	 */
+	protected void onFragmentEmpty() {
+		finish();
 	}
 	
 	@Override

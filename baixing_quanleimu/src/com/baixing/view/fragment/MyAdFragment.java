@@ -74,6 +74,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     private final int MSG_SHOW_BIND_DIALOG = 11;
     private final int MSG_REFRESH_FAIL = 12;
     private final int MSG_ASK_REFRESH = 13;
+    private final int MSG_UPDATE_LIST = 14;
 
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
@@ -204,7 +205,15 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		
 		lvGoodsList.setOnRefreshListener(this);	
 		
-		Bundle bundle = this.getArguments();
+		Bundle bundle = null;
+		Activity act = getActivity();
+		if(act != null){
+			Intent intent = act.getIntent();
+			if(intent != null){
+				bundle = intent.getExtras();
+			}
+		}
+//		Bundle bundle = this.getArguments();
 		if(bundle != null){
 //			if(bundle.containsKey(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER)){
 //				if(bundle.getBoolean(PostGoodsFragment.KEY_LAST_POST_CONTACT_USER, false)){
@@ -361,6 +370,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	protected void handleMessage(final Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_UPDATE_LIST: {
+			if (adapter != null) {
+				adapter.notifyDataSetChanged();
+			}
+			break;
+		}
 		case MSG_ASK_REFRESH: {
 			hideProgress();
 			final Pair<String, String> p = (Pair<String, String>) msg.obj;
@@ -821,7 +836,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
 		if(currentType == TYPE_MYPOST){
-			title.m_title = "我的信息";
+			title.m_title = "已发布信息";
 		}
 		title.m_visible = true;
 	}
@@ -834,7 +849,11 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			params.addParam("userId", user.getId());
 		}		
 		if(currentType == TYPE_MYPOST){
-			Bundle bundle = this.getArguments();
+			Bundle bundle = null;
+			if(getActivity() != null && getActivity().getIntent() != null){
+				bundle = getActivity().getIntent().getExtras();
+			}
+//			Bundle bundle = this.getArguments();
 			if(bundle != null && bundle.getString("lastPost") != null){
 				params.addParam("newAdIds", bundle.getString("lastPost"));
 			}
@@ -900,10 +919,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				user = (UserBean) note.getObject();
 				filterOutAd(listMyPost, user);
 				needReloadData = true;
-				if (adapter != null)
-				{
-					adapter.notifyDataSetChanged();
-				}
 			}
 		}		
 	}

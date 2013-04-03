@@ -161,7 +161,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 					}catch(Exception e){
 						e.printStackTrace();
 					}
-					applyToMap(String.valueOf((int)((Double.valueOf(latV))*1E6)), String.valueOf((int)((Double.valueOf(latV)*1E6))));
+					applyToMap(String.valueOf((int)((Double.valueOf(latV))*1E6)), String.valueOf((int)((Double.valueOf(lonV)*1E6))));
 				}
 			});
 			convertThread.start();
@@ -418,12 +418,19 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		{
 			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
 		}
-		GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
-		location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
-		location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
-
-		this.updateMyLocationOverlay(location);
+		if (isInChina(location)) {
+			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
+			location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
+			location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
+			if (isInChina(location)) {
+				this.updateMyLocationOverlay(location);
+			}
+		} 
 		mBMapMan.getLocationManager().removeUpdates(this);
+	}
+	
+	private boolean isInChina(Location location) {
+		return !(location.getLatitude() < 3 || location.getLatitude() > 54 || location.getLongitude() < 73 || location.getLongitude() > 136);
 	}
 	
 	

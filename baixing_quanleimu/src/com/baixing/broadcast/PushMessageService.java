@@ -29,6 +29,7 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.TraceUtil;
+import com.baixing.util.Util;
 
 /**
  * 
@@ -50,7 +51,7 @@ public class PushMessageService extends Service implements Observer
     public static final String ACTION_XMPP_MESSAGE_RECEIVED = "com.quanleimu.action.XMPP.MESSAGE_RECEIVED";
     public static final String ACTION_XMPP_CONNECTION_CHANGED = "com.quanleimu.action.XMPP.CONNECTION_CHANGED";
     
-    
+    private static final String FILE_TOKEN_BINDING_CTRL = "tokenbindingstatus";
     
 	public static final String TAG = "PushMessageService";
 	
@@ -141,8 +142,9 @@ public class PushMessageService extends Service implements Observer
 //            } else {
 ////                Log.w("onStartCommand() null intent with Gingerbread or higher");
 //            }
-            
-            registeDevice(null, null);
+            if (!this.isBindedDevice()) {
+            	registeDevice(null, null);
+            }
             return START_STICKY;
         }
 //        Log.i("onStartCommand(): Intent " + intent.getAction());
@@ -158,7 +160,7 @@ public class PushMessageService extends Service implements Observer
             sendToServiceHandler(startId, intent);
         }
         
-        if (intent.getBooleanExtra("updateToken", false))
+        if (intent.getBooleanExtra("updateToken", false) && !isBindedDevice())
         {
         	registeDevice(null, null); //
         }
@@ -278,7 +280,15 @@ public class PushMessageService extends Service implements Observer
     private int updateListenersToCurrentState(int currentState) {
         return currentState;
     }
-	
+    
+    private boolean isBindedDevice() {
+    	byte[] data = Util.loadData(this, FILE_TOKEN_BINDING_CTRL);
+    	boolean binded = data != null && "1".equals(new String(data));
+    	if (binded) {
+    		Log.e(TAG, "device is already binded");
+    	}
+    	return binded;
+    }
     
     private void registeDevice(BroadcastReceiver receiver, UserBean userBean)
     {
@@ -311,7 +321,8 @@ public class PushMessageService extends Service implements Observer
 			
 			@Override
 			public void onNetworkDone(String apiName, String responseData) {
-				Log.d(TAG, "updatetoken succed " + responseData);				
+				Log.d(TAG, "updatetoken succed " + responseData);	
+				Util.saveDataToFile(PushMessageService.this, null, FILE_TOKEN_BINDING_CTRL, "1".getBytes());
 			}
 		});
 		

@@ -14,6 +14,7 @@ import android.graphics.Bitmap;
 import android.hardware.Camera;
 import android.hardware.Camera.AutoFocusCallback;
 import android.hardware.Camera.CameraInfo;
+import android.hardware.Camera.Parameters;
 import android.hardware.Camera.PictureCallback;
 import android.hardware.Sensor;
 import android.hardware.SensorEvent;
@@ -51,6 +52,10 @@ import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.hardware.AccelerometerSensorDetector;
+import com.baixing.util.hardware.OrientationSensorDetector;
+import com.baixing.util.hardware.RotationDetector;
+import com.baixing.util.hardware.RotationDetector.Orien;
 import com.baixing.util.post.ImageUploader;
 import com.baixing.view.CameraPreview;
 import com.quanleimu.activity.R;
@@ -69,6 +74,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	
 	private SensorManager sensorMgr;
 	private Sensor sensor;
+	private RotationDetector detector = new RotationDetector() {
+		
+		@Override
+		public Orien updateSensorEvent(SensorEvent sensorEvent) {
+			return Orien.DEFAULT;
+		}
+	};
 	
 	private CameraPreview mPreview;
     Camera mCamera;
@@ -81,7 +93,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 //    int cameraCurrentlyLocked;
     
     Orien currentOrien = Orien.DEFAULT;
-    SensorEvent lastSensorEvent;
     
     private Vector<BXThumbnail> originalList = new Vector<BXThumbnail>();
     private Vector<BXThumbnail> deleteList = new Vector<BXThumbnail>();
@@ -114,20 +125,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     private static final int STATE_DONE = 3;
     
     private Handler handler;
-    
-    public static enum Orien {
-    	DEFAULT("DEFAULT",0),
-    	TOP_UP("TOP_UP", 90),
-    	RIGHT_UP("RIGHT_UP", 0),
-    	BOTTOM_UP("BOTTOM_UP", 270),
-    	LEFT_UP("LEFT_UP", 180);
-    	String des = "";
-    	int orientationDegree;
-    	private Orien(String des, int degree) {
-    		this.des = des;
-    		this.orientationDegree = degree;
-    	}
-    }
     
     private void updateCapState() {
     	boolean enable = imageList.size() < MAX_IMG_COUNT; 
@@ -190,6 +187,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				txt.setVisibility(mCamera == null ? View.VISIBLE : View.GONE);
 				if (mCamera != null) {
 					mPreview = new CameraPreview(CameraActivity.this);
+					mPreview.setRotateDisplay(!isLandscapeMode);
 					cameraP.addView(mPreview, LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT);
 					
 					mPreview.setCamera(mCamera);
@@ -235,7 +233,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 				break;
 			case MSG_ORIENTATION_CHANGE:
 				View capV = findViewById(R.id.cap);
-				if (isInitialized && capV != null && capV.isEnabled()) { //If capture button is disabled, do not need auto focus. 
+				if (isInitialized) {
+					Parameters params = mCamera.getParameters();
+					params.setRotation(currentOrien.orientationDegree);
+					mCamera.setParameters(params);
+				}
+				
+				if (isInitialized && capV != null && capV.isEnabled()) { //If capture button is disabled, do not need auto focus.
 					autoFocusWhenOrienChange();
 				}
 				break;
@@ -315,7 +319,8 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
     
     private void cancelTakenPic() {
     	onCancelEdit();
-    	int resultCode = getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED);
+    	int resultCode = getIntent() != null && getIntent().getExtras() != null ? 
+    			getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, Activity.RESULT_CANCELED) : Activity.RESULT_CANCELED;
     	
     	Intent backIntent = (Intent) getIntent().getExtras().get(CommonIntentAction.EXTRA_COMMON_INTENT);//new Intent(this, QuanleimuMainActivity.class);
 		Bundle bundle = new Bundle();
@@ -323,9 +328,12 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		bundle.putInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CommonIntentAction.EXTRA_COMMON_REQUST_CODE));
 		bundle.putInt(CommonIntentAction.EXTRA_COMMON_RESULT_CODE, resultCode);
 		
+//		Intent data = new Intent();
+		
 		backIntent.putExtras(bundle);
 		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(backIntent);
+//		this.setResult(resultCode);
 		this.finish();
     }
     
@@ -346,10 +354,13 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		data.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, getLocalUrls());
 		bundle.putParcelable(CommonIntentAction.EXTRA_COMMON_DATA, data);
 		
+//		setResult(Activity.RESULT_OK,data);
+//		this.finish();
+		
+		
 		backIntent.putExtras(bundle);
 		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
 		this.startActivity(backIntent);
-//		handler.sendEmptyMessageDelayed(MSG_FINISH_ME, 50);
 		this.finish();
     }
     
@@ -490,6 +501,18 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	protected void onCreate(Bundle savedInstanceState) {
 		PerformanceTracker.stamp(Event.E_CameraActivity_OnCreate_Start);
 		super.onCreate(savedInstanceState);
+		//Sensor to update current orientation. 
+		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
+		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
+		if (sensor != null) {
+			detector = new AccelerometerSensorDetector();
+		} else {
+			sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+			if (sensor != null) {
+				detector = new OrientationSensorDetector();
+			} 
+		}
+		
 //		Profiler.markStart("cameOnCreate");
 		handler = new InternalHandler(); //Make sure handler instance is created on main thread.
 		String nextBtnLabel = getIntent().getStringExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL);
@@ -503,7 +526,9 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 		{
 			this.setRequestedOrientation(ActivityInfo.SCREEN_ORIENTATION_PORTRAIT);
 			setContentView(R.layout.image_selector);
-			nextBtnLabel = nextBtnLabel.replace("\n", "");
+			if (nextBtnLabel != null) {
+				nextBtnLabel = nextBtnLabel.replace("\n", "");
+			}
 		}
 					
 		
@@ -518,9 +543,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			nextLabel.setText(nextBtnLabel);
 		}
 		
-		//Sensor to update current orientation. 
-		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
-		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+
 		
 		deleteListener = new OnDeleteListener();
 		
@@ -680,7 +703,6 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	    		handler.sendEmptyMessage(MSG_CANCEL_STORE_PIC);
 	    		return;
 	    	}
-	    	
 	    	postAppendPhoto(data);
 	        
 //	        handler.sendEmptyMessage(MSG_PIC_TAKEN);
@@ -796,41 +818,25 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 	@Override
 	public void onSensorChanged(SensorEvent sensorEvent) {
-		if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-			lastSensorEvent = sensorEvent;
-			float pitch = sensorEvent.values[1];
-			float roll = sensorEvent.values[2];
-			
-			Orien newOrien = updateOrien(pitch, roll);
-			if (newOrien != null && currentOrien != newOrien) {
-				Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
-				currentOrien = newOrien;
-				handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
-			}
-				
+//		if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
+//			float pitch = sensorEvent.values[1];
+//			float roll = sensorEvent.values[2];
+//			
+//			Orien newOrien = updateOrien(pitch, roll);
+//			if (newOrien != null && currentOrien != newOrien) {
+//				Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
+//				currentOrien = newOrien;
+//				handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
+//			}
+//				
+//		}
+		Orien newOrien = detector.updateSensorEvent(sensorEvent);
+		if (newOrien != null && currentOrien != newOrien) {
+			Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
+			currentOrien = newOrien;
+			handler.sendEmptyMessage(MSG_ORIENTATION_CHANGE);
+
 		}
-	}
-	
-	private Orien updateOrien(float pitch, float roll) {
-		if ((pitch < -45 && pitch > -135) || 
-				(roll >= -15 && roll <= 15 && pitch >= -45 && pitch <= 0)) { //When roll is very small, most likely phone is top up.Do not consider bottom up case because no body will do that.
-			return Orien.TOP_UP;
-		}
-		
-		if (pitch > 45 && pitch < 135) {
-			return Orien.BOTTOM_UP;
-		}
-		
-		if (roll > 45) {
-			return Orien.RIGHT_UP;
-		}
-		
-		if (roll < -45 || 
-				(roll > -45 && roll < 0 && (pitch > -15 && pitch < 15))) { //When pitch is very small and roll is negative.
-			return Orien.LEFT_UP;
-		}
-		
-		return Orien.DEFAULT;
 	}
 	
 	class OnDeleteListener implements View.OnClickListener {
@@ -914,6 +920,7 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 			protected void onPostExecute(BXThumbnail result) {
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
+		        showOneMoreMsg();
 			}
 		};
 		
@@ -927,20 +934,25 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 
 			@Override
 			protected BXThumbnail doInBackground(byte[]... params) {
-				return BitmapUtils.saveAndCreateThumbnail(params[0], currentOrien.orientationDegree, CameraActivity.this, isFrontCam);
+				//Do not do rotation because we set rotation parameter to camera, the output buffer should already be rotated by camera.
+				return BitmapUtils.saveAndCreateThumbnail(params[0], /*currentOrien.orientationDegree*/0, CameraActivity.this, isFrontCam);
 			}
 
 			@Override
 			protected void onPostExecute(BXThumbnail result) {
-				boolean full = (MAX_IMG_COUNT -1) == imageList.size();
 				Message msg = handler.obtainMessage(MSG_SAVE_DONE, result);
 		        handler.sendMessage(msg);
-		        if (!full) {
-		        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
-		        }
+		        showOneMoreMsg();
 			}
 		};
 		task.execute(cameraData);
+	}
+	
+	private void showOneMoreMsg() {
+		boolean full = (MAX_IMG_COUNT -1) == imageList.size();
+		if (!full) {
+        	ViewUtil.showToast(CameraActivity.this,  "再来一张吧，你还能再添加" + (MAX_IMG_COUNT-imageList.size() -1) + "张", false);
+        }
 	}
 	
 	

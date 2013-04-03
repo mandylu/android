@@ -209,6 +209,7 @@ public final class BaseApiCommand implements IRequestStatusListener {
 				error = new ApiError();
 				error.setErrorCode(detail.getString("code"));
 				error.setMsg(detail.getString("message"));
+				error.setServerResponse(response);
 			}
 			
 		} catch (JSONException e) {

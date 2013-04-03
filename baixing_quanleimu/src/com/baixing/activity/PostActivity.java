@@ -9,6 +9,7 @@ import android.content.Intent;
 import android.content.IntentFilter;
 import android.os.Bundle;
 import android.view.View;
+import android.view.inputmethod.InputMethodManager;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
@@ -52,6 +53,13 @@ public class PostActivity extends BaseTabActivity {
 		initTitleAction();
 		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
 	}
+	
+	protected void onFragmentEmpty() {
+		
+		this.afterChange(TAB_INDEX_CAT);
+		finish();
+	}
+	
 	
 	private void registerBroadcast(){
 		IntentFilter intentFilter = new IntentFilter(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
@@ -103,6 +111,28 @@ public class PostActivity extends BaseTabActivity {
             	}
             }
 		}		
+	}
+	
+	public void handleBack(){
+        InputMethodManager imm = (InputMethodManager) getSystemService(Context.INPUT_METHOD_SERVICE); 
+        imm.hideSoftInputFromWindow(this.findViewById(R.id.contentLayout).getWindowToken(), 0); 
+
+        BaseFragment currentFragmet = getCurrentFragment();
+        
+		try{
+	    	if( currentFragmet != null && !currentFragmet.handleBack()){
+    			if (getSupportFragmentManager().getBackStackEntryCount()>1)
+    			{
+    				popFragment(currentFragmet);
+    			}
+    			else
+    			{
+    				finish();
+    			}
+	    	}	
+		}catch(Exception e){
+			e.printStackTrace();
+		}
 	}
 	
 	@Override

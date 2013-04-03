@@ -20,6 +20,7 @@ import com.baixing.util.Util;
 public class SharingCenter{
 	static private BaseSharingManager sm;
 	public static String shareFrom = null;
+	public static String shareWeixinScene = "timeline";
 	public static String adId = null;
 	public static String categoryName = null;
 	
@@ -36,10 +37,11 @@ public class SharingCenter{
 		sm.share(ad);
 	}
 	
-	public static void share2Weixin(BaseActivity activity, Ad ad){
+	public static void share2Weixin(BaseActivity activity, Ad ad, boolean friends){
 		release();
+		if(!friends) shareWeixinScene = "session";//TODO: 确实挺恶心的，先收集数据，如果需要还是要独立成一个分享渠道
 		trackShareStart("weixin");
-		sm = new WeixinSharingManager(activity);
+		sm = new WeixinSharingManager(activity, friends);
 		registerReceiver(ad);
 		sm.share(ad);
 	}
@@ -94,15 +96,17 @@ public class SharingCenter{
 				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, SharingCenter.categoryName)
 				.append(TrackConfig.TrackMobile.Key.RESULT, success ? TrackConfig.TrackMobile.Value.YES : TrackConfig.TrackMobile.Value.NO);
 		if(!success) e.append(TrackConfig.TrackMobile.Key.FAIL_REASON, failReason);
+		if(channel.equals("weixin")) e.append(TrackConfig.TrackMobile.Key.SHARE_WEIXIN_SCENE, shareWeixinScene);
 		e.end();
 	}
 
 	public static void trackShareStart(String channel) {
-		Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE_START)
+		LogData e = Tracker.getInstance().event(TrackConfig.TrackMobile.BxEvent.SHARE_START)
 				.append(TrackConfig.TrackMobile.Key.SHARE_FROM, SharingCenter.shareFrom)
 				.append(TrackConfig.TrackMobile.Key.SHARE_CHANNEL, channel)
 				.append(TrackConfig.TrackMobile.Key.ADID, SharingCenter.adId)
-				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, SharingCenter.categoryName)
-				.end();
+				.append(TrackConfig.TrackMobile.Key.SECONDCATENAME, SharingCenter.categoryName);
+		if(channel.equals("weixin")) e.append(TrackConfig.TrackMobile.Key.SHARE_WEIXIN_SCENE, shareWeixinScene);
+		e.end();
 	}
 }

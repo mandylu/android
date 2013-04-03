@@ -1,8 +1,11 @@
 package com.baixing.view.fragment;
 
+import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
 import android.os.Bundle;
+import android.os.Message;
+import android.text.TextUtils;
 import android.text.method.DateTimeKeyListener;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -16,10 +19,17 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.activity.MainActivity;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.entity.UserProfile;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.*;
+import com.baixing.widget.EditUsernameDialogFragment;
+import com.baixing.widget.EditUsernameDialogFragment.ICallback;
 import com.quanleimu.activity.R;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
@@ -27,10 +37,13 @@ import com.umeng.update.UpdateResponse;
 
 import java.util.Date;
 
-public class SettingFragment extends BaseFragment implements View.OnClickListener {
+public class SettingFragment extends BaseFragment implements View.OnClickListener, ICallback {
     private UserBean user;
+    private UserProfile profile;
     private long debugShowFlagTime = 0;
     private long debugShowFlag = 0;
+    
+    public static final int MSG_PROFILE_UPDATE = 1;
 
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
@@ -43,6 +56,8 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
+        ((RelativeLayout) setmain.findViewById(R.id.setChangeUserName)).setOnClickListener(this);
+        ((RelativeLayout) setmain.findViewById(R.id.resetPassword)).setOnClickListener(this);
         ((Button) setmain.findViewById(R.id.debugBtn)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
@@ -58,48 +73,46 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 }
             }
         });
-
-//		WeiboAccessTokenWrapper tokenWrapper = (WeiboAccessTokenWrapper)Helper.loadDataFromLocate(this.getActivity(), "weiboToken");
-//		AccessToken token = null;
-//		if(tokenWrapper != null && tokenWrapper.getToken() != null){
-//			token = new AccessToken(tokenWrapper.getToken(), QuanleimuApplication.kWBBaixingAppSecret);
-//			token.setExpiresIn(tokenWrapper.getExpires());
-//		}
-//		String nick = (String)Helper.loadDataFromLocate(this.getActivity(), "weiboNickName");
-//		if(token != null && nick != null){
-//			((TextView)setmain.findViewById(R.id.tvWeiboNick)).setText(nick);
-//			if(QuanleimuApplication.getWeiboAccessToken() == null){
-//				QuanleimuApplication.setWeiboAccessToken(token);
-//			}
-//		}
-
-//		final TextView textImg = (TextView)setmain.findViewById(R.id.textView3);
-//		if(QuanleimuApplication.isTextMode()){
-//			textImg.setText("文字");
-//		}
-//		else{
-//			textImg.setText("图片");
-//		}
-//		((RelativeLayout)setmain.findViewById(R.id.rlTextImage)).setOnClickListener(new View.OnClickListener() {
-//
-//			@Override
-//			public void onClick(View v) {
-//				if(textImg.getText().equals("图片")){
-//					textImg.setText("文字");
-//					QuanleimuApplication.setTextMode(true);
-//				}
-//				else{
-//					textImg.setText("图片");
-//					QuanleimuApplication.setTextMode(false);
-//				}
-//			}
-//		});
-
-//		((TextView)setmain.findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
-
+        
         refreshUI(setmain);
+        
+        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
+        if (profile == null && isLogin) {
+        	loadProfile();
+		}
+
 
         return setmain;
+    }
+    
+    private void loadProfile() {
+    	Thread t = new Thread(new Runnable() {
+    		public void run() {
+    			UserProfile profile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
+    			if (profile == null) {
+    				ApiParams param = new ApiParams();
+    				param.addParam("rt", 1);
+    				param.addParam("userId", user.getId());
+    				
+    				String upString = BaseApiCommand.createCommand("user_profile", true, param).executeSync(getAppContext());
+    				if (!TextUtils.isEmpty(upString)) {
+    					profile = UserProfile.from(upString);
+    					if (profile != null)
+    					{
+    						Util.saveDataToLocate(getActivity(), "userProfile", profile);
+    						SettingFragment.this.profile = profile;
+    						sendMessageDelay(MSG_PROFILE_UPDATE, null, 100);
+    					}
+    				}
+    				
+    			} else {
+    				SettingFragment.this.profile = profile;
+    				sendMessageDelay(MSG_PROFILE_UPDATE, null, 100);
+    			}
+    			
+    		}
+    	});
+    	t.start();
     }
 
     private void refreshUI(View rootView) {
@@ -116,7 +129,19 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
         String res = getResources().getStringArray(R.array.item_flow_optimize)[GlobalDataManager.isTextMode() ? 1 : 0];;
         flowOptimizeTw.setText(res);
-
+        
+        if (profile != null) {
+        	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.VISIBLE);
+        	TextView userNameTxt = (TextView) rootView.findViewById(R.id.userNameTxt);
+        	userNameTxt.setText(profile.nickName);
+        } else {
+        	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.GONE);
+        }
+        
+        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
+        ((RelativeLayout) rootView.findViewById(R.id.resetPassword)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
+        ((RelativeLayout) rootView.findViewById(R.id.bindSharingAccount)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
+        
     }
 
 
@@ -147,6 +172,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                     @Override
                     public void onClick(DialogInterface dialogInterface, int i) {
                         Util.logout();
+                        profile = null;
                         refreshUI(getView());
                         ViewUtil.showToast(getActivity(), "已退出", false);
                         Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CONFIRM).end();
@@ -164,6 +190,16 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
     @Override
     public void onClick(View v) {
         switch (v.getId()) {
+        	case R.id.setChangeUserName:
+        		EditUsernameDialogFragment editUserDlg = new EditUsernameDialogFragment();
+                editUserDlg.callback = this;
+                editUserDlg.show(getFragmentManager(), null);
+                break;
+        	case R.id.resetPassword:
+        		Bundle b = createArguments("修改密码", null);
+        		b.putString(ForgetPassFragment.Forget_Type, "edit");
+        		pushFragment(new ForgetPassFragment(), b);
+        		break;
             case R.id.setFlowOptimize:
                 showFlowOptimizeDialog();
                 Tracker.getInstance().event(BxEvent.SETTINGS_PICMODE).end();
@@ -340,5 +376,27 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 	{
 		return false;
 	}
+
+	@Override
+	public void onEditSucced(String newUserName) {
+		if (profile != null) {
+			profile.nickName = newUserName;
+		}
+		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_PROFILE_UPDATE, profile);
+		this.sendMessage(MSG_PROFILE_UPDATE, null);
+	}
+
+	@Override
+	protected void handleMessage(Message msg, Activity activity, View rootView) {
+		switch (msg.what) {
+		case MSG_PROFILE_UPDATE:
+			refreshUI(rootView);
+			break;
+			default :
+				super.handleMessage(msg, activity, rootView);
+		}
+	}
+	
+	
 
 }

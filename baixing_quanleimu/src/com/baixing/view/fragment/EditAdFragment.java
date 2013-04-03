@@ -7,8 +7,11 @@ import java.util.List;
 import android.os.Bundle;
 import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
+import android.widget.Button;
 import android.widget.CheckBox;
 import android.widget.TextView;
+
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -29,6 +32,11 @@ class EditAdFragment extends PostGoodsFragment{
 		editMode = true;
 		super.onCreate(savedInstanceState);				
 		goodsDetail = (Ad) getArguments().getSerializable("goodsDetail");
+		
+		String strArea = goodsDetail.getValueByKey(PostCommonValues.STRING_DETAIL_POSITION);
+
+		GlobalDataManager.getInstance().setAddress(strArea);
+		GlobalDataManager.getInstance().setPhoneNumber(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
 	}
 	
 	@Override
@@ -172,15 +180,15 @@ class EditAdFragment extends PostGoodsFragment{
 			}
 			this.params.put(bean.getName(), displayValue, detailValue);
 		
-			if(bean.getDisplayName().equals(PostCommonValues.STRING_AREA)){
-				String strArea = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
-				String[] areas = strArea.split(",");
-				if(areas.length >= 2){
-					if(control instanceof TextView){
-						((TextView)control).setText(areas[areas.length - 1]);
-					}
-				}
-			}
+//			if(bean.getDisplayName().equals(PostCommonValues.STRING_AREA)){
+//				String strArea = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_AREANAME);
+//				String[] areas = strArea.split(",");
+//				if(areas.length >= 2){
+//					if(control instanceof TextView){
+//						((TextView)control).setText(areas[areas.length - 1]);
+//					}
+//				}
+//			}
 		}
 
 		if (goodsDetail.getImageList() != null) {
@@ -224,6 +232,19 @@ class EditAdFragment extends PostGoodsFragment{
 					this.bmpUrls.add(cbig[i]);
 				}
 			}
+		}
+		
+		String btnAddr = ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
+		if(btnAddr == null || btnAddr.length() == 0){
+			String strArea = goodsDetail.getValueByKey(PostCommonValues.STRING_DETAIL_POSITION);
+			((Button)getView().findViewById(R.id.btn_address)).setText(strArea);
+			setPhoneAndAddrLeftIcon();
+		}
+		
+		String btnCall = ((Button)getView().findViewById(R.id.btn_contact)).getText().toString();
+		if(btnCall == null || btnCall.length() == 0){
+			((Button)getView().findViewById(R.id.btn_contact)).setText(goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_CONTACT));
+			setPhoneAndAddrLeftIcon();
 		}
 	}
 	

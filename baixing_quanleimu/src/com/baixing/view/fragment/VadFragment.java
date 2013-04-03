@@ -55,12 +55,14 @@ import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostCommonValues;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.vad.VadLogger;
 import com.baixing.view.vad.VadPageController;
 import com.baixing.view.vad.VadPageController.ActionCallback;
 import com.baixing.widget.ContextMenuItem;
 import com.quanleimu.activity.R;
+import com.tencent.mm.sdk.platformtools.Log;
 
 public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback {
 
@@ -109,6 +111,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			this.apiName = apiName;
 		}
 	}
+	
 	
 	@Override
 	public void onDestroy(){
@@ -202,6 +205,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		
 	}
+	
+	public void onStackTop(boolean isBack) {
+		if (this.isVadPreview() && detail != null && detail.isValidMessage()) {
+			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
+			getArguments().putBoolean("autoShared", true);
+		}
+	}
+	
 	
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
@@ -356,6 +367,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return false;
 	}
 	
+	private boolean isVadPreview() {
+		return getArguments() != null && getArguments().getBoolean("isVadPreview", false) && !getArguments().getBoolean("autoShared", false);
+	}
+	
+	public void handleRightAction() {
+		this.finishFragment();
+	}
+	
 	private void handleStoreBtnClicked(){
 		if(handleRightBtnIfInVerify()) return;
 		//tracker
@@ -483,6 +502,27 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}else if(BigGalleryFragment.MSG_GALLERY_BACK == requestCode){
 //			Log.d("haha", "hahaha,   from gallery back");
 			galleryReturned = true;
+		}else if(PostCommonValues.MSG_POST_EDIT_SUCCEED == requestCode){
+			if(result != null){
+				Ad newDetail = (Ad) result;
+				detail = newDetail;
+				try {
+					AdList list = this.mListLoader.getGoodsList();
+					List<Ad> dataList = list.getData();
+					for (int i=0; i<dataList.size(); i++) {
+						Ad ad = dataList.get(i);
+						if (ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(newDetail.getValueByKey(EDATAKEYS.EDATAKEYS_ID))) {
+							dataList.add(i, newDetail);
+							dataList.remove(i+1);
+							break;
+						}
+					}
+				} catch (Throwable t) {
+					Log.d(TAG, "error when update ad in adlist. " + t.getMessage());
+				} finally {
+					this.notifyPageDataChange(false);
+				}
+			}
 		}
 	}
 
@@ -652,13 +692,15 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public void initTitle(TitleDef title){
-		title.m_leftActionHint = "返回";
-		title.m_rightActionHint = "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
+		title.m_leftActionHint = isVadPreview() ? "" : "返回";
+		title.m_rightActionHint = isVadPreview() ? "完成" : "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
 		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
 			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
-					this.mListLoader.getGoodsList().getData().size();			
+					this.mListLoader.getGoodsList().getData().size();	
 		}
 		title.m_visible = true;
+		
+		title.m_leftActionImage = getArguments() != null && "close".equalsIgnoreCase(getArguments().getString(ARG_COMMON_BACK_HINT)) ? R.drawable.icon_close : R.drawable.icon_back;
 		
 		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
 		title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 

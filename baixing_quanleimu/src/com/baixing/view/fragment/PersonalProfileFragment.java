@@ -54,6 +54,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 	private static final int MSG_NEWREGISTERVIEW = 7;
 	private static final int MSG_FORGETPASSWORDVIEW = 8;
 	private static final int MSG_ANONYMOUS_USER = 9;
+	private static final int MSG_LOGIN_STATUS_CHANGE = 10;
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
@@ -92,6 +93,7 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_PROFILE_UPDATE);
 		if (savedInstanceState != null)
 		{
 			Log.e(TAG, "check if arguments is auto saved ? restore:" + this.getArguments());
@@ -120,9 +122,11 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		}
 
 		View v = inflater.inflate(R.layout.personalentryview, null);
+		v.findViewById(R.id.rl_login).setOnClickListener(this);
 		v.findViewById(R.id.rl_wosent).setOnClickListener(this);
 		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
 		v.findViewById(R.id.rl_setting).setOnClickListener(this);
+		v.findViewById(R.id.rl_login).setVisibility(GlobalDataManager.getInstance().getAccountManager().isUserLogin() ? View.GONE : View.VISIBLE);
 
 		if (up != null)
 		{
@@ -198,6 +202,10 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 		switch (msg.what) {
+		case MSG_LOGIN_STATUS_CHANGE:
+			Boolean login = (Boolean) msg.obj;
+			rootView.findViewById(R.id.rl_login).setVisibility(login.booleanValue() ? View.GONE : View.VISIBLE);
+			break;
 		case MSG_FORGETPASSWORDVIEW:
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));
 			break;
@@ -326,11 +334,14 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
     @Override
     public void onClick(View v) {
         switch(v.getId()){
-            case R.id.userInfo_editUsername_btn:
-                editUserDlg = new EditUsernameDialogFragment();
-                editUserDlg.handler = this.handler;
-                editUserDlg.show(getFragmentManager(), null);
-                break;
+//            case R.id.userInfo_editUsername_btn:
+//                editUserDlg = new EditUsernameDialogFragment();
+//                editUserDlg.handler = this.handler;
+//                editUserDlg.show(getFragmentManager(), null);
+//                break;
+            case R.id.rl_login:
+            	this.pushFragment(new LoginFragment(), createArguments("登录", ""));	
+            	break;
             case R.id.rl_wosent:
             	pushPersonalPostFragment(MyAdFragment.TYPE_MYPOST);	
             	break;
@@ -378,8 +389,17 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 				user = (UserBean) note.getObject();
 				up = null;
 				reloadUser(getView());
+				
+				sendMessage(MSG_LOGIN_STATUS_CHANGE, IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName()) ? Boolean.TRUE : Boolean.FALSE);
+			} else if (IBxNotificationNames.NOTIFICATION_PROFILE_UPDATE.equals(note.getName())) {
+				up = (UserProfile) note.getObject();
 			}
 		}
+	}
+	@Override
+	public void onVerifyFailed(String message) {
+		// TODO Auto-generated method stub
+		
 	}
 
 }

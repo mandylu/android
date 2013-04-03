@@ -18,10 +18,20 @@ import java.net.SocketTimeoutException;
 import java.net.URL;
 import java.net.URLConnection;
 import java.net.UnknownHostException;
+import java.security.InvalidKeyException;
 import java.security.MessageDigest;
+import java.security.NoSuchAlgorithmException;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.UUID;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
+
+import javax.crypto.BadPaddingException;
+import javax.crypto.Cipher;
+import javax.crypto.IllegalBlockSizeException;
+import javax.crypto.NoSuchPaddingException;
+import javax.crypto.spec.SecretKeySpec;
 
 import org.apache.http.HttpResponse;
 import org.apache.http.client.HttpClient;
@@ -50,6 +60,7 @@ import com.baixing.message.IBxNotificationNames;
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.ObjectReader;
 import com.fasterxml.jackson.databind.ObjectWriter;
+import com.tencent.mm.algorithm.Base64;
 public class Util {
 	
 	public static final String TAG = "QLM";
@@ -61,6 +72,11 @@ public class Util {
 	public static String qq_access_secret="";
 	
 //	private static String currentUserId;
+	
+	public static boolean isLoggable() {
+		return new File(Environment.getExternalStorageDirectory()
+				+ "/baixing_debug_log_crl.dat").exists();
+	}
 
 	private static String getSdCardRoot() {
 		String path = Environment.getExternalStorageDirectory().getAbsolutePath();
@@ -802,7 +818,7 @@ public class Util {
 		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
         GlobalDataManager.getInstance().getAccountManager().logout();
 		
-		GlobalDataManager.getInstance().setPhoneNumber("");
+//		GlobalDataManager.getInstance().setPhoneNumber("");
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
 	}
@@ -900,5 +916,46 @@ public class Util {
     	
     	return DEVICE_ID;
 
-    }	
+    }
+    
+    public static String getDevicePhoneNumber(){
+        TelephonyManager mTelephonyMgr = (TelephonyManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.TELEPHONY_SERVICE);
+        String number = null;
+        if(mTelephonyMgr != null){
+        	number = mTelephonyMgr.getLine1Number();
+        	if(number != null && number.length() >= 11){
+        		number = number.substring(number.length() - 11);
+        	}
+        }
+        return number;
+    }
+    
+    public static boolean isValidMobile(String mobile){
+    	Pattern p = Pattern.compile("^(13[0-9]|15[0|3|6|7|8|9]|18[8|9|6])\\d{8}$");
+        Matcher matcher = p.matcher(mobile);  
+        System.out.println(matcher.matches() + "---");
+        return matcher.matches();    	
+    }
+    
+    static private byte[] decript(byte[] encryptedData, byte[] key)
+            throws NoSuchAlgorithmException, NoSuchPaddingException,
+            InvalidKeyException, IllegalBlockSizeException, BadPaddingException {
+	    Cipher c = Cipher.getInstance("AES/ECB/ZeroBytePadding");
+	    SecretKeySpec k = new SecretKeySpec(key, "AES");
+	    c.init(Cipher.DECRYPT_MODE, k);
+	    return c.doFinal(encryptedData);
+    }
+    
+    static public String getDecryptedPassword(String encryptedPwd){
+		try{
+			String key = "c6dd9d408c0bcbeda381d42955e08a3f";
+			key = key.substring(0, 16);
+			byte[] pwd = decript(Base64.decode(encryptedPwd), key.getBytes("utf-8"));
+			String str = new String(pwd);
+			return str;
+		}catch(Exception e){
+			e.printStackTrace();
+		}
+		return null;
+    }
 }

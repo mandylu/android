@@ -23,6 +23,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.ChatMessage;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
+import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.AutoRegisterService;
@@ -47,24 +48,11 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //	private boolean isRestoring;
 	private SplashJob splashJob;
 	private BroadcastReceiver msgListener;
-	
+	private List<Runnable> resumeTask = new ArrayList<Runnable>(); 
 	
 	public MainActivity(){
 		super();
 	}
-	
-	
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		Log.e(TAG, "activity on activity result.");
-		BaseFragment fragment = getCurrentFragment();
-		if(fragment != null){
-			fragment.onActivityResult(requestCode, resultCode, data);
-		}
-		super.onActivityResult(requestCode, resultCode, data);
-	
-	}
-
 	
 	@Override
 	protected void onDestroy() {
@@ -77,10 +65,15 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onNewIntent(intent);
 		
 		if (Intent.ACTION_MAIN.equals(intent.getAction()) && GlobalDataManager.getInstance().getLastActiveClass() != null) {
+//			resumeTask.add(new Runnable() {
+//				public void run() {
+//					deprecatSelect(TAB_INDEX_CAT);
+//				}
+//			});
 			Intent go = new Intent();
-			go.addCategory(Intent.CATEGORY_LAUNCHER);
+//			go.addCategory(Intent.CATEGORY_LAUNCHER);
 			go.setClassName(this, GlobalDataManager.getInstance().getLastActiveClass().getName());
-			
+			go.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
 			startActivity(go);
 		}
 	}
@@ -128,6 +121,11 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			jumpToPage();
 			responseOnResume();
 		}
+		
+		for (Runnable task : resumeTask) {
+			task.run();
+		}
+		resumeTask.clear();
 		
 //		Profiler.markEnd("mainresume");
 		
@@ -362,7 +360,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		if (!this.isChangingTab) {
 			Log.d("ddd","onstart");
 			
-			Tracker.getInstance().event(BxEvent.APP_START).end();
+			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.USERID, GlobalDataManager.getInstance().getCityEnglishName()).end();
 			Tracker.getInstance().save();
 			Sender.getInstance().notifySendMutex();
 		}

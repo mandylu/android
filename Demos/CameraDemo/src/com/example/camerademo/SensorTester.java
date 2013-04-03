@@ -1,6 +1,10 @@
 package com.example.camerademo;
 
-import com.example.camerademo.MainActivity.Orien;
+import java.util.List;
+
+import com.example.camerademo.util.OrientationSensorDetector;
+import com.example.camerademo.util.RotationDetector;
+import com.example.camerademo.util.RotationDetector.Orien;
 
 import android.app.Activity;
 import android.content.Context;
@@ -12,7 +16,9 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.util.Log;
+import android.view.Display;
 import android.view.View;
+import android.view.WindowManager;
 import android.view.View.OnClickListener;
 import android.widget.TextView;
 
@@ -27,10 +33,14 @@ public class SensorTester extends Activity implements OnClickListener, SensorEve
 	private Sensor sensorA;
 	private Sensor sensorM;
 	
-	SensorEvent lastSensorEvent;
-    
     SensorEvent gravityEvent;
     SensorEvent magEvent;
+    
+    RotationDetector detector = new RotationDetector() {
+		public Orien updateSensorEvent(SensorEvent sensorEvent) {
+			return Orien.DEFAULT;
+		}
+	};
     
     public static final int MSG_UPDATE_ORIENTATION = 1;
     public static final int MSG_UPDATE_GRIVITY = 2;
@@ -61,6 +71,9 @@ public class SensorTester extends Activity implements OnClickListener, SensorEve
 		
 		sensorMgr = (SensorManager) this.getSystemService(Context.SENSOR_SERVICE);
 		sensor = sensorMgr.getDefaultSensor(Sensor.TYPE_ORIENTATION);
+		if (sensor != null) {
+			detector = new OrientationSensorDetector();
+		}
 		sensorA = sensorMgr.getDefaultSensor(Sensor.TYPE_ACCELEROMETER);
 		sensorM = sensorMgr.getDefaultSensor(Sensor.TYPE_MAGNETIC_FIELD);
 		
@@ -123,13 +136,9 @@ public class SensorTester extends Activity implements OnClickListener, SensorEve
     
 	public void onSensorChanged(SensorEvent sensorEvent) {
 		if (sensorEvent.sensor.getType() == Sensor.TYPE_ORIENTATION) {
-			lastSensorEvent = sensorEvent;
-			float pitch = sensorEvent.values[1];
-			float roll = sensorEvent.values[2];
 			
-			Orien newOrien = updateOrien(pitch, roll);
+			Orien newOrien = detector.updateSensorEvent(sensorEvent);
 			if (newOrien != null && currentOrien != newOrien) {
-				Log.w(TAG, "orientation changed from " + currentOrien.des + " to " + newOrien.des);
 				currentOrien = newOrien;
 				handler.sendEmptyMessage(MSG_UPDATE_ORIENTATION);
 				
@@ -145,6 +154,7 @@ public class SensorTester extends Activity implements OnClickListener, SensorEve
 			switch (sensorEvent.sensor.getType()) {
 			case Sensor.TYPE_ACCELEROMETER:
 				gravityEvent =sensorEvent;
+				Log.w("ACCELEROMETER", valueOf(gravityEvent.values));
 				break;
 			case Sensor.TYPE_MAGNETIC_FIELD:
 				magEvent = sensorEvent;
@@ -189,29 +199,6 @@ public class SensorTester extends Activity implements OnClickListener, SensorEve
 		}
 	}
     
-	
-	private Orien updateOrien(float pitch, float roll) {
-		if ((pitch < -45 && pitch > -135) || 
-				(roll >= -15 && roll <= 15 && pitch >= -45 && pitch <= 0)) { //When roll is very small, most likely phone is top up.Do not consider bottom up case because no body will do that.
-			return Orien.TOP_UP;
-		}
-		
-		if (pitch > 45 && pitch < 135) {
-			return Orien.BOTTOM_UP;
-		}
-		
-		if (roll > 45) {
-			return Orien.RIGHT_UP;
-		}
-		
-		if (roll < -45 || 
-				(roll > -45 && roll < 0 && (pitch > -15 && pitch < 15))) { //When pitch is very small and roll is negative.
-			return Orien.LEFT_UP;
-		}
-		
-		return Orien.DEFAULT;
-	}
-	
 	private String valueOf(float[] values) {
 		StringBuffer buf = new StringBuffer();
 		buf.append("[");

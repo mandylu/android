@@ -2,6 +2,8 @@ package com.baixing.entity;
 
 import java.io.Serializable;
 
+import com.baixing.network.NetworkUtil;
+
 public class UserBean implements Serializable{
 
 	/**
@@ -15,8 +17,8 @@ public class UserBean implements Serializable{
 	public String getPassword() {
 		return password;
 	}
-	public void setPassword(String password) {
-		this.password = password;
+	public void setPassword(String password, boolean raw) {
+		this.password = raw ? NetworkUtil.getMD5(password) : password;
 	}
 	public String getId() {
 		return id;
@@ -35,6 +37,4 @@ public class UserBean implements Serializable{
 		return "UserBean [id=" + id + ", phone=" + phone + ", password="
 				+ password + "]";
 	}
-	
-	
 }

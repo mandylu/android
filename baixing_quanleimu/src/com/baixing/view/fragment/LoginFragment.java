@@ -8,6 +8,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
@@ -21,12 +22,12 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LoginUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
+import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
 public class LoginFragment extends BaseFragment implements LoginUtil.LoginListener {
 	
-	private static final int REQ_CODE_RESET_PASS = 1;
-	private static final int REQ_CODE_REGISTER = 2;
+	public static final int MSG_LOGIN_SUCCESS = 0x1234FFFF;
 	
 	public String backPageName = "back";
 	public String categoryEnglishName = "";
@@ -95,12 +96,52 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
         super.handleRightAction();
         onRegisterClicked();
     }
+    
+    private boolean paused = false;
+    private boolean needShowDlg = false;
+ 
+    @Override
+    public void onPause(){
+    	super.onPause();
+    	paused = true;
+    }
 
 	@Override
 	public void onResume() {
 		super.onResume();
 		this.pv = PV.LOGIN;
 		Tracker.getInstance().pv(PV.LOGIN).end();
+		paused = false;
+		if(needShowDlg){
+			this.showVerifyDlg();
+			needShowDlg = false;
+		}		
+	}
+	
+	private void showVerifyDlg(){
+    	if(this.paused){
+    		needShowDlg = true;
+    		return;
+    	}
+
+		VerifyFailDialog dlg = new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			
+			@Override
+			public void onReVerify(String mobile) {
+				// TODO Auto-generated method stub
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify("");
+			}
+
+			@Override
+			public void onSendVerifyCode(String code) {
+				// TODO Auto-generated method stub				
+//				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				loginHelper.reVerify(code);
+			}
+		});
+		dlg.show(getFragmentManager(), null);		
+		needShowDlg = false;
 	}
 	
 	
@@ -149,6 +190,13 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		
 		RelativeLayout llLoginRoot = (RelativeLayout)inflater.inflate(R.layout.login, null);
 		
+		Bundle bundle = this.getArguments();
+		if(bundle != null && bundle.containsKey("defaultNumber")){
+			String number = bundle.getString("defaultNumber");
+			if(Util.isValidMobile(number)){
+				((TextView)llLoginRoot.findViewById(R.id.et_account)).setText(number);
+			}
+		}
 		loginHelper = new LoginUtil(llLoginRoot, this);
 		
 		return llLoginRoot;
@@ -159,18 +207,9 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	protected void onFragmentBackWithData(int resultCode, Object result) {
 		super.onFragmentBackWithData(resultCode, result);
 
-		if(resultCode == REQ_CODE_RESET_PASS){
-			ViewUtil.showToast(getActivity(), "重置密码成功，请重新登录", true);
-		}
-		else if (resultCode == REQ_CODE_REGISTER)
-		{
-//			UserBean user = (UserBean) Util.loadDataFromLocate(getAppContext(), "user", UserBean.class);
-			
-			handleRightAction();
-		} else if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS) {
-            finishFragment();
-        }
-	
+		if (resultCode == RegisterFragment.MSG_REGISTER_SUCCESS || resultCode == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED) {
+            finishFragment(resultCode, result);
+        }	
 	}
 
 	@Override
@@ -191,7 +230,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 //				Bundle bundle = createArguments(null, null);
 //				bundle.putInt("defaultPageIndex", 1);
 //				((BaseActivity)this.getActivity()).pushFragment(new PersonalInfoFragment(), bundle, true);
-				this.finishFragment();
+				this.finishFragment(MSG_LOGIN_SUCCESS, null);
 			}
 			break;
 		case MSG_LOGINFAIL:
@@ -207,7 +246,13 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			break;
 		case MSG_FORGETPASSWORDVIEW:
 //			m_viewInfoListener.onNewView(new ForgetPasswordView(getContext(), null));
-			pushFragment(new ForgetPassFragment(), createArguments(null, null));
+			Bundle bundle = createArguments("找回密码", null);
+			bundle.putString(ForgetPassFragment.Forget_Type, "forget");
+			String phone = ((TextView)getView().findViewById(R.id.et_account)).getText().toString();
+			if(phone != null && phone.length() > 0 && Util.isValidMobile(phone)){
+				bundle.putString("defaultNumber", phone);
+			}
+			pushFragment(new ForgetPassFragment(), bundle);
 			break;
 		case 10:
 			hideProgress();
@@ -219,6 +264,15 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 	public boolean hasGlobalTab()
 	{
 		return false;
+	}
+	
+	
+	
+	@Override
+	public void onVerifyFailed(String message) {
+		hideProgress();
+		// TODO Auto-generated method stub
+		showVerifyDlg();
 	}
 
 }
