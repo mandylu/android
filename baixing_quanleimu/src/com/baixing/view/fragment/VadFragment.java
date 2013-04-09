@@ -924,7 +924,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		View root = getView();
 		if (root != null)
 		{
-			ViewUtil.postShortToastMessage(root, "后面没有啦！", 0);
+			ViewUtil.showToast(getActivity(), "后面没有啦！", false);
 		}
 	}
 

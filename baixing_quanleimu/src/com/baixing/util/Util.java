@@ -661,60 +661,6 @@ public class Util {
 		}
 	}
 	
-	public static String getJsonDataFromURLByPost(String path,String params) throws SocketTimeoutException, UnknownHostException {
-		//����һ��URL����
-//		HttpURLConnection urlCon = null;
-		BufferedReader reader = null ;
-		String str = "";
-		try {
-			
-			HttpClient httpClient = NetworkProtocols.getInstance().getHttpClient();
-            
-            HttpPost httpPost = new HttpPost(path); 
-            
-            ByteArrayEntity stringEntity = new ByteArrayEntity(params.getBytes());
-            stringEntity.setContentType("application/x-www-form-urlencoded");
-            httpPost.setEntity(stringEntity);
-            
-            HttpResponse response = httpClient.execute(httpPost);
-            
-//			DataOutputStream out = new DataOutputStream(urlCon.getOutputStream());
-//			
-//			out.writeBytes(params);
-//			
-//			out.flush();
-//			out.close();
-			reader = new BufferedReader(new InputStreamReader(response.getEntity().getContent()));
-			String temp = "";
-			while((temp=reader.readLine())!=null){
-				str += (temp + "\n");
-			}
-			
-			httpClient.getConnectionManager().shutdown();
-		}catch(SocketTimeoutException ste){
-			Log.e("��ʱ", "��ʱ��");
-				throw ste; 
-		}catch(UnknownHostException h){
-			Log.e("��·", "���粻��ͨ");
-			throw h;
-		
-		} catch (MalformedURLException e) {
-			e.printStackTrace();
-		} catch (IOException e) {
-			e.printStackTrace();
-		} finally {
-			try {
-				if(reader!=null)
-					reader.close();
-			} catch (IOException e) {
-				e.printStackTrace();
-			}
-//			urlCon.disconnect();
-		}
-		//Log.d("json", "activityjson--->" + str);
-		return str;
-	}
-	
 	public static boolean isExternalStorageWriteable() {
 		String state = Environment.getExternalStorageState();
 		

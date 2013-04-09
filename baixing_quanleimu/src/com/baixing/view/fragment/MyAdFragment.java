@@ -401,7 +401,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 		case MSG_REFRESH_FAIL: {
 			hideProgress();
-			ViewUtil.postShortToastMessage(rootView, (String) msg.obj, (long) 0);
+			ViewUtil.showToast(getActivity(), (String) msg.obj, false);
 			break;
 		}
 		case MSG_MYPOST:

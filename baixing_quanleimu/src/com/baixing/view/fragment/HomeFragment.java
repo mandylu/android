@@ -157,14 +157,14 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 				break;
 			case 4:
 				hideProgress();
-				ViewUtil.postShortToastMessage(rootView, "网络连接失败，请检查设置！", 0);
+				ViewUtil.showToast(getActivity(), "网络连接失败，请检查设置！", false);
 				break;
 	        case MSG_USER_LOGIN:
 	        	getView().findViewById(R.id.userInfoLayout).setVisibility(View.VISIBLE);
 	            break;
 	        case MSG_SHOW_TOAST:
 	            hideProgress();
-	            ViewUtil.postShortToastMessage(rootView, msg.obj.toString(), 0);
+	            ViewUtil.showToast(getActivity(), msg.obj.toString(), false);
 	            break;
 	        case MSG_SHOW_PROGRESS:
 	            showProgress(R.string.dialog_title_info, R.string.dialog_message_updating, true);

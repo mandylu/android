@@ -418,7 +418,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		{
 			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
 		}
-		if (isInChina(location)) {
+		if (location != null && isInChina(location)) {
 			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
 			location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
 			location.setLongitude(1.0d*point.getLongitudeE6()/1e6);
