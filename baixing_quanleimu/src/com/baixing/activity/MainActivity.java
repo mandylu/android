@@ -6,21 +6,17 @@ import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 
-import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
-import android.content.IntentFilter;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.KeyEvent;
 import android.view.View;
 
 import com.baixing.activity.SplashJob.JobDoneListener;
-import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.broadcast.push.PageJumper;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.ChatMessage;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
@@ -28,7 +24,6 @@ import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.AutoRegisterService;
 import com.baixing.util.LocationService;
-import com.baixing.util.PerformEvent;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
@@ -41,13 +36,10 @@ import com.umeng.update.UmengUpdateAgent;
 //import com.tencent.mm.sdk.openapi.IWXAPIEventHandler;
 public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandler,*/ JobDoneListener {
 	
-	public static boolean isInActiveStack;
-	
 	private List<Runnable> pendingTask;
 	
 //	private boolean isRestoring;
 	private SplashJob splashJob;
-	private BroadcastReceiver msgListener;
 	private List<Runnable> resumeTask = new ArrayList<Runnable>(); 
 	
 	public MainActivity(){
@@ -57,7 +49,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	@Override
 	protected void onDestroy() {
 		super.onDestroy();
-		isInActiveStack = false;
 	}
 	
 	protected void onNewIntent(Intent intent)
@@ -86,7 +77,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			
 			Tracker.getInstance().event(BxEvent.APP_PAUSE).end();
 		}
-		unregisterMsgListener();
 		
 		super.onPause();
 		
@@ -107,7 +97,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //		Profiler.markStart("mainresume");
 		bundle.putString("backPageName", "");
 		super.onResume();
-		isInActiveStack = true;
 		BaseFragment bf = this.getCurrentFragment();
 		if(bf == null && splashJob == null){
 			splashJob = new SplashJob(this, this);
@@ -159,60 +148,13 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 
 	private void responseOnResume()
 	{
-		registerMsgListener();
 	}
 	
 	static public final String WX_APP_ID = "wx862b30c868401dbc";
 //	static public final String WX_APP_ID = "wx47a12013685c6d3b";//debug
 //	static public final String WX_APP_ID = "wxc54c9e29fcd6993d";////burizado, baixingwang2
 	
-//	private void showDetailViewFromWX(){
-//		Intent intent = this.getIntent();
-//		if(intent != null){
-//			Bundle bundle = intent.getExtras();
-//			if(bundle != null){
-//				if(bundle.getBoolean("isFromWX") && bundle.getString("detailFromWX") != null){
-//					
-//					GoodsList gl = JsonUtil.getGoodsListFromJson((String)bundle.getString("detailFromWX"));
-//					if(gl != null){
-//						GoodsListLoader glLoader = new GoodsListLoader(null, null, null, gl);
-//						glLoader.setGoodsList(gl);
-//						glLoader.setHasMore(false);		
-////						BaseView pb = QuanleimuApplication.getApplication().getViewStack().peer();
-//						BaseFragment currentF = getCurrentFragment();
-//						if (currentF instanceof GoodDetailFragment)
-//						{
-//							popFragment(currentF);
-//						}
-//						
-//						Bundle args = new Bundle();
-//						args.putAll(this.bundle);
-//						args.putSerializable("loader", glLoader);
-//						args.putInt("index", 0);
-//						pushFragment(new GoodDetailFragment(), args, false);
-////						if(pb != null && currentView != null){
-////							if((currentView instanceof GoodDetailView) && (pb instanceof GoodDetailView)){
-////								this.onBack();
-////							}
-////						}
-////						onNewView(new GoodDetailView(this, this.bundle, glLoader, 0, null));
-//					}
-//				}
-//			}
-//		}		
-//	}
-	
-	
-	
-//	@Override
-//	public boolean onContextItemSelected(MenuItem item) {
-//		if (currentView != null)
-//		{
-//			return currentView.handleContextMenuSelect(item);
-//		}
-//		
-//		return super.onContextItemSelected(item);
-//	}
+
 	@Override
 	public void onSaveInstanceState(Bundle savedInstanceState) {
 		Log.d("quanleimu", "onSaveInstanceState");
@@ -262,22 +204,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		{
 			this.notifyStackTop();
 		}
-//		findViewById(R.id.splash_cover).setVisibility(View.GONE);
-		
-//		findViewById(R.id.splash_cover).setVisibility(View.GONE);
-//		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
-		
-//		QuanleimuApplication.wxapi = WXAPIFactory.createWXAPI(this, WX_APP_ID, false);
-//		QuanleimuApplication.wxapi.registerApp(WX_APP_ID);
-//		QuanleimuApplication.wxapi.handleIntent(this.getIntent(), this);
-//		showDetailViewFromWX();
-		
-//		startTalking(getIntent()); //Launch after splash job.
 		
 		responseOnResume();
-		
-//		findViewById(R.id.splash_cover).setVisibility(View.GONE);
-//		findViewById(R.id.splash_cover).setBackgroundColor(color.transparent); //this may remove image reference.
 		
 		this.splashJob = null; //Remove splash job reference.
 		if (pendingTask != null && pendingTask.size() > 0)
@@ -379,93 +307,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		return false;
 	}
 	
-//	protected void onNewIntent(Intent intent) {
-//		super.onNewIntent(intent);
-		//Do not update intent if launch from history.
-//		Runnable task = new Runnable() {
-//			public void run()
-//			{
-////				QuanleimuApplication.wxapi.handleIntent(getIntent(), QuanleimuMainActivity.this);
-////				showDetailViewFromWX();
-////				showDataFromAlbamOrPhoto();
-//				
-//				startTalking(getIntent());
-//			}
-//		};
-//		
-//		if (splashJob == null || splashJob.isJobDone()) //do not handle any intent before splash job done.
-//		{
-//			task.run();
-//		}
-//		else if (!splashJob.isJobDone())
-//		{
-//			pendingTask.add(task);
-//		}
-//	}
-	
-//	private void startTalking(Intent intent)
-//	{
-//		if (intent.getBooleanExtra("isTalking", false) && Util.getMyId(this) != null)//
-//		{
-//			ChatMessage msg = (ChatMessage) intent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-//			Bundle bundle = new Bundle();
-//			bundle.putString("receiverId", msg.getFrom());
-//			bundle.putString("adId", msg.getAdId());
-//			bundle.putString("sessionId", msg.getSession());
-//			bundle.putSerializable("message", msg);
-//			pushFragment(new TalkFragment(), bundle, false);
-//		}
-//
-//		if (intent.hasExtra("isTalking"))
-//		{
-//			intent.putExtra("isTalking", false);
-//		}
-//	}
-
-//	// ΢�ŷ������󵽵���Ӧ��ʱ����ص����÷���
-//	@Override
-//	public void onReq(BaseReq req) {
-//		int i = 0;
-//		if(i == 1)
-//			return;
-////		switch (req.getType()) {
-////		case ConstantsAPI.COMMAND_GETMESSAGE_FROM_WX:
-////			goToGetMsg();		
-////			break;
-////		case ConstantsAPI.COMMAND_SHOWMESSAGE_FROM_WX:
-////			goToShowMsg((ShowMessageFromWX.Req) req);
-////			break;
-////		default:
-////			break;
-////		}
-//	}
-
-	// ����Ӧ�÷��͵�΢�ŵ�����������Ӧ����ص����÷���
-//	@Override
-//	public void onResp(BaseResp resp) {
-//		
-//		int result = 0;
-//		if(result == 1)
-//			return;
-////		switch (resp.errCode) {
-////		case BaseResp.ErrCode.ERR_OK:
-////			result = R.string.errcode_success;
-////			break;
-////		case BaseResp.ErrCode.ERR_USER_CANCEL:
-////			result = R.string.errcode_cancel;
-////			break;
-////		case BaseResp.ErrCode.ERR_AUTH_DENIED:
-////			result = R.string.errcode_deny;
-////			break;
-////		default:
-////			result = R.string.errcode_unknown;
-////			break;
-////		}
-////		
-//	}
-
-	private final static String SHARE_PREFS_NAME = "baixing_shortcut_app";
-	
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
     {
@@ -481,60 +322,4 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
         return true;
     }
 	
-	private void checkAndUpdateBadge(long uiDelay)
-	{
-//		final BadgeView v = (BadgeView) findViewById(R.id.badge);
-//		uiDelay = uiDelay > 0 ? uiDelay : 0;
-//			v.postDelayed(new Runnable() {
-//
-//			public void run() {
-//				ChatMessageDatabase.prepareDB(QuanleimuMainActivity.this);
-//				final String myId = Util.getMyId(QuanleimuMainActivity.this);
-//				int count = ChatMessageDatabase.getUnreadCount(null, myId);
-//				Log.d("badge", "count" + count);
-//				v.setText(count + "");
-//
-//				if (count == 0 ||  myId == null) {
-//					v.setVisibility(View.GONE);
-//				} else {
-//					v.setVisibility(View.VISIBLE);
-//				}
-//			}
-//
-//		}, uiDelay);
-	}
-	
-	private void registerMsgListener()
-	{
-		if (msgListener == null)
-		{
-			msgListener = new BroadcastReceiver() {
-
-				public void onReceive(Context outerContext, Intent outerIntent) {
-					if (outerIntent != null && outerIntent.hasExtra(CommonIntentAction.EXTRA_MSG_MESSAGE))
-					{
-						ChatMessage msg = (ChatMessage) outerIntent.getSerializableExtra(CommonIntentAction.EXTRA_MSG_MESSAGE);
-						if (msg.getTo().equals(GlobalDataManager.getInstance().getAccountManager().getMyId(MainActivity.this)))
-						{
-							checkAndUpdateBadge(50);
-						}
-					}
-				}
-				
-			};
-		}
-		
-		registerReceiver(msgListener, new IntentFilter(CommonIntentAction.ACTION_BROADCAST_NEW_MSG));
-	}
-	
-	protected void unregisterMsgListener()
-	{
-		if (msgListener != null){
-			try{
-				unregisterReceiver(msgListener);
-			}catch(IllegalArgumentException e){
-				e.printStackTrace();
-			}
-		}
-	}
 }
