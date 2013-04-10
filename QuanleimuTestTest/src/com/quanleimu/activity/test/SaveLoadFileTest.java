@@ -80,7 +80,7 @@ public class SaveLoadFileTest extends AndroidTestCase {
 	{
 		UserBean userBean = new UserBean();
 		userBean.setId("123");
-		userBean.setPassword("123");
+		userBean.setPassword("123", false);
 		userBean.setPhone("123456");
 		
 		final String fileName = System.currentTimeMillis() + ".json";
