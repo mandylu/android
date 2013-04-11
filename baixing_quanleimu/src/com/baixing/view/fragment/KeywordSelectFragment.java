@@ -37,6 +37,11 @@ public class KeywordSelectFragment extends BaseFragment {
 	private List<String> listRemark = new ArrayList<String>();
 	private TextView tvClear;
 	private ListView lvSearchHistory;
+	
+	public KeywordSelectFragment() {
+		this.defaultEnterAnim = R.anim.zoom_enter;
+		this.defaultExitAnim = R.anim.zoom_exit;
+	}
 
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);

@@ -22,12 +22,12 @@
      normal size (filling the screen) and scales down while fading out.
      This goes with zoom_enter.xml. -->
 <set xmlns:android="http://schemas.android.com/apk/res/android"
-        android:interpolator="@android:anim/linear_interpolator"
+        android:interpolator="@android:anim/decelerate_interpolator"
         android:zAdjustment="top">
-    <scale android:fromXScale="1.0" android:toXScale="0.5"
-           android:fromYScale="1.0" android:toYScale="0.5"
+    <scale android:fromXScale="1.0" android:toXScale="0.9"
+           android:fromYScale="1.0" android:toYScale="0.9"
            android:pivotX="50%p" android:pivotY="50%p"
-           android:duration="@integer/animation_duration" />
+           android:duration="300" />
     <alpha android:fromAlpha="1.0" android:toAlpha="0"
-            android:duration="@integer/animation_duration"/>
+            android:duration="300"/>
 </set>

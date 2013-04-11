@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.NetworkInfo.DetailedState;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Pair;
@@ -85,7 +86,10 @@ public class SearchFragment extends BaseFragment implements Callback {
 		title.hasGlobalSearch = true;
 	}
 	
-	
+	public SearchFragment() {
+		this.defaultEnterAnim = R.anim.zoom_enter;
+		this.defaultExitAnim = R.anim.zoom_exit;
+	}
 	
 
 	@Override
