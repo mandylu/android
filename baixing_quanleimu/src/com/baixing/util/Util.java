@@ -85,10 +85,9 @@ public class Util {
 	
 	//数据保存SD卡
 	public static String saveDataToSdCard(String path, String file,
-			Object object, boolean append) {
+			byte[] content, boolean append) {
 		String res = null;
 		FileOutputStream fos = null;
-		ObjectOutputStream oos = null;
 		if (Environment.getExternalStorageState() != null) {
 			try {
 				String sdcardRoot = getSdCardRoot();
@@ -101,8 +100,7 @@ public class Util {
 					f.createNewFile();
 				}
 				fos = new FileOutputStream(f, append);
-				oos = new ObjectOutputStream(fos);
-				oos.writeObject(object);
+				fos.write(content);
 			} catch (FileNotFoundException e) {
 				res = "没有找到文件";
 				e.printStackTrace();
@@ -111,9 +109,6 @@ public class Util {
 				e.printStackTrace();
 			} finally {
 				try {
-					if(null != oos){
-						oos.close();
-					}
 					if(null != fos){
 						fos.close();
 					}
@@ -128,40 +123,33 @@ public class Util {
 	}
 
 	//从SD卡读取数据
-	public static Object loadDataFromSdCard(String path, String file) {
-		Object obj = null;
+	public static byte[] loadDataFromSdCard(String path, String file) {
+		byte[] content = null;
 		FileInputStream fis = null;
-		ObjectInputStream ois = null;
 		if (Environment.getExternalStorageState() != null) {
 			try {
 				fis = new FileInputStream(getSdCardRoot() + path + "/" + file
 						+ ".txt");
-				ois = new ObjectInputStream(fis);
-				obj = ois.readObject();
+				content = new byte[fis.available()];
+				fis.read(content);
 			} catch (FileNotFoundException e) {
-				obj = null;
+				content = null;
 				e.printStackTrace();
 			} catch (IOException e) {
-				obj = null;
-				e.printStackTrace();
-			} catch (ClassNotFoundException e) {
-				obj = null;
+				content = null;
 				e.printStackTrace();
 			} finally {
 				try {
-					if(null != ois){
-						ois.close();
-					}
 					if(null != fis){
 						fis.close();
 					}
 				} catch (Exception e) {
-					obj = null;
+					content = null;
 					e.printStackTrace();
 				}
 			}
 		}
-		return obj;
+		return content;
 	}
 	
 	public static void saveDataToLocateDelay(final Context context, final String file, final Object obj)

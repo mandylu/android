@@ -83,8 +83,8 @@ public class Tracker {
 				if (log != null) {
 					synchronized(this) {
 
-						Util.saveDataToSdCard("baixing", "tracker_addlog", log.toJsonObj().toString()
-								+ "\n", true);
+						Util.saveDataToSdCard("baixing", "tracker_addlog", (log.toJsonObj().toString()
+								+ "\r\n").getBytes(), true);
 					}
 				}
 			} catch (Exception e) {

@@ -204,8 +204,8 @@ public class Sender implements Runnable{
 					JSONObject log = null;
 					log = array.getJSONObject(i);
 					if (log != null) {
-						Util.saveDataToSdCard("baixing", "sender_sendlistlog", log.toString()
-								+ "\n", true);
+						Util.saveDataToSdCard("baixing", "sender_sendlistlog", (log.toString()
+								+ "\r\n").getBytes(), true);
 					}
 				}
 			} catch (JSONException e) {
