@@ -81,7 +81,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 			{
 				View detail = getNewPage(LayoutInflater.from(arg0.getContext()), position);//LayoutInflater.from(vp.getContext()).inflate(R.layout.gooddetailcontent, null);
 				
-				detail.setTag(R.id.accountEt, detail);
+//				detail.setTag(R.id.accountEt, detail);
 				((ViewPager) arg0).addView(detail, 0);
 				if (position == callback.totalPages())
 				{

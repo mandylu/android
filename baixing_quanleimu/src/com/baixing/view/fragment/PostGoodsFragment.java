@@ -262,6 +262,29 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onPause();
 		paused = true;
 	}
+	
+	@Override
+	public void onDestroy(){
+		if(layout_txt != null){
+			for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+				View child = layout_txt.getChildAt(i);
+				if(child != null){
+					child.setTag(PostCommonValues.HASH_CONTROL, null);
+				}
+			}
+			View categoryItem = layout_txt.findViewById(R.id.categoryItem);
+			if(categoryItem != null){
+				categoryItem.setTag(PostCommonValues.HASH_CONTROL, null);
+			}
+			
+			View description = layout_txt.findViewById(R.id.img_description);
+			if(description != null){
+				description.setTag(PostCommonValues.HASH_CONTROL, null);
+			}
+
+		}
+		super.onDestroy();
+	}
 
 	@Override
 	public void onStackTop(boolean isBack) {
