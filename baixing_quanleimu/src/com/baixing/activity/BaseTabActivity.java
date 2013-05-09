@@ -253,7 +253,9 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
     			}
     			else
     			{
-    				exitMainActivity();
+    				if (exitCtrl.requestExit()) {
+						exitMainActivity();
+					}
     			}
 	    	}	
 		}catch(Exception e){
@@ -285,41 +287,41 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 	 * 
 	 */
 	public void exitMainActivity() {
-		SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-		String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
-
-		AlertDialog.Builder builder = new AlertDialog.Builder(this);
-
-		LayoutInflater adbInflater = LayoutInflater.from(this);
-		View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
-
-		final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
-		final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
-		if (needShowShortcut)
-		{
-		    builder.setView(shortcutLayout);
-		}
-
-		builder.setTitle(R.string.dialog_title_info)
-			.setMessage(R.string.dialog_message_confirm_exit)
-			.setNegativeButton(R.string.no, null)
-			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
-		{
-
-		    @Override
-		    public void onClick(DialogInterface dialog, int which)
-		    {
+//		SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+//		String hasShowShortcutMessage = settings.getString("hasShowShortcut", "no");
+//
+//		AlertDialog.Builder builder = new AlertDialog.Builder(this);
+//
+//		LayoutInflater adbInflater = LayoutInflater.from(this);
+//		View shortcutLayout = adbInflater.inflate(R.layout.shortcutshow, null);
+//
+//		final CheckBox shortcutCheckBox = (CheckBox) shortcutLayout.findViewById(R.id.shortcut);
+//		final boolean needShowShortcut = "no".equals(hasShowShortcutMessage) && !ShortcutUtil.hasShortcut(this);
+//		if (needShowShortcut)
+//		{
+//		    builder.setView(shortcutLayout);
+//		}
+//
+//		builder.setTitle(R.string.dialog_title_info)
+//			.setMessage(R.string.dialog_message_confirm_exit)
+//			.setNegativeButton(R.string.no, null)
+//			.setPositiveButton(R.string.yes, new DialogInterface.OnClickListener()
+//		{
+//
+//		    @Override
+//		    public void onClick(DialogInterface dialog, int which)
+//		    {
 		    	
 		    	LocationService.getInstance().stop();
-		        if (needShowShortcut && shortcutCheckBox.isChecked())
-		        {
-		            ShortcutUtil.addShortcut(BaseTabActivity.this);
-		        }
-		        SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
-		        SharedPreferences.Editor editor = settings.edit();
-		        editor.putString("hasShowShortcut", "yes");
-		        // Commit the edits!
-		        editor.commit();
+//		        if (needShowShortcut && shortcutCheckBox.isChecked())
+//		        {
+//		            ShortcutUtil.addShortcut(BaseTabActivity.this);
+//		        }
+//		        SharedPreferences settings = getSharedPreferences(SHARE_PREFS_NAME, 0);
+//		        SharedPreferences.Editor editor = settings.edit();
+//		        editor.putString("hasShowShortcut", "yes");
+//		        // Commit the edits!
+//		        editor.commit();
 				Intent pushIntent = new Intent(BaseTabActivity.this, com.baixing.broadcast.BXNotificationService.class);
 				BaseTabActivity.this.startService(pushIntent);
 
@@ -340,7 +342,7 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 					Tracker.getInstance().save();
 				} catch (Exception e) {}
 		    	Log.d("quanleimu", "exit");
-		    	dialog.dismiss();
+//		    	dialog.dismiss();
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
 		    	List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
@@ -362,9 +364,9 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 		    	NetworkProfiler.flush();
 		    	
 				BaseTabActivity.this.finish();
-		    }
-		});
-		builder.create().show();
+//		    }
+//		});
+//		builder.create().show();
 	}
 	
 
