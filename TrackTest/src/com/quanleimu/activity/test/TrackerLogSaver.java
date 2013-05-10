@@ -1,6 +1,7 @@
 package com.quanleimu.activity.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
 import com.baixing.tracking.LogData;
 
@@ -19,6 +20,24 @@ class TrackerLogSaver {
 		ArrayList<LogData> ret = new ArrayList<LogData>();
 		synchronized(this){
 			ret.addAll(logs);
+		}
+		return ret;
+	}
+	
+	public ArrayList<LogData> getLog(String trackType, String event){
+		ArrayList<LogData> current = getLog();
+		ArrayList<LogData> ret = new ArrayList<LogData>();
+		boolean isPageView = trackType.equals("pageview") ? true : false;
+		for(int i = current.size() - 1; i >= 0; -- i){
+			LogData ld = current.get(i);
+			HashMap<String, String> maps = ld.getMap();
+			if(maps != null){
+				if(maps.get("tracktype").equals(trackType) 
+						&& ((isPageView && maps.get("url").equals(event))
+						|| (!isPageView && maps.get("event").equals(event)))){
+					ret.add(current.get(i));
+				}
+			}
 		}
 		return ret;
 	}
