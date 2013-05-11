@@ -2,11 +2,14 @@ package com.quanleimu.activity.test;
 
 import java.util.ArrayList;
 
+import android.support.v4.view.ViewPager;
 import android.test.suitebuilder.annotation.Smoke;
 import android.text.TextUtils;
 import android.view.View;
 import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.TextView;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.LogData;
@@ -25,8 +28,6 @@ public class VADTest extends BaseTest<MainActivity> {
 
 		solo.clickInList(0);
 
-//		View lvView = solo.getView(R.id.lvGoodsList);
-//		solo.waitForView(lvView);
 		Util.Sleep(15000);
 		
 		ArrayList<ListView> listingView = solo.getCurrentViews(ListView.class);
@@ -34,14 +35,17 @@ public class VADTest extends BaseTest<MainActivity> {
 		for(int i = 0; i < listingView.get(0).getChildCount(); ++ i){
 			ImageView iv = (ImageView)listingView.get(0).getChildAt(i).findViewById(R.id.ivInfo);
 			if(iv != null){
-				if(iv.getDrawable() != null){
+				if(!TextUtils.isEmpty((String)iv.getTag())){
 					index = i;
 					break;
 				}
 			}
 		}
 		
-		solo.clickInList(index);
+		View item = listingView.get(0).getChildAt(index);
+		solo.clickOnView(item);
+		
+		String address = ((TextView)item.findViewById(R.id.tvDateAndAddress)).getText().toString();
 		Util.Sleep(3000);
 		
 		View detailV = solo.getView(R.id.llDetail);
@@ -52,11 +56,19 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
 		
-//		View iv = solo.getView(R.id.action_indicator_img);
-//		solo.getv
-//		View mapV = (View)solo.getImage(R.drawable.vad_icon_location).getParent();		
-//		solo.clickOnView(mapV);
-		Util.Sleep(10000);
+		View addressView = solo.getText(address);
+//		ViewPager vp = (ViewPager)solo.getView(R.id.svDetail);
+//		int currentIndex = vp.getCurrentItem();
+//		View currentParent = vp.getChildAt(index == 1 ? 1 : currentIndex - 1);
+//		LinearLayout parent = (LinearLayout)currentParent.findViewById(R.id.meta);
+//		int childCount = parent.getChildCount();
+//		View mapView = parent.getChildAt(childCount > 1 ? childCount - 1 : 0);
+		solo.clickOnView(addressView);
+		
+		
+		View mapV = solo.getView(R.id.bmapsView);
+		solo.waitForView(mapV);
+		
 		logs = TrackerLogSaver.getInstance().getLog("pageview", "/viewAdMap");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));

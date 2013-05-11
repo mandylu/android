@@ -43,6 +43,7 @@ import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LocationService;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.post.PostLocationService;
@@ -246,6 +247,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
 	    if (mBMapMan != null) {
 	        mBMapMan.start();
 	    }
@@ -266,6 +268,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
         if(bundle != null){
 	        Ad position = (Ad)bundle.getSerializable("detail");
 	        if(position == null) return;
+	        Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, 
+	        		position.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	        		.append(Key.ADID, position.getValueByKey(EDATAKEYS.EDATAKEYS_ID)).end();
 			String areaname = position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
 			if(areaname != null){
 				String[] aryArea = areaname.split(",");
