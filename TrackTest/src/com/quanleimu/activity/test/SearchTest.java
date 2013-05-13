@@ -41,7 +41,7 @@ public class SearchTest extends BaseTest<MainActivity> {
 		View tv = solo.getText("搜索");
 		solo.clickOnView(tv);
 
-		Util.Sleep(3000);
+		Util.sleep(3000);
 		
 		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/searchResultCategory");
 		assertTrue(logs != null && logs.size() == 1);
@@ -63,7 +63,7 @@ public class SearchTest extends BaseTest<MainActivity> {
 		View tv = solo.getText("搜索");
 		solo.clickOnView(tv);
 		
-		Util.Sleep(3000);		
+		Util.sleep(3000);		
 		solo.clickInList(0);
 		
 		View glView = solo.getView(R.id.lvGoodsList);
