@@ -26,6 +26,7 @@ class Util{
 			solo.clickOnView(solo.getText("设置"));
 			solo.clickOnView(solo.getText("退出登录"));
 			solo.clickOnButton(0);
+			solo.goBack();
 		}
 
 		solo.clickOnView(solo.getText("登录百姓网"));

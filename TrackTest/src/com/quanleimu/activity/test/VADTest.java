@@ -37,7 +37,7 @@ public class VADTest extends BaseTest<MainActivity> {
 
 	@Smoke
 	public void testPV() {
-		View v1 = solo.getText("全职招聘");
+		View v1 = solo.getText("物品交易");
 		solo.waitForView(v1);
 		View item1 = (View) v1.getParent().getParent();
 		solo.clickOnView(item1);

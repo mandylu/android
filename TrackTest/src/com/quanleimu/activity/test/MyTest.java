@@ -17,8 +17,10 @@ public class MyTest extends BaseTest<PersonalActivity> {
 	}
 	
 	private void chooseCity(){
-		TextView tv = solo.getText("上海");
-		solo.clickOnView(tv);
+		if(solo.searchText("上海")){
+			TextView tv = solo.getText("上海");
+			solo.clickOnView(tv);
+		}
 	}
 	
 	public void testMyAPV(){
@@ -30,6 +32,7 @@ public class MyTest extends BaseTest<PersonalActivity> {
 		assertTrue(logs != null && logs.size() >= 1);
 		assertTrue(logs.get(0).getMap().get("isLogin").equals("1"));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("userId")));
+		TrackerLogSaver.getInstance().clearLog();
 	}
 	
 	public void testMyPostPV(){
@@ -62,18 +65,33 @@ public class MyTest extends BaseTest<PersonalActivity> {
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
 		
 		solo.clickOnView(edit);
-		solo.getView(R.id.goodscontent);
+		solo.waitForView(solo.getView(R.id.goodscontent));
 		logs = TrackerLogSaver.getInstance().getLog("pageview", "/editPost");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
+		
+		TrackerLogSaver.getInstance().clearLog();
+		solo.clickOnView(solo.getView(R.id.image_list_parent));
+		solo.waitForText("相册");
+		logs = TrackerLogSaver.getInstance().getLog("pageview", "/post/camera");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(logs.get(0).getMap().get("from").equals("postForm"));
+		assertTrue(logs.get(0).getMap().get("isEdit").equals("1"));
+		solo.goBack();
+		solo.goBack();
+		solo.clickOnButton(0);
+		TrackerLogSaver.getInstance().clearLog();
 	}
 	
 	public void testMyFavPV(){
 		solo.clickOnView(solo.getText("收藏"));
+		solo.waitForText("收藏的信息");
 		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/favAds");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(Integer.valueOf(logs.get(0).getMap().get("adsCount")) >= 0);
+		
+		TrackerLogSaver.getInstance().clearLog();
 	}
 	
 	public void testMySettings(){

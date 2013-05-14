@@ -334,6 +334,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
 		goIntent.putExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL, finishActionLabel);
 		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, cancelResultCode);
+		goIntent.putExtra("isEdit", editMode);
 		getActivity().startActivity(goIntent);
 	}
 

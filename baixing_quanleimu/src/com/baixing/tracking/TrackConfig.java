@@ -99,6 +99,8 @@ public class TrackConfig implements Observer {
 			SHARE_FROM("shareFrom", "分享发起页"),
 			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
+			ISEDIT("isEdit", "拍照是否编辑"),
+			FROM("from", "拍照来源")
 			;
 			private String name;
 			private String description;
@@ -164,7 +166,7 @@ public class TrackConfig implements Observer {
 //			POSTCATE2("/post/cate2","发布选择二级类目页"),
 			POST("/post","发布界面"),
 			EDITPOST("/editPost","编辑界面"),
-			CAMERA("/camera", "拍照"),
+			CAMERA("/post/camera", "拍照"),
 			MY("/my","我的百姓网"),
 			MYADS_SENT("/myAds_sent","已发布信息"),
 //			MYADS_APPROVING("/myAds_approving","审核未通过"),
@@ -178,7 +180,7 @@ public class TrackConfig implements Observer {
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
 			FORGETPASSWORD("/forgetPassword","忘记密码"),
-			RESETPASSWORD("/restPassword", "修改密码"),
+			RESETPASSWORD("/resetPassword", "修改密码"),
 			BINDFORWARD("/3rdAuth", "绑定转发");
 			
 			private String name;

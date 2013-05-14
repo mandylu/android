@@ -47,7 +47,7 @@ public class AccountTest extends BaseTest<PersonalActivity> {
 		Util.loginWithSpecifiedAccount(solo);
 		solo.clickOnText("设置");
 		solo.clickOnText("修改密码");
-		logs = TrackerLogSaver.getInstance().getLog("pageview", "/restPassword");
+		logs = TrackerLogSaver.getInstance().getLog("pageview", "/resetPassword");
 		assertTrue(logs != null && logs.size() == 1);
 		
 		solo.goBack();
