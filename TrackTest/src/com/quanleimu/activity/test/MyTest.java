@@ -75,4 +75,10 @@ public class MyTest extends BaseTest<PersonalActivity> {
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(Integer.valueOf(logs.get(0).getMap().get("adsCount")) >= 0);
 	}
+	
+	public void testMySettings(){
+		solo.clickOnView(solo.getText("设置"));
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/settings");
+		assertTrue(logs != null && logs.size() == 1);		
+	}
 }

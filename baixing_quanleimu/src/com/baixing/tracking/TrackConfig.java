@@ -177,7 +177,9 @@ public class TrackConfig implements Observer {
 			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
-			FORGETPASSWORD("/forgetPassword","忘记密码");
+			FORGETPASSWORD("/forgetPassword","忘记密码"),
+			RESETPASSWORD("/restPassword", "修改密码"),
+			BINDFORWARD("/3rdAuth", "绑定转发");
 			
 			private String name;
 			private String description;

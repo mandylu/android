@@ -21,8 +21,8 @@ class Util{
 		
 		solo.getText("设置");
 		
-		boolean loginned = solo.searchText("登录百姓网");
-		if(loginned){
+		boolean loginned = solo.searchText("登录百姓网", true);
+		if(!loginned){
 			solo.clickOnView(solo.getText("设置"));
 			solo.clickOnView(solo.getText("退出登录"));
 			solo.clickOnButton(0);
@@ -32,7 +32,7 @@ class Util{
 		solo.enterText(0, "13917542245");
 		solo.enterText(1, "qqq");
 		solo.clickOnButton("登录百姓网");
-		solo.getText("退出登录");
+		solo.waitForText("已发布信息");
 		solo.goBack();
 	}
 }

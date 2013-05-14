@@ -5,11 +5,11 @@ import java.util.ArrayList;
 import android.support.v4.view.ViewPager;
 import android.test.suitebuilder.annotation.Smoke;
 import android.text.TextUtils;
-import android.util.Log;
 import android.view.View;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
+import android.widget.ScrollView;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.LogData;
@@ -21,10 +21,23 @@ public class VADTest extends BaseTest<MainActivity> {
 	public VADTest() {
 		super(MainActivity.class);
 	}
+	
+	private View getCurrentItemView(int index){
+		ViewPager vp = (ViewPager)solo.getView(R.id.svDetail);
+		View currentItem = null;
+		for(int i = 0; i < vp.getChildCount(); ++ i){
+			View child = vp.getChildAt(i);
+			if(child.getTag() != null && (Integer)child.getTag() == index - 1){
+				currentItem = child;
+				break;
+			}			
+		}
+		return currentItem;
+	}
 
 	@Smoke
 	public void testPV() {
-		View v1 = solo.getText("物品交易");
+		View v1 = solo.getText("全职招聘");
 		solo.waitForView(v1);
 		View item1 = (View) v1.getParent().getParent();
 		solo.clickOnView(item1);
@@ -65,18 +78,9 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
 		
-		ViewPager vp = (ViewPager)solo.getView(R.id.svDetail);
-		View currentItem = null;
-		for(int i = 0; i < vp.getChildCount(); ++ i){
-			View child = vp.getChildAt(i);
-			if(child.getTag() != null && (Integer)child.getTag() == index - 1){
-				currentItem = child;
-				LinearLayout meta = (LinearLayout)child.findViewById(R.id.meta);
-				solo.clickOnView(meta.getChildAt(meta.getChildCount() - 1));
-				break;
-			}
-			
-		}		
+		View currentItem = getCurrentItemView(index);
+		LinearLayout meta = (LinearLayout)currentItem.findViewById(R.id.meta);
+		solo.clickOnView(meta.getChildAt(meta.getChildCount() - 1));
 		
 		View mapV = solo.getView(R.id.bmapsView);
 		solo.waitForView(mapV);
@@ -98,6 +102,34 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
+		
+		solo.goBack();
+		
+		
+		final View cutItem = getCurrentItemView(index);
+		solo.waitForView(cutItem);
+		this.getActivity().runOnUiThread(new Runnable(){
+
+			@Override
+			public void run() {
+				// TODO Auto-generated method stub
+				((ScrollView)cutItem).scrollBy(0, 5000);
+//				((ScrollView)cutItem).scrollBy(0, -500);	
+			}			
+		});
+		Util.sleep(1000);
+		View userView = cutItem.findViewById(R.id.user_info);
+
+		ScrollView sv = (ScrollView)solo.getView(ScrollView.class, 0);
+		sv.scrollTo(0, 500);
+		
+		solo.clickOnView(userView);
+		solo.waitForView(ListView.class);
+		logs = TrackerLogSaver.getInstance().getLog("pageview", "/user");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adSenderId")));
 		
 		TrackerLogSaver.getInstance().clearLog();
 	}
