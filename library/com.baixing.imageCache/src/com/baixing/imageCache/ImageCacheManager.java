@@ -19,35 +19,23 @@ import android.util.Log;
 import android.util.Pair;
 import android.view.WindowManager;
 
-import com.baixing.data.GlobalDataManager;
 import com.baixing.network.api.FileDownloadCommand;
-import com.baixing.util.BitmapUtils;
-import com.baixing.util.BitmapUtils._Rect;
-import com.baixing.util.TextUtil;
+import com.baixing.imageCache.Utils._Rect;
 public class ImageCacheManager{
 	private List<WeakReference<Bitmap>> trashList = new ArrayList<WeakReference<Bitmap>>();
 	private LruCache<String, Pair<Integer, WeakReference<Bitmap>>> imageLruCache;
 	private DiskLruCache imageDiskLruCache = null;	
 	private Context context;	
 	
-	static ImageCacheManager instance;
-	
-	static public ImageCacheManager getInstance(){
-		if(instance == null){
-			instance = new ImageCacheManager();
-		}
-		return instance;
-	}
-	
-	private ImageCacheManager(){
-		this.context = GlobalDataManager.getInstance().getApplicationContext();
+	public ImageCacheManager(Context ctx){
+		this.context = ctx;
 	    // Get memory class of this device, exceeding this amount will throw an
 	    // OutOfMemory exception.
 	    final int memClass = ((ActivityManager) context.getSystemService(Context.ACTIVITY_SERVICE)).getMemoryClass();
 	    
 	    File fileCacheDir = DiskLruCache.getDiskCacheDir(context, "");
 	    long capacity_20M = 20*1024*1024;
-	    long capacity_halfFreeSpace = BitmapUtils.getUsableSpace(fileCacheDir) / 2;
+	    long capacity_halfFreeSpace = Utils.getUsableSpace(fileCacheDir) / 2;
 	    final long diskCacheSize =  capacity_20M < capacity_halfFreeSpace ? capacity_20M : capacity_halfFreeSpace;
 	    
 	    imageDiskLruCache = DiskLruCache.openCache(context, fileCacheDir, diskCacheSize);
@@ -71,7 +59,7 @@ public class ImageCacheManager{
 	}
 	
 	public void enableSampleSize(boolean b){
-		BitmapUtils.enableSampleSize(b);
+		Utils.enableSampleSize(b);
 	}
 	
 	public boolean contains(String url){
@@ -80,17 +68,17 @@ public class ImageCacheManager{
 		}
 	}
 	
-	private static void configOption(BitmapFactory.Options option, int maxWidth, int maxHeight){
-		int sampleSize = BitmapUtils.calculateInSampleSize(option, maxWidth, maxHeight);
-		option.inJustDecodeBounds = false;
-		option.inPurgeable = true;
-		option.inInputShareable = true;
-		option.inSampleSize = sampleSize;
-		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
-	}
+//	private static void configOption(BitmapFactory.Options option, int maxWidth, int maxHeight){
+//		int sampleSize = Utils.calculateInSampleSize(ImageCacheManager.getInstance().context, option, maxWidth, maxHeight);
+//		option.inJustDecodeBounds = false;
+//		option.inPurgeable = true;
+//		option.inInputShareable = true;
+//		option.inSampleSize = sampleSize;
+//		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
+//	}
 	
 	public Bitmap loadBitmapFromResource(int resId){
-		WeakReference<Bitmap> cached = ImageCacheManager.getInstance().getFromCache(String.valueOf(resId));
+		WeakReference<Bitmap> cached = getFromCache(String.valueOf(resId));
 		if(cached != null && cached.get() != null) return cached.get();
 		BitmapFactory.Options option = new BitmapFactory.Options();
 		option.inPurgeable = true;
@@ -98,7 +86,7 @@ public class ImageCacheManager{
 		option.inPreferredConfig = Bitmap.Config.ARGB_8888;
 		Bitmap ret = BitmapFactory.decodeResource(context.getResources(), resId, option);
 		if(ret != null){
-			ImageCacheManager.getInstance().saveBitmapToCache(String.valueOf(resId), new WeakReference<Bitmap>(ret));
+			saveBitmapToCache(String.valueOf(resId), new WeakReference<Bitmap>(ret));
 		}
 		return ret;
 	}
@@ -117,7 +105,7 @@ public class ImageCacheManager{
 
 	private WeakReference<Bitmap> getFromFileCache(String url){
 		if(null != imageDiskLruCache){
-			return new WeakReference<Bitmap>(imageDiskLruCache.get(TextUtil.getMD5(url)));
+			return new WeakReference<Bitmap>(imageDiskLruCache.get(Utils.getMD5(url)));
 		}
 		
 		return null;
@@ -250,20 +238,20 @@ public class ImageCacheManager{
 	}
 	
 	public void putImageToDisk(String url, Bitmap bmp){
-		String key = TextUtil.getMD5(url);
+		String key = Utils.getMD5(url);
 		imageDiskLruCache.put(key, bmp);
 	}
 	
-	private static Bitmap decodeSampledBitmapFromFile(String file){
+	private static Bitmap decodeSampledBitmapFromFile(Context ctx, String file){
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    if(BitmapUtils.useSampleSize()){	    	
+	    if(Utils.useSampleSize()){	    	
 			_Rect rc = new _Rect();
 			rc.width = 200;
 			rc.height = 200;
 			WindowManager wm = 
-					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					(WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			
@@ -272,7 +260,7 @@ public class ImageCacheManager{
 		    BitmapFactory.decodeFile(file, options);
 		    
 		    // Calculate inSampleSize
-		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
+		    options.inSampleSize = Utils.calculateInSampleSize(ctx, options, rc.width, rc.height);
 	    }
 	    else{
 	    	options.inSampleSize = 1;
@@ -298,13 +286,13 @@ public class ImageCacheManager{
 //	        HttpGet httpGet = new HttpGet(urlStr); 
 //	        HttpResponse response = httpClient.execute(httpGet);	
 	        
-	        String key = TextUtil.getMD5(urlStr);
+	        String key = Utils.getMD5(urlStr);
 	        final String targetFile = imageDiskLruCache.createFilePath(key);
 	        FileDownloadCommand cmd = new  FileDownloadCommand(urlStr);
 	        boolean succed = cmd.doDownload(context, new File(targetFile));
 	        if (succed) {
 	        	enableSampleSize(true);
-	        	bitmapRet = decodeSampledBitmapFromFile(/*new FileInputStream(new File(targetFile))*/targetFile);
+	        	bitmapRet = decodeSampledBitmapFromFile(context, targetFile);
 	        	enableSampleSize(false);
 	        }
 	        
@@ -361,7 +349,7 @@ public class ImageCacheManager{
 
 	public String getFileInDiskCache(String url) {
 		if(null != imageDiskLruCache){
-			return imageDiskLruCache.getFilePath(TextUtil.getMD5(url));
+			return imageDiskLruCache.getFilePath(Utils.getMD5(url));
 		}else{
 			return "";
 		}

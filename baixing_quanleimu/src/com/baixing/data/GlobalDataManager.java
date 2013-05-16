@@ -20,6 +20,7 @@ import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
 import com.baixing.imageCache.ImageCacheManager;
+import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -50,11 +51,24 @@ public class GlobalDataManager implements Observer {
     private AccountManager accountManager;
     private NetworkCacheManager networkCache;
     private LocationManager locationManager;
+    private ImageCacheManager imageCacheMgr;
+    private ImageLoaderManager imageLoaderMgr;
     
     private Class lastActiveCls;
     
     public final ImageCacheManager getImageManager(){
-    	return ImageCacheManager.getInstance();
+    	if(imageCacheMgr == null){
+    		imageCacheMgr = new ImageCacheManager(getApplicationContext());
+    	}
+
+    	return imageCacheMgr;
+    }
+    
+    public ImageLoaderManager getImageLoaderMgr(){
+    	if(imageLoaderMgr == null){
+    		imageLoaderMgr = new ImageLoaderManager(getImageManager());
+    	}
+    	return imageLoaderMgr;
     }
     
 	public static void setTextMode(boolean tMode){

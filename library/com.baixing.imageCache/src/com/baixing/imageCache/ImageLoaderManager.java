@@ -8,8 +8,6 @@ import java.util.HashMap;
 import java.util.List;
 import java.util.Vector;
 
-import com.baixing.data.GlobalDataManager;
-
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -43,17 +41,22 @@ public class ImageLoaderManager{
 	
 	static ImageLoaderManager instance;
 	
-	static public void initImageLoader(){
-		if(instance == null){
-			instance = new ImageLoaderManager();
-		}		
-	}
+//	static public void initImageLoader(){
+//		if(instance == null){
+//			instance = new ImageLoaderManager();
+//		}		
+//	}
+//	
+//	static public ImageLoaderManager getInstance(){
+//		if(instance == null){
+//			instance = new ImageLoaderManager();
+//		}
+//		return instance;
+//	}
 	
-	static public ImageLoaderManager getInstance(){
-		if(instance == null){
-			instance = new ImageLoaderManager();
-		}
-		return instance;
+	private ImageCacheManager cacheManager;
+	public ImageLoaderManager(ImageCacheManager cacheManager){
+		this.cacheManager = cacheManager;
 	}
 	
 	private WeakReference<Bitmap> get(String url,ImageLoaderCallback callback){
@@ -61,7 +64,7 @@ public class ImageLoaderManager{
 		
 		//1. try to get from memory cache
 //		if(ImageCacheManager.getInstance().contains(url)){
-		bitmap = ImageCacheManager.getInstance().getFromCache(url);
+		bitmap = cacheManager.getFromCache(url);
 //		}
 		if(bitmap != null && bitmap.get() != null){//if found in memory cache, just return that to the caller
 			return bitmap;
@@ -180,7 +183,7 @@ public class ImageLoaderManager{
 						continue;
 					} 
 					
-					WeakReference<Bitmap> bitmap = ImageCacheManager.getInstance().getFromCache(mCurrentUrl);
+					WeakReference<Bitmap> bitmap = cacheManager.getFromCache(mCurrentUrl);
 					if(bitmap==null || bitmap.get() == null){//if not in disk cache, put the url to download-deque for further downloading
 						putToDownloadDeque(mCurrentUrl);
 						startDownloadingTread();
@@ -223,7 +226,7 @@ public class ImageLoaderManager{
 						continue;
 					} 
 					
-					WeakReference<Bitmap> bitmap = ImageCacheManager.getInstance().safeGetFromNetwork(url);
+					WeakReference<Bitmap> bitmap = cacheManager.safeGetFromNetwork(url);
 					
 					if(null != bitmap && bitmap.get() != null){
 						Message msg=handler.obtainMessage(MESSAGE_ID);
@@ -251,7 +254,7 @@ public class ImageLoaderManager{
 
 	private WeakReference<Bitmap> getBitmapInMemory(String url){
 		if(url == null || url.equals("")) return null;
-		return ImageCacheManager.getInstance().getFromCache(url);
+		return cacheManager.getFromCache(url);
 	}
 	
 	public void loadImg(final DownloadCallback downloadCallback, String url) {
@@ -305,7 +308,7 @@ public class ImageLoaderManager{
 											if(curBmp != null && curBmp.hashCode() == bmp.hashCode()){
 												int count = decreaseBitmapReferenceCount(bmp.hashCode(), view.hashCode());
 												if(0 >= count){
-													ImageCacheManager.getInstance().forceRecycle(preUrl, true);
+													cacheManager.forceRecycle(preUrl, true);
 												}
 											}
 										}
@@ -383,7 +386,7 @@ public class ImageLoaderManager{
 										if(curBmp != null && curBmp.hashCode() == bmp.hashCode()){
 											int count = decreaseBitmapReferenceCount(bmp.hashCode(), view.hashCode());
 											if(0 >= count){
-												ImageCacheManager.getInstance().forceRecycle(preUrl, true);
+												cacheManager.forceRecycle(preUrl, true);
 											}												
 										}
 									}

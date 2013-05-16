@@ -260,11 +260,11 @@ public class VadListAdapter extends BaseAdapter {
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 
 		if(null == defaultBk2){
-	        defaultBk2 = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_listing_nopic);
+	        defaultBk2 = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.icon_listing_nopic);
 		}
 		
 		if(null == downloadFailBk){				
-	        downloadFailBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+	        downloadFailBk = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
 		}
 		
 		holder.ivInfo.setScaleType(ImageView.ScaleType.CENTER_CROP);
@@ -325,7 +325,7 @@ public class VadListAdapter extends BaseAdapter {
 								holder.ivInfo.setVisibility(View.INVISIBLE);
 								holder.pbView.setVisibility(View.VISIBLE);
 //									SimpleImageLoader.showImg(holder.ivInfo, c[0], strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
-								ImageLoaderManager.getInstance().showImg(holder.ivInfo, c[0], strTag, this.context, 
+								GlobalDataManager.getInstance().getImageLoaderMgr().showImg(holder.ivInfo, c[0], strTag, this.context, 
 										new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 								//Log.d("GoodsListAdapter load image", "showImg for : "+position+", @url:"+c[0]);
 							}
@@ -351,7 +351,7 @@ public class VadListAdapter extends BaseAdapter {
 								holder.ivInfo.setVisibility(View.INVISIBLE);
 								holder.pbView.setVisibility(View.VISIBLE);
 //									SimpleImageLoader.showImg(holder.ivInfo, b, strTag, this.context, downloadFailBk);//R.drawable.home_bg_thumb_2x);
-								ImageLoaderManager.getInstance().showImg(holder.ivInfo, b, strTag, this.context, 
+								GlobalDataManager.getInstance().getImageLoaderMgr().showImg(holder.ivInfo, b, strTag, this.context, 
 										new WeakReference<Bitmap>(downloadFailBk));//R.drawable.home_bg_thumb_2x);
 								//Log.d("GoodsListAdapter load image", "showImg: "+position+", @url:"+b);
 							}
@@ -365,7 +365,7 @@ public class VadListAdapter extends BaseAdapter {
 				for(String url : listUrlsToCancel){
 					//Log.d("GoodsListAdapter canceled image", "canceled: "+url);
 					
-					ImageLoaderManager.getInstance().Cancel(url, holder.ivInfo);
+					GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(url, holder.ivInfo);
 				}
 			}
 		}

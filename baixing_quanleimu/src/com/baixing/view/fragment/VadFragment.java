@@ -325,7 +325,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		if (!buzzEnable)
 		{
 //			btnTxt.setTextColor(getResources().getColor(R.color.common_button_disable));
-			btnImg.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_sms_disable));
+			btnImg.setImageBitmap(GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.icon_sms_disable));
 		}
 		
 		rootView.findViewById(R.id.vad_buzz_btn).setOnClickListener(this);
@@ -762,7 +762,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
     			if(position - index >= 0)
     				urls.add(listUrl.get(position-index));				
     		}
-    		ImageLoaderManager.getInstance().AdjustPriority(urls);
+    		GlobalDataManager.getInstance().getImageLoaderMgr().AdjustPriority(urls);
     	}
     }
 

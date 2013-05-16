@@ -674,7 +674,7 @@ public abstract class BaseFragment extends Fragment  {
 				if (title.m_leftActionImage != -1) {					
 					img.setImageResource(title.m_leftActionImage);
 				}else{
-					img.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_back));
+					img.setImageBitmap(GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.icon_back));
 				}
 				
 			}else{

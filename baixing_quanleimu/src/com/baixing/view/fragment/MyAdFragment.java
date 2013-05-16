@@ -249,7 +249,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
+				GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(imageView.getTag().toString(), imageView);
 			}
 		}	
 	}
@@ -283,7 +283,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
+				GlobalDataManager.getInstance().getImageLoaderMgr().showImg(imageView, imageView.getTag().toString(), null, getActivity());
 			}
 		}
 		setSharedStatus();

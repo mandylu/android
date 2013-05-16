@@ -49,9 +49,9 @@ import java.util.TimerTask;
 import java.util.Map.Entry;
 import java.util.Timer;
 
-import com.baixing.data.GlobalDataManager;
-import com.baixing.util.BitmapUtils;
-import com.baixing.util.BitmapUtils._Rect;
+//import com.baixing.data.GlobalDataManager;
+//import com.baixing.util.BitmapUtils;
+//import com.baixing.util.BitmapUtils._Rect;
 
 /**
  * A simple disk LRU bitmap cache to illustrate how a disk cache would be used for bitmap caching. A
@@ -80,6 +80,7 @@ class DiskLruCache {
     
     private boolean mNeedDumpToFile = false;
     private Timer timer = new Timer();
+    private Context mCtx;
 
     /**
      * A filename filter to use to identify the cache filenames which have CACHE_FILENAME_PREFIX
@@ -104,10 +105,14 @@ class DiskLruCache {
         if (!cacheDir.exists()) {
             cacheDir.mkdirs();
         }
+        
+        
 
         if (cacheDir.isDirectory() && cacheDir.canWrite()
-                && BitmapUtils.getUsableSpace(cacheDir) > maxFreeByteSize) {
-            return new DiskLruCache(cacheDir, maxFreeByteSize);
+                && Utils.getUsableSpace(cacheDir) > maxFreeByteSize) {
+            DiskLruCache instance = new DiskLruCache(cacheDir, maxFreeByteSize);
+            instance.mCtx = context;
+            return instance;
         }
 
         return null;
@@ -190,7 +195,7 @@ class DiskLruCache {
                     flushCache();
         }
     }
-    
+    static final int IO_BUFFER_SIZE = 8 * 1024;
     public void put(String key, InputStream in){
         synchronized (mLinkedHashMap) {
             /*if (mLinkedHashMap.get(key) == null)*/ {	
@@ -202,9 +207,9 @@ class DiskLruCache {
 			{
 				final String file = createFilePath(mCacheDir, key);
 				bis = new BufferedInputStream(in);
-				bos = new BufferedOutputStream(new FileOutputStream(file), BitmapUtils.IO_BUFFER_SIZE);
+				bos = new BufferedOutputStream(new FileOutputStream(file), IO_BUFFER_SIZE);
 				
-				byte[] buffer = new byte[BitmapUtils.IO_BUFFER_SIZE];
+				byte[] buffer = new byte[IO_BUFFER_SIZE];
 				int length = 0;
 				while((length = bis.read(buffer)) != -1)
 				{
@@ -282,19 +287,19 @@ class DiskLruCache {
         }
     }
     
-	private static Bitmap decodeSampledBitmapFromFile(String fileName) {
+	private static Bitmap decodeSampledBitmapFromFile(Context ctx, String fileName) {
 		
 		if(null == fileName)	return null;
 		if(!(new File(fileName)).exists()) return null;
 		
 	    // First decode with inJustDecodeBounds=true to check dimensions
 	    final BitmapFactory.Options options = new BitmapFactory.Options();
-	    if(BitmapUtils.useSampleSize()){
-			_Rect rc = new _Rect();
+	    if(Utils.useSampleSize()){
+			Utils._Rect rc = new Utils._Rect();
 			rc.width = 200;
 			rc.height = 200;
 			WindowManager wm = 
-					(WindowManager)GlobalDataManager.getInstance().getApplicationContext().getSystemService(Context.WINDOW_SERVICE);
+					(WindowManager)ctx.getSystemService(Context.WINDOW_SERVICE);
 			rc.width = wm.getDefaultDisplay().getWidth()/2;//shrink display to save memory
 			rc.height = wm.getDefaultDisplay().getHeight()/2;//shrink display area to save memory
 			
@@ -302,7 +307,7 @@ class DiskLruCache {
 		    BitmapFactory.decodeFile(fileName,options);
 	
 		    // Calculate inSampleSize
-		    options.inSampleSize = BitmapUtils.calculateInSampleSize(options, rc.width, rc.height);
+		    options.inSampleSize = Utils.calculateInSampleSize(ctx, options, rc.width, rc.height);
 	    }
 	    else{
 	    	options.inSampleSize = 1;
@@ -314,10 +319,10 @@ class DiskLruCache {
 	    return BitmapFactory.decodeFile(fileName, options);
 	}
 
-	public Bitmap decodeBitmapFromFile(String fileName){
+	public Bitmap decodeBitmapFromFile(Context ctx, String fileName){
 		try
 		{
-			return decodeSampledBitmapFromFile(fileName);
+			return decodeSampledBitmapFromFile(ctx, fileName);
 		}
 		catch(Throwable t)
 		{
@@ -349,7 +354,7 @@ class DiskLruCache {
             	
             	//Log.d("LruDiskCache", "currently used key: "+key+", found in disk cache!");
             	
-                return decodeBitmapFromFile(file);//BitmapFactory.decodeFile(file, o);
+                return decodeBitmapFromFile(this.mCtx, file);//BitmapFactory.decodeFile(file, o);
             } else {
                 final String existingFile = createFilePath(mCacheDir, key);
                 if (new File(existingFile).exists()) {
@@ -359,7 +364,7 @@ class DiskLruCache {
 //                    }
                     //Log.d("LruDiskCache", "currently used key: "+key+", found in file list!");
                     
-                    return decodeBitmapFromFile(file);//BitmapFactory.decodeFile(existingFile, o);
+                    return decodeBitmapFromFile(this.mCtx, file);//BitmapFactory.decodeFile(existingFile, o);
                 }
             }
             
@@ -436,8 +441,8 @@ class DiskLruCache {
         // otherwise use internal cache dir
         final String cachePath =
                 Environment.getExternalStorageState().equals(Environment.MEDIA_MOUNTED) ||
-                        !BitmapUtils.isExternalStorageRemovable() ?
-                        BitmapUtils.getExternalCacheDir(context).getPath() :
+                        !Utils.isExternalStorageRemovable() ?
+                        Utils.getExternalCacheDir(context).getPath() :
                         context.getCacheDir().getPath();
 
         File diskCacheDir = new File(cachePath + File.separator + uniqueName);
@@ -446,7 +451,7 @@ class DiskLruCache {
         	diskCacheDir.mkdirs();
         }        
         
-        if(!BitmapUtils.isPathValidForDiskCache(diskCacheDir) || BitmapUtils.getUsableSpace(diskCacheDir) < 0){
+        if(!Utils.isPathValidForDiskCache(diskCacheDir) || Utils.getUsableSpace(diskCacheDir) < 0){
         	diskCacheDir = new File(context.getCacheDir().getPath() + File.separator + uniqueName);
         }
         
@@ -536,7 +541,7 @@ class DiskLruCache {
 
         OutputStream out = null;
         try {
-            out = new BufferedOutputStream(new FileOutputStream(file), BitmapUtils.IO_BUFFER_SIZE);
+            out = new BufferedOutputStream(new FileOutputStream(file), IO_BUFFER_SIZE);
             return bitmap.compress(mCompressFormat, mCompressQuality, out);
         } finally {
             if (out != null) {

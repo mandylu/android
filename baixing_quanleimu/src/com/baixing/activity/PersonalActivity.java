@@ -54,7 +54,7 @@ public class PersonalActivity extends BaseTabActivity {
 		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
 			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
-		ImageLoaderManager.initImageLoader();
+//		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		onSetRootView(findViewById(R.id.root));
 		

@@ -246,7 +246,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 //		Debug.startMethodTracing();
 		PerformanceTracker.stamp(Event.E_MainActivity_Begin_Create);//, PerformanceTracker.getFileName(), PerformanceTracker.getLineNumber(), System.currentTimeMillis());
 		super.onCreate(savedInstanceState);
-		ImageLoaderManager.initImageLoader();
+//		ImageLoaderManager.initImageLoader();
 		GlobalDataManager.context = new WeakReference<Context>(this);
 		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
 		this.stopService(pushIntent);

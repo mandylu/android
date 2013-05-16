@@ -210,7 +210,7 @@ public class WeiboSSOSharingManager extends BaseSharingManager {
 
 	private void doShare2Weibo(Oauth2AccessToken accessToken) {
 		String imgUrl = super.getThumbnailUrl(mAd);
-		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : ImageCacheManager.getInstance().getFileInDiskCache(imgUrl);
+		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : GlobalDataManager.getInstance().getImageManager().getFileInDiskCache(imgUrl);
 
 		Bundle bundle = new Bundle();
 		bundle.putString(WeiboSharingFragment.EXTRA_WEIBO_CONTENT,

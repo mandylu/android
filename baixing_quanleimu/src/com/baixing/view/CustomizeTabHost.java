@@ -5,6 +5,7 @@ import java.io.Serializable;
 
 import org.jivesoftware.smackx.pubsub.GetItemsRequest;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
 
@@ -127,7 +128,7 @@ public final class CustomizeTabHost implements Serializable
     	}
     	else
     	{
-    		icon.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex)));
+    		icon.setImageBitmap(GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex)));
     	}
     }
     

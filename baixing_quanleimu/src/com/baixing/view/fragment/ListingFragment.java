@@ -397,7 +397,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				if(null != imageView.getTag() && imageView.getTag().toString().length() > 0
 				/*&& null != imageView.getDrawable()
 				&& imageView.getDrawable() instanceof AnimationDrawable*/){
-					ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
+					GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(imageView.getTag().toString(), imageView);
 				}
 			}
 		}		
@@ -421,7 +421,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 				}			
 			}
 			
-			ImageLoaderManager.getInstance().AdjustPriority(urls);			
+			GlobalDataManager.getInstance().getImageLoaderMgr().AdjustPriority(urls);			
 		}		
 	}
 

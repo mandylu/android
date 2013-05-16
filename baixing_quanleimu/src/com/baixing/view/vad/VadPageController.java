@@ -26,6 +26,7 @@ import android.widget.ScrollView;
 import android.widget.TextView;
 
 import com.baixing.adapter.VadImageAdapter;
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.imageCache.ImageCacheManager;
@@ -107,7 +108,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 //                	Log.d("imagecount", "imagecount, destroyItem: " + pos + "  " + mListLoader.getGoodsList().getData().get(pos).toString());
                 	List<String> listUrl = getImageUrls(callback.getAd(pos));
                 	if(null != listUrl && listUrl.size() > 0){
-                		ImageLoaderManager.getInstance().Cancel(listUrl);
+                		GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(listUrl);
 	            		for(int i = 0; i < listUrl.size(); ++ i){
 	            			decreaseImageCount(listUrl.get(i), pos);
 	            		}
@@ -516,9 +517,9 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 	@Override
 	public void onShowView(ImageView imageView, String url, String previousUrl, final int index) {
 		if(failBk == null){
-			failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+			failBk = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
 		}
-		ImageLoaderManager.getInstance().showImg(imageView, url, previousUrl, imageView.getContext(), new WeakReference<Bitmap>(failBk));
+		GlobalDataManager.getInstance().getImageLoaderMgr().showImg(imageView, url, previousUrl, imageView.getContext(), new WeakReference<Bitmap>(failBk));
 		increaseImageCount(url, index);
 	}
 	
@@ -552,7 +553,7 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 				}
 			}
 			if(values.size() == 0){
-				ImageCacheManager.getInstance().forceRecycle(url, true);
+				GlobalDataManager.getInstance().getImageManager().forceRecycle(url, true);
 				imageMap.remove(url);
 			}else{
 				imageMap.put(url, values);

@@ -111,7 +111,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		for (int i = 0; i < icons.length; i++)
 		{
 			GridInfo gi = new GridInfo();
-			gi.img = ImageCacheManager.getInstance().loadBitmapFromResource(icons[i]);//bmpCaches.get(i).get();
+			gi.img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(icons[i]);//bmpCaches.get(i).get();
 			gi.text = texts[i];
 //			gi.resId = icons[i];
 			gitems.add(gi);

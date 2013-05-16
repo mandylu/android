@@ -3,6 +3,7 @@ package com.baixing.adapter;
   
 import java.util.List;  
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageCacheManager;
 import com.quanleimu.activity.R;
   
@@ -99,7 +100,7 @@ public class GridAdapter extends BaseAdapter {
         		text = String.format("%s(%d)", text, info.number);
         	}
             holder.text.setText(text);
-            holder.imageBtn.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(info.imgResourceId));
+            holder.imageBtn.setImageBitmap(GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(info.imgResourceId));
             holder.starIcon.setVisibility(info.starred ? View.VISIBLE : View.GONE);
             convertView.setEnabled(true);
         }  

@@ -910,7 +910,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			resId = R.drawable.icon_post_call_disable;
 		}
 		
-		Bitmap img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		Bitmap img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(resId);
 		BitmapDrawable bd = new BitmapDrawable(img);
 		bd.setBounds(0, 0, 45, 45);
 		
@@ -923,7 +923,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			resId = R.drawable.icon_location_disable;
 		}
 	
-		img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(resId);
 		bd = new BitmapDrawable(img);
 		bd.setBounds(0, 0, 45, 45);
 		

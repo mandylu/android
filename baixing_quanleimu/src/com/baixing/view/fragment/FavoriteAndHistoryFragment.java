@@ -155,7 +155,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
             if (null != imageView
                     && null != imageView.getTag() && imageView.getTag().toString().length() > 0                    /*&& null != imageView.getDrawable()
                     && imageView.getDrawable() instanceof AnimationDrawable*/) {
-            	ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
+            	GlobalDataManager.getInstance().getImageLoaderMgr().showImg(imageView, imageView.getTag().toString(), null, getActivity());
             }
         }
 
@@ -176,7 +176,7 @@ public class FavoriteAndHistoryFragment extends BaseFragment implements PullToRe
                     && null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/) {
-            	ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
+            	GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(imageView.getTag().toString(), imageView);
             }
         }
     }
