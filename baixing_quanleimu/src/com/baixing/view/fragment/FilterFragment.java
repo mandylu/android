@@ -3,6 +3,7 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.HashMap;
+import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
@@ -18,7 +19,6 @@ import android.widget.EditText;
 import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
@@ -29,6 +29,8 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.tracking.LogData;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
@@ -136,6 +138,13 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 	}
 	
 	public void handleRightAction(){
+		Iterator<String> ite = parametersHolder.keyIterator();
+		HashMap<String, String> data = new HashMap<String, String>();
+		while(ite.hasNext()){
+			String key = ite.next();
+			data.put(key, parametersHolder.getData(key));
+		}
+		Tracker.getInstance().event(BxEvent.LISTING_FILTERSUBMIT).append(data).append(Key.SECONDCATENAME, categoryEnglishName).end();
 		finishFragment(fragmentRequestCode, parametersHolder);
 	}//called when right button on title bar pressed, return true if handled already, false otherwise
 	

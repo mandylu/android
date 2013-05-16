@@ -292,7 +292,8 @@ public class TrackConfig implements Observer {
 			PUSH_STARTAPP("Push_StartApp","Push_StartApp"),
 			SHARE("Share","Share"),
 			SHARE_START("Share_Start","Share_Start"),
-			GPS("GPS","GPS");
+			GPS("GPS","GPS"),
+			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit");
 			
 			private String name;
 			private String description;

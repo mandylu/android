@@ -10,6 +10,7 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ListView;
 import android.widget.ScrollView;
+import android.widget.Toast;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.LogData;
@@ -34,9 +35,8 @@ public class VADTest extends BaseTest<MainActivity> {
 		}
 		return currentItem;
 	}
-
-	@Smoke
-	public void testPV() {
+	
+	private int jumpToVAD(){
 		View v1 = solo.getText("物品交易");
 		solo.waitForView(v1);
 		View item1 = (View) v1.getParent().getParent();
@@ -72,6 +72,12 @@ public class VADTest extends BaseTest<MainActivity> {
 		
 		View detailV = solo.getView(R.id.llDetail);
 		solo.waitForView(detailV);
+		
+		return index;
+	}
+
+	public void testPV() {
+		int index = jumpToVAD();
 		
 		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/viewAd");
 		assertTrue(logs != null && logs.size() == 1);
@@ -132,5 +138,77 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adSenderId")));
 		
 		TrackerLogSaver.getInstance().clearLog();
+	}
+	
+	private void _testMobileCallClick(){
+		final View call = solo.getView(R.id.vad_call_btn);
+		solo.clickOnView(call);
+
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_MobileCallClick");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
+	}
+	
+	private void _testFav(){
+		View fav = solo.getText("收藏");
+		solo.clickOnView(fav);
+		solo.waitForText("收藏成功");
+		solo.waitForCondition(new Condition(){
+
+			@Override
+			public boolean isSatisfied() {
+				// TODO Auto-generated method stub
+				return !solo.searchText("收藏成功");
+			}
+			
+		}, 3000);
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_Fav");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
+
+		solo.clickOnView(solo.getText("取消收藏"));
+		logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_Unfav");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
+	}
+	
+	private void _testSMS(){
+		solo.clickOnView(solo.getView(R.id.vad_buzz_btn));
+		solo.goBack();
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_SMS");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));				
+	}
+	
+	private void _testShowMap(View currentItem){
+		LinearLayout meta = (LinearLayout)currentItem.findViewById(R.id.meta);
+		solo.clickOnView(meta.getChildAt(meta.getChildCount() - 1));
+		
+		View mapV = solo.getView(R.id.bmapsView);
+		solo.waitForView(mapV);
+
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_ShowMap");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
+		
+		solo.goBack();
+	}
+	
+	public void testEvent(){
+		int index = jumpToVAD();		
+		_testFav();				
+		_testShowMap(getCurrentItemView(index));
+		_testSMS();
+		
+	}
+	
+	public void testMobileClick(){
+		jumpToVAD();
+		_testMobileCallClick();
 	}
 }

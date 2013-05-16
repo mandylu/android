@@ -6,7 +6,7 @@ import android.widget.EditText;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.LogData;
-import com.jayway.android.robotium.solo.Solo;
+import com.jayway.android.robotium.solo.Condition;
 import com.quanleimu.activity.R;
 
 public class SearchTest extends BaseTest<MainActivity> {
@@ -41,7 +41,15 @@ public class SearchTest extends BaseTest<MainActivity> {
 		View tv = solo.getText("搜索");
 		solo.clickOnView(tv);
 
-		Util.sleep(3000);
+		solo.waitForCondition(new Condition(){
+
+			@Override
+			public boolean isSatisfied() {
+				// TODO Auto-generated method stub
+				return !solo.waitForText("搜索中", 1, 500);
+			}
+			
+		}, 3000);
 		
 		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/searchResultCategory");
 		assertTrue(logs != null && logs.size() == 1);
@@ -63,8 +71,27 @@ public class SearchTest extends BaseTest<MainActivity> {
 		View tv = solo.getText("搜索");
 		solo.clickOnView(tv);
 		
-		Util.sleep(3000);		
+		solo.waitForCondition(new Condition(){
+
+			@Override
+			public boolean isSatisfied() {
+				// TODO Auto-generated method stub
+				return !solo.waitForText("搜索中", 1, 500);
+			}
+			
+		}, 3000);
+		
 		solo.clickInList(0);
+		
+		solo.waitForCondition(new Condition(){
+
+			@Override
+			public boolean isSatisfied() {
+				// TODO Auto-generated method stub
+				return !solo.waitForText("搜索中", 1, 500);
+			}
+			
+		}, 3000);
 		
 		View glView = solo.getView(R.id.lvGoodsList);
 		solo.waitForView(glView);
