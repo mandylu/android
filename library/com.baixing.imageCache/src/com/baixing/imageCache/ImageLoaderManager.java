@@ -10,16 +10,13 @@ import java.util.Vector;
 
 import android.content.Context;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.drawable.BitmapDrawable;
 import android.graphics.drawable.Drawable;
 import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
-import android.util.DisplayMetrics;
 import android.view.View;
-import android.view.WindowManager;
 import android.widget.ImageView;
 public class ImageLoaderManager{
 
@@ -161,10 +158,10 @@ public class ImageLoaderManager{
 			}			
 		};
 	};	
-	
-	private void notifyFail(String url){
-		callbackManager.fail(url);
-	}
+//	
+//	private void notifyFail(String url){
+//		callbackManager.fail(url);
+//	}
 	
 	private  class DiskIOImageThread extends Thread{		
 		private boolean isRun=true;
