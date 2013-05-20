@@ -1,0 +1,51 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/filterinputlayout"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:orientation="horizontal" >
+
+    <TextView
+        android:id="@+id/filter_label"
+        android:layout_width="80dip"
+        android:layout_height="fill_parent"
+        android:gravity="left|center_vertical"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:textColor="#838383"
+        android:textSize="18dip" />
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_marginLeft="15dip"
+        android:gravity="center_vertical"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip" >
+
+        <EditText
+            android:id="@+id/filter_input"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_toLeftOf="@+id/filter_unit"
+            android:background="@null"
+            android:ellipsize="end"
+            android:gravity="right|center_vertical"
+            android:hint="请输入"
+            android:paddingRight="5dip"
+            android:singleLine="true"
+            android:textColor="@drawable/list_titleselector"
+            android:textColorHint="#d1d0ca" >
+        </EditText>
+
+        <TextView
+            android:id="@+id/filter_unit"
+            android:layout_width="wrap_content"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:gravity="center_vertical"
+            android:textColor="#82807C"
+            android:textSize="18dip" />
+    </RelativeLayout>
+
+</LinearLayout>

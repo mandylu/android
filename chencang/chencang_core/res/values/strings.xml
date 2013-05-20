@@ -1,0 +1,130 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+
+    <string name="app_name"> 百姓网 </string>
+    <string name="weiboinfo">weiboinfo</string>
+    <string name="pull_to_refresh_tap_label">点击这里刷新…</string>
+    <string name="pull_to_refresh_pull_label">向下拉刷新…</string>
+    <string name="pull_to_refresh_refreshing_label">正在刷新…</string>
+    <string name="pull_to_refresh_release_label">松开刷新…</string>
+    <string name="scrolldown_to_getmore">正在加载更多，请耐心等待~</string>
+    <string name="click_to_get_more">点击加载下30条</string>
+    <string name="scrolldown_to_getmore_nomore">已经到最后了~</string>
+    <string name="nickname_empty">请输入昵称</string>
+    <string name="tip_loading_im_history">正在加载历史对话，请耐心等待</string>
+    <string name="warning_no_phone_app_install">您的设备尚未安装拨打电话的应用，请先安装</string>
+    <string name="warning_no_sms_app_install">您的设备尚未安装发送短信的应用，请先安装</string>
+    <string name="tip_add_fav">您刚联系过对方，是否收藏该信息，方便下次查找</string>
+    <string name="warning_danger_mobile">该电话为异地号码，请务必见面交易，不要轻信汇款和转账相关的行为</string>
+    <string name="tip_history_cleared">搜索历史已清空</string>
+    <string name="warning_fail_to_get_profile">获取用户信息失败</string>
+    <string name="warning_camera_in_use">相机暂时不可用，请退出百姓网应用并再次进入重试</string>
+    
+    <!-- tips show as toast. -->
+    <string name="tip_clipd_contact">联系方式已经复制到粘贴板</string>
+    <string name="tip_searching">搜索中...</string>
+    <string name="tip_camera_before_post">免费发布，请先拍张照片</string>
+
+    <!-- time related -->
+    <string name="common_time_ago">前</string>
+    <string name="common_time_justnow">刚刚</string>
+    <string name="common_time_second">秒</string>
+    <string name="common_time_minute">分钟</string>
+    <string name="common_time_hour">小时</string>
+    <string name="common_time_day">天</string>
+    <string name="common_time_month">月</string>
+    <string name="common_time_one_year_ago">年</string>
+    <string name="common_time_unknow"></string>
+
+    <!-- text -->
+    <string name="yes">是</string>
+    <string name="no">否</string>
+    <string name="ok">确认</string>
+    <string name="close">关闭</string>
+    <string name="cancel">取消</string>
+    <string name="back">返回</string>
+    <string name="delete">删除</string>
+    <string name="appeal">申诉</string>
+
+    <string name="tab_browse">分类查找</string>
+    <string name="tab_user_center">个人中心</string>
+    <string name="tab_post">免费发布</string>
+
+    <!-- dialog text -->
+    <string name="dialog_title_info">提示</string>
+    <string name="dialog_title_warning">安全提示</string>
+
+    <!-- dialog text confirm -->
+    <string name="dialog_message_confirm_exit">确认退出？</string>
+    <string name="dialog_message_confirm_clear_cache">确认清空缓存？</string>
+    <string name="dialog_message_discard_input">现在退出内容将会丢失,确认退出吗？</string>
+
+    <!-- dialog text waiting -->
+    <string name="dialog_message_waiting">请稍候…</string>
+    <string name="dialog_message_updating">更新中，请稍等…</string>
+    <string name="dialog_message_uploading">上传中，请稍等…</string>
+    <string name="dialog_message_data_loading">数据下载中，请稍候…</string>
+
+    <string name="dialog_message_image_load_error">图片未加载成功，请稍后重试</string>
+
+    <!-- label text -->
+    <string name="label_test">测试</string>
+    <string name="label_login">登录百姓网</string>
+    <string name="label_logout">退出登录</string>
+    <string name="dialog_confirm_logout">确认退出登录？</string>
+
+    <string name="label_flow_optimize">流量优化设置</string>
+    <string name="label_warning_flow_optimize">是否切换到无图模式以节省流量？</string>
+    <string name="label_warning_switch_succed">切换成功！</string>
+
+
+
+    <!-- input hint text -->
+    <string name="hint_searchCity">请输入城市名称</string>
+
+    <!-- colors -->
+    <color name="dialogbackgournd">#00ffffff</color>
+    <string name="citychange_gpscity">GPS定位城市</string>
+
+    <string name="search_no_result">没有找到相应信息...</string>
+
+    <string-array name="item_flow_optimize">
+        <item>图片模式</item>
+        <item>2G/3G网络下列表无图</item>
+    </string-array>
+
+    <string-array name="item_operate_favorite_history">
+        <item>删除</item>
+    </string-array>
+
+    <string-array name="item_operate_mypost">
+        <item>转发到其他网站</item>
+        <item>刷新</item>
+        <item>修改</item>
+        <item>删除</item>
+    </string-array>
+
+    <string-array name="item_operate_inverify">
+        <item>申诉</item>
+        <item>删除</item>
+    </string-array>
+    
+	<string-array name="item_call_nonmobile">
+        <item>立即拨打</item>
+        <item>复制此号码</item>
+    </string-array>
+
+    <string-array name="item_operate_deleted">
+        <item>恢复</item>
+        <item>彻底删除</item>
+    </string-array>
+
+    <string-array name="item_operate_session">
+        <item>删除</item>
+    </string-array>    
+
+    <string name="search_result_title">请选择分类查看</string>
+
+	<!-- 帐号绑定 -->
+    <string name="personalpost_bind_baixing_account">是否用百姓网帐号登录以管理所有信息？</string>
+</resources>

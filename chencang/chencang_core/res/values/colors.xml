@@ -1,0 +1,40 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+	<color name="white">#FFFFFF</color>    
+	<color name="citychange_titleline">#76C920</color>
+	<color name="tab_bg">#4B4B4B</color>
+	<color name="tab_bg_select">#000000</color>
+	<color name="tab_indicator_bg">#84d748</color>
+	<color name="tab_font_foucs">#84d748</color>
+	<color name="tab_font">#ffffff</color>
+	<color name="category_grid_font">#4b4b4b</color>
+	<color name="category_second_font">#BEBEBE</color>
+	<color name="list_seperator">#d6d6d6</color>
+	<color name="list_line">#C1C1B9</color>
+    <color name="base_green">#86CF2A</color>
+    <color name="talk_content_font">#707070</color>
+    <color name="tab_gap_color">#d3d3d3</color>
+    <!-- <color name="font_title">#5c5c5c</color> -->
+	<color name="font_title">#FFFFFF</color>    
+    <color name="font_filter_bar">#7b7b7b</color>
+    <color name="bg_screen">#ffffff</color>
+    <color name="vad_meta_price">#e86e02</color>
+    <color name="vad_meta_label">#707070</color>
+    <color name="vad_meta_content">#333333</color>
+    <color name="vad_group_title">#86cf2a</color>
+    <color name="title_gap_line">#d3d3d3</color>
+    <color name="vad_buzz">#fb9e24</color>
+    <color name="vad_sms">#4a4945</color>
+    <color name="vad_call_btn_text">#ffffff</color>
+    <color name="vad_list_sub_info">#82807c</color>
+    
+    <!-- common color -->
+    <color name="common_black">#000000</color>
+    <color name="common_placeholder">#808080</color>
+    <color name="common_background">#f3f1e8</color>
+    <color name="common_edit_text_color">#333333</color>
+    <color name="common_button_text_color">#333333</color>
+    <color name="common_info">#d6d6d6</color>
+    <color name="common_button_disable">#adadad</color>
+    <color name="text_num_gray">#333</color>
+</resources>

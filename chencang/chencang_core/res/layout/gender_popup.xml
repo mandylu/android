@@ -1,0 +1,96 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:layout_marginLeft="15dip"
+    android:layout_marginRight="15dip"
+    android:gravity="center_vertical|center_horizontal" >
+
+    <LinearLayout
+        android:id="@+id/rl"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/bk_box"
+        android:orientation="vertical"
+        android:paddingBottom="20dip"
+        android:paddingTop="15dip" >
+
+        <RelativeLayout
+            android:id="@+id/rl_boy"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginBottom="5dip"
+            android:orientation="horizontal"
+            android:paddingLeft="15dip"
+            android:paddingRight="20dip" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dip"
+                android:text="男"
+                android:textColor="#000000"
+                android:textSize="22dip" >
+            </TextView>
+
+            <CheckBox
+                android:id="@+id/ivGenderBoy"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:button="@drawable/item_radio"
+                android:clickable="false"
+                android:paddingBottom="3dip"
+                android:paddingTop="3dip" >
+            </CheckBox>
+        </RelativeLayout>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#c6c5c1" >
+        </View>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="2dp"
+            android:background="#fbfafa" >
+        </View>
+
+        <RelativeLayout
+            android:id="@+id/rl_girl"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_marginTop="5dip"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="15dip"
+            android:paddingRight="20dip" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="15dip"
+                android:text="女"
+                android:textColor="#000000"
+                android:textSize="22dip" />
+
+            <CheckBox
+                android:id="@+id/ivGenderGirl"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_alignParentRight="true"
+                android:layout_centerVertical="true"
+                android:layout_marginLeft="150dip"
+                android:button="@drawable/item_radio"
+                android:clickable="false"
+                android:paddingBottom="3dip"
+                android:paddingTop="3dip" >
+            </CheckBox>
+        </RelativeLayout>
+    </LinearLayout>
+
+</RelativeLayout>

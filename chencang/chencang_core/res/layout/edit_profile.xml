@@ -1,0 +1,200 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen" >
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:paddingBottom="5dip" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical"
+            android:padding="18dp">
+
+            <RelativeLayout
+                android:id="@+id/rl_image"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_marginBottom="10dp"
+                android:visibility="gone">
+                <RelativeLayout
+                    android:id="@+id/rl_personalImage"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:background="@drawable/overlay" android:layout_alignParentRight="false"
+                    android:layout_alignWithParentIfMissing="false"
+                    android:layout_marginBottom="10dp" android:layout_alignParentTop="false"
+                    android:layout_centerHorizontal="true">
+
+                    <ImageView
+                            android:id="@+id/personalImage"
+                            android:layout_width="105dp"
+                            android:layout_height="105dp"
+                            android:layout_centerInParent="true" >
+                    </ImageView>
+
+                    <TextView
+                        android:layout_width="105dp"
+                        android:layout_height="29dp"
+                        android:gravity="center"
+                        android:text="修改头像"
+                        android:textSize="14dp"
+                        android:layout_alignParentBottom="false"
+                        android:textColor="@android:color/white"
+                        android:layout_marginTop="90dp" android:background="#80000000"
+                        android:layout_alignParentLeft="false" android:layout_alignParentRight="false"
+                        android:layout_centerHorizontal="true" android:autoText="false"
+                        android:singleLine="true" style="text-align:center;">
+                    </TextView>
+                </RelativeLayout>
+
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent">
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/list_line" android:layout_alignParentBottom="false"
+                        android:layout_alignParentTop="true"/>
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
+                <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="48dp"
+                        android:layout_gravity="center_horizontal"
+                        android:orientation="horizontal"
+                        android:background="@drawable/list_selector">
+
+                    <TextView
+                            android:layout_width="80dp"
+                            android:layout_height="fill_parent"
+                            android:gravity="center_vertical"
+                            android:text="用户名"
+                            android:textSize="14dp"
+                            android:textColor="#838383"/>
+
+                    <EditText
+                            android:id="@+id/username"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:background="@android:color/transparent"
+                            android:textSize="14dp" 
+                            android:paddingLeft="5dp" android:gravity="center_vertical"
+                            android:hint="请输入用户名"
+                            android:textColor="#b0afab">
+                    </EditText>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:visibility="gone">
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
+                <ImageView
+                        android:layout_width="wrap_content"
+                        android:layout_height="wrap_content"
+                        android:layout_alignParentBottom="true"
+                        android:layout_alignParentRight="true"
+                        android:src="@drawable/icon_triangle" >
+                </ImageView>
+                <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/set_table_height"
+                        android:orientation="horizontal" >
+
+                    <TextView
+                            android:layout_width="120dp"
+                            android:layout_height="fill_parent"
+                            android:text="性别"
+                            android:textSize="20dip" android:gravity="center_vertical|right" android:paddingRight="30dp"/>
+
+                    <TextView
+                            android:id="@+id/gender"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:paddingLeft="5dp"
+                            android:textSize="20dip" android:gravity="center_vertical" android:singleLine="true"
+                            android:hint="请选择性别"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:visibility="gone">
+                <View
+                        android:layout_width="match_parent"
+                        android:layout_height="1dp"
+                        android:background="@color/list_line" android:layout_alignParentBottom="true"/>
+                <LinearLayout
+                        android:layout_width="fill_parent"
+                        android:layout_height="@dimen/set_table_height"
+                        android:orientation="horizontal">
+
+                    <TextView
+                            android:layout_width="120dp"
+                            android:layout_height="fill_parent"
+                            android:text="常居地"
+                            android:textSize="20dip" android:gravity="center_vertical|right" android:paddingRight="30dp"/>
+
+                    <TextView
+                            android:id="@+id/city"
+                            android:layout_width="fill_parent"
+                            android:layout_height="fill_parent"
+                            android:layout_centerVertical="true"
+                            android:background="@android:color/transparent"
+                            android:paddingLeft="5dp"
+                            android:textSize="20dip" android:gravity="center_vertical" android:hint="请输入地址"/>
+                </LinearLayout>
+            </RelativeLayout>
+
+            <LinearLayout
+                android:layout_width="wrap_content"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_gravity="center_horizontal"
+                android:layout_marginTop="10dip"
+                android:orientation="horizontal"
+                android:visibility="gone">
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="注册时间"
+                    android:textSize="18dip" />
+
+                <TextView
+                    android:id="@+id/create_time"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:text="2012年12月"
+                    android:textSize="18dip" />
+            </LinearLayout>
+            <RelativeLayout
+                    android:layout_width="fill_parent"
+                    android:layout_height="fill_parent"
+                    android:layout_marginTop="18dp">
+                <Button
+                        android:layout_width="fill_parent"
+                        android:layout_height="40dp"
+                        android:text="解除绑定当前帐号"
+                        android:background="@drawable/bg_message_btn_selector"
+                        android:id="@+id/editProfileLogoutBtn"
+                        android:textColor="#838383"
+                        android:textSize="14dp"/>
+            </RelativeLayout>
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

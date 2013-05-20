@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="80dp"
+    android:background="@drawable/list_selector"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:orientation="horizontal"
+    >
+
+	<LinearLayout
+	    android:layout_width="fill_parent"
+	    android:layout_height="fill_parent"
+	    android:paddingLeft="5dp"
+	    android:paddingRight="5dp"
+	   	android:paddingTop="5dp"
+	    android:paddingBottom="5dp"	   	
+	    android:gravity="center_vertical"
+	    android:orientation="vertical" 
+	    android:layout_toLeftOf="@id/rlListOperate"
+	    android:layout_marginLeft="@dimen/list_margin_LF"
+	    >
+	
+	    <TextView
+	        android:id="@+id/tvUserAndAd"
+	        android:layout_width="fill_parent"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="@drawable/list_titleselector"
+	        android:textSize="16sp"
+	        >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/tvLastMsg"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="@drawable/list_textselector"
+	        android:textSize="12sp" >
+	    </TextView>
+	
+	    <TextView
+	        android:id="@+id/tvTimeAndDate"
+	        android:layout_width="wrap_content"
+	        android:layout_height="wrap_content"
+	        android:singleLine="true"
+	        android:textColor="#f57b0f"
+	        android:textSize="12sp" >
+	    </TextView>
+	</LinearLayout>
+	
+    <RelativeLayout
+        android:layout_width="54dp"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:id="@+id/rlListOperate"
+        android:clickable="true"
+        android:paddingRight="@dimen/list_margin_LF"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:background="@drawable/list_selector">
+
+
+        <ImageButton
+            android:id="@+id/sessionArrow"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/btn_circle_arrow"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+        
+        <View
+            android:id="@+id/lineView"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:background="#c1c1b9"
+            android:layout_marginRight="@dimen/list_margin_LF"
+            android:layout_toLeftOf="@+id/btnListOperate" />
+    </RelativeLayout>
+    
+    <View     
+        android:id="@+id/vad_divider"
+        android:layout_width="match_parent"
+   		android:layout_height="1dp"
+   		android:layout_alignParentBottom="true"
+        android:background="@drawable/list_divider" >
+    </View>
+
+</RelativeLayout>

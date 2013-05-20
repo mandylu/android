@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical" >
+
+    <RelativeLayout
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/list_selector"
+        android:paddingBottom="3dip"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="3dip" >
+
+		<CheckBox
+            android:id="@+id/checkitem"
+            android:layout_width="@dimen/check_box_size"
+            android:layout_height="@dimen/check_box_size"
+            android:layout_alignParentLeft="true"
+            android:layout_centerVertical="true"
+            android:clickable="false"
+            android:focusable="false"
+            android:focusableInTouchMode="false" >
+        </CheckBox>
+            <!-- android:button="@drawable/list_checkboxselector" -->
+        
+        <TextView
+            android:id="@+id/checktext"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_toRightOf="@+id/checkitem"
+            android:layout_centerVertical="true"
+            android:duplicateParentState="true"
+            android:textColor="@drawable/list_textselector"
+            android:textSize="18dip" >
+        </TextView>
+
+
+    </RelativeLayout>
+
+    <TextView
+        android:id="@+id/divider"
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+</LinearLayout>

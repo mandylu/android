@@ -1,0 +1,61 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="80dp"
+    android:background="@drawable/list_selector">
+	
+	<ImageView
+        android:id="@+id/meta_icon"
+        android:layout_width="16dp"
+        android:layout_height="16dp"
+        android:layout_marginRight="@dimen/vad_margin_LF"
+        android:layout_alignParentLeft="true"
+        android:layout_centerVertical="true"
+        android:visibility="gone"
+        android:src="@drawable/vad_icon_location" />
+
+    <TextView
+        android:id="@+id/tvmetatxt"
+        android:layout_centerVertical="true"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_toRightOf="@+id/meta_icon"
+        android:text="上海"
+        android:textColor="@color/vad_meta_label"
+        android:width="40dip"
+        android:textSize="@dimen/font_medium" 
+        >
+    </TextView>
+
+    <TextView
+        android:id="@+id/tvmeta"
+        android:layout_centerVertical="true"
+        android:layout_toRightOf="@+id/tvmetatxt"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:text="上海"
+        android:singleLine="false"
+        android:textColor="@color/vad_meta_content"
+        android:textSize="@dimen/font_medium" >
+    </TextView>
+    
+    
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dip"
+        android:layout_marginTop="10dip"
+        android:layout_alignParentBottom="true"
+        android:background="@drawable/list_divider" >
+    </View>
+    
+    <ImageView
+        android:id="@+id/action_indicator_img"
+        android:layout_width="6dp"
+        android:layout_height="10dp"
+        android:layout_alignParentRight="true"
+        android:layout_centerVertical="true"
+        android:visibility="invisible"
+        android:src="@drawable/icon_select_arrow" >
+    </ImageView>
+
+</RelativeLayout>

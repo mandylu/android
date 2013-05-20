@@ -1,0 +1,33 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+  xmlns:android="http://schemas.android.com/apk/res/android"
+  xmlns:app="http://schemas.android.com/apk/res-auto"
+  android:layout_width="fill_parent"
+  android:layout_height="fill_parent"
+  android:orientation="vertical"
+  android:background="#000000" xmlns:app1="http://schemas.android.com/apk/res-auto">
+  	<include layout="@layout/common_title"/>
+<!--   	<Gallery  -->
+<!-- 		android:layout_height="fill_parent"		 -->
+<!--     	android:layout_width="fill_parent"  -->
+<!--     	android:id="@+id/vfCoupon"  -->
+<!--     	android:spacing="2.7dp" -->
+<!--     	android:unselectedAlpha="1" -->
+<!--     	android:fadingEdge="none" -->
+<!--     	android:layout_alignParentTop="true"> -->
+<!-- 	</Gallery> -->
+	
+	<FrameLayout 
+    	android:orientation="vertical" 
+    	android:layout_width="fill_parent"
+    	android:layout_height="fill_parent"
+    	android:layout_below="@+id/linearTop">					
+					
+    	<com.baixing.widget.ViewFlow
+    		android:id="@+id/vfCoupon" 
+    		android:layout_width="fill_parent"
+    		android:layout_height="fill_parent"
+    		app:sidebuffer="1"/>	
+	</FrameLayout>
+	
+</RelativeLayout>

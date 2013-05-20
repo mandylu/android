@@ -1,0 +1,64 @@
+<?xml version="1.0" encoding="utf-8"?>
+
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+                android:layout_width="fill_parent"
+                android:layout_height="fill_parent"
+                android:background="@color/bg_screen" >
+	<include layout="@layout/common_title" android:id="@+id/linearTop"/>
+
+	<LinearLayout
+			android:orientation="vertical"
+			android:layout_width="fill_parent"
+			android:layout_height="667dp" android:layout_alignParentLeft="true"
+			android:layout_below="@+id/include" android:layout_marginTop="60dp">
+		<Button
+				android:layout_width="fill_parent"
+				android:layout_height="44dp"
+				android:text="www.baixing.com"
+				android:id="@+id/hostBtn"
+				android:layout_centerHorizontal="true" android:layout_alignParentTop="true"
+				android:layout_gravity="center" android:layout_marginLeft="20dp" android:layout_marginRight="20dp"/>
+		<RelativeLayout
+				android:layout_width="fill_parent"
+				android:layout_height="200dp">
+			<Button
+					android:layout_width="80dp"
+					android:layout_height="44dp"
+					android:text="push Test"
+					android:id="@+id/pushTestBtn" android:layout_alignParentLeft="false"
+					android:layout_alignParentBottom="false" android:layout_alignParentTop="false"
+					android:layout_marginRight="20dp" android:layout_alignParentRight="true"
+					android:textSize="@dimen/font_micro"/>
+			<ToggleButton
+					android:layout_width="60dp"
+					android:layout_height="44dp"
+					android:text="showPush"
+					android:id="@+id/showPushBtn"
+					android:checked="false"
+					android:layout_toLeftOf="@+id/pushTestBtn" android:layout_marginRight="8dp"/>
+			<EditText
+					android:layout_width="fill_parent"
+					android:layout_height="44dp"
+					android:text="info"
+					android:id="@+id/pushActionEt"
+					android:layout_alignLeft="@+id/xmppConTv" android:layout_marginRight="176dp"
+					android:layout_marginLeft="20dp"/>
+			<EditText android:layout_width="fill_parent" android:layout_height="44dp"
+			          android:id="@+id/pushTitleEt"
+			          android:layout_alignLeft="@+id/xmppConTv" android:layout_below="@+id/pushTestBtn"
+			          android:layout_alignRight="@+id/pushTestBtn" android:hint="title"
+			          android:layout_marginLeft="20dp"/>
+			<EditText android:layout_width="fill_parent" android:layout_height="115dp" android:id="@+id/pushDataEt"
+			          android:hint="data"
+			          android:layout_alignLeft="@+id/pushActionEt" android:layout_below="@+id/pushTitleEt"
+			          android:layout_alignRight="@+id/pushTestBtn" android:lines="4"
+			          android:text='"content":"push test content 123"'/>
+		</RelativeLayout>
+		<TextView
+				android:layout_width="wrap_content"
+				android:layout_height="wrap_content"
+				android:text="none"
+				android:id="@+id/infoTv" android:layout_marginLeft="20dp" android:layout_marginRight="20dp"
+				android:layout_gravity="left|center_vertical"/>
+	</LinearLayout>
+</RelativeLayout>

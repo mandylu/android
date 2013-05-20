@@ -49,7 +49,8 @@ public class EntryApplication extends Application {
 				mangerInstance.getAccountManager().getMyId(
 						mangerInstance.getApplicationContext()),
 				mangerInstance.getVersion(), mangerInstance.getChannelId(),
-				mangerInstance.getCityEnglishName());
+				mangerInstance.getCityEnglishName(),
+				getPackageName());
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());

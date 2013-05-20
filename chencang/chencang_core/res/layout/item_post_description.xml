@@ -1,0 +1,37 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+	android:id="@+id/postinputlayout"
+	android:layout_width="fill_parent"
+	android:layout_height="wrap_content"
+	android:background="@drawable/post_box"
+	android:orientation="horizontal" >
+	    
+    <TextView
+        android:id="@+id/postdescriptionshow"
+        android:layout_width="88dip"
+        android:layout_height="wrap_content"
+        android:gravity="left|top"
+        android:paddingTop="10dip"
+        android:paddingLeft="10dip"
+        android:textColor="#838383"
+        android:text="AA"
+        android:textSize="@dimen/font_medium" />	
+
+	<EditText
+	    android:id="@+id/postdescriptioninput"
+	    android:layout_width="fill_parent"
+	    android:layout_height="wrap_content"
+		android:layout_marginLeft="10dip"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip" 			    
+	    android:gravity="left|top"
+		android:inputType="textMultiLine"
+	    android:background="@null"
+       	android:ellipsize="end"
+        android:hint="请输入"
+        android:textSize="18dip"
+       	android:textColor="@drawable/list_titleselector"
+        android:textColorHint="#d1d0ca">
+	</EditText>
+
+</LinearLayout>
