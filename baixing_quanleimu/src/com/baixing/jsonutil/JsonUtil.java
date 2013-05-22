@@ -80,29 +80,6 @@ public class JsonUtil {
 	// 获取所有城市列表
 	public static CityList parseCityListFromJson(String jsonData) {
 		return parseCityListFromJackson(jsonData);
-//		CityList cityList = new CityList();
-//		try {
-//			List<CityDetail> list = new ArrayList<CityDetail>();
-//			// JSONArray jsonA = new JSONArray(jsonData);
-//
-//			JSONObject jsonObj = new JSONObject(jsonData);
-//
-//			JSONArray jsonArray = jsonObj.names();
-//			for (int i = 0; i < jsonArray.length(); i++) {
-//				CityDetail cityDetail = new CityDetail();
-//				cityDetail.setId(jsonArray.getString(i));
-//				JSONObject jsonCity = jsonObj.getJSONObject(jsonArray
-//						.getString(i));
-//				cityDetail.setEnglishName(jsonCity.getString("englishName"));
-//				cityDetail.setName(jsonCity.getString("name"));
-//				cityDetail.setSheng(jsonCity.getString("sheng"));
-//				list.add(cityDetail);
-//			}
-//			cityList.setListDetails(list);
-//		} catch (JSONException e1) {
-//			e1.printStackTrace();
-//		}
-//		return cityList;
 	}
 	
 	public static List<ChatMessage> parseChatMessagesByJackson(String msg){
@@ -276,7 +253,7 @@ public class JsonUtil {
 						while(jt != JsonToken.END_OBJECT){
 							String fname = parser.getCurrentName();
 							if(fname == null){
-								parser.nextToken();
+								jt = parser.nextToken();
 								continue;
 							}
 							if(fname.equals("images")){
@@ -290,7 +267,7 @@ public class JsonUtil {
 											jt = parser.nextToken();
 											continue;
 										}
-										parser.nextToken();
+										jt = parser.nextToken();
 										
 										String imgStr = "";
 										while(jt != JsonToken.END_ARRAY){

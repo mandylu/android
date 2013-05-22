@@ -8,7 +8,6 @@ import java.util.List;
 import android.content.Context;
 import android.database.DataSetObserver;
 import android.graphics.Bitmap;
-import android.graphics.BitmapFactory;
 import android.graphics.Color;
 import android.graphics.Typeface;
 import android.os.Handler;
@@ -25,8 +24,8 @@ import android.widget.TextView;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
-import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.entity.AdSeperator;
 import com.baixing.network.NetworkUtil;
 import com.baixing.util.TextUtil;
 import com.baixing.view.AdViewHistory;
@@ -230,9 +229,8 @@ public class VadListAdapter extends BaseAdapter {
 		else{
 			holder = (ViewHolder)v.getTag();
 		}
-		
-		if (isGroupPosition(pos))
-		{
+		final int position = getRealIndex(pos);
+		if (isGroupPosition(pos)){
 			v.findViewById(R.id.filter_view_root).setVisibility(View.VISIBLE);
 			v.findViewById(R.id.goods_item_view_root).setVisibility(View.GONE);
 			GroupItem g = findGroupByPos(pos);
@@ -247,16 +245,24 @@ public class VadListAdapter extends BaseAdapter {
 			holder.divider.setVisibility(View.GONE);
 			v.setEnabled(false);	
 			return v;
+		}else if(list.size() > pos && list.get(position) instanceof AdSeperator){
+			v.findViewById(R.id.filter_view_root).setVisibility(View.VISIBLE);
+			v.findViewById(R.id.goods_item_view_root).setVisibility(View.GONE);
+			TextView text = (TextView) v.findViewById(R.id.filter_view_root).findViewById(R.id.filter_string);
+			text.setText(list.get(position).getValueByKey(EDATAKEYS.EDATAKEYS_TITLE));
+			v.setEnabled(false);
+			v.setClickable(false);
+			holder.divider.setVisibility(View.GONE);
+			return v;
 		}
-		else
-		{
+		else{
 			v.setEnabled(true);
 			holder.divider.setVisibility(View.VISIBLE);
 			v.findViewById(R.id.filter_view_root).setVisibility(View.GONE);
 			v.findViewById(R.id.goods_item_view_root).setVisibility(View.VISIBLE);
 		}
 		
-		final int position = getRealIndex(pos);
+		
 //			Log.e("LIST", "position translate from " + pos + "-->" + position);
 
 		if(null == defaultBk2){

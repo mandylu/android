@@ -9,6 +9,7 @@ import java.util.List;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.Gravity;
 import android.view.LayoutInflater;
@@ -23,17 +24,18 @@ import android.widget.LinearLayout;
 import android.widget.LinearLayout.LayoutParams;
 import android.widget.ListAdapter;
 import android.widget.ProgressBar;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.adapter.VadListAdapter.GroupItem;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
+import com.baixing.entity.AdSeperator;
 import com.baixing.entity.BXLocation;
+import com.baixing.entity.CityDetail;
 import com.baixing.entity.Filterss;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -48,6 +50,7 @@ import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
@@ -311,7 +314,8 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 
 		goodsListLoader.setParams(getSearchParams()); //= new GoodsListLoader(addParams, myHandler, null, new GoodsList());
 		if(curLocation != null && /*searchType != SEARCH_RECENT*/ isSerchNearBy()){
-			goodsListLoader.setNearby(true);
+//			goodsListLoader.setNearby(true);
+			goodsListLoader.setSearchType(SEARCH_POLICY.SEARCH_NEARBY);
 			goodsListLoader.setRuntime(true);
 		}
 		
@@ -326,7 +330,9 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
                     Tracker.getInstance().event(BxEvent.LISTING_SELECTEDROWINDEX)
                             .append(Key.SELECTEDROWINDEX, index)
                             .end();
-
+                    if(goodsListLoader.getGoodsList().getData().get(index) instanceof AdSeperator){
+                    	return;
+                    }
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", goodsListLoader);
 					bundle.putInt("index", index);
@@ -450,6 +456,27 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		}
 	}
 	
+	static private String getAroundCityName(List<Ad> ads){
+		String ret = "";
+		String preCityEnglishName = GlobalDataManager.getInstance().getCityEnglishName();
+		String cityCombine = preCityEnglishName;
+		List<CityDetail> cities = GlobalDataManager.getInstance().getListCityDetails();
+		for(int i = 0; i < ads.size(); ++ i){
+			String curCityEnglishName = ads.get(i).getValueByKey("cityEnglishName");
+			if(!curCityEnglishName.equals(preCityEnglishName) && !cityCombine.contains(curCityEnglishName)){
+				preCityEnglishName = ads.get(i).getValueByKey("cityEnglishName");
+				cityCombine += " " + preCityEnglishName;
+				for(int j = 0; j < cities.size(); ++ j){
+					if(cities.get(j).englishName.equals(preCityEnglishName)){
+						ret += cities.get(j).name + " ";
+						break;
+					}
+				}
+			}
+		}
+		return ret;
+	}
+	
 	@Override
 	protected void handleMessage(Message msg, Activity activity, View rootView) {
 
@@ -469,10 +496,39 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			PerformanceTracker.stamp(Event.E_Listing_Start_ParseJson);
 			AdList goodsList = JsonUtil.getGoodsListFromJson(goodsListLoader.getLastJson());
 			PerformanceTracker.stamp(Event.E_Listing_End_ParseJson);
-			goodsListLoader.setGoodsList(goodsList);
-
-			if (goodsList == null || goodsList.getData() == null || goodsList.getData().size() == 0) {
-				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请更改条件并重试！");
+			boolean prevSearchAround = (goodsListLoader.getSearchType() == SEARCH_POLICY.SEARCH_AROUND);
+			
+			if(!prevSearchAround){
+				goodsListLoader.setGoodsList(goodsList);
+			}else{
+				if(goodsList != null && goodsList.getData() != null && goodsList.getData().size() > 0){
+					AdSeperator seperator = new AdSeperator();
+					String cities = getAroundCityName(goodsList.getData());
+					if(!TextUtils.isEmpty(cities)){
+						cities = "附近城市:" + cities;
+					}else{
+						cities = "附近城市";
+					}
+					seperator.setValueByKey(EDATAKEYS.EDATAKEYS_TITLE, cities);
+					
+					AdList preList = goodsListLoader.getGoodsList();
+					preList.getData().add(seperator);
+					preList.getData().addAll(goodsList.getData());
+					preList.setCount(preList.getData().size());
+					goodsListLoader.setGoodsList(preList);
+				}
+			}
+			
+			boolean needAroundAds = false;
+			int newRows = 0;
+			if (goodsListLoader.getGoodsList() == null || goodsListLoader.getGoodsList().getData() == null || goodsListLoader.getGoodsList().getData().size() == 0) {
+				
+				if(!prevSearchAround && !isSerchNearBy()){
+					needAroundAds = true;
+					newRows = goodsListLoader.getRows();
+				}else{
+					ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_COMMON_FAILURE, "没有符合的结果，请更改条件并重试！");
+				}
 
 				VadListAdapter adapter = findGoodListAdapter();
 				if (adapter != null)
@@ -482,11 +538,23 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					adapter.notifyDataSetChanged();
 				}
 			} else {
+				if(!isSerchNearBy() && !prevSearchAround && goodsList.getData().size() < goodsListLoader.getRows()){
+					needAroundAds = true;
+					newRows = goodsListLoader.getRows() - goodsList.getData().size();
+				}else{
 				//QuanleimuApplication.getApplication().setListGoods(goodsListLoader.getGoodsList().getData());
-				VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
-				updateData(adapter, goodsListLoader.getGoodsList().getData());
-				lvGoodsList.setAdapter(adapter);
-				goodsListLoader.setHasMore(true);
+					VadListAdapter adapter = new VadListAdapter(getActivity(), goodsListLoader.getGoodsList().getData(), AdViewHistory.getInstance());
+					updateData(adapter, goodsListLoader.getGoodsList().getData());
+					lvGoodsList.setAdapter(adapter);
+					goodsListLoader.setHasMore(true);
+				}
+			}
+			
+			if(needAroundAds){
+				goodsListLoader.setSearchType(SEARCH_POLICY.SEARCH_AROUND);
+				goodsListLoader.setRows(newRows);
+				goodsListLoader.startFetching(getAppContext(), true, mRefreshUsingLocal);
+				break;
 			}
 			
 			lvGoodsList.onRefreshComplete();
@@ -518,6 +586,15 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			hideProgress();
 			PerformanceTracker.stamp(Event.E_Listing_Got_First_Leave);
 			PerformanceTracker.flush();
+			
+			if(goodsListLoader.getSearchType() == SEARCH_POLICY.SEARCH_AROUND){
+				boolean nearby = this.isSerchNearBy();
+				goodsListLoader.setSearchType(nearby ? SEARCH_POLICY.SEARCH_NEARBY : SEARCH_POLICY.SEARCH_LISTING);
+				goodsListLoader.setRows(-1);
+//				VadListAdapter adapter = findGoodListAdapter();
+//				adapter.updateGroups(null);
+			}
+
 			break;
 		case VadListLoader.MSG_NO_MORE:
 			if(goodsListLoader == null) break;
@@ -747,13 +824,13 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 		goodsListLoader.cancelFetching();
 		if (!isNeryBy)
 		{
-			goodsListLoader.setNearby(false);
+			goodsListLoader.setSearchType(SEARCH_POLICY.SEARCH_LISTING);
 			goodsListLoader.setParams(getSearchParams());
 			goodsListLoader.setRuntime(true);
 		}
 		else
 		{
-			goodsListLoader.setNearby(true);
+			goodsListLoader.setSearchType(SEARCH_POLICY.SEARCH_NEARBY);
 			goodsListLoader.setParams(getSearchParams());
 			goodsListLoader.setRuntime(true);
 		}
