@@ -45,6 +45,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
+import com.baixing.entity.CityDetail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.Quota;
 import com.baixing.entity.UserBean;
@@ -86,6 +87,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final int MSG_POST_SUCCEED = 0xF0000010; 
 	protected String categoryEnglishName = "";
+	protected String cityEnglishName = "";
 	private String categoryName = "";
 	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
@@ -182,6 +184,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		this.postLBS = new PostLocationService(this.handler);
 		postNS = PostNetworkService.getInstance();
 		postNS.setHandler(handler);
+		cityEnglishName = GlobalDataManager.getInstance().getCityEnglishName();
 	}
 		
 	@Override
@@ -314,7 +317,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
-		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);		
+		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);	
+		v.findViewById(R.id.quotaText).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		if (!editMode)
@@ -371,7 +375,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	protected String getCityEnglishName(){
-		return GlobalDataManager.getInstance().getCityEnglishName();
+//		return GlobalDataManager.getInstance().getCityEnglishName();
+		return cityEnglishName;
 	}
 	
 	private void showGettingMetaProgress(boolean show){
@@ -580,7 +585,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		list.put("cityEnglishName", cityEnglishName);//GlobalDataManager.getInstance().getCityEnglishName());
 		
 		HashMap<String, String> mapParams = new HashMap<String, String>();
 		Iterator<String> ite = params.keyIterator();
@@ -1140,12 +1145,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private boolean checkQuota(final int msg){
+		if(doingAccountCheck) return false;
 		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-		if(user == null || TextUtils.isEmpty(user.getId())) return false;
+		if(user == null 
+				|| TextUtils.isEmpty(user.getId())
+				|| !GlobalDataManager.getInstance().getAccountManager().isUserLogin()) return false;
 		ApiParams param = new ApiParams();
 		param.addParam("userId", user.getId());
-		param.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		param.addParam("cityEnglishName", cityEnglishName);//GlobalDataManager.getInstance().getCityEnglishName());
 		param.addParam("categoryEnglishName", this.categoryEnglishName);
+		param.useCache = false;
 		BaseApiCommand.createCommand("get_quota_info", true, param).execute(getAppContext(), new BaseApiCommand.Callback(){
 
 			@Override
@@ -1167,19 +1176,48 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void handleOutOfQuota(final Quota qt){
+		final boolean cityExceed = qt.getType().equals("城市发布超限");
+		String cityName = "";
+		if(cityExceed){
+			List<CityDetail> cities = GlobalDataManager.getInstance().getListCityDetails();
+			for(int i = 0; i < cities.size(); ++ i){
+				if(cities.get(i).englishName.equals(qt.getExplain())){
+					cityName = cities.get(i).name;
+				}
+			}
+		}
 		AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
-        bd.setTitle("")
-                .setMessage(qt.getMessage())
-                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
-                	@Override
-                    public void onClick(DialogInterface dialog, int which) {
-                        dialog.dismiss();
-                        hideSoftKeyboard();
-                        if(qt.getType().equals("城市发布超限")){
-                        	getActivity().finish();
-                        }
-                    }
-                });
+        bd.setTitle("").
+        setMessage(qt.getMessage())
+        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				dialog.dismiss();
+				hideSoftKeyboard();
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(button != null){
+					button.setEnabled(false);
+				}
+				if(cityExceed){
+					getActivity().finish();
+				}
+			}
+        	
+        });
+        if(cityExceed){
+	        bd.setPositiveButton("发到" + cityName, new DialogInterface.OnClickListener() {
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+	        		cityEnglishName = qt.getExplain();
+	                dialog.dismiss();
+	                hideSoftKeyboard();
+	                showPost();
+	            }
+	        });
+        }
+
         AlertDialog alert = bd.create();
         alert.show();
 	}
@@ -1280,6 +1318,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		case MSG_GET_QUOTA_AFTER_LOGIN_FINISH:{
 			if(msg.obj != null && msg.obj instanceof Quota){
+				((TextView)layout_txt.getRootView().findViewById(R.id.quotaText)).setText(((Quota)msg.obj).getMessage());
+				layout_txt.getRootView().findViewById(R.id.quotaText).setVisibility(View.VISIBLE);
+
 				if(((Quota)msg.obj).isOutOfQuota()){
 					this.handleOutOfQuota((Quota)msg.obj);
 					break;
@@ -1302,6 +1343,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 						button.setEnabled(true);
 					}
 				}
+				((TextView)layout_txt.getRootView().findViewById(R.id.quotaText)).setText(((Quota)msg.obj).getMessage());
+				layout_txt.getRootView().findViewById(R.id.quotaText).setVisibility(View.VISIBLE);
 			}
 			this.showGettingMetaProgress(false);
 			break;

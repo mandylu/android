@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -723,12 +725,23 @@ public class JsonUtil {
 		try{
 			JSONObject json = new JSONObject(jsonData);
 			JSONObject quotaObj = json.getJSONObject("quota");
-
+			String explain = "";
+			if(quotaObj.has("explain")){
+				String exp = quotaObj.getString("explain");
+				Pattern p = Pattern.compile("(?<=: )\\w+");
+		        Matcher m = p.matcher(exp);
+		        if(m.find()){
+		        	explain = m.group();
+		        }
+			}
+			
 			quota = new Quota(quotaObj.getBoolean("outOfQuota"), 
 					quotaObj.getInt("limit"), 
 					quotaObj.getInt("used"), 
 					quotaObj.getString("message"), 
-					quotaObj.getString("type"));
+					quotaObj.getString("type"),
+					explain);
+			
 		}catch(JSONException e){
 			e.printStackTrace();
 		}

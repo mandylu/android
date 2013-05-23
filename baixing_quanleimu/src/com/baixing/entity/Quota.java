@@ -6,13 +6,19 @@ public class Quota extends Object{
 	private int used;
 	private String message;
 	private String type;
+	private String explain;
 	
-	public Quota(boolean outOfQuota, int limit, int used, String message, String type){
+	public Quota(boolean outOfQuota, int limit, int used, String message, String type, String explain){
 		this.outOfQuota = outOfQuota;
 		this.limit = limit;
 		this.used = used;
 		this.message = message;
 		this.type = type;
+		this.explain = explain;
+	}
+	
+	public String getExplain(){
+		return explain;
 	}
 	
 	public boolean isOutOfQuota(){
