@@ -1194,6 +1194,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			@Override
 			public void onClick(DialogInterface dialog, int which) {
 				// TODO Auto-generated method stub
+				Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_ACTION)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
+				.append(Key.RULENAME, qt.getType())
+				.append(Key.MENU_ACTION_TYPE, "取消").end();
+				
 				dialog.dismiss();
 				hideSoftKeyboard();
 				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
@@ -1212,6 +1217,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	        bd.setPositiveButton("发到" + cityName, new DialogInterface.OnClickListener() {
 	        	@Override
 	            public void onClick(DialogInterface dialog, int which) {
+					Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_ACTION)
+					.append(Key.SECONDCATENAME, categoryEnglishName)
+					.append(Key.RULENAME, qt.getType())
+					.append(Key.MENU_ACTION_TYPE, "其他").end();
+
 	        		cityEnglishName = qt.getExplain();
 	                dialog.dismiss();
 	                hideSoftKeyboard();
@@ -1220,6 +1230,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	        });
         }
 
+        Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_SHOW)
+        .append(Key.SECONDCATENAME, categoryEnglishName)
+        .append(Key.RULENAME, qt.getType()).end();
+        
         AlertDialog alert = bd.create();
         alert.show();
 	}

@@ -100,7 +100,9 @@ public class TrackConfig implements Observer {
 			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			ISEDIT("isEdit", "拍照是否编辑"),
-			FROM("from", "拍照来源")
+			FROM("from", "拍照来源"),
+			RULENAME("ruleName", "版规名称")
+			
 			;
 			private String name;
 			private String description;
@@ -229,6 +231,9 @@ public class TrackConfig implements Observer {
 			POST_GPSFAIL("Post_GpsFail","Post_GPS失败"),
 			POST_INPUTING("Post_Inputing","post页面编辑项目"),
 			POST_IMAGEUPLOAD("Post_ImgUpload", "照片上传"),
+			POST_RULE_ALERT_SHOW("Post_RuleAlert_Show", "遇到前置版规提示"),
+			POST_RULE_ALERT_ACTION("Post_RuleAlert_Action", "处理前置版规提示"),
+			
 			
 //			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
 			EDITPOST_POSTBTNCONTENTCLICKED("EditPost_PostBtnContentClicked","EditPost_PostBtnContentClicked"),
