@@ -1202,6 +1202,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				}
 				if(cityExceed){
 					getActivity().finish();
+				}else if(qt.getType().equals("类目发布超限")){
+					popupCategorySelectionDialog();
 				}
 			}
         	
