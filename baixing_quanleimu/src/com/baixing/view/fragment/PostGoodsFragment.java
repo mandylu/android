@@ -19,7 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.InputFilter;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -46,8 +46,8 @@ import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.Quota;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -96,6 +96,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private static final int MSG_IMAGE_STATE_CHANGE = 14;
 	private static final int MSG_GET_AD_FAIL = 15;
 	private static final int MSG_GET_AD_SUCCED = 16;
+	private static final int MSG_GET_QUOTA_AFTER_CATEGORY_FINISH = 17;
+	private static final int MSG_GET_QUOTA_AFTER_LOGIN_FINISH = 18;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
@@ -406,6 +408,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				addCategoryItem();
 				buildPostLayout(postList);
 				loadCachedData();
+				checkQuota(MSG_GET_QUOTA_AFTER_CATEGORY_FINISH);
 				return;
 			}
 		}
@@ -746,7 +749,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				|| message == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED){
 			if(doingAccountCheck){
 				doingAccountCheck = false;
-				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);				
 				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
 			}
 		}
@@ -1136,6 +1139,51 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 	
+	private boolean checkQuota(final int msg){
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(user == null || TextUtils.isEmpty(user.getId())) return false;
+		ApiParams param = new ApiParams();
+		param.addParam("userId", user.getId());
+		param.addParam("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		param.addParam("categoryEnglishName", this.categoryEnglishName);
+		BaseApiCommand.createCommand("get_quota_info", true, param).execute(getAppContext(), new BaseApiCommand.Callback(){
+
+			@Override
+			public void onNetworkDone(String apiName, String responseData) {
+				// TODO Auto-generated method stub
+				Quota qt = JsonUtil.parseQuota(responseData);
+				sendMessage(msg, qt);
+			}
+
+			@Override
+			public void onNetworkFail(String apiName, ApiError error) {
+				// TODO Auto-generated method stub
+				sendMessage(msg, null);
+			}
+
+			
+		});
+		return true;
+	}
+	
+	private void handleOutOfQuota(final Quota qt){
+		AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+        bd.setTitle("")
+                .setMessage(qt.getMessage())
+                .setPositiveButton("确定", new DialogInterface.OnClickListener() {
+                	@Override
+                    public void onClick(DialogInterface dialog, int which) {
+                        dialog.dismiss();
+                        hideSoftKeyboard();
+                        if(qt.getType().equals("城市发布超限")){
+                        	getActivity().finish();
+                        }
+                    }
+                });
+        AlertDialog alert = bd.create();
+        alert.show();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
@@ -1211,15 +1259,50 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		}
 		case PostCommonValues.MSG_GET_META_SUCCEED:{
-			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
-			if(button != null){
-				button.setEnabled(true);
-			}
-
 			postList = (LinkedHashMap<String, PostGoodsBean>)msg.obj;
 			addCategoryItem();
 			buildPostLayout(postList);
 			loadCachedData();
+			if(!checkQuota(MSG_GET_QUOTA_AFTER_CATEGORY_FINISH)){
+				this.showGettingMetaProgress(false);
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(button != null){
+					button.setEnabled(true);
+				}
+			}
+			break;
+		}
+		case PostCommonValues.MSG_CHECK_QUOTA_AFTER_LOGIN:{
+			if(!checkQuota(MSG_GET_QUOTA_AFTER_LOGIN_FINISH)){
+				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_CHECK_QUOTA_OK, "");
+			}
+			break;
+		}
+		case MSG_GET_QUOTA_AFTER_LOGIN_FINISH:{
+			if(msg.obj != null && msg.obj instanceof Quota){
+				if(((Quota)msg.obj).isOutOfQuota()){
+					this.handleOutOfQuota((Quota)msg.obj);
+					break;
+				}
+			}
+			this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_CHECK_QUOTA_OK, "");
+			break;
+		}
+		
+		case MSG_GET_QUOTA_AFTER_CATEGORY_FINISH:{
+			if(msg.obj instanceof Quota){
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(((Quota)msg.obj).isOutOfQuota()){
+					handleOutOfQuota((Quota)msg.obj);
+					if(button != null){
+						button.setEnabled(false);
+					}
+				}else{
+					if(button != null){
+						button.setEnabled(true);
+					}
+				}
+			}
 			this.showGettingMetaProgress(false);
 			break;
 		}

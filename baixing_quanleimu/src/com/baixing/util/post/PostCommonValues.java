@@ -13,8 +13,10 @@ public class PostCommonValues {
 	static public final int MSG_POST_NEED_REGISTER = 0xFFFF0F18;
 	static public final int MSG_ACCOUNT_CHECK_FAIL = 0xFFFF0F19;
 	static public final int MSG_POST_EDIT_SUCCEED = 0xFFFF0F20;
+	static public final int MSG_CHECK_QUOTA_AFTER_LOGIN = 0xFFFF0F21;
 	static public final int ACTION_POST_NEED_LOGIN_DONE = 0x11110F00;
 	static public final int ACTION_POST_NEED_REVERIIFY = 0x11110F01;
+	static public final int ACTION_POST_CHECK_QUOTA_OK = 0x11110F02;
 	public static final String STRING_AREA = "地区";
 	public final static String STRING_DETAIL_POSITION = "具体地点";
 	public static final String STRING_DESCRIPTION = "description";

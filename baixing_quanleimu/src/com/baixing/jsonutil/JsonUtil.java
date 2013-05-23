@@ -13,18 +13,19 @@ import org.json.JSONObject;
 import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.entity.Category;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filters;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.Ad;
-import com.baixing.entity.AdList;
 import com.baixing.entity.HotData;
 import com.baixing.entity.HotList;
 import com.baixing.entity.ImageList;
 import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.Quota;
 import com.baixing.entity.labels;
 import com.baixing.entity.values;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -714,5 +715,23 @@ public class JsonUtil {
 		}
 		
 		return root;
+	}
+	
+	
+	static public Quota parseQuota(String jsonData){
+		Quota quota = null;
+		try{
+			JSONObject json = new JSONObject(jsonData);
+			JSONObject quotaObj = json.getJSONObject("quota");
+
+			quota = new Quota(quotaObj.getBoolean("outOfQuota"), 
+					quotaObj.getInt("limit"), 
+					quotaObj.getInt("used"), 
+					quotaObj.getString("message"), 
+					quotaObj.getString("type"));
+		}catch(JSONException e){
+			e.printStackTrace();
+		}
+		return quota;
 	}
 }
