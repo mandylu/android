@@ -1225,6 +1225,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	        		cityEnglishName = qt.getExplain();
 	                dialog.dismiss();
 	                hideSoftKeyboard();
+	        		resetData(false);
 	                showPost();
 	            }
 	        });
