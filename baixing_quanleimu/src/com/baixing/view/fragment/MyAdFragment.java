@@ -772,7 +772,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	            	Pair<String, String> p = new Pair<String, String>(error.getMsg(), adId);
 	            	sendMessage(MSG_ASK_REFRESH, p);
 				}else{
-					sendMessage(MSG_REFRESH_FAIL, "刷新失败，请稍后重试！");
+					sendMessage(MSG_REFRESH_FAIL, error == null ? "刷新失败，请稍后重试！" : error.getMsg());
 				}
 			}
 			
