@@ -160,7 +160,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private boolean isMyAd(){
 		if(detail == null) return false;
-		return GlobalDataManager.getInstance().isMyAd(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));		
+//		return GlobalDataManager.getInstance().isMyAd(detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID));
+		return GlobalDataManager.getInstance().isMyAd(detail);
 	}
 	
 	private boolean isInMyStore(){

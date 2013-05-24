@@ -19,6 +19,7 @@ import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filterss;
+import com.baixing.entity.UserBean;
 import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
@@ -225,17 +226,28 @@ public class GlobalDataManager implements Observer {
 		}
 	}
 	
-	public boolean isMyAd(String adId) {
-		if(null != listMyPost && null != adId){
-			for(int i = 0; i < listMyPost.size(); ++ i){
-				if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
-						.equals(adId)){
-					return true;
-				}
+	public boolean isMyAd(Ad ad){
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		boolean ret = false;
+		if(user != null && ad != null){
+			if(user.getId() != null && ad.getValueByKey("userId") != null && user.getId().equals(ad.getValueByKey("userId"))){
+				ret = true;
 			}
 		}
-		return false;
+		return ret;
 	}
+	
+//	public boolean isMyAd(String adId) {
+//		if(null != listMyPost && null != adId){
+//			for(int i = 0; i < listMyPost.size(); ++ i){
+//				if(listMyPost.get(i).getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)
+//						.equals(adId)){
+//					return true;
+//				}
+//			}
+//		}
+//		return false;
+//	}
 
 	public void setListMyPost(List<Ad> listMyPost) {
 		this.listMyPost = listMyPost;
