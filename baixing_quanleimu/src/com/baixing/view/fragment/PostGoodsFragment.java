@@ -1145,7 +1145,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private boolean checkQuota(final int msg){
-		if(doingAccountCheck) return false;
+		if(doingAccountCheck || this.editMode) return false;
 		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if(user == null 
 				|| TextUtils.isEmpty(user.getId())
