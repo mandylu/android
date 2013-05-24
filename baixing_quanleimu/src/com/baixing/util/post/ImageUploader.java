@@ -10,6 +10,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.graphics.Bitmap;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.imageCache.ImageLoaderManager.DownloadCallback;
 import com.baixing.network.api.FileUploadCommand;
@@ -139,7 +140,7 @@ public class ImageUploader implements DownloadCallback {
 			imageList.add(image);
 		}
 		
-		ImageLoaderManager.getInstance().loadImg(this, thumbnailUrl);
+		GlobalDataManager.getInstance().getImageLoaderMgr().loadImg(this, thumbnailUrl);
 	}
 	
 	/**

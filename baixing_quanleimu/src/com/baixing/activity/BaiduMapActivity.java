@@ -43,6 +43,7 @@ import com.baixing.network.NetworkCommand;
 import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.LocationService;
 import com.baixing.util.ViewUtil;
 import com.baixing.util.post.PostLocationService;
@@ -246,6 +247,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 	@Override
 	protected void onResume() {
 		super.onResume();
+		
 	    if (mBMapMan != null) {
 	        mBMapMan.start();
 	    }
@@ -266,6 +268,9 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
         if(bundle != null){
 	        Ad position = (Ad)bundle.getSerializable("detail");
 	        if(position == null) return;
+	        Tracker.getInstance().pv(PV.VIEWADMAP).append(Key.SECONDCATENAME, 
+	        		position.getValueByKey(EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	        		.append(Key.ADID, position.getValueByKey(EDATAKEYS.EDATAKEYS_ID)).end();
 			String areaname = position.getValueByKey(EDATAKEYS.EDATAKEYS_AREANAME);
 			if(areaname != null){
 				String[] aryArea = areaname.split(",");
@@ -418,7 +423,7 @@ public class BaiduMapActivity extends MapActivity implements LocationListener{
 		{
 			Tracker.getInstance().event(BxEvent.GPS).append(Key.GPS_RESULT, false).end();
 		}
-		if (isInChina(location)) {
+		if (location != null && isInChina(location)) {
 			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.getLatitude()*1e6), (int)(location.getLongitude()*1e6))));
 			location.setLatitude(1.0d*point.getLatitudeE6()/1e6);
 			location.setLongitude(1.0d*point.getLongitudeE6()/1e6);

@@ -1,0 +1,29 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen"
+    android:orientation="vertical" >
+
+    <include layout="@layout/common_title" />
+
+    <LinearLayout
+        android:id="@+id/ll_selection"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:orientation="vertical"
+        android:paddingLeft="10dip"
+        android:paddingRight="10dip"
+        android:paddingTop="10dip" >
+
+        <include
+            android:id="@+id/city_selector"
+            layout="@layout/item_post_select" />
+
+        <include
+            android:id="@+id/category_selector"
+            android:layout_marginTop="10dip"
+            layout="@layout/item_post_select" />
+    </LinearLayout>
+
+</LinearLayout>

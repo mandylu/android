@@ -324,11 +324,14 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 	private String verifyCode;
 	public void onOutActionDone(int action, String data){
 		if(action == PostCommonValues.ACTION_POST_NEED_LOGIN_DONE){
-			doPost();
+			sendMessage(PostCommonValues.MSG_CHECK_QUOTA_AFTER_LOGIN, null);
+//			doPost();
 		}else if(action == PostCommonValues.ACTION_POST_NEED_REVERIIFY){
 			verifyCode = data;
 			AccountService.getInstance().setActionListener(this);
 			AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified);
+		}else if(action == PostCommonValues.ACTION_POST_CHECK_QUOTA_OK){
+			doPost();
 		}
 	}
 

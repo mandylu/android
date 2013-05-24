@@ -11,7 +11,6 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
-import android.app.ProgressDialog;
 import android.app.AlertDialog.Builder;
 import android.content.Context;
 import android.content.DialogInterface;
@@ -20,7 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.InputFilter;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -41,16 +40,15 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
+import com.baixing.entity.CityDetail;
 import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.Quota;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -73,10 +71,8 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
-import com.baixing.widget.EditUsernameDialogFragment;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
-import com.tencent.mm.sdk.platformtools.Log;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	
@@ -88,25 +84,25 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final String KEY_IS_EDITPOST = "isEditPost"; 
 	static final String KEY_CATE_ENGLISHNAME = "cateEnglishName";
-	static final private String KEY_IMG_BUNDLE = "key_image_bundle";
 	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final int MSG_POST_SUCCEED = 0xF0000010; 
 	protected String categoryEnglishName = "";
+	protected String cityEnglishName = "";
 	private String categoryName = "";
 	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
 	private static final int NONE = 0;
-	private static final int PHOTORESOULT = 3;
 	private static final int MSG_CATEGORY_SEL_BACK = 11;
 	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	private static final int MSG_IMAGE_STATE_CHANGE = 14;
 	private static final int MSG_GET_AD_FAIL = 15;
 	private static final int MSG_GET_AD_SUCCED = 16;
+	private static final int MSG_GET_QUOTA_AFTER_CATEGORY_FINISH = 17;
+	private static final int MSG_GET_QUOTA_AFTER_LOGIN_FINISH = 18;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
-	protected Bundle imgSelBundle = null;
 	private BXLocation detailLocation = null;
     protected List<String> bmpUrls = new ArrayList<String>();
     private EditText etDescription = null;
@@ -115,7 +111,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
     private PostNetworkService postNS;
     
     protected ArrayList<String> photoList = new ArrayList<String>();
-//    private Bitmap firstImage = null;
     protected boolean isNewPost = true;
     private boolean finishRightNow = false;
     private long lastClickPostTime = 0;
@@ -134,16 +129,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				ArrayList<String> result = data.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
 				photoList.addAll(result);
 			}
-			
-//			if (photoList != null && photoList.size() > 0) {
-//				firstImage = ImageUploader.getInstance().getThumbnail(photoList.get(0));
-//				for(int i = 0; i < photoList.size(); ++ i){
-//					ImageUploader.getInstance().registerCallback(photoList.get(i), this);
-//				}				
-//			}
-//			else {
-//				firstImage = null;
-//			}
 		}
 		
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
@@ -184,20 +169,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (savedInstanceState != null){
 			postList.putAll( (HashMap<String, PostGoodsBean>)savedInstanceState.getSerializable("postList"));
 			params = (PostParamsHolder) savedInstanceState.getSerializable("params");
-//			listUrl.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
 			photoList.addAll((List<String>) savedInstanceState.getSerializable("listUrl"));
-			imgHeight = savedInstanceState.getInt("imgHeight");
-			imgSelBundle = savedInstanceState.getBundle(KEY_IMG_BUNDLE);
 		}
-		
-		if(imgSelBundle == null){
-			imgSelBundle =  new Bundle();
-		}
-
-//		if(imgSelDlg == null){ //FIXME: remove 
-//			imgSelDlg = new ImageSelectionDialog(imgSelBundle);
-//			imgSelDlg.setMsgOutHandler(handler);
-//		}
 		
 		String appPhone = GlobalDataManager.getInstance().getPhoneNumber();
 		if(!editMode && (appPhone == null || appPhone.length() == 0)){
@@ -211,6 +184,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		this.postLBS = new PostLocationService(this.handler);
 		postNS = PostNetworkService.getInstance();
 		postNS.setHandler(handler);
+		cityEnglishName = GlobalDataManager.getInstance().getCityEnglishName();
 	}
 		
 	@Override
@@ -220,24 +194,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
 		outState.putSerializable("listUrl", photoList);
-		outState.putInt("imgHeight", imgHeight);
-		outState.putBundle(KEY_IMG_BUNDLE, imgSelBundle);
 	}
 	
 	private void doClearUpImages() {
 		//Clear the upload image list.
 		this.photoList.clear();
-//		this.firstImage = null;
 		ImageUploader.getInstance().clearAll();
 	}
 
 	@Override
 	public boolean handleBack() {
-//		if(imgSelDlg != null)
-//			if(imgSelDlg.handleBack()){
-//				return true;
-//		}		
-//		return super.handleBack();
 		AlertDialog.Builder builder = new Builder(getActivity());
 		builder.setMessage("退出发布？");
 		builder.setNegativeButton("否", new DialogInterface.OnClickListener() {
@@ -301,6 +267,29 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onPause();
 		paused = true;
 	}
+	
+	@Override
+	public void onDestroy(){
+		if(layout_txt != null){
+			for(int i = 0; i < layout_txt.getChildCount(); ++ i){
+				View child = layout_txt.getChildAt(i);
+				if(child != null){
+					child.setTag(PostCommonValues.HASH_CONTROL, null);
+				}
+			}
+			View categoryItem = layout_txt.findViewById(R.id.categoryItem);
+			if(categoryItem != null){
+				categoryItem.setTag(PostCommonValues.HASH_CONTROL, null);
+			}
+			
+			View description = layout_txt.findViewById(R.id.img_description);
+			if(description != null){
+				description.setTag(PostCommonValues.HASH_CONTROL, null);
+			}
+
+		}
+		super.onDestroy();
+	}
 
 	@Override
 	public void onStackTop(boolean isBack) {
@@ -316,10 +305,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		if (isNewPost) {
 			this.startImgSelDlg(Activity.RESULT_FIRST_USER, "跳过\n拍照");
-		} else {
-			
 		}
-		
 	}	
 
 	@Override
@@ -331,7 +317,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
-		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);		
+		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);	
+		v.findViewById(R.id.quotaText).setVisibility(View.GONE);
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		if (!editMode)
@@ -342,11 +329,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	protected void startImgSelDlg(final int cancelResultCode, String finishActionLabel){
-//		if(container != null){
-//			imgSelBundle.putSerializable(ImageSelectionDialog.KEY_IMG_CONTAINER, container);
-//		}
-//		imgSelDlg.setMsgOutBundle(imgSelBundle);
-//		imgSelDlg.show(getFragmentManager(), null);
 		PerformanceTracker.stamp(Event.E_Send_Camera_Bootup);
 		Intent backIntent = new Intent();
 		backIntent.setClass(getActivity(), getActivity().getClass());
@@ -358,12 +340,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		goIntent.putStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST, this.photoList);
 		goIntent.putExtra(CommonIntentAction.EXTRA_FINISH_ACTION_LABEL, finishActionLabel);
 		goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, cancelResultCode);
-//		BXLocation loc = GlobalDataManager.getInstance().getLocationManager().getCurrentPosition(true); 
-//		if (loc != null) {
-//			goIntent.putExtra("location", loc);
-//		}
+		goIntent.putExtra("isEdit", editMode);
 		getActivity().startActivity(goIntent);
-//		getActivity().startActivityForResult(goIntent, 0);
 	}
 
 	private void deployDefaultLayout(){
@@ -397,7 +375,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	protected String getCityEnglishName(){
-		return GlobalDataManager.getInstance().getCityEnglishName();
+//		return GlobalDataManager.getInstance().getCityEnglishName();
+		return cityEnglishName;
 	}
 	
 	private void showGettingMetaProgress(boolean show){
@@ -434,6 +413,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				addCategoryItem();
 				buildPostLayout(postList);
 				loadCachedData();
+				checkQuota(MSG_GET_QUOTA_AFTER_CATEGORY_FINISH);
 				return;
 			}
 		}
@@ -470,15 +450,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				lastClickPostTime = System.currentTimeMillis();
 			}
 			break;
-//		case R.id.location:
-//			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, PostCommonValues.STRING_DETAIL_POSITION).end();			
-//			if(this.detailLocation != null && locationView != null){
-//				setDetailLocationControl(detailLocation);
-//			}else if(detailLocation == null){
-//				ViewUtil.showToast(this.getActivity(), "无法获得当前位置", false);
-//			}
-//			break;
-//		case R.id.myImg:
 		case R.id.add_post_image:
 			Tracker.getInstance().event((!editMode)?BxEvent.POST_INPUTING:BxEvent.EDITPOST_INPUTING).append(Key.ACTION, "image").end();
 			
@@ -607,20 +578,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private String getFilledLocation(){
 		return ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
-//		String toRet = "";
-//		for(int m = 0; m < layout_txt.getChildCount(); ++ m){
-//			View v = layout_txt.getChildAt(m);
-//			PostGoodsBean bean = (PostGoodsBean)v.getTag(PostCommonValues.HASH_POST_BEAN);
-//			if(bean == null) continue;
-//			if(bean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-//				TextView tv = (TextView)v.getTag(PostCommonValues.HASH_CONTROL);
-//				if(tv != null && !tv.getText().toString().equals("")){
-//					toRet = tv.getText().toString();
-//				}
-//				break;
-//			}
-//		}
-//		return toRet;
 	}
 	
 	protected void mergeParams(HashMap<String, String> list){}
@@ -628,7 +585,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected void postAd(BXLocation location){
 		HashMap<String, String> list = new HashMap<String, String>();
 		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", GlobalDataManager.getInstance().getCityEnglishName());
+		list.put("cityEnglishName", cityEnglishName);//GlobalDataManager.getInstance().getCityEnglishName());
 		
 		HashMap<String, String> mapParams = new HashMap<String, String>();
 		Iterator<String> ite = params.keyIterator();
@@ -797,7 +754,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				|| message == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED){
 			if(doingAccountCheck){
 				doingAccountCheck = false;
-				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);				
 				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
 			}
 		}
@@ -830,35 +787,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			layout.setOnClickListener(this);
 		}
 
-		if(layout != null && !postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-			ViewGroup.LayoutParams lp = layout.getLayoutParams();
-			lp.height = getResources().getDimensionPixelOffset(R.dimen.post_item_height);
-			layout.setLayoutParams(lp);
-		}
-
-//		if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
-//			layout.findViewById(R.id.location).setOnClickListener(this);
-//			((TextView)layout.findViewById(R.id.postinput)).setHint("填写或点击按钮定位");
-//			locationView = layout;
-//			
-//			String address = GlobalDataManager.getInstance().getAddress();
-//			if(address != null && address.length() > 0){
-//				((TextView)layout.findViewById(R.id.postinput)).setText(address);
-//			}
-//		}else 
-		if(postBean.getName().equals("contact") && layout != null){
-			etContact = ((EditText)layout.getTag(PostCommonValues.HASH_CONTROL));
-			((TextView)layout.findViewById(R.id.postinput)).setHint("手机或座机");
-			etContact.setFilters(new InputFilter[]{new InputFilter.LengthFilter(15)});
-			String phone = GlobalDataManager.getInstance().getPhoneNumber();
-			if(editMode){
-				etContact.setText(getAdContact());
-			}else{
-				if(phone != null && phone.length() > 0){
-					etContact.setText(phone);
-				}
-			}
-		}else if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
+		if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
 			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
 		}else if(postBean.getName().equals("价格")){
 			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
@@ -873,7 +802,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					}
 				}
 			}
-//			
 		}
 		
 		if(layout != null){
@@ -895,13 +823,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	}
 	
 	private void addCategoryItem(){
-		Activity activity = getActivity();
 		if(layout_txt != null){
 			if(layout_txt.findViewById(R.id.arrow_down) != null) return;
 		}
-//		LayoutInflater inflater = LayoutInflater.from(activity);
-//		View categoryItem = inflater.inflate(R.layout.item_post_category, null);
-		
 		View categoryItem = layout_txt.findViewById(R.id.categoryItem);
 		if(editMode){
 			layout_txt.removeView(categoryItem);
@@ -994,7 +918,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			resId = R.drawable.icon_post_call_disable;
 		}
 		
-		Bitmap img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		Bitmap img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(resId);
 		BitmapDrawable bd = new BitmapDrawable(img);
 		bd.setBounds(0, 0, 45, 45);
 		
@@ -1007,7 +931,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			resId = R.drawable.icon_location_disable;
 		}
 	
-		img = ImageCacheManager.getInstance().loadBitmapFromResource(resId);
+		img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(resId);
 		bd = new BitmapDrawable(img);
 		bd.setBounds(0, 0, 45, 45);
 		
@@ -1220,6 +1144,100 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 	
+	private boolean checkQuota(final int msg){
+		if(doingAccountCheck || this.editMode) return false;
+		UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if(user == null 
+				|| TextUtils.isEmpty(user.getId())
+				|| !GlobalDataManager.getInstance().getAccountManager().isUserLogin()) return false;
+		ApiParams param = new ApiParams();
+		param.addParam("userId", user.getId());
+		param.addParam("cityEnglishName", cityEnglishName);//GlobalDataManager.getInstance().getCityEnglishName());
+		param.addParam("categoryEnglishName", this.categoryEnglishName);
+		param.useCache = false;
+		BaseApiCommand.createCommand("get_quota_info", true, param).execute(getAppContext(), new BaseApiCommand.Callback(){
+
+			@Override
+			public void onNetworkDone(String apiName, String responseData) {
+				// TODO Auto-generated method stub
+				Quota qt = JsonUtil.parseQuota(responseData);
+				sendMessage(msg, qt);
+			}
+
+			@Override
+			public void onNetworkFail(String apiName, ApiError error) {
+				// TODO Auto-generated method stub
+				sendMessage(msg, null);
+			}
+
+			
+		});
+		return true;
+	}
+	
+	private void handleOutOfQuota(final Quota qt){
+		final boolean cityExceed = qt.getType().equals("城市发布超限");
+		String cityName = "";
+		if(cityExceed){
+			List<CityDetail> cities = GlobalDataManager.getInstance().getListCityDetails();
+			for(int i = 0; i < cities.size(); ++ i){
+				if(cities.get(i).englishName.equals(qt.getExplain())){
+					cityName = cities.get(i).name;
+				}
+			}
+		}
+		AlertDialog.Builder bd = new AlertDialog.Builder(this.getActivity());
+        bd.setTitle("").
+        setMessage(qt.getMessage())
+        .setNegativeButton("取消", new DialogInterface.OnClickListener(){
+
+			@Override
+			public void onClick(DialogInterface dialog, int which) {
+				// TODO Auto-generated method stub
+				Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_ACTION)
+				.append(Key.SECONDCATENAME, categoryEnglishName)
+				.append(Key.RULENAME, qt.getType())
+				.append(Key.MENU_ACTION_TYPE, "取消").end();
+				
+				dialog.dismiss();
+				hideSoftKeyboard();
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(button != null){
+					button.setEnabled(false);
+				}
+				if(cityExceed){
+					getActivity().finish();
+				}else if(qt.getType().equals("类目发布超限")){
+					popupCategorySelectionDialog();
+				}
+			}
+        	
+        });
+        if(cityExceed){
+	        bd.setPositiveButton("发到" + cityName, new DialogInterface.OnClickListener() {
+	        	@Override
+	            public void onClick(DialogInterface dialog, int which) {
+					Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_ACTION)
+					.append(Key.SECONDCATENAME, categoryEnglishName)
+					.append(Key.RULENAME, qt.getType())
+					.append(Key.MENU_ACTION_TYPE, "其他").end();
+
+	        		cityEnglishName = qt.getExplain();
+	                dialog.dismiss();
+	                hideSoftKeyboard();
+	                showPost();
+	            }
+	        });
+        }
+
+        Tracker.getInstance().event(BxEvent.POST_RULE_ALERT_SHOW)
+        .append(Key.SECONDCATENAME, categoryEnglishName)
+        .append(Key.RULENAME, qt.getType()).end();
+        
+        AlertDialog alert = bd.create();
+        alert.show();
+	}
+	
 	@SuppressWarnings("unchecked")
 	@Override
 	protected void handleMessage(Message msg, final Activity activity, final View rootView) {
@@ -1295,15 +1313,55 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		}
 		case PostCommonValues.MSG_GET_META_SUCCEED:{
-			Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
-			if(button != null){
-				button.setEnabled(true);
-			}
-
 			postList = (LinkedHashMap<String, PostGoodsBean>)msg.obj;
 			addCategoryItem();
 			buildPostLayout(postList);
 			loadCachedData();
+			if(!checkQuota(MSG_GET_QUOTA_AFTER_CATEGORY_FINISH)){
+				this.showGettingMetaProgress(false);
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(button != null){
+					button.setEnabled(true);
+				}
+			}
+			break;
+		}
+		case PostCommonValues.MSG_CHECK_QUOTA_AFTER_LOGIN:{
+			if(!checkQuota(MSG_GET_QUOTA_AFTER_LOGIN_FINISH)){
+				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_CHECK_QUOTA_OK, "");
+			}
+			break;
+		}
+		case MSG_GET_QUOTA_AFTER_LOGIN_FINISH:{
+			if(msg.obj != null && msg.obj instanceof Quota){
+				((TextView)layout_txt.getRootView().findViewById(R.id.quotaText)).setText(((Quota)msg.obj).getMessage());
+				layout_txt.getRootView().findViewById(R.id.quotaText).setVisibility(View.VISIBLE);
+
+				if(((Quota)msg.obj).isOutOfQuota()){
+					this.handleOutOfQuota((Quota)msg.obj);
+					break;
+				}
+			}
+			this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_CHECK_QUOTA_OK, "");
+			break;
+		}
+		
+		case MSG_GET_QUOTA_AFTER_CATEGORY_FINISH:{
+			if(msg.obj instanceof Quota){
+				Button button = (Button) layout_txt.getRootView().findViewById(R.id.iv_post_finish);
+				if(((Quota)msg.obj).isOutOfQuota()){
+					handleOutOfQuota((Quota)msg.obj);
+					if(button != null){
+						button.setEnabled(false);
+					}
+				}else{
+					if(button != null){
+						button.setEnabled(true);
+					}
+				}
+				((TextView)layout_txt.getRootView().findViewById(R.id.quotaText)).setText(((Quota)msg.obj).getMessage());
+				layout_txt.getRootView().findViewById(R.id.quotaText).setVisibility(View.VISIBLE);
+			}
 			this.showGettingMetaProgress(false);
 			break;
 		}
@@ -1335,7 +1393,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			doClearUpImages();
 			
 			String id = ((PostResultData)msg.obj).id;
-			boolean isRegisteredUser = ((PostResultData)msg.obj).isRegisteredUser;
 			String message = ((PostResultData)msg.obj).message;
 			int code = ((PostResultData)msg.obj).error;
 			if (!id.equals("") && code == 0) {
@@ -1360,33 +1417,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 							intent.putExtra("lastPost", id);
 						}
 					}
-//					showPost();
-//					String lp = getArguments().getString("lastPost");
-//					if(lp != null && !lp.equals("")){
-//						lp += "," + id;
-//					}else{
-//						lp = id;
-//					}
-//					args.putString("lastPost", lp);
-//					
-//					args.putString("cateEnglishName", categoryEnglishName);
-//					args.putBoolean(KEY_IS_EDITPOST, editMode); 
-//					
-//					args.putBoolean(KEY_LAST_POST_CONTACT_USER,  isRegisteredUser);
-//					if(activity != null){							
-//						args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-//						
-//						Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-//						intent.putExtras(args);
-//						PerformanceTracker.stamp(Event.E_Post_Send_Success_Broadcast);
-//						activity.sendBroadcast(intent);
-//					}
 					doClearUpImages();
-//					finishFragment();
 				}
-//				else{
-//					PostGoodsFragment.this.finishFragment(PostGoodsFragment.MSG_POST_SUCCEED, null);
-//				}
 			}else{
 				postResultFail(message);
 				if(msg.obj != null){
@@ -1418,10 +1450,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case ErrorHandler.ERROR_SERVICE_UNAVAILABLE:
 			hideProgress();
 			ErrorHandler.getInstance().handleMessage(msg);
-//			this.getView().findViewById(R.id.goodscontent).setVisibility(View.GONE);
-//			this.getView().findViewById(R.id.networkErrorView).setVisibility(View.VISIBLE);		
-//			this.reCreateTitle();
-//			this.refreshHeader();
 			break;
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
@@ -1552,15 +1580,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	                	@Override
 	                    public void onClick(DialogInterface dialog, int which) {
 	                        dialog.dismiss();
-//							if(getActivity() != null){
-//								resetData(true);
-//								showPost();
-//								Bundle args = createArguments(null, null);
-//								args.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYPOST);
-//								Intent intent = new Intent(CommonIntentAction.ACTION_BROADCAST_POST_FINISH);
-//								intent.putExtras(args);
-//								getActivity().sendBroadcast(intent);
-//							}
 	                        handlePostFinish(result.id);
 	                    }
 	                });
@@ -1571,8 +1590,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 	}
 
-	private int imgHeight = 0;
-	
 	////to fix stupid system error. all text area will be the same content after app is brought to front when activity not remain is checked
 	private void setInputContent(){		
 		if(layout_txt == null) return;

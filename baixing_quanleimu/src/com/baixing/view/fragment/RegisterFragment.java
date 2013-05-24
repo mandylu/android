@@ -390,7 +390,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		if(action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null){
 			outParams.addParam("verifyCode", verifyCode);
 			verifyCode = null;
-		}else if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) || action.equals(BaseAnonymousLogic.Action_Register)){
+		}else if(action.equals(BaseAnonymousLogic.Action_Register)){
 			outParams.addParam("password", passwordEt.getText().toString());
 		}
 	}

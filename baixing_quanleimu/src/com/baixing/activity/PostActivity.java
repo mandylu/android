@@ -30,7 +30,7 @@ public class PostActivity extends BaseTabActivity {
 		if(GlobalDataManager.context == null || GlobalDataManager.context.get() == null){
 			GlobalDataManager.context = new WeakReference<Context>(this);
 		}
-		ImageLoaderManager.initImageLoader();
+//		ImageLoaderManager.initImageLoader();
 		this.setContentView(R.layout.main_post);
 		final View rootV = findViewById(R.id.root);
 		

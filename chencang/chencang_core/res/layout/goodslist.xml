@@ -1,0 +1,119 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    xmlns:app="http://schemas.android.com/apk/res-auto"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent" >
+	
+    <include layout="@layout/title_home" android:id="@+id/title"/>
+    
+        <include layout="@layout/filter_bar"
+            android:id="@+id/filter_bar_root"
+            android:layout_below="@+id/title"
+        android:layout_width="fill_parent"
+        android:layout_height="@dimen/tab_height"/>
+        
+    <LinearLayout
+        android:id="@+id/linearListView"
+        android:layout_below="@+id/filter_bar_root"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:background="@color/bg_screen"
+        android:orientation="vertical" >
+
+        <com.baixing.widget.PullToRefreshListView
+            android:id="@+id/lvGoodsList"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:divider="@drawable/list_divider"
+            android:dividerHeight="0dp"
+            android:fastScrollEnabled="true"
+            android:focusable="true"
+            android:footerDividersEnabled="true"
+            android:headerDividersEnabled="false"
+            android:listSelector="@drawable/list_selector"
+            android:scrollbars="vertical"
+            android:scrollingCache="false"
+            app:need_gap_header="false" />
+    </LinearLayout>
+<!--      
+    <RelativeLayout
+        android:id="@+id/linearStatusbar"
+        android:layout_below="@+id/filter_bar_root"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="#dd222222"
+        android:gravity="center_vertical" >
+
+        <TextView
+            android:id="@+id/tvSpaceOrTimeNumber"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_marginLeft="20dip"
+            android:layout_marginRight="5dip"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="1"
+            android:textColor="#ffffff"
+            android:textSize="20dip"
+            android:textStyle="bold" />
+
+        <TextView
+            android:id="@+id/tvSpaceOrTimeUnit"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeNumber"
+            android:layout_alignTop="@+id/tvSpaceOrTimeNumber"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeNumber"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="小时"
+            android:textColor="#ffffff"
+            android:textSize="15dip" />
+
+        <TextView
+            android:id="@+id/tvSpaceOrTimeScope"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeUnit"
+            android:layout_alignTop="@+id/tvSpaceOrTimeUnit"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeUnit"
+            android:gravity="bottom"
+            android:singleLine="true"
+            android:text="以内的："
+            android:textColor="#ffffff"
+            android:textSize="15dip" />
+
+        <TextView
+            android:id="@+id/tvSubCateName"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignBottom="@+id/tvSpaceOrTimeScope"
+            android:layout_alignTop="@+id/tvSpaceOrTimeScope"
+            android:layout_toLeftOf="@+id/imageQuickIndicator"
+            android:layout_toRightOf="@+id/tvSpaceOrTimeScope"
+            android:gravity="bottom|left"
+            android:singleLine="true"
+            android:text="xxxx"
+            android:textColor="#ffffff"
+            android:textSize="16dip"
+            android:textStyle="bold" />
+
+        <ImageView
+            android:id="@+id/imageQuickIndicator"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_alignParentRight="true" />
+    </RelativeLayout> 
+
+    <ImageButton
+        android:id="@+id/publishBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_alignParentBottom="true"
+        android:layout_alignParentLeft="true"
+        android:layout_marginBottom="10dip"
+        android:layout_marginLeft="10dip"
+        android:background="@drawable/btn_listing_publish" >
+    </ImageButton>-->
+
+</RelativeLayout>

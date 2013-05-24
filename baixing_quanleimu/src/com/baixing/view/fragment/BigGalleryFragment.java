@@ -45,7 +45,7 @@ import com.baixing.util.ViewUtil;
 import com.baixing.widget.ViewFlow;
 import com.quanleimu.activity.R;
 
-class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
+public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchListener, MediaScannerConnectionClient {
 	
 	private static final int MSG_HIDE_TITLE = 1;
 	private static final int MSG_SHOW_TITLE = 2;
@@ -154,13 +154,13 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
         
 //        goodsDetail = null;
 //        ImageCacheManager.getInstance().enableSampleSize(false);
-  		ImageLoaderManager.getInstance().Cancel(listUrl);
+        GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(listUrl);
   		if(listUrl != null){
   			for(int i = 0; i < listUrl.size(); ++ i){
   				String url = listUrl.get(i);
   				if(url != null && !url.equals("")){
 //  					Log.d("ondestroy of biggalleryview", "hahahaha recycle in biggalleryview ondestroy");
-  					ImageCacheManager.getInstance().forceRecycle(url, true);
+  					GlobalDataManager.getInstance().getImageManager().forceRecycle(url, true);
 //  					Log.d("ondestroy of biggalleryview", "hahahaha end recycle in biggalleryview ondestroy");
   				}
   			}
@@ -247,7 +247,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //	    		return;
 //	    	}
 //	    	String filePath = SimpleImageLoader.getFileInDiskCache(vfCoupon.getSelectedView().getTag().toString());
-	    	String filePath = ImageCacheManager.getInstance().getFileInDiskCache(path);
+	    	String filePath = GlobalDataManager.getInstance().getImageManager().getFileInDiskCache(path);
 	    	if(filePath == null) return;
 	    	
 	    	String title = goodsDetail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_TITLE)+postIndex;
@@ -383,11 +383,11 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 //					imageView.setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.bg_transparent));
 					
 					if(failBk == null){
-						failBk = ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
+						failBk = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.home_bg_thumb_2x);
 					}
 					String prevTag = (String) imageView.getTag();
 					imageView.setTag(imageUrls.get(position));
-				    ImageLoaderManager.getInstance().showImg(imageView, imageUrls.get(position), 
+					GlobalDataManager.getInstance().getImageLoaderMgr().showImg(imageView, imageUrls.get(position), 
 				    		prevTag, getAppContext(), new WeakReference<Bitmap>(failBk));
 		            
 				}
@@ -439,7 +439,7 @@ class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSwitchLis
 				if(position - index >= 0)
 					urls.add(listUrl.get(position-index));				
 			}
-			ImageLoaderManager.getInstance().AdjustPriority(urls);		
+			GlobalDataManager.getInstance().getImageLoaderMgr().AdjustPriority(urls);		
 		}
 
 		@Override

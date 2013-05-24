@@ -23,6 +23,7 @@ public class ApiParams implements Serializable {
 	private static final long serialVersionUID = 6811845003931804312L;
 	
 	public static final String KEY_APIKEY = "api_key";
+	public static final String KEY_APPID = "appId";
 	public static final String KEY_UDID = "udid";
 	public static final String KEY_VERSION = "version";
 	public static final String KEY_TIMESTAMP = "timestamp";

@@ -1,0 +1,67 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout
+ 	 xmlns:android="http://schemas.android.com/apk/res/android"
+  	 android:layout_width="fill_parent"
+  	 android:layout_height="fill_parent"
+  	 android:orientation="vertical"
+  	 android:focusableInTouchMode="true"
+  	 android:background="@color/bg_screen"
+  	 android:focusable="true">
+	<include layout="@layout/common_title"/>
+
+  	 <LinearLayout
+  	 	android:id="@+id/lvSearch"
+  	 	android:layout_width="fill_parent"
+  	 	android:layout_height="wrap_content"
+  	 	android:layout_below="@+id/linearTop"  	
+  	 	android:gravity="center">
+  	     
+  	     <LinearLayout
+  	         android:id="@+id/rlSearch"
+  	         android:layout_width="fill_parent"
+  	         android:layout_height="wrap_content"
+  	         android:layout_marginLeft="10dip"
+  	         android:layout_marginTop="5dip"
+  	         android:layout_marginBottom="5dip"
+  	         android:gravity="center"
+  	         android:layout_weight="1">
+	
+  	         <EditText
+  	             android:id="@+id/etSearch"
+			        android:layout_width="fill_parent"
+			        android:layout_height="40dp"
+			        android:drawableLeft="@drawable/iconsearch"
+			        android:drawablePadding="6dp"
+			        android:singleLine="true"
+			        android:gravity="center_vertical|left"
+			        android:textSize="@dimen/font_input_text"
+			        android:textColor="@color/common_edit_text_color"
+			        android:background="@drawable/edit_bg"
+  	             android:focusableInTouchMode="true"
+				 android:imeOptions="actionGo"/>        		          	         
+  	     </LinearLayout>
+  	     
+  	     <Button
+  	         	android:id="@+id/btnCancel"
+  	             android:layout_width="54dp"
+  	             android:layout_height="40dp"
+  	             android:layout_margin="5dip"
+  	             android:singleLine="true"
+  	             android:text="搜索"
+  	             android:gravity="center"	
+  	             android:textColor="@color/common_button_text_color"		        
+  	             android:background="@drawable/bg_message_btn_selector" />
+  	 </LinearLayout>	
+  	 
+  	 <ListView 
+  	     android:layout_below="@id/lvSearch"
+  	 	android:layout_height="fill_parent" 
+  	 	android:layout_width="fill_parent" 
+  	 	android:id="@+id/lvSearchHistory"
+  	 	android:layout_gravity="bottom"
+  	 	android:listSelector="#00000000"
+  	 	android:scrollingCache="false"
+  	 	android:focusableInTouchMode="true"
+  	 	android:focusable="true"/>
+
+</RelativeLayout>

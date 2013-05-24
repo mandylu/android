@@ -5,6 +5,8 @@ import java.io.IOException;
 import java.util.ArrayList;
 import java.util.LinkedHashMap;
 import java.util.List;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONArray;
 import org.json.JSONException;
@@ -13,18 +15,19 @@ import org.json.JSONObject;
 import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.entity.Ad;
+import com.baixing.entity.AdList;
 import com.baixing.entity.Category;
 import com.baixing.entity.ChatMessage;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.CityList;
 import com.baixing.entity.Filters;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.Ad;
-import com.baixing.entity.AdList;
 import com.baixing.entity.HotData;
 import com.baixing.entity.HotList;
 import com.baixing.entity.ImageList;
 import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.Quota;
 import com.baixing.entity.labels;
 import com.baixing.entity.values;
 import com.fasterxml.jackson.core.JsonFactory;
@@ -80,29 +83,6 @@ public class JsonUtil {
 	// 获取所有城市列表
 	public static CityList parseCityListFromJson(String jsonData) {
 		return parseCityListFromJackson(jsonData);
-//		CityList cityList = new CityList();
-//		try {
-//			List<CityDetail> list = new ArrayList<CityDetail>();
-//			// JSONArray jsonA = new JSONArray(jsonData);
-//
-//			JSONObject jsonObj = new JSONObject(jsonData);
-//
-//			JSONArray jsonArray = jsonObj.names();
-//			for (int i = 0; i < jsonArray.length(); i++) {
-//				CityDetail cityDetail = new CityDetail();
-//				cityDetail.setId(jsonArray.getString(i));
-//				JSONObject jsonCity = jsonObj.getJSONObject(jsonArray
-//						.getString(i));
-//				cityDetail.setEnglishName(jsonCity.getString("englishName"));
-//				cityDetail.setName(jsonCity.getString("name"));
-//				cityDetail.setSheng(jsonCity.getString("sheng"));
-//				list.add(cityDetail);
-//			}
-//			cityList.setListDetails(list);
-//		} catch (JSONException e1) {
-//			e1.printStackTrace();
-//		}
-//		return cityList;
 	}
 	
 	public static List<ChatMessage> parseChatMessagesByJackson(String msg){
@@ -276,7 +256,7 @@ public class JsonUtil {
 						while(jt != JsonToken.END_OBJECT){
 							String fname = parser.getCurrentName();
 							if(fname == null){
-								parser.nextToken();
+								jt = parser.nextToken();
 								continue;
 							}
 							if(fname.equals("images")){
@@ -290,7 +270,7 @@ public class JsonUtil {
 											jt = parser.nextToken();
 											continue;
 										}
-										parser.nextToken();
+										jt = parser.nextToken();
 										
 										String imgStr = "";
 										while(jt != JsonToken.END_ARRAY){
@@ -737,5 +717,34 @@ public class JsonUtil {
 		}
 		
 		return root;
+	}
+	
+	
+	static public Quota parseQuota(String jsonData){
+		Quota quota = null;
+		try{
+			JSONObject json = new JSONObject(jsonData);
+			JSONObject quotaObj = json.getJSONObject("quota");
+			String explain = "";
+			if(quotaObj.has("explain")){
+				String exp = quotaObj.getString("explain");
+				Pattern p = Pattern.compile("(?<=: )\\w+");
+		        Matcher m = p.matcher(exp);
+		        if(m.find()){
+		        	explain = m.group();
+		        }
+			}
+			
+			quota = new Quota(quotaObj.getBoolean("outOfQuota"), 
+					quotaObj.getInt("limit"), 
+					quotaObj.getInt("used"), 
+					quotaObj.getString("message"), 
+					quotaObj.getString("type"),
+					explain);
+			
+		}catch(JSONException e){
+			e.printStackTrace();
+		}
+		return quota;
 	}
 }

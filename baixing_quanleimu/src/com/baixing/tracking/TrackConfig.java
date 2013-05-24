@@ -99,6 +99,10 @@ public class TrackConfig implements Observer {
 			SHARE_FROM("shareFrom", "分享发起页"),
 			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
+			ISEDIT("isEdit", "拍照是否编辑"),
+			FROM("from", "拍照来源"),
+			RULENAME("ruleName", "版规名称")
+			
 			;
 			private String name;
 			private String description;
@@ -164,7 +168,7 @@ public class TrackConfig implements Observer {
 //			POSTCATE2("/post/cate2","发布选择二级类目页"),
 			POST("/post","发布界面"),
 			EDITPOST("/editPost","编辑界面"),
-			CAMERA("/camera", "拍照"),
+			CAMERA("/post/camera", "拍照"),
 			MY("/my","我的百姓网"),
 			MYADS_SENT("/myAds_sent","已发布信息"),
 //			MYADS_APPROVING("/myAds_approving","审核未通过"),
@@ -177,7 +181,9 @@ public class TrackConfig implements Observer {
 			FEEDBACK("/feedback", "反馈"),
 			LOGIN("/login","登录"),
 			REGISTER("/register","注册"),
-			FORGETPASSWORD("/forgetPassword","忘记密码");
+			FORGETPASSWORD("/forgetPassword","忘记密码"),
+			RESETPASSWORD("/resetPassword", "修改密码"),
+			BINDFORWARD("/3rdAuth", "绑定转发");
 			
 			private String name;
 			private String description;
@@ -225,6 +231,9 @@ public class TrackConfig implements Observer {
 			POST_GPSFAIL("Post_GpsFail","Post_GPS失败"),
 			POST_INPUTING("Post_Inputing","post页面编辑项目"),
 			POST_IMAGEUPLOAD("Post_ImgUpload", "照片上传"),
+			POST_RULE_ALERT_SHOW("Post_RuleAlert_Show", "遇到前置版规提示"),
+			POST_RULE_ALERT_ACTION("Post_RuleAlert_Action", "处理前置版规提示"),
+			
 			
 //			EDITPOST_POSTBTNHEADERCLICKED("EditPost_PostBtnHeaderClicked","EditPost_PostBtnHeaderClicked"),
 			EDITPOST_POSTBTNCONTENTCLICKED("EditPost_PostBtnContentClicked","EditPost_PostBtnContentClicked"),
@@ -288,7 +297,8 @@ public class TrackConfig implements Observer {
 			PUSH_STARTAPP("Push_StartApp","Push_StartApp"),
 			SHARE("Share","Share"),
 			SHARE_START("Share_Start","Share_Start"),
-			GPS("GPS","GPS");
+			GPS("GPS","GPS"),
+			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit");
 			
 			private String name;
 			private String description;

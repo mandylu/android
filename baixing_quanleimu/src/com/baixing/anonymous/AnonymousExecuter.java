@@ -1,8 +1,6 @@
 //xumengyi@baixing.com
 package com.baixing.anonymous;
 
-import java.util.Random;
-
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -68,13 +66,7 @@ public class AnonymousExecuter implements Callback{
 	}
 	
 	public void executeAction(String action, String mobile){
-		if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy)){
-			ApiParams params = new ApiParams();
-			if(listener != null){
-				listener.beforeActionDone(BaseAnonymousLogic.Action_AutoVerifiy, params);
-			}
-			doAutoVerify(mobile, params);
-		}else if(action.equals(BaseAnonymousLogic.Action_Login)){
+		if(action.equals(BaseAnonymousLogic.Action_Login)){
 			ApiParams params = new ApiParams();
 			if(listener != null){
 				listener.beforeActionDone(BaseAnonymousLogic.Action_Login, params);
@@ -99,11 +91,7 @@ public class AnonymousExecuter implements Callback{
 				listener.beforeActionDone(BaseAnonymousLogic.Action_Verify, params);
 			}	
 			String code = params.getParam("verifyCode");
-//			if(code != null && code.length() > 0){
-				this.doVerify(mobile, code);
-//			}else{
-//				requestVerifyCode(mobile, params);	
-//			}			
+			this.doVerify(mobile, code);
 		}
 	}
 	
@@ -113,20 +101,6 @@ public class AnonymousExecuter implements Callback{
 		params.addParam("nickname", mobile);
 		params.addParam("password", password);
 		BaseApiCommand.createCommand("user_login", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);		
-	}
-	
-	private void doAutoVerify(String mobile, ApiParams param){
-		ApiParams params = new ApiParams();
-		params.addParam("mobile", mobile);
-		params.addAll(param.getParams());
-		BaseApiCommand.createCommand("autoVerify", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
-	}
-	
-	private void mockSms(){
-        Intent newIntent = new Intent(CommonIntentAction.ACTION_BROADCAST_SMS);
-        newIntent.putExtra("msg", "您的手机验证码为905292，请在手机客户端上输入后继续下一步操作。本条免费，有效期一天");
-        GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(newIntent);
-
 	}
 	
 	Handler handler = new Handler(){
@@ -231,9 +205,7 @@ public class AnonymousExecuter implements Callback{
 	
 	private static String getPairAction(String apiName){
 		String pair = "";
-		if(apiName.equals("autoVerify")){
-			pair = BaseAnonymousLogic.Action_AutoVerifiy;
-		}else if(apiName.equals("verifyMobile")){			
+		if(apiName.equals("verifyMobile")){			
 			pair = BaseAnonymousLogic.Action_Verify;
 		}else if(apiName.equals("user_login")){
 			pair = BaseAnonymousLogic.Action_Login;

@@ -26,6 +26,7 @@ import android.os.Build.VERSION;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.KeyEvent;
@@ -46,6 +47,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.tracking.TrackConfig;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.BitmapUtils;
 import com.baixing.util.PerformEvent.Event;
@@ -664,8 +666,17 @@ public class CameraActivity extends Activity  implements OnClickListener, Sensor
 	@Override
 	protected void onResume() {
 		PerformanceTracker.stamp(Event.E_CameraActivity_onResume);
+		String isEdit = getIntent().getBooleanExtra("isEdit", false) ? "1" : "0";
+		String from = "others";
+		int finishCode = getIntent().getIntExtra(CommonIntentAction.EXTRA_COMMON_FINISH_CODE, 0);
+		if(finishCode == Activity.RESULT_CANCELED){
+			from = "postForm";
+		}
 		GlobalDataManager.getInstance().setLastActiveActivity(this.getClass());
-		Tracker.getInstance().pv(TrackConfig.TrackMobile.PV.CAMERA).end();
+		Tracker.getInstance()
+		.pv(TrackConfig.TrackMobile.PV.CAMERA)
+		.append(Key.ISEDIT, isEdit)
+		.append(Key.FROM, from).end();
 //		Profiler.markStart("cameOnResume");
 		super.onResume();
 		

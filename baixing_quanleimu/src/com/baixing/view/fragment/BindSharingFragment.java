@@ -23,6 +23,8 @@ import com.baixing.sharing.BaseSharingManager;
 import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.sharing.WeiboSSOSharingManager;
 import com.baixing.sharing.WeiboSSOSharingManager.WeiboAccessTokenWrapper;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 
@@ -83,6 +85,7 @@ class BindSharingFragment extends BaseFragment implements OnClickListener{
 	@Override
 	public void onResume(){
 		super.onResume();
+		Tracker.getInstance().pv(PV.BINDFORWARD).end();
 		setBindingStatus();
 	}
 	

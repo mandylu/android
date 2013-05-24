@@ -252,8 +252,7 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 		if(action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null){
 			outParams.addParam("verifyCode", verifyCode);
 			verifyCode = null;
-		}else if(action.equals(BaseAnonymousLogic.Action_AutoVerifiy) 
-				|| action.equals(BaseAnonymousLogic.Action_Register)
+		}else if(action.equals(BaseAnonymousLogic.Action_Register)
 				|| action.equals(BaseAnonymousLogic.Action_Login)){
 			outParams.addParam("password", password);
 		}

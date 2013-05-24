@@ -1,0 +1,94 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen" >
+
+    <include layout="@layout/common_title" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearTop"
+        android:layout_marginBottom="5dip" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <RelativeLayout
+                android:id="@+id/setFlowOptimize"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textView1"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="流量优化设置"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/setFlowOptimizeTw"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textView1"
+                    android:layout_marginRight="10dp"
+                    android:text="图片模式" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/setFeedback"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="反馈"
+                    android:textSize="@dimen/set_table_item_text_height" />
+            </RelativeLayout>
+
+            <Button
+                android:id="@+id/debugBtn"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="right"
+                android:background="@android:color/transparent" />
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

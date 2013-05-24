@@ -27,12 +27,14 @@ public class  VadListLoader implements Serializable{
 	private boolean mIsFirst = true;
 	private boolean mHasMore = true;
 	private int mCurIndex = 0;
-	private int mRows = 30;
+	private int mRows = DEFAULT_ROWS;
+	private static int DEFAULT_ROWS = 30;
 //	private transient Handler mHandler = new Handler();
 	private transient Callback callback;
 	
-	private static String mApiName = "ad_list";
-	private static String mNearbyApiName = "ad_nearby";
+//	private static String mApiName = "ad_list";
+//	private static String mNearbyApiName = "ad_nearby";
+//	private static String mAroundApiName = "getAroundAds";
 	
 	private String mLastJson = null; //Should this be static?
 	
@@ -91,6 +93,10 @@ public class  VadListLoader implements Serializable{
 		mRows = rows;
 	}
 	
+	public int getRows(){
+		return mRows;
+	}
+	
 	public String getLastJson(){
 		return mLastJson;
 	}
@@ -145,12 +151,33 @@ public class  VadListLoader implements Serializable{
 	public E_LISTDATA_STATUS getRequestDataStatus(){
 		return mStatusListdataRequesting;
 	}
-	
-	private boolean isNearby = false;
-	public void setNearby(boolean isNearby){
-		this.isNearby = isNearby;
+
+	public static enum SEARCH_POLICY {
+		SEARCH_LISTING("ad_list"),
+		SEARCH_USER_LIST("ad_user_list"),
+		SEARCH_NEARBY("ad_nearby"),
+		SEARCH_AROUND("getAroundAds");
+		public String command;
+		private SEARCH_POLICY(String command){
+			this.command = command;
+		}
 	}
 	
+	private SEARCH_POLICY mPolicy = SEARCH_POLICY.SEARCH_LISTING;
+	
+	public void setSearchType(SEARCH_POLICY policy){
+		mPolicy = policy;
+	}
+	
+	public SEARCH_POLICY getSearchType(){
+		return mPolicy;
+	}
+	
+//	private boolean isNearby = false;
+//	public void setNearby(boolean isNearby){
+//		this.isNearby = isNearby;
+//	}
+//	
 	public void startFetching(Context context, boolean isFirst, boolean useCache){
 		cancelFetching();
 		
@@ -158,7 +185,7 @@ public class  VadListLoader implements Serializable{
 		
 		mIsFirst = isFirst;
 
-		currentCommand = new GetListCommand(context, isNearby, isUserList, useCache);		
+		currentCommand = new GetListCommand(context, mPolicy, useCache);		
 		currentCommand.run();
 	}	
 	
@@ -168,20 +195,14 @@ public class  VadListLoader implements Serializable{
 		mStatusListdataRequesting = (useCache ? E_LISTDATA_STATUS.E_LISTDATA_STATUS_OFFLINE : E_LISTDATA_STATUS.E_LISTDATA_STATUS_ONLINE);
 		
 		mIsFirst = isFirst;
-		currentCommand = new GetListCommand(context, msgGotFirst, msgGotMore, msgNoMore, useCache, isNearby, isUserList);		
+		currentCommand = new GetListCommand(context, msgGotFirst, msgGotMore, msgNoMore, useCache, mPolicy);		
 		currentCommand.run();
 	}
 	
 	public void setRuntime(boolean rt){
 		mRt = rt;
 	}
-	
-	private boolean isUserList = false;
-	
-	public void setSearchUserList(boolean isUserList){
-		this.isUserList = isUserList;
-	}
-	
+		
 	class GetListCommand implements Runnable, BaseApiCommand.Callback {
 		private int msgFirst = VadListLoader.MSG_FINISH_GET_FIRST;
 		private int msgMore = VadListLoader.MSG_FINISH_GET_MORE;
@@ -191,23 +212,25 @@ public class  VadListLoader implements Serializable{
 		private Context context;
 		
 		private boolean mCancel = false;
-		private boolean isNearby = false;
-		private boolean isUserList = false;
+//		private boolean isNearby = false;
+//		private boolean isUserList = false;
 		
-		GetListCommand(Context cxt, boolean isNearby, boolean isUserList, boolean useCache){
+		private SEARCH_POLICY policy = SEARCH_POLICY.SEARCH_LISTING;
+		
+		GetListCommand(Context cxt, SEARCH_POLICY policy, boolean useCache){
 			this.useCache = useCache;
-			this.isNearby = isNearby;
-			this.isUserList = isUserList;
+			this.policy = policy;
+//			this.isUserList = isUserList;
 			this.context = cxt;
 		}
 		
-		GetListCommand(Context cxt, int errFirst, int errMore, int errNoMore, boolean useCache, boolean isNearby, boolean isUserList){
+		GetListCommand(Context cxt, int errFirst, int errMore, int errNoMore, boolean useCache, SEARCH_POLICY policy){
 			msgFirst = errFirst;
 			msgMore = errMore;
 			msgNoMore = errNoMore;
 			this.useCache = useCache;
-			this.isNearby = isNearby;
-			this.isUserList = isUserList;
+			this.policy = policy;
+//			this.isUserList = isUserList;
 			this.context = cxt;
 		}
 		
@@ -258,8 +281,10 @@ public class  VadListLoader implements Serializable{
 			if(mRt){
 				list.addParam("rt","1");
 			}
-			if(mRows > 0)
-				list.addParam("rows", "" + mRows);
+			if(mRows <= 0){
+				mRows = DEFAULT_ROWS;
+			}
+			list.addParam("rows", "" + mRows);
 			
 			
 			if(!this.wantedExists(list)){//如果没有显式的制定wanted，那么默认wanted＝0, 只显示 “转让信息”
@@ -271,8 +296,10 @@ public class  VadListLoader implements Serializable{
 				return;
 			}
 			
-			String method = this.isNearby ? mNearbyApiName : (isUserList ? "ad_user_list" : mApiName);
-//			ApiClient.getInstance().remoteCall(Api.createGet(method), list, this);
+			String method = this.policy.command;
+//					this.policy == SEARCH_POLICY.SEARCH_LISTING ? mApiName 
+//							: (policy == SEARCH_POLICY.SEARCH_NEARBY ? mNearbyApiName : mAroundApiName);
+////			ApiClient.getInstance().remoteCall(Api.createGet(method), list, this);
 			BaseApiCommand.createCommand(method, true, list).execute(context, this);
 		}
 		

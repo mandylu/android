@@ -66,14 +66,16 @@ public final class BaseApiCommand implements IRequestStatusListener {
 		return "http://" + HOST + "/api/mobile." + apiName + "/?";
 	}
 	
-	public static void init(String udid, String userId, String version, String channel, String city) {
+	public static void init(String udid, String userId, String version, String channel, String city, String appId) {
 		commonParams.addParam(ApiParams.KEY_UDID, udid);
 		commonParams.addParam(ApiParams.KEY_USERID, userId);
 		commonParams.addParam(ApiParams.KEY_VERSION, version);
 		commonParams.addParam(ApiParams.KEY_CHANNEL, channel);
 		commonParams.addParam(ApiParams.KEY_CITY, city);
 		commonParams.addParam(ApiParams.KEY_APIKEY, API_KEY);
+		commonParams.addParam(ApiParams.KEY_APPID, appId);
 	}
+
 	
 	public static void addCommonParams(String key, String value) {
 		commonParams.addParam(key, value);

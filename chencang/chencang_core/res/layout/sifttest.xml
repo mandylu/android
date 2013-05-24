@@ -1,0 +1,107 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:background="@color/bg_screen" >
+
+    <!--
+         <ListView 
+        android:id="@+id/lv_test"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/rlTitle"
+        />
+    -->
+ 	<include layout="@layout/common_title"/>
+ 	
+    <ScrollView
+        android:id="@+id/svDetail"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent">
+
+        <LinearLayout
+            android:id="@+id/llDetail"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+
+            <LinearLayout
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:gravity="center"
+                android:paddingTop="20dp"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:paddingBottom="10dp"
+                android:orientation="horizontal" 
+               >
+ 
+                <!-- TextView
+                    android:textSize="18dip"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:textColor="#82807C"
+                    android:text="关键字" /> 
+                     <EditText
+                    android:gravity="right"
+                    android:id="@+id/edsift"
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@android:color/transparent"
+                    android:hint="请输入您想要搜索的内容" />-->
+
+				    <EditText
+				        android:id="@+id/edsift"
+				        android:layout_width="fill_parent"
+				        android:layout_height="40dp"
+				        android:drawableLeft="@drawable/iconsearch"
+				        android:drawablePadding="6dp"
+				        android:singleLine="true"
+				        android:gravity="center_vertical|left"
+				        android:textSize="@dimen/font_input_text"
+				        android:textColor="@color/common_edit_text_color"
+				        android:background="@drawable/edit_bg"
+				        android:hint="请输入关键字"
+				        android:inputType="text" >
+				    </EditText>
+               
+            </LinearLayout>
+            
+            <LinearLayout
+                android:id="@+id/meta"
+                android:paddingLeft="16dp"
+                android:paddingRight="16dp"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:orientation="vertical" >
+            </LinearLayout>
+            
+			<Button android:id="@+id/filter_confirm"
+                android:text="确定"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textSize="@dimen/font_medium"
+                android:textColor="#ffffff"
+                android:background="@drawable/bg_call_btn_selector"
+                android:layout_marginTop="10dp"
+				android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"/>
+            
+            
+            <Button android:id="@+id/filter_clear"
+                android:text="清空"
+                android:layout_width="fill_parent"
+                android:layout_height="40dp"
+                android:textSize="@dimen/font_medium"
+                android:background="@drawable/bg_message_btn_selector"
+                android:layout_marginTop="15dp"
+                android:layout_marginBottom="15dp"
+				android:layout_marginLeft="16dp"
+                android:layout_marginRight="16dp"/>
+
+        </LinearLayout>
+    </ScrollView>
+
+</LinearLayout>

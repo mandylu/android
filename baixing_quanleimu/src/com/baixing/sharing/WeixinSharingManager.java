@@ -15,6 +15,7 @@ import android.app.Activity;
 import android.content.Context;
 import android.graphics.Bitmap;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.ImageList;
@@ -86,7 +87,7 @@ class WeixinSharingManager extends BaseSharingManager{
 //		}
 		
 		if(imgUrl != null){
-			WeakReference<Bitmap> thumbnail = ImageCacheManager.getInstance().getFromCache(imgUrl);
+			WeakReference<Bitmap> thumbnail = GlobalDataManager.getInstance().getImageManager().getFromCache(imgUrl);
 			if(thumbnail != null && thumbnail.get() != null){
 				obj.setThumbImage(thumbnail.get());
 			}

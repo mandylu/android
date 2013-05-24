@@ -1,0 +1,48 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    >
+
+    <ImageView
+        android:id="@+id/result_image"
+        android:layout_width="@dimen/camera_preview_width"
+        android:layout_height="@dimen/camera_preview_width"
+        android:layout_margin="@dimen/camera_preview_half_gap"
+        android:padding="@dimen/camera_preview_board_size"
+        android:layout_centerInParent="true"
+        android:background="@drawable/bg_image_preview"
+        android:scaleType="fitXY"
+        />
+
+    <LinearLayout android:id="@+id/loading_status"
+        android:visibility="gone"
+        android:layout_width="@dimen/camera_preview_width"
+        android:layout_height="@dimen/camera_preview_width"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:background="#80000000"
+        >
+    <ProgressBar
+        android:layout_width="@dimen/progress_size_small"
+        android:layout_height="@dimen/progress_size_small"
+        />
+    </LinearLayout>
+    
+    <ImageView
+        android:id="@+id/delete_preview"
+        android:layout_width="@dimen/camera_del_preview_width"
+        android:layout_height="@dimen/camera_del_preview_width"
+        android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        android:visibility="invisible"
+        android:src="@drawable/delete_img_icon" />
+    
+    <View android:id="@+id/delete_btn"
+        android:layout_width="45dp"
+        android:layout_height="45dp"
+		android:layout_alignParentRight="true"
+        android:layout_alignParentTop="true"
+        />
+
+</RelativeLayout>

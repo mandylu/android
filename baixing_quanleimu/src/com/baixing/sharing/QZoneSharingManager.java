@@ -76,7 +76,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements IUiListe
 		if(il != null){
 			String big = il.getBig();
 			if(big != null && big.length() > 0){
-				String path = ImageCacheManager.getInstance().getFileInDiskCache(big.split(",")[0]);
+				String path = GlobalDataManager.getInstance().getImageManager().getFileInDiskCache(big.split(",")[0]);
 				if(path != null && path.length() > 0){
 					
 					StringBuilder sb = new StringBuilder();
@@ -143,7 +143,7 @@ public class QZoneSharingManager  extends BaseSharingManager implements IUiListe
 	private void share2QZone(final Ad ad){
 		
 		String imgUrl = super.getThumbnailUrl(mAd);
-		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : ImageCacheManager.getInstance().getFileInDiskCache(imgUrl);
+		String imgPath = (imgUrl == null || imgUrl.length() == 0) ? "" : GlobalDataManager.getInstance().getImageManager().getFileInDiskCache(imgUrl);
 
 		Bundle bundle = new Bundle();
 		bundle.putString(WeiboSharingFragment.EXTRA_WEIBO_CONTENT,

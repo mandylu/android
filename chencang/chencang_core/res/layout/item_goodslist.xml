@@ -1,0 +1,147 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/goods_item_view_root"
+    android:layout_width="fill_parent"
+    android:layout_height="88dp"
+    android:paddingLeft="@dimen/list_margin_LF"
+    android:descendantFocusability="blocksDescendants"
+    android:gravity="center_vertical"
+    android:background = "@drawable/list_selector"
+    android:orientation="horizontal"
+   	>
+
+    <RelativeLayout
+        android:id="@+id/rlListInfo"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="false"
+        android:layout_alignParentTop="false"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/rlListOperate">
+
+        <com.baixing.widget.ContextMenuItem
+            android:id="@+id/deleteContextMenuItem"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:visibility="gone" />
+
+        <com.baixing.widget.AnimatingImageView
+            android:id="@+id/ivInfo"
+            android:layout_width="64dp"
+            android:layout_height="64dp"
+            android:layout_marginRight="10dp"
+            android:layout_centerVertical="true"
+            android:background="@drawable/bg_picholder" />
+
+        <RelativeLayout
+            android:id="@+id/pbLoadingProgress"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_alignBottom="@+id/ivInfo"
+            android:layout_alignLeft="@+id/ivInfo"
+            android:layout_alignRight="@+id/ivInfo"
+            android:layout_alignTop="@+id/ivInfo"
+            android:background="@drawable/bg_picholder"
+            android:visibility="gone" >
+
+            <ProgressBar
+                style="?android:attr/progressBarStyleSmall"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:indeterminate="true" />
+        </RelativeLayout>
+
+        <TextView
+            android:id="@+id/tvDes"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_alignTop="@+id/ivInfo"
+            android:layout_toRightOf="@+id/ivInfo"
+            android:singleLine="true"
+            android:textColor="@color/common_black"
+            android:textSize="16dip"
+            android:textStyle="bold"
+            android:layout_marginRight="5dp">
+
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvDateAndAddress"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDes"
+            android:layout_toRightOf="@+id/ivInfo"
+            android:singleLine="true"
+            android:textColor="@color/vad_list_sub_info"
+            android:textSize="14dip"
+            android:layout_toLeftOf="@+id/rlListOperate"
+            android:layout_marginRight="5dp">
+        </TextView>
+
+        <TextView
+            android:id="@+id/tvPrice"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDateAndAddress"
+            android:layout_toRightOf="@+id/ivInfo"
+            android:layout_marginRight="10dp"
+            android:singleLine="true"
+            android:textColor="@color/vad_meta_price"
+            android:textSize="14dip"
+		>
+        </TextView>
+        
+<!--         <View android:id="@+id/tvGap"
+           android:layout_width="10dp"
+           android:layout_height="wrap_content"
+           android:layout_below="@+id/tvDateAndAddress"
+           android:layout_toRightOf="@+id/tvPrice" 
+            /> -->
+
+        <TextView
+            android:id="@+id/tvUpdateDate"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:layout_below="@+id/tvDateAndAddress"
+            android:layout_toRightOf="@+id/tvPrice"
+            android:singleLine="true"
+            android:textColor="@color/vad_list_sub_info"
+            android:textSize="14dip" >
+        </TextView>
+
+    </RelativeLayout>
+
+    <RelativeLayout
+            android:layout_width="54dp"
+            android:layout_height="fill_parent"
+            android:layout_alignParentRight="true"
+            android:id="@+id/rlListOperate"
+            android:clickable="true"
+            android:paddingRight="@dimen/list_margin_LF"
+            android:layout_alignParentLeft="false"
+            android:layout_alignParentTop="false"
+            android:background="@drawable/list_selector">
+
+
+        <Button
+            android:id="@+id/btnListOperate"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:background="@drawable/btn_circle_arrow"
+            android:clickable="false"
+            android:focusable="false"
+            android:layout_centerVertical="true"
+            android:layout_alignParentRight="true"/>
+        
+        <View
+            android:id="@+id/lineView"
+            android:layout_width="1dp"
+            android:layout_height="20dp"
+            android:layout_centerVertical="true"
+            android:background="#c1c1b9"
+            android:layout_marginRight="@dimen/list_margin_LF"
+            android:layout_toLeftOf="@+id/btnListOperate" />
+    </RelativeLayout>
+
+</RelativeLayout>

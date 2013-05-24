@@ -6,6 +6,7 @@ import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
+import android.net.NetworkInfo.DetailedState;
 import android.os.Bundle;
 import android.os.Message;
 import android.util.Pair;
@@ -34,6 +35,7 @@ import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
@@ -85,7 +87,10 @@ public class SearchFragment extends BaseFragment implements Callback {
 		title.hasGlobalSearch = true;
 	}
 	
-	
+	public SearchFragment() {
+		this.defaultEnterAnim = R.anim.zoom_enter;
+		this.defaultExitAnim = R.anim.zoom_exit;
+	}
 	
 
 	@Override
@@ -186,8 +191,8 @@ public class SearchFragment extends BaseFragment implements Callback {
 	public void onResume() {
 		super.onResume();
 
-		if (searchContent.equals(""))
-			Tracker.getInstance().pv(PV.SEARCH).end();
+//		if (searchContent.equals(""))
+//			Tracker.getInstance().pv(PV.SEARCH).end();
 	}
 
 	@Override
@@ -219,7 +224,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 	 */
 	private void showSearchResult(boolean search) {
 		this.pv = PV.SEARCHRESULTCATEGORY;
-		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
+//		Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(Key.SEARCHKEYWORD, searchContent).end();
 
 		this.hideSoftKeyboard();
 		if (search)
@@ -270,6 +275,7 @@ public class SearchFragment extends BaseFragment implements Callback {
 					totalAdsCount += pair.second;
 					maxAdsCount = Math.max(maxAdsCount, pair.second);
 				}
+				Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(TrackConfig.TrackMobile.Key.SEARCHKEYWORD, this.searchContent).end();
 			}
 			
 			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)

@@ -1,0 +1,129 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/linearTop"
+    android:layout_width="fill_parent"
+    android:layout_height="@dimen/title_height"
+    android:background="@drawable/chencang_header_bg" >
+
+    <RelativeLayout
+        android:id="@+id/left_action"
+        android:layout_width="@dimen/title_action_width"
+        android:layout_height="fill_parent"
+        android:background="@drawable/title_bg_selector" >
+
+        <ImageView
+            android:id="@+id/back_icon"
+            android:layout_width="24dp"
+            android:layout_height="24dp"
+            android:src="@drawable/icon_back"
+            android:layout_centerInParent="true"/>
+    </RelativeLayout>
+
+    <include
+        android:id="@+id/left_line"
+        android:layout_width="0dp"
+        android:layout_height="fill_parent"
+        android:layout_toRightOf="@+id/left_action"
+        layout="@layout/title_line" 
+        android:visibility="gone"/>
+
+    <!--
+             <LinearLayout
+            android:layout_width="1dp"
+            android:layout_height="fill_parent"
+            android:id="@+id/left_line"
+            android:layout_toRightOf="@+id/left_action"
+            android:background="@color/title_gap_line" />
+    -->
+
+    <TextView
+        android:id="@+id/tvTitle"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerInParent="true"
+        android:gravity="center"
+        android:maxWidth="200dip"
+        android:singleLine="true"
+        android:text="首页"
+        android:textColor="@color/font_title"
+        android:textSize="@dimen/font_medium" >
+    </TextView>
+
+    <LinearLayout
+        android:id="@+id/right_action_parent"
+        android:layout_width="wrap_content"
+        android:layout_height="fill_parent"
+        android:layout_alignParentRight="true"
+        android:orientation="horizontal" >
+
+        <RelativeLayout
+            android:id="@+id/search_action"
+            android:layout_width="@dimen/title_action_width"
+            android:layout_height="@dimen/title_height"
+            android:background="@drawable/title_bg_selector" >
+
+            <!--
+             <View
+            android:layout_width="1dp"
+            android:layout_height="@dimen/title_height"
+            android:background="@color/title_gap_line" />
+            -->
+
+            <!-- <include layout="@layout/title_line" />
+ -->
+            <ImageView
+                android:id="@+id/globalSearch"
+                android:layout_width="28dp"
+                android:layout_height="28dp"
+                android:layout_centerInParent="true"
+                android:background="@drawable/icon_search"
+                android:gravity="center"
+                android:scaleType="fitXY" >
+            </ImageView>
+        </RelativeLayout>
+
+        <RelativeLayout
+            android:id="@+id/right_action"
+            android:layout_width="@dimen/title_action_right_width"
+            android:layout_height="fill_parent"
+            android:background="@drawable/bg_post_selector"
+            android:gravity="center" >
+
+            <!--
+                 <View
+            android:layout_width="1dp"
+            android:layout_height="@dimen/title_height"
+            android:background="@color/title_gap_line" />
+            -->
+
+           <!--  <include layout="@layout/title_line" /> -->
+
+            <TextView
+                android:id="@+id/right_btn_txt"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:text="发布 "
+                android:textColor="@color/font_title"
+                android:textSize="@dimen/font_medium" >
+            </TextView>
+        </RelativeLayout>
+    </LinearLayout>
+
+    <LinearLayout
+        android:id="@+id/linearTitleControls"
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_centerInParent="true"
+        android:layout_toLeftOf="@+id/right_action_parent"
+        android:layout_toRightOf="@+id/left_line" />
+
+    <View
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:layout_alignParentBottom="true"
+        android:background="#d2d2d2"
+        android:visibility="gone" />
+
+</RelativeLayout>

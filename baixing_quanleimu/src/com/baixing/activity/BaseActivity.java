@@ -31,6 +31,7 @@ import android.widget.TextView;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.CityDetail;
 import com.baixing.util.LocationService;
+import com.baixing.util.ViewUtil;
 import com.baixing.view.fragment.FirstRunFragment;
 import com.quanleimu.activity.R;
 import com.umeng.analytics.MobclickAgent;
@@ -42,6 +43,8 @@ import com.umeng.analytics.MobclickAgent;
 public class BaseActivity extends FragmentActivity implements OnClickListener{
 
 	public static final String TAG = "QLM";// "BaseActivity";
+	
+	protected ExitController exitCtrl = new ExitController();
 	
 	public static final String PREF_FIRSTRUN  = "firstRunFlag";
 	
@@ -331,7 +334,7 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		FragmentManager fm = getSupportFragmentManager();
 		final boolean isFirstFragment = fm.getBackStackEntryCount() == 1; 
 		FragmentTransaction ft = fm.beginTransaction();
-		ft.setCustomAnimations(fragment.getEnterAnimation(), /*R.anim.right_to_left_exit*/0, /*R.anim.left_to_right_enter*/0, fragment.getExitAnimation());
+		ft.setCustomAnimations(fragment.getEnterAnimation(),/*R.anim.right_to_left_exit*/R.anim.zoom_exit, /*R.anim.left_to_right_enter*/R.anim.zoom_enter, fragment.getExitAnimation());
 		if (!"".equals(popTo))
 		{
 			fm.popBackStack(popTo == null ? null : popTo , FragmentManager.POP_BACK_STACK_INCLUSIVE);
@@ -397,5 +400,25 @@ public class BaseActivity extends FragmentActivity implements OnClickListener{
 		FragmentManager fm = this.getSupportFragmentManager();
 //		
 		return (BaseFragment) fm.findFragmentById(R.id.contentLayout);
+	}
+	
+	public class ExitController {
+		private static final int TIME_GAP = 5000;
+		private long lastBackEventTime;
+		public boolean requestExit() {
+			long currentTime = System.currentTimeMillis();
+			if (lastBackEventTime == 0 || currentTime <= lastBackEventTime || (currentTime - lastBackEventTime) >= TIME_GAP) {
+				lastBackEventTime = currentTime;
+				ViewUtil.showToast(BaseActivity.this, "再按一次退出程序", false);
+				return false;
+			} 
+			
+			try {
+				return true;
+			} finally {
+				lastBackEventTime = 0;
+			}
+		}
+		
 	}
 }

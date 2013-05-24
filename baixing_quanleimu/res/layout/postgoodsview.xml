@@ -7,11 +7,37 @@
 
     <include layout="@layout/common_title" />
 
+    <LinearLayout
+        android:id="@+id/ll_quota"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/linearTop"
+        android:orientation="vertical" >
+
+        <TextView
+            android:id="@+id/quotaText"
+            android:layout_width="fill_parent"
+            android:layout_height="wrap_content"
+            android:background="#FFFFCC"
+            android:paddingLeft="@dimen/post_padding"
+            android:paddingRight="@dimen/post_padding"
+            android:paddingTop="4dip"
+            android:paddingBottom="4dip"
+            android:textSize="@dimen/font_small" >
+        </TextView>
+
+        <View
+            android:layout_width="fill_parent"
+            android:layout_height="1dp"
+            android:background="@drawable/list_divider" >
+        </View>
+    </LinearLayout>
+
     <ScrollView
         android:id="@+id/goodscontent"
         android:layout_width="fill_parent"
         android:layout_height="fill_parent"
-        android:layout_below="@+id/linearTop"
+        android:layout_below="@id/ll_quota"
         android:clickable="true"
         android:focusableInTouchMode="true"
         android:paddingBottom="@dimen/post_padding"

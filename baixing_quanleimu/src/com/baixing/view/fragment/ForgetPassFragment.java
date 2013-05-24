@@ -65,7 +65,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 
 	@Override
 	public void onResume() {
-		this.pv = PV.FORGETPASSWORD;
+		this.pv = isForgetType ? PV.FORGETPASSWORD : PV.RESETPASSWORD;
 		Tracker.getInstance().pv(this.pv).end();
 		super.onResume();
 		paused = false;

@@ -1,0 +1,49 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:id="@+id/post_select"
+    android:layout_width="fill_parent"
+    android:layout_height="wrap_content"
+    android:paddingLeft="8dp"
+    android:paddingRight="8dp"
+    android:background="@drawable/post_select_selector" >
+
+    <ImageView
+        android:id="@+id/action_indicator"
+        android:layout_width="6dp"
+        android:layout_height="10dp"
+        android:layout_centerVertical="true"
+        android:layout_alignParentRight="true"
+        android:src="@drawable/icon_select_arrow" >
+    </ImageView>
+
+    <TextView
+        android:id="@+id/filter_label"
+        android:layout_width="80dip"
+        android:layout_height="wrap_content"
+        android:layout_alignParentLeft="true"
+        android:duplicateParentState="true"
+        android:gravity="left"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:singleLine="true"
+        android:textColor="@drawable/list_textselector"
+        android:textSize="18dip" />
+
+    <TextView
+        android:id="@+id/filter_value"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_marginLeft="15dip"
+        android:layout_marginRight="5dp"
+        android:layout_toLeftOf="@+id/action_indicator"
+        android:layout_toRightOf="@+id/filter_label"
+        android:gravity="right"
+        android:paddingBottom="10dip"
+        android:paddingTop="10dip"
+        android:singleLine="true"
+        android:textColorHint="#d1d0ca"
+        android:textColor="@drawable/list_titleselector"
+        android:textSize="18dip" />
+
+</RelativeLayout>

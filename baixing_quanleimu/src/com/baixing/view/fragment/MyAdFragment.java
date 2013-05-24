@@ -56,6 +56,7 @@ import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
+import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
@@ -201,7 +202,8 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		glLoader = new VadListLoader(null, this, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
-		glLoader.setSearchUserList(true);
+//		glLoader.setSearchUserList(true);
+		glLoader.setSearchType(SEARCH_POLICY.SEARCH_USER_LIST);
 		
 		lvGoodsList.setOnRefreshListener(this);	
 		
@@ -249,7 +251,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				ImageLoaderManager.getInstance().Cancel(imageView.getTag().toString(), imageView);
+				GlobalDataManager.getInstance().getImageLoaderMgr().Cancel(imageView.getTag().toString(), imageView);
 			}
 		}	
 	}
@@ -283,7 +285,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					&& null != imageView.getTag() && imageView.getTag().toString().length() > 0
 					/*&& null != imageView.getDrawable()
 					&& imageView.getDrawable() instanceof AnimationDrawable*/){
-				ImageLoaderManager.getInstance().showImg(imageView, imageView.getTag().toString(), null, getActivity());
+				GlobalDataManager.getInstance().getImageLoaderMgr().showImg(imageView, imageView.getTag().toString(), null, getActivity());
 			}
 		}
 		setSharedStatus();
@@ -401,7 +403,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 		case MSG_REFRESH_FAIL: {
 			hideProgress();
-			ViewUtil.postShortToastMessage(rootView, (String) msg.obj, (long) 0);
+			ViewUtil.showToast(getActivity(), (String) msg.obj, false);
 			break;
 		}
 		case MSG_MYPOST:

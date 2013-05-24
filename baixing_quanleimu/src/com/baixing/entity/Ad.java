@@ -120,7 +120,7 @@ public class Ad implements Serializable{
 	}	
 	@JsonIgnore
 	public void setValueByKey(EDATAKEYS e, String value){
-		String key =  getValueByKey(e);
+		String key =  getStringByEnum(e);
 		if(key.equals("")) return;
 		data.put(key, value);
 	}
