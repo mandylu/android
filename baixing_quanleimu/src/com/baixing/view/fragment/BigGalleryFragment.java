@@ -272,7 +272,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	        try{
 	        	uri = getActivity().getContentResolver().insert(MediaStore.Images.Media.EXTERNAL_CONTENT_URI, values);
 	        }catch(Exception e){
-	        	ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可>_<", true);
+	        	ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可用>_<", true);
 	        	return;
 	        }
 
@@ -305,7 +305,7 @@ public class BigGalleryFragment extends BaseFragment  implements ViewFlow.ViewSw
 	            ViewUtil.showToast(getActivity(), "图片已保存到相册", true);
 	        } catch (Exception e) {
 	            e.printStackTrace();
-	            ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可>_<", true);
+	            ViewUtil.showToast(getActivity(), "保存失败,请检查SD卡是否可用>_<", true);
 	        }finally{
 	        	if(outStream != null){
 	        		try {
