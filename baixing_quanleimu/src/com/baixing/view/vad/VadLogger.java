@@ -20,8 +20,8 @@ import com.baixing.tracking.Tracker;
  */
 public class VadLogger {
 	public static final void trackPageView(Ad detail, Context context) {
-		if ((detail != null && GlobalDataManager.getInstance().isMyAd(
-				detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)))
+		if ((detail != null 
+				&& GlobalDataManager.getInstance().isMyAd(detail))
 				|| !detail.isValidMessage()) {
 			Tracker.getInstance()
 					.pv(PV.MYVIEWAD)
