@@ -57,6 +57,32 @@ public class GlobalDataManager implements Observer {
     
     private Class lastActiveCls;
     
+    public void updateLastUsedCategory(String name, String englishName){
+    	List<String> categories = getLastUsedCategory();
+    	if(categories == null){
+    		categories = new ArrayList<String>();
+    	}
+    	String newCategory = name + "," + englishName;
+    	int index = categories.indexOf(newCategory);
+    	if(index == 0){
+    		return;
+    	}else{
+    		if(index > 0){
+    			categories.remove(index);
+    		}
+    		categories.add(0, newCategory);
+    	}
+    	if(categories.size() > 3){
+    		categories = categories.subList(0, 3);
+    	}
+    	Util.saveDataToLocate(getApplicationContext(), "lastUsedCategories", categories);
+    }
+    
+    public List<String> getLastUsedCategory(){
+    	return (List<String>)Util.loadDataFromLocate(getApplicationContext(), "lastUsedCategories", List.class);
+    }
+    
+    
     public final ImageCacheManager getImageManager(){
     	if(imageCacheMgr == null){
     		imageCacheMgr = new ImageCacheManager(getApplicationContext());

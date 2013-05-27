@@ -66,10 +66,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 	{
 		gridItems.clear();
 		gridItems.addAll(items);
-		long t1 = System.currentTimeMillis();
-		this.costruct();
-		long t2 = System.currentTimeMillis();
-		Log.d("time", "time:   " + (t2 - t1));
+		this.construct();
 	}
 	
 	public void setItemClickListener(ItemClickListener listener)
@@ -77,10 +74,13 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 		this.itemClickListener = listener;
 	}
 	
-	private void costruct()
+	private void construct()
 	{
 		WindowManager winMgr = (WindowManager) this.getContext().getSystemService(Context.WINDOW_SERVICE);
-		final int fixWidth = winMgr.getDefaultDisplay().getWidth() / columnCount;
+		
+		final int fixWidth = 
+				(winMgr.getDefaultDisplay().getWidth() - this.getPaddingLeft() - this.getPaddingRight()) / columnCount;
+		
 		int lineCount = gridItems.size() / columnCount;
 		if (gridItems.size() > lineCount * columnCount)
 		{
@@ -152,12 +152,15 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         	convertView.setEnabled(false);
         }
         
-        if (index != 0 && (index + 1)%columnCount == 0)
-        {
-        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_2);
+        if(index == 0){
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_left_top);
+        }else if(index < columnCount){
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_top);
         }
-        else
-        {
+        else if (index % columnCount == 0){
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_left);
+        }
+        else{
         	convertView.setBackgroundResource(R.drawable.bg_grid_selector);
         }
         return convertView;  

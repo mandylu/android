@@ -112,7 +112,7 @@ public class GridAdapter extends BaseAdapter {
         
         if (index != 0 && (index + 1)%colCount == 0)
         {
-        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_2);
+        	convertView.setBackgroundResource(R.drawable.bg_grid_selector_left);
         }
         else
         {

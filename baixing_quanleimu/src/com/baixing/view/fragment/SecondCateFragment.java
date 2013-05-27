@@ -112,6 +112,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 				finishFragment(fragmentRequestCode, toRet);
 			} else {
 				bundle.putString("categoryName", secCate.getName());
+				GlobalDataManager.getInstance().updateLastUsedCategory(secCate.getName(), secCate.getEnglishName());
 				if (!GlobalDataManager.isTextMode() && GlobalDataManager.needNotifySwitchMode() && !NetworkUtil.isWifiConnection(arg0.getContext()))
 				{
 					AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
@@ -123,7 +124,7 @@ public class SecondCateFragment extends BaseFragment implements OnItemClickListe
 						public void onClick(DialogInterface dialog, int which) {
 							Tracker.getInstance().event(BxEvent.BROWSEMODENOIMAGE).append(Key.RESULT, Value.NO).end();
 							GlobalDataManager.setTextMode(false);
-							PerformanceTracker.stamp(Event.E_Start_ListingFragment);
+							PerformanceTracker.stamp(Event.E_Start_ListingFragment);							
 							pushFragment(new ListingFragment(), bundle);
 						}
 					})

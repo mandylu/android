@@ -2,12 +2,9 @@ package com.baixing.anonymous;
 
 import android.util.Pair;
 
-import com.baixing.anonymous.AnonymousNetworkListener.ResponseData;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.network.api.ApiParams;
-import com.baixing.util.Util;
-import com.baixing.util.post.PostCommonValues;
 
 public class AccountService implements AnonymousNetworkListener{
 	public final static String Action_Done = "action_done";
