@@ -424,6 +424,17 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		
 		View page = loadingMorePage == null ? null : loadingMorePage.get();
 		final ViewPager vp = (ViewPager) rootView.findViewById(R.id.svDetail);
+		if(vp != null){
+			for(int i = 0; i < vp.getChildCount(); ++ i){
+				Ad detaiObj = callback.getAd((Integer)vp.getChildAt(i).getTag());
+				if(detaiObj != null){
+					this.initContent(vp.getChildAt(i), 
+							detaiObj, 
+							Integer.valueOf((Integer) vp.getChildAt(i).getTag()), 
+							vp, false);
+				}
+			}
+		}
 		if (!hasMore && page != null && vp != null)
 		{
 			vp.removeView(page);

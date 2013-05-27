@@ -111,6 +111,10 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 			if(deviceNumber != null && deviceNumber.length() == 11){
 				checkMobile = deviceNumber;
 			}
+			if(!Util.isValidMobile(checkMobile)){
+				sendMessage(PostCommonValues.MSG_POST_NEED_LOGIN, checkMobile);
+				return;
+			}
 			String status = AnonymousExecuter.retreiveAccountStatusSync(checkMobile);
 			if(status != null){
 				if(status.equals(BaseAnonymousLogic.Status_UnRegistered)){
