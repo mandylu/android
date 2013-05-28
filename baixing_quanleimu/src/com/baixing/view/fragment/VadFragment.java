@@ -940,6 +940,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public Ad getAd(int pos) {
+		if(mListLoader == null 
+				|| mListLoader.getGoodsList() == null
+				|| mListLoader.getGoodsList().getData() == null
+				|| mListLoader.getGoodsList().getData().size() <= pos){
+			return null;
+		}
 		return mListLoader.getGoodsList().getData().get(pos);
 	}
 

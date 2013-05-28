@@ -514,7 +514,7 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					AdList preList = goodsListLoader.getGoodsList();
 					preList.getData().add(seperator);
 					preList.getData().addAll(goodsList.getData());
-					preList.setCount(preList.getData().size());
+//					preList.setCount(preList.getData().size());
 					goodsListLoader.setGoodsList(preList);
 				}
 			}
