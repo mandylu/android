@@ -6,68 +6,36 @@
     android:orientation="vertical" >
 
     <RelativeLayout
-            android:id="@+id/vad_title_fav_parent"
-            android:layout_width="@dimen/title_action_right_width"
-            android:layout_height="fill_parent"
-            android:layout_alignParentRight="true"
-            android:background="@drawable/bg_post_selector"
-            android:gravity="center" >
-
-            <include layout="@layout/title_line"/>
-            <TextView
-                android:id="@+id/btn_fav_unfav"
-                android:layout_centerInParent="true"
-                android:layout_width="fill_parent"
-                android:layout_height="wrap_content"
-                android:gravity="center"
-                android:text="取消收藏"
-                android:textColor="@color/font_title"
-                android:textSize="@dimen/font_small" >
-            </TextView>
-
-        </RelativeLayout>
-        
-    <!-- <LinearLayout
         android:id="@+id/vad_title_fav_parent"
-        android:layout_width="@dimen/title_action_width"
+        android:layout_width="@dimen/title_action_right_width"
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
-        android:gravity="center"
-        android:orientation="vertical" >
-	    <ImageView
-	        android:id="@+id/btn_fav_unfav"
-	        android:layout_width="32dp"
-	        android:layout_height="32dp"
-	        android:src="@drawable/icon_fav" />
-    </LinearLayout> -->
+        android:background="@drawable/bg_post_selector"
+        android:gravity="center" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_alignParentLeft="true"
-        android:layout_toLeftOf="@+id/vad_title_fav_parent"
-        android:orientation="horizontal"
-        android:gravity="center"
-        android:layout_centerVertical="true" >
+        <include layout="@layout/title_line" />
 
         <TextView
-            android:id="@+id/vad_create_time"
-            android:layout_width="wrap_content"
+            android:id="@+id/btn_fav_unfav"
+            android:layout_width="fill_parent"
             android:layout_height="wrap_content"
+            android:layout_centerInParent="true"
+            android:gravity="center"
+            android:text="取消收藏"
             android:textColor="@color/font_title"
-            android:textSize="@dimen/font_medium"
-            android:text="一天前发布" />
+            android:textSize="@dimen/font_small" >
+        </TextView>
+    </RelativeLayout>
 
-        <TextView
-            android:id="@+id/vad_viewed_time"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-			android:textColor="@color/font_title"
-			android:visibility="gone"
-			android:paddingLeft="6dp"
-            android:textSize="@dimen/font_small"
-            android:text="1980次查看" />
-	    
-    </LinearLayout>
+    <TextView
+        android:id="@+id/vad_viewed_time"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:layout_centerVertical="true"
+        android:layout_toLeftOf="@+id/vad_title_fav_parent"
+        android:gravity="center"
+        android:text="1980次查看"
+        android:textColor="@color/font_title"
+        android:textSize="@dimen/font_small" />
 
 </RelativeLayout>

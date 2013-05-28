@@ -166,16 +166,17 @@
                     android:textSize="@dimen/font_medium" >
                 </TextView>
 
-                <LinearLayout
-                    android:id="@+id/shareandjubao"
+                <TextView
+                    android:id="@+id/ad_id"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
-                    android:layout_marginLeft="12dip"
-                    android:layout_marginRight="10dip"
-                    android:gravity="center_vertical"
-                    android:paddingBottom="10dip"
-                    android:paddingTop="10dip" >
-                </LinearLayout>
+                    android:gravity="left|top"
+                    android:lineSpacingExtra="@dimen/line_space"
+                    android:paddingLeft="@dimen/vad_margin_LF"
+                    android:paddingRight="@dimen/vad_margin_LF"
+                    android:textColor="@color/vad_meta_label"
+                    android:textSize="@dimen/font_medium" >
+                </TextView>
             </LinearLayout>
         </RelativeLayout>
     </LinearLayout>

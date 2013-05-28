@@ -6,11 +6,16 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.List;
 
+import android.content.res.Resources;
 import android.graphics.Bitmap;
 import android.support.v4.view.PagerAdapter;
 import android.support.v4.view.ViewPager;
 import android.support.v4.view.ViewPager.OnPageChangeListener;
+import android.text.Spannable;
+import android.text.SpannableString;
 import android.text.TextUtils;
+import android.text.style.AbsoluteSizeSpan;
+import android.text.style.ForegroundColorSpan;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -29,8 +34,7 @@ import com.baixing.adapter.VadImageAdapter;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
-import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.util.TextUtil;
 import com.baixing.widget.HorizontalListView;
 import com.quanleimu.activity.R;
 
@@ -338,16 +342,44 @@ public class VadPageController implements OnTouchListener, VadImageAdapter.IImag
 		{
 			title = description.length() > 40 ? description.substring(0, 40) : description;
 		}
+
+		String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
+		if (dateV != null){
+			try {
+				long timeL = Long.parseLong(dateV) * 1000;
+				dateV = TextUtil.timeTillNow(timeL, GlobalDataManager.getInstance().getApplicationContext());
+			}
+			catch(Throwable t)
+			{
+				dateV = "";
+			}
+		}
+
+		Spannable word = null;
+		if(!TextUtils.isEmpty(dateV)){
+			Resources res = GlobalDataManager.getInstance().getApplicationContext().getResources();
+			float fontSize = res.getDimension(R.dimen.font_small);
+			fontSize /= res.getDisplayMetrics().scaledDensity;
+			word = new SpannableString(title + " " + dateV);
+			word.setSpan(new AbsoluteSizeSpan((int)fontSize, true), title.length(), word.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+			
+			int color = res.getColor(R.color.vad_meta_label);
+			word.setSpan(new ForegroundColorSpan(color), title.length(), word.length(), Spannable.SPAN_INCLUSIVE_INCLUSIVE);
+		}else{
+			word = new SpannableString(title);
+		}
 		
 		description += "\n打电话给我时，请一定说明在百姓网看到的，谢谢！";
 		description = appendPostFromInfo(detail, description);
 		description = appendExtralMetaInfo(detail, description);
 		
 		txt_message1.setText(description);
-		txt_tittle.setText(title);
+		txt_tittle.setText(word);
 		txt_user.setText(userInfo);
 		
-		
+		TextView txt_adid = (TextView) contentView.findViewById(R.id.ad_id);
+		txt_adid.setText("信息编号：" + detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+
 		txt_user.setOnClickListener(new View.OnClickListener() {
 			
 			@Override

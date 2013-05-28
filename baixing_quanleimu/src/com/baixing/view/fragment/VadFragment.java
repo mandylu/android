@@ -726,20 +726,20 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			favBtn.setText(isInMyStore() ? "取消收藏" : "收藏");
 		}
 		
-		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);
+		
 		if(detail != null){
-			String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
-			if (dateV != null)
-			{
-				try {
-					long timeL = Long.parseLong(dateV) * 1000;
-					createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
-				}
-				catch(Throwable t)
-				{
-					createTimeView.setText("");
-				}
-			}
+//			String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
+//			if (dateV != null)
+//			{
+//				try {
+//					long timeL = Long.parseLong(dateV) * 1000;
+//					createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
+//				}
+//				catch(Throwable t)
+//				{
+//					createTimeView.setText("");
+//				}
+//			}
 			
 			TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
 			viewTimes.setText(detail.getValueByKey("count") + "次查看");
