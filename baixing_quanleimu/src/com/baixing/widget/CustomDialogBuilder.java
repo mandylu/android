@@ -13,8 +13,10 @@ import android.content.Context;
 import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
@@ -22,7 +24,6 @@ import android.widget.BaseAdapter;
 import android.widget.ImageView;
 import android.widget.ListView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
@@ -79,10 +80,21 @@ public class CustomDialogBuilder {
 //		}
 	}
 	
+	private boolean hasRangeSelection = false;
+	private String unit = "";
+	public void setHasRangeSelection(String unit){
+		hasRangeSelection = true;
+		this.unit = unit;
+		MultiLevelItem range = new MultiLevelItem();
+		range.id = range.txt = "";
+		this.items.add(range);
+	}
+	
+	private CustomDialog dialog;
 	public void start() {
-		CustomDialog cd = getCustomDialog();
-		cd.show();
-		configCustomDialog(cd);
+		dialog = getCustomDialog();
+		dialog.show();
+		configCustomDialog(dialog);
 	}
 	
 	
@@ -400,7 +412,41 @@ public class CustomDialogBuilder {
 			View v = convertView;
 			TextView tv = null;
 			ImageView img = null;
-			
+			if(hasRangeSelection && position == items.size() - 1){
+				final View range = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(R.layout.item_range_setting, null);
+				((TextView)range.findViewById(R.id.rangeUnit)).setText(unit);
+				range.findViewById(R.id.range_finish).setOnClickListener(new OnClickListener(){
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						String left = ((TextView)range.findViewById(R.id.leftRange)).getText().toString();
+						String right = ((TextView)range.findViewById(R.id.rightRange)).getText().toString();
+						if(TextUtils.isEmpty(left) && TextUtils.isEmpty(right)){
+							ViewUtil.showToast(GlobalDataManager.getInstance().getApplicationContext(), "至少填写一项范围", false);
+						}else if(!TextUtils.isEmpty(left) && !TextUtils.isEmpty(right)
+								&& Integer.valueOf(left) > Integer.valueOf(right)){
+							ViewUtil.showToast(GlobalDataManager.getInstance().getApplicationContext(), "范围不正确", false);							
+						}else{
+							MultiLevelItem item = new MultiLevelItem();
+							item.id = "[" 
+									+ (TextUtils.isEmpty(left) ? "*" : Integer.valueOf(left))
+									+ " TO "
+									+ (TextUtils.isEmpty(right) ? "*" : Integer.valueOf(right))
+									+ "]";
+							item.txt = (TextUtils.isEmpty(left) ? "*" : left)
+									+ "-" 
+									+ (TextUtils.isEmpty(right) ? "*" : right)
+									+ ((TextView)range.findViewById(R.id.rangeUnit)).getText();
+							CustomDialogBuilder.this.lastChoise = item;
+							
+							CustomDialogBuilder.this.handleLastLevelChoice(dialog);
+						}
+					}
+					
+				});
+				return range;
+			}
 			v = LayoutInflater.from(CustomDialogBuilder.this.context).inflate(
 					R.layout.item_seccategory_simple2, null);
 			

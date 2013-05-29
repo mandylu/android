@@ -330,8 +330,12 @@ public class FilterFragment extends BaseFragment implements View.OnClickListener
 								bundle.putSerializable("items", items);
 								bundle.putInt("maxLevel",
 										fss.getLevelCount() - 1);
-								
-								new CustomDialogBuilder(getActivity(), FilterFragment.this.getHandler(), bundle).start(); //alert方式
+								CustomDialogBuilder cdb = 
+										new CustomDialogBuilder(getActivity(), FilterFragment.this.getHandler(), bundle);
+								if(fss.getName().contains("价格")){
+									cdb.setHasRangeSelection(fss.getUnit());
+								}
+								cdb.start(); //alert方式
 //								((BaseActivity) getActivity()).pushFragment(new MultiLevelSelectionFragment(), bundle, false); //fragment方式
 								
 							}

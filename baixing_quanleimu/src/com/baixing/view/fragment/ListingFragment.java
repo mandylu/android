@@ -54,7 +54,6 @@ import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.FilterUtil;
-import com.baixing.view.FilterUtil.CustomizeItem;
 import com.baixing.view.FilterUtil.FilterSelectListener;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.baixing.widget.PullToRefreshListView;
@@ -724,11 +723,11 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 					final Filterss fss = (Filterss) v.getTag();
 					final boolean isLocation = fss.getName().equals("地区_s");
 					
-					CustomizeItem cItem = new CustomizeItem();
+					MultiLevelItem cItem = new MultiLevelItem();
 					cItem.id = PostParamsHolder.INVALID_VALUE; //FIXME:  this is special for current location.
 					cItem.txt = "附近500米";
 					
-					CustomizeItem[] cs = isLocation && curLocation != null && isCurrentCity() ? new CustomizeItem[] {cItem} : null; 
+					MultiLevelItem[] cs = isLocation && curLocation != null && isCurrentCity() ? new MultiLevelItem[] {cItem} : null; 
 
 					Tracker.getInstance().event(BxEvent.LISTING_TOPFILTEROPEN)
 							.append(Key.SECONDCATENAME, categoryEnglishName)

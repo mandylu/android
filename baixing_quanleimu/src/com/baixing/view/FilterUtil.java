@@ -2,7 +2,6 @@
 package com.baixing.view;
 
 import java.util.ArrayList;
-import java.util.HashMap;
 import java.util.List;
 
 import android.app.AlertDialog;
@@ -10,20 +9,25 @@ import android.content.Context;
 import android.content.DialogInterface;
 import android.content.DialogInterface.OnCancelListener;
 import android.location.Location;
+import android.os.Bundle;
+import android.os.Handler;
+import android.os.Message;
 import android.util.Log;
 import android.view.View;
 import android.widget.TextView;
 
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.adapter.VadListAdapter.GroupItem;
+import com.baixing.entity.Ad;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Filterss;
-import com.baixing.entity.Ad;
 import com.baixing.entity.values;
-import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.view.fragment.FilterFragment;
 import com.baixing.view.fragment.MultiLevelSelectionFragment;
-import com.baixing.view.fragment.PostParamsHolder;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
+import com.baixing.view.fragment.PostParamsHolder;
+import com.baixing.widget.CustomDialogBuilder;
 import com.quanleimu.activity.R;
 
 /**
@@ -37,11 +41,6 @@ public class FilterUtil {
 	{
 		public void onItemSelect(MultiLevelItem item);
 		public void onCancel();
-	}
-	
-	public static class CustomizeItem extends MultiLevelSelectionFragment.MultiLevelItem
-	{
-		
 	}
 	
 	public static List<VadListAdapter.GroupItem> createFilterGroup(List<Filterss> fss, PostParamsHolder paramsHolder, List<Ad> list)
@@ -183,7 +182,7 @@ public class FilterUtil {
 	
 	
 
-	public static void startSelect(Context context, CustomizeItem[] customizeItems, Filterss fss, final FilterSelectListener listener)
+	public static void startSelect(Context context, MultiLevelItem[] customizeItems, Filterss fss, final FilterSelectListener listener)
 	{
 		String title = "选择" + fss.getDisplayName();
 		
@@ -191,7 +190,7 @@ public class FilterUtil {
 		
 		final ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
 		MultiLevelSelectionFragment.MultiLevelItem head = new MultiLevelSelectionFragment.MultiLevelItem();
-		head.txt = "所有" + fss.getDisplayName();
+		head.txt = "全部";
 		head.id = "";
 		items.add(head);
 		if (skipCount != 0)
@@ -211,31 +210,26 @@ public class FilterUtil {
 					.getValue();
 			items.add(t);
 		}
-		AlertDialog.Builder builder = new AlertDialog.Builder(context);
-		builder.setTitle(title).setItems(getItemList(items), new DialogInterface.OnClickListener() {
-			public void onClick(DialogInterface dialog, int which) {
-				if (which >= 0 && which < items.size())
-				{
-					listener.onItemSelect(items.get(which));
-				}
-			}
-		}).setNegativeButton("取消", new DialogInterface.OnClickListener() {
-			
-			@Override
-			public void onClick(DialogInterface dialog, int which) {
-				listener.onCancel();
-			}
-		});
-		builder.setCancelable(true);
-		builder.setOnCancelListener(new OnCancelListener() {
-			
-			@Override
-			public void onCancel(DialogInterface dialog) {
-				listener.onCancel();
-			}
-		});
 		
-		builder.create().show();
+		Bundle bundle = new Bundle();
+		bundle.putSerializable("items", items);
+		bundle.putInt("maxLevel", fss.getLevelCount() - 1);
+		CustomDialogBuilder cdb = 
+				new CustomDialogBuilder(context, new Handler(){
+					@Override
+					public void handleMessage(Message msg) {
+						if(msg.what == CustomDialogBuilder.MSG_DIALOG_BACK_WITH_DATA){
+							if(msg.obj != null && msg.obj instanceof Bundle){
+								
+								listener.onItemSelect((MultiLevelItem)((Bundle)msg.obj).getSerializable("lastChoise"));
+							}
+						}						
+					}
+				}, bundle);
+		if(fss.getName().contains("价格")){
+			cdb.setHasRangeSelection(fss.getUnit());
+		}
+		cdb.start();
 	}
 	
 	private static CharSequence[] getItemList(List<MultiLevelItem> items)
