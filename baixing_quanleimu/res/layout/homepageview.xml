@@ -3,7 +3,7 @@
     android:id="@+id/linearLayout1"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen"
+    android:background="#f1f1f1"
     android:focusable="false"
     android:focusableInTouchMode="false"
     android:orientation="vertical" >

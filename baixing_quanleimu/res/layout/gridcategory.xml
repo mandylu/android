@@ -2,7 +2,7 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="#f1f1f1"
+
     android:scrollbars="none" >
 
     <LinearLayout
@@ -11,9 +11,12 @@
         android:orientation="vertical" >
 
         <LinearLayout
+            android:id="@+id/ll_everUsed"
             android:layout_width="fill_parent"
             android:layout_height="50dip"
-            android:layout_margin="16dip"
+            android:layout_marginLeft="16dip"
+            android:layout_marginRight="16dip"
+            android:layout_marginTop="16dip"
             android:background="@drawable/btn_category_left_top"
             android:gravity="center_vertical"
             android:orientation="horizontal"
@@ -97,8 +100,9 @@
         <com.baixing.widget.CustomizeGridView
             android:id="@+id/gridcategory"
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
+            android:layout_height="fill_parent"
             android:layout_marginBottom="16dip"
+            android:layout_marginTop="16dip"
             android:orientation="vertical"
             android:paddingLeft="16dip"
             android:paddingRight="16dip" />

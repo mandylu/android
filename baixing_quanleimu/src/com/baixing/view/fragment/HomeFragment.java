@@ -11,6 +11,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -120,7 +121,10 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		gv.setItemClickListener(this);
 		
 		List<String> lastUsedCategories = GlobalDataManager.getInstance().getLastUsedCategory();
-		if(lastUsedCategories != null){
+		if(lastUsedCategories == null || lastUsedCategories.size() == 0){
+			getView().findViewById(R.id.ll_everUsed).setVisibility(View.GONE);
+		}
+		else{
 			LinearLayout llCategory = (LinearLayout)getView().findViewById(R.id.ll_categories);
 			for(int i = 0; i < lastUsedCategories.size(); ++ i){
 				((Button)llCategory.getChildAt(i)).setText(lastUsedCategories.get(i).split(",")[0]);
