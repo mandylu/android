@@ -158,7 +158,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		logCreateView(savedInstanceState);
 
 		View v = inflater.inflate(R.layout.homepageview, null);
-
+		v.findViewById(R.id.linearLayout1).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //		pageMgr.attachView(v, this, this);
 		
 		return v;

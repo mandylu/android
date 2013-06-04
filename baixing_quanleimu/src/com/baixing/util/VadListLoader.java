@@ -156,7 +156,8 @@ public class  VadListLoader implements Serializable{
 		SEARCH_LISTING("ad_list"),
 		SEARCH_USER_LIST("ad_user_list"),
 		SEARCH_NEARBY("ad_nearby"),
-		SEARCH_AROUND("getAroundAds");
+		SEARCH_AROUND("getAroundAds"),
+		SEARCH_FAVORITES("get_favourites");
 		public String command;
 		private SEARCH_POLICY(String command){
 			this.command = command;

@@ -215,6 +215,9 @@ public class LoginUtil implements View.OnClickListener, AnonymousNetworkListener
 						if(pd != null){
 							pd.dismiss();
 						}
+						 
+						FavoriteNetworkUtil.syncFavorites(GlobalDataManager.getInstance().getApplicationContext(), 
+								GlobalDataManager.getInstance().getAccountManager().getCurrentUser());
 						return;
 					}
 				}

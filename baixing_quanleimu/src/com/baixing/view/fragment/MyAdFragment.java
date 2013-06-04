@@ -16,6 +16,7 @@ import android.content.DialogInterface;
 import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
@@ -23,7 +24,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.ImageView;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
@@ -35,7 +35,6 @@ import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.BxMessageCenter.IBxNotification;
@@ -52,6 +51,7 @@ import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
+import com.baixing.util.FavoriteNetworkUtil;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
@@ -66,6 +66,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private final int MSG_MYPOST = 1;
 //	private final int MSG_INVERIFY = 2;
 //	private final int MSG_DELETED = 3;
+	private final int MSG_MYFAVS = 4;
 	private final int MCMESSAGE_DELETE = 5;
 	private final int MSG_DELETE_POST_SUCCESS = 6;
 	private final int MSG_DELETE_POST_FAIL = 7;
@@ -76,7 +77,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
     private final int MSG_REFRESH_FAIL = 12;
     private final int MSG_ASK_REFRESH = 13;
     private final int MSG_UPDATE_LIST = 14;
-
+    
 	private PullToRefreshListView lvGoodsList;
 //	public ImageView ivMyads, ivMyfav, ivMyhistory;
 
@@ -85,12 +86,14 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	private UserBean user;
 	private boolean needReloadData = false;
 	private boolean isOnResume = false;
+	
     /**
      * 用这几个 static value 区分不同类别“我的信息”
      */
 
     public final static String TYPE_KEY = "PersonalPostFragment_type_key";
-    final static int TYPE_MYPOST = 0;   //0:mypost, 2:inverify, 2:deleted
+    final static int TYPE_MYPOST = 0;   //0:mypost, 1:inverify, 2:deleted, 3:favorite
+    final static int TYPE_MYFAVORITES = 3;
     private int currentType = TYPE_MYPOST;
 	private VadListLoader glLoader = null;	
 	private String json = "";
@@ -172,6 +175,10 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			needReloadData = false;
 		}
 	}
+	
+	private boolean isMyPostView(){
+		return currentType == TYPE_MYPOST;
+	}
 
 
 	@Override
@@ -191,19 +198,20 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 
 		lvGoodsList = (PullToRefreshListView) v.findViewById(R.id.lvGoodsList);
-		adapter = new VadListAdapter(this.getActivity(), this.listMyPost, null);
+		adapter = new VadListAdapter(getActivity(), isMyPostView() ? listMyPost : GlobalDataManager.getInstance().getListMyStore(), null);
         adapter.setHasDelBtn(true);
 		adapter.setOperateMessage(handler, MSG_ITEM_OPERATE);
 		lvGoodsList.setAdapter(adapter);
 
 		AdList gl = new AdList();
-		gl.setData(listMyPost == null ? new ArrayList<Ad>() : listMyPost);
+		gl.setData(isMyPostView() ? (listMyPost == null ? new ArrayList<Ad>() : listMyPost)
+				: GlobalDataManager.getInstance().getListMyStore());
 	
 		glLoader = new VadListLoader(null, this, null, null);
 		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 //		glLoader.setSearchUserList(true);
-		glLoader.setSearchType(SEARCH_POLICY.SEARCH_USER_LIST);
+		glLoader.setSearchType(isMyPostView() ? SEARCH_POLICY.SEARCH_USER_LIST : SEARCH_POLICY.SEARCH_FAVORITES);
 		
 		lvGoodsList.setOnRefreshListener(this);	
 		
@@ -302,7 +310,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		rootView.findViewById(R.id.linearListView);
 
 
-		if(TYPE_MYPOST == currentType){
+		if(isMyPostView()){
 //            bxEvent = BxEvent.SENT_RESULT;
 
 			AdList gl = new AdList();
@@ -327,6 +335,10 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				}
 				this.isOnResume = false;
 			}
+		}else{
+			adapter.setList(glLoader.getGoodsList().getData());
+			adapter.notifyDataSetChanged();
+			lvGoodsList.invalidateViews();
 		}
 
 
@@ -338,13 +350,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				if(index < 0)
 					return;
 				
-				if(TYPE_MYPOST == currentType && null != listMyPost && index < listMyPost.size() ){
+//				if(TYPE_MYPOST == currentType && null != listMyPost && index < listMyPost.size() ){
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
 					pushFragment(new VadFragment(), bundle);
-					
-				}
+//				}
 			}
 		});
 		lvGoodsList.invalidateViews();
@@ -354,7 +365,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	
 	private void doShare(){
 		Bundle bundle = getArguments();
-		if(currentType == TYPE_MYPOST && listMyPost != null && listMyPost.size() > 0 && showShareDlg){
+		if(isMyPostView() && listMyPost != null && listMyPost.size() > 0 && showShareDlg){
 			String lastPost = bundle.getString("lastPost");
 			if(lastPost != null && lastPost.length() > 0){
 				lastPost = lastPost.split(",")[0];
@@ -406,6 +417,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			ViewUtil.showToast(getActivity(), (String) msg.obj, false);
 			break;
 		}
+		case MSG_MYFAVS:
 		case MSG_MYPOST:
 			PerformanceTracker.stamp(Event.E_MyPost_Got);
 			isRefreshing = false;
@@ -416,16 +428,20 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //			this.pv = (currentType==TYPE_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)); //delete MYADS_APPROVING
 //			this.pv = PV.MYADS_SENT;
 			//tracker
-			if (gl == null || gl.getData() == null) {//no ads count
-				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, 0).end();
-			} else {//ads count
-				Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, gl.getData().size()).end();
+			if(msg.what == MSG_MYPOST){
+				if (gl == null || gl.getData() == null) {//no ads count
+					Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, 0).end();
+				} else {//ads count
+					Tracker.getInstance().event(BxEvent.SENT_RESULT).append(Key.ADSCOUNT, gl.getData().size()).end();
+				}
 			}
 			
 			if (gl == null || gl.getData().size() == 0) {
 				if(msg.what == MSG_MYPOST) {
 
 					if(null != listMyPost) listMyPost.clear();
+				}else{
+					GlobalDataManager.getInstance().updateFav(new ArrayList<Ad>());
 				}
 				glLoader.setGoodsList(new AdList());
 			}
@@ -444,15 +460,21 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					AdList gl2 = new AdList();
 					gl2.setData(listMyPost);
 					glLoader.setGoodsList(gl2);
+				}else{
+					GlobalDataManager.getInstance().updateFav(gl.getData());
+					FavoriteNetworkUtil.syncFavorites(getActivity(), GlobalDataManager.getInstance().getAccountManager().getCurrentUser());
+					glLoader.setGoodsList(gl);
 				}
 			}
 			if(msg.what == MSG_MYPOST){
 				GlobalDataManager.getInstance().setListMyPost(listMyPost);
-			}
-			setSharedStatus();
+				setSharedStatus();
+			}			
 			rebuildPage(rootView, true);
 			lvGoodsList.onRefreshComplete();
-			doShare();
+			if(msg.what == MSG_MYPOST){
+				doShare();
+			}
 			PerformanceTracker.stamp(Event.E_MyPost_Got_Handled);
 			break;
 		case VadListLoader.MSG_FIRST_FAIL:
@@ -470,6 +492,45 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			showSimpleProgress();
 //			new Thread(new MyMessageDeleteThread(id)).start();
 			sendDeteleCmd(id, TYPE_MYPOST);
+			break;
+		case FavoriteNetworkUtil.MSG_CANCEL_FAVORITE_SUCCESS:{
+			hideProgress();
+			
+			FavoriteNetworkUtil.ReplyData data = (FavoriteNetworkUtil.ReplyData)msg.obj;
+			try {
+				JSONObject jb = new JSONObject(data.response);
+				JSONObject js = jb.getJSONObject("error");
+				String message = js.getString("message");
+				int code = js.getInt("code");
+				List<Ad> refList = null;
+				refList = GlobalDataManager.getInstance().getListMyStore();
+				if(refList == null) break;
+				String msgToShow = "取消收藏失败,请稍后重试！";
+				if (code == 0) {
+					for(int i = 0; i < refList.size(); ++ i){
+						if(refList.get(i).getValueByKey(EDATAKEYS.EDATAKEYS_ID).equals(data.id)){
+							refList.remove(i);
+							break;
+						}
+					}
+					GlobalDataManager.getInstance().updateFav(refList);
+					adapter.setList(refList);						
+					adapter.notifyDataSetChanged();
+					lvGoodsList.invalidateViews();
+					msgToShow = message;
+				} 
+				ViewUtil.showToast(activity, msgToShow, false);
+			} catch (JSONException e) {
+				// TODO Auto-generated catch block
+				e.printStackTrace();
+			}
+			adapter.setUiHold(false);			
+			break;
+		}
+		case FavoriteNetworkUtil.MSG_CANCEL_FAVORITE_FAIL:
+			hideProgress();
+			ViewUtil.showToast(activity, (String)msg.obj, false);
+
 			break;
 		case MSG_DELETE_POST_FAIL:
 			hideProgress();
@@ -654,89 +715,107 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
         int r_array_item_operate = R.array.item_operate_mypost;
         
-        if (isValidMessage(detail))
-        {
-        	r_array_item_operate = R.array.item_operate_mypost;
-        	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
-        	.append(Key.STATUS, Value.VALID)
-            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-            .append(Key.POSTEDSECONDS, postedSeconds)
-        	.end();
+        if(isMyPostView()){
+	        if (isValidMessage(detail))
+	        {
+	        	r_array_item_operate = R.array.item_operate_mypost;
+	        	Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+	        	.append(Key.STATUS, Value.VALID)
+	            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	            .append(Key.POSTEDSECONDS, postedSeconds)
+	        	.end();
+	        }
+	        else
+	        {
+	            r_array_item_operate = R.array.item_operate_inverify;
+	//            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
+	            Tracker.getInstance().event(BxEvent.SENT_MANAGE)
+	        	.append(Key.STATUS, Value.APPROVING)
+	            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	            .append(Key.POSTEDSECONDS, postedSeconds)
+	        	.end();
+	        }  
+        }else{
+        	r_array_item_operate = R.array.item_operate_favorite;
         }
-        else
-        {
-            r_array_item_operate = R.array.item_operate_inverify;
-//            Tracker.getInstance().event(BxEvent.APPROVING_MANAGE).end();
-            Tracker.getInstance().event(BxEvent.SENT_MANAGE)
-        	.append(Key.STATUS, Value.APPROVING)
-            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-            .append(Key.POSTEDSECONDS, postedSeconds)
-        	.end();
-        }        
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
             public void onClick(DialogInterface dialog, int clickedIndex) {
-                if (isValidMessage(detail)) {
-                    switch (clickedIndex) {
-                    case 0:///sharing
-                    	(new SharingFragment(detail, "myAdList")).show(getFragmentManager(), null);
-                    	break;
-                    case 1://刷新
-                        doRefresh(0, adId);
-                        Tracker.getInstance().event(BxEvent.SENT_REFRESH)
-                                .append(Key.STATUS, Value.VALID)
-                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                .append(Key.POSTEDSECONDS, postedSeconds)
-                                .end();
-                        break;
-                    case 2://修改
-                        Bundle args = createArguments(null, null);
-                        args.putSerializable("goodsDetail", detail);
-                        args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
-						pushFragment(new EditAdFragment(), args);
-                        Tracker.getInstance().event(BxEvent.SENT_EDIT)
-                                .append(Key.STATUS, Value.VALID)
-                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                .append(Key.POSTEDSECONDS, postedSeconds)
-                                .end();
-                        break;
-                    case 3://删除
-                    	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                    			.append(Key.STATUS, Value.VALID)
-                    			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                        break;
-                    }
-                } 
-                else {
-                    switch (clickedIndex) {
-                        case 0://申诉
-                        	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
-                            .append(Key.STATUS, Value.APPROVING)
-                            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                            .append(Key.POSTEDSECONDS, postedSeconds)
-                            .end();
-                        	
-                            Bundle bundle = createArguments("申诉", null);
-                            bundle.putInt("type", 1);
-                            bundle.putString("adId", adId);
-                            pushFragment(new FeedbackFragment(), bundle);
-                            break;
-                        case 1://删除
-                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
-                        			.append(Key.STATUS, Value.APPROVING)
-                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
-                        			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
-                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
-                            break;
-                    }
-                }
+            	if(isMyPostView()){
+	                if (isValidMessage(detail)) {
+	                    switch (clickedIndex) {
+	                    case 0:///sharing
+	                    	(new SharingFragment(detail, "myAdList")).show(getFragmentManager(), null);
+	                    	break;
+	                    case 1://刷新
+	                        doRefresh(0, adId);
+	                        Tracker.getInstance().event(BxEvent.SENT_REFRESH)
+	                                .append(Key.STATUS, Value.VALID)
+	                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	                                .append(Key.POSTEDSECONDS, postedSeconds)
+	                                .end();
+	                        break;
+	                    case 2://修改
+	                        Bundle args = createArguments(null, null);
+	                        args.putSerializable("goodsDetail", detail);
+	                        args.putString("cateNames", detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME));
+							pushFragment(new EditAdFragment(), args);
+	                        Tracker.getInstance().event(BxEvent.SENT_EDIT)
+	                                .append(Key.STATUS, Value.VALID)
+	                                .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	                                .append(Key.POSTEDSECONDS, postedSeconds)
+	                                .end();
+	                        break;
+	                    case 3://删除
+	                    	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+	                    			.append(Key.STATUS, Value.VALID)
+	                    			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	                                .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	                                .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+	                        break;
+	                    }
+	                } 
+	                else {
+	                    switch (clickedIndex) {
+	                        case 0://申诉
+	                        	Tracker.getInstance().event(BxEvent.SENT_APPEAL)
+	                            .append(Key.STATUS, Value.APPROVING)
+	                            .append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	                            .append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	                            .append(Key.POSTEDSECONDS, postedSeconds)
+	                            .end();
+	                        	
+	                            Bundle bundle = createArguments("申诉", null);
+	                            bundle.putInt("type", 1);
+	                            bundle.putString("adId", adId);
+	                            pushFragment(new FeedbackFragment(), bundle);
+	                            break;
+	                        case 1://删除
+	                        	postDelete(Tracker.getInstance().event(BxEvent.SENT_DELETE)
+	                        			.append(Key.STATUS, Value.APPROVING)
+	                        			.append(Key.SECONDCATENAME, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_CATEGORYENGLISHNAME))
+	                        			.append(Key.ADID, detail.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID))
+	                                    .append(Key.POSTEDSECONDS, postedSeconds), adId, postedSeconds);
+	                            break;
+	                    }
+	                }
+            	}else{
+            		if(0 == clickedIndex){
+            			if(GlobalDataManager.getInstance().getAccountManager().isUserLogin()){
+	            			showSimpleProgress();
+	            			FavoriteNetworkUtil.cancelFavorite(getActivity(), adId, user, getHandler());
+            			}else{
+            				GlobalDataManager.getInstance().removeFav(detail);
+        					adapter.setList(GlobalDataManager.getInstance().getListMyStore());						
+        					adapter.notifyDataSetChanged();
+        					lvGoodsList.invalidateViews();
+            			}
+            		}
+            	}
             }
         }).setNegativeButton(
                 "取消", new DialogInterface.OnClickListener() {
@@ -831,14 +910,14 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			}
 		});
     }
-
-
-
+    
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = "返回";
-		if(currentType == TYPE_MYPOST){
+		if(isMyPostView()){
 			title.m_title = "已发布信息";
+		}else{
+			title.m_title = "收藏信息";
 		}
 		title.m_visible = true;
 	}
@@ -846,11 +925,14 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	@Override
 	public void onRefresh() {
 		if(isRefreshing) return;
+		if(user == null || TextUtils.isEmpty(user.getPhone())){
+			this.lvGoodsList.onRefreshComplete();
+			return;
+		}
 		ApiParams params = new ApiParams();
-		if(user != null){
-			params.addParam("userId", user.getId());
-		}		
-		if(currentType == TYPE_MYPOST){
+		params.addParam("userId", user.getId());
+		
+		if(isMyPostView()){
 			Bundle bundle = null;
 			if(getActivity() != null && getActivity().getIntent() != null){
 				bundle = getActivity().getIntent().getExtras();
@@ -863,7 +945,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		}
 		glLoader.setRows(1000);
 		glLoader.setParams(params);
-		int msg = MSG_MYPOST;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
+		int msg = isMyPostView() ? MSG_MYPOST : MSG_MYFAVS;//(currentType == TYPE_MYPOST) ? MSG_MYPOST : (this.currentType == TYPE_INVERIFY ? MSG_INVERIFY : MSG_DELETED);
 		PerformanceTracker.stamp(Event.E_MyAdStartFetching);
 		glLoader.startFetching(getAppContext(), true, msg, msg, msg, !NetworkUtil.isNetworkActive(getAppContext()));
 		isRefreshing = true;

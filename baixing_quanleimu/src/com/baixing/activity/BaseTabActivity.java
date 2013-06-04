@@ -6,36 +6,30 @@ import java.util.Iterator;
 import java.util.List;
 import java.util.Map;
 
-import android.app.AlertDialog;
 import android.content.Context;
-import android.content.DialogInterface;
 import android.content.Intent;
-import android.content.SharedPreferences;
 import android.os.Bundle;
 import android.support.v4.app.FragmentManager;
 import android.support.v4.app.FragmentTransaction;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.KeyEvent;
-import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewTreeObserver.OnGlobalLayoutListener;
 import android.view.inputmethod.InputMethodManager;
-import android.widget.CheckBox;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.PushMessageService;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.database.ChatMessageDatabase;
 import com.baixing.entity.Ad;
+import com.baixing.entity.UserBean;
 import com.baixing.network.NetworkProfiler;
-import com.baixing.sharing.QZoneSharingManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.Tracker;
-import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.util.LocationService;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
-import com.baixing.util.ShortcutUtil;
 import com.baixing.util.Util;
 import com.baixing.view.AdViewHistory;
 import com.baixing.view.CustomizeTabHost;
@@ -44,10 +38,6 @@ import com.baixing.view.CustomizeTabHost.TabSelectListener;
 import com.baixing.view.fragment.ListingFragment;
 import com.baixing.view.fragment.PostGoodsFragment;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.drawable;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
-import com.quanleimu.activity.R.string;
 
 /**
  * 
@@ -346,8 +336,8 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 		    	AdViewHistory.getInstance().clearHistory();
 		    	
 		    	List<Ad> favList = GlobalDataManager.getInstance().getListMyStore();
-		    	if (favList != null)
-		    	{
+		    	UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		    	if (favList != null && (user == null || TextUtils.isEmpty(user.getPassword()))){
 		    		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", favList);
 		    	}
 		    	

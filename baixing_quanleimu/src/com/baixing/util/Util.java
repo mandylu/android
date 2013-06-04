@@ -54,6 +54,7 @@ import android.util.Pair;
 import android.view.Display;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.Ad;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
@@ -483,14 +484,6 @@ public class Util {
 		new File(absolutePath).delete();
 	}
 	
-	public static void clearData(Context context, String file){
-		if(file != null && !file.equals("") && file.charAt(0) != '_'){
-			file = "_" + file;
-		}
-		
-		context.deleteFile(file);
-	}
-	
 	/**
 	 * 保存json数据和timstamp(秒数)至手机内存。会检查json的完整性。
 	 * @param context
@@ -746,8 +739,13 @@ public class Util {
      */
     public static void logout()
 	{
-        Util.clearData(GlobalDataManager.getInstance().getApplicationContext(), "user");
-        Util.clearData(GlobalDataManager.getInstance().getApplicationContext(), "userProfile");
+    	List<Ad> ads = GlobalDataManager.getInstance().getListMyStore();
+    	if(ads != null){
+    		ads.clear();
+    	}
+    	
+        Util.deleteDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "user");
+        Util.deleteDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile");
         
 		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
         GlobalDataManager.getInstance().getAccountManager().logout();
@@ -755,6 +753,8 @@ public class Util {
 //		GlobalDataManager.getInstance().setPhoneNumber("");
 		
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
+		
+		GlobalDataManager.getInstance().loadPersonalSync();
 	}
 
 	public static boolean isPushAlreadyThere(Context ctx, String pushCode){

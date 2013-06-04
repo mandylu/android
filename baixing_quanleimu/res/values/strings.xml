@@ -96,6 +96,10 @@
     <string-array name="item_operate_favorite_history">
         <item>删除</item>
     </string-array>
+    
+    <string-array name="item_operate_favorite">
+        <item>取消收藏</item>
+    </string-array>
 
     <string-array name="item_operate_mypost">
         <item>转发到其他网站</item>
