@@ -302,6 +302,30 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		adapter.setList(glLoader.getGoodsList().getData());
 		lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 	}
+	
+	private boolean checkAndHandleDeletedAd(int index){
+		final Ad ad = glLoader.getGoodsList().getData().get(index);
+		if(ad.getValueByKey("status").equals("3")){
+	        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+	        builder.setTitle("该信息已被删除")
+	                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialogInterface, int i) {
+	                    	dialogInterface.dismiss();
+	                    }
+	                })
+	                .setNegativeButton("取消收藏", new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialog, int id) {
+	                        dialog.dismiss();
+	            			showSimpleProgress();
+	            			FavoriteNetworkUtil.cancelFavorite(getActivity(), ad.getValueByKey(EDATAKEYS.EDATAKEYS_ID), user, getHandler());
+	                    }
+	                }).create().show();
+	        return true;
+		}
+		return false;
+	}
 
 	private void rebuildPage(View rootView, boolean onResult){		
 		if(glLoader != null){
@@ -351,10 +375,12 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					return;
 				
 //				if(TYPE_MYPOST == currentType && null != listMyPost && index < listMyPost.size() ){
+				if(!checkAndHandleDeletedAd(index)){
 					Bundle bundle = createArguments(null, null);
 					bundle.putSerializable("loader", glLoader);
 					bundle.putInt("index", index);
 					pushFragment(new VadFragment(), bundle);
+				}
 //				}
 			}
 		});
