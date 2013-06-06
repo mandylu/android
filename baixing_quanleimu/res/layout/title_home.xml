@@ -8,36 +8,36 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
-        android:paddingLeft="@dimen/title_action_width"
-        android:gravity="center"
         android:background="@drawable/title_bg_selector"
-        android:orientation="horizontal" >
-       <TextView
-        android:id="@+id/title_label_city"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
         android:gravity="center"
-        android:text="上海"
-        android:textColor="@color/font_title"
-       	android:textSize="22dp" />
-       
-      <TextView
-        android:id="@+id/title_label_app_name"
-        android:layout_width="wrap_content"
-        android:layout_height="wrap_content"
-        android:gravity="center"
-        android:text="百姓网"
-        android:textColor="@color/font_title"
-       	android:textSize="22dp" />
+        android:orientation="horizontal"
+        android:paddingLeft="@dimen/title_action_width" >
 
-       <ImageView
-           android:id="@+id/imageView1"
-           android:layout_width="10dp"
-           android:layout_height="6dp"
-           android:layout_marginTop="2dp"
-           android:layout_marginLeft="10dp"
-           android:src="@drawable/icon_header_city_arrow" />
+        <TextView
+            android:id="@+id/title_label_city"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="上海"
+            android:textColor="@color/font_title"
+            android:textSize="22dp" />
 
+        <TextView
+            android:id="@+id/title_label_app_name"
+            android:layout_width="wrap_content"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:text="百姓网"
+            android:textColor="@color/font_title"
+            android:textSize="22dp" />
+
+        <ImageView
+            android:id="@+id/imageView1"
+            android:layout_width="10dp"
+            android:layout_height="6dp"
+            android:layout_marginLeft="10dp"
+            android:layout_marginTop="2dp"
+            android:src="@drawable/icon_header_city_arrow" />
     </LinearLayout>
-    
+
 </RelativeLayout>

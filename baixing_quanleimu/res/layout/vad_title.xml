@@ -31,7 +31,7 @@
         android:layout_height="wrap_content"
         android:layout_centerVertical="true"
         android:layout_toLeftOf="@+id/vad_title_fav_parent"
-        android:gravity="center"
+        android:gravity="center|center_vertical"
         android:text="1980次查看"
         android:textColor="@color/font_title"
         android:textSize="@dimen/font_small" />

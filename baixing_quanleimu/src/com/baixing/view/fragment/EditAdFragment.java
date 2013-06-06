@@ -9,6 +9,7 @@ import android.test.suitebuilder.annotation.SmallTest;
 import android.view.View;
 import android.widget.Button;
 import android.widget.CheckBox;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.baixing.data.GlobalDataManager;
@@ -24,7 +25,7 @@ import com.baixing.util.post.PostUtil;
 import com.baixing.util.post.PostCommonValues;
 import com.quanleimu.activity.R;
 
-class EditAdFragment extends PostGoodsFragment{
+public class EditAdFragment extends PostGoodsFragment{
 	private Ad goodsDetail;
 
 	@Override
@@ -154,7 +155,18 @@ class EditAdFragment extends PostGoodsFragment{
 	@Override
 	protected void buildPostLayout(HashMap<String, PostGoodsBean> pl){
 		super.buildPostLayout(pl);
+
+		String description = this.goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_DESCRIPTION);
+		String title = goodsDetail.getValueByKey(EDATAKEYS.EDATAKEYS_TITLE);
+		if(description != null && title != null
+				&& (!description.startsWith(title) || (description.length() <= 25 && description.length() != title.length()))){
+			EditText v = (EditText)layout_txt.findViewById(R.id.description_input);
+			v.removeTextChangedListener(textWatcher);
+		}
+
 		editPostUI();
+		((TextView)getView().findViewById(R.id.tv_title_post)).setText(title);
+//		((EditText)layout_txt.findViewById(R.id.description_input)).setText(title);
 		super.updateImageInfo(layout_txt);
 	}
 	

@@ -8,18 +8,15 @@ import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.graphics.drawable.Drawable;
 import android.os.Bundle;
-import android.os.Handler;
-import android.os.Message;
 import android.support.v4.app.DialogFragment;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.Toast;
 
 import com.baixing.entity.UserProfile;
-import com.baixing.message.BxMessageCenter;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -67,6 +64,9 @@ public class EditUsernameDialogFragment extends DialogFragment {
         AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
         View v = inflater.inflate(R.layout.dialog_edit_username, null);
         EditText editUsernameEt = (EditText) v.findViewById(R.id.dialog_edit_username_et);
+        Drawable left = getResources().getDrawable(R.drawable.iconsearch);
+        left.setBounds(0, 0, left.getIntrinsicWidth(), left.getIntrinsicHeight());
+        editUsernameEt.setCompoundDrawables(left, null, null, null);
         editUsernameEt.setText(userProfile.nickName);
         editUsernameEt.setSelection(editUsernameEt.getText().length());
         builder.setView(v)

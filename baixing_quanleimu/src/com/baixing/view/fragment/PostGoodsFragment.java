@@ -19,7 +19,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -71,6 +73,8 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
+import com.baixing.widget.EditTitleDialogFragment;
+import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
@@ -530,6 +534,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if(!this.checkInputComplete()){
 			return;
 		}
+		params.put("title", ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString(), 
+				((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
+		
 		PerformanceTracker.stamp(Event.E_Start_PostAction);
 		String detailLocationValue = params.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
@@ -547,7 +554,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private boolean checkInputComplete() {
 		if(this.categoryEnglishName == null || this.categoryEnglishName.equals("")){
 			ViewUtil.showToast(this.getActivity(), "请选择分类", false);
-			popupCategorySelectionDialog();
+			popupCategorySelectionDialog();	
 			return false;
 		}
 		
@@ -788,7 +795,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 
 		if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
-			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
+			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);			
 		}else if(postBean.getName().equals("价格")){
 			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
 		}else if(postBean.getName().equals("faburen")){
@@ -850,6 +857,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		layout_txt.addView(categoryItem);
 	}
 	
+	protected TextWatcher textWatcher = new TextWatcher(){
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+		
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start,
+				int count, int after) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onTextChanged(final CharSequence s, int start,
+				int before, int count) {
+			// TODO Auto-generated method stub
+			((TextView)getView().findViewById(R.id.tv_title_post)).setText(s);
+		}
+		
+	};
+	
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl){
 		if(pl == null || pl.size() == 0) return;
 		
@@ -881,6 +912,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					}
 				});
 				text.setOnFocusChangeListener(new PostUtil.BorderChangeListener(this.getActivity(), v));
+				
+				text.addTextChangedListener(textWatcher);
 
 				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
@@ -1630,10 +1663,39 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	@Override
 	public void initTitle(TitleDef title){
-		title.m_visible = true;
+//		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_leftActionImage  = R.drawable.icon_close;
-		title.m_title = "免费发布";
+//		title.m_title = "免费发布";
+
+		LayoutInflater inflator = LayoutInflater.from(getActivity());
+		title.m_titleControls = inflator.inflate(R.layout.title_post, null);
+		
+		title.m_titleControls.findViewById(R.id.ll_post_title).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				EditTitleDialogFragment dlgEdit = new EditTitleDialogFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString("title", ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
+				dlgEdit.setCallback(new ICallback(){
+
+					@Override
+					public void onTitleChangeFinished(String newTitle) {
+						// TODO Auto-generated method stub
+						String currentTitle = ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString();
+						if(!TextUtils.isEmpty(newTitle)){
+							if(!newTitle.equals(currentTitle)){
+								EditText text = (EditText)getView().findViewById(R.id.description_input);
+								text.removeTextChangedListener(textWatcher);
+								((TextView)getView().findViewById(R.id.tv_title_post)).setText(newTitle);
+							}
+						}
+					}
+					
+				});
+				dlgEdit.setArguments(bundle);
+				dlgEdit.show(getFragmentManager(), null);
+			}
+		});				
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){

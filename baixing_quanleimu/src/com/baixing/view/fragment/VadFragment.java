@@ -24,6 +24,7 @@ import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.util.Pair;
+import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -727,7 +728,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	{
 		
 		if(isMyAd() || !detail.isValidMessage()){
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.INVISIBLE);
 		}
 		else{
 			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
