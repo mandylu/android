@@ -665,11 +665,16 @@ public class ListingFragment extends BaseFragment implements OnScrollListener, P
 			
 			hideProgress();			
 			break;
+		case ErrorHandler.ERROR_COMMON_FAILURE:
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			if(goodsListLoader == null) break;
 			progressBar.setVisibility(View.GONE);
 
-			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			if(msg.what == ErrorHandler.ERROR_COMMON_FAILURE && msg.obj != null){
+				ViewUtil.showToast(getActivity(), (String)msg.obj, false);
+			}else{
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			}
 			
 			lvGoodsList.onFail();
 			

@@ -609,25 +609,18 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			hideProgress();
 			ViewUtil.showToast(activity, "恢复失败,请稍后重试！", false);
 			break;
+		case ErrorHandler.ERROR_COMMON_FAILURE:
 		case ErrorHandler.ERROR_NETWORK_UNAVAILABLE:
 			isRefreshing = false;
 			hideProgress();
-			//tracker
-//			if (this.isOnResume) {
-//				Tracker.getInstance()
-////			.pv((currentType==MSG_MYPOST?PV.MYADS_SENT:(PV.MYADS_APPROVING)) ) //delete MYADS_APPROVING
-//				.pv(PV.MYADS_SENT)
-//				.append(Key.ADSCOUNT, 0)
-//				.end();
-//				this.isOnResume = false;
-//			}
-			
 			Tracker.getInstance().event(BxEvent.SENT_RESULT)
 			.append(Key.ADSCOUNT, 0)
 			.end();
-			
-			Message msg2 = Message.obtain();
-			ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			if(msg.what == ErrorHandler.ERROR_COMMON_FAILURE && msg.obj != null){
+				ViewUtil.showToast(getActivity(), (String)msg.obj, false);
+			}else{
+				ErrorHandler.getInstance().handleError(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+			}
 			lvGoodsList.onRefreshComplete();
 			lvGoodsList.onFail();
 			
