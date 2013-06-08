@@ -18,6 +18,7 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
@@ -32,6 +33,7 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
+import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
@@ -521,7 +523,37 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				}
 			}
 		}else if(MSG_LOGIN_TO_PROSECUTE == requestCode){
-			this.showProsecute();
+			(new AsyncTask<Ad, Integer, Boolean>(){
+				@Override
+				protected Boolean doInBackground(Ad... ads) {
+					// TODO Auto-generated method stub
+					ApiParams params = new ApiParams();
+					params.addParam("adId", ads[0].getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+					params.addParam("mobile", GlobalDataManager.getInstance().getAccountManager().getCurrentUser().getPhone());
+					String response = BaseApiCommand.createCommand("ad_reported", true, params).executeSync(getAppContext());
+					try {
+						JSONObject json = new JSONObject(response);
+						JSONObject jsonErr = json.getJSONObject("error");
+						if(jsonErr.getInt("code") == 0){
+							return json.getBoolean("reported");
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return false;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean reported) {
+					if(reported){
+						ViewUtil.showToast(getAppContext(), "您已举报过该信息", false);
+					}else{
+						showProsecute();
+					}
+				}
+			
+			}).execute(detail);
 		}
 	}
 

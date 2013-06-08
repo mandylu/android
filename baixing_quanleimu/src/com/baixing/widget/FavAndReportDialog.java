@@ -7,8 +7,10 @@ import org.json.JSONObject;
 
 import android.app.Dialog;
 import android.app.ProgressDialog;
+import android.graphics.Bitmap;
 import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
+import android.os.AsyncTask;
 import android.os.Handler;
 import android.text.TextUtils;
 import android.view.Gravity;
@@ -23,8 +25,9 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.UserBean;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.FavoriteNetworkUtil;
-import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.view.vad.VadLogger;
 import com.quanleimu.activity.R;
@@ -71,7 +74,45 @@ public class FavAndReportDialog extends Dialog implements
 		wmlp.gravity = Gravity.TOP | Gravity.LEFT;
 		wmlp.x = x;
 		wmlp.y = y;
-		show();
+		if(!GlobalDataManager.getInstance().getAccountManager().isUserLogin()){
+			show();
+		}
+		else{
+			(new AsyncTask<Ad, Integer, Boolean>(){
+				@Override
+				protected Boolean doInBackground(Ad... ads) {
+					// TODO Auto-generated method stub
+					ApiParams params = new ApiParams();
+					params.addParam("adId", ads[0].getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+					params.addParam("mobile", GlobalDataManager.getInstance().getAccountManager().getCurrentUser().getPhone());
+					String response = BaseApiCommand.createCommand("ad_reported", true, params).executeSync(getContext());
+					try {
+						JSONObject json = new JSONObject(response);
+						JSONObject jsonErr = json.getJSONObject("error");
+						if(jsonErr.getInt("code") == 0){
+							return json.getBoolean("reported");
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return false;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean reported) {
+					if(reported){
+						((Button)findViewById(R.id.reportBtn)).setText("已举报");
+						((Button)findViewById(R.id.reportBtn)).setClickable(false);
+					}else{
+						((Button)findViewById(R.id.reportBtn)).setText("举报");
+						((Button)findViewById(R.id.reportBtn)).setClickable(true);					
+					}
+					show();
+				}
+			
+			}).execute(mAd);
+		}
 	}
 	
 	private void addAdToFavorite(){
