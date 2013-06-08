@@ -15,9 +15,9 @@ import java.net.URL;
 import java.security.SecureRandom;
 import java.security.cert.CertificateException;
 import java.security.cert.X509Certificate;
-import java.util.Iterator;
 import java.util.List;
-import java.util.Map;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 import java.util.zip.GZIPInputStream;
 
 import javax.net.ssl.HostnameVerifier;
@@ -124,6 +124,26 @@ public class HttpNetworkConnector {
 		
 		return syncRequestResponse;
 	}
+	
+	static private String dealCacheKey(String url){
+		if(TextUtils.isEmpty(url)) return "";
+		String ret = new String(url);
+		
+		Pattern p = Pattern.compile("access_token=\\w+");
+        Matcher m = p.matcher(url);
+        if(m.find()){
+        	ret = ret.replace(m.group(), "");
+        }
+        
+        p = Pattern.compile("timestamp=\\w+");
+        m = p.matcher(ret);
+        if(m.find()){
+        	ret = ret.replace(m.group(), "");
+        }
+        ret = ret.replaceAll("\\?\\&", "\\?");
+        ret = ret.replaceAll("\\&\\&", "\\&");
+        return ret;
+	}
 
 	private void doSend(Context context, IHttpRequest request, IResponseHandler responseHandler, IRequestStatusListener listener) {
 		HttpURLConnection connection = null;
@@ -133,7 +153,7 @@ public class HttpNetworkConnector {
 		//Try to load data from cache.
 		if (request.getCachePolicy() == CACHE_POLICY.CACHE_PREF_CACHE) { //If cache available, return it.
 			if (cacheProxy != null) {
-				String cacheData = cacheProxy.onLoad(targetUrl);
+				String cacheData = cacheProxy.onLoad(dealCacheKey(targetUrl));
 				
 				if (cacheData != null) {
 					try {
@@ -245,11 +265,6 @@ public class HttpNetworkConnector {
 				
 				if (totalLen < totalReadCount) responseSize = totalReadCount;
 
-				if (cacheOs != null) {
-					if (cacheProxy != null) cacheProxy.onSave(targetUrl, cacheOs.toString()); 
-					cacheOs.close();
-				}
-
 				if (!request.isCanceled()) {
 					if (listener != null) listener.onProcessingData();
 				}
@@ -258,6 +273,11 @@ public class HttpNetworkConnector {
 				}
 
 				businessResponse = responseHandler.handleResponseEnd(charset);
+				if(cacheOs != null){
+					if (cacheProxy != null){
+						cacheProxy.onSave(dealCacheKey(targetUrl), cacheOs.toString()); 
+					}
+				}
 				
 //				listener.onRequestDone(businessResponse);
 			} else {

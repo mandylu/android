@@ -10,7 +10,7 @@ import java.util.Map;
 import android.util.Pair;
 
 
-public abstract class BaseHttpRequest implements IHttpRequest {
+abstract class BaseHttpRequest implements IHttpRequest {
 
 	public static final String TAG = "BaseHttpRequest";
 	
