@@ -11,18 +11,29 @@
         android:layout_height="fill_parent"
         android:layout_alignParentRight="true"
         android:background="@drawable/bg_post_selector"
-        android:gravity="center" >
+        android:gravity="center"
+        android:orientation="horizontal" >
 
-        <include layout="@layout/title_line" />
+        <include
+            android:layout_alignParentLeft="true"
+            layout="@layout/title_line" />
 
-        <ImageView
-            android:id="@+id/btn_fav_unfav"
+        <RelativeLayout
             android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:layout_centerInParent="true"
-            android:gravity="center"
-            android:src="@drawable/viewad_icon_more" >
-        </ImageView>
+            android:layout_height="fill_parent" >
+
+            <ImageView
+                android:id="@+id/btn_fav_unfav"
+                android:layout_width="30dip"
+                android:layout_height="10dip"
+                android:layout_centerInParent="true"
+                android:gravity="center"
+                android:paddingLeft="5dip"
+                android:paddingRight="5dip"
+                android:scaleType="centerInside"
+                android:src="@drawable/viewad_icon_more" >
+            </ImageView>
+        </RelativeLayout>
     </RelativeLayout>
 
     <TextView
