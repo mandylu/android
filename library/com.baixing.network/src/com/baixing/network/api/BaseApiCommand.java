@@ -226,30 +226,31 @@ public final class BaseApiCommand implements IRequestStatusListener {
 	}
 	
 	public static final String decodeUnicode(String source) {
-		if (null == source || " ".equals(source)) {
-			return source;
-		}
-		StringBuffer sb = new StringBuffer();
-		int i = 0;
-		while (i < source.length()) {
-			if (source.charAt(i) == '\\') {
-				if (source.charAt(i + 1) == 'u') {
-					int j = Integer
-							.parseInt(source.substring(i + 2, i + 6), 16);
-					sb.append((char) j);
-					i += 6;
-				} else {
-					sb.append(source.charAt(i));
-					i++;
-					sb.append(source.charAt(i));
-					i++;
-				}
-			} else {
-				sb.append(source.charAt(i));
-				i++;
-			}
-		}
-		return sb.toString();
+		return source;
+//		if (null == source || " ".equals(source)) {
+//			return source;
+//		}
+//		StringBuffer sb = new StringBuffer();
+//		int i = 0;
+//		while (i < source.length()) {
+//			if (source.charAt(i) == '\\') {
+//				if (source.charAt(i + 1) == 'u') {
+//					int j = Integer
+//							.parseInt(source.substring(i + 2, i + 6), 16);
+//					sb.append((char) j);
+//					i += 6;
+//				} else {
+//					sb.append(source.charAt(i));
+//					i++;
+//					sb.append(source.charAt(i));
+//					i++;
+//				}
+//			} else {
+//				sb.append(source.charAt(i));
+//				i++;
+//			}
+//		}
+//		return sb.toString();
 
 	}
 
