@@ -11,10 +11,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/title_bg_selector"
         android:drawableLeft="@drawable/viewad_icon_unfav"
-        android:paddingBottom="5dip"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
-        android:paddingTop="5dip"
+        android:paddingBottom="8dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="17dip"
+        android:paddingTop="8dip"
         android:text="收藏"
         android:textSize="@dimen/font_medium" >
     </Button>
@@ -31,10 +31,10 @@
         android:layout_height="wrap_content"
         android:background="@drawable/title_bg_selector"
         android:drawableLeft="@drawable/viewad_icon_flag"
-        android:paddingBottom="5dip"
-        android:paddingLeft="10dip"
-        android:paddingRight="10dip"
-        android:paddingTop="5dip"
+        android:paddingBottom="8dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="17dip"
+        android:paddingTop="8dip"
         android:text="举报"
         android:textSize="@dimen/font_medium" >
     </Button>
