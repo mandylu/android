@@ -130,7 +130,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         String res = getResources().getStringArray(R.array.item_flow_optimize)[GlobalDataManager.isTextMode() ? 1 : 0];;
         flowOptimizeTw.setText(res);
         
-        if (profile != null) {
+        if (profile != null && GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
         	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.VISIBLE);
         	TextView userNameTxt = (TextView) rootView.findViewById(R.id.userNameTxt);
         	userNameTxt.setText(profile.nickName);

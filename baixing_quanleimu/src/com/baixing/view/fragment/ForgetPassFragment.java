@@ -1,13 +1,7 @@
 package com.baixing.view.fragment;
 
-import java.security.InvalidKeyException;
-import java.security.NoSuchAlgorithmException;
-
-import javax.crypto.BadPaddingException;
-import javax.crypto.Cipher;
-import javax.crypto.IllegalBlockSizeException;
-import javax.crypto.NoSuchPaddingException;
-import javax.crypto.spec.SecretKeySpec;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,8 +15,6 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.EditText;
-import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.anonymous.AccountService;
@@ -34,6 +26,7 @@ import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -46,10 +39,9 @@ import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
-import com.tencent.mm.algorithm.Base64;
 
 
-public class ForgetPassFragment extends BaseFragment implements AnonymousNetworkListener {
+public class ForgetPassFragment extends BaseFragment implements AnonymousNetworkListener, Observer {
 	public static final String Forget_Type = "forget_type";///"forget", "edit"
 	public static final int MSG_FORGET_PWD_SUCCEED = 0xfff10001;
     private EditText mobileEt;
@@ -75,10 +67,33 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
 		}
 	}
 	
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
+				finishFragment();
+			}
+		}
+	}
+	
+	@Override
+	public void onCreate(Bundle savedInstanceState){
+		super.onCreate(savedInstanceState);
+        Bundle bundle = getArguments();
+        if(bundle != null && bundle.containsKey(Forget_Type)){
+        	if(!bundle.getString(Forget_Type).equals("forget")){
+        		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+        	}
+        }        
+	}
+	
 	public void onDestory()
 	{
 		super.onDestroy();
 		countTimer.cancel();
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
 	
 	public void initTitle(TitleDef title){
