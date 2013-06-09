@@ -260,12 +260,19 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		if(getView() != null){
-			int titleWidth = getView().findViewById(R.id.linearTop).getWidth();
-			int leftWidth = getView().findViewById(R.id.left_action).getWidth();
-			int rightIconWidth = getView().findViewById(R.id.imageView1).getWidth();
-			int padding = getView().findViewById(R.id.ll_post_title).getPaddingRight();
-			((TextView)getView().findViewById(R.id.tv_title_post)).setMaxWidth(titleWidth - leftWidth - rightIconWidth - 4 * padding);
-
+			getView().post(new Runnable(){
+				@Override
+				public void run(){
+					int titleWidth = getView().findViewById(R.id.linearTop).getWidth();
+					int leftWidth = getView().findViewById(R.id.left_action).getWidth();
+					int rightIconWidth = getView().findViewById(R.id.imageView1).getWidth();
+					int padding = getView().findViewById(R.id.ll_post_title).getPaddingRight();
+					int maxWidth = titleWidth - leftWidth - rightIconWidth - 4 * padding;
+					if(maxWidth > 0){
+						((TextView)getView().findViewById(R.id.tv_title_post)).setMaxWidth(maxWidth);
+					}
+				}
+			});
 		}
 	}
 	
@@ -704,7 +711,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		Iterator<String> ite = params.keyIterator();
 		while(ite.hasNext()){
 			String key = ite.next();
-			if(!PostUtil.inArray(key, PostCommonValues.fixedItemNames)){
+			if(!PostUtil.inArray(key, PostCommonValues.fixedItemNames) && !key.equals("title")){
 				params.remove(key);
 				ite = params.keyIterator();
 			}
@@ -922,7 +929,15 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				});
 				text.setOnFocusChangeListener(new PostUtil.BorderChangeListener(this.getActivity(), v));
 				
-				text.addTextChangedListener(textWatcher);
+				if(params.containsKey("title")){
+					if(PostGoodsFragment.shouldAddTextWatcher(params.getData("title"), params.getData("description"))){
+						text.addTextChangedListener(textWatcher);
+					}
+					((TextView)v.getRootView().findViewById(R.id.tv_title_post)).setText(params.getData("title"));
+				}else{
+					text.addTextChangedListener(textWatcher);
+				}
+				
 
 				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
@@ -1668,6 +1683,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	public void onStart(){
 		super.onStart();
 		setInputContent();
+	}
+	
+	static private boolean shouldAddTextWatcher(String title, String description){
+		if(TextUtils.isEmpty(title)) return true;
+		if(TextUtils.isEmpty(description)) return false;
+		
+		String subDescription = description.length() > 25 ? description.substring(0, 25) : description;
+		return title.equals(subDescription);
 	}
 	
 	@Override
