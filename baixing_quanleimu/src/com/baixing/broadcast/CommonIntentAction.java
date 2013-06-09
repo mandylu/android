@@ -24,6 +24,8 @@ public class CommonIntentAction
 	public static final String EXTRA_JUMP_DATA = "extra.common.jump.data";
 	
 	public static final String ACTION_BROADCAST_QZONE_AUTH_SUCCESS = "com.baixing.action.qzone.auth.success";
+	
+	public static final String ACTION_BROADCAST_EDIT_LOGOUT = "com.baixing.action.edit.logout";
 	/**
 	 * Status bar notification actions.
 	 */
