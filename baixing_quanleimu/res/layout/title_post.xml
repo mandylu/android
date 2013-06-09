@@ -8,6 +8,7 @@
         android:layout_width="fill_parent"
         android:layout_height="match_parent"
         android:layout_centerInParent="true"
+        android:layout_marginRight="@dimen/title_action_width"
         android:background="@drawable/title_bg_selector"
         android:gravity="center"
         android:orientation="horizontal"
@@ -18,11 +19,11 @@
             android:layout_width="wrap_content"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:hint="免费发布"
+            android:hint="标题"
             android:maxLength="25"
             android:singleLine="true"
             android:textColor="@color/font_title"
-            android:textSize="22dp" />
+            android:textSize="@dimen/font_medium" />
 
         <ImageView
             android:id="@+id/imageView1"

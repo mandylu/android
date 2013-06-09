@@ -267,7 +267,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					int leftWidth = getView().findViewById(R.id.left_action).getWidth();
 					int rightIconWidth = getView().findViewById(R.id.imageView1).getWidth();
 					int padding = getView().findViewById(R.id.ll_post_title).getPaddingRight();
-					int maxWidth = titleWidth - leftWidth - rightIconWidth - 4 * padding;
+					int maxWidth = titleWidth - 2 * leftWidth - rightIconWidth - 4 * padding;
 					if(maxWidth > 0){
 						((TextView)getView().findViewById(R.id.tv_title_post)).setMaxWidth(maxWidth);
 					}
