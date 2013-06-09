@@ -1014,14 +1014,16 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 
 	@Override
 	public void update(Observable observable, Object data) {
-		if (data instanceof IBxNotification)
-		{
+		if (data instanceof IBxNotification){
 			IBxNotification note = (IBxNotification) data;
 			if (IBxNotificationNames.NOTIFICATION_LOGIN.equals(note.getName())
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
 				user = (UserBean) note.getObject();
-				filterOutAd(listMyPost, user);
-				needReloadData = true;
+				if(this.isMyPostView()){
+					filterOutAd(listMyPost, user);
+					needReloadData = true;
+				}
+				adapter.notifyDataSetChanged();
 			}
 		}		
 	}
