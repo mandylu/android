@@ -259,6 +259,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			needShowDlg = false;
 		}
 		
+		if(getView() != null){
+			int titleWidth = getView().findViewById(R.id.linearTop).getWidth();
+			int leftWidth = getView().findViewById(R.id.left_action).getWidth();
+			int rightIconWidth = getView().findViewById(R.id.imageView1).getWidth();
+			int padding = getView().findViewById(R.id.ll_post_title).getPaddingRight();
+			((TextView)getView().findViewById(R.id.tv_title_post)).setMaxWidth(titleWidth - leftWidth - rightIconWidth - 4 * padding);
+
+		}
 	}
 	
 	private boolean isActive = false;
@@ -317,7 +325,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onViewCreated(view, savedInstanceState);
 		showPost();
 	}
-
+	
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
@@ -329,9 +337,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			button.setText("立即免费发布");
 		else
 			button.setText("立即更新信息");
+
 		return v;
 	}
-	
+		
 	protected void startImgSelDlg(final int cancelResultCode, String finishActionLabel){
 		PerformanceTracker.stamp(Event.E_Send_Camera_Bootup);
 		Intent backIntent = new Intent();
@@ -1670,7 +1679,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
 		title.m_titleControls = inflator.inflate(R.layout.title_post, null);
-		
+				
 		title.m_titleControls.findViewById(R.id.ll_post_title).setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				EditTitleDialogFragment dlgEdit = new EditTitleDialogFragment();
