@@ -34,6 +34,7 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.ViewUtil;
+import com.baixing.view.fragment.PostParamsHolder;
 import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.activity.R;
 
@@ -291,11 +292,17 @@ public class CustomDialogBuilder {
 							CustomDialogBuilder.this.lastChoise = item;
 							handleLastLevelChoice(cd);
 						} else {
-							showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
-							CustomDialogBuilder.this.id = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
-							String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
-//							(new Thread(new GetMetaDataThread(id,txt))).start();
-							sendGetMetaCmd(id, txt);
+							String selId = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).id;
+							if(selId.equals(PostParamsHolder.INVALID_VALUE)){
+								CustomDialogBuilder.this.lastChoise = (MultiLevelItem)(CustomDialogBuilder.this.items.get(pos));
+								handleLastLevelChoice(cd);
+							}else{
+								showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, true);
+								CustomDialogBuilder.this.id = selId;
+								String txt = ((MultiLevelItem)(CustomDialogBuilder.this.items.get(pos))).toString();
+	//							(new Thread(new GetMetaDataThread(id,txt))).start();
+								sendGetMetaCmd(id, txt);
+							}
 						}
 					}//not category over
 					
