@@ -25,7 +25,6 @@ import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
 import android.text.TextUtils;
 import android.util.Pair;
-import android.view.Gravity;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
 import android.view.MotionEvent;
@@ -33,9 +32,9 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
-import android.widget.Button;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
+import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
@@ -160,6 +159,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		this.keepSilent = false;
 		super.onResume();
+		
+//		if(getArguments() != null && getArguments().getBoolean("isVadPreview", false)){
+//			getView().findViewById(R.id.left_action).setVisibility(View.VISIBLE);
+//			getView().findViewById(R.id.back_icon).setVisibility(View.INVISIBLE);
+//		}
 	}
 	
 	private boolean isMyAd(){
@@ -738,11 +742,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		BaseApiCommand cmd = BaseApiCommand.createCommand(request.apiName, false, params);
 		cmd.execute(getActivity(), this);
 	}
-
+	
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = isVadPreview() ? "" : "返回";
-		title.m_rightActionHint = isVadPreview() ? "完成" : "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
+		title.m_rightActionHint = isVadPreview() ? "完成" : "";
 		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
 			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
 					this.mListLoader.getGoodsList().getData().size();	
@@ -751,46 +755,38 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		title.m_leftActionImage = getArguments() != null && "close".equalsIgnoreCase(getArguments().getString(ARG_COMMON_BACK_HINT)) ? R.drawable.icon_close : R.drawable.icon_back;
 		
-		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-		title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
-		
+		if(!isMyAd()){
+			LayoutInflater inflater = LayoutInflater.from(this.getActivity());
+			title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setOnClickListener(this);
+		}
+
+		if(detail != null){
+			if(!isMyAd()){
+				TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
+				viewTimes.setText(detail.getValueByKey("count") + "次查看");
+			}else{
+				title.m_title = detail.getValueByKey("count") + "次查看";
+			}			
+		}
+
 		updateTitleBar(title);
+		
+	
 	}
 	
 	private void updateTitleBar(TitleDef title)
 	{
 		
 		if(isMyAd() || !detail.isValidMessage()){
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.INVISIBLE);
+			if(title.m_titleControls != null){
+				title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.INVISIBLE);
+			}
 		}
 		else{
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
-		}
-		
-		title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setOnClickListener(this);
-//		TextView favBtn = (TextView) title.m_titleControls.findViewById(R.id.btn_fav_unfav);
-//		if (favBtn != null)
-//		{
-//			favBtn.setText(isInMyStore() ? "取消收藏" : "收藏");
-//		}
-		
-		
-		if(detail != null){
-//			String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
-//			if (dateV != null)
-//			{
-//				try {
-//					long timeL = Long.parseLong(dateV) * 1000;
-//					createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
-//				}
-//				catch(Throwable t)
-//				{
-//					createTimeView.setText("");
-//				}
-//			}
-			
-			TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
-			viewTimes.setText(detail.getValueByKey("count") + "次查看");
+			if(title.m_titleControls != null){
+				title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
+			}
 		}
 	}
 	

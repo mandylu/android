@@ -45,6 +45,6 @@
         android:gravity="center|center_vertical"
         android:text="1980次查看"
         android:textColor="@color/font_title"
-        android:textSize="@dimen/font_small" />
+        android:textSize="@dimen/font_medium" />
 
 </RelativeLayout>
