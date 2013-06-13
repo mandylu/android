@@ -1,44 +1,27 @@
 <?xml version="1.0" encoding="utf-8"?>
-<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
     xmlns:tools="http://schemas.android.com/tools"
     android:layout_width="106.5dp"
     android:layout_height="106.5dp"
-    android:background="@drawable/bg_grid_selector" >
+    android:background="@drawable/bg_grid_selector"
+    android:gravity="center_vertical|center_horizontal"
+    android:orientation="vertical" >
 
-    <LinearLayout
-        android:layout_width="fill_parent"
-        android:layout_height="fill_parent"
-        android:layout_centerInParent="true"
-        android:gravity="center_vertical|center_horizontal"
-        android:orientation="vertical" >
+    <ImageButton
+        android:id="@+id/itemicon"
+        android:layout_width="48dp"
+        android:layout_height="48dp"
+        android:background="@null"
+        android:scaleType="centerInside"
+        tools:ignore="ContentDescription" >
+    </ImageButton>
 
-        <ImageButton
-            android:id="@+id/itemicon"
-            android:layout_width="48dp"
-            android:layout_height="48dp"
-            android:background="@null"
-            android:scaleType="centerInside"
-            tools:ignore="ContentDescription" >
-        </ImageButton>
-
-        <TextView
-            android:id="@+id/itemtext"
-            android:layout_width="wrap_content"
-            android:layout_height="wrap_content"
-            android:singleLine="true"
-            android:textColor="@color/category_grid_font" >
-        </TextView>
-    </LinearLayout>
-
-    <!--
-         <ImageView
-        android:id="@+id/star"
+    <TextView
+        android:id="@+id/itemtext"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:layout_alignParentTop="true"
-        android:layout_toRightOf="@+id/itemicon"
-        android:visibility="gone"
-        android:src="@drawable/icon_my_new_point" />
-    -->
+        android:singleLine="true"
+        android:textColor="@color/category_grid_font" >
+    </TextView>
 
-</RelativeLayout>
+</LinearLayout>
