@@ -160,10 +160,17 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		this.keepSilent = false;
 		super.onResume();
 		
-//		if(getArguments() != null && getArguments().getBoolean("isVadPreview", false)){
-//			getView().findViewById(R.id.left_action).setVisibility(View.VISIBLE);
-//			getView().findViewById(R.id.back_icon).setVisibility(View.INVISIBLE);
-//		}
+		Boolean firstIn = (Boolean)Util.loadDataFromLocate(getAppContext(), "firstInVadAfter3.3", Boolean.class);
+		if(!isMyAd() && (firstIn == null || firstIn)){
+			Util.saveDataToLocate(getAppContext(), "firstInVadAfter3.3", false);
+			
+			getTitleDef().m_titleControls.findViewById(R.id.vad_title_fav_parent).post(new Runnable(){
+				@Override
+				public void run(){
+					handleStoreBtnClicked();
+				}
+			});
+		}
 	}
 	
 	private boolean isMyAd(){

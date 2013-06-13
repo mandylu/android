@@ -1,6 +1,12 @@
 package com.baixing.activity;
 
+import java.io.File;
+import java.io.FileNotFoundException;
+import java.io.FileOutputStream;
+import java.io.IOException;
+
 import android.content.Context;
+import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 import android.util.Pair;
@@ -15,6 +21,7 @@ import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.MobileConfig;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
+import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
 /**
@@ -74,6 +81,25 @@ public class UpdateCityAndCatCommand implements Callback {
 		}
 		else if ("category_list".equals(apiName)) {
 			if (!TextUtils.isEmpty(responseData)) {
+//				File file = new File(Environment.getExternalStorageDirectory(), "/category.txt");
+//				try {
+//					FileOutputStream os = new FileOutputStream(file, true);
+//					String after = TextUtil.decodeUnicode(responseData);
+//					try {
+//						os.write(after.getBytes());
+//					} catch (IOException e) {
+//						// TODO Auto-generated catch block
+//						e.printStackTrace();
+//					}
+//					os.close();
+//				} catch (FileNotFoundException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				} catch (IOException e) {
+//					// TODO Auto-generated catch block
+//					e.printStackTrace();
+//				}
+				
 				Util.saveJsonAndTimestampToLocate(context, "saveFirstStepCate",
 						responseData, cateUpdateTime);
 			}
