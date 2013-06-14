@@ -3,6 +3,8 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -40,12 +42,16 @@ import android.widget.TextView;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -66,7 +72,7 @@ import com.baixing.widget.FavAndReportDialog;
 import com.quanleimu.activity.R;
 import com.tencent.mm.sdk.platformtools.Log;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback, Observer {
 
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -119,22 +125,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
-		
-//		Thread t = new Thread(new Runnable(){
-//			public void run(){
-//				try{
-//					Thread.sleep(2000);
-//					if(mb_loading != null && mb_loading.get() != null){
-//						mb_loading.get().recycle();
-//						mb_loading = null;
-//					}
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//		t.start();
-	
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);	
 		super.onDestroy();
 	}
 	
@@ -219,7 +210,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 //			this.mListLoader.setHandler(handler);
 			this.mListLoader.setHasMoreListener(this);
 		}
-		
+   		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
 	
 	public void onStackTop(boolean isBack) {
@@ -1108,4 +1099,21 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
+				View edit = getView() == null ? null : getView().findViewById(R.id.vad_tool_bar);
+				if(edit != null){
+					int visibility = edit.getVisibility();
+					if(visibility == View.VISIBLE){
+						finishFragment();
+						this.getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+					}
+				}
+			}
+		}
+	}	
 }

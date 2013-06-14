@@ -79,7 +79,8 @@ public class PersonalActivity extends BaseTabActivity {
 				public void onReceive(Context context, Intent intent) {
 					String action = intent.getAction();
 
-					if (action.equals(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT)) {
+					if (action.equals(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT)
+							|| action.equals(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT)) {
 						pushFragment(new PersonalProfileFragment(), bundle, true);
 					}
 				}
@@ -95,6 +96,7 @@ public class PersonalActivity extends BaseTabActivity {
 		this.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT));
 		
 		IntentFilter intentFilter = new IntentFilter(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT);
+		intentFilter.addAction(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT);
 		this.registerReceiver(personalReceiver, intentFilter);
 	}
 	
