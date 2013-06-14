@@ -36,7 +36,6 @@ import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
@@ -50,8 +49,8 @@ import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -170,11 +169,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return GlobalDataManager.getInstance().isMyAd(detail);
 	}
 	
-	private boolean isInMyStore(){
-		if(detail == null) return false;
-		return GlobalDataManager.getInstance().isFav(detail);
-	}
-//	
 	public boolean onTouch (View v, MotionEvent event){
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_DOWN:
@@ -231,11 +225,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
 		
 		pageController = new VadPageController(v, detail, this, originalSelect);
-		
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-        o.inPurgeable = true;
-//        mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
-        
+		        
         mListLoader.setSelection(originalSelect);
         mListLoader.setCallback(this);       
         
@@ -394,10 +384,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		FavAndReportDialog menu = new FavAndReportDialog((BaseActivity)getActivity(), detail, handler);
 		
 		menu.show(location[0] + width - menu.getWindow().getAttributes().width - 5, height - 1);
-//		menu.show(400, 80);
-		//tracker
-		
-		
 	}
 	
 	class ManagerAlertDialog extends AlertDialog{
@@ -1110,7 +1096,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					int visibility = edit.getVisibility();
 					if(visibility == View.VISIBLE){
 						finishFragment();
-						this.getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+						getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+					}else{
+						getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_COMMON_AD_LOGOUT));
 					}
 				}
 			}
