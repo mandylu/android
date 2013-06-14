@@ -22,7 +22,6 @@ import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.AutoRegisterService;
 import com.baixing.util.LocationService;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -293,8 +292,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			Sender.getInstance().notifySendMutex();
 		}
 		
-		AutoRegisterService.start();
-
 		super.onStart();
 	}
 	

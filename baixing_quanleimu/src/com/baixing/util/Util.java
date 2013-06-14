@@ -747,12 +747,9 @@ public class Util {
         Util.deleteDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "user");
         Util.deleteDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile");
         
-		UserBean anonymousUser = (UserBean) loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
         GlobalDataManager.getInstance().getAccountManager().logout();
 		
-//		GlobalDataManager.getInstance().setPhoneNumber("");
-		
-		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, anonymousUser);
+		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGOUT, null);
 		
 		GlobalDataManager.getInstance().loadPersonalSync();
 	}

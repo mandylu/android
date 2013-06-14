@@ -13,41 +13,25 @@ import com.baixing.util.Util;
  */
 public class AccountManager {
 	private static UserBean currentUser;
-	private static UserBean anonymousUser;
 	AccountManager() {
 		
 	}
 	
 	public void logout() {
-		currentUser = null;
-		
-		UserBean anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
-		if(anonymousUser != null){
-			Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", anonymousUser);
-			currentUser = anonymousUser;
-		}
-	}
-	
-	public UserBean getAnonymousUser() {
-		if (anonymousUser != null) {
-			return anonymousUser;
-		}
-		
-		anonymousUser = (UserBean) Util.loadDataFromLocate(GlobalDataManager.getInstance().getApplicationContext(), "anonymousUser", UserBean.class);
-		return anonymousUser;
+		currentUser = null;		
 	}
 	
 	/**
     *
     * @return 返回当前 UserBean user，未登录情况下返回 null
     */
-   public UserBean getCurrentUser() {
+    public UserBean getCurrentUser() {
 		if (currentUser != null) {
 			return currentUser;
 		}
 		currentUser = reloadUser();
 		return currentUser;
-   }
+    }
    
 	public boolean isUserLogin() {
 		UserBean user = getCurrentUser();
