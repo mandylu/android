@@ -278,9 +278,9 @@ public class EditAdFragment extends PostGoodsFragment implements Observer{
 		// TODO Auto-generated method stub
 		if (data instanceof IBxNotification){
 			IBxNotification note = (IBxNotification) data;
-			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
-				finishFragment();
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){				
 				this.getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT));
+				finishFragment();
 			}
 		}		
 		

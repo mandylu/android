@@ -2,12 +2,15 @@ package com.baixing.view.fragment;
 
 import java.io.IOException;
 import java.io.UnsupportedEncodingException;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -19,8 +22,12 @@ import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -30,7 +37,7 @@ import com.baixing.util.ViewUtil;
 import com.quanleimu.activity.R;
 
 
-public class FeedbackFragment extends BaseFragment {
+public class FeedbackFragment extends BaseFragment implements Observer {
 	
 	private EditText etOpinion;
 	private String content = "";
@@ -73,6 +80,10 @@ public class FeedbackFragment extends BaseFragment {
 		if (bunle.containsKey("adId"))
 		{
 			this.adId = bunle.getString("adId");
+		}
+		
+		if(opinionType == 0 || opinionType == 1){
+			BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 		}
 	}
 	@Override
@@ -217,6 +228,16 @@ public class FeedbackFragment extends BaseFragment {
 	public boolean hasGlobalTab()
 	{
 		return false;
+	}
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
+				finishFragment();
+			}
+		}
 	}
 	
 }

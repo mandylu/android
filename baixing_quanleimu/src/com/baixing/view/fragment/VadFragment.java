@@ -219,6 +219,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if(detail == null || mListLoader == null) return null;
+		if(mListLoader.getGoodsList() == null 
+				|| mListLoader.getGoodsList().getData() == null
+				|| mListLoader.getGoodsList().getData().size() == 0){
+			if(getActivity() != null){
+				getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+//				return null;
+			}
+		}
 		final int originalSelect = getArguments().getInt("index", 0);
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		

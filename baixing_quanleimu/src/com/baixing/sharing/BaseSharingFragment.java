@@ -1,13 +1,20 @@
 package com.baixing.sharing;
 
 import java.io.File;
+import java.util.Observable;
+import java.util.Observer;
 
 import com.baixing.activity.BaseFragment;
+import com.baixing.broadcast.CommonIntentAction;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.quanleimu.activity.R;
 import android.app.AlertDialog;
 import android.app.Dialog;
 import android.app.ProgressDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
 import android.graphics.Color;
@@ -26,7 +33,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 import android.widget.Toast;
 
-public class BaseSharingFragment extends BaseFragment implements OnClickListener{
+public class BaseSharingFragment extends BaseFragment implements OnClickListener, Observer{
     private TextView mTextNum;
     protected EditText mEdit;
     private FrameLayout mPiclayout;
@@ -40,6 +47,12 @@ public class BaseSharingFragment extends BaseFragment implements OnClickListener
     public static final String EXTRA_EXPIRES_IN = "com.sharing.android.expires";
 
     public static final int WEIBO_MAX_LENGTH = 140;
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+    	super.onCreate(savedInstanceState);
+    	BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+    }
     
     @Override
     public void onClick(View v) {
@@ -138,6 +151,24 @@ public class BaseSharingFragment extends BaseFragment implements OnClickListener
 		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_rightActionHint = "发布";
+	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){				
+				getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+				finishFragment();
+			}
+		}
+	}
+	
+	@Override
+	public void onDestroy(){
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+		super.onDestroy();
 	}
 
 }
