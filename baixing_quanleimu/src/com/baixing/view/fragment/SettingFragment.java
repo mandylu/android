@@ -3,6 +3,7 @@ package com.baixing.view.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -17,11 +18,13 @@ import android.widget.TextView;
 import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.MainActivity;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.Tracker;
@@ -36,14 +39,22 @@ import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
 
 import java.util.Date;
+import java.util.Observable;
+import java.util.Observer;
 
-public class SettingFragment extends BaseFragment implements View.OnClickListener, ICallback {
+public class SettingFragment extends BaseFragment implements View.OnClickListener, ICallback, Observer {
     private UserBean user;
     private UserProfile profile;
     private long debugShowFlagTime = 0;
     private long debugShowFlag = 0;
     
     public static final int MSG_PROFILE_UPDATE = 1;
+    
+    @Override
+    public void onCreate(Bundle savedInstanceState){
+    	super.onCreate(savedInstanceState);
+    	BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+    }
 
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
@@ -396,7 +407,25 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
 				super.handleMessage(msg, activity, rootView);
 		}
 	}
+
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
+				if(getView() != null && getView().findViewById(R.id.setChangeUserName).getVisibility() == View.VISIBLE){
+					finishFragment();
+				}
+			}
+		}
+		
+	}
 	
-	
+	@Override
+	public void onDestroy(){
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);
+		super.onDestroy();
+	}
 
 }
