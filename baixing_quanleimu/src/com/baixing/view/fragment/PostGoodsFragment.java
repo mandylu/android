@@ -529,8 +529,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			return;
 		}
 		PostUtil.extractInputData(layout_txt, params);
-		String contentAdr = ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
-		String contentContact = ((Button)getView().findViewById(R.id.btn_contact)).getText().toString();
+		boolean contactAndAddrVisible = getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE;
+		String contentAdr = contactAndAddrVisible ? 
+				((Button)getView().findViewById(R.id.btn_address)).getText().toString()
+				: params.getData("contact");
+		String contentContact = contactAndAddrVisible ?
+				((Button)getView().findViewById(R.id.btn_contact)).getText().toString()
+				: params.getData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(contentAdr != null && contentAdr.length() > 0){
 			GlobalDataManager.getInstance().setAddress(contentAdr);
 		}
@@ -949,10 +954,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				this.updateImageInfo(layout_txt);
 			}			
 		}
+
+		boolean contactAndPhoneVisible = !TextUtils.isEmpty(GlobalDataManager.getInstance().getPhoneNumber()) 
+				&& !TextUtils.isEmpty(GlobalDataManager.getInstance().getAddress());
 		
 		for(int i = 0; i < PostCommonValues.fixedItemNames.length; ++ i){
 			if(pm.containsKey(PostCommonValues.fixedItemNames[i]) && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DESCRIPTION)){
-				if((!PostCommonValues.fixedItemNames[i].equals("contact") && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION)))
+				if(contactAndPhoneVisible
+						&& (PostCommonValues.fixedItemNames[i].equals("contact") 
+								|| PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION))){
+					continue;
+				}
 				this.appendBeanToLayout(pm.get(PostCommonValues.fixedItemNames[i]));
 			}else if(!pm.containsKey(PostCommonValues.fixedItemNames[i])){
 				params.remove(PostCommonValues.fixedItemNames[i]);
@@ -960,7 +972,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
-		setPhoneAndAddrLayout();
+		if(contactAndPhoneVisible){
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
+			setPhoneAndAddrLayout();
+		}else{
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.GONE);
+		}
 	}
 	
 	protected void setPhoneAndAddrLeftIcon(){
