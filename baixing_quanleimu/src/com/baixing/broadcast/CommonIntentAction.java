@@ -26,6 +26,8 @@ public class CommonIntentAction
 	public static final String ACTION_BROADCAST_QZONE_AUTH_SUCCESS = "com.baixing.action.qzone.auth.success";
 	
 	public static final String ACTION_BROADCAST_EDIT_LOGOUT = "com.baixing.action.edit.logout";
+	public static final String ACTION_BROADCAST_MYAD_LOGOUT = "com.baixing.action.myad.logout";
+	public static final String ACTION_BROADCAST_COMMON_AD_LOGOUT = "com.baixing.action.common.ad.logout";
 	/**
 	 * Status bar notification actions.
 	 */
