@@ -127,6 +127,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		listMyPost = GlobalDataManager.getInstance().getListMyPost();
 		filterOutAd(listMyPost, user);
 		
+		glLoader = new VadListLoader(null, this, null, null);
+		glLoader.setHasMore(false);
+		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
@@ -164,6 +167,10 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			lvGoodsList.fireRefresh();
 			needReloadData = false;
 		}
+		
+		if (glLoader.getGoodsList().getData() != null && glLoader.getGoodsList().getData().size() > 0){
+			lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
+		}
 	}
 	
 	private boolean isMyPostView(){
@@ -197,8 +204,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		gl.setData(isMyPostView() ? (listMyPost == null ? new ArrayList<Ad>() : listMyPost)
 				: GlobalDataManager.getInstance().getListMyStore());
 	
-		glLoader = new VadListLoader(null, this, null, null);
-		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 //		glLoader.setSearchUserList(true);
 		glLoader.setSearchType(isMyPostView() ? SEARCH_POLICY.SEARCH_USER_LIST : SEARCH_POLICY.SEARCH_FAVORITES);
