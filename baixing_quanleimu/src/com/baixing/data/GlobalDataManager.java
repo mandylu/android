@@ -12,6 +12,7 @@ import android.content.Context;
 import android.content.SharedPreferences;
 import android.content.pm.ApplicationInfo;
 import android.content.pm.PackageManager;
+import android.text.TextUtils;
 import android.util.Pair;
 
 import com.baixing.entity.Ad;
@@ -28,6 +29,7 @@ import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
+import com.baixing.util.FavoriteNetworkUtil;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 
@@ -56,6 +58,32 @@ public class GlobalDataManager implements Observer {
     private ImageLoaderManager imageLoaderMgr;
     
     private Class lastActiveCls;
+    
+    public void updateLastUsedCategory(String name, String englishName){
+    	List<String> categories = getLastUsedCategory();
+    	if(categories == null){
+    		categories = new ArrayList<String>();
+    	}
+    	String newCategory = name + "," + englishName;
+    	int index = categories.indexOf(newCategory);
+    	if(index == 0){
+    		return;
+    	}else{
+    		if(index > 0){
+    			categories.remove(index);
+    		}
+    		categories.add(0, newCategory);
+    	}
+    	if(categories.size() > 3){
+    		categories = categories.subList(0, 3);
+    	}
+    	Util.saveDataToLocate(getApplicationContext(), "lastUsedCategories", categories);
+    }
+    
+    public List<String> getLastUsedCategory(){
+    	return (List<String>)Util.loadDataFromLocate(getApplicationContext(), "lastUsedCategories", List.class);
+    }
+    
     
     public final ImageCacheManager getImageManager(){
     	if(imageCacheMgr == null){
@@ -114,7 +142,14 @@ public class GlobalDataManager implements Observer {
 		if (this.listMyStore != null)
 		{
 			this.listMyStore.clear();
+			saveFavoriteToLocal();
 		}
+	}
+	
+	private void saveFavoriteToLocal(){
+		if(!GlobalDataManager.getInstance().getAccountManager().isUserLogin()){
+			Util.saveDataToLocate(getApplicationContext(), "listMyStore", listMyStore);
+		}	
 	}
 	
 	public List<Ad> addFav(Ad detail)
@@ -126,6 +161,7 @@ public class GlobalDataManager implements Observer {
 		
 		this.listMyStore.add(0, detail);
 		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_FAV_ADDED, detail);
+		saveFavoriteToLocal();
 		return this.listMyStore;
 	}
 	
@@ -157,40 +193,14 @@ public class GlobalDataManager implements Observer {
 				break;
 			}
 		}
-		
+		saveFavoriteToLocal();
 		return this.listMyStore;
 	}
 	
 	public void updateFav(List<Ad> favs)
 	{
-		this.listMyStore = new ArrayList<Ad>();
-		
-		if (favs != null)
-		{
-			for (int i=0; i<favs.size() && i<=50; i++)
-			{
-				this.listMyStore.add(favs.get(i));
-			}
-		}
-	}
-
-	private void updateFav(Ad[] list) {
-		this.listMyStore = new ArrayList<Ad>();
-
-		if (list != null)
-		{
-			int i=0;
-			for (Ad item : list)
-			{
-				this.listMyStore.add(item);
-				i++;
-				if (i == 50)
-				{
-					break;
-				}
-			}
-		}
-					
+		this.listMyStore = favs == null ? new ArrayList<Ad>() : favs;
+		saveFavoriteToLocal();
 	}
 
 	//我的发布信息
@@ -582,13 +592,17 @@ public class GlobalDataManager implements Observer {
 		String[] objRemark = (String[]) Util.loadDataFromLocate(getApplicationContext(), "listRemark", String[].class);
 		GlobalDataManager.getInstance().updateRemark(objRemark);
 
-		Ad[] objStore = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
-		GlobalDataManager.getInstance().updateFav(objStore);
-		
-//		byte[] personalMark = Util.loadData(getApplicationContext(), "personMark");//.loadDataFromLocate(parentActivity, "personMark");
-//		if(personalMark != null){
-//			GlobalDataManager.getInstance().setPersonMark(new String(personalMark));
-//		}
-
+		UserBean user = this.getAccountManager().getCurrentUser();
+		if(user != null && !TextUtils.isEmpty(user.getPhone())){
+			FavoriteNetworkUtil.retreiveFavorites(getApplicationContext(), user);
+			FavoriteNetworkUtil.syncFavorites(getApplicationContext(), user);
+		}else{
+			Ad[] store = (Ad[]) Util.loadDataFromLocate(getApplicationContext(), "listMyStore", Ad[].class);
+			if(store != null){
+				for(int i = 0; i < store.length; ++ i){
+					addFav(store[i]);
+				}
+			}
+		}		
 	}
 }

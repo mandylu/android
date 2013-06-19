@@ -33,6 +33,9 @@ public class AnonymousExecuter implements Callback{
 		String retStatus = "请求失败";
 		String result = BaseApiCommand.createCommand(checkStatusApi, true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 		if(result == null) return retStatus;
+		if(!result.startsWith("{") && !result.startsWith("[")){
+			retStatus = result;
+		}
 		JSONObject obj;
 		try {
 			obj = new JSONObject(result);

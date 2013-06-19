@@ -1,0 +1,42 @@
+<?xml version="1.0" encoding="utf-8"?>
+<LinearLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="wrap_content"
+    android:layout_height="wrap_content"
+    android:background="@drawable/btn_category_left_top"
+    android:orientation="vertical" >
+
+    <Button
+        android:id="@+id/favButton"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_bg_selector"
+        android:drawableLeft="@drawable/viewad_icon_unfav"
+        android:paddingBottom="8dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="17dip"
+        android:paddingTop="8dip"
+        android:text="收藏"
+        android:textSize="@dimen/font_medium" >
+    </Button>
+
+    <TextView
+        android:layout_width="fill_parent"
+        android:layout_height="1dp"
+        android:background="@drawable/list_divider" >
+    </TextView>
+
+    <Button
+        android:id="@+id/reportBtn"
+        android:layout_width="wrap_content"
+        android:layout_height="wrap_content"
+        android:background="@drawable/title_bg_selector"
+        android:drawableLeft="@drawable/viewad_icon_flag"
+        android:paddingBottom="8dip"
+        android:paddingLeft="15dip"
+        android:paddingRight="17dip"
+        android:paddingTop="8dip"
+        android:text="举报"
+        android:textSize="@dimen/font_medium" >
+    </Button>
+
+</LinearLayout>

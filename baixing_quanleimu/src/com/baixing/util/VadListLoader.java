@@ -3,6 +3,7 @@ package com.baixing.util;
 import java.io.Serializable;
 
 import android.content.Context;
+import android.text.TextUtils;
 import android.util.Log;
 
 import com.baixing.entity.AdList;
@@ -156,7 +157,8 @@ public class  VadListLoader implements Serializable{
 		SEARCH_LISTING("ad_list"),
 		SEARCH_USER_LIST("ad_user_list"),
 		SEARCH_NEARBY("ad_nearby"),
-		SEARCH_AROUND("getAroundAds");
+		SEARCH_AROUND("getAroundAds"),
+		SEARCH_FAVORITES("get_favourites");
 		public String command;
 		private SEARCH_POLICY(String command){
 			this.command = command;
@@ -342,7 +344,11 @@ public class  VadListLoader implements Serializable{
 		public void onNetworkFail(String apiName, ApiError error) {
 			if(!mCancel){
 				if(callback != null){
-					callback.onRequestComplete(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+					if(error != null && !TextUtils.isEmpty(error.getMsg())){
+						callback.onRequestComplete(ErrorHandler.ERROR_COMMON_FAILURE, error.getMsg());
+					}else{
+						callback.onRequestComplete(ErrorHandler.ERROR_NETWORK_UNAVAILABLE, null);
+					}
 				}
 			}
 		}

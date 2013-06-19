@@ -2,14 +2,110 @@
 <ScrollView xmlns:android="http://schemas.android.com/apk/res/android"
     android:layout_width="fill_parent"
     android:layout_height="fill_parent"
-    android:background="@color/bg_screen"
+
     android:scrollbars="none" >
 
-    <com.baixing.widget.CustomizeGridView
-        android:id="@+id/gridcategory"
+    <LinearLayout
         android:layout_width="fill_parent"
         android:layout_height="wrap_content"
-        android:orientation="vertical"
-        />
+        android:orientation="vertical" >
+
+        <LinearLayout
+            android:id="@+id/ll_everUsed"
+            android:layout_width="fill_parent"
+            android:layout_height="50dip"
+            android:layout_marginLeft="16dip"
+            android:layout_marginRight="16dip"
+            android:layout_marginTop="16dip"
+            android:background="@drawable/btn_category_left_top"
+            android:gravity="center_vertical"
+            android:orientation="horizontal"
+            android:paddingLeft="5dip"
+            android:paddingRight="5dip" >
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dip"
+                android:paddingLeft="5dip"
+                android:paddingRight="10dip"
+                android:paddingTop="10dip"
+                android:text="常用"
+                android:textColor="#deded4"
+                android:textSize="@dimen/font_small" />
+
+            <TextView
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:gravity="center_vertical"
+                android:paddingBottom="10dip"
+                android:paddingTop="10dip"
+                android:text="|"
+                android:textColor="#deded4"
+                android:textSize="@dimen/font_medium" />
+
+            <LinearLayout
+                android:id="@+id/ll_categories"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+                android:layout_gravity="center_vertical"
+                android:orientation="horizontal"
+                android:paddingLeft="10dip"
+                android:paddingRight="10dip" >
+
+                <Button
+                    android:id="@+id/category1"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_weight="1"
+                    android:background="@drawable/title_bg_selector"
+                    android:gravity="center_vertical|center"
+                    android:paddingBottom="10dip"
+                    android:paddingTop="10dip"
+                    android:singleLine="true"
+                    android:textSize="@dimen/font_small" >
+                </Button>
+
+                <Button
+                    android:id="@+id/category2"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/title_bg_selector"
+                    android:gravity="center_vertical|center"
+                    android:paddingBottom="10dip"
+                    android:paddingTop="10dip"
+                    android:singleLine="true"
+                    android:textSize="@dimen/font_small" >
+                </Button>
+
+                <Button
+                    android:id="@+id/category3"
+                    android:layout_width="0dip"
+                    android:layout_height="wrap_content"
+                    android:layout_marginLeft="10dip"
+                    android:layout_weight="1"
+                    android:background="@drawable/title_bg_selector"
+                    android:gravity="center_vertical|center"
+                    android:paddingBottom="10dip"
+                    android:paddingTop="10dip"
+                    android:singleLine="true"
+                    android:textSize="@dimen/font_small" >
+                </Button>
+            </LinearLayout>
+        </LinearLayout>
+
+        <com.baixing.widget.CustomizeGridView
+            android:id="@+id/gridcategory"
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:layout_marginBottom="16dip"
+            android:layout_marginTop="16dip"
+            android:orientation="vertical"
+            android:paddingLeft="16dip"
+            android:paddingRight="16dip" />
+    </LinearLayout>
 
 </ScrollView>

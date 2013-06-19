@@ -63,6 +63,8 @@ public class PostUtil{
 	
 	static public void extractInputData(ViewGroup vg, PostParamsHolder params){
 		if(vg == null) return;
+		String title = ((TextView)vg.getRootView().findViewById(R.id.tv_title_post)).getText().toString();
+		params.put("title", title, title);
 		for(int i = 0; i < vg.getChildCount(); ++ i){
 			PostGoodsBean postGoodsBean = (PostGoodsBean)vg.getChildAt(i).getTag(PostCommonValues.HASH_POST_BEAN);
 			if(postGoodsBean == null) continue;
@@ -70,7 +72,7 @@ public class PostUtil{
 			if (postGoodsBean.getControlType().equals("input") 
 					|| postGoodsBean.getControlType().equals("textarea")) {
 				EditText et = (EditText)vg.getChildAt(i).getTag(PostCommonValues.HASH_CONTROL);
-				if(et != null && et.getText() != null && et.getText().toString().trim().length() > 0){
+				if(et != null && et.getText() != null){// && et.getText().toString().trim().length() > 0){
 					params.put(postGoodsBean.getName(),  et.getText().toString(), et.getText().toString());
 				}
 			}

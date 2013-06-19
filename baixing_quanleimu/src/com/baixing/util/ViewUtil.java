@@ -8,6 +8,7 @@ import android.app.Activity;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
+import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
 import android.graphics.Bitmap;
@@ -214,6 +215,20 @@ public class ViewUtil {
 		Bitmap thumbnail = Bitmap.createScaledBitmap(srcBmp, (int)(thumbHeight*ratio), thumbHeight, true);
 
 		return thumbnail;
+	}
+	
+	static public ProgressDialog showSimpleProgress(Context context){
+		ProgressDialog pd = 
+				ProgressDialog.show(context, context.getString(R.string.dialog_title_info), context.getString(R.string.dialog_message_waiting));
+		pd.setCancelable(true);
+        pd.setCanceledOnTouchOutside(true);
+        return pd;
+	}
+	
+	static public void hideSimpleProgress(ProgressDialog pd){
+		if(pd != null){
+			pd.dismiss();
+		}
 	}
 	
 	static public void showToast(final Context context, final String msg, final boolean longDuration){

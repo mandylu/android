@@ -19,7 +19,9 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.Editable;
 import android.text.TextUtils;
+import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -71,6 +73,8 @@ import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.widget.CustomDialogBuilder;
+import com.baixing.widget.EditTitleDialogFragment;
+import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
@@ -255,6 +259,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			needShowDlg = false;
 		}
 		
+		if(getView() != null){
+			getView().post(new Runnable(){
+				@Override
+				public void run(){
+					int titleWidth = getView().findViewById(R.id.linearTop).getWidth();
+					int leftWidth = getView().findViewById(R.id.left_action).getWidth();
+					int rightIconWidth = getView().findViewById(R.id.imageView1).getWidth();
+					int padding = getView().findViewById(R.id.ll_post_title).getPaddingRight();
+					int maxWidth = titleWidth - 2 * leftWidth - rightIconWidth - 4 * padding;
+					if(maxWidth > 0){
+						((TextView)getView().findViewById(R.id.tv_title_post)).setMaxWidth(maxWidth);
+					}
+				}
+			});
+		}
 	}
 	
 	private boolean isActive = false;
@@ -313,7 +332,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		super.onViewCreated(view, savedInstanceState);
 		showPost();
 	}
-
+	
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.postgoodsview, null);		
@@ -325,9 +344,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			button.setText("立即免费发布");
 		else
 			button.setText("立即更新信息");
+
 		return v;
 	}
-	
+		
 	protected void startImgSelDlg(final int cancelResultCode, String finishActionLabel){
 		PerformanceTracker.stamp(Event.E_Send_Camera_Bootup);
 		Intent backIntent = new Intent();
@@ -530,6 +550,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if(!this.checkInputComplete()){
 			return;
 		}
+		params.put("title", ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString(), 
+				((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
+		
 		PerformanceTracker.stamp(Event.E_Start_PostAction);
 		String detailLocationValue = params.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
@@ -547,7 +570,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private boolean checkInputComplete() {
 		if(this.categoryEnglishName == null || this.categoryEnglishName.equals("")){
 			ViewUtil.showToast(this.getActivity(), "请选择分类", false);
-			popupCategorySelectionDialog();
+			popupCategorySelectionDialog();	
 			return false;
 		}
 		
@@ -688,7 +711,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		Iterator<String> ite = params.keyIterator();
 		while(ite.hasNext()){
 			String key = ite.next();
-			if(!PostUtil.inArray(key, PostCommonValues.fixedItemNames)){
+			if(!PostUtil.inArray(key, PostCommonValues.fixedItemNames) && !key.equals("title")){
 				params.remove(key);
 				ite = params.keyIterator();
 			}
@@ -788,7 +811,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 
 		if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION) && layout != null){
-			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);
+			etDescription = (EditText) layout.getTag(PostCommonValues.HASH_CONTROL);			
 		}else if(postBean.getName().equals("价格")){
 			((TextView)layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
 		}else if(postBean.getName().equals("faburen")){
@@ -850,6 +873,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		layout_txt.addView(categoryItem);
 	}
 	
+	protected TextWatcher textWatcher = new TextWatcher(){
+
+		@Override
+		public void afterTextChanged(Editable s) {
+			// TODO Auto-generated method stub
+		
+		}
+
+		@Override
+		public void beforeTextChanged(CharSequence s, int start,
+				int count, int after) {
+			// TODO Auto-generated method stub
+			
+		}
+
+		@Override
+		public void onTextChanged(final CharSequence s, int start,
+				int before, int count) {
+			// TODO Auto-generated method stub
+			((TextView)getView().findViewById(R.id.tv_title_post)).setText(s);
+		}
+		
+	};
+	
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl){
 		if(pl == null || pl.size() == 0) return;
 		
@@ -881,6 +928,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					}
 				});
 				text.setOnFocusChangeListener(new PostUtil.BorderChangeListener(this.getActivity(), v));
+				
+				if(params.containsKey("title")){
+					if(PostGoodsFragment.shouldAddTextWatcher(params.getData("title"), params.getData("description"))){
+						text.addTextChangedListener(textWatcher);
+					}
+					((TextView)v.getRootView().findViewById(R.id.tv_title_post)).setText(params.getData("title"));
+				}else{
+					text.addTextChangedListener(textWatcher);
+				}
+				
 
 				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
@@ -1628,12 +1685,49 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		setInputContent();
 	}
 	
+	static private boolean shouldAddTextWatcher(String title, String description){
+		if(TextUtils.isEmpty(title)) return true;
+		if(TextUtils.isEmpty(description)) return false;
+		
+		String subDescription = description.length() > 25 ? description.substring(0, 25) : description;
+		return title.equals(subDescription);
+	}
+	
 	@Override
 	public void initTitle(TitleDef title){
-		title.m_visible = true;
+//		title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_leftActionImage  = R.drawable.icon_close;
-		title.m_title = "免费发布";
+//		title.m_title = "免费发布";
+
+		LayoutInflater inflator = LayoutInflater.from(getActivity());
+		title.m_titleControls = inflator.inflate(R.layout.title_post, null);
+				
+		title.m_titleControls.findViewById(R.id.ll_post_title).setOnClickListener(new View.OnClickListener() {
+			public void onClick(View v) {
+				EditTitleDialogFragment dlgEdit = new EditTitleDialogFragment();
+				Bundle bundle = new Bundle();
+				bundle.putString("title", ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
+				dlgEdit.setCallback(new ICallback(){
+
+					@Override
+					public void onTitleChangeFinished(String newTitle) {
+						// TODO Auto-generated method stub
+						String currentTitle = ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString();
+						if(!TextUtils.isEmpty(newTitle)){
+							if(!newTitle.equals(currentTitle)){
+								EditText text = (EditText)getView().findViewById(R.id.description_input);
+								text.removeTextChangedListener(textWatcher);
+								((TextView)getView().findViewById(R.id.tv_title_post)).setText(newTitle);
+							}
+						}
+					}
+					
+				});
+				dlgEdit.setArguments(bundle);
+				dlgEdit.show(getFragmentManager(), null);
+			}
+		});				
 	}
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){

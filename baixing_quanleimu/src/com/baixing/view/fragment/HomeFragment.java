@@ -1,25 +1,24 @@
 //liuchong@baixing.com
 package com.baixing.view.fragment;
 
-import java.lang.ref.WeakReference;
 import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
-import android.graphics.Bitmap;
-import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
+import android.widget.Button;
+import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
-import com.baixing.imageCache.ImageCacheManager;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.PerformEvent.Event;
@@ -120,6 +119,37 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
 		gv.setData(gitems, 3);
 		gv.setItemClickListener(this);
+		
+		List<String> lastUsedCategories = GlobalDataManager.getInstance().getLastUsedCategory();
+		if(lastUsedCategories == null || lastUsedCategories.size() == 0){
+			getView().findViewById(R.id.ll_everUsed).setVisibility(View.GONE);
+		}
+		else{
+			LinearLayout llCategory = (LinearLayout)getView().findViewById(R.id.ll_categories);
+			for(int i = 0; i < lastUsedCategories.size(); ++ i){
+				((Button)llCategory.getChildAt(i)).setText(lastUsedCategories.get(i).split(",")[0]);
+				llCategory.getChildAt(i).setTag(lastUsedCategories.get(i));
+				llCategory.getChildAt(i).setOnClickListener(new OnClickListener(){
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						String value = (String)v.getTag();
+						if(value != null){
+							String[] category = value.split(",");
+							if(category != null && category.length == 2){
+								Bundle bundle = createArguments(category[0], "返回");
+								bundle.putString("categoryEnglishName", category[1]);
+								bundle.putString("siftresult", "");
+								bundle.putString("categoryName", category[0]);
+								pushFragment(new ListingFragment(), bundle);
+							}
+						}
+					}
+					
+				});
+			}
+		}
 	}
 
 	@Override
@@ -128,7 +158,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		logCreateView(savedInstanceState);
 
 		View v = inflater.inflate(R.layout.homepageview, null);
-
+		v.findViewById(R.id.linearLayout1).setLayoutParams(new LinearLayout.LayoutParams(LayoutParams.FILL_PARENT, LayoutParams.FILL_PARENT));
 //		pageMgr.attachView(v, this, this);
 		
 		return v;

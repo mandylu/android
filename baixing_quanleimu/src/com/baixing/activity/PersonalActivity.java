@@ -4,14 +4,15 @@ package com.baixing.activity;
 import java.lang.ref.WeakReference;
 
 import android.app.ProgressDialog;
+import android.content.BroadcastReceiver;
 import android.content.Context;
 import android.content.Intent;
+import android.content.IntentFilter;
 import android.os.Bundle;
 
 import com.baixing.broadcast.CommonIntentAction;
-import com.baixing.entity.AdList;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.imageCache.ImageLoaderManager;
+import com.baixing.entity.AdList;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -47,6 +48,8 @@ public class PersonalActivity extends BaseTabActivity {
 		}
 	}
 	
+	private BroadcastReceiver personalReceiver;
+	
 	@Override
 	public void onCreate(Bundle savedBundle){
 		PerformanceTracker.stamp(Event.E_PersonalActivity_onCreate);
@@ -67,6 +70,24 @@ public class PersonalActivity extends BaseTabActivity {
 //		showDetailViewFromWX();
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), 	this);
 		initTitleAction();
+		if(personalReceiver == null){
+			personalReceiver = new BroadcastReceiver() {
+				@Override
+				public void onReceive(Context context, Intent intent) {
+					String action = intent.getAction();
+
+					if (action.equals(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT)
+							|| action.equals(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT)) {
+						pushFragment(new PersonalProfileFragment(), bundle, true);
+					}else if(action.equals(CommonIntentAction.ACTION_BROADCAST_COMMON_AD_LOGOUT)){
+						BaseFragment fragment = getCurrentFragment();
+						if(fragment != null && fragment instanceof VadFragment){
+							pushFragment(new PersonalProfileFragment(), bundle, true);
+						}
+					}
+				}
+			};
+		}
 	}
 	
 	@Override
@@ -75,6 +96,19 @@ public class PersonalActivity extends BaseTabActivity {
 		jumpToPersonalPost(getIntent());
 		showDetailViewFromWX();
 		this.sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_SHARE_BACK_TO_FRONT));
+		
+		IntentFilter intentFilter = new IntentFilter(CommonIntentAction.ACTION_BROADCAST_EDIT_LOGOUT);
+		intentFilter.addAction(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT);
+		intentFilter.addAction(CommonIntentAction.ACTION_BROADCAST_COMMON_AD_LOGOUT);
+		this.registerReceiver(personalReceiver, intentFilter);
+	}
+	
+	@Override
+	public void onPause(){
+		super.onPause();
+		if(personalReceiver != null){
+			this.unregisterReceiver(personalReceiver);
+		}
 	}
 	
 	@Override

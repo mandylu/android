@@ -347,8 +347,10 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
             	break;
             case R.id.rl_wofav:
             	Bundle bundle = createArguments(null, null);
-				bundle.putBoolean("isFav", true);
-				pushFragment(new FavoriteAndHistoryFragment(), bundle);		
+            	bundle.putInt(MyAdFragment.TYPE_KEY, MyAdFragment.TYPE_MYFAVORITES);
+//				bundle.putBoolean("isFav", true);
+//				pushFragment(new FavoriteAndHistoryFragment(), bundle);
+            	pushFragment(new MyAdFragment(), bundle);
             	break;
             case R.id.rl_setting:
             	pushFragment(new SettingFragment(), null);

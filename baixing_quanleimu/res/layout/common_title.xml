@@ -26,15 +26,6 @@
         android:layout_toRightOf="@+id/left_action"
         layout="@layout/title_line" />
 
-    <!--
-             <LinearLayout
-            android:layout_width="1dp"
-            android:layout_height="fill_parent"
-            android:id="@+id/left_line"
-            android:layout_toRightOf="@+id/left_action"
-            android:background="@color/title_gap_line" />
-    -->
-
     <TextView
         android:id="@+id/tvTitle"
         android:layout_width="wrap_content"

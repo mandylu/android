@@ -3,6 +3,8 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Observable;
+import java.util.Observer;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -18,10 +20,12 @@ import android.content.pm.PackageManager;
 import android.content.pm.ResolveInfo;
 import android.graphics.BitmapFactory;
 import android.net.Uri;
+import android.os.AsyncTask;
 import android.os.Bundle;
 import android.os.Message;
 import android.support.v4.view.ViewPager;
 import android.text.ClipboardManager;
+import android.text.TextUtils;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MenuItem;
@@ -33,18 +37,20 @@ import android.widget.AdapterView.OnItemSelectedListener;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
+import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.adapter.VadImageAdapter;
+import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
-import com.baixing.imageCache.ImageCacheManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.jsonutil.JsonUtil;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -61,10 +67,11 @@ import com.baixing.view.vad.VadLogger;
 import com.baixing.view.vad.VadPageController;
 import com.baixing.view.vad.VadPageController.ActionCallback;
 import com.baixing.widget.ContextMenuItem;
+import com.baixing.widget.FavAndReportDialog;
 import com.quanleimu.activity.R;
 import com.tencent.mm.sdk.platformtools.Log;
 
-public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback {
+public class VadFragment extends BaseFragment implements View.OnTouchListener,View.OnClickListener, OnItemSelectedListener, VadListLoader.HasMoreListener, VadListLoader.Callback, ActionCallback, Callback, Observer {
 
 	public interface IListHolder{
 		public void startFecthingMore();
@@ -83,6 +90,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	private static final int MSG_FINISH_FRAGMENT = 10;
 	public static final int MSG_ADINVERIFY_DELETED = 0x00010000;
 	public static final int MSG_MYPOST_DELETED = 0x00010001;
+	private static final int MSG_LOGIN_TO_PROSECUTE = 11;
 
 	public Ad detail = new Ad();
 	private String json = "";
@@ -116,22 +124,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public void onDestroy(){
 		this.keepSilent = true;
-		
-//		Thread t = new Thread(new Runnable(){
-//			public void run(){
-//				try{
-//					Thread.sleep(2000);
-//					if(mb_loading != null && mb_loading.get() != null){
-//						mb_loading.get().recycle();
-//						mb_loading = null;
-//					}
-//				}catch(Exception e){
-//					e.printStackTrace();
-//				}
-//			}
-//		});
-//		t.start();
-	
+		BxMessageCenter.defaultMessageCenter().removeObserver(this);	
 		super.onDestroy();
 	}
 	
@@ -156,6 +149,18 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		this.keepSilent = false;
 		super.onResume();
+		
+		Boolean firstIn = (Boolean)Util.loadDataFromLocate(getAppContext(), "firstInVadAfter3.3", Boolean.class);
+		if(!isMyAd() && (firstIn == null || firstIn)){
+			Util.saveDataToLocate(getAppContext(), "firstInVadAfter3.3", false);
+			
+			getTitleDef().m_titleControls.findViewById(R.id.vad_title_fav_parent).post(new Runnable(){
+				@Override
+				public void run(){
+					handleStoreBtnClicked();
+				}
+			});
+		}
 	}
 	
 	private boolean isMyAd(){
@@ -164,11 +169,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return GlobalDataManager.getInstance().isMyAd(detail);
 	}
 	
-	private boolean isInMyStore(){
-		if(detail == null) return false;
-		return GlobalDataManager.getInstance().isFav(detail);
-	}
-//	
 	public boolean onTouch (View v, MotionEvent event){
 	    switch (event.getAction()) {
 	    case MotionEvent.ACTION_DOWN:
@@ -204,7 +204,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 //			this.mListLoader.setHandler(handler);
 			this.mListLoader.setHasMoreListener(this);
 		}
-		
+   		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
 	
 	public void onStackTop(boolean isBack) {
@@ -219,17 +219,21 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
 			Bundle savedInstanceState) {
 		if(detail == null || mListLoader == null) return null;
+		if(mListLoader.getGoodsList() == null 
+				|| mListLoader.getGoodsList().getData() == null
+				|| mListLoader.getGoodsList().getData().size() == 0){
+			if(getActivity() != null){
+				getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+//				return null;
+			}
+		}
 		final int originalSelect = getArguments().getInt("index", 0);
 		this.keepSilent = false;//magic flag to refuse unexpected touch event
 		
 		final View v = inflater.inflate(R.layout.gooddetailview, null);
 		
 		pageController = new VadPageController(v, detail, this, originalSelect);
-		
-		BitmapFactory.Options o =  new BitmapFactory.Options();
-        o.inPurgeable = true;
-//        mb_loading = new WeakReference<Bitmap>(BitmapFactory.decodeResource(getActivity().getResources(), R.drawable.icon_vad_loading, o));
-        
+		        
         mListLoader.setSelection(originalSelect);
         mListLoader.setCallback(this);       
         
@@ -378,26 +382,16 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	
 	private void handleStoreBtnClicked(){
 		if(handleRightBtnIfInVerify()) return;
-		//tracker
-		VadLogger.trackLikeUnlike(detail);
 		
-		if(!isInMyStore()){			
-			List<Ad> myStore = GlobalDataManager.getInstance().addFav(detail); 
-			
-			if (myStore != null)
-			{
-				Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "listMyStore", myStore);
-			}
-						
-			updateTitleBar(getTitleDef());
-			ViewUtil.showToast(getActivity(), "收藏成功", true);
-		}
-		else  {
-			List<Ad> favList = GlobalDataManager.getInstance().removeFav(detail);
-			Util.saveDataToLocate(this.getAppContext(), "listMyStore", favList);
-			updateTitleBar(getTitleDef());
-			ViewUtil.showToast(this.getActivity(), "取消收藏", true);
-		}
+		View parent = this.getView().findViewById(R.id.vad_title_fav_parent);
+		int[] location = {0, 0};
+		parent.getLocationInWindow(location);
+		int width = parent.getWidth();
+		int height = parent.getHeight();
+		
+		FavAndReportDialog menu = new FavAndReportDialog((BaseActivity)getActivity(), detail, handler);
+		
+		menu.show(location[0] + width - menu.getWindow().getAttributes().width - 5, height - 1);
 	}
 	
 	class ManagerAlertDialog extends AlertDialog{
@@ -524,6 +518,38 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					this.notifyPageDataChange(false);
 				}
 			}
+		}else if(MSG_LOGIN_TO_PROSECUTE == requestCode){
+			(new AsyncTask<Ad, Integer, Boolean>(){
+				@Override
+				protected Boolean doInBackground(Ad... ads) {
+					// TODO Auto-generated method stub
+					ApiParams params = new ApiParams();
+					params.addParam("adId", ads[0].getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+					params.addParam("mobile", GlobalDataManager.getInstance().getAccountManager().getCurrentUser().getPhone());
+					String response = BaseApiCommand.createCommand("ad_reported", true, params).executeSync(getAppContext());
+					try {
+						JSONObject json = new JSONObject(response);
+						JSONObject jsonErr = json.getJSONObject("error");
+						if(jsonErr.getInt("code") == 0){
+							return json.getBoolean("reported");
+						}
+					} catch (JSONException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+					return false;
+				}
+				
+				@Override
+				protected void onPostExecute(Boolean reported) {
+					if(reported){
+						ViewUtil.showToast(getAppContext(), "您已举报过该信息", false);
+					}else{
+						showProsecute();
+					}
+				}
+			
+			}).execute(detail);
 		}
 	}
 
@@ -657,10 +683,28 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 				e.printStackTrace();
 			}
 			break;
+		case FavAndReportDialog.MSG_PROSECUTE:
+			UserBean user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+			Bundle arg = this.createArguments(null, null);
+			arg.putInt(LoginFragment.KEY_RETURN_CODE, MSG_LOGIN_TO_PROSECUTE);
+			if(user == null || TextUtils.isEmpty(user.getPhone())){
+				pushFragment(new LoginFragment(), arg);
+			}else{
+				showProsecute();
+			}
+			break;
 		default:
 			break;
 		}
 	
+	}
+	
+	private void showProsecute(){
+		Bundle bundle = new Bundle();
+		bundle.putInt("type", 0);
+		bundle.putString("adId", this.detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
+		bundle.putString(ARG_COMMON_TITLE, "举报");
+		pushFragment(new FeedbackFragment(), bundle);		
 	}
 	
 	private void executeModify(REQUEST_TYPE request, int pay) {
@@ -690,11 +734,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		BaseApiCommand cmd = BaseApiCommand.createCommand(request.apiName, false, params);
 		cmd.execute(getActivity(), this);
 	}
-
+	
 	@Override
 	public void initTitle(TitleDef title){
 		title.m_leftActionHint = isVadPreview() ? "" : "返回";
-		title.m_rightActionHint = isVadPreview() ? "完成" : "";//detail.getValueByKey("status").equals("0") ? "收藏" : null;
+		title.m_rightActionHint = isVadPreview() ? "完成" : "";
 		if(this.mListLoader != null && mListLoader.getGoodsList() != null && mListLoader.getGoodsList().getData() != null){
 			title.m_title = ( this.mListLoader.getSelection() + 1 ) + "/" + 
 					this.mListLoader.getGoodsList().getData().size();	
@@ -703,46 +747,38 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		title.m_leftActionImage = getArguments() != null && "close".equalsIgnoreCase(getArguments().getString(ARG_COMMON_BACK_HINT)) ? R.drawable.icon_close : R.drawable.icon_back;
 		
-		LayoutInflater inflater = LayoutInflater.from(this.getActivity());
-		title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
-		
+		if(!isMyAd()){
+			LayoutInflater inflater = LayoutInflater.from(this.getActivity());
+			title.m_titleControls = inflater.inflate(R.layout.vad_title, null); 
+			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setOnClickListener(this);
+		}
+
+		if(detail != null){
+			if(!isMyAd()){
+				TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
+				viewTimes.setText(detail.getValueByKey("count") + "次查看");
+			}else{
+				title.m_title = detail.getValueByKey("count") + "次查看";
+			}			
+		}
+
 		updateTitleBar(title);
+		
+	
 	}
 	
 	private void updateTitleBar(TitleDef title)
 	{
 		
 		if(isMyAd() || !detail.isValidMessage()){
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.GONE);
+			if(title.m_titleControls != null){
+				title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.INVISIBLE);
+			}
 		}
 		else{
-			title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
-		}
-		
-		title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setOnClickListener(this);
-		TextView favBtn = (TextView) title.m_titleControls.findViewById(R.id.btn_fav_unfav);
-		if (favBtn != null)
-		{
-			favBtn.setText(isInMyStore() ? "取消收藏" : "收藏");
-		}
-		
-		TextView createTimeView = (TextView) title.m_titleControls.findViewById(R.id.vad_create_time);
-		if(detail != null){
-			String dateV = detail.getValueByKey(EDATAKEYS.EDATAKEYS_DATE);
-			if (dateV != null)
-			{
-				try {
-					long timeL = Long.parseLong(dateV) * 1000;
-					createTimeView.setText(TextUtil.timeTillNow(timeL, getAppContext()) + "发布");
-				}
-				catch(Throwable t)
-				{
-					createTimeView.setText("");
-				}
+			if(title.m_titleControls != null){
+				title.m_titleControls.findViewById(R.id.vad_title_fav_parent).setVisibility(View.VISIBLE);
 			}
-			
-			TextView viewTimes = (TextView) getTitleDef().m_titleControls.findViewById(R.id.vad_viewed_time);
-			viewTimes.setText(detail.getValueByKey("count") + "次查看");
 		}
 	}
 	
@@ -804,6 +840,13 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		return super.onContextItemSelected(menuItem);
 	}
 	
+	@Override
+	public void onActivityResult(int requestCode, int resultCode, Intent data) {
+		if(requestCode == 100){
+			this.handleStoreBtnClicked();
+		}
+	}
+	
 	private void startContact(boolean sms)
 	{
 		if (sms){//右下角发短信
@@ -823,7 +866,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			List<ResolveInfo> ls = getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 			if (ls != null && ls.size() > 0)
 			{
-				startActivity(intent);
+				if(sms){
+					startActivity(intent);
+				}else{
+					this.startActivityForResult(intent, 100);
+				}
 			}
 			else
 			{
@@ -940,6 +987,12 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 
 	@Override
 	public Ad getAd(int pos) {
+		if(mListLoader == null 
+				|| mListLoader.getGoodsList() == null
+				|| mListLoader.getGoodsList().getData() == null
+				|| mListLoader.getGoodsList().getData().size() <= pos){
+			return null;
+		}
 		return mListLoader.getGoodsList().getData().get(pos);
 	}
 
@@ -1040,4 +1093,23 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 	}
 	
+	@Override
+	public void update(Observable observable, Object data) {
+		// TODO Auto-generated method stub
+		if (data instanceof IBxNotification){
+			IBxNotification note = (IBxNotification) data;
+			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
+				View edit = getView() == null ? null : getView().findViewById(R.id.vad_tool_bar);
+				if(edit != null){
+					int visibility = edit.getVisibility();
+					if(visibility == View.VISIBLE){
+						finishFragment();
+						getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_MYAD_LOGOUT));
+					}else{
+						getActivity().sendBroadcast(new Intent(CommonIntentAction.ACTION_BROADCAST_COMMON_AD_LOGOUT));
+					}
+				}
+			}
+		}
+	}	
 }

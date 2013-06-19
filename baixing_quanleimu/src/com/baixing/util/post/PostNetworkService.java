@@ -187,10 +187,10 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 //									URLEncoder.encode(value.substring(0, Math.min(25, value.length())), "UTF-8").replaceAll("%7E", "~"));
 
 						apiParam.addParam(beans.get(key).getName(), value); 
-						if(beans.get(key).getName().equals(PostCommonValues.STRING_DESCRIPTION)){//generate title from description
-							apiParam.addParam("title", value.substring(0, Math.min(25, value.length())));
-						
-						}
+//						if(beans.get(key).getName().equals(PostCommonValues.STRING_DESCRIPTION)){//generate title from description
+//							apiParam.addParam("title", value.substring(0, Math.min(25, value.length())));
+//						
+//						}
 //					}catch(UnsupportedEncodingException e){
 //						e.printStackTrace();
 //					}

@@ -130,7 +130,7 @@ public class Ad implements Serializable{
 //		EDATAKEYS e =  getEnumByString(key);
 //		if(e == null) return;
 		if(value != null && !value.equals("")){
-			String strDecoded = value.replaceAll("&amp;", "&").replace("&#039;", "'");
+			String strDecoded = value.replaceAll("&amp;", "&").replace("&#039;", "'").replaceAll("&quot;", "\"");
 			data.put(key, strDecoded);
 		}
 			

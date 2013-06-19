@@ -1,25 +1,24 @@
 <?xml version="1.0" encoding="utf-8"?>
-
 <RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
-              android:orientation="vertical"
-              android:layout_width="fill_parent"
-              android:layout_height="fill_parent"
-              android:padding="18dp">
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:orientation="vertical"
+    android:padding="18dp" >
 
     <EditText
-            android:layout_width="fill_parent"
-            android:layout_height="wrap_content"
-            android:id="@+id/dialog_edit_username_et"
-           	android:drawableLeft="@drawable/iconsearch"
-	        android:drawablePadding="6dp"
-	        android:singleLine="true"
-	        android:gravity="center_vertical|left"
-	        android:textSize="@dimen/font_input_text"
-	        android:textColor="@color/common_edit_text_color"
-	        android:background="@drawable/edit_bg"
-            android:hint="username"
-            android:inputType="text"
-            android:enabled="true"
-            android:focusable="true"
-            android:editable="true"/>
+        android:id="@+id/dialog_edit_username_et"
+        android:layout_width="fill_parent"
+        android:layout_height="wrap_content"
+        android:background="@drawable/edit_bg"
+        android:drawablePadding="6dp"
+        android:editable="true"
+        android:enabled="true"
+        android:focusable="true"
+        android:gravity="center_vertical|left"
+        android:hint="用户名"
+        android:inputType="text"
+        android:singleLine="true"
+        android:textColor="@color/common_edit_text_color"
+        android:textSize="@dimen/font_input_text" />
+
 </RelativeLayout>
