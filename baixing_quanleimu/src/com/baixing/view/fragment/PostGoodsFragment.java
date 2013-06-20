@@ -233,6 +233,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	@Override
 	public void onResume() {
 		super.onResume();
+		if (finishRightNow) {
+			finishRightNow = false;
+			getView().post(new Runnable(){
+				@Override
+				public void run(){
+					doClearUpImages();
+					finishFragment();					
+				}
+			});
+			return;
+		}
 		isActive = true;
 		postLBS.start();
 		if(!editMode && !isNewPost && !finishRightNow) { //isNewPost==true ==> will show camera immediately, no PV; finishRightNow==true ==> cancel post on camera screen, no PV.
@@ -243,11 +254,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			.end();
 		}	
 		
-		if (finishRightNow) {
-			finishRightNow = false;
-			doClearUpImages();
-			finishFragment();
-		}
+
 		
 		if (isNewPost) {
 			isNewPost = false;
