@@ -131,10 +131,14 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 
         TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
+        Button btnLogout = (Button)rootView.findViewById(R.id.btn_logout);
         if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
             bindIdTextView.setText(R.string.label_login);
+            btnLogout.setVisibility(View.GONE);
         } else {
-            bindIdTextView.setText(R.string.label_logout);
+        	rootView.findViewById(R.id.setBindID).setVisibility(View.GONE);
+        	btnLogout.setVisibility(View.VISIBLE);
+        	btnLogout.setOnClickListener(this);
         }
 
         TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
@@ -215,6 +219,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 showFlowOptimizeDialog();
                 Tracker.getInstance().event(BxEvent.SETTINGS_PICMODE).end();
                 break;
+            case R.id.btn_logout:
             case R.id.setBindID:
                 if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
                     Bundle bundle = createArguments(null, "用户中心");

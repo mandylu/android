@@ -277,8 +277,13 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public void onResume() {
 		PerformanceTracker.stamp(Event.E_MyAdShowup);
 		super.onResume();
-		this.isOnResume = true;
-		Log.d("jjj","WWWW->onresume()");
+		
+		if(isMyPostView()){
+			Tracker.getInstance().pv(PV.MYADS_SENT).append(Key.ADSCOUNT, listMyPost != null ? listMyPost.size() : 0).end();
+		}else{
+			Tracker.getInstance().pv(PV.FAVADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+		}
+//		Log.d("jjj","WWWW->onresume()");
 		this.rebuildPage(getView(), false);
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
@@ -341,17 +346,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //			Bundle bundle = this.getArguments();
  
 			if (this.isOnResume) {
-				if (listMyPost != null) {
-					Tracker.getInstance()
-					.pv(PV.MYADS_SENT)
-					.append(Key.ADSCOUNT, listMyPost.size())
-					.end();
-				} else {
-					Tracker.getInstance()
-					.pv(PV.MYADS_SENT)
-					.append(Key.ADSCOUNT, 0)
-					.end();
-				}
+
 				this.isOnResume = false;
 			}
 		}else{

@@ -4,6 +4,11 @@ import java.util.List;
 
 import org.json.JSONException;
 import org.json.JSONObject;
+
+import android.net.Uri;
+import android.os.Bundle;
+import android.support.v4.app.Fragment;
+
 import com.baixing.activity.BaseActivity;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
@@ -18,9 +23,7 @@ import com.baixing.view.fragment.ListingFragment;
 import com.baixing.view.fragment.MyAdFragment;
 import com.baixing.view.fragment.SecondCateFragment;
 import com.baixing.view.fragment.VadFragment;
-import android.os.Bundle;
-import android.support.v4.app.Fragment;
-import android.widget.Toast;
+import com.baixing.view.fragment.WebViewFragment;
 
 public class PageJumper{
 	private static final String PAGE_HOME = "home";
@@ -28,20 +31,33 @@ public class PageJumper{
 	private static final String PAGE_CATEGORY = "category";
 	private static final String PAGE_VIEWAD = "viewad";
 	private static final String PAGE_MY = "my";
+	private static final String PAGE_OPENURL = "openurl";
 	
 	static public boolean isValidPage(String page){
 		return page.equals(PAGE_CATEGORY) 
 				|| page.equals(PAGE_LISTING)
 				|| page.equals(PAGE_HOME)
 				|| page.equals(PAGE_MY)
-				|| page.equals(PAGE_VIEWAD);
+				|| page.equals(PAGE_VIEWAD)
+				|| page.equals(PAGE_OPENURL);
 	}
 	
 	static public void jumpToPage(BaseActivity currentActivity, String pageName, String data){
 		Fragment currentFrag = currentActivity.getCurrentFragment();
-		if(pageName.equals(PAGE_HOME)){
+		if(pageName.equals(PAGE_HOME) || pageName.equals(PAGE_OPENURL)){
 			if(currentFrag == null || !(currentFrag instanceof HomeFragment)){
 				currentActivity.pushFragment(new HomeFragment(), new Bundle(), true);
+			}
+			if(pageName.equals(PAGE_OPENURL)){
+				try{
+					JSONObject obj = new JSONObject(data);
+					String url = obj.getString("url");
+					Bundle bundle  = new Bundle();
+					bundle.putString("url", url);
+					currentActivity.pushFragment(new WebViewFragment(), bundle, false);
+				}catch(JSONException e){
+					
+				}
 			}
 		}else if(pageName.equals(PAGE_LISTING)){
 			try {
@@ -127,6 +143,8 @@ public class PageJumper{
 			Bundle bundle = new Bundle();
 			bundle.putInt(MyAdFragment.TYPE_KEY, 0);
 			currentActivity.pushFragment(new MyAdFragment(), bundle, false);
+		}else if(pageName.equals(PAGE_OPENURL)){
+			
 		}
 	}
 }

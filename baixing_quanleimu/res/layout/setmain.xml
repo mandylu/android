@@ -40,7 +40,7 @@
                     android:textColor="@color/base_green"
                     android:textSize="@dimen/set_table_header_text_height" />
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:id="@+id/setChangeUserName"
                 android:layout_width="fill_parent"
@@ -77,7 +77,7 @@
                     android:layout_marginRight="10dp"
                     android:text="小百姓" />
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:id="@+id/resetPassword"
                 android:layout_width="fill_parent"
@@ -95,8 +95,8 @@
                     android:layout_centerVertical="true"
                     android:background="@color/list_line" />
 
-                <TextView            
-                    android:id="@+id/txt_changePass"        
+                <TextView
+                    android:id="@+id/txt_changePass"
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -122,7 +122,7 @@
                     android:layout_centerVertical="true"
                     android:background="@color/list_line" />
 
-                <TextView                    
+                <TextView
                     android:layout_width="wrap_content"
                     android:layout_height="wrap_content"
                     android:layout_centerVertical="true"
@@ -181,7 +181,7 @@
                     android:textColor="@color/base_green"
                     android:textSize="@dimen/set_table_header_text_height" />
             </RelativeLayout>
-            
+
             <RelativeLayout
                 android:id="@+id/setFlowOptimize"
                 android:layout_width="fill_parent"
@@ -296,12 +296,29 @@
                     android:text="反馈"
                     android:textSize="@dimen/set_table_item_text_height" />
             </RelativeLayout>
-	        <Button
-			        android:layout_width="100dp"
-			        android:layout_height="48dp"
-			        android:id="@+id/debugBtn" android:layout_alignParentLeft="true"
-			        android:layout_alignParentTop="true" android:layout_gravity="right"
-			        android:background="@android:color/transparent" />
+
+            <Button
+                android:id="@+id/btn_logout"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="16dip"
+                android:background="@drawable/post_finish_btn"
+                android:text="退出登录"
+                android:textColor="#FFFFFF"
+                android:textSize="18dp"
+                android:textStyle="bold" >
+            </Button>
+
+            <Button
+                android:id="@+id/debugBtn"
+                android:layout_width="100dp"
+                android:layout_height="48dp"
+                android:layout_alignParentLeft="true"
+                android:layout_alignParentTop="true"
+                android:layout_gravity="right"
+                android:background="@android:color/transparent" />
         </LinearLayout>
     </ScrollView>
 

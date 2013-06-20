@@ -86,7 +86,7 @@ public class MyTest extends BaseTest<PersonalActivity> {
 	
 	public void testMyFavPV(){
 		solo.clickOnView(solo.getText("收藏"));
-		solo.waitForText("收藏的信息");
+		solo.waitForText("收藏信息");
 		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/favAds");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(Integer.valueOf(logs.get(0).getMap().get("adsCount")) >= 0);

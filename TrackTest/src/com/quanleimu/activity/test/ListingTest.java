@@ -173,6 +173,7 @@ public class ListingTest extends BaseTest<MainActivity>{
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("filterName")));
 		
 		solo.clickInList(2);
+		solo.clickInList(2);
 		
 		solo.waitForCondition(new Condition(){
 
