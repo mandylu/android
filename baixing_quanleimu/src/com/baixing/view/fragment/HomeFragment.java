@@ -5,8 +5,11 @@ import java.util.ArrayList;
 import java.util.List;
 
 import android.app.Activity;
+import android.app.AlertDialog;
+import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -18,20 +21,24 @@ import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.data.LocationManager.onLocationFetchedListener;
+import com.baixing.entity.BXLocation;
 import com.baixing.entity.Category;
+import com.baixing.entity.CityDetail;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
+import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
 import com.baixing.widget.CustomizeGridView;
 import com.baixing.widget.CustomizeGridView.GridInfo;
 import com.baixing.widget.CustomizeGridView.ItemClickListener;
 import com.quanleimu.activity.R;
 
-public class HomeFragment extends BaseFragment implements ItemClickListener{
+public class HomeFragment extends BaseFragment implements ItemClickListener, onLocationFetchedListener{
 
 	public static final String NAME = "HomeFragment";
 	
@@ -66,6 +73,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		logoRoot.setOnClickListener(new View.OnClickListener() {
 			public void onClick(View v) {
 				pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
+				GlobalDataManager.getInstance().getLocationManager().removeLocationListener(HomeFragment.this);
 			}
 		});
 	}
@@ -88,9 +96,14 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	public void handleSearch() {
 		this.pushFragment(new SearchFragment(), this.getArguments());
 	};
+	
+	static boolean switchCityPrompted = false;
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		if(!switchCityPrompted){
+			GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
+		}
 //		this.pv = PV.HOME;
 	}
 	
@@ -222,6 +235,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 	@Override
 	public void onDestroy(){
 		super.onDestroy();
+		GlobalDataManager.getInstance().getLocationManager().removeLocationListener(this);
 	}
 	
 	@Override
@@ -271,6 +285,59 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 		return 0;
 	}
 
+	@Override
+	public void onLocationFetched(BXLocation location) {
+		// TODO Auto-generated method stub
+		
+	}
+
+	@Override
+	public void onGeocodedLocationFetched(BXLocation location) {
+		// TODO Auto-generated method stub
+		if(!switchCityPrompted){
+			final String currentCity = GlobalDataManager.getInstance().getCityName();
+			final String gpsCity = GlobalDataManager.getInstance().getLocationManager().getCurrentCity();
+			if(!TextUtils.isEmpty(currentCity) && !TextUtils.isEmpty(gpsCity)){
+				if(!currentCity.equals(gpsCity) && !gpsCity.startsWith(currentCity)){
+			        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
+			        builder.setTitle("是否切换城市")
+			        .setMessage("猜您在" + gpsCity + "，是否切换到所在城市？")
+	                .setPositiveButton("切换", new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialogInterface, int i) {
+	                    	List<CityDetail> cities = GlobalDataManager.getInstance().getListCityDetails();
+	                    	for(CityDetail city : cities){
+	                    		if(gpsCity.startsWith(city.name)){
+	                    			GlobalDataManager.getInstance().setCityEnglishName(city.englishName);
+	                    			GlobalDataManager.getInstance().setCityName(city.name);
+	                    			Util.saveDataToFile(getActivity(), null, "cityName", city.getName().getBytes());
+	                    			TextView titleLabel = (TextView) getTitleDef().m_titleControls.findViewById(R.id.title_label_city);
+	                    			titleLabel.setText(city.name);
+	                    			Tracker.getInstance().event(BxEvent.City_postSelect)
+	                    			.append(Key.CURRENTCITY, currentCity)
+	                    			.append(Key.GEOCITY, gpsCity)
+	                    			.append(Key.ACCEPT, true);
+	                    			break;
+	                    			
+	                    		}
+	                    	}
+	                    }
+	                })
+	                .setNegativeButton("不了", new DialogInterface.OnClickListener() {
+	                    @Override
+	                    public void onClick(DialogInterface dialog, int id) {
+                			Tracker.getInstance().event(BxEvent.City_postSelect)
+                			.append(Key.CURRENTCITY, currentCity)
+                			.append(Key.GEOCITY, gpsCity)
+                			.append(Key.ACCEPT, false);
+
+	                    }
+	                }).create().show();
+			        switchCityPrompted = true;
+				}
+			}
+		}		
+	}
 }
 
 

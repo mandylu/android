@@ -104,7 +104,9 @@ public class TrackConfig implements Observer {
 			RULENAME("ruleName", "版规名称"),
 			RECENTCATEGORY_COUNT("count", "最近使用类目数量"),
 			RECENTCATEGORY_NAMES("secondCateNames", "最近使用类目的名称"),
-			
+			CURRENTCITY("currentCity", "当前城市"),
+			GEOCITY("geoCity", "定位所在城市"),
+			ACCEPT("accept", "是否接受切换城市")
 			
 			;
 			private String name;
@@ -205,6 +207,7 @@ public class TrackConfig implements Observer {
 		
 		public static enum BxEvent implements TrackMobile {//event相关的value
 			CITY_SELECT("City_Select","City_Select"),
+			City_postSelect("City_postSelect", "提示切换城市"),
 			CITY_SEARCH("City_Search","City_Search"),
 			HEADERSEARCHRESULT("HeaderSearchResult","HeaderSearchResult"),
 			BROWSEMODENOIMAGE("BrowseModeNoImage","无图模式切换的结果"),
