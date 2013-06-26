@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,36 +27,37 @@ import android.widget.ImageView;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.PersonalActivity;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
-import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.NetworkUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.LogData;
+import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
-import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.FavoriteNetworkUtil;
-import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
-import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
 
@@ -594,6 +594,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				e.printStackTrace();
 			}
 			adapter.setUiHold(false);
+			ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
 			break;	
 		case MSG_RESTORE_POST_FAIL:
 			hideProgress();
@@ -915,7 +916,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				msg.obj = id;
 				msg.arg1 = currentType;
 				msg.what = MSG_DELETE_POST_SUCCESS;
-				handler.sendMessage(msg);
+				handler.sendMessage(msg);				
 			}
 		});
     }

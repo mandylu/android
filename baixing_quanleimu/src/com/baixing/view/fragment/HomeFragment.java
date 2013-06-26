@@ -19,6 +19,8 @@ import android.widget.TextView;
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Category;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.PerformEvent.Event;
@@ -125,6 +127,16 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 			getView().findViewById(R.id.ll_everUsed).setVisibility(View.GONE);
 		}
 		else{
+			String recentNames = "";
+			for(String cate : lastUsedCategories){
+				recentNames += cate.split(",")[1] + " ";
+			}
+			final String finalNames = recentNames.trim();
+			
+			Tracker.getInstance().event(BxEvent.RECENTCATEGORY_CHOW)
+			.append(Key.RECENTCATEGORY_COUNT, lastUsedCategories.size())
+			.append(Key.RECENTCATEGORY_NAMES, finalNames).end();
+			
 			LinearLayout llCategory = (LinearLayout)getView().findViewById(R.id.ll_categories);
 			for(int i = 0; i < lastUsedCategories.size(); ++ i){
 				((Button)llCategory.getChildAt(i)).setText(lastUsedCategories.get(i).split(",")[0]);
@@ -138,6 +150,11 @@ public class HomeFragment extends BaseFragment implements ItemClickListener{
 						if(value != null){
 							String[] category = value.split(",");
 							if(category != null && category.length == 2){
+								Tracker.getInstance().event(BxEvent.RECENTCATEGORY_CLICK)
+								.append(Key.RECENTCATEGORY_COUNT, finalNames.split(" ").length)
+								.append(Key.RECENTCATEGORY_NAMES, finalNames)
+								.append(Key.SECONDCATENAME, category[1]).end();
+								
 								Bundle bundle = createArguments(category[0], "返回");
 								bundle.putString("categoryEnglishName", category[1]);
 								bundle.putString("siftresult", "");

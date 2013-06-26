@@ -63,7 +63,7 @@ public class PostLocationService implements BXRgcListener, LocationManager.onLoc
 			GeoPoint point = CoordinateConvert.bundleDecode(CoordinateConvert.fromWgs84ToBaidu(new GeoPoint((int)(location.fLat*1e6), (int)(location.fLon*1e6))));
 //			GeoPoint gp = new GeoPoint((int)(point.getLatitudeE6()), (int)(point.getLongitudeE6()));
 			float transferredLat = (float) (1.0d*point.getLatitudeE6()/1e6);
-			float transferredLon = (float)(1.0d*point.getLongitudeE6()/1e6); 
+			float transferredLon = (float)(1.0d*point.getLongitudeE6()/1e6);
 
 //			LocationService.getInstance().reverseGeocode(location.fLat, location.fLon, this);
 			LocationService.getInstance().reverseGeocode(transferredLat, transferredLon, this);			

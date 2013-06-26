@@ -672,7 +672,8 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						finishFragment(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					}
 //					finish();
-					ViewUtil.showToast(activity, message, false);
+//					ViewUtil.showToast(activity, message, false);
+					ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
 				} else {
 					// 删除失败
 					ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
@@ -839,11 +840,42 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		return super.onContextItemSelected(menuItem);
 	}
+		
+	private boolean shouldShowCommentsDialog(){
+		String count = (String)Util.loadDataFromLocate(getAppContext(), "contactCount1", String.class);
+		if(!TextUtils.isEmpty(count) && count.equals("yes")){
+			return true;
+		}
+		return false;
+	}
+	
+	private void increaseContactCount(){
+		String count = (String)Util.loadDataFromLocate(getAppContext(), "contactCount1", String.class);
+		if(TextUtils.isEmpty(count)){
+			Util.saveDataToLocate(getAppContext(), "contactCount1", "1");
+		}else{
+			if(!count.equals("no") && !count.equals("yes")){
+				Integer ic = Integer.valueOf(count);
+				if(++ ic == 3){
+					Util.saveDataToLocate(getAppContext(), "contactCount1", "yes");
+				}else{
+					Util.saveDataToLocate(getAppContext(), "contactCount1", String.valueOf(ic));
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == 100){
-			this.handleStoreBtnClicked();
+			this.handleStoreBtnClicked();			
+			if(shouldShowCommentsDialog()){
+				ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
+				Util.saveDataToLocate(getAppContext(), "contactCount1", "no");
+			}else{
+				increaseContactCount();	
+			}
+			
 		}
 	}
 	

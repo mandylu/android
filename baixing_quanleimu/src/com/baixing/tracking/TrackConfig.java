@@ -94,14 +94,17 @@ public class TrackConfig implements Observer {
 			FAIL_REASON("failReason","失败原因"),
 			ACTION("action","inputing动作"),
 			STATUS("status","信息状态"),
-			SIZEINBYTES("sizeInBytes","字节数大小"),
-			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
+			SIZEINBYTES("size","字节数大小"),
+			UPLOADSECONDS("uploadTime","上传时间秒数"),
 			SHARE_FROM("shareFrom", "分享发起页"),
 			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			ISEDIT("isEdit", "拍照是否编辑"),
 			FROM("from", "拍照来源"),
-			RULENAME("ruleName", "版规名称")
+			RULENAME("ruleName", "版规名称"),
+			RECENTCATEGORY_COUNT("count", "最近使用类目数量"),
+			RECENTCATEGORY_NAMES("secondCateNames", "最近使用类目的名称"),
+			
 			
 			;
 			private String name;
@@ -298,7 +301,10 @@ public class TrackConfig implements Observer {
 			SHARE("Share","Share"),
 			SHARE_START("Share_Start","Share_Start"),
 			GPS("GPS","GPS"),
-			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit");
+			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit"),
+			RECENTCATEGORY_CHOW("RecentCategory_Chow", "RecentCategory_Chow"),
+			RECENTCATEGORY_CLICK("RecentCategory_Click", "RecentCategory_Click");
+			
 			
 			private String name;
 			private String description;

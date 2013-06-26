@@ -5,18 +5,16 @@ import android.os.Bundle;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.inputmethod.InputMethodManager;
 import android.view.ViewGroup;
+import android.view.inputmethod.InputMethodManager;
 import android.widget.LinearLayout;
-import android.widget.RelativeLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.BXLocation;
-import com.baixing.util.LocationService;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.post.PostUtil;
 import com.quanleimu.activity.R;
 
 public class ContactAndAddressDetailFragment extends BaseFragment{
@@ -50,22 +48,6 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 				}			
 			}, 100);
 		}
-	}
-	
-	static private String getLocationSummary(BXLocation location){
-		String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
-        		((location.subCityName == null || location.subCityName.equals("")) ?
-						"" 
-						: location.subCityName)
-				: location.detailAddress;
-        if(address == null || address.length() == 0) return "";
-        if(location.adminArea != null && location.adminArea.length() > 0){
-        	address = address.replaceFirst(location.adminArea, "");
-        }
-        if(location.cityName != null && location.cityName.length() > 0){
-        	address = address.replaceFirst(location.cityName, "");
-        }
-        return address;
 	}
 
 	@Override
@@ -102,7 +84,7 @@ public class ContactAndAddressDetailFragment extends BaseFragment{
 							// TODO Auto-generated method stub
 							if(bundle.containsKey("location")){
 								BXLocation location = (BXLocation)bundle.getSerializable("location");
-								String address = getLocationSummary(location);
+								String address = PostUtil.getLocationSummary(location);
 								((TextView)llEdit.findViewById(R.id.postinput)).setText(address);
 							}else{
 								llEdit.postDelayed(new Runnable(){

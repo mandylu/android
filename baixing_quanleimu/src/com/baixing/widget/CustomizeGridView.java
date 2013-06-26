@@ -16,6 +16,7 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.WindowManager;
 import android.widget.ImageButton;
+import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.TextView;
 
@@ -43,7 +44,7 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
 	}
 	
     static private class GridHolder {  
-        ImageButton imageBtn;  
+        ImageView imageBtn;  
         public TextView text;  
 //        public View starIcon;
         public GridInfo info;
@@ -123,9 +124,8 @@ public class CustomizeGridView extends LinearLayout implements View.OnClickListe
         GridHolder holder;  
         View convertView = inflater.inflate(R.layout.categorygriditem, null);     
         holder = new GridHolder();  
-    	holder.imageBtn = (ImageButton)convertView.findViewById(R.id.itemicon);  
-    	holder.imageBtn.setClickable(false);
-    	holder.imageBtn.setFocusable(false);
+    	holder.imageBtn = (ImageView)convertView.findViewById(R.id.itemicon);  
+
     	holder.text = (TextView)convertView.findViewById(R.id.itemtext);  
 //    	holder.starIcon = convertView.findViewById(R.id.star);
         convertView.setTag(holder);

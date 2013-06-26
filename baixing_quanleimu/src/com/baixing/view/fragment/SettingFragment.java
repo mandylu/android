@@ -1,46 +1,43 @@
 package com.baixing.view.fragment;
 
+import java.util.Observable;
+import java.util.Observer;
+
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
-import android.text.method.DateTimeKeyListener;
-import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
+
+import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.MainActivity;
-import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.IBxNotificationNames;
 import com.baixing.message.BxMessageCenter.IBxNotification;
+import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.util.*;
+import com.baixing.tracking.Tracker;
+import com.baixing.util.Util;
+import com.baixing.util.ViewUtil;
+import com.baixing.widget.CommentsDialog;
 import com.baixing.widget.EditUsernameDialogFragment;
 import com.baixing.widget.EditUsernameDialogFragment.ICallback;
 import com.quanleimu.activity.R;
 import com.umeng.update.UmengUpdateAgent;
 import com.umeng.update.UmengUpdateListener;
 import com.umeng.update.UpdateResponse;
-
-import java.util.Date;
-import java.util.Observable;
-import java.util.Observer;
 
 public class SettingFragment extends BaseFragment implements View.OnClickListener, ICallback, Observer {
     private UserBean user;
@@ -66,6 +63,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
         ((RelativeLayout) setmain.findViewById(R.id.setCheckUpdate)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
+        ((RelativeLayout) setmain.findViewById(R.id.commentsUs)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.setChangeUserName)).setOnClickListener(this);
         ((RelativeLayout) setmain.findViewById(R.id.resetPassword)).setOnClickListener(this);
@@ -273,6 +271,9 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 pushFragment(new FeedbackFragment(), createArguments("反馈信息", null));
                 Tracker.getInstance().event(BxEvent.SETTINGS_FEEDBACK).end();
                 break;
+            case R.id.commentsUs:
+            	(new CommentsDialog((BaseActivity)getActivity())).show();
+            	break;
             case R.id.bindSharingAccount:
             	pushFragment(new BindSharingFragment(), createArguments("绑定转发帐号", null));
             	break;
