@@ -257,7 +257,10 @@ public class ViewUtil {
 		
 	}
 	
+	static private boolean commentsDlgShowed = false; 
 	static public void showCommentsPromptDialog(final BaseActivity activity){
+		if(commentsDlgShowed) return;
+		commentsDlgShowed = true;
         AlertDialog.Builder builder = new AlertDialog.Builder(activity);
         builder.setTitle("百姓网好用么？")
         		.setMessage("感谢您使用了这么久百姓网，不知道您的感受如何？您的反馈是我们不断为您改进的动力")
