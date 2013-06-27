@@ -51,7 +51,7 @@ class WeixinSharingManager extends BaseSharingManager{
 	public void share(Ad ad) {
 		// TODO Auto-generated method stub
 //		String detailJson = convert2JSONString(ad);
-		String title = "我在转让：" + ad.getValueByKey("title") + ",请各位朋友们帮忙转发下哦~";
+		String title = "我用@百姓网 发布了：" + ad.getValueByKey("title") + ",请各位朋友们帮忙转发下哦~";
 		
 		String imgUrl = super.getThumbnailUrl(ad);
 
