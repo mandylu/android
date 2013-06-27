@@ -394,12 +394,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		menu.show(location[0] + width - menu.getWindow().getAttributes().width - 5, height - 1);
 	}
 	
-	class ManagerAlertDialog extends AlertDialog{
-		public ManagerAlertDialog(Context context, int theme){
-			super(context, theme);
-		}
-	}
-	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -868,14 +862,14 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == 100){
-			this.handleStoreBtnClicked();			
+			
+			increaseContactCount();
 			if(shouldShowCommentsDialog()){
 				ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
 				Util.saveDataToLocate(getAppContext(), "contactCount1", "no");
 			}else{
-				increaseContactCount();	
+				handleStoreBtnClicked();
 			}
-			
 		}
 	}
 	
