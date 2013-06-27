@@ -667,7 +667,9 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 					}
 //					finish();
 //					ViewUtil.showToast(activity, message, false);
-					ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
+					if(getArguments() == null || !getArguments().getBoolean("isVadPreview", false)){
+						ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
+					}
 				} else {
 					// 删除失败
 					ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
