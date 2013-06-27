@@ -137,6 +137,7 @@ public class CommentsDialog extends Dialog implements OnItemClickListener {
 		if(TextUtils.isEmpty(ai.activityName)){
 			Intent launchIntent = this.getContext().getPackageManager().getLaunchIntentForPackage(ai.packageName);
 			launchIntent.setData(ai.uri);
+			launchIntent.setAction(Intent.ACTION_VIEW);
 			this.getContext().startActivity(launchIntent);
 		}else{
 			Intent intent = new Intent(Intent.ACTION_VIEW);
