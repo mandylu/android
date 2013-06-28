@@ -29,6 +29,9 @@ import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.view.fragment.FeedbackFragment;
 import com.baixing.widget.CommentsDialog;
 import com.quanleimu.activity.R;
@@ -269,6 +272,7 @@ public class ViewUtil {
                     public void onClick(DialogInterface dialogInterface, int i) {
                     	dialogInterface.dismiss();
                     	(new CommentsDialog(activity)).show();
+                    	Tracker.getInstance().event(BxEvent.REVIEW_ACTION).append(Key.ACTION, "appMarket").end();
                     }
                 })
                 .setNegativeButton("不爽，我要告状", new DialogInterface.OnClickListener() {
@@ -278,6 +282,7 @@ public class ViewUtil {
                     	Bundle arg = new Bundle();
                     	arg.putString(BaseFragment.ARG_COMMON_TITLE, "反馈信息");
                     	activity.pushFragment(new FeedbackFragment(), arg, false);
+                    	Tracker.getInstance().event(BxEvent.REVIEW_ACTION).append(Key.ACTION, "feedback").end();
                     }
                 }).create().show();        
 	}

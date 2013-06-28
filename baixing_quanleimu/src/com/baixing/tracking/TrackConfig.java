@@ -265,6 +265,7 @@ public class TrackConfig implements Observer {
 //			DELETED_DELETE("Deleted_Delete","Deleted_Delete"),
 			MYVIEWAD_EDIT("MyViewad_Edit","MyViewad_Edit"),
 			MYVIEWAD_REFRESH("MyViewad_Refresh","MyViewad_Refresh"),
+			MYVIEWAD_SHARE("MyViewad_Share", "MyViewad_Share"),
 			MYVIEWAD_DELETE("MyViewad_Delete","MyViewad_Delete"),
 			MYVIEWAD_APPEAL("MyViewad_Appeal","MyViewad_Appeal"),
 			FAV_MANAGE("Fav_Manage","Fav_Manage"),
@@ -276,7 +277,8 @@ public class TrackConfig implements Observer {
 			SETTINGS_CHECKUPDATE("Settings_CheckUpdate","Settings_CheckUpdate"),
 			SETTINGS_ABOUT("Settings_About","Settings_About"),
 			SETTINGS_FEEDBACK("Settings_Feedback","Settings_Feedback"),
-			SETTINGS_PICMODE("Settings_PicMode","Settings_PicMode"),
+			SETTINGS_COMMENTSUS("Settings_Rate", "Settings_Rate"),
+			SETTINGS_PICMODE("settingsPicMode","settingsPicMode"),
 			SETTINGS_LOGOUT("Settings_Logout","Settings_Logout"),
 			SETTINGS_LOGOUT_CONFIRM("Settings_Logout_Confirm","Settings_Logout_Confirm"),
 			SETTINGS_LOGOUT_CANCEL("Settings_Logout_Cancel","Settings_Logout_Cancel"),
@@ -306,7 +308,9 @@ public class TrackConfig implements Observer {
 			GPS("GPS","GPS"),
 			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit"),
 			RECENTCATEGORY_CHOW("RecentCategory_Chow", "RecentCategory_Chow"),
-			RECENTCATEGORY_CLICK("RecentCategory_Click", "RecentCategory_Click");
+			RECENTCATEGORY_CLICK("RecentCategory_Click", "RecentCategory_Click"),
+			REVIEW_ACTION("Review_Action", "Review_Action")
+			;
 			
 			
 			private String name;

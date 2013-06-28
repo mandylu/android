@@ -107,7 +107,69 @@ public class MyTest extends BaseTest<PersonalActivity> {
 		assertTrue(!TextUtils.isEmpty(map.get("status")));
 	}
 	
-	public void testMySentEvents(){
+//	public void testMySentEvents(){
+//		solo.clickOnView(solo.getText("已发布信息"));
+//		
+//		solo.waitForCondition(new Condition(){
+//
+//			@Override
+//			public boolean isSatisfied() {
+//				// TODO Auto-generated method stub
+//				return solo.getView(R.id.pull_to_refresh_progress).getVisibility() == View.GONE;
+//			}
+//			
+//		}, 15000);
+//		
+//		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Result");
+//		assertTrue(logs != null && logs.size() == 1);
+//		assertTrue(Integer.valueOf(logs.get(0).getMap().get("adsCount")) > 0);
+////		assertOperationResult(logs.get(0).getMap());
+//		
+//		solo.clickOnView(solo.getView(R.id.rlListOperate));
+//		logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Manage");
+//		assertTrue(logs != null && logs.size() == 1);
+//		assertTrue(Integer.valueOf(logs.get(0).getMap().get("postedSeconds")) > 0);
+//		
+//		if(solo.waitForText("刷新", 1, 1000)){
+//			solo.clickOnText("刷新");
+//			solo.waitForText("确定");
+//			solo.goBack();
+//			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Refresh");
+//			assertTrue(logs != null && logs.size() == 1);
+//			assertOperationResult(logs.get(0).getMap());
+//			
+//			solo.clickOnView(solo.getView(R.id.rlListOperate));
+//			solo.clickOnText("删除");
+//			solo.clickOnButton(0);
+//			solo.goBack();
+//			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Delete");
+//			assertTrue(logs != null && logs.size() == 1);
+//			assertOperationResult(logs.get(0).getMap());
+//			
+//			solo.clickOnView(solo.getView(R.id.rlListOperate));
+//			solo.clickOnText("修改");
+//			solo.goBack();
+//			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Edit");
+//			assertTrue(logs != null && logs.size() == 1);
+//			assertOperationResult(logs.get(0).getMap());			
+//
+//			
+//		}else if(solo.waitForText("申诉", 1, 1000)){
+//			solo.clickOnText("申诉");
+//			solo.goBack();
+//			solo.goBack();
+//			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Appeal");
+//			assertTrue(logs != null && logs.size() == 1);
+//			assertOperationResult(logs.get(0).getMap());
+//		}
+//	}
+	
+	private void assertMyAdVadEvent(HashMap<String, String> data){
+		assertTrue(!TextUtils.isEmpty(data.get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(data.get("postedSeconds")));
+	}
+	
+	public void testMyVADEvents(){
 		solo.clickOnView(solo.getText("已发布信息"));
 		
 		solo.waitForCondition(new Condition(){
@@ -120,51 +182,33 @@ public class MyTest extends BaseTest<PersonalActivity> {
 			
 		}, 15000);
 		
-		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Result");
+		solo.clickInList(0);
+		solo.clickOnText("修改");
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "MyViewad_Edit");
 		assertTrue(logs != null && logs.size() == 1);
-		assertTrue(Integer.valueOf(logs.get(0).getMap().get("adsCount")) > 0);
-//		assertOperationResult(logs.get(0).getMap());
+		assertMyAdVadEvent(logs.get(0).getMap());
 		
-		solo.clickOnView(solo.getView(R.id.rlListOperate));
-		logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Manage");
+		solo.goBack();
+		solo.clickOnButton(0);
+		
+		solo.clickOnText("刷新");
+		solo.clickOnButton(1);
+		logs = TrackerLogSaver.getInstance().getLog("event", "MyViewad_Refresh");
 		assertTrue(logs != null && logs.size() == 1);
-		assertTrue(Integer.valueOf(logs.get(0).getMap().get("postedSeconds")) > 0);
-		
-		if(solo.waitForText("刷新", 1, 1000)){
-			solo.clickOnText("刷新");
-			solo.waitForText("确定");
-			solo.goBack();
-			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Refresh");
-			assertTrue(logs != null && logs.size() == 1);
-			assertOperationResult(logs.get(0).getMap());
-			
-			solo.clickOnView(solo.getView(R.id.rlListOperate));
-			solo.clickOnText("删除");
-			solo.clickOnButton(0);
-			solo.goBack();
-			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Delete");
-			assertTrue(logs != null && logs.size() == 1);
-			assertOperationResult(logs.get(0).getMap());
-			
-			solo.clickOnView(solo.getView(R.id.rlListOperate));
-			solo.clickOnText("修改");
-			solo.goBack();
-			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Edit");
-			assertTrue(logs != null && logs.size() == 1);
-			assertOperationResult(logs.get(0).getMap());			
+		assertMyAdVadEvent(logs.get(0).getMap());
 
-			
-		}else if(solo.waitForText("申诉", 1, 1000)){
-			solo.clickOnText("申诉");
-			solo.goBack();
-			solo.goBack();
-			logs = TrackerLogSaver.getInstance().getLog("event", "Sent_Appeal");
-			assertTrue(logs != null && logs.size() == 1);
-			assertOperationResult(logs.get(0).getMap());
-		}
-	}
-	
-	public void testMyVADEvents(){
+		solo.clickOnText("转发");
+		solo.goBack();
+		logs = TrackerLogSaver.getInstance().getLog("event", "MyViewad_Share");
+		assertTrue(logs != null && logs.size() == 1);
+		assertMyAdVadEvent(logs.get(0).getMap());
+
+		solo.clickOnText("删除");
+		solo.clickOnButton(0);
+		solo.goBack();
+		logs = TrackerLogSaver.getInstance().getLog("event", "MyViewad_Delete");
+		assertTrue(logs != null && logs.size() == 1);
+		assertMyAdVadEvent(logs.get(0).getMap());
 		
 	}
 }

@@ -749,6 +749,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	        }  
         }else{
         	r_array_item_operate = R.array.item_operate_favorite;
+        	Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
         }
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
@@ -824,6 +825,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         					adapter.notifyDataSetChanged();
         					lvGoodsList.invalidateViews();
             			}
+                    	Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
             		}
             	}
             }

@@ -273,6 +273,7 @@ public class SettingFragment extends BaseFragment implements View.OnClickListene
                 break;
             case R.id.commentsUs:
             	(new CommentsDialog((BaseActivity)getActivity())).show();
+            	Tracker.getInstance().event(BxEvent.SETTINGS_COMMENTSUS).end();
             	break;
             case R.id.bindSharingAccount:
             	pushFragment(new BindSharingFragment(), createArguments("绑定转发帐号", null));

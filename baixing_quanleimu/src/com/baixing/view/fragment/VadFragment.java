@@ -441,6 +441,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		case R.id.vad_btn_forward:{
 			//my viewad share
+			VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_SHARE);
 			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
 			break;
 		}
