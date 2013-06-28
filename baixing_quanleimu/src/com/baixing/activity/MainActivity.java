@@ -247,8 +247,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onCreate(savedInstanceState);
 //		ImageLoaderManager.initImageLoader();
 		GlobalDataManager.context = new WeakReference<Context>(this);
-		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
-		this.stopService(pushIntent);
+//		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
+//		this.stopService(pushIntent);
 		
 //		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 //		startPush.putExtra("updateToken", true);
