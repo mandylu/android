@@ -539,10 +539,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		boolean contactAndAddrVisible = getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE;
 		String contentAdr = contactAndAddrVisible ? 
 				((Button)getView().findViewById(R.id.btn_address)).getText().toString()
-				: params.getData("contact");
+				: params.getData(PostCommonValues.STRING_DETAIL_POSITION);
 		String contentContact = contactAndAddrVisible ?
 				((Button)getView().findViewById(R.id.btn_contact)).getText().toString()
-				: params.getData(PostCommonValues.STRING_DETAIL_POSITION);
+				: params.getData("contact");
 		if(contentAdr != null && contentAdr.length() > 0){
 			GlobalDataManager.getInstance().setAddress(contentAdr);
 		}
