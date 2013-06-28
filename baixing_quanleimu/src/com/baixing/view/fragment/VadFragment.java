@@ -894,11 +894,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			List<ResolveInfo> ls = getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 			if (ls != null && ls.size() > 0)
 			{
-				if(sms){
-					startActivity(intent);
-				}else{
+//				if(sms){
+//					startActivity(intent);
+//				}else{
 					this.startActivityForResult(intent, 100);
-				}
+//				}
 			}
 			else
 			{
