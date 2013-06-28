@@ -312,8 +312,8 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 //		        editor.putString("hasShowShortcut", "yes");
 //		        // Commit the edits!
 //		        editor.commit();
-				Intent pushIntent = new Intent(BaseTabActivity.this, com.baixing.broadcast.BXNotificationService.class);
-				BaseTabActivity.this.startService(pushIntent);
+//				Intent pushIntent = new Intent(BaseTabActivity.this, com.baixing.broadcast.BXNotificationService.class);
+//				BaseTabActivity.this.startService(pushIntent);
 
 				Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 				startPush.putExtra("updateToken", true);

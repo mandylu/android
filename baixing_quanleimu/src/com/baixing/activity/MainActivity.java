@@ -22,7 +22,6 @@ import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
-import com.baixing.util.AutoRegisterService;
 import com.baixing.util.LocationService;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -199,6 +198,10 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
 			this.pushFragment(new HomeFragment(), bundle, true);
+			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.CITY, GlobalDataManager.getInstance().getCityEnglishName()).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
+
 		}
 		else
 		{
@@ -248,8 +251,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onCreate(savedInstanceState);
 //		ImageLoaderManager.initImageLoader();
 		GlobalDataManager.context = new WeakReference<Context>(this);
-		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
-		this.stopService(pushIntent);
+//		Intent pushIntent = new Intent(this, com.baixing.broadcast.BXNotificationService.class);
+//		this.stopService(pushIntent);
 		
 //		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 //		startPush.putExtra("updateToken", true);
@@ -288,13 +291,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		if (!this.isChangingTab) {
 			Log.d("ddd","onstart");
 			
-			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.USERID, GlobalDataManager.getInstance().getCityEnglishName()).end();
-			Tracker.getInstance().save();
-			Sender.getInstance().notifySendMutex();
 		}
 		
-		AutoRegisterService.start();
-
 		super.onStart();
 	}
 	

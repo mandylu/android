@@ -278,11 +278,11 @@ public class SearchFragment extends BaseFragment implements Callback {
 				Tracker.getInstance().pv(PV.SEARCHRESULTCATEGORY).append(TrackConfig.TrackMobile.Key.SEARCHKEYWORD, this.searchContent).end();
 			}
 			
-			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
-					.append(Key.SEARCHKEYWORD, searchContent)
-					.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
-					.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
-					.append(Key.MAXCATE_ADSCOUNT, ""+maxAdsCount).end();
+//			Tracker.getInstance().event(BxEvent.HEADERSEARCHRESULT)
+//					.append(Key.SEARCHKEYWORD, searchContent)
+//					.append(Key.RESULTCATESCOUNT, ""+resultCatesCount)
+//					.append(Key.TOTAL_ADSCOUNT, ""+totalAdsCount)
+//					.append(Key.MAXCATE_ADSCOUNT, ""+maxAdsCount).end();
 			
 			this.hideProgress();
 			break;

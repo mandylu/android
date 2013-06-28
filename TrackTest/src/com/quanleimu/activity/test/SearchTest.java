@@ -40,7 +40,7 @@ public class SearchTest extends BaseTest<MainActivity> {
 		solo.enterText(et, "三星");
 		View tv = solo.getText("搜索");
 		solo.clickOnView(tv);
-
+		
 		solo.waitForCondition(new Condition(){
 
 			@Override
@@ -50,8 +50,12 @@ public class SearchTest extends BaseTest<MainActivity> {
 			}
 			
 		}, 3000);
+
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "HeaderSearchResult");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(((String)logs.get(0).getMap().get("searchKeyword")).equals("三星"));
 		
-		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("pageview", "/searchResultCategory");
+		logs = TrackerLogSaver.getInstance().getLog("pageview", "/searchResultCategory");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(logs.get(0).getMap().get("searchKeyword").equals("三星"));
 		TrackerLogSaver.getInstance().clearLog();

@@ -1,8 +1,14 @@
 package com.quanleimu.activity.test;
 
 import java.util.ArrayList;
+import java.util.HashMap;
 
+import android.text.TextUtils;
 import android.view.View;
+import android.widget.EditText;
+import android.widget.LinearLayout;
+import android.widget.ListView;
+import android.widget.TextView;
 
 import com.baixing.activity.MainActivity;
 import com.baixing.tracking.LogData;
@@ -33,6 +39,7 @@ public class PostTest extends BaseTest<MainActivity> {
 		solo.clickOnView(postV);
 		
 		
+		solo.waitForText("跳过拍照");
 		View tv = solo.getText("跳过拍照");
 		solo.waitForView(tv);
 		solo.clickOnView(tv);
@@ -46,5 +53,175 @@ public class PostTest extends BaseTest<MainActivity> {
 		solo.goBack();
 		solo.goBack();
 		solo.clickOnButton(0);
-	}	
+	}
+	
+	private void gotoPostPage(){
+		if(solo.waitForText("切换城市", 1, 3000)){
+			solo.clickOnButton(0);
+		}
+		
+		View postV = solo.getText("免费发布");
+		solo.waitForView(postV);
+		solo.clickOnView(postV);
+		
+		
+		boolean isCapView = solo.waitForText("跳过拍照");
+		if(isCapView){
+			solo.clickOnView(solo.getView(R.id.cap));
+			solo.waitForText("完成");
+			solo.clickOnText("完成");
+		}		
+		
+		solo.waitForText("分类");
+		
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Post_ImgUpload");
+		assertTrue(logs != null && logs.size() == 1);
+		HashMap<String, String> log = logs.get(0).getMap();
+		assertTrue(!TextUtils.isEmpty(log.get("result")));
+//		assertTrue(log.containsKey("failReason"));
+		assertTrue(Integer.valueOf(log.get("size")) > 0);
+		assertTrue(Float.valueOf(log.get("uploadTime")) > 0);
+	}
+	
+	public void testPostEvent(){
+		gotoPostPage();		
+		
+		solo.clickOnText("分类");
+		ArrayList<View> views = solo.getViews();
+		ListView firstLV = null;
+		for(View v : views){
+			if(v instanceof ListView){
+				firstLV = (ListView)v;
+				break;
+			}
+		}
+		int firstCateCount = firstLV == null ? 0 : firstLV.getChildCount();
+		int i = 0;
+		int j = 2;
+		for(; i < firstCateCount; ++ i){
+			solo.clickInList(i);
+			views = solo.getViews();
+			ListView secondLV = null;
+			for(View v : views){
+				if(v instanceof ListView){
+					secondLV = (ListView)v;
+					break;
+				}
+			}
+			boolean validCate = false;
+			if(secondLV != null){
+				for(j = 2; j < secondLV.getChildCount(); ++ j){
+					solo.clickInList(j);
+					if(!solo.waitForText("额度已用完", 1, 1000)){
+						validCate = true;
+						break;
+					}else{
+						solo.clickOnText("取消");
+						if(j == secondLV.getChildCount() - 1){
+							++ i;
+						}
+					}
+				}
+			}
+			if(validCate){
+				break;
+			}
+		}
+		
+		LinearLayout parent = (LinearLayout)solo.getView(R.id.layout_txt);
+		for(i = 0; i < parent.getChildCount(); ++ i){
+			View child = parent.getChildAt(i);
+			View inputArea = child.findViewById(R.id.postinput);
+			if(inputArea == null){
+				inputArea = child.findViewById(R.id.description_input);
+				if(inputArea == null){
+					View show = child.findViewById(R.id.postshow);
+					if(show != null){
+						String txtShow = ((TextView)show).getText().toString();
+						if(!txtShow.equals("分类")){
+							inputArea = child.findViewById(R.id.posthint);
+						}
+					}
+				}
+			}else{
+				View show = child.findViewById(R.id.postshow);
+				if(show != null){
+					String txtShow = ((TextView)show).getText().toString();
+					if(txtShow.equals("联系电话")){
+						continue;
+					}					
+				}
+			}
+			if(inputArea != null){
+				solo.clickOnView(inputArea);
+				if(inputArea instanceof EditText){
+					solo.enterText((EditText)inputArea, "123");
+				}else{
+					solo.clickInList(1);
+					if(solo.waitForText("返回上一级", 1, 1000)){
+						solo.clickInList(1);
+					}
+				}
+			}
+		}
+				
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Post_Inputing");
+		assertTrue(logs != null && logs.size() >= 1);
+		String lastAction = "";
+		for(LogData data : logs){
+			assertTrue(!TextUtils.isEmpty(data.getMap().get("action")));
+			assertTrue(!lastAction.equals(data.getMap().get("action")));
+		}
+		
+		solo.clickOnButton("立即免费发布");
+		logs = TrackerLogSaver.getInstance().getLog("event", "Post_PostBtnContentClicked");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		
+		assertTrue(solo.waitForText("发布成功"));
+		solo.clickOnButton(0);
+		logs = TrackerLogSaver.getInstance().getLog("event", "Post_PostResult");
+		HashMap<String, String> map = logs.get(0).getMap();
+		assertTrue(!TextUtils.isEmpty(map.get("secondCateName")));
+		assertTrue(!TextUtils.isEmpty(map.get("postStatus")));
+		assertTrue(!TextUtils.isEmpty(map.get("postPicsCount")));
+		assertTrue(!TextUtils.isEmpty(map.get("postDescriptionLineCount")));
+		assertTrue(!TextUtils.isEmpty(map.get("postDescriptionTextCount")));
+		assertTrue(!TextUtils.isEmpty(map.get("postContactTextCount")));
+		assertTrue(!TextUtils.isEmpty(map.get("postDetailPositionAuto")));
+		solo.goBack();
+	}
+	
+	public void testPostCityQuota(){
+		solo.clickOnText("百姓网");
+		solo.clickOnText("广州");
+		gotoPostPage();
+		boolean cityQuota = solo.waitForText("百姓网是本地的");
+		if(!cityQuota){
+			solo.clickOnText("分类");
+			solo.clickInList(1);
+			solo.clickInList(2);
+			assertTrue(solo.waitForText("百姓网是本地的"));
+		}
+		solo.clickOnButton(0);
+		
+		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Post_RuleAlert_Show");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("ruleName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		
+		logs = TrackerLogSaver.getInstance().getLog("event", "Post_RuleAlert_Action");
+		assertTrue(logs != null && logs.size() == 1);
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("ruleName")));
+		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
+		assertTrue(logs.get(0).getMap().get("menuActionType").startsWith("其他"));
+
+		solo.goBack();
+		solo.goBack();
+		assertTrue(solo.waitForText("退出发布"));
+		solo.clickOnButton(0);
+		solo.clickOnText("百姓网");
+		solo.clickOnText("上海");
+		
+	}
 }

@@ -394,12 +394,6 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		menu.show(location[0] + width - menu.getWindow().getAttributes().width - 5, height - 1);
 	}
 	
-	class ManagerAlertDialog extends AlertDialog{
-		public ManagerAlertDialog(Context context, int theme){
-			super(context, theme);
-		}
-	}
-	
 	@Override
 	public void onClick(View v) {
 		switch (v.getId()) {
@@ -447,6 +441,7 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		}
 		case R.id.vad_btn_forward:{
 			//my viewad share
+			VadLogger.trackMofifyEvent(detail, BxEvent.MYVIEWAD_SHARE);
 			(new SharingFragment(detail, "myViewad")).show(getFragmentManager(), null);
 			break;
 		}
@@ -672,7 +667,10 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 						finishFragment(MSG_ADINVERIFY_DELETED, detail.getValueByKey(EDATAKEYS.EDATAKEYS_ID));
 					}
 //					finish();
-					ViewUtil.showToast(activity, message, false);
+//					ViewUtil.showToast(activity, message, false);
+					if(getArguments() == null || !getArguments().getBoolean("isVadPreview", false)){
+						ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
+					}
 				} else {
 					// 删除失败
 					ViewUtil.showToast(activity, "删除失败,请稍后重试！", false);
@@ -839,11 +837,42 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 		
 		return super.onContextItemSelected(menuItem);
 	}
+		
+	private boolean shouldShowCommentsDialog(){
+		String count = (String)Util.loadDataFromLocate(getAppContext(), "contactCount1", String.class);
+		if(!TextUtils.isEmpty(count) && count.equals("yes")){
+			return true;
+		}
+		return false;
+	}
+	
+	private void increaseContactCount(){
+		String count = (String)Util.loadDataFromLocate(getAppContext(), "contactCount1", String.class);
+		if(TextUtils.isEmpty(count)){
+			Util.saveDataToLocate(getAppContext(), "contactCount1", "1");
+		}else{
+			if(!count.equals("no") && !count.equals("yes")){
+				Integer ic = Integer.valueOf(count);
+				if(++ ic == 3){
+					Util.saveDataToLocate(getAppContext(), "contactCount1", "yes");
+				}else{
+					Util.saveDataToLocate(getAppContext(), "contactCount1", String.valueOf(ic));
+				}
+			}
+		}
+	}
 	
 	@Override
 	public void onActivityResult(int requestCode, int resultCode, Intent data) {
 		if(requestCode == 100){
-			this.handleStoreBtnClicked();
+			
+			increaseContactCount();
+			if(shouldShowCommentsDialog()){
+				ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
+				Util.saveDataToLocate(getAppContext(), "contactCount1", "no");
+			}else{
+				handleStoreBtnClicked();
+			}
 		}
 	}
 	
@@ -866,11 +895,11 @@ public class VadFragment extends BaseFragment implements View.OnTouchListener,Vi
 			List<ResolveInfo> ls = getActivity().getPackageManager().queryIntentActivities(intent, PackageManager.MATCH_DEFAULT_ONLY);
 			if (ls != null && ls.size() > 0)
 			{
-				if(sms){
-					startActivity(intent);
-				}else{
+//				if(sms){
+//					startActivity(intent);
+//				}else{
 					this.startActivityForResult(intent, 100);
-				}
+//				}
 			}
 			else
 			{

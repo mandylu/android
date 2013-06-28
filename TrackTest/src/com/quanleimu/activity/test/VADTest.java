@@ -150,10 +150,11 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
 	}
 	
-	private void _testFav(){
-		View fav = solo.getText("收藏");
+	private void _testFav(){		
+		View fav = solo.getView(R.id.vad_title_fav_parent);
 		solo.clickOnView(fav);
-		solo.waitForText("收藏成功");
+		solo.waitForText("收藏");
+		solo.clickOnText("收藏");
 		solo.waitForCondition(new Condition(){
 
 			@Override
@@ -167,6 +168,9 @@ public class VADTest extends BaseTest<MainActivity> {
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("adId")));		
+
+		fav = solo.getView(R.id.vad_title_fav_parent);
+		solo.clickOnView(fav);
 
 		solo.clickOnView(solo.getText("取消收藏"));
 		logs = TrackerLogSaver.getInstance().getLog("event", "Viewad_Unfav");

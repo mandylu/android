@@ -17,7 +17,6 @@ import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
@@ -28,36 +27,37 @@ import android.widget.ImageView;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.PersonalActivity;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.adapter.VadListAdapter;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
-import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.AdList;
 import com.baixing.entity.UserBean;
+import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.network.NetworkUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.tracking.LogData;
+import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.TrackConfig.TrackMobile.Value;
-import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.FavoriteNetworkUtil;
-import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
 import com.baixing.util.VadListLoader;
-import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.util.ViewUtil;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.VadListLoader.SEARCH_POLICY;
 import com.baixing.widget.PullToRefreshListView;
 import com.quanleimu.activity.R;
 
@@ -127,6 +127,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		listMyPost = GlobalDataManager.getInstance().getListMyPost();
 		filterOutAd(listMyPost, user);
 		
+		glLoader = new VadListLoader(null, this, null, null);
+		glLoader.setHasMore(false);
+		
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGIN);
 		BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
 	}
@@ -136,17 +139,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		BxMessageCenter.defaultMessageCenter().removeObserver(this);
 	}
 	
-	private boolean isAnonyUser(String uid) {
-		UserBean anonyUser = GlobalDataManager.getInstance().getAccountManager().getAnonymousUser();
-		if (anonyUser == null) {
-			return false;
-		}
-		
-		return uid.equals(anonyUser.getId());
-	}
-	
-	private  void filterOutAd(List<Ad> list, UserBean user)
-	{
+	private  void filterOutAd(List<Ad> list, UserBean user){
 		if (list != null && user != null)
 		{
 			int i=0;
@@ -154,7 +147,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			{
 				Ad detail = list.get(i);
 				final String uid = detail.getValueByKey("userId");
-				if (!uid.equals(user.getId()) && !isAnonyUser(uid))
+				if (!uid.equals(user.getId()))
 				{
 					list.remove(i);
 				}
@@ -173,6 +166,10 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 			PerformanceTracker.stamp(Event.E_MyAd_FireRefresh);
 			lvGoodsList.fireRefresh();
 			needReloadData = false;
+		}
+		
+		if (glLoader.getGoodsList().getData() != null && glLoader.getGoodsList().getData().size() > 0){
+			lvGoodsList.setSelectionFromHeader(glLoader.getSelection());
 		}
 	}
 	
@@ -207,8 +204,6 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		gl.setData(isMyPostView() ? (listMyPost == null ? new ArrayList<Ad>() : listMyPost)
 				: GlobalDataManager.getInstance().getListMyStore());
 	
-		glLoader = new VadListLoader(null, this, null, null);
-		glLoader.setHasMore(false);
 		glLoader.setGoodsList(gl);
 //		glLoader.setSearchUserList(true);
 		glLoader.setSearchType(isMyPostView() ? SEARCH_POLICY.SEARCH_USER_LIST : SEARCH_POLICY.SEARCH_FAVORITES);
@@ -282,8 +277,13 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	public void onResume() {
 		PerformanceTracker.stamp(Event.E_MyAdShowup);
 		super.onResume();
-		this.isOnResume = true;
-		Log.d("jjj","WWWW->onresume()");
+		
+		if(isMyPostView()){
+			Tracker.getInstance().pv(PV.MYADS_SENT).append(Key.ADSCOUNT, listMyPost != null ? listMyPost.size() : 0).end();
+		}else{
+			Tracker.getInstance().pv(PV.FAVADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+		}
+//		Log.d("jjj","WWWW->onresume()");
 		this.rebuildPage(getView(), false);
 		
 		for(int i = 0; i < lvGoodsList.getChildCount(); ++i){
@@ -346,17 +346,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 //			Bundle bundle = this.getArguments();
  
 			if (this.isOnResume) {
-				if (listMyPost != null) {
-					Tracker.getInstance()
-					.pv(PV.MYADS_SENT)
-					.append(Key.ADSCOUNT, listMyPost.size())
-					.end();
-				} else {
-					Tracker.getInstance()
-					.pv(PV.MYADS_SENT)
-					.append(Key.ADSCOUNT, 0)
-					.end();
-				}
+
 				this.isOnResume = false;
 			}
 		}else{
@@ -604,6 +594,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				e.printStackTrace();
 			}
 			adapter.setUiHold(false);
+			ViewUtil.showCommentsPromptDialog((BaseActivity)getActivity());
 			break;	
 		case MSG_RESTORE_POST_FAIL:
 			hideProgress();
@@ -758,6 +749,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 	        }  
         }else{
         	r_array_item_operate = R.array.item_operate_favorite;
+        	Tracker.getInstance().event(BxEvent.FAV_MANAGE).end();
         }
 
         builder.setItems(r_array_item_operate, new DialogInterface.OnClickListener() {
@@ -833,6 +825,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
         					adapter.notifyDataSetChanged();
         					lvGoodsList.invalidateViews();
             			}
+                    	Tracker.getInstance().event(BxEvent.FAV_DELETE).end();
             		}
             	}
             }
@@ -925,7 +918,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 				msg.obj = id;
 				msg.arg1 = currentType;
 				msg.what = MSG_DELETE_POST_SUCCESS;
-				handler.sendMessage(msg);
+				handler.sendMessage(msg);				
 			}
 		});
     }
@@ -1020,9 +1013,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
 				user = (UserBean) note.getObject();
 				if(this.isMyPostView()){
-					filterOutAd(listMyPost, user);
-					needReloadData = true;
+					filterOutAd(listMyPost, user);					
 				}
+				needReloadData = true;
 				adapter.notifyDataSetChanged();
 			}
 		}		

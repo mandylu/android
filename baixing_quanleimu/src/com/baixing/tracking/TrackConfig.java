@@ -94,14 +94,19 @@ public class TrackConfig implements Observer {
 			FAIL_REASON("failReason","失败原因"),
 			ACTION("action","inputing动作"),
 			STATUS("status","信息状态"),
-			SIZEINBYTES("sizeInBytes","字节数大小"),
-			UPLOADSECONDS("uploadSeconds","上传时间秒数"),
+			SIZEINBYTES("size","字节数大小"),
+			UPLOADSECONDS("uploadTime","上传时间秒数"),
 			SHARE_FROM("shareFrom", "分享发起页"),
 			SHARE_WEIXIN_SCENE("shareWeixinScene", "微信分享场景"),
 			SHARE_CHANNEL("shareChannel", "分享渠道"),
 			ISEDIT("isEdit", "拍照是否编辑"),
 			FROM("from", "拍照来源"),
-			RULENAME("ruleName", "版规名称")
+			RULENAME("ruleName", "版规名称"),
+			RECENTCATEGORY_COUNT("count", "最近使用类目数量"),
+			RECENTCATEGORY_NAMES("secondCateNames", "最近使用类目的名称"),
+			CURRENTCITY("currentCity", "当前城市"),
+			GEOCITY("geoCity", "定位所在城市"),
+			ACCEPT("accept", "是否接受切换城市")
 			
 			;
 			private String name;
@@ -202,6 +207,7 @@ public class TrackConfig implements Observer {
 		
 		public static enum BxEvent implements TrackMobile {//event相关的value
 			CITY_SELECT("City_Select","City_Select"),
+			City_postSelect("City_postSelect", "提示切换城市"),
 			CITY_SEARCH("City_Search","City_Search"),
 			HEADERSEARCHRESULT("HeaderSearchResult","HeaderSearchResult"),
 			BROWSEMODENOIMAGE("BrowseModeNoImage","无图模式切换的结果"),
@@ -259,6 +265,7 @@ public class TrackConfig implements Observer {
 //			DELETED_DELETE("Deleted_Delete","Deleted_Delete"),
 			MYVIEWAD_EDIT("MyViewad_Edit","MyViewad_Edit"),
 			MYVIEWAD_REFRESH("MyViewad_Refresh","MyViewad_Refresh"),
+			MYVIEWAD_SHARE("MyViewad_Share", "MyViewad_Share"),
 			MYVIEWAD_DELETE("MyViewad_Delete","MyViewad_Delete"),
 			MYVIEWAD_APPEAL("MyViewad_Appeal","MyViewad_Appeal"),
 			FAV_MANAGE("Fav_Manage","Fav_Manage"),
@@ -270,7 +277,8 @@ public class TrackConfig implements Observer {
 			SETTINGS_CHECKUPDATE("Settings_CheckUpdate","Settings_CheckUpdate"),
 			SETTINGS_ABOUT("Settings_About","Settings_About"),
 			SETTINGS_FEEDBACK("Settings_Feedback","Settings_Feedback"),
-			SETTINGS_PICMODE("Settings_PicMode","Settings_PicMode"),
+			SETTINGS_COMMENTSUS("Settings_Rate", "Settings_Rate"),
+			SETTINGS_PICMODE("settingsPicMode","settingsPicMode"),
 			SETTINGS_LOGOUT("Settings_Logout","Settings_Logout"),
 			SETTINGS_LOGOUT_CONFIRM("Settings_Logout_Confirm","Settings_Logout_Confirm"),
 			SETTINGS_LOGOUT_CANCEL("Settings_Logout_Cancel","Settings_Logout_Cancel"),
@@ -298,7 +306,12 @@ public class TrackConfig implements Observer {
 			SHARE("Share","Share"),
 			SHARE_START("Share_Start","Share_Start"),
 			GPS("GPS","GPS"),
-			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit");
+			LISTING_FILTERSUBMIT("Listing_FilterSubmit", "Listing_FilterSubmit"),
+			RECENTCATEGORY_CHOW("RecentCategory_Chow", "RecentCategory_Chow"),
+			RECENTCATEGORY_CLICK("RecentCategory_Click", "RecentCategory_Click"),
+			REVIEW_ACTION("Review_Action", "Review_Action")
+			;
+			
 			
 			private String name;
 			private String description;

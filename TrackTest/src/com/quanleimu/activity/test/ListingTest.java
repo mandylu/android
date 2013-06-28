@@ -47,8 +47,12 @@ public class ListingTest extends BaseTest<MainActivity>{
 		solo.clickOnView(item1);
 		solo.clickInList(0);
 		
+		ArrayList<LogData> logs = null;
 		if(solo.waitForDialogToOpen(500)){
 			solo.clickOnButton(1);
+			logs = TrackerLogSaver.getInstance().getLog("event", "BrowseModeNoImage");
+			assertTrue(logs != null && logs.size() == 1);
+			assertTrue(((String)logs.get(0).getMap().get("result")).equals("0"));
 		}		
 
 		solo.waitForCondition(new Condition(){
@@ -62,7 +66,7 @@ public class ListingTest extends BaseTest<MainActivity>{
 		}, 15000);
 		Util.sleep(1000);
 		
-		ArrayList<LogData> logs = TrackerLogSaver.getInstance().getLog("event", "Listing");
+		logs = TrackerLogSaver.getInstance().getLog("event", "Listing");
 		assertTrue(logs != null && logs.size() == 1);
 		assertTrue(Integer.valueOf(logs.get(0).getMap().get("total_adsCount")) > 0);
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("categoryEnglishName")));
@@ -172,6 +176,7 @@ public class ListingTest extends BaseTest<MainActivity>{
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("secondCateName")));
 		assertTrue(!TextUtils.isEmpty(logs.get(0).getMap().get("filterName")));
 		
+		solo.clickInList(2);
 		solo.clickInList(2);
 		
 		solo.waitForCondition(new Condition(){

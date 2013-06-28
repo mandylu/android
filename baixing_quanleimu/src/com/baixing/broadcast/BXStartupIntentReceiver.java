@@ -30,9 +30,9 @@ public class BXStartupIntentReceiver extends BroadcastReceiver {
             }
 
             if (intent.getAction().equals(Intent.ACTION_BOOT_COMPLETED)) {
-                Intent serviceIntent = new Intent(context,
-                        BXNotificationService.class);
-                context.startService(serviceIntent);
+//                Intent serviceIntent = new Intent(context,
+//                        BXNotificationService.class);
+//                context.startService(serviceIntent);
 
                 Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
                 startPush.putExtra("updateToken", true);

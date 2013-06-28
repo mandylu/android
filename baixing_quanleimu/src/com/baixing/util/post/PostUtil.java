@@ -17,6 +17,7 @@ import android.widget.LinearLayout.LayoutParams;
 
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
+import com.baixing.entity.BXLocation;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.view.fragment.MultiLevelSelectionFragment;
 import com.baixing.view.fragment.PostParamsHolder;
@@ -275,5 +276,21 @@ public class PostUtil{
 		layoutParams.bottomMargin = view.getContext().getResources().getDimensionPixelOffset(R.dimen.post_marginbottom);		
 		layoutParams.height = view.getResources().getDimensionPixelOffset(R.dimen.post_item_height);
 		view.setLayoutParams(layoutParams);
+	}
+	
+	static public String getLocationSummary(BXLocation location){
+		String address = (location.detailAddress == null || location.detailAddress.equals("")) ? 
+        		((location.subCityName == null || location.subCityName.equals("")) ?
+						"" 
+						: location.subCityName)
+				: location.detailAddress;
+        if(address == null || address.length() == 0) return "";
+        if(location.adminArea != null && location.adminArea.length() > 0){
+        	address = address.replaceFirst(location.adminArea, "");
+        }
+        if(location.cityName != null && location.cityName.length() > 0){
+        	address = address.replaceFirst(location.cityName, "");
+        }
+        return address;
 	}
 }

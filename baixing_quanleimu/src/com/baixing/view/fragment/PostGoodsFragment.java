@@ -536,8 +536,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			return;
 		}
 		PostUtil.extractInputData(layout_txt, params);
-		String contentAdr = ((Button)getView().findViewById(R.id.btn_address)).getText().toString();
-		String contentContact = ((Button)getView().findViewById(R.id.btn_contact)).getText().toString();
+		boolean contactAndAddrVisible = getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE;
+		String contentAdr = contactAndAddrVisible ? 
+				((Button)getView().findViewById(R.id.btn_address)).getText().toString()
+				: params.getData(PostCommonValues.STRING_DETAIL_POSITION);
+		String contentContact = contactAndAddrVisible ?
+				((Button)getView().findViewById(R.id.btn_contact)).getText().toString()
+				: params.getData("contact");
 		if(contentAdr != null && contentAdr.length() > 0){
 			GlobalDataManager.getInstance().setAddress(contentAdr);
 		}
@@ -663,13 +668,19 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private void postResultSuccess() {
 		BxEvent event = editMode ? BxEvent.EDITPOST_POSTRESULT : BxEvent.POST_POSTRESULT;
+		boolean autoPosition = false;
+		if(detailLocation != null 
+				&& PostUtil.getLocationSummary(detailLocation).equals(params.getData(PostCommonValues.STRING_DETAIL_POSITION))){
+			autoPosition = true;
+		}
 		Tracker.getInstance().event(event)
 		.append(Key.SECONDCATENAME, categoryEnglishName)
 		.append(Key.POSTSTATUS, 1)
 		.append(Key.POSTPICSCOUNT, getImgCount())
 		.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
 		.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
-		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength()).end();
+		.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
+		.append(Key.POSTDETAILPOSITIONAUTO, autoPosition).end();
 	}
 	
 	private void postResultFail(String errorMsg) {
@@ -956,10 +967,17 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				this.updateImageInfo(layout_txt);
 			}			
 		}
+
+		boolean contactAndPhoneVisible = !TextUtils.isEmpty(GlobalDataManager.getInstance().getPhoneNumber()) 
+				&& !TextUtils.isEmpty(GlobalDataManager.getInstance().getAddress());
 		
 		for(int i = 0; i < PostCommonValues.fixedItemNames.length; ++ i){
 			if(pm.containsKey(PostCommonValues.fixedItemNames[i]) && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DESCRIPTION)){
-				if((!PostCommonValues.fixedItemNames[i].equals("contact") && !PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION)))
+				if(contactAndPhoneVisible
+						&& (PostCommonValues.fixedItemNames[i].equals("contact") 
+								|| PostCommonValues.fixedItemNames[i].equals(PostCommonValues.STRING_DETAIL_POSITION))){
+					continue;
+				}
 				this.appendBeanToLayout(pm.get(PostCommonValues.fixedItemNames[i]));
 			}else if(!pm.containsKey(PostCommonValues.fixedItemNames[i])){
 				params.remove(PostCommonValues.fixedItemNames[i]);
@@ -967,7 +985,12 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
-		setPhoneAndAddrLayout();
+		if(contactAndPhoneVisible){
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.VISIBLE);
+			setPhoneAndAddrLayout();
+		}else{
+			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(View.GONE);
+		}
 	}
 	
 	protected void setPhoneAndAddrLeftIcon(){
@@ -1739,7 +1762,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean){
 		Activity activity = getActivity();
-		ViewGroup layout = PostUtil.createItemByPostBean(postBean, activity);
+		final ViewGroup layout = PostUtil.createItemByPostBean(postBean, activity);
 
 		if (layout == null)
 			return null;
@@ -1829,7 +1852,21 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 					InputMethodManager inputMgr = (InputMethodManager) ctrl.getContext().getSystemService(Context.INPUT_METHOD_SERVICE);
 					inputMgr.showSoftInput(ctrl, InputMethodManager.SHOW_IMPLICIT);
 				}
-			});			
+			});	
+			
+			if(postBean.getName().equals(PostCommonValues.STRING_DETAIL_POSITION)){
+				layout.findViewById(R.id.location).setOnClickListener(new OnClickListener(){
+
+					@Override
+					public void onClick(View v) {
+						// TODO Auto-generated method stub
+						if(detailLocation != null){
+							((TextView)layout.findViewById(R.id.postinput)).setText(PostUtil.getLocationSummary(detailLocation));
+						}
+					}
+					
+				});
+			}
 		}		
 		PostUtil.adjustMarginBottomAndHeight(layout);
 		

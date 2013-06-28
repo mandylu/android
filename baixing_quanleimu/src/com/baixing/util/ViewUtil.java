@@ -5,15 +5,16 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.app.Activity;
+import android.app.AlertDialog;
 import android.app.Notification;
 import android.app.NotificationManager;
 import android.app.PendingIntent;
 import android.app.ProgressDialog;
 import android.content.Context;
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.graphics.Bitmap;
 import android.net.Uri;
-import android.os.AsyncTask;
 import android.os.Build;
 import android.os.Bundle;
 import android.os.PowerManager;
@@ -24,9 +25,15 @@ import android.widget.Toast;
 
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
+import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
+import com.baixing.tracking.Tracker;
+import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
+import com.baixing.tracking.TrackConfig.TrackMobile.Key;
+import com.baixing.view.fragment.FeedbackFragment;
+import com.baixing.widget.CommentsDialog;
 import com.quanleimu.activity.R;
 
 /**
@@ -251,5 +258,32 @@ public class ViewUtil {
 			task.run();
 		}
 		
+	}
+	
+	static private boolean commentsDlgShowed = false; 
+	static public void showCommentsPromptDialog(final BaseActivity activity){
+		if(commentsDlgShowed) return;
+		commentsDlgShowed = true;
+        AlertDialog.Builder builder = new AlertDialog.Builder(activity);
+        builder.setTitle("百姓网好用么？")
+        		.setMessage("感谢您使用了这么久百姓网，不知道您的感受如何？您的反馈是我们不断为您改进的动力")
+                .setPositiveButton("很爽，赞一下", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialogInterface, int i) {
+                    	dialogInterface.dismiss();
+                    	(new CommentsDialog(activity)).show();
+                    	Tracker.getInstance().event(BxEvent.REVIEW_ACTION).append(Key.ACTION, "appMarket").end();
+                    }
+                })
+                .setNegativeButton("不爽，我要告状", new DialogInterface.OnClickListener() {
+                    @Override
+                    public void onClick(DialogInterface dialog, int id) {
+                    	dialog.dismiss();
+                    	Bundle arg = new Bundle();
+                    	arg.putString(BaseFragment.ARG_COMMON_TITLE, "反馈信息");
+                    	activity.pushFragment(new FeedbackFragment(), arg, false);
+                    	Tracker.getInstance().event(BxEvent.REVIEW_ACTION).append(Key.ACTION, "feedback").end();
+                    }
+                }).create().show();        
 	}
 }

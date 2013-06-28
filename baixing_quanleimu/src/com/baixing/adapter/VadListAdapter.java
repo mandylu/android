@@ -409,11 +409,12 @@ public class VadListAdapter extends BaseAdapter {
 		holder.tvDes.setTypeface(null, Typeface.BOLD);
 		if (vadHistory != null && vadHistory.isReaded(detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_ID)))
 		{
-			holder.tvDes.setTextColor(context.getResources().getColor(R.color.vad_list_sub_info));
+			v.setBackgroundColor(Color.rgb(240, 240, 240));
 		}	
 		else
 		{
 			holder.tvDes.setTextColor(context.getResources().getColor(R.color.common_black));
+			v.setBackgroundColor(context.getResources().getColor(R.color.bg_screen));
 		}
 		
 		String dateV = detailObj.getValueByKey(Ad.EDATAKEYS.EDATAKEYS_DATE);

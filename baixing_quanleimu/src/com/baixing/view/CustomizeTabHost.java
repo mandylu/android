@@ -3,18 +3,16 @@ package com.baixing.view;
 
 import java.io.Serializable;
 
-import org.jivesoftware.smackx.pubsub.GetItemsRequest;
-
-import com.baixing.data.GlobalDataManager;
-import com.baixing.imageCache.ImageCacheManager;
-import com.quanleimu.activity.R;
-
-import android.app.Activity;
 import android.content.res.Resources;
+import android.graphics.Bitmap;
+import android.graphics.drawable.BitmapDrawable;
+import android.graphics.drawable.Drawable;
 import android.view.View;
 import android.view.ViewGroup;
-import android.widget.ImageView;
 import android.widget.TextView;
+
+import com.baixing.data.GlobalDataManager;
+import com.quanleimu.activity.R;
 
 
 /**
@@ -121,14 +119,24 @@ public final class CustomizeTabHost implements Serializable
     
     private void setTabIcon(int index, TabIconRes res)
     {
-    	ImageView icon = (ImageView) getTabItem(index).findViewById(R.id.tab_icon);
-    	if (res == TabIconRes.NO_ICON)
-    	{
-    		icon.setVisibility(View.GONE);
+//    	ImageView icon = (ImageView) getTabItem(index).findViewById(R.id.tab_icon);
+    	TextView tv = (TextView)getTabItem(index).findViewById(R.id.tab_text);
+    	if (res == TabIconRes.NO_ICON){
+    		tv.setCompoundDrawables(null, null, null, null);
+//    		icon.setVisibility(View.GONE);
     	}
-    	else
-    	{
-    		icon.setImageBitmap(GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex)));
+    	else{
+    		Bitmap bmp = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(res.getRes(index == this.currentFocusIndex));
+    		Drawable top = new BitmapDrawable(bmp);
+    		
+    		int width = 
+    				GlobalDataManager.getInstance().getApplicationContext().getResources().getDimensionPixelSize(R.dimen.tab_icon_width);
+    		int height = 
+    				GlobalDataManager.getInstance().getApplicationContext().getResources().getDimensionPixelSize(R.dimen.tab_icon_height);
+
+    		top.setBounds(0, 0, width, height);
+    		tv.setCompoundDrawables(null, top, null, null);
+//    		icon.setImageBitmap();
     	}
     }
     
