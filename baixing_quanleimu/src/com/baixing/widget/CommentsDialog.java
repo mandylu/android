@@ -1,6 +1,7 @@
 package com.baixing.widget;
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Random;
 
 import android.annotation.SuppressLint;
 import android.app.Dialog;
@@ -8,14 +9,12 @@ import android.content.ComponentName;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ResolveInfo;
-import android.graphics.drawable.ColorDrawable;
 import android.graphics.drawable.Drawable;
 import android.net.Uri;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
-import android.view.Window;
 import android.widget.AdapterView;
 import android.widget.AdapterView.OnItemClickListener;
 import android.widget.BaseAdapter;
@@ -25,6 +24,7 @@ import android.widget.LinearLayout;
 import android.widget.TextView;
 
 import com.baixing.activity.BaseActivity;
+import com.baixing.data.GlobalDataManager;
 import com.quanleimu.activity.R;
 
 @SuppressLint("NewApi")
@@ -86,7 +86,16 @@ public class CommentsDialog extends Dialog implements OnItemClickListener {
             ((ImageView)appView.findViewById(R.id.itemicon)).setImageDrawable(drawable);
             return appView;  
         }
-    }	
+    }
+	
+	private static String[] markets = {
+		"http://play.google.com/store/apps/details?id=" + GlobalDataManager.getInstance().getApplicationContext().getPackageName(),
+		"http://zhushou.360.cn/detail/index/soft_id/111600?recrefer=SE_D_%E7%99%BE%E5%A7%93%E7%BD%91",
+		"http://www.wandoujia.com/apps/com.quanleimu.activity",
+		"http://app.xiaomi.com/detail/3726",
+		"http://www.anzhi.com/soft_920667.html",
+		"http://www.nduoa.com/apk/detail/572166"		
+	};
 
 	public CommentsDialog(BaseActivity activity) {
 		super(activity);
@@ -97,9 +106,11 @@ public class CommentsDialog extends Dialog implements OnItemClickListener {
 		View v = LayoutInflater.from(getContext()).inflate(R.layout.comments, null);
 		this.setContentView(v);
 
+		Random rand = new Random();
+		String market = markets[rand.nextInt(markets.length)];
 		Intent intent = new Intent(Intent.ACTION_VIEW);
 		Uri[] data = {Uri.parse("market://details?id=" + activity.getPackageName()),
-				Uri.parse("http://play.google.com/store/apps/details?id=" + activity.getPackageName())};
+				Uri.parse(market)};
 		
 		
 		for(int i = 0; i < data.length; ++ i){
