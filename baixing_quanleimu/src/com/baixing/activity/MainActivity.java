@@ -288,7 +288,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	@Override
 	protected void onStart() {
 		if (!this.isChangingTab) {
-			Log.d("ddd","onstart");			
+			Log.d("ddd","onstart");
 		}
 		
 		super.onStart();

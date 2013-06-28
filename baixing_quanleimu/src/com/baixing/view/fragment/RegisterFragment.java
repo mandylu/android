@@ -371,6 +371,7 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 		}else{
 			if(!response.success){
 				if(action.equals(BaseAnonymousLogic.Action_Verify)){
+					this.hideProgress();
 						showVerifyDlg();
 //						dlgShowing = true;
 				}else{

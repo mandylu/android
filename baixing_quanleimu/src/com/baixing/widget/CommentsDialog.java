@@ -105,6 +105,7 @@ public class CommentsDialog extends Dialog implements OnItemClickListener {
 		this.setTitle("选择评论渠道");
 		View v = LayoutInflater.from(getContext()).inflate(R.layout.comments, null);
 		this.setContentView(v);
+		this.setCanceledOnTouchOutside(true);
 
 		Random rand = new Random();
 		String market = markets[rand.nextInt(markets.length)];

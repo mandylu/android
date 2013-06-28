@@ -1013,9 +1013,9 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 					|| IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())) {
 				user = (UserBean) note.getObject();
 				if(this.isMyPostView()){
-					filterOutAd(listMyPost, user);
-					needReloadData = true;
+					filterOutAd(listMyPost, user);					
 				}
+				needReloadData = true;
 				adapter.notifyDataSetChanged();
 			}
 		}		
