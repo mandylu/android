@@ -93,7 +93,7 @@ public class CommentsDialog extends Dialog implements OnItemClickListener {
 		"http://zhushou.360.cn/detail/index/soft_id/111600?recrefer=SE_D_%E7%99%BE%E5%A7%93%E7%BD%91",
 		"http://www.wandoujia.com/apps/com.quanleimu.activity",
 		"http://app.xiaomi.com/detail/3726",
-		"http://www.anzhi.com/soft_920667.html",
+//		"http://www.anzhi.com/soft_920667.html",
 		"http://www.nduoa.com/apk/detail/572166"		
 	};
 
