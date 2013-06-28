@@ -198,6 +198,9 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0)
 		{
 			this.pushFragment(new HomeFragment(), bundle, true);
+			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.CITY, GlobalDataManager.getInstance().getCityEnglishName()).end();
+			Tracker.getInstance().save();
+			Sender.getInstance().notifySendMutex();
 		}
 		else
 		{
@@ -285,11 +288,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	@Override
 	protected void onStart() {
 		if (!this.isChangingTab) {
-			Log.d("ddd","onstart");
-			
-			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.CITY, GlobalDataManager.getInstance().getCityEnglishName()).end();
-			Tracker.getInstance().save();
-			Sender.getInstance().notifySendMutex();
+			Log.d("ddd","onstart");			
 		}
 		
 		super.onStart();
