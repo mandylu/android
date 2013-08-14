@@ -18,6 +18,9 @@ import com.baixing.util.ViewUtil;
  *
  */
 public class PushDispatcher {
+	
+	private static final String TAG = PushDispatcher.class.getSimpleName();
+	
 	private Context context;
 	private PushHandler[] handlers;// = new ArrayList<PushHandler>();
 	public PushDispatcher(Context context)
@@ -53,12 +56,13 @@ public class PushDispatcher {
 			{
 				if (h.acceptMessage(type))
 				{
+					Log.i(TAG, "type = " + type);
 					try {
 						h.processMessage(msgJson);
 					}
 					catch(Throwable t)
 					{
-						//Ignor, handler do not affect each other.
+						Log.e(TAG, t.toString());
 					}
 				}
 			}

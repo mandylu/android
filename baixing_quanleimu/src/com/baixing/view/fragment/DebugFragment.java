@@ -3,7 +3,6 @@ package com.baixing.view.fragment;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.graphics.Color;
 import android.os.Bundle;
 import android.os.Message;
 import android.view.LayoutInflater;
@@ -14,11 +13,9 @@ import android.widget.CompoundButton;
 import android.widget.EditText;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 import android.widget.ToggleButton;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.broadcast.XMPPManager;
 import com.baixing.network.api.ApiConfiguration;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
@@ -68,6 +65,7 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
         Button pushTestBtn = (Button) debugLayout.findViewById(R.id.pushTestBtn);
         pushTestBtn.setOnClickListener(this);
 
+        /* by zengjin@baixing.net
         if (XMPPManager.getInstance(this.getAppContext()).isConnected()) {
             pushTestBtn.setText("push");
             pushTestBtn.setTextColor(Color.GREEN);
@@ -75,6 +73,7 @@ public class DebugFragment extends BaseFragment implements View.OnClickListener,
             pushTestBtn.setText("XMPP无法连接");
             pushTestBtn.setTextColor(Color.RED);
         }
+        */
 
         ToggleButton showPushBtn = (ToggleButton)debugLayout.findViewById(R.id.showPushBtn);
         Boolean showDebugPush = (Boolean) Util.loadDataFromLocate(getAppContext(), "showDebugPush", Boolean.class);

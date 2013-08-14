@@ -7,6 +7,7 @@ import java.lang.ref.WeakReference;
 import java.util.Calendar;
 import java.util.Date;
 
+import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.network.NetworkProfiler;
 import com.baixing.network.api.ApiConfiguration;
@@ -14,6 +15,8 @@ import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
+import com.xiaomi.mipush.MiPushCallback;
+import com.xiaomi.mipush.MiPushService;
 
 import android.app.Application;
 import android.content.Context;
@@ -51,6 +54,9 @@ public class EntryApplication extends Application {
 				mangerInstance.getVersion(), mangerInstance.getChannelId(),
 				mangerInstance.getCityEnglishName(),
 				getPackageName());
+		
+		// MiPush by zengjin@baixing.net
+		MiPushService.initialize(this, null, null, new MiPushCallback(new PushDispatcher(this)));
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());

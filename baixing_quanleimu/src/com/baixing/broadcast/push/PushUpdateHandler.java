@@ -8,6 +8,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.os.Bundle;
+import android.util.Log;
 
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.broadcast.NotificationIds;
@@ -23,6 +24,8 @@ import com.baixing.util.ViewUtil;
  * To change this template use File | Settings | File Templates.
  */
 public class PushUpdateHandler extends PushHandler {
+	
+	private static final String TAG = PushUpdateHandler.class.getSimpleName();
 
     PushUpdateHandler(Context context) {
         super(context);
@@ -35,22 +38,26 @@ public class PushUpdateHandler extends PushHandler {
 
     @Override
     public void processMessage(String message) {
+    	Log.d(TAG, message);
+    	
         try
         {   // { type:"bxupdate", data:{serverVersion:"3.1", apkUrl:"xxx", versionInfo:"yyy"} }
             JSONObject json = new JSONObject(message);
 
-            JSONObject data = json.getJSONObject("data");
+            JSONObject data = json.getJSONObject("d");
 
 //            String serverVersion = updateInfo.getString("serverVersion");
             String serverVersion = data.getString("serverVersion");
             String apkUrl = data.getString("apkUrl");
+            
+            Log.i(TAG, data + " : " + apkUrl);
 
             Pattern p = Pattern.compile("http(s)?://\\w+");
             Matcher matcher = p.matcher(apkUrl);
             if (matcher.find() == false) {
                 return;
             }
-
+            
             if (Version.compare(serverVersion, GlobalDataManager.getInstance().getVersion()) == 1) {
             	String title = "百姓网有新版本啦~";
     			if (data.has("title")) {
@@ -70,7 +77,7 @@ public class PushUpdateHandler extends PushHandler {
         }
         catch(Exception ex)
         {
-
+        	Log.e(TAG, ex.toString());
         }
     }
 }

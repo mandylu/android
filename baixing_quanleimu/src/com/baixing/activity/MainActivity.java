@@ -14,10 +14,8 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.baixing.activity.SplashJob.JobDoneListener;
-import com.baixing.broadcast.PushMessageService;
 import com.baixing.broadcast.push.PageJumper;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -183,9 +181,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	public void onJobDone() {
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone);
 		//Start server when application is start.
+		
+		/* by zengjin@baixing.net
 		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		startPush.putExtra("updateToken", true);
 		this.startService(startPush);
+		*/
 		
 		//Update UI after splash.
 		initTitleAction();

@@ -1,11 +1,20 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <classpath>
-	<classpathentry kind="lib" path="libs/baidumapapi.jar"/>
-	<classpathentry kind="lib" path="libs/libammsdk.jar"/>
-	<classpathentry kind="lib" path="libs/open_sdk.jar"/>
-	<classpathentry kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.LIBRARIES"/>
 	<classpathentry kind="con" path="com.android.ide.eclipse.adt.ANDROID_FRAMEWORK"/>
-	<classpathentry excluding="com/baixing/android/api/cmd/|com/baixing/android/api/|com/baixing/util/Communication.java|com/baixing/util/post/ImageUploadCommand.java" kind="src" path="src"/>
+	<classpathentry excluding="com/baixing/android/api/cmd/|com/baixing/android/api/|com/baixing/util/Communication.java|com/baixing/util/post/ImageUploadCommand.java|com/baixing/mipush/|com/baixing/broadcast/XMPPManager.java|com/baixing/broadcast/PushMessageService.java|com/baixing/broadcast/BXStartupIntentReceiver.java|com/baixing/broadcast/NetworkConnectivityReceiver.java" kind="src" path="src"/>
 	<classpathentry kind="src" path="gen"/>
+	<classpathentry exported="true" kind="lib" path="libs/android-viewbadger.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/baidumapapi.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/bluemobi.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/commons-httpclient-3.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-annotations-2.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/jackson-databind-2.1.1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/libammsdk.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/MiPush_SDK_Client_1_1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/open_sdk.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/umeng_sdk.jar"/>
+	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
