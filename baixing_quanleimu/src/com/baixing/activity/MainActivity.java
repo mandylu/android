@@ -43,11 +43,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super();
 	}
 	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
-	}
-	
 	protected void onNewIntent(Intent intent)
 	{
 		super.onNewIntent(intent);
@@ -137,12 +132,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onStop();
 	}
 	
-	protected void onDestory()
-	{
+	@Override
+	protected void onDestroy() {
 		LocationService.getInstance().stop();
 		super.onDestroy();
 	}
-
+	
 	private void responseOnResume()
 	{
 	}
