@@ -42,7 +42,7 @@ public class MiPushService {
 	public static void setAlias(Context context, String alias) {
 		if (alias != null) {
 			Log.d(TAG, "set alias: " + alias);
-			MiPushClient.unsubscribe(context, alias, null);
+			MiPushClient.setAlias(context, alias, null);
 		}
 	}
 
