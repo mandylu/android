@@ -2,10 +2,11 @@
 package com.baixing.activity;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Calendar;
-import java.util.Date;
+
+import android.app.Application;
+import android.content.Context;
+import android.os.Environment;
 
 import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.data.GlobalDataManager;
@@ -17,11 +18,6 @@ import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
 import com.xiaomi.mipush.MiPushCallback;
 import com.xiaomi.mipush.MiPushService;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.Environment;
 
 public class EntryApplication extends Application {
 
@@ -56,7 +52,10 @@ public class EntryApplication extends Application {
 				getPackageName());
 		
 		// MiPush by zengjin@baixing.net
-		MiPushService.initialize(mangerInstance.getApplicationContext(), null, null, new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
+		MiPushService.initialize(
+				mangerInstance.getApplicationContext(),
+				Util.getDeviceUdid(mangerInstance.getApplicationContext()),
+				new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());
