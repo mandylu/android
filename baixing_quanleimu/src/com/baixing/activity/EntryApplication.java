@@ -56,7 +56,7 @@ public class EntryApplication extends Application {
 				getPackageName());
 		
 		// MiPush by zengjin@baixing.net
-		MiPushService.initialize(this, null, null, new MiPushCallback(new PushDispatcher(this)));
+		MiPushService.initialize(mangerInstance.getApplicationContext(), null, null, new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());

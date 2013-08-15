@@ -232,7 +232,7 @@ public class LocationService{
 	}
 	
 	public void removeLocationListener(BXLocationServiceListener userListener){
-		if(null == bMapManager && null == mkLocationManager && null == locationListener){
+		if(null != bMapManager && null != mkLocationManager && null != locationListener){
 			locationListener.removeListener(userListener);
 		}		
 	}
