@@ -53,8 +53,7 @@ public class EntryApplication extends Application {
 		
 		// MiPush by zengjin@baixing.net
 		MiPushService.initialize(
-				mangerInstance.getApplicationContext(),
-				Util.getDeviceUdid(mangerInstance.getApplicationContext()),
+				mangerInstance.getApplicationContext(), 
 				new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
 		
 		if (Util.isLoggable()) {

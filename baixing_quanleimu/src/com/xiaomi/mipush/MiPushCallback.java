@@ -10,7 +10,9 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.util.Util;
 import com.xiaomi.mipush.sdk.ErrorCode;
+import com.xiaomi.mipush.sdk.MiPushClient;
 import com.xiaomi.mipush.sdk.MiPushClient.MiPushClientCallback;
 
 public class MiPushCallback extends MiPushClientCallback {
@@ -48,6 +50,8 @@ public class MiPushCallback extends MiPushClientCallback {
 		if (resultCode == ErrorCode.SUCCESS) {
 			Log.i(TAG, "regID = " + regID);
 			register(regID);
+			MiPushService.setAlias(context, Util.getDeviceUdid(context));
+			MiPushService.subscribe(context, MiPushService.TOPIC_BROADCAST);
 		} else {
 			Log.e(TAG, reason);
 		}
