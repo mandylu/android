@@ -3,6 +3,8 @@ package com.xiaomi.mipush;
 import android.content.Context;
 import android.util.Log;
 
+import com.xiaomi.channel.commonutils.logger.LoggerInterface;
+import com.xiaomi.mipush.sdk.Logger;
 import com.xiaomi.mipush.sdk.MiPushClient;
 
 public class MiPushService {
@@ -11,8 +13,28 @@ public class MiPushService {
 
 	private static final String TAG = MiPushService.class.getSimpleName();
 
-	private static final String MiPush_APP_ID = "1001139";
-	private static final String MiPush_APP_TOKEN = "800100193139";
+	private static final String MiPush_APP_ID = "1005249";
+	private static final String MiPush_APP_TOKEN = "830100583249";
+	static {
+        LoggerInterface newLogger = new LoggerInterface() {
+
+            @Override
+            public void setTag(String tag) {
+                // ignore
+            }
+
+            @Override
+            public void log(String content, Throwable t) {
+                Log.d(TAG, content, t);
+            }
+
+            @Override
+            public void log(String content) {
+                Log.d(TAG, content);
+            }
+        };
+        Logger.setLogger(newLogger);
+    }
 	
 	private static Context context;
 

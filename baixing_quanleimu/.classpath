@@ -12,9 +12,9 @@
 	<classpathentry exported="true" kind="lib" path="libs/jackson-core-2.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/jackson-databind-2.1.1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/libammsdk.jar"/>
-	<classpathentry exported="true" kind="lib" path="libs/MiPush_SDK_Client_1_1.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/open_sdk.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/umeng_sdk.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
+	<classpathentry kind="lib" path="libs/MiPush_SDK_Client_1_1.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>
