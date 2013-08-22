@@ -56,7 +56,7 @@ public class PushDispatcher {
 			{
 				if (h.acceptMessage(type))
 				{
-					Log.i(TAG, "type = " + type);
+					Log.d(TAG, "type = " + type);
 					try {
 						h.processMessage(msgJson);
 					}
