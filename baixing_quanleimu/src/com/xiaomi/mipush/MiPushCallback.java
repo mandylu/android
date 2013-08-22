@@ -48,7 +48,7 @@ public class MiPushCallback extends MiPushClientCallback {
 	@Override
 	public void onInitializeResult(long resultCode, String reason, String regID) {
 		if (resultCode == ErrorCode.SUCCESS) {
-			Log.i(TAG, "regID = " + regID);
+			Log.d(TAG, "regID = " + regID);
 			register(regID);
 			MiPushService.setAlias(context, Util.getDeviceUdid(context));
 			MiPushService.subscribe(context, MiPushService.TOPIC_BROADCAST);
@@ -59,14 +59,14 @@ public class MiPushCallback extends MiPushClientCallback {
 
 	@Override
 	public void onReceiveMessage(String content, String topic, String alias) {
-		Log.i(TAG, "json = " + content);
+		Log.d(TAG, "json = " + content);
 		pushDispatcher.dispatch(content);
 	}
 
 	@Override
 	public void onSubscribeResult(long resultCode, String reason, String topic) {
 		if (resultCode == ErrorCode.SUCCESS) {
-			Log.i(TAG, "subscribed topic: " + topic);
+			Log.d(TAG, "subscribed topic: " + topic);
 		} else {
 			Log.e(TAG, reason);
 		}
@@ -75,7 +75,7 @@ public class MiPushCallback extends MiPushClientCallback {
 	@Override
 	public void onUnsubscribeResult(long resultCode, String reason, String topic) {
 		if (resultCode == ErrorCode.SUCCESS) {
-			Log.i(TAG, "unsubscribed topic: " + topic);
+			Log.d(TAG, "unsubscribed topic: " + topic);
 		} else {
 			Log.e(TAG, reason);
 		}
@@ -86,7 +86,7 @@ public class MiPushCallback extends MiPushClientCallback {
 
 		ApiParams params = new ApiParams();
 		params.addParam("deviceToken", regID);
-		Log.i(TAG, "params: " + params.toString());
+		Log.d(TAG, "params: " + params.toString());
 
 		BaseApiCommand.createCommand("tokenupdate", true, params).execute(
 				context, new Callback() {

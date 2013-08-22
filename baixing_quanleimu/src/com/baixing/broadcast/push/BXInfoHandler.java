@@ -40,7 +40,7 @@ public class BXInfoHandler extends PushHandler {
 			
 			String content = data.getString("content");
 			
-			Log.i(TAG, title + " : " + content);
+			Log.d(TAG, title + " : " + content);
 			
 //			String pushCode = "0";
 //			if(data.has("pushCode")){

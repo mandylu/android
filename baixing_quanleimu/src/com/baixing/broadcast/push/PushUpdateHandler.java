@@ -50,7 +50,7 @@ public class PushUpdateHandler extends PushHandler {
             String serverVersion = data.getString("serverVersion");
             String apkUrl = data.getString("apkUrl");
             
-            Log.i(TAG, data + " : " + apkUrl);
+            Log.d(TAG, data + " : " + apkUrl);
 
             Pattern p = Pattern.compile("http(s)?://\\w+");
             Matcher matcher = p.matcher(apkUrl);

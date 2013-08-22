@@ -314,12 +314,6 @@ public class BaseTabActivity extends BaseActivity implements TabSelectListener, 
 //				Intent pushIntent = new Intent(BaseTabActivity.this, com.baixing.broadcast.BXNotificationService.class);
 //				BaseTabActivity.this.startService(pushIntent);
 		    	
-		    	/* by zengjin@baixing.net
-				Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
-				startPush.putExtra("updateToken", true);
-				BaseTabActivity.this.startService(startPush);
-				*/
-		    	
 				GlobalDataManager.getInstance().getNetworkCacheManager().deleteOldRecorders(3600 * 24 * 3);
 //		            		Debug.stopMethodTracing();
 //				isInActiveStack = false;
