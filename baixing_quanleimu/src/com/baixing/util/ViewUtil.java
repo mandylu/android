@@ -26,6 +26,7 @@ import android.widget.Toast;
 import com.baixing.activity.BaiduMapActivity;
 import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.activity.EntryApplication;
 import com.baixing.broadcast.NotificationIds;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
@@ -144,9 +145,11 @@ public class ViewUtil {
 		}
 		if(notificationId == NotificationIds.NOTIFICATION_ID_BXINFO){
 			notificationIntent.putExtra("pagejump", true);
+			EntryApplication.pushViewed = false;
 		}
+		notificationIntent.setFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP | Intent.FLAG_ACTIVITY_NEW_TASK | Intent.FLAG_ACTIVITY_SINGLE_TOP);
 		PendingIntent contentIntent = PendingIntent.getBroadcast(context, 0,
-				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT);
+				notificationIntent, PendingIntent.FLAG_UPDATE_CURRENT | PendingIntent.FLAG_ONE_SHOT);
 
 		notification.setLatestEventInfo(context, contentTitle, contentText,
 				contentIntent);

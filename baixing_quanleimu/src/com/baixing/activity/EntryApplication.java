@@ -20,6 +20,8 @@ import com.xiaomi.mipush.MiPushCallback;
 import com.xiaomi.mipush.MiPushService;
 
 public class EntryApplication extends Application {
+	
+	public static boolean pushViewed;
 
 	/* (non-Javadoc)
 	 * @see android.app.Application#onCreate()
@@ -55,6 +57,7 @@ public class EntryApplication extends Application {
 		MiPushService.initialize(
 				mangerInstance.getApplicationContext(), 
 				new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
+		pushViewed = true;
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());

@@ -231,6 +231,13 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		Intent intent = this.getIntent();
 		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
 			if(intent.getBooleanExtra("pagejump", false)){
+				Log.d(TAG, "MainActivity.jumpToPage: " + EntryApplication.pushViewed);
+				if (!EntryApplication.pushViewed) {
+					EntryApplication.pushViewed = true;
+					intent.setClass(this, PushActivity.class);
+					startActivity(intent);
+					return;
+				}
 				Bundle data = intent.getExtras();
 				PageJumper.jumpToPage(this, data.getString("page"), data.getString("data"));
 				///intent.getExtras()
@@ -301,7 +308,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    {		
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
         	handleBack();
