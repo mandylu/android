@@ -1,5 +1,11 @@
 package com.baixing.activity;
 
+import java.io.UnsupportedEncodingException;
+import java.lang.ref.WeakReference;
+import java.util.List;
+
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.BitmapFactory;
@@ -8,17 +14,9 @@ import android.graphics.Paint;
 import android.graphics.Point;
 import android.location.Location;
 import android.os.Bundle;
-import org.jivesoftware.smack.util.Base64;
-
-import android.text.TextUtils;
-import android.util.Log;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.widget.TextView;
-import android.widget.Toast;
-
-import com.baidu.mapapi.MapActivity;
 
 import com.baidu.mapapi.BMapManager;
 import com.baidu.mapapi.CoordinateConvert;
@@ -27,39 +25,26 @@ import com.baidu.mapapi.LocationListener;
 import com.baidu.mapapi.MKEvent;
 import com.baidu.mapapi.MKGeneralListener;
 import com.baidu.mapapi.MKLocationManager;
-import com.baidu.mapapi.MKPoiInfo;
+import com.baidu.mapapi.MapActivity;
 import com.baidu.mapapi.MapController;
 import com.baidu.mapapi.MapView;
-import com.baidu.mapapi.MapView.LayoutParams;
 import com.baidu.mapapi.MyLocationOverlay;
 import com.baidu.mapapi.Overlay;
-import com.baidu.mapapi.PoiOverlay;
 import com.baidu.mapapi.Projection;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.Ad.EDATAKEYS;
 import com.baixing.entity.BXLocation;
 import com.baixing.network.NetworkCommand;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
+import com.baixing.util.Base64;
 import com.baixing.util.LocationService;
 import com.baixing.util.ViewUtil;
-import com.baixing.util.post.PostLocationService;
 import com.quanleimu.activity.R;
-import com.quanleimu.activity.R.drawable;
-import com.quanleimu.activity.R.id;
-import com.quanleimu.activity.R.layout;
-import com.quanleimu.activity.R.style;
-
-import java.io.UnsupportedEncodingException;
-import java.lang.ref.WeakReference;
-import java.util.ArrayList;
-import java.util.List;
-import java.util.zip.Inflater;
-
-import org.json.JSONObject;
+//import org.jivesoftware.smack.util.Base64;
           
 public class BaiduMapActivity extends MapActivity implements LocationListener{
 

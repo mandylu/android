@@ -14,10 +14,8 @@ import android.view.KeyEvent;
 import android.view.View;
 
 import com.baixing.activity.SplashJob.JobDoneListener;
-import com.baixing.broadcast.PushMessageService;
 import com.baixing.broadcast.push.PageJumper;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.imageCache.ImageLoaderManager;
 import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -43,11 +41,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	
 	public MainActivity(){
 		super();
-	}
-	
-	@Override
-	protected void onDestroy() {
-		super.onDestroy();
 	}
 	
 	protected void onNewIntent(Intent intent)
@@ -139,12 +132,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		super.onStop();
 	}
 	
-	protected void onDestory()
-	{
+	@Override
+	protected void onDestroy() {
 		LocationService.getInstance().stop();
 		super.onDestroy();
 	}
-
+	
 	private void responseOnResume()
 	{
 	}
@@ -183,9 +176,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	public void onJobDone() {
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone);
 		//Start server when application is start.
+		
+		/* by zengjin@baixing.net
 		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
 		startPush.putExtra("updateToken", true);
 		this.startService(startPush);
+		*/
 		
 		//Update UI after splash.
 		initTitleAction();
@@ -201,7 +197,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 			Tracker.getInstance().event(BxEvent.APP_START).append(TrackConfig.TrackMobile.Key.CITY, GlobalDataManager.getInstance().getCityEnglishName()).end();
 			Tracker.getInstance().save();
 			Sender.getInstance().notifySendMutex();
-
 		}
 		else
 		{
@@ -236,6 +231,13 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		Intent intent = this.getIntent();
 		if(intent != null){ //FIXME FIXME: need to check if the push have bad effects.
 			if(intent.getBooleanExtra("pagejump", false)){
+				Log.d(TAG, "MainActivity.jumpToPage: " + EntryApplication.pushViewed);
+				if (!EntryApplication.pushViewed) {
+					EntryApplication.pushViewed = true;
+					intent.setClass(this, PushActivity.class);
+					startActivity(intent);
+					return;
+				}
 				Bundle data = intent.getExtras();
 				PageJumper.jumpToPage(this, data.getString("page"), data.getString("data"));
 				///intent.getExtras()
@@ -290,7 +292,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	protected void onStart() {
 		if (!this.isChangingTab) {
 			Log.d("ddd","onstart");
-			
 		}
 		
 		super.onStart();
@@ -307,7 +308,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 	
 	@Override
     public boolean onKeyDown(int keyCode, KeyEvent event)
-    {
+    {		
         if (keyCode == KeyEvent.KEYCODE_BACK)
         {
         	handleBack();

@@ -2,11 +2,13 @@
 package com.baixing.activity;
 
 import java.io.File;
-import java.io.IOException;
 import java.lang.ref.WeakReference;
-import java.util.Calendar;
-import java.util.Date;
 
+import android.app.Application;
+import android.content.Context;
+import android.os.Environment;
+
+import com.baixing.broadcast.push.PushDispatcher;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.network.NetworkProfiler;
 import com.baixing.network.api.ApiConfiguration;
@@ -14,13 +16,12 @@ import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.TextUtil;
 import com.baixing.util.Util;
-
-import android.app.Application;
-import android.content.Context;
-import android.content.pm.ApplicationInfo;
-import android.os.Environment;
+import com.xiaomi.mipush.MiPushCallback;
+import com.xiaomi.mipush.MiPushService;
 
 public class EntryApplication extends Application {
+	
+	public static boolean pushViewed;
 
 	/* (non-Javadoc)
 	 * @see android.app.Application#onCreate()
@@ -51,6 +52,12 @@ public class EntryApplication extends Application {
 				mangerInstance.getVersion(), mangerInstance.getChannelId(),
 				mangerInstance.getCityEnglishName(),
 				getPackageName());
+		
+		// MiPush by zengjin@baixing.net
+		MiPushService.initialize(
+				mangerInstance.getApplicationContext(), 
+				new MiPushCallback(new PushDispatcher(mangerInstance.getApplicationContext())));
+		pushViewed = true;
 		
 		if (Util.isLoggable()) {
 			String datePrefix = TextUtil.getShortTimeDesc(System.currentTimeMillis());

@@ -16,6 +16,8 @@ import android.util.Log;
 import android.content.Context;
 
 public class BXInfoHandler extends PushHandler {
+	
+	private static final String TAG = BXInfoHandler.class.getSimpleName();
 
 	BXInfoHandler(Context context) {
 		super(context);
@@ -37,6 +39,8 @@ public class BXInfoHandler extends PushHandler {
 			String title = json.getString("t");
 			
 			String content = data.getString("content");
+			
+			Log.i(TAG, title + " : " + content);
 			
 //			String pushCode = "0";
 //			if(data.has("pushCode")){
