@@ -1,4 +1,4 @@
-//liuchong@baixing.com
+//zengjin@baixing.net
 package com.baixing.activity;
 
 import java.lang.ref.WeakReference;
