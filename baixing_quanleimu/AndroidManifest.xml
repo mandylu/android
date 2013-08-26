@@ -2,8 +2,8 @@
 <manifest xmlns:android="http://schemas.android.com/apk/res/android"
     package="com.quanleimu.activity"
     android:installLocation="auto"
-    android:versionCode="342"
-    android:versionName="3.4.2" >
+    android:versionCode="343"
+    android:versionName="3.4.3" >
 
     <uses-sdk android:minSdkVersion="8" />
 
@@ -144,7 +144,8 @@
 			<intent-filter>
 			    <action android:name="switch" />
             </intent-filter>
-        </activity>
+        </activity>
+
         -->
 
         <activity
