@@ -10,6 +10,7 @@ import android.content.DialogInterface;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -61,6 +62,8 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
     public static final int MSG_EDIT_USERNAME_SUCCESS = 100;
     public static final int MSG_SHOW_TOAST = 101;
     public static final int MSG_SHOW_PROGRESS = 102;
+    
+    private List<Category> allCates = null;
 
 	protected void initTitle(TitleDef title) {
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
@@ -94,6 +97,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 	
 	@Override
 	public void handleSearch() {
+		Log.d(TAG, "Home.handleSearch: " + this.getArguments());
 		this.pushFragment(new SearchFragment(), this.getArguments());
 	};
 	
@@ -103,6 +107,17 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		super.onCreate(savedInstanceState);
 		if(!switchCityPrompted){
 			GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
+		}
+		allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
+		if (allCates == null || allCates.size() == 0)
+		{
+			Log.d(TAG, "Reload category");
+			GlobalDataManager.getInstance().loadCategorySync();//reload
+			allCates = GlobalDataManager.getInstance().getFirstLevelCategory();//.getListFirst();//recheck
+			if(allCates == null || allCates.size() == 0){
+				Log.e(TAG, "Failed to reload category");
+				return;
+			}
 		}
 //		this.pv = PV.HOME;
 	}
@@ -117,16 +132,13 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		int []icons 	= {R.drawable.icon_category_wupinjiaoyi, R.drawable.icon_category_car, 		R.drawable.icon_category_house, 	R.drawable.icon_category_quanzhi, 
 				   R.drawable.icon_category_jianzhi,     R.drawable.icon_category_vita, 	R.drawable.icon_category_friend, 	R.drawable.icon_category_pet,
 				   R.drawable.icon_category_service,     R.drawable.icon_category_education};
-		String []texts 	= {"物品交易", "车辆买卖", "房屋租售", "全职招聘", 
-						   "兼职招聘", "求职简历", "交友活动", "宠物", 
-						   "生活服务", "教育培训"};
 
 		List<GridInfo> gitems = new ArrayList<GridInfo>();
 		for (int i = 0; i < icons.length; i++)
 		{
 			GridInfo gi = new GridInfo();
 			gi.img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(icons[i]);//bmpCaches.get(i).get();
-			gi.text = texts[i];
+			gi.text = allCates.get(i).getName(); 
 //			gi.resId = icons[i];
 			gitems.add(gi);
 		}
@@ -260,7 +272,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 	public void onItemClick(GridInfo info, int index) {	
 //		List<FirstStepCate> allCates = QuanleimuApplication.getApplication()
 //				.getListFirst();
-		List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
 		if (allCates == null || allCates.size() == 0)
 			return;
 		if (info == null)
