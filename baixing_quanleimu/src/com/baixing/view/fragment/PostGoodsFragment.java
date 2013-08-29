@@ -22,6 +22,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -852,7 +853,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 
 	private void popupCategorySelectionDialog(){
 		Bundle bundle = createArguments(null, null);
-		bundle.putSerializable("items", (Serializable) Arrays.asList(PostCommonValues.mainCategories));
+		bundle.putSerializable("items", (Serializable) GlobalDataManager.getInstance().getFirstLevelCategory());
 		bundle.putInt("maxLevel", 1);
 		bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
 		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {

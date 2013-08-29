@@ -14,6 +14,7 @@ import android.os.Bundle;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -39,6 +40,8 @@ import com.baixing.view.fragment.MultiLevelSelectionFragment.MultiLevelItem;
 import com.quanleimu.activity.R;
 
 public class CustomDialogBuilder {
+	
+	private static final String TAG = CustomDialogBuilder.class.getSimpleName();
 
 	private final int MESSAGE_GET_METAOBJ = 1;
 	public static final int MSG_CATEGORY_SEL_BACK = 11;
@@ -68,6 +71,7 @@ public class CustomDialogBuilder {
 		hasNextLevel = remainLevel > 0;
 		
 		this.items = (List) bundle.getSerializable("items");
+		Log.d(TAG, this.items.toString());
 		this.requestCode = bundle.getInt(ARG_COMMON_REQ_CODE);
 		if (bundle.getInt(ARG_COMMON_REQ_CODE) == MSG_CATEGORY_SEL_BACK)
 			isCategoryItem = true;
@@ -105,13 +109,15 @@ public class CustomDialogBuilder {
 		List<Map<String,Object>> firstLevelList = new ArrayList<Map<String,Object>>();
 		if (isCategoryItem) {
 			cd.setTitle("请选择分类");
-			for (String item : (List<String>)items) {
+			for (Category item : (List<Category>) items) {
 				Map<String,Object> map = new HashMap<String,Object>();
-				map.put("tv", item);
+				map.put("tv", item.getName());
+				map.put("tvEnglishName", item.getEnglishName());
 				firstLevelList.add(map);
 			}
 		} else {
 			cd.setTitle("请选择");
+			Log.d(TAG, items.toString());
 			for (MultiLevelItem item : (List<MultiLevelItem>)items) {
 				Map<String,Object> map = new HashMap<String,Object>();
 				map.put("tv", item.toString());
@@ -124,8 +130,8 @@ public class CustomDialogBuilder {
 //				new String[]{"tv"}, new int[]{R.id.tv});
 //		lv.setAdapter(simpleAdapter);
 		
+		Log.d(TAG, firstLevelList.toString());
 		configFirstLevel(cd, lv, firstLevelList);
-		
 		
 	}
 	
@@ -177,29 +183,34 @@ public class CustomDialogBuilder {
 			@Override
 			public void onItemClick(AdapterView<?> arg0, View arg1, int pos,
 					long arg3) {
-				System.out.println("onItemClick");
+				Log.d(TAG, "onItemClick");
 				if (hasNextLevel) {
-					System.out.println("hasNextLevel true");
+					Log.d(TAG, "hasNextLevel true");
 					final List<Map<String,Object>> secondLevelList = new ArrayList<Map<String,Object>>();//
 					if (isCategoryItem) {//分类模块
-						System.out.println("isCategoryItem " + isCategoryItem);
+						Log.d(TAG, "isCategoryItem " + isCategoryItem);
 						cd.setTitle("请选择分类");
 //						List<FirstStepCate> allCates = QuanleimuApplication.getApplication().getListFirst();
 						List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
+						Log.d(TAG, allCates.toString());
 						if (allCates == null || allCates.size() <= pos)
 						{
-							System.out.println("Reload category");
+							Log.d(TAG, "Reload category");
 							GlobalDataManager.getInstance().loadCategorySync();//reload
 							allCates = GlobalDataManager.getInstance().getFirstLevelCategory();//.getListFirst();//recheck
 							if(allCates == null || allCates.size() <= pos){
-								System.out.println("仁至义尽");
+								Log.d(TAG, "仁至义尽");
 								return;
 							}
 						}
+						
+						Log.d(TAG, "list.get(pos): " + list.get(pos).toString());
 						Category selectedCate = null;
-						String selText = (String)((Map<String,Object>)list.get(pos)).get("tv");//
+						String selText = (String)((Map<String,Object>)list.get(pos)).get("tvEnglishName");
+						Log.d(TAG, "selText: " + selText);
 						for (int i=0; i< allCates.size(); i++) {
-							if (allCates.get(i).getName().equals(selText)) {
+							Log.d(TAG, allCates.get(i).getEnglishName());
+							if (allCates.get(i).getEnglishName().equals(selText)) {
 								selectedCate = allCates.get(i);
 								break;
 							}
@@ -208,7 +219,8 @@ public class CustomDialogBuilder {
 						Map<String,Object> backMap = new HashMap<String,Object>();
 						backMap.put("tvCategoryName", "返回上一级");
 						backMap.put("tvCategoryEnglishName", "back");
-						secondLevelList.add(backMap);//
+						secondLevelList.add(backMap);
+						Log.d("CustomDialogBuilder", selectedCate.toString());
 						List<Category> children = selectedCate.getChildren();
 						for (Category cate : children) {
 							Map<String,Object> map = new HashMap<String,Object>();
