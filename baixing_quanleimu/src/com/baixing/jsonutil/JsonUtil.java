@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import android.util.Log;
 import android.util.Pair;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.Ad;
 import com.baixing.entity.AdList;
 import com.baixing.entity.Category;
@@ -746,5 +747,26 @@ public class JsonUtil {
 			e.printStackTrace();
 		}
 		return quota;
+	}
+	
+	public static String[] getTopPredictedCategory(String jsonData)
+	{
+		try {
+			JSONArray data = new JSONArray(jsonData);
+			if (data.length() == 0) {
+				return null;
+			}
+
+			JSONArray categoryResult = data.getJSONArray(0);
+			String[] categoryName = new String[2];
+			categoryName[0] = categoryResult.getString(0);
+			categoryName[1] = categoryResult.getString(1);
+			
+			return categoryName;
+
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
 	}
 }

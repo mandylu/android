@@ -2,7 +2,6 @@
 package com.baixing.view.fragment;
 import java.io.Serializable;
 import java.util.ArrayList;
-import java.util.Arrays;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
@@ -22,7 +21,6 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
-import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -48,6 +46,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
+import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.Quota;
@@ -94,6 +93,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	protected String categoryEnglishName = "";
 	protected String cityEnglishName = "";
 	private String categoryName = "";
+	private Category predictedCategory = null;
 	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
 	private static final int NONE = 0;
@@ -105,6 +105,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 	private static final int MSG_GET_AD_SUCCED = 16;
 	private static final int MSG_GET_QUOTA_AFTER_CATEGORY_FINISH = 17;
 	private static final int MSG_GET_QUOTA_AFTER_LOGIN_FINISH = 18;
+	private static final int MSG_GET_CATEGORY_FAIL = 19;
+	private static final int MSG_GET_CATEGORY_SUCCEED = 20;
 	protected PostParamsHolder params = new PostParamsHolder();
 	protected boolean editMode = false;
 //	protected ArrayList<String> listUrl = new ArrayList<String>();
@@ -254,12 +256,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			.append(Key.SECONDCATENAME, categoryEnglishName)
 			.end();
 		}	
-		
-
-		
-		if (isNewPost) {
-			isNewPost = false;
-		}
 		
 		paused = false;
 		if(needShowDlg){
@@ -856,12 +852,32 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		bundle.putSerializable("items", (Serializable) GlobalDataManager.getInstance().getFirstLevelCategory());
 		bundle.putInt("maxLevel", 1);
 		bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-		if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
+		if (predictedCategory != null) {
+			bundle.putString("predictedCategory", predictedCategory.getEnglishName());
+			bundle.putString("predictedParentCate", predictedCategory.getParentEnglishName());
+			bundle.putString("selectedValue", predictedCategory.getName());
+		} else if(categoryEnglishName != null && !categoryEnglishName.equals("") && categoryName != null) {
 			bundle.putString("selectedValue", categoryName);
 		}
 		PostUtil.extractInputData(layout_txt, params);
 		CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(), PostGoodsFragment.this.getHandler(), bundle);
 		cdb.start();
+	}
+	
+	private void handlePredictCategory(String title) {
+		ApiParams param = new ApiParams();
+		param.addParam("title", title);
+		this.showProgress("", "正在尝试自动分类，请耐心等候", false);
+		
+		BaseApiCommand.createCommand("get_category_by_title", true, param).execute(getActivity(), new BaseApiCommand.Callback() {
+			public void onNetworkFail(String apiName, ApiError error) {
+				PostGoodsFragment.this.sendMessage(MSG_GET_CATEGORY_FAIL, "");
+			}
+		      
+			public void onNetworkDone(String apiName, String responseData) {
+				PostGoodsFragment.this.sendMessage(MSG_GET_CATEGORY_SUCCEED, responseData);
+			}
+		});
 	}
 	
 	private void addCategoryItem(){
@@ -879,7 +895,13 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			@Override
 			public void onClick(View v) {
 				Tracker.getInstance().event(BxEvent.POST_INPUTING).append(Key.ACTION, "类目").end();
-				popupCategorySelectionDialog();
+				if (isNewPost) {
+					isNewPost = false;
+					handlePredictCategory(((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
+				} else {
+					predictedCategory = null;
+					popupCategorySelectionDialog();
+				}
 			}				
 		});//categoryItem.setOnClickListener
 		
@@ -1335,6 +1357,30 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		
 		switch (msg.what) {
+		case MSG_GET_CATEGORY_FAIL:
+			predictedCategory = null;
+			popupCategorySelectionDialog();
+			break;
+		case MSG_GET_CATEGORY_SUCCEED:
+			String[] categoryNameList = JsonUtil.getTopPredictedCategory((String)msg.obj);
+			/*
+			 * categoryNameList[0] - firstLevelCategoryEnglishName
+			 * categoryNameList[1] - secondLevelCategoryEnglishName
+			 */
+			List<Category> categories = GlobalDataManager.getInstance().getFirstLevelCategory();
+			for (int i = 0; i < categories.size(); i++) {
+				if (categories.get(i).getEnglishName().equals(categoryNameList[0])) {
+					List<Category> secondCategories = categories.get(i).getChildren(); 
+					for (int j = 0; j < secondCategories.size(); j++) {
+						if (secondCategories.get(j).getEnglishName().equals(categoryNameList[1])) {
+							predictedCategory = secondCategories.get(j);
+						}
+					}
+				}
+			}
+			
+			popupCategorySelectionDialog();
+			break;
 		case MSG_GET_AD_SUCCED:
 			this.hideSoftKeyboard();
 			this.hideProgress();

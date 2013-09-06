@@ -64,6 +64,9 @@ public class CustomDialogBuilder {
 	private Handler delegateHandler;
 	private int requestCode;
 	
+	private String predictedCategory = null;
+	private String predictedParentCate = null;
+	
 	public CustomDialogBuilder(Context context,Handler delegateHandler, Bundle bundle) {
 		this.context = context;
 		this.delegateHandler = delegateHandler;
@@ -78,6 +81,15 @@ public class CustomDialogBuilder {
 		if (bundle.containsKey("selectedValue") && bundle.getString("selectedValue")!=null)
 		{
 			this.selectedValue = bundle.getString("selectedValue");//selectedValue
+		}
+		
+		if (bundle.containsKey("predictedCategory") && bundle.getString("predictedCategory")!=null) {
+			Log.d(TAG, bundle.getString("predictedCategory"));
+			this.predictedCategory = bundle.getString("predictedCategory");
+		}
+		if (bundle.containsKey("predictedParentCate") && bundle.getString("predictedParentCate")!=null) {
+			Log.d(TAG, bundle.getString("predictedParentCate"));
+			this.predictedParentCate = bundle.getString("predictedParentCate");
 		}
 //		if (bundle.containsKey("metaId"))
 //		{
@@ -327,6 +339,16 @@ public class CustomDialogBuilder {
 			}
 		});
 		
+		if (this.predictedParentCate != null) {
+			for (int i=0; i< list.size(); i++) {
+				if (((Map<String, Object>) list.get(i)).get("tvEnglishName").equals(this.predictedParentCate)) {
+					Log.d(TAG, predictedParentCate + ": " + i);
+					lv.performItemClick(lv, i, lv.getItemIdAtPosition(i));
+					break;
+				}
+			}
+			this.predictedParentCate = null;
+		}
 	}
 	
 	private void configSecondLevel(final CustomDialog cd, ListView lv, final List list) {
@@ -356,6 +378,21 @@ public class CustomDialogBuilder {
 				}
 			}
 		});
+		
+		if (this.predictedCategory != null) {
+			List<Category> allCates = GlobalDataManager.getInstance().getFirstLevelCategory();
+			for (int i=0; i< list.size(); i++) {
+				Map<String,Object> map = (Map<String,Object>) list.get(i);
+				if (map.get("tvCategoryEnglishName").equals(this.predictedCategory)) {
+					Log.d(TAG, predictedCategory + ": " + i);
+					lv.setSelection(i);
+					String categoryNames = map.get("tvCategoryEnglishName") + "," + map.get("tvCategoryName");
+					CustomDialogBuilder.this.lastChoise = categoryNames;
+					break;
+				}
+			}
+			this.predictedCategory = null;
+		}
 	}
 	
 	private void handleLastLevelChoice(CustomDialog cd) {
