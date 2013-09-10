@@ -131,4 +131,6 @@
 
 	<!-- 帐号绑定 -->
     <string name="personalpost_bind_baixing_account">是否用百姓网帐号登录以管理所有信息？</string>
+    
+    <string name="title_activity_referral_launcher">APP推广</string>
 </resources>

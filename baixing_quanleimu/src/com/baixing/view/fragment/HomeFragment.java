@@ -7,6 +7,7 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -26,6 +27,7 @@ import com.baixing.data.LocationManager.onLocationFetchedListener;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
+import com.baixing.sharing.referral.ReferralLauncherActivity;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -142,6 +144,13 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 //			gi.resId = icons[i];
 			gitems.add(gi);
 		}
+		
+		gitems.add(new GridInfo());
+		GridInfo gi = new GridInfo();
+		gi.img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.icon_category_referral);
+		gi.text = "APP推广";
+		gitems.add(gi);
+		Log.d(TAG, "gitems: " + gitems.size());
 
 		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
 		gv.setData(gitems, 3);
@@ -276,6 +285,16 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 			return;
 		if (info == null)
 			return;
+		
+		Log.d(TAG, "index: " + index);
+		if (index == 11) {
+			Intent intent = new Intent(getActivity(), ReferralLauncherActivity.class);
+			startActivity(intent);
+			return;
+		}
+		if (index == 10) {
+			return;
+		}
 		
 //		FirstStepCate cate = allCates.get(index);
 		Category cate = allCates.get(index);

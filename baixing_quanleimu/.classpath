@@ -15,6 +15,7 @@
 	<classpathentry exported="true" kind="lib" path="libs/open_sdk.jar"/>
 	<classpathentry exported="true" kind="lib" path="libs/umeng_sdk.jar"/>
 	<classpathentry exported="true" kind="con" path="com.android.ide.eclipse.adt.DEPENDENCIES"/>
-	<classpathentry kind="lib" path="libs/MiPush_SDK_Client_1_1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/MiPush_SDK_Client_1_1.jar"/>
+	<classpathentry exported="true" kind="lib" path="libs/core-2.2.jar"/>
 	<classpathentry kind="output" path="bin/classes"/>
 </classpath>

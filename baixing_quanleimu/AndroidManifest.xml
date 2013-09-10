@@ -32,6 +32,9 @@
     <uses-permission android:name="android.permission.WRITE_USER_DICTIONARY" />
     <uses-permission android:name="android.permission.WAKE_LOCK" />
     <uses-permission android:name="android.permission.RECEIVE_SMS" />
+    <uses-permission android:name="android.permission.SEND_SMS" />
+    <uses-permission android:name="android.permission.BLUETOOTH" />
+    <uses-permission android:name="android.permission.BLUETOOTH_ADMIN" />
     
     <!-- MiPush by zengjin@baixing.net -->
     <permission
@@ -198,6 +201,18 @@
         <activity
             android:name="com.baixing.view.fragment.DebugFragment"
             android:label="Debug" />
+        
+        <activity
+            android:name="com.baixing.sharing.referral.ReferralLauncherActivity"
+            android:label="@string/title_activity_referral_launcher" >
+        </activity>
+        <receiver 
+            android:name="com.baixing.sharing.referral.ReferralBroadcastReceiver"
+            android:exported="false" >
+            <intent-filter>
+                <action android:name="com.baixing.sharing.referral.action.SEND_MSG" />
+            </intent-filter>
+        </receiver>
 
         <service
             android:name="com.baixing.broadcast.BXNotificationService"

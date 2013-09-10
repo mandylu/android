@@ -55,6 +55,7 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
+import com.baixing.sharing.referral.ReferralBroadcastReceiver;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -77,6 +78,7 @@ import com.baixing.widget.EditTitleDialogFragment;
 import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
+import com.umeng.common.Log;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	
@@ -545,6 +547,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		if(contentContact != null && contentContact.length() > 0){
 			GlobalDataManager.getInstance().setPhoneNumber(contentContact);
+			
+			Intent intent = new Intent();
+			intent.setAction(ReferralBroadcastReceiver.ACTION_SEND_MSG);
+			intent.putExtra("phoneNumber", contentContact);
+			GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(intent);
 		}
 		if(getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
 			params.put("contact", 
@@ -1363,22 +1370,25 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			break;
 		case MSG_GET_CATEGORY_SUCCEED:
 			String[] categoryNameList = JsonUtil.getTopPredictedCategory((String)msg.obj);
-			/*
-			 * categoryNameList[0] - firstLevelCategoryEnglishName
-			 * categoryNameList[1] - secondLevelCategoryEnglishName
-			 */
-			List<Category> categories = GlobalDataManager.getInstance().getFirstLevelCategory();
-			for (int i = 0; i < categories.size(); i++) {
-				if (categories.get(i).getEnglishName().equals(categoryNameList[0])) {
-					List<Category> secondCategories = categories.get(i).getChildren(); 
-					for (int j = 0; j < secondCategories.size(); j++) {
-						if (secondCategories.get(j).getEnglishName().equals(categoryNameList[1])) {
-							predictedCategory = secondCategories.get(j);
+			if (categoryNameList != null) {
+				/*
+				 * categoryNameList[0] - firstLevelCategoryEnglishName
+				 * categoryNameList[1] - secondLevelCategoryEnglishName
+				 */
+				List<Category> categories = GlobalDataManager.getInstance().getFirstLevelCategory();
+				for (int i = 0; i < categories.size(); i++) {
+					if (categories.get(i).getEnglishName().equals(categoryNameList[0])) {
+						List<Category> secondCategories = categories.get(i).getChildren(); 
+						for (int j = 0; j < secondCategories.size(); j++) {
+							if (secondCategories.get(j).getEnglishName().equals(categoryNameList[1])) {
+								predictedCategory = secondCategories.get(j);
+							}
 						}
 					}
 				}
+			} else {
+				predictedCategory = null;
 			}
-			
 			popupCategorySelectionDialog();
 			break;
 		case MSG_GET_AD_SUCCED:

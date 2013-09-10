@@ -2,6 +2,9 @@ package com.xiaomi.mipush;
 
 import java.util.List;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.util.Log;
 
@@ -10,6 +13,9 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.sharing.referral.Program;
+import com.baixing.sharing.referral.ReferralLauncherActivity;
+import com.baixing.sharing.referral.ReferralNotification;
 import com.baixing.util.Util;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -41,8 +47,9 @@ public class MiPushCallback extends MiPushClientCallback {
 	@Override
 	public void onCommandResult(String command, long resultCode, String reason,
 			List<String> params) {
-		// TODO Auto-generated method stub
-
+		if (command.equals(MiPushClient.COMMAND_SET_ALIAS) && resultCode == ErrorCode.SUCCESS) {
+			new Program(context).activated();
+		}
 	}
 
 	@Override
@@ -59,8 +66,16 @@ public class MiPushCallback extends MiPushClientCallback {
 
 	@Override
 	public void onReceiveMessage(String content, String topic, String alias) {
-		Log.d(TAG, "json = " + content);
-		pushDispatcher.dispatch(content);
+		Log.d(TAG, "content = " + content);
+		try {
+			new JSONObject(content);
+			Log.d(TAG, "call dispatcher");
+			pushDispatcher.dispatch(content);
+		} catch (JSONException e) {
+			Log.w(TAG, "content is not json data");
+			ReferralNotification.showNotification(context, content);/*
+			ReferralLauncherActivity.handler.obtainMessage(ReferralLauncherActivity.MSG_JOIN, content).sendToTarget();*/
+		}
 	}
 
 	@Override
