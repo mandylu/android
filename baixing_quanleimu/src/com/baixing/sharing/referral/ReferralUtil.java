@@ -13,6 +13,8 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -22,44 +24,36 @@ import android.os.Environment;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.baixing.data.GlobalDataManager;
 import com.baixing.util.Util;
 
-public class Program {
+public class ReferralUtil {
 
-	private static final String TAG = Program.class.getSimpleName();
+	private static final String TAG = ReferralUtil.class.getSimpleName();
 
 	private static final String PROMOTE_URL = "http://192.168.5.109/baixing/lunchnow/promote.php";
 	private static final String PROMOTER_ID = "PROMOTER_ID";
-	
-	private static Context context;
+	private static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
 
-	public Program(Context context) {
-		Program.context = context;
-	}
-	
 	public void activated() {
-		if (!TextUtils.isEmpty(PromoterID(context))) {
+		if (!TextUtils.isEmpty(PromoterID())) {
 			updateReferral("join");
-			//MiPushService.subscribe(context, mPromoterID);
 		}
 	}
-	
+
 	public boolean isPromoter() {
 		return true;
 	}
 
-	private static void savePromoterId(Context context, String mPromoterID) {
-		SharedPreferences preferences = context.getSharedPreferences(PROMOTER_ID, Context.MODE_PRIVATE);
-		Editor editor = preferences.edit();
-		editor.putString("parent", mPromoterID);
-		editor.commit();
-	}
-
 	public void updateReferral(String action) {
+
+		Context context = GlobalDataManager.getInstance()
+				.getApplicationContext();
+
 		String url = PROMOTE_URL + "?action=" + action;
-		
+
 		if (action.equals("join") || action.equals("post")) {
-			url += "&promoter=" + PromoterID(context) + "&receiver="
+			url += "&promoter=" + PromoterID() + "&receiver="
 					+ Util.getDeviceUdid(context);
 			Log.d(TAG, "url: " + url);
 			new NotifyTask().execute(url);
@@ -69,7 +63,7 @@ public class Program {
 			new NotifyTask().execute(url);
 		}
 	}
-	
+
 	private class NotifyTask extends AsyncTask<String, Integer, String> {
 
 		@Override
@@ -104,23 +98,49 @@ public class Program {
 			super.onPostExecute(s);
 			if (!TextUtils.isEmpty(s)) {
 				Log.d(TAG, s);
-				String[] list = s.split(";");
-				ReferralLauncherActivity.fillData(list);
+				ReferralLauncherActivity.updateData(s.split(";"));
 			}
 		}
 	}
 
-	public static String PromoterID(Context context) {
-		
-		SharedPreferences preferences = context.getSharedPreferences(PROMOTER_ID, Context.MODE_PRIVATE);
-		if (preferences.contains("parent")) {
-			Log.d(TAG, "promoterID: " + preferences.getString("parent", ""));
-			return preferences.getString("parent", "");
+	public static String PromoterID() {
+
+		Context context = GlobalDataManager.getInstance()
+				.getApplicationContext();
+
+		String promoter_id = getPromoterId(context);
+		if (!TextUtils.isEmpty(promoter_id)) {
+			return promoter_id;
 		}
-		
+
+		promoter_id = getPromoterIdByBluetooth(context);
+		if (!TextUtils.isEmpty(promoter_id)) {
+			savePromoterId(context, promoter_id);
+			return promoter_id;
+		}
+
+		promoter_id = getPromoterIdByAssets(context);
+		if (!TextUtils.isEmpty(promoter_id)) {
+			savePromoterId(context, promoter_id);
+			return promoter_id;
+		}
+
+		savePromoterId(context, "");
+		return null;
+	}
+
+	private static String getPromoterId(Context context) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				PROMOTER_ID, Context.MODE_PRIVATE);
+		if (preferences.contains(PROMOTER_KEY)) {
+			return preferences.getString(PROMOTER_KEY, "");
+		}
+		return null;
+	}
+
+	private static String getPromoterIdByBluetooth(Context context) {
 		File[] bluetooth = Environment.getExternalStorageDirectory().listFiles(
 				new FileFilter() {
-
 					@Override
 					public boolean accept(File pathname) {
 						return pathname.isDirectory()
@@ -130,33 +150,27 @@ public class Program {
 				});
 		if (bluetooth != null && bluetooth.length > 0) {
 			File[] files = bluetooth[0].listFiles(new FilenameFilter() {
-
 				@Override
 				public boolean accept(File dir, String filename) {
 					return filename.startsWith("baixing-")
 							&& filename.endsWith(".apk");
 				}
 			});
-			if (files.length > 0) {
+			if (files != null && files.length > 0) {
 				if (files.length > 1) {
 					Arrays.sort(files, new Comparator<File>() {
-
 						@Override
 						public int compare(File lhs, File rhs) {
 							return (int) (rhs.lastModified() - lhs
 									.lastModified());
 						}
-
 					});
 				}
 				Log.d(TAG, files[0].getName());
-				int start = files[0].getName().lastIndexOf("-") + 1;
-				int end = files[0].getName().lastIndexOf("-") + 1
-						+ Util.getDeviceUdid(context).length();
-				String promoterId = files[0].getName().substring(start, end);
-				if (!promoterId.contains("-") && !promoterId.contains(".")) {
-					savePromoterId(context, promoterId);
-					return promoterId;
+				Pattern udidPattern = Pattern.compile("[0-9a-zA-Z]{16}");
+				Matcher udidMatcher = udidPattern.matcher(files[0].getName());
+				if (udidMatcher.find()) {
+					return udidMatcher.group();
 				}
 			} else {
 				Log.e(TAG, "No apk found");
@@ -164,19 +178,28 @@ public class Program {
 		} else {
 			Log.e(TAG, "No Bluetooth Dir");
 		}
+		return null;
+	}
 
+	private static String getPromoterIdByAssets(Context context) {
 		try {
 			InputStream is = context.getAssets().open(PROMOTER_ID);
 			int length = is.available();
 			byte[] buffer = new byte[length];
 			length = is.read(buffer, 0, length);
 			String promoterId = new String(buffer, 0, length);
-			savePromoterId(context, promoterId);
 			return promoterId;
 		} catch (IOException e) {
 			e.printStackTrace();
-			savePromoterId(context, "");
 			return null;
 		}
-	}	
+	}
+
+	private static void savePromoterId(Context context, String mPromoterID) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				PROMOTER_ID, Context.MODE_PRIVATE);
+		Editor editor = preferences.edit();
+		editor.putString(PROMOTER_KEY, mPromoterID);
+		editor.commit();
+	}
 }

@@ -9,6 +9,7 @@ import java.util.Hashtable;
 import java.util.List;
 
 import android.app.Activity;
+import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
 import android.content.pm.ApplicationInfo;
@@ -18,7 +19,6 @@ import android.graphics.Color;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
-import android.os.Handler;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.View;
@@ -45,6 +45,7 @@ public class ReferralLauncherActivity extends Activity {
 	ImageView imgQRCode;
 	Button btnBluetooth;
 	static ListView listInfo;
+	static ReferralAdapter listAdapter;
 	static Context context;
 	
 	public static final int MSG_JOIN = 1;
@@ -129,23 +130,33 @@ public class ReferralLauncherActivity extends Activity {
 					}
 				//}
 				
-				
 				Intent intent = new Intent();
 				intent.setAction(Intent.ACTION_SEND);
-				intent.setType("*/*");
-				intent.setClassName("com.android.bluetooth" , "com.android.bluetooth.opp.BluetoothOppLauncherActivity");
-				intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkName)));
-				intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
-				getApplicationContext().startActivity(intent);
+			    intent.setType("*/*");
+			    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkName)));
+				try {
+					intent.setClassName("com.android.bluetooth", "com.android.bluetooth.opp.BluetoothOppLauncherActivity");
+					startActivity(intent);
+				} catch (ActivityNotFoundException ex) {
+					intent.setClassName("com.mediatek.bluetooth", "com.mediatek.bluetooth.BluetoothShareGatewayActivity");
+					startActivity(intent);
+				}
 			}
 		});
 		
 		listInfo = (ListView) findViewById(R.id.list_info);
-		new Program(context).updateReferral("info");
+		listAdapter = null;
+		new ReferralUtil().updateReferral("info");
 	}
 	
-	public static void fillData(String[] list) {
-		listInfo.setAdapter(new ReferralAdapter(context, list));
+	public static void updateData(String[] list) {
+		if (listAdapter == null) {
+			listAdapter = new ReferralAdapter(context, list);
+			listInfo.setAdapter(listAdapter);
+		} else {
+			listAdapter.refresh(list);
+		}
 	}
 	
 	static Bitmap encodeAsBitmap(String contents, BarcodeFormat format,

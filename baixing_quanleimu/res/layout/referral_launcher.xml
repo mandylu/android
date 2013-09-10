@@ -18,7 +18,7 @@
         android:layout_height="wrap_content"
         android:layout_alignParentTop="true"
         android:layout_toRightOf="@+id/img_qrcode"
-        android:text="蓝牙传输" />
+        android:text="@string/button_referral_bluetooth" />
 
     <ListView
         android:id="@+id/list_info"

@@ -13,8 +13,7 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
-import com.baixing.sharing.referral.Program;
-import com.baixing.sharing.referral.ReferralLauncherActivity;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.sharing.referral.ReferralNotification;
 import com.baixing.util.Util;
 import com.xiaomi.mipush.sdk.ErrorCode;
@@ -48,7 +47,7 @@ public class MiPushCallback extends MiPushClientCallback {
 	public void onCommandResult(String command, long resultCode, String reason,
 			List<String> params) {
 		if (command.equals(MiPushClient.COMMAND_SET_ALIAS) && resultCode == ErrorCode.SUCCESS) {
-			new Program(context).activated();
+			new ReferralUtil().activated();
 		}
 	}
 
@@ -73,8 +72,7 @@ public class MiPushCallback extends MiPushClientCallback {
 			pushDispatcher.dispatch(content);
 		} catch (JSONException e) {
 			Log.w(TAG, "content is not json data");
-			ReferralNotification.showNotification(context, content);/*
-			ReferralLauncherActivity.handler.obtainMessage(ReferralLauncherActivity.MSG_JOIN, content).sendToTarget();*/
+			ReferralNotification.showNotification(context, content);
 		}
 	}
 

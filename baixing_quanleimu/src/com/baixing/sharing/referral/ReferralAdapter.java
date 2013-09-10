@@ -1,13 +1,13 @@
 package com.baixing.sharing.referral;
 
-import com.quanleimu.activity.R;
-
 import android.content.Context;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.BaseAdapter;
 import android.widget.TextView;
+
+import com.quanleimu.activity.R;
 
 public class ReferralAdapter extends BaseAdapter {
 	
@@ -17,6 +17,11 @@ public class ReferralAdapter extends BaseAdapter {
 	public ReferralAdapter(Context context, String[] list) {
 		referralInflater = LayoutInflater.from(context);
 		this.list = list;
+	}
+	
+	public void refresh(String[] list) {
+		this.list = list;
+		notifyDataSetChanged();
 	}
 
 	@Override
