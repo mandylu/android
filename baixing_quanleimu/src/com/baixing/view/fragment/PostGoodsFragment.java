@@ -56,6 +56,7 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.sharing.referral.ReferralBroadcastReceiver;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -547,11 +548,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		}
 		if(contentContact != null && contentContact.length() > 0){
 			GlobalDataManager.getInstance().setPhoneNumber(contentContact);
-			
-			Intent intent = new Intent();
-			intent.setAction(ReferralBroadcastReceiver.ACTION_SEND_MSG);
-			intent.putExtra("phoneNumber", contentContact);
-			GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(intent);
 		}
 		if(getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
 			params.put("contact", 
@@ -641,10 +637,19 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
 		
 		String phone = mapParams.get("contact");
+		
+		// by zengjin@baixing.net
+		if (ReferralUtil.isPromoter()) {
+			ReferralUtil.setHandler(handler);
+			ReferralUtil.notifyNewPost(phone);
+			return;
+		}
+		
 		UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if(curUser != null && curUser.getPhone() != null && curUser.getPhone().length() > 0){
 			phone = curUser.getPhone();
 		}
+		
 		postNS.doRegisterAndVerify(phone);
 	}
 

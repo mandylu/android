@@ -17,15 +17,23 @@ import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
 import android.content.Context;
+import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
 import android.os.AsyncTask;
 import android.os.Environment;
+import android.os.Handler;
+import android.os.Message;
 import android.text.TextUtils;
 import android.util.Log;
 
+import com.baixing.anonymous.AccountService;
+import com.baixing.anonymous.AnonymousNetworkListener;
+import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.ApiParams;
 import com.baixing.util.Util;
+import com.baixing.util.post.PostCommonValues;
 
 public class ReferralUtil {
 
@@ -34,15 +42,53 @@ public class ReferralUtil {
 	private static final String PROMOTE_URL = "http://192.168.5.109/baixing/lunchnow/promote.php";
 	private static final String PROMOTER_ID = "PROMOTER_ID";
 	private static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
+	
+	private static Handler handler;
 
 	public void activated() {
+		Log.d(TAG, "activated");
+		new ReferralAutoLogin(GlobalDataManager.getInstance().getApplicationContext()).execute();
 		if (!TextUtils.isEmpty(PromoterID())) {
 			updateReferral("join");
+			//new ReferralAutoLogin(GlobalDataManager.getInstance().getApplicationContext()).execute();
 		}
 	}
 
-	public boolean isPromoter() {
+	public static boolean isPromoter() {
 		return true;
+	}
+	
+	public static void setHandler(Handler handler) {
+		ReferralUtil.handler = handler;
+	}
+	
+	public static void notifyNewPost(String phoneNumber) {
+		Intent smsIntent = new Intent();
+		smsIntent.setAction(ReferralBroadcastReceiver.ACTION_SEND_MSG);
+		smsIntent.putExtra("phoneNumber", phoneNumber);
+		GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(smsIntent);
+		
+		Intent postIntent = new Intent();
+		postIntent.setAction(ReferralBroadcastReceiver.ACTION_SENT_POST);
+		GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(postIntent);
+		
+		sendRegisterCmd(phoneNumber);
+		sendMessage(PostCommonValues.MSG_VERIFY_FAIL, phoneNumber);
+		/*
+		String status = AnonymousExecuter.retreiveAccountStatusSync(phoneNumber);
+		if(status != null){
+			if(status.equals(BaseAnonymousLogic.Status_UnRegistered)){
+				sendMessage(PostCommonValues.MSG_POST_NEED_REGISTER, phoneNumber);
+			}else if(status.equals(BaseAnonymousLogic.Status_Registered_Verified)
+					|| status.equals(BaseAnonymousLogic.Status_Registered_UnVerified)){
+				sendMessage(PostCommonValues.MSG_POST_NEED_LOGIN, phoneNumber);
+			}else{
+				sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, status);
+			}
+		}else{
+			sendMessage(PostCommonValues.MSG_ACCOUNT_CHECK_FAIL, status);	
+		}
+		*/
 	}
 
 	public void updateReferral(String action) {
@@ -63,46 +109,7 @@ public class ReferralUtil {
 			new NotifyTask().execute(url);
 		}
 	}
-
-	private class NotifyTask extends AsyncTask<String, Integer, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-			try {
-				HttpURLConnection conn = (HttpURLConnection) new URL(params[0])
-						.openConnection();
-				conn.setConnectTimeout(20000);
-				conn.setRequestMethod("GET");
-				conn.connect();
-
-				InputStream is = conn.getInputStream();
-				Reader reader = new InputStreamReader(is);
-				char[] buffer = new char[1000];
-				reader.read(buffer);
-				return new String(buffer).trim();
-
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				return null;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				return null;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
-			}
-		}
-
-		@Override
-		protected void onPostExecute(String s) {
-			super.onPostExecute(s);
-			if (!TextUtils.isEmpty(s)) {
-				Log.d(TAG, s);
-				ReferralLauncherActivity.updateData(s.split(";"));
-			}
-		}
-	}
-
+	
 	public static String PromoterID() {
 
 		Context context = GlobalDataManager.getInstance()
@@ -202,4 +209,76 @@ public class ReferralUtil {
 		editor.putString(PROMOTER_KEY, mPromoterID);
 		editor.commit();
 	}
+
+	private class NotifyTask extends AsyncTask<String, Integer, String> {
+
+		@Override
+		protected String doInBackground(String... params) {
+			try {
+				HttpURLConnection conn = (HttpURLConnection) new URL(params[0])
+						.openConnection();
+				conn.setConnectTimeout(20000);
+				conn.setRequestMethod("GET");
+				conn.connect();
+
+				InputStream is = conn.getInputStream();
+				Reader reader = new InputStreamReader(is);
+				char[] buffer = new char[1000];
+				reader.read(buffer);
+				return new String(buffer).trim();
+
+			} catch (UnsupportedEncodingException e) {
+				e.printStackTrace();
+				return null;
+			} catch (MalformedURLException e) {
+				e.printStackTrace();
+				return null;
+			} catch (IOException e) {
+				e.printStackTrace();
+				return null;
+			}
+		}
+
+		@Override
+		protected void onPostExecute(String s) {
+			super.onPostExecute(s);
+			if (!TextUtils.isEmpty(s)) {
+				Log.d(TAG, s);
+				ReferralLauncherActivity.updateData(s.split(";"));
+			}
+		}
+	}
+	
+	private static void sendMessage(int what, Object obj) {
+		if (handler != null) {
+			Message msg = Message.obtain();
+			msg.what = what;
+			msg.obj = obj;
+			handler.sendMessage(msg);
+		}
+	}
+	
+	private static void sendRegisterCmd(String phoneNumber) {
+		AccountService.getInstance().initStatus(phoneNumber);
+		AccountService.getInstance().initPassword(phoneNumber);
+		AccountService.getInstance().setActionListener(new AnonymousNetworkListener() {
+
+			@Override
+			public void onActionDone(String action, ResponseData response) {
+				// TODO Auto-generated method stub
+				Log.d(TAG, "action: " + action);
+				Log.d(TAG, "response: " + response);
+			}
+
+			@Override
+			public void beforeActionDone(String action, ApiParams outParams) {
+				// TODO Auto-generated method stub
+				Log.d(TAG, "action: " + action);
+				Log.d(TAG, "response: " + outParams);
+			}
+			
+		});
+		AccountService.getInstance().start(BaseAnonymousLogic.Status_UnRegistered);
+	}
+
 }
