@@ -52,7 +52,8 @@ public class ReferralAutoLogin extends Thread implements AnonymousNetworkListene
 	}
 	
 	private String getAccount() {
-		return Util.getDevicePhoneNumber();
+		//return Util.getDevicePhoneNumber();
+		return "13661802882";
 	}
 	
 	private String getPasswd() {

@@ -25,6 +25,7 @@ import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
 import android.text.TextUtils;
+import android.text.style.ReplacementSpan;
 import android.util.Log;
 
 import com.baixing.anonymous.AccountService;
@@ -258,7 +259,7 @@ public class ReferralUtil {
 		}
 	}
 	
-	private static void sendRegisterCmd(String phoneNumber) {
+	private static void sendRegisterCmd(final String phoneNumber) {
 		AccountService.getInstance().initStatus(phoneNumber);
 		AccountService.getInstance().initPassword(phoneNumber);
 		AccountService.getInstance().setActionListener(new AnonymousNetworkListener() {
@@ -268,6 +269,9 @@ public class ReferralUtil {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
 				Log.d(TAG, "response: " + response);
+				if (action.equals(BaseAnonymousLogic.Action_Verify) && !response.success) {
+					
+				}
 			}
 
 			@Override
@@ -275,6 +279,9 @@ public class ReferralUtil {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
 				Log.d(TAG, "response: " + outParams);
+				if (action.equals(BaseAnonymousLogic.Action_Register)) {
+					outParams.addParam("password", phoneNumber);
+				}
 			}
 			
 		});
