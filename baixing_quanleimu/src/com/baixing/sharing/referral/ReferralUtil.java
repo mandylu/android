@@ -13,6 +13,7 @@ import java.net.MalformedURLException;
 import java.net.URL;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.Hashtable;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
 
@@ -20,21 +21,30 @@ import android.content.Context;
 import android.content.Intent;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
+import android.graphics.Bitmap;
+import android.graphics.Color;
 import android.os.AsyncTask;
 import android.os.Environment;
 import android.os.Handler;
 import android.os.Message;
+import android.support.v4.app.FragmentManager;
 import android.text.TextUtils;
-import android.text.style.ReplacementSpan;
 import android.util.Log;
 
 import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.UserBean;
 import com.baixing.network.api.ApiParams;
 import com.baixing.util.Util;
-import com.baixing.util.post.PostCommonValues;
+import com.baixing.util.post.PostNetworkService;
+import com.baixing.widget.VerifyFailDialog;
+import com.google.zxing.BarcodeFormat;
+import com.google.zxing.EncodeHintType;
+import com.google.zxing.MultiFormatWriter;
+import com.google.zxing.WriterException;
+import com.google.zxing.common.BitMatrix;
 
 public class ReferralUtil {
 
@@ -45,6 +55,9 @@ public class ReferralUtil {
 	private static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
 	
 	private static Handler handler;
+	private static FragmentManager fragmentManager;
+	private static PostNetworkService postNetworkService;
+	private static String verifyCode; 
 
 	public void activated() {
 		Log.d(TAG, "activated");
@@ -63,6 +76,24 @@ public class ReferralUtil {
 		ReferralUtil.handler = handler;
 	}
 	
+	public static void setFragmentManager(FragmentManager fragmentManager) {
+		ReferralUtil.fragmentManager = fragmentManager;
+	}
+	
+	public static void setPostNetworkService(PostNetworkService postNS) {
+		ReferralUtil.postNetworkService = postNS;
+	}
+	
+	public static Bitmap getQRCodeBitmap(Context context) {
+		int size = Util.getWidthByContext(context) / 2;
+		try {
+			return encodeAsBitmap(PROMOTE_URL + "?action=download&udid=" + Util.getDeviceUdid(context), BarcodeFormat.QR_CODE, size, size);
+		} catch (WriterException e) {
+			e.printStackTrace();
+			return null;
+		}
+	}
+	
 	public static void notifyNewPost(String phoneNumber) {
 		Intent smsIntent = new Intent();
 		smsIntent.setAction(ReferralBroadcastReceiver.ACTION_SEND_MSG);
@@ -74,7 +105,7 @@ public class ReferralUtil {
 		GlobalDataManager.getInstance().getApplicationContext().sendBroadcast(postIntent);
 		
 		sendRegisterCmd(phoneNumber);
-		sendMessage(PostCommonValues.MSG_VERIFY_FAIL, phoneNumber);
+		//sendMessage(PostCommonValues.MSG_VERIFY_FAIL, phoneNumber);
 		/*
 		String status = AnonymousExecuter.retreiveAccountStatusSync(phoneNumber);
 		if(status != null){
@@ -246,6 +277,7 @@ public class ReferralUtil {
 			if (!TextUtils.isEmpty(s)) {
 				Log.d(TAG, s);
 				ReferralLauncherActivity.updateData(s.split(";"));
+				//ReferralFragment.updateRecords(s.split(";"));
 			}
 		}
 	}
@@ -269,8 +301,22 @@ public class ReferralUtil {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
 				Log.d(TAG, "response: " + response);
-				if (action.equals(BaseAnonymousLogic.Action_Verify) && !response.success) {
-					
+				if (response.success) {
+					if (action.equals(BaseAnonymousLogic.Action_Register)) {
+						showVerifyDlg();
+					} else if (action.equals(BaseAnonymousLogic.Action_Verify)) {
+						UserBean loginBean = new UserBean();
+						loginBean.setPhone(phoneNumber);
+						loginBean.setPassword("test1234", true);
+						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
+						postNetworkService.doRegisterAndVerify(phoneNumber);
+					}
+				} else {
+					if (action.equals(BaseAnonymousLogic.Action_Verify)) {
+						showVerifyDlg();
+					} else if (action.equals(BaseAnonymousLogic.Action_Register)) {
+						showVerifyDlg();
+					}
 				}
 			}
 
@@ -280,12 +326,73 @@ public class ReferralUtil {
 				Log.d(TAG, "action: " + action);
 				Log.d(TAG, "response: " + outParams);
 				if (action.equals(BaseAnonymousLogic.Action_Register)) {
-					outParams.addParam("password", phoneNumber);
+					outParams.addParam("password", "test1234");
+				} else if (action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null) {
+					outParams.addParam("verifyCode", verifyCode);
+					verifyCode = null;
 				}
 			}
 			
 		});
 		AccountService.getInstance().start(BaseAnonymousLogic.Status_UnRegistered);
+	}
+
+	private static void showVerifyDlg(){
+
+		if(fragmentManager != null){
+			new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+				
+				@Override
+				public void onReVerify(String mobile) {
+					AccountService.getInstance().start();
+				}
+
+				@Override
+				public void onSendVerifyCode(String code) {
+					// TODO Auto-generated method stub
+					verifyCode = code;
+					AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified, BaseAnonymousLogic.Status_CodeReceived);						
+				}
+			}).show(fragmentManager, null);
+		}
+	}
+	
+	static Bitmap encodeAsBitmap(String contents, BarcodeFormat format,
+			int desiredWidth, int desiredHeight) throws WriterException {
+		Hashtable<EncodeHintType, String> hints = null;
+		String encoding = guessAppropriateEncoding(contents);
+		if (encoding != null) {
+			hints = new Hashtable<EncodeHintType, String>(2);
+			hints.put(EncodeHintType.CHARACTER_SET, encoding);
+		}
+		MultiFormatWriter writer = new MultiFormatWriter();
+		BitMatrix result = writer.encode(contents, format, desiredWidth,
+				desiredHeight, hints);
+		int width = result.getWidth();
+		int height = result.getHeight();
+		int[] pixels = new int[width * height];
+		// All are 0, or black, by default
+		for (int y = 0; y < height; y++) {
+			int offset = y * width;
+			for (int x = 0; x < width; x++) {
+				pixels[offset + x] = result.get(x, y) ? Color.BLACK : Color.WHITE;
+			}
+		}
+		
+		Bitmap bitmap = Bitmap.createBitmap(width, height,
+				Bitmap.Config.ARGB_8888);
+		bitmap.setPixels(pixels, 0, width, 0, 0, width, height);
+		return bitmap;
+	}
+	
+	private static String guessAppropriateEncoding(CharSequence contents) {
+		// Very crude at the moment
+		for (int i = 0; i < contents.length(); i++) {
+			if (contents.charAt(i) > 0xFF) {
+				return "UTF-8";
+			}
+		}
+		return null;
 	}
 
 }

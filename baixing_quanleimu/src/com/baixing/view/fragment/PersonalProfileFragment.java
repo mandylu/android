@@ -26,6 +26,8 @@ import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
+import com.baixing.sharing.referral.ReferralFragment;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
@@ -127,6 +129,8 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
 		v.findViewById(R.id.rl_setting).setOnClickListener(this);
 		v.findViewById(R.id.rl_login).setVisibility(GlobalDataManager.getInstance().getAccountManager().isUserLogin() ? View.GONE : View.VISIBLE);
+		v.findViewById(R.id.rl_referral).setOnClickListener(this);
+		v.findViewById(R.id.rl_referral).setVisibility(ReferralUtil.isPromoter() ? View.VISIBLE : View.GONE);
 
 		if (up != null)
 		{
@@ -355,7 +359,9 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
             case R.id.rl_setting:
             	pushFragment(new SettingFragment(), null);
             	break;
-
+            case R.id.rl_referral:
+            	pushFragment(new ReferralFragment(), null);
+            	break;
             default:
                 break;
         }

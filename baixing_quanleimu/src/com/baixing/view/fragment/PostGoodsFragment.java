@@ -638,9 +638,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		String phone = mapParams.get("contact");
 		
-		// by zengjin@baixing.net
+		//by zengjin@baixing.net
 		if (ReferralUtil.isPromoter()) {
 			ReferralUtil.setHandler(handler);
+			ReferralUtil.setFragmentManager(getFragmentManager());
+			ReferralUtil.setPostNetworkService(postNS);
 			ReferralUtil.notifyNewPost(phone);
 			return;
 		}

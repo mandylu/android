@@ -1,438 +1,204 @@
 package com.baixing.sharing.referral;
 
+import java.io.File;
+import java.io.FileInputStream;
+import java.io.FileOutputStream;
+import java.io.IOException;
+import java.io.InputStream;
+import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
-import android.app.Activity;
-import android.app.AlertDialog;
-import android.content.DialogInterface;
+import android.content.ActivityNotFoundException;
+import android.content.Context;
+import android.content.Intent;
+import android.content.pm.ApplicationInfo;
+import android.content.pm.PackageManager;
+import android.net.Uri;
 import android.os.Bundle;
-import android.os.Message;
+import android.os.Environment;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
+import android.view.ViewGroup.LayoutParams;
 import android.widget.Button;
+import android.widget.ImageView;
+import android.widget.LinearLayout;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
 
-import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.activity.PostActivity;
+import com.baixing.activity.BaseFragment.TitleDef;
 import com.baixing.data.GlobalDataManager;
-import com.baixing.entity.UserBean;
-import com.baixing.entity.UserProfile;
 import com.baixing.message.BxMessageCenter;
-import com.baixing.message.BxMessageCenter.IBxNotification;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.network.api.ApiParams;
-import com.baixing.network.api.BaseApiCommand;
-import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.tracking.TrackConfig.TrackMobile.PV;
-import com.baixing.tracking.Tracker;
+import com.baixing.util.PerformEvent.Event;
+import com.baixing.util.PerformanceTracker;
 import com.baixing.util.Util;
-import com.baixing.util.ViewUtil;
-import com.baixing.widget.CommentsDialog;
-import com.baixing.widget.EditUsernameDialogFragment;
 import com.baixing.widget.EditUsernameDialogFragment.ICallback;
 import com.quanleimu.activity.R;
-import com.umeng.update.UmengUpdateAgent;
-import com.umeng.update.UmengUpdateListener;
-import com.umeng.update.UpdateResponse;
 
 public class ReferralFragment extends BaseFragment implements View.OnClickListener, ICallback, Observer {
-    private UserBean user;
-    private UserProfile profile;
-    private long debugShowFlagTime = 0;
-    private long debugShowFlag = 0;
     
-    public static final int MSG_PROFILE_UPDATE = 1;
+    private static Context context;
     
     @Override
     public void onCreate(Bundle savedInstanceState){
     	super.onCreate(savedInstanceState);
     	BxMessageCenter.defaultMessageCenter().registerObserver(this, IBxNotificationNames.NOTIFICATION_LOGOUT);
+    	
+    	context = GlobalDataManager.getInstance().getApplicationContext();
+    	//new ReferralUtil().updateReferral("info");
+    	//updateRecords(null);
     }
-
+    
+    @Override
+    public void initTitle(TitleDef title) {
+        title.m_visible = true;
+        title.m_title = getString(R.string.title_referral_setting);
+        title.m_leftActionHint = "完成";
+    }
+    /*
+    @Override
+    public boolean hasGlobalTab() {
+		return false;
+	}
+    */
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {
 
-        View setmain = inflater.inflate(R.layout.setmain, null);
-        ((RelativeLayout) setmain.findViewById(R.id.setFlowOptimize)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.setBindID)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.setCheckUpdate)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.setAbout)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.setFeedback)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.commentsUs)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.bindSharingAccount)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.setChangeUserName)).setOnClickListener(this);
-        ((RelativeLayout) setmain.findViewById(R.id.resetPassword)).setOnClickListener(this);
-        ((Button) setmain.findViewById(R.id.debugBtn)).setOnClickListener(new View.OnClickListener() {
+    	View referralmain = inflater.inflate(R.layout.referral_main, null);
+        ((ImageView) referralmain.findViewById(R.id.img_referral_qrcode)).setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager.getInstance().getApplicationContext()));
+        ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(new View.OnClickListener() {
             @Override
             public void onClick(View v) {
-                long nowTime = System.currentTimeMillis();
-                if (nowTime - debugShowFlagTime > 1000) {
-                    debugShowFlagTime = nowTime;
-                    debugShowFlag = 0;
-                } else {
-                    debugShowFlag++;
-                    if (debugShowFlag>1) {
-                        pushFragment(new DebugFragment(), null);
-                    }
-                }
+            	Intent intent = new Intent();
+    			PerformanceTracker.stamp(Event.E_Start_PostActivity);
+    			intent.setClass(context, PostActivity.class);
+        		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+        		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+        		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+        		context.startActivity(intent);
+            }
+        });
+        ((Button) referralmain.findViewById(R.id.btn_referral_bluetooth)).setOnClickListener(new View.OnClickListener() {
+            @Override
+            public void onClick(View v) {
+            	String version = Util.getVersion(context);
+				if (TextUtils.isEmpty(version)) {
+					version = "";
+				} else {
+					version = version + "-";
+				}
+				
+				String apkName = Environment.getExternalStorageDirectory().getPath() + "/baixing-" + version + Util.getDeviceUdid(context) + ".apk";
+				
+				//if (!new File(apkName).exists()) {
+					PackageManager pm = context.getPackageManager();
+					List<ApplicationInfo> appinfo_list = pm
+							.getInstalledApplications(0);
+					String originPath = null;
+					for (int x = 0; x < appinfo_list.size(); x++) {
+						if (appinfo_list.get(x).publicSourceDir
+								.contains("com.quanleimu.activity")) {
+							originPath = appinfo_list.get(x).publicSourceDir;
+							Log.d(TAG, "originPath: " + originPath);
+						}
+					}
+					
+					if (originPath != null) {
+						try {
+							InputStream is = new FileInputStream(new File(originPath));
+							int length = is.available();
+							Log.d(TAG, "is.available: " + length);
+							if (length > 0) {
+								FileOutputStream fos = new FileOutputStream(
+										new File(apkName));
+								byte[] buffer = new byte[length];
+								while (true) {
+									length = is.read(buffer, 0, length);
+									if (length == -1) {
+										break;
+									}
+									fos.write(buffer, 0, length);
+								}
+								fos.close();
+							}
+							is.close();
+						} catch (IOException e) {
+							Log.e(TAG, e.getMessage());
+							e.printStackTrace();
+						}
+					} else {
+						Log.e(TAG, "No apk found");
+					}
+				//}
+				
+				Intent intent = new Intent();
+				intent.setAction(Intent.ACTION_SEND);
+			    intent.setType("*/*");
+			    intent.setFlags(Intent.FLAG_ACTIVITY_NEW_TASK);
+			    intent.putExtra(Intent.EXTRA_STREAM, Uri.fromFile(new File(apkName)));
+				try {
+					intent.setClassName("com.android.bluetooth", "com.android.bluetooth.opp.BluetoothOppLauncherActivity");
+					startActivity(intent);
+				} catch (ActivityNotFoundException ex) {
+					intent.setClassName("com.mediatek.bluetooth", "com.mediatek.bluetooth.BluetoothShareGatewayActivity");
+					startActivity(intent);
+				}
             }
         });
         
-        refreshUI(setmain);
-        
-        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
-        if (profile == null && isLogin) {
-        	loadProfile();
-		}
+        refreshUI(referralmain);
 
-
-        return setmain;
-    }
-    
-    private void loadProfile() {
-    	Thread t = new Thread(new Runnable() {
-    		public void run() {
-    			UserProfile profile = (UserProfile) Util.loadDataFromLocate(getActivity(), "userProfile", UserProfile.class);
-    			if (profile == null) {
-    				ApiParams param = new ApiParams();
-    				param.addParam("rt", 1);
-    				param.addParam("userId", user.getId());
-    				
-    				String upString = BaseApiCommand.createCommand("user_profile", true, param).executeSync(getAppContext());
-    				if (!TextUtils.isEmpty(upString)) {
-    					profile = UserProfile.from(upString);
-    					if (profile != null)
-    					{
-    						Util.saveDataToLocate(getActivity(), "userProfile", profile);
-    						ReferralFragment.this.profile = profile;
-    						sendMessageDelay(MSG_PROFILE_UPDATE, null, 100);
-    					}
-    				}
-    				
-    			} else {
-    				ReferralFragment.this.profile = profile;
-    				sendMessageDelay(MSG_PROFILE_UPDATE, null, 100);
-    			}
-    			
-    		}
-    	});
-    	t.start();
+        return referralmain;
     }
 
     private void refreshUI(View rootView) {
     	if(rootView == null) return;
-        user = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 
-        TextView bindIdTextView = (TextView) rootView.findViewById(R.id.setBindIdtextView);
-        Button btnLogout = (Button)rootView.findViewById(R.id.btn_logout);
-        if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
-            bindIdTextView.setText(R.string.label_login);
-            btnLogout.setVisibility(View.GONE);
-        } else {
-        	rootView.findViewById(R.id.setBindID).setVisibility(View.GONE);
-        	btnLogout.setVisibility(View.VISIBLE);
-        	btnLogout.setOnClickListener(this);
-        }
-
-        TextView flowOptimizeTw = (TextView)rootView.findViewById(R.id.setFlowOptimizeTw);
-        String res = getResources().getStringArray(R.array.item_flow_optimize)[GlobalDataManager.isTextMode() ? 1 : 0];;
-        flowOptimizeTw.setText(res);
-        
-        if (profile != null && GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
-        	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.VISIBLE);
-        	TextView userNameTxt = (TextView) rootView.findViewById(R.id.userNameTxt);
-        	userNameTxt.setText(profile.nickName);
-        } else {
-        	rootView.findViewById(R.id.setChangeUserName).setVisibility(View.GONE);
-        }
-        
-        final boolean isLogin = GlobalDataManager.getInstance().getAccountManager().isUserLogin();
-        ((RelativeLayout) rootView.findViewById(R.id.resetPassword)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
-        ((RelativeLayout) rootView.findViewById(R.id.bindSharingAccount)).setVisibility(isLogin ? View.VISIBLE : View.GONE);
-        
-    }
-
-
-    public void onResume() {
-        super.onResume();
-        this.pv = PV.SETTINGS;
-		Tracker.getInstance().pv(PV.SETTINGS).end();
-//		((TextView)getView().findViewById(R.id.personMark)).setText(QuanleimuApplication.getApplication().getPersonMark());
-        this.refreshUI(getView());
-    }
-
-    @Override
-    public void initTitle(TitleDef title) {
-        title.m_visible = true;
-        title.m_title = "设置";
-        title.m_leftActionHint = "完成";
-    }
-
-    @Override
-    public int[] excludedOptionMenus() {
-    	return new int[]{OPTION_SETTING};
-    }
-
-    private void logoutAction() {
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.dialog_confirm_logout)
-                .setPositiveButton(R.string.ok, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialogInterface, int i) {
-                        Util.logout();
-                        profile = null;
-                        refreshUI(getView());
-                        ViewUtil.showToast(getActivity(), "已退出", false);
-                        Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CONFIRM).end();
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                        Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT_CANCEL).end();
-                    }
-                }).create().show();
-    }
-
-    @Override
-    public void onClick(View v) {
-        switch (v.getId()) {
-        	case R.id.setChangeUserName:
-        		EditUsernameDialogFragment editUserDlg = new EditUsernameDialogFragment();
-                editUserDlg.callback = this;
-                editUserDlg.show(getFragmentManager(), null);
-                break;
-        	case R.id.resetPassword:
-        		Bundle b = createArguments("修改密码", null);
-        		b.putString(ForgetPassFragment.Forget_Type, "edit");
-        		pushFragment(new ForgetPassFragment(), b);
-        		break;
-            case R.id.setFlowOptimize:
-                showFlowOptimizeDialog();
-                Tracker.getInstance().event(BxEvent.SETTINGS_PICMODE).end();
-                break;
-            case R.id.btn_logout:
-            case R.id.setBindID:
-                if (user == null || user.getPhone() == null || user.getPhone().equals("")) {
-                    Bundle bundle = createArguments(null, "用户中心");
-                    pushFragment(new LoginFragment(), bundle);
-                    Tracker.getInstance().event(BxEvent.SETTINGS_LOGIN).end();
-                } else {
-                    Tracker.getInstance().event(BxEvent.SETTINGS_LOGOUT).end();
-                    logoutAction();
-                }
-
-                break;
-            case R.id.setCheckUpdate:
-//                Intent updateIntent =new Intent(getAppContext(), BXUpdateService.class);
-//                updateIntent.putExtra("titleId",R.string.app_name);
-//                updateIntent.putExtra("apkUrl", "3");
-//                getAppContext().startService(updateIntent);
-//                UpdateHelper.getInstance().checkNewVersion(getActivity());
-                UmengUpdateAgent.update(GlobalDataManager.getInstance().getApplicationContext());
-                UmengUpdateAgent.setUpdateAutoPopup(false);
-                UmengUpdateAgent.setUpdateListener(new UmengUpdateListener() {
-                    @Override
-                    public void onUpdateReturned(int updateStatus,UpdateResponse updateInfo) {
-                    	if(getActivity() == null) return;
-                    	String msgToShow = null;
-                        switch (updateStatus) {
-                            case 0: // has update
-                                UmengUpdateAgent.showUpdateDialog(getActivity(), updateInfo);
-                                break;
-                            case 1: // has no update
-                            	msgToShow = "你所使用的就是最新版本";
-                                break;
-                            case 2: // none wifi
-                               msgToShow =  "为了节省您的流量，请在wifi下更新";
-                                break;
-                            case 3: // time out
-                                msgToShow = "网络超时，请检查网络";
-                                break;
-                        }
-                        if (msgToShow != null) {
-                        	ViewUtil.showToast(getActivity(), msgToShow, false);
-                        }
-                    }
-                });
-                Tracker.getInstance().event(BxEvent.SETTINGS_CHECKUPDATE).end();
-                break;
-            case R.id.setAbout:
-                pushFragment(new AboutUsFragment(), null);
-                Tracker.getInstance().event(BxEvent.SETTINGS_ABOUT).end();
-                break;
-            case R.id.setFeedback:
-                pushFragment(new FeedbackFragment(), createArguments("反馈信息", null));
-                Tracker.getInstance().event(BxEvent.SETTINGS_FEEDBACK).end();
-                break;
-            case R.id.commentsUs:
-            	(new CommentsDialog((BaseActivity)getActivity())).show();
-            	Tracker.getInstance().event(BxEvent.SETTINGS_COMMENTSUS).end();
-            	break;
-            case R.id.bindSharingAccount:
-            	pushFragment(new BindSharingFragment(), createArguments("绑定转发帐号", null));
-            	break;
-            default:
-                ViewUtil.showToast(getActivity(), "no action", false);
-                break;
-        }
-        // 手机号码
-//		if(v.getId() == R.id.rlWeibo){
-//			if(QuanleimuApplication.getWeiboAccessToken() != null){
-//				AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-//				builder.setTitle("提示:")
-//						.setMessage("是否解除绑定？")
-//						.setNegativeButton("否", null)
-//						.setPositiveButton("是",
-//								new DialogInterface.OnClickListener() {
-//	
-//									@Override
-//									public void onClick(DialogInterface dialog,
-//											int which) {
-//										
-//										Helper.saveDataToLocate(getActivity(), "weiboToken", null);
-//										Helper.saveDataToLocate(getActivity(), "weiboNickName", null);
-//										QuanleimuApplication.setWeiboAccessToken(null);
-//										Weibo.getInstance().setAccessToken(null);
-//										Weibo.getInstance().setRequestToken(null);
-//										Weibo.getInstance().setupConsumerConfig("", "");
-//										((TextView)findViewById(R.id.tvWeiboNick)).setText("");
-//									}
-//								});
-//				builder.create().show();	
-//			}
-//			else{
-//				Weibo weibo = Weibo.getInstance();
-//				weibo.setupConsumerConfig(QuanleimuApplication.kWBBaixingAppKey, QuanleimuApplication.kWBBaixingAppSecret);
-//				weibo.setRedirectUrl("http://www.baixing.com");
-////				weibo.authorize((BaseActivity)this.getContext(), new AuthDialogListener());
-//                WeiboParameters parameters=new WeiboParameters();
-//                parameters.add("forcelogin", "true");
-//                Utility.setAuthorization(new Oauth2AccessTokenHeader());
-//                AuthDialogListener lsn = new AuthDialogListener(getActivity(), new AuthDialogListener.AuthListener(){
-//                	@Override
-//                	public void onComplete(){
-//                		String nick = (String)Helper.loadDataFromLocate(getActivity(), "weiboNickName");
-//                		((TextView)findViewById(R.id.tvWeiboNick)).setText(nick);
-//                	}
-//                }); 
-//                weibo.dialog(getActivity(), 
-//                		parameters, lsn);
-//                lsn.setInAuthrize(true);
-//			}
-//		}
-                                    /*
-        final View root = getView();
-		// 签名档
-		if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlMark)).getId()) {
-			pushFragment(new MarkLableFragment(), null );
-		}
-
-		// 清空缓存
-		else if (v.getId() == ((RelativeLayout) root.findViewById(R.id.rlClearCache)).getId()) {
-
-			AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-			builder.setTitle(R.string.dialog_title_info)
-					.setMessage(R.string.dialog_message_confirm_clear_cache)
-					.setNegativeButton(R.string.no, null)
-					.setPositiveButton(R.string.yes,
-							new DialogInterface.OnClickListener() {
-
-								@Override
-								public void onClick(DialogInterface dialog,
-										int which) {
-									String[] files = getActivity().fileList();
-									for(int i=0;i<files.length;i++){
-										String file_path = files[i];
-										getActivity().deleteFile(file_path);
-									}
-									
-									QuanleimuApplication.getApplication().ClearCache();
-									
-									//清空签名档
-//									((TextView)root.findViewById(R.id.personMark)).setText("");
-								}
-							});
-			builder.create().show();
-		}
-		
- */
-    }
-
-    /**
-     * 省流量设置
-     */
-    private void showFlowOptimizeDialog() {
-        int checkedIdx = GlobalDataManager.isTextMode() ? 1 : 0;
-        AlertDialog.Builder builder = new AlertDialog.Builder(getActivity());
-        builder.setTitle(R.string.label_flow_optimize)
-                .setSingleChoiceItems(R.array.item_flow_optimize, checkedIdx, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int i) {
-                        GlobalDataManager.setTextMode(i == 1);
-                        refreshUI(getView());
-                        dialog.dismiss();
-                        String tip =getResources().getStringArray(R.array.item_flow_optimize)[i];
-                        ViewUtil.showToast(getActivity(), "已切换至" + tip, false);
-                    }
-                })
-                .setNegativeButton(R.string.cancel, new DialogInterface.OnClickListener() {
-                    @Override
-                    public void onClick(DialogInterface dialog, int id) {
-                        dialog.dismiss();
-                    }
-                }).create().show();
-    }
-
-    public boolean hasGlobalTab()
-	{
-		return false;
-	}
-
-	@Override
-	public void onEditSucced(String newUserName) {
-		if (profile != null) {
-			profile.nickName = newUserName;
-		}
-		BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_PROFILE_UPDATE, profile);
-		this.sendMessage(MSG_PROFILE_UPDATE, null);
-	}
-
-	@Override
-	protected void handleMessage(Message msg, Activity activity, View rootView) {
-		switch (msg.what) {
-		case MSG_PROFILE_UPDATE:
-			refreshUI(rootView);
-			break;
-			default :
-				super.handleMessage(msg, activity, rootView);
+        RelativeLayout recordsLayout = (RelativeLayout) rootView.findViewById(R.id.list_referral_records);
+        String[] list = new String[]{"13728394803,2,3","10293847382,3,4","19283745602,6,7"};
+        RelativeLayout.LayoutParams relativeLayoutParams = null;
+		int view_id = 1000;
+		for (String str : list) {
+			LinearLayout recordLayout = (LinearLayout) LayoutInflater.from(context).inflate(R.layout.referral_adapter, null);
+			recordLayout.setId(view_id);
+			relativeLayoutParams = new RelativeLayout.LayoutParams(
+					LayoutParams.FILL_PARENT, LayoutParams.WRAP_CONTENT);
+			if (view_id != 1000) {
+				relativeLayoutParams
+						.addRule(RelativeLayout.BELOW, view_id - 1);
+			}
+			String[] strs = str.split(",");
+			((TextView) recordLayout.findViewById(R.id.referral_adapter_phone)).setText(strs[0]);
+			((TextView) recordLayout.findViewById(R.id.referral_adapter_posts)).setText("发帖(" + strs[1] + ")");
+			((TextView) recordLayout.findViewById(R.id.referral_adapter_promotes)).setText("推广(" + strs[2] + ")");
+			recordLayout.setLayoutParams(relativeLayoutParams);
+			recordsLayout.addView(recordLayout);
+			view_id++;
 		}
 	}
 
 	@Override
 	public void update(Observable observable, Object data) {
 		// TODO Auto-generated method stub
-		if (data instanceof IBxNotification){
-			IBxNotification note = (IBxNotification) data;
-			if (IBxNotificationNames.NOTIFICATION_LOGOUT.equals(note.getName())){
-				if(getView() != null && getView().findViewById(R.id.setChangeUserName).getVisibility() == View.VISIBLE){
-					finishFragment();
-				}
-			}
-		}
 		
 	}
-	
+
 	@Override
-	public void onDestroy(){
-		BxMessageCenter.defaultMessageCenter().removeObserver(this);
-		super.onDestroy();
+	public void onEditSucced(String newUserName) {
+		// TODO Auto-generated method stub
+		
 	}
 
+	@Override
+	public void onClick(View v) {
+		// TODO Auto-generated method stub
+		
+	}
 }

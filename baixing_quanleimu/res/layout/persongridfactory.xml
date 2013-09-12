@@ -265,6 +265,51 @@
                     android:textSize="@dimen/font_medium" >
                 </TextView>
             </RelativeLayout>
+            
+            <TextView
+                android:layout_width="fill_parent"
+                android:layout_height="1dip"
+                android:layout_marginLeft="@dimen/list_margin_LF"
+                android:layout_marginRight="@dimen/list_margin_LF"
+                android:background="@drawable/list_divider" >
+            </TextView>
+            
+            <RelativeLayout
+                android:id="@+id/rl_referral"
+                android:layout_width="fill_parent"
+                android:layout_height="wrap_content"
+				android:paddingLeft="8dp"
+				android:paddingTop="9dp"
+				android:paddingBottom="9dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true"
+                android:gravity="center_vertical"
+				>
+
+                <ImageView
+                    android:id="@+id/referral_img"
+					android:layout_width="@dimen/icon_width_small"
+                    android:layout_height="@dimen/icon_height_small"
+                    android:layout_alignParentLeft="true"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dip"
+                    android:src="@drawable/icon_referral" >
+                </ImageView>
+
+                <TextView
+                    android:layout_width="fill_parent"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="14dip"
+                    android:layout_toRightOf="@+id/referral_img"
+                    android:duplicateParentState="true"
+                    android:gravity="center_vertical"
+                    android:text="@string/title_referral_setting"
+                    android:textColor="@color/common_button_text_color"
+                    android:textSize="@dimen/font_medium" >
+                </TextView>
+            </RelativeLayout>
+            
             <TextView
                 android:layout_width="fill_parent"
                 android:layout_height="1dip"
