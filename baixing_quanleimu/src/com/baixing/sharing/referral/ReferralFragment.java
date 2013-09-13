@@ -61,12 +61,12 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
         title.m_title = getString(R.string.title_referral_setting);
         title.m_leftActionHint = "完成";
     }
-    /*
+    
     @Override
     public boolean hasGlobalTab() {
 		return false;
 	}
-    */
+    
     @Override
     public View onInitializeView(LayoutInflater inflater, ViewGroup container,
                              Bundle savedInstanceState) {

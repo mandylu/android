@@ -638,8 +638,10 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		String phone = mapParams.get("contact");
 		
+		UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		
 		//by zengjin@baixing.net
-		if (ReferralUtil.isPromoter()) {
+		if (ReferralUtil.isPromoter() && !phone.equals(curUser.getPhone())) {
 			ReferralUtil.setHandler(handler);
 			ReferralUtil.setFragmentManager(getFragmentManager());
 			ReferralUtil.setPostNetworkService(postNS);
@@ -647,7 +649,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			return;
 		}
 		
-		UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 		if(curUser != null && curUser.getPhone() != null && curUser.getPhone().length() > 0){
 			phone = curUser.getPhone();
 		}

@@ -32,8 +32,10 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.baixing.anonymous.AccountService;
+import com.baixing.anonymous.AnonymousExecuter;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
+import com.baixing.data.AccountManager;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.network.api.ApiParams;
@@ -69,7 +71,11 @@ public class ReferralUtil {
 	}
 
 	public static boolean isPromoter() {
-		return true;
+		AccountManager am = GlobalDataManager.getInstance().getAccountManager(); 
+		if (am.isUserLogin() && am.getCurrentUser().getPhone().equals("13661812580")) {
+			return true;
+		}
+		return false;
 	}
 	
 	public static void setHandler(Handler handler) {
@@ -291,31 +297,51 @@ public class ReferralUtil {
 		}
 	}
 	
+	private static void helpSendPost(final String phone) {
+		UserBean curUserBean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		if (curUserBean == null) {
+			// promoter doesn't login
+			return;
+		}
+		GlobalDataManager.getInstance().getAccountManager().logout();
+		UserBean newUserBean = new UserBean();
+		newUserBean.setPhone(phone);
+		newUserBean.setPassword("test1234", true);
+		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", newUserBean);
+		postNetworkService.doRegisterAndVerify(phone);
+		GlobalDataManager.getInstance().getAccountManager().logout();
+		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", curUserBean);
+	}
+	
 	private static void sendRegisterCmd(final String phoneNumber) {
 		AccountService.getInstance().initStatus(phoneNumber);
-		AccountService.getInstance().initPassword(phoneNumber);
+		AccountService.getInstance().initPassword("test1234");
 		AccountService.getInstance().setActionListener(new AnonymousNetworkListener() {
 
 			@Override
 			public void onActionDone(String action, ResponseData response) {
 				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
-				Log.d(TAG, "response: " + response);
-				if (response.success) {
-					if (action.equals(BaseAnonymousLogic.Action_Register)) {
-						showVerifyDlg();
-					} else if (action.equals(BaseAnonymousLogic.Action_Verify)) {
-						UserBean loginBean = new UserBean();
-						loginBean.setPhone(phoneNumber);
-						loginBean.setPassword("test1234", true);
-						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", loginBean);
-						postNetworkService.doRegisterAndVerify(phoneNumber);
-					}
+				if (action.equals(AccountService.Action_Done)) {
+					
 				} else {
-					if (action.equals(BaseAnonymousLogic.Action_Verify)) {
-						showVerifyDlg();
-					} else if (action.equals(BaseAnonymousLogic.Action_Register)) {
-						showVerifyDlg();
+					Log.d(TAG, "response: " + response);
+					if (response.success) {
+						if (action.equals(BaseAnonymousLogic.Action_Register)) {
+							showVerifyDlg();
+						} else if (action.equals(BaseAnonymousLogic.Action_Verify)) {
+							helpSendPost(phoneNumber);
+						}
+					} else {
+						if (action.equals(BaseAnonymousLogic.Action_Verify)) {
+							showVerifyDlg();
+						} else if (action.equals(BaseAnonymousLogic.Action_Register)) {
+							if (AnonymousExecuter.retreiveAccountStatusSync(phoneNumber).equals(BaseAnonymousLogic.Status_Registered_Verified)) {
+								helpSendPost(phoneNumber);
+							} else {
+								showVerifyDlg();
+							}
+						}
 					}
 				}
 			}
@@ -344,7 +370,7 @@ public class ReferralUtil {
 				
 				@Override
 				public void onReVerify(String mobile) {
-					AccountService.getInstance().start();
+					AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified);
 				}
 
 				@Override
