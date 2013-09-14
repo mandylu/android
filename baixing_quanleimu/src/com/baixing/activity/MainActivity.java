@@ -10,8 +10,10 @@ import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
 import android.util.Log;
+import android.view.Gravity;
 import android.view.KeyEvent;
 import android.view.View;
+import android.widget.Toast;
 
 import com.baixing.activity.SplashJob.JobDoneListener;
 import com.baixing.broadcast.push.PageJumper;
@@ -225,6 +227,12 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		jumpToPage();
 		
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone_End);
+		
+		// zengjin@baixing.net
+ 		//AppMsg.makeText(getActivity(), "今天有N多次浏览", AppMsg.STYLE_INFO).show();
+ 		Toast toast = Toast.makeText(this, "今天有N多次浏览", Toast.LENGTH_SHORT);
+ 		toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, (int)getResources().getDimension(R.dimen.title_height));
+ 		toast.show();
 	}
 	
 	private void jumpToPage(){
