@@ -306,7 +306,7 @@ public class ReferralUtil {
 		GlobalDataManager.getInstance().getAccountManager().logout();
 		UserBean newUserBean = new UserBean();
 		newUserBean.setPhone(phone);
-		newUserBean.setPassword("test1234", true);
+		newUserBean.setPassword("test12345", true);
 		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", newUserBean);
 		postNetworkService.doRegisterAndVerify(phone);
 		GlobalDataManager.getInstance().getAccountManager().logout();
