@@ -7,7 +7,6 @@ import java.util.List;
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
-import android.content.Intent;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -27,7 +26,7 @@ import com.baixing.data.LocationManager.onLocationFetchedListener;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
-import com.baixing.sharing.referral.ReferralLauncherActivity;
+import com.baixing.sharing.referral.ReferralEntrance;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -145,12 +144,8 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 			gitems.add(gi);
 		}
 		
-		gitems.add(new GridInfo());
-		GridInfo gi = new GridInfo();
-		gi.img = GlobalDataManager.getInstance().getImageManager().loadBitmapFromResource(R.drawable.icon_category_referral);
-		gi.text = "APP推广";
-		gitems.add(gi);
-		Log.d(TAG, "gitems: " + gitems.size());
+		// zengjin@baixing.net
+		ReferralEntrance.getInstance().addAppShareGrid(getActivity(), gitems);
 
 		CustomizeGridView gv = (CustomizeGridView) getView().findViewById(R.id.gridcategory);
 		gv.setData(gitems, 3);
@@ -283,16 +278,10 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 //				.getListFirst();
 		if (allCates == null || allCates.size() == 0)
 			return;
-		if (info == null)
-			return;
 		
-		Log.d(TAG, "index: " + index);
-		if (index == 11) {
-			Intent intent = new Intent(getActivity(), ReferralLauncherActivity.class);
-			startActivity(intent);
-			return;
-		}
-		if (index == 10) {
+		// zengjin@baixing.net
+		if (index >= allCates.size()) {
+			ReferralEntrance.getInstance().pushFragment(this, info);
 			return;
 		}
 		

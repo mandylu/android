@@ -129,6 +129,8 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		v.findViewById(R.id.rl_wofav).setOnClickListener(this);
 		v.findViewById(R.id.rl_setting).setOnClickListener(this);
 		v.findViewById(R.id.rl_login).setVisibility(GlobalDataManager.getInstance().getAccountManager().isUserLogin() ? View.GONE : View.VISIBLE);
+		
+		// zengjin@baixing.net
 		v.findViewById(R.id.rl_referral).setOnClickListener(this);
 		v.findViewById(R.id.rl_referral).setVisibility(ReferralUtil.isPromoter() ? View.VISIBLE : View.GONE);
 

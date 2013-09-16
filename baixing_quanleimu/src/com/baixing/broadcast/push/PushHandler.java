@@ -17,7 +17,7 @@ public abstract class PushHandler {
 
 	protected Context cxt;
 	
-	PushHandler(Context context) {
+	protected PushHandler(Context context) {
 		this.cxt = context;
 	}
 	

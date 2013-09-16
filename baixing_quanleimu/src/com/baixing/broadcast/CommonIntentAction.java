@@ -63,5 +63,9 @@ public class CommonIntentAction
 		public static final int PHOTOHRAPH = 1;
 	}
 	
-
+	/**
+	 * Referral broadcast message
+	 */
+	public static final String ACTION_SEND_MSG = "com.baixing.sharing.referral.action.SEND_MSG";
+	public static final String ACTION_SENT_POST = "com.baixing.sharing.referral.action.SENT_POST";
 }

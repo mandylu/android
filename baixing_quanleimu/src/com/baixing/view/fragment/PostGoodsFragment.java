@@ -55,7 +55,7 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
-import com.baixing.sharing.referral.ReferralBroadcastReceiver;
+import com.baixing.sharing.referral.ReferralPost;
 import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -642,10 +642,8 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		//by zengjin@baixing.net
 		if (ReferralUtil.isPromoter() && !phone.equals(curUser.getPhone())) {
-			ReferralUtil.setHandler(handler);
-			ReferralUtil.setFragmentManager(getFragmentManager());
-			ReferralUtil.setPostNetworkService(postNS);
-			ReferralUtil.notifyNewPost(phone);
+			ReferralPost.Config(getFragmentManager(), postNS);
+			ReferralPost.getInstance().postNewAd(phone);
 			return;
 		}
 		

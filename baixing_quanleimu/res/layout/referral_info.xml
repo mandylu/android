@@ -1,0 +1,295 @@
+<?xml version="1.0" encoding="utf-8"?>
+<RelativeLayout xmlns:android="http://schemas.android.com/apk/res/android"
+    android:layout_width="fill_parent"
+    android:layout_height="fill_parent"
+    android:background="@color/bg_screen" >
+
+    <include layout="@layout/common_title" />
+
+    <ScrollView
+        android:layout_width="fill_parent"
+        android:layout_height="fill_parent"
+        android:layout_below="@+id/linearTop"
+        android:layout_marginBottom="5dip" >
+
+        <LinearLayout
+            android:layout_width="fill_parent"
+            android:layout_height="fill_parent"
+            android:orientation="vertical" >
+            
+            <Button
+                android:id="@+id/btn_referral_post"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="16dip"
+                android:background="@drawable/post_finish_btn"
+                android:text="@string/button_referral_post"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/base_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/title_referral_info_posts"
+                    android:textColor="@color/base_green"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoAllPosts"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textAllPosts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/info_referral_all_posts"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/textAllPostsNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textAllPosts"
+                    android:layout_marginRight="10dp"
+                    android:text="100" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoEffectivePosts"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textEffectivePosts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/info_referral_effective_posts"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/textEffectivePostsNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textEffectivePosts"
+                    android:layout_marginRight="10dp"
+                    android:text="57" />
+            </RelativeLayout>
+            
+            <RelativeLayout
+                android:id="@+id/infoPendingPosts"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textPendingPosts"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/info_referral_pending_posts"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/textPendingPostsNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textPendingPosts"
+                    android:layout_marginRight="10dp"
+                    android:text="20" />
+            </RelativeLayout>
+            
+            <Button
+                android:id="@+id/btn_referral_posts_detail"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="16dip"
+                android:background="@drawable/post_finish_btn"
+                android:text="@string/button_referral_info_detail"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            
+            <RelativeLayout
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="5dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/base_green" />
+
+                <TextView
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/title_referral_info_share"
+                    android:textColor="@color/base_green"
+                    android:textSize="18sp" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoAlreadyShare"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textAlreadyShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/info_referral_already_share"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/textAlreadyShareNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textAlreadyShare"
+                    android:layout_marginRight="10dp"
+                    android:text="100" />
+            </RelativeLayout>
+
+            <RelativeLayout
+                android:id="@+id/infoEffectiveShare"
+                android:layout_width="fill_parent"
+                android:layout_height="@dimen/set_table_height"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:background="@drawable/list_selector"
+                android:clickable="true" >
+
+                <View
+                    android:id="@+id/lineView"
+                    android:layout_width="fill_parent"
+                    android:layout_height="1dp"
+                    android:layout_alignParentBottom="true"
+                    android:layout_centerVertical="true"
+                    android:background="@color/list_line" />
+
+                <TextView
+                    android:id="@+id/textEffectiveShare"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_centerVertical="true"
+                    android:layout_marginLeft="10dp"
+                    android:text="@string/info_referral_effective_share"
+                    android:textSize="@dimen/set_table_item_text_height" />
+
+                <TextView
+                    android:id="@+id/textEffectiveShareNum"
+                    android:layout_width="wrap_content"
+                    android:layout_height="wrap_content"
+                    android:layout_alignParentLeft="false"
+                    android:layout_alignParentRight="true"
+                    android:layout_alignTop="@+id/textEffectiveShare"
+                    android:layout_marginRight="10dp"
+                    android:text="57" />
+            </RelativeLayout>
+            
+            <Button
+                android:id="@+id/btn_referral_share_detail"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginLeft="10dp"
+                android:layout_marginRight="10dp"
+                android:layout_marginTop="16dip"
+                android:background="@drawable/post_finish_btn"
+                android:text="@string/button_referral_info_detail"
+                android:textColor="#FFFFFF"
+                android:textSize="18sp"
+                android:textStyle="bold" />
+            
+        </LinearLayout>
+    </ScrollView>
+
+</RelativeLayout>

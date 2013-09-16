@@ -283,8 +283,7 @@
 				android:paddingBottom="9dp"
                 android:background="@drawable/list_selector"
                 android:clickable="true"
-                android:gravity="center_vertical"
-				>
+                android:gravity="center_vertical" >
 
                 <ImageView
                     android:id="@+id/referral_img"

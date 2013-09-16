@@ -38,6 +38,7 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.Util;
 import com.baixing.widget.VerifyFailDialog;
@@ -143,6 +144,13 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 			postParams.params.removeParam("userToken");
 			postParams.params.appendAuthInfo(user.getPhone(), user.getPassword());
 		}
+		
+		// zengjin@baixing.net
+		if (ReferralUtil.isPromoter()) {
+			postParams.params.addParam("referral_id", user.getId());
+			postParams.params.addParam("compaign", "offline_promote");
+		}
+		
 		BaseApiCommand.createCommand(postParams.apiName, false, postParams.params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 	}
 	

@@ -132,10 +132,21 @@
 	<!-- 帐号绑定 -->
     <string name="personalpost_bind_baixing_account">是否用百姓网帐号登录以管理所有信息？</string>
     
+    <!-- 地推神器 -->
     <string name="title_activity_referral_launcher">APP推广</string>
-    <string name="button_referral_bluetooth">通过蓝牙发送</string>
-    <string name="title_referral_setting">推广百姓网</string>
-    <string name="button_referral_post">发布信息</string>
-    <string name="title_referral_promote">便捷推广</string>
-    <string name="title_referral_records">推广记录</string>
+    
+    <string name="title_referral_setting">我的推广</string>
+    <string name="button_referral_post">发布推广信息</string>
+    <string name="title_referral_info_posts">信息发布任务</string>
+    <string name="info_referral_all_posts">全部信息</string>
+    <string name="info_referral_effective_posts">有效信息</string>
+    <string name="info_referral_pending_posts">待审核信息</string>
+    <string name="title_referral_info_share">APP推广任务</string>
+    <string name="info_referral_already_share">已推广</string>
+    <string name="info_referral_effective_share">有效</string>
+    <string name="button_referral_info_detail">查看明细</string>
+    
+    <string name="title_referral_promote">分享</string>
+    <string name="title_referral_qrcode">扫描二维码进行下载</string>
+    <string name="button_referral_bluetooth">蓝牙直接分享给好友</string>
 </resources>
