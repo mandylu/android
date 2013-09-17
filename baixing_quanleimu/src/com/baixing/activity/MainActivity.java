@@ -22,6 +22,7 @@ import com.baixing.tracking.Sender;
 import com.baixing.tracking.TrackConfig;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.Tracker;
+import com.baixing.util.HomeToast;
 import com.baixing.util.LocationService;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -228,11 +229,8 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone_End);
 		
-		// zengjin@baixing.net
- 		//AppMsg.makeText(getActivity(), "今天有N多次浏览", AppMsg.STYLE_INFO).show();
- 		Toast toast = Toast.makeText(this, "今天有N多次浏览", Toast.LENGTH_SHORT);
- 		toast.setGravity(Gravity.TOP | Gravity.CENTER_HORIZONTAL, 0, (int)getResources().getDimension(R.dimen.title_height));
- 		toast.show();
+		// lumengdi@baixing.net
+ 		HomeToast.show(this, this.getLayoutInflater(), "今天有N多次浏览", true);
 	}
 	
 	private void jumpToPage(){

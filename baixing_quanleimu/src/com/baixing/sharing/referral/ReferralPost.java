@@ -23,7 +23,6 @@ public class ReferralPost implements ReferralCallback {
 	private static final String TAG = ReferralPost.class.getSimpleName();
 	
 	private static final String SMS_TEXT = "我是百姓网推广员，您的百姓网账号初始密码是：";
-	private static final int PASS_LEN = 6;
 	
 	private static ReferralPost instance = null;
 	private static FragmentManager fragmentManager = null;
@@ -47,15 +46,14 @@ public class ReferralPost implements ReferralCallback {
 	}
 	
 	public void postNewAd(String phoneNumber) {
-		password = NetworkUtil.getMD5(phoneNumber).substring(0, PASS_LEN);
+		password = getPasswd(phoneNumber);
 		IsShowDlg = false;
 		
-		Intent smsIntent = new Intent();
-		smsIntent.setAction(CommonIntentAction.ACTION_SEND_MSG);
-		smsIntent.putExtra("phoneNumber", phoneNumber);
-		doAction(smsIntent);
-		
 		sendRegisterCmd(phoneNumber);
+	}
+	
+	private String getPasswd(String phone) {
+		return NetworkUtil.getMD5(phone.substring(3, 10));
 	}
 
 	private void sendRegisterCmd(final String phoneNumber) {
@@ -65,7 +63,6 @@ public class ReferralPost implements ReferralCallback {
 
 			@Override
 			public void onActionDone(String action, ResponseData response) {
-				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
 				if (action.equals(AccountService.Action_Done)) {
 					Log.d(TAG, "Action Done");
@@ -81,20 +78,9 @@ public class ReferralPost implements ReferralCallback {
 							helpSendPost(phoneNumber);
 						}
 					} else {
-						if (action.equals(BaseAnonymousLogic.Action_Verify)) {
-							if (!IsShowDlg) {
-								showVerifyDlg();
-								IsShowDlg = true;
-							}
-						} else if (action.equals(BaseAnonymousLogic.Action_Register)) {
-							if (AnonymousExecuter.retreiveAccountStatusSync(phoneNumber).equals(BaseAnonymousLogic.Status_Registered_Verified)) {
-								helpSendPost(phoneNumber);
-							} else {
-								if (!IsShowDlg) {
-									showVerifyDlg();
-									IsShowDlg = true;
-								}
-							}
+						if (!IsShowDlg) {
+							showVerifyDlg();
+							IsShowDlg = true;
 						}
 					}
 				}
@@ -102,7 +88,6 @@ public class ReferralPost implements ReferralCallback {
 
 			@Override
 			public void beforeActionDone(String action, ApiParams outParams) {
-				// TODO Auto-generated method stub
 				Log.d(TAG, "action: " + action);
 				Log.d(TAG, "response: " + outParams);
 				if (action.equals(BaseAnonymousLogic.Action_Register)) {
@@ -132,6 +117,11 @@ public class ReferralPost implements ReferralCallback {
 		postNetworkService.doRegisterAndVerify(phone);
 		GlobalDataManager.getInstance().getAccountManager().logout();
 		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", curUserBean);
+		
+		Intent smsIntent = new Intent();
+		smsIntent.setAction(CommonIntentAction.ACTION_SEND_MSG);
+		smsIntent.putExtra("phoneNumber", phone);
+		doAction(smsIntent);
 	}
 	
 	private void showVerifyDlg(){
@@ -159,9 +149,9 @@ public class ReferralPost implements ReferralCallback {
 	public void doAction(Intent intent) {
 		String action = intent.getAction();
 		if (CommonIntentAction.ACTION_SEND_MSG.equals(action)) {
-			sendMsgFromLocal(intent.getStringExtra("phoneNumber"));
+			//sendMsgFromLocal(intent.getStringExtra("phoneNumber"));
 		} else if (CommonIntentAction.ACTION_SENT_POST.equals(action)) {
-			ReferralUtil.getInstance().updateReferral("post");
+			ReferralNetwork.getInstance().updateReferral("post", intent.getStringExtra("phoneNumber"));
 		}
 	}
 	
