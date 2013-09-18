@@ -100,8 +100,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/textAllPosts"
-                    android:layout_marginRight="10dp"
-                    android:text="100" />
+                    android:layout_marginRight="10dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -137,8 +136,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/textEffectivePosts"
-                    android:layout_marginRight="10dp"
-                    android:text="57" />
+                    android:layout_marginRight="10dp" />
             </RelativeLayout>
             
             <RelativeLayout
@@ -174,8 +172,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/textPendingPosts"
-                    android:layout_marginRight="10dp"
-                    android:text="20" />
+                    android:layout_marginRight="10dp" />
             </RelativeLayout>
             
             <Button
@@ -248,8 +245,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/textAlreadyShare"
-                    android:layout_marginRight="10dp"
-                    android:text="100" />
+                    android:layout_marginRight="10dp" />
             </RelativeLayout>
 
             <RelativeLayout
@@ -285,8 +281,7 @@
                     android:layout_alignParentLeft="false"
                     android:layout_alignParentRight="true"
                     android:layout_alignTop="@+id/textEffectiveShare"
-                    android:layout_marginRight="10dp"
-                    android:text="57" />
+                    android:layout_marginRight="10dp" />
             </RelativeLayout>
             
             <Button

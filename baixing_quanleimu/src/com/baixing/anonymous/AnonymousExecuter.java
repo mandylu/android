@@ -14,10 +14,12 @@ import android.os.Message;
 import com.baixing.anonymous.AnonymousNetworkListener.ResponseData;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.UserBean;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.sharing.referral.ReferralUtil;
 
 public class AnonymousExecuter implements Callback{
 	private final static String checkStatusApi = "checkAccountStatus";
@@ -144,6 +146,15 @@ public class AnonymousExecuter implements Callback{
 		params.addParam("mobile", mobile);
 		params.addAll(param.getParams());
 		BaseApiCommand.createCommand("sendsmscode", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
+		
+		// zengjin@baixing.net
+		if (ReferralUtil.isPromoter()) {
+			UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+			if (curUser.getPhone() != null && !mobile.equals(curUser.getPhone())) {
+				return;
+			}
+		}
+		
 		if(smsReceiver == null){
 			smsReceiver = new BroadcastReceiver(){
 

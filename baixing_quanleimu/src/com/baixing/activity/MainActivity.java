@@ -230,7 +230,7 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone_End);
 		
 		// lumengdi@baixing.net
- 		HomeToast.show(this, this.getLayoutInflater(), "今天有N多次浏览", true);
+ 		HomeToast.show(this, this.getLayoutInflater(), "今日浏览39283", true);
 	}
 	
 	private void jumpToPage(){

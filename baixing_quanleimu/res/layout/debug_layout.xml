@@ -10,7 +10,7 @@
 			android:orientation="vertical"
 			android:layout_width="fill_parent"
 			android:layout_height="667dp" android:layout_alignParentLeft="true"
-			android:layout_below="@+id/include" android:layout_marginTop="60dp">
+			android:layout_below="@+id/linearTop" android:layout_marginTop="60dp">
 		<Button
 				android:layout_width="fill_parent"
 				android:layout_height="44dp"
@@ -41,11 +41,11 @@
 					android:layout_height="44dp"
 					android:text="info"
 					android:id="@+id/pushActionEt"
-					android:layout_alignLeft="@+id/xmppConTv" android:layout_marginRight="176dp"
+					android:layout_marginRight="176dp"
 					android:layout_marginLeft="20dp"/>
 			<EditText android:layout_width="fill_parent" android:layout_height="44dp"
 			          android:id="@+id/pushTitleEt"
-			          android:layout_alignLeft="@+id/xmppConTv" android:layout_below="@+id/pushTestBtn"
+			          android:layout_below="@+id/pushTestBtn"
 			          android:layout_alignRight="@+id/pushTestBtn" android:hint="title"
 			          android:layout_marginLeft="20dp"/>
 			<EditText android:layout_width="fill_parent" android:layout_height="115dp" android:id="@+id/pushDataEt"

@@ -52,10 +52,6 @@
                     android:id="@+id/image_list"
                     layout="@layout/post_image_list" />
 
-                <include
-                    android:id="@+id/img_description"
-                    layout="@layout/post_image_description_layout" />
-
             </LinearLayout>
 
             <LinearLayout

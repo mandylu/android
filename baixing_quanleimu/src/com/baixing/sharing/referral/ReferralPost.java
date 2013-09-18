@@ -1,5 +1,8 @@
 package com.baixing.sharing.referral;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
@@ -11,7 +14,10 @@ import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.network.NetworkUtil;
+import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.util.Util;
 import com.baixing.util.post.PostNetworkService;
 import com.baixing.widget.VerifyFailDialog;
@@ -44,10 +50,10 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 	
 	public void postNewAd(String phone) {
 		phoneNumber = phone;
-		password = getPasswd(phoneNumber);
+		password = getPasswd(phone);
 		IsShowDlg = false;
 		
-		startVerify(phoneNumber);
+		startVerify(phone);
 	}
 	
 	private String getPasswd(String phone) {
@@ -72,25 +78,57 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 	}
 	
 	private void helpSendPost(String phone) {
-		UserBean curUserBean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-		if (curUserBean == null) {
-			Log.e(TAG, "promoter didn't login");
-			return;
-		}
-		GlobalDataManager.getInstance().getAccountManager().logout();
-		UserBean newUserBean = new UserBean();
-		newUserBean.setId(curUserBean.getId());
-		newUserBean.setPhone(phone);
-		newUserBean.setPassword(password, true);
-		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", newUserBean);
-		postNetworkService.doRegisterAndVerify(phone);
-		GlobalDataManager.getInstance().getAccountManager().logout();
-		Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", curUserBean);
-		
-		Intent smsIntent = new Intent();
-		smsIntent.setAction(CommonIntentAction.ACTION_SEND_MSG);
-		smsIntent.putExtra("phoneNumber", phone);
-		doAction(smsIntent);
+		ApiParams param = new ApiParams();
+		param.addParam("mobile", phoneNumber);
+		BaseApiCommand.createCommand("getUser", false, param).execute(GlobalDataManager.getInstance().getApplicationContext(), new Callback(){
+
+			@Override
+			public void onNetworkDone(String apiName, String responseData) {
+				try {
+					JSONObject obj = new JSONObject(responseData);
+					if (obj != null) {
+						JSONObject error = obj.getJSONObject("error");
+						if (error != null) {
+							String code = error.getString("code");
+							if (code != null && code.equals("0")) {
+								String password = obj.getString("password");
+								String id = obj.getString("id");
+								UserBean otherBean = new UserBean();
+								otherBean.setId(id);
+								otherBean.setPhone(phoneNumber);
+								String decPwd = Util.getDecryptedPassword(password);
+								otherBean.setPassword(decPwd, false);
+								
+								UserBean ownerBean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+								if (ownerBean == null) {
+									Log.e(TAG, "promoter didn't login");
+									return;
+								}
+								GlobalDataManager.getInstance().getAccountManager().logout();
+								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", otherBean);
+								postNetworkService.doRegisterAndVerify(phoneNumber);
+								GlobalDataManager.getInstance().getAccountManager().logout();
+								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", ownerBean);
+								
+								Intent smsIntent = new Intent();
+								smsIntent.setAction(CommonIntentAction.ACTION_SENT_POST);
+								smsIntent.putExtra("phoneNumber", phoneNumber);
+								doAction(smsIntent);
+							}
+						}
+					}
+				} catch(JSONException e) {
+					e.printStackTrace();
+				}				
+			}
+
+			@Override
+			public void onNetworkFail(String apiName, ApiError error) {
+				// TODO Auto-generated method stub
+				Log.e(TAG, "Network Error");
+			}
+			
+		});
 	}
 	
 	private void showVerifyDlg(final String phone) {

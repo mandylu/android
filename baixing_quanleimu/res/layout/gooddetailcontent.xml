@@ -74,7 +74,6 @@
                 android:id="@+id/llMainContent"
                 android:layout_width="fill_parent"
                 android:layout_height="fill_parent"
-                android:layout_below="@+id/verifyseperator"
                 android:orientation="vertical" >
 
                 <RelativeLayout

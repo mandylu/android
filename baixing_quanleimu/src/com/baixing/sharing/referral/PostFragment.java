@@ -168,12 +168,6 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 		PerformanceTracker.stamp(Event.E_PGFrag_OnCreate_Start);
 		super.onCreate(savedInstanceState);
 		
-		if (savedInstanceState != null) {
-			isNewPost = false;
-		} else {
-			isNewPost = !editMode;
-		}
-		
 		String categoryNames = this.getArguments().getString(KEY_INIT_CATEGORY);
 		initWithCategoryNames(categoryNames);
 				
@@ -309,7 +303,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 				categoryItem.setTag(PostCommonValues.HASH_CONTROL, null);
 			}
 			
-			View description = layout_txt.findViewById(R.id.img_description);
+			View description = null;
 			if(description != null){
 				description.setTag(PostCommonValues.HASH_CONTROL, null);
 			}
@@ -706,7 +700,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 						((CheckBox)control).setChecked(false);
 					}
 				}else if(control instanceof TextView){
-					((TextView)control).setText(displayValue);
+					//((TextView)control).setText(displayValue);
 				}
 			}
 		}	
@@ -726,14 +720,14 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 	private void resetData(boolean clearImgs){
 		if(this.layout_txt != null){
 			View imgView = layout_txt.findViewById(R.id.image_list);
-			View desView = layout_txt.findViewById(R.id.img_description);
-			View catView = layout_txt.findViewById(R.id.categoryItem);
+			//View desView = layout_txt.findViewById(R.id.img_description);
+			//View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
-			layout_txt.addView(imgView);
-			layout_txt.addView(desView);
-			if(catView != null){
-				layout_txt.addView(catView);
-			}
+			//layout_txt.addView(imgView);
+			//layout_txt.addView(desView);
+			//if(catView != null){
+			//	layout_txt.addView(catView);
+			//}
 		}
 		postList.clear();
 		
@@ -774,8 +768,8 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 			this.showPost();
 		}else if(message == ContactAndAddressDetailFragment.MSG_RET_CODE){
 			if(layout_txt.findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE){
-				((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
-				((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
+				//((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
+				//((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
 			}
 		}else if(message == RegisterFragment.MSG_REGISTER_SUCCESS 
 				|| message == LoginFragment.MSG_LOGIN_SUCCESS
@@ -896,7 +890,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 		if(pm.containsKey(PostCommonValues.STRING_DESCRIPTION)){
 			PostGoodsBean bean = pm.get(PostCommonValues.STRING_DESCRIPTION);
 			if(bean != null){
-				View v = layout_txt.findViewById(R.id.img_description);
+				/*View v = layout_txt.findViewById(R.id.img_description);
 				EditText text = (EditText)v.findViewById(R.id.description_input);
 				text.setText("");
 				text.setOnTouchListener(new OnTouchListener() {
@@ -923,7 +917,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 				text.setHint("请输入" + bean.getDisplayName());
 				v.setTag(PostCommonValues.HASH_POST_BEAN, bean);
 				v.setTag(PostCommonValues.HASH_CONTROL, text);
-				v.setOnClickListener(this);
+				v.setOnClickListener(this);*/
 				
 //				v.findViewById(R.id.myImg).setOnClickListener(this);
 //				((ImageView)v.findViewById(R.id.myImg)).setImageBitmap(ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.btn_add_picture));
@@ -994,7 +988,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 		if(phone == null || phone.length() == 0){
 			((Button)getView().findViewById(R.id.btn_contact)).setHint("联系方式");
 		}else{
-			((Button)getView().findViewById(R.id.btn_contact)).setText(phone);
+			//((Button)getView().findViewById(R.id.btn_contact)).setText(phone);
 		}
 		
 		String address = GlobalDataManager.getInstance().getAddress();
@@ -1005,7 +999,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 				((Button)getView().findViewById(R.id.btn_address)).setHint("交易地点");
 			}
 		}else{
-			((Button)getView().findViewById(R.id.btn_address)).setText(address);
+			//((Button)getView().findViewById(R.id.btn_address)).setText(address);
 		}
 		
 		setPhoneAndAddrLeftIcon();
@@ -1494,16 +1488,16 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
 					}
 					if(bean.getName().equals("contact")){
 						if(editMode){
-							((TextView)control).setText(getAdContact());
+							//((TextView)control).setText(getAdContact());
 						}else{
 							String phone = GlobalDataManager.getInstance().getPhoneNumber();
 							if(phone != null && phone.length() > 0){
-								((TextView)control).setText(phone);
+								//((TextView)control).setText(phone);
 								continue;
 							}
 						}
 					}
-					((TextView)control).setText(value);
+					//((TextView)control).setText(value);
 				}
 			}
 		}
@@ -1689,7 +1683,7 @@ public class PostFragment extends BaseFragment implements OnClickListener, Callb
             if(location.cityName != null && location.cityName.length() > 0){
             	address = address.replaceFirst(location.cityName, "");
             }
-            addrBtn.setText(address);
+            //addrBtn.setText(address);
             
             setPhoneAndAddrLeftIcon();
 		}		
