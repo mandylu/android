@@ -151,4 +151,5 @@
     <string name="button_referral_bluetooth">蓝牙直接分享给好友</string>
     
     <string name="button_referral_login">一键快速注册登录</string>
+    <string name="button_referral_poster">海报推广</string>
 </resources>

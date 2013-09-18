@@ -41,7 +41,7 @@ public class ReferralUtil {
 
 	public static boolean isPromoter() {
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager(); 
-		if (am.isUserLogin() && am.getCurrentUser().getPhone().equals("13503300040")) {
+		if (am.isUserLogin()/* && am.getCurrentUser().getPhone().equals("13503300040")*/) {
 			return true;
 		}
 		return false;

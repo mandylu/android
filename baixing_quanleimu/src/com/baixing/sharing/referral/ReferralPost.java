@@ -2,11 +2,9 @@ package com.baixing.sharing.referral;
 
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
-import android.telephony.SmsManager;
 import android.util.Log;
 
 import com.baixing.anonymous.AccountService;
-import com.baixing.anonymous.AnonymousExecuter;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
 import com.baixing.broadcast.CommonIntentAction;
@@ -18,11 +16,9 @@ import com.baixing.util.Util;
 import com.baixing.util.post.PostNetworkService;
 import com.baixing.widget.VerifyFailDialog;
 
-public class ReferralPost implements ReferralCallback {
+public class ReferralPost implements ReferralCallback, AnonymousNetworkListener {
 	
 	private static final String TAG = ReferralPost.class.getSimpleName();
-	
-	private static final String SMS_TEXT = "我是百姓网推广员，您的百姓网账号初始密码是：";
 	
 	private static ReferralPost instance = null;
 	private static FragmentManager fragmentManager = null;
@@ -31,6 +27,7 @@ public class ReferralPost implements ReferralCallback {
 	private static String password;
 	private static String verifyCode;
 	private static boolean IsShowDlg;
+	private static String phoneNumber;
 	
 	public static ReferralPost getInstance() {
 		if (instance != null) {
@@ -45,61 +42,33 @@ public class ReferralPost implements ReferralCallback {
 		ReferralPost.postNetworkService = postNetworkService;
 	}
 	
-	public void postNewAd(String phoneNumber) {
+	public void postNewAd(String phone) {
+		phoneNumber = phone;
 		password = getPasswd(phoneNumber);
 		IsShowDlg = false;
 		
-		sendRegisterCmd(phoneNumber);
+		startVerify(phoneNumber);
 	}
 	
 	private String getPasswd(String phone) {
 		return NetworkUtil.getMD5(phone.substring(3, 10));
 	}
-
-	private void sendRegisterCmd(final String phoneNumber) {
+	
+	private void startVerify(String phoneNumber) {
+		String phoneStatus = AccountService.getInstance().getAccountStatus(phoneNumber);
 		AccountService.getInstance().initStatus(phoneNumber);
-		AccountService.getInstance().initPassword(password);
-		AccountService.getInstance().setActionListener(new AnonymousNetworkListener() {
-
-			@Override
-			public void onActionDone(String action, ResponseData response) {
-				Log.d(TAG, "action: " + action);
-				if (action.equals(AccountService.Action_Done)) {
-					Log.d(TAG, "Action Done");
-				} else {
-					Log.d(TAG, "response: " + response);
-					if (response.success) {
-						if (action.equals(BaseAnonymousLogic.Action_Register)) {
-							if (!IsShowDlg) {
-								showVerifyDlg();
-								IsShowDlg = true;
-							}
-						} else if (action.equals(BaseAnonymousLogic.Action_Verify)) {
-							helpSendPost(phoneNumber);
-						}
-					} else {
-						if (!IsShowDlg) {
-							showVerifyDlg();
-							IsShowDlg = true;
-						}
-					}
-				}
-			}
-
-			@Override
-			public void beforeActionDone(String action, ApiParams outParams) {
-				Log.d(TAG, "action: " + action);
-				Log.d(TAG, "response: " + outParams);
-				if (action.equals(BaseAnonymousLogic.Action_Register)) {
-					outParams.addParam("password", password);
-				} else if (action.equals(BaseAnonymousLogic.Action_Verify) && verifyCode != null) {
-					outParams.addParam("verifyCode", verifyCode);
-					verifyCode = null;
-				}
-			}
-			
-		});
-		AccountService.getInstance().start(BaseAnonymousLogic.Status_UnRegistered);
+		AccountService.getInstance().setActionListener(this);
+		Log.d(TAG, phoneStatus);
+		if (BaseAnonymousLogic.Status_Registered_Verified.equals(phoneStatus)) {
+			AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_Verified, BaseAnonymousLogic.Status_ForgetPwd);
+		} else {
+			AccountService.getInstance().start(phoneStatus);
+		}
+		
+		if (!IsShowDlg) {
+			showVerifyDlg(phoneNumber);
+			IsShowDlg = true;
+		}
 	}
 	
 	private void helpSendPost(String phone) {
@@ -124,24 +93,35 @@ public class ReferralPost implements ReferralCallback {
 		doAction(smsIntent);
 	}
 	
-	private void showVerifyDlg(){
+	private void showVerifyDlg(final String phone) {
 
-		if(fragmentManager != null){
+		if(fragmentManager != null) {
 			new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
 				
 				@Override
 				public void onReVerify(String mobile) {
 					IsShowDlg = false;
-					AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified);
+					startVerify(phone);
 				}
 
 				@Override
 				public void onSendVerifyCode(String code) {
 					IsShowDlg = false;
 					verifyCode = code;
-					AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified, BaseAnonymousLogic.Status_CodeReceived);						
+					sendVerifyCode(phone);						
 				}
 			}).show(fragmentManager, null);
+		}
+	}
+	
+	private void sendVerifyCode(String mobile) {
+		String status = AccountService.getInstance().getAccountStatus(mobile);
+		if (status != null && !status.equals(BaseAnonymousLogic.Status_UnRegistered)) {
+			AccountService.getInstance().initStatus(mobile);
+			AccountService.getInstance().setActionListener(this);
+			AccountService.getInstance().start(BaseAnonymousLogic.Status_Registered_UnVerified, BaseAnonymousLogic.Status_CodeReceived);
+		} else {
+			Log.e(TAG, "failed to registered");
 		}
 	}
 
@@ -155,9 +135,33 @@ public class ReferralPost implements ReferralCallback {
 		}
 	}
 	
-	private void sendMsgFromLocal(String phoneNumber) {
-		SmsManager smsManager = SmsManager.getDefault();
-		String smsText = SMS_TEXT + password;
-		smsManager.sendTextMessage(phoneNumber, null, smsText, null, null);
+	@Override
+	public void onActionDone(String action, ResponseData response) {
+		Log.d(TAG, "action: " + action);
+		if (action.equals(AccountService.Action_Done)) {
+			Log.d(TAG, "Action Done");
+		} else {
+			Log.d(TAG, "response: " + response.message);
+			if (action.equals(BaseAnonymousLogic.Action_Verify) && response.success) {
+				helpSendPost(phoneNumber);
+			} else if (action.equals(BaseAnonymousLogic.Action_Register) && !response.success) {
+				startVerify(phoneNumber);
+			} else if (!IsShowDlg) {
+				showVerifyDlg(phoneNumber);
+				IsShowDlg = true;
+			}
+		}
+	}
+
+	@Override
+	public void beforeActionDone(String action, ApiParams outParams) {
+		Log.d(TAG, "action: " + action);
+		Log.d(TAG, "outParams: " + outParams.toString());
+		if (action.equals(BaseAnonymousLogic.Action_Register)) {
+			outParams.addParam("password", password);
+		} else if (action.equals(BaseAnonymousLogic.Action_Verify)) {
+			outParams.addParam("verifyCode", verifyCode);
+			verifyCode = null;
+		}
 	}
 }

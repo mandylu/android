@@ -204,16 +204,17 @@
             android:label="Debug" />
         
         <activity
-            android:name="com.baixing.sharing.referral.ReferralLauncherActivity"
-            android:label="@string/title_activity_referral_launcher" >
-        </activity>
-        <receiver 
-            android:name="com.baixing.sharing.referral.ReferralBroadcastReceiver"
-            android:exported="false" >
+            android:name="com.baixing.sharing.referral.PostActivity"
+            android:configChanges="orientation|keyboardHidden|navigation"
+            android:label="@string/app_name"
+            android:launchMode="singleInstance"
+            android:screenOrientation="portrait"
+            android:theme="@style/mainActivityTheme"
+            android:windowSoftInputMode="adjustResize" >
             <intent-filter>
-                <action android:name="com.baixing.sharing.referral.action.SEND_MSG" />
+                <category android:name="android.intent.category.LAUNCHER" />
             </intent-filter>
-        </receiver>
+        </activity>
 
         <service
             android:name="com.baixing.broadcast.BXNotificationService"

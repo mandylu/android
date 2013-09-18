@@ -68,6 +68,7 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 
     	referralmain = inflater.inflate(R.layout.referral_info, null);
         ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(new BtnPostOnClickListener());
+        ((Button) referralmain.findViewById(R.id.btn_referral_poster)).setOnClickListener(new BtnPosterOnClickListener());
 
         return referralmain;
     }
@@ -79,6 +80,21 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 			Intent intent = new Intent();
 			PerformanceTracker.stamp(Event.E_Start_PostActivity);
 			intent.setClass(context, PostActivity.class);
+    		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+    		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+    		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+    		context.startActivity(intent);
+		}
+    	
+    }
+    
+    class BtnPosterOnClickListener implements View.OnClickListener {
+
+		@Override
+		public void onClick(View v) {
+			Intent intent = new Intent();
+			PerformanceTracker.stamp(Event.E_Start_PostActivity);
+			intent.setClass(context, com.baixing.sharing.referral.PostActivity.class);
     		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
     		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
