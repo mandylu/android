@@ -67,35 +67,32 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
                              Bundle savedInstanceState) {
 
     	referralmain = inflater.inflate(R.layout.referral_info, null);
-        ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(new BtnPostOnClickListener());
-        ((Button) referralmain.findViewById(R.id.btn_referral_poster)).setOnClickListener(new BtnPosterOnClickListener());
+    	BtnOnClickListener btnOnClickListener = new BtnOnClickListener();
+        ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_poster)).setOnClickListener(btnOnClickListener);
 
         return referralmain;
     }
     
-    class BtnPostOnClickListener implements View.OnClickListener {
+    class BtnOnClickListener implements View.OnClickListener {
 
 		@Override
 		public void onClick(View v) {
 			Intent intent = new Intent();
-			PerformanceTracker.stamp(Event.E_Start_PostActivity);
-			intent.setClass(context, PostActivity.class);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-    		context.startActivity(intent);
-		}
-    	
-    }
-    
-    class BtnPosterOnClickListener implements View.OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-			Intent intent = new Intent();
-			PerformanceTracker.stamp(Event.E_Start_PostActivity);
-			intent.setClass(context, com.baixing.sharing.referral.PostActivity.class);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+			
+			switch (v.getId()) {
+			case R.id.btn_referral_post:
+				intent.setClass(context, com.baixing.activity.PostActivity.class);
+				break;
+			case R.id.btn_referral_poster:
+				intent.setClass(context, com.baixing.sharing.referral.PosterActivity.class);
+				break;
+			default:
+				break;
+			}
+			
+			intent.putExtra("isReferral", true);
+			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
     		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
     		context.startActivity(intent);
