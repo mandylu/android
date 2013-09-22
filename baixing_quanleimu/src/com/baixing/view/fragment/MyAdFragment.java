@@ -281,7 +281,7 @@ public class MyAdFragment extends BaseFragment  implements PullToRefreshListView
 		if(isMyPostView()){
 			Tracker.getInstance().pv(PV.MYADS_SENT).append(Key.ADSCOUNT, listMyPost != null ? listMyPost.size() : 0).end();
 		}else{
-			Tracker.getInstance().pv(PV.FAVADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData().size()).end();
+			Tracker.getInstance().pv(PV.FAVADS).append(Key.ADSCOUNT, glLoader.getGoodsList().getData() != null ? glLoader.getGoodsList().getData().size() : 0).end();
 		}
 //		Log.d("jjj","WWWW->onresume()");
 		this.rebuildPage(getView(), false);
