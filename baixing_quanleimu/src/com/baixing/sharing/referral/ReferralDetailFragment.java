@@ -1,0 +1,59 @@
+package com.baixing.sharing.referral;
+
+import android.content.Context;
+import android.os.Bundle;
+import android.util.Log;
+import android.view.LayoutInflater;
+import android.view.View;
+import android.view.ViewGroup;
+import android.webkit.WebView;
+import android.webkit.WebViewClient;
+
+import com.baixing.activity.BaseFragment;
+import com.baixing.activity.BaseFragment.TitleDef;
+import com.baixing.data.GlobalDataManager;
+import com.baixing.message.BxMessageCenter;
+import com.baixing.message.IBxNotificationNames;
+import com.quanleimu.activity.R;
+
+public class ReferralDetailFragment extends BaseFragment {
+	 private static Context context;
+	 private String mTitle;
+	 private String mUrl;
+	    
+	    @Override
+	    public void onCreate(Bundle savedInstanceState){
+	    	super.onCreate(savedInstanceState);
+	    	context = GlobalDataManager.getInstance().getApplicationContext();
+	    	Bundle bundle=getArguments();
+	    	mTitle=bundle.getString("title");
+	    	mUrl=bundle.getString("url");
+	    	Log.v("bundle", (mTitle==null?"null":mTitle));
+	    	Log.v("bundle", (mUrl==null?"null":mUrl));
+	    }
+	    
+	    @Override
+	    public void initTitle(TitleDef title) {
+	        title.m_visible = true;
+	        title.m_title = mTitle;
+	        title.m_leftActionHint = "完成";
+	    }
+	    
+	    @Override
+	    public boolean hasGlobalTab() {
+			return true;
+		}
+
+	@Override
+	protected View onInitializeView(LayoutInflater inflater,
+			ViewGroup container, Bundle savedInstanceState) {
+		View referraldetail = inflater.inflate(R.layout.referral_detail, null);
+		
+		WebView web=(WebView)referraldetail.findViewById(R.id.web_referral_detail);
+		web.getSettings().setJavaScriptEnabled(true); 
+        web.loadUrl(mUrl);
+        web.setWebViewClient(new WebViewClient());
+		return referraldetail;
+	}
+
+}

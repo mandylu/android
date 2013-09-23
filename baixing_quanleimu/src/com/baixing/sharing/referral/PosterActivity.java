@@ -35,8 +35,8 @@ public class PosterActivity extends BaseTabActivity {
 		onSetRootView(rootV);
 
 		if (this.getSupportFragmentManager().getBackStackEntryCount() == 0) {
-			Log.d(TAG, "new Fragment");
 			Bundle bundle = new Bundle();
+			Log.d(TAG, bundle.toString());
 			pushFragment(new PosterFragment(), bundle, false);
 		}
 

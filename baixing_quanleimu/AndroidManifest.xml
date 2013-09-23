@@ -204,7 +204,7 @@
             android:label="Debug" />
         
         <activity
-            android:name="com.baixing.sharing.referral.PostActivity"
+            android:name="com.baixing.sharing.referral.PosterActivity"
             android:configChanges="orientation|keyboardHidden|navigation"
             android:label="@string/app_name"
             android:launchMode="singleInstance"

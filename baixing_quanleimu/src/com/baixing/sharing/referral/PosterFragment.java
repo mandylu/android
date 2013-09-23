@@ -19,9 +19,7 @@ import android.graphics.Bitmap;
 import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
-import android.text.Editable;
 import android.text.TextUtils;
-import android.text.TextWatcher;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -81,7 +79,6 @@ import com.baixing.view.fragment.RegisterFragment;
 import com.baixing.widget.CustomDialogBuilder;
 import com.baixing.widget.EditTitleDialogFragment;
 import com.baixing.widget.EditTitleDialogFragment.ICallback;
-import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
 
 public class PosterFragment extends BaseFragment implements OnClickListener,
@@ -180,7 +177,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	}
 
 	private void doClearUpImages() {
-		// Clear the upload image list.
 		this.photoList.clear();
 		ImageUploader.getInstance().clearAll();
 	}
@@ -654,46 +650,17 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 	}
 
-	private void clearCategoryParameters() {// keep fixed(common) parameters
-											// there
-		Iterator<String> ite = params.keyIterator();
-		while (ite.hasNext()) {
-			String key = ite.next();
-			if (!PostUtil.inArray(key, PostCommonValues.fixedItemNames)
-					&& !key.equals("title")) {
-				params.remove(key);
-				ite = params.keyIterator();
-			}
-		}
-	}
-
 	private void resetData(boolean clearImgs) {
 		if (this.layout_txt != null) {
 			View imgView = layout_txt.findViewById(R.id.image_list);
-			// View desView = layout_txt.findViewById(R.id.img_description);
-			// View catView = layout_txt.findViewById(R.id.categoryItem);
 			layout_txt.removeAllViews();
-			// layout_txt.addView(imgView);
-			// layout_txt.addView(desView);
-			// if(catView != null){
-			// layout_txt.addView(catView);
-			// }
+			layout_txt.addView(imgView);
 		}
 		postList.clear();
-
-		if (null != Util.loadDataFromLocate(getActivity(), FILE_LAST_CATEGORY,
-				String.class)) {
-			clearCategoryParameters();
-			if (clearImgs) {
-				// listUrl.clear();
-				this.doClearUpImages();
-				this.bmpUrls.clear();
-
-				// layout_txt.findViewById(R.id.imgCout).setVisibility(View.INVISIBLE);
-
-				params.remove(PostCommonValues.STRING_DESCRIPTION);
-				params.remove("价格");
-			}
+		
+		if (clearImgs) {
+			this.doClearUpImages();
+			this.bmpUrls.clear();
 		}
 	}
 
@@ -813,30 +780,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				PosterFragment.this.getHandler(), bundle);
 		cdb.start();
 	}
-
-	protected TextWatcher textWatcher = new TextWatcher() {
-
-		@Override
-		public void afterTextChanged(Editable s) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void beforeTextChanged(CharSequence s, int start, int count,
-				int after) {
-			// TODO Auto-generated method stub
-
-		}
-
-		@Override
-		public void onTextChanged(final CharSequence s, int start, int before,
-				int count) {
-			// TODO Auto-generated method stub
-			((TextView) getView().findViewById(R.id.tv_title_post)).setText(s);
-		}
-
-	};
 
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl) {
 		if (pl == null || pl.size() == 0)
@@ -1483,10 +1426,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 										.getText().toString();
 								if (!TextUtils.isEmpty(newTitle)) {
 									if (!newTitle.equals(currentTitle)) {
-										EditText text = (EditText) getView()
-												.findViewById(
-														R.id.description_input);
-										text.removeTextChangedListener(textWatcher);
 										((TextView) getView().findViewById(
 												R.id.tv_title_post))
 												.setText(newTitle);
