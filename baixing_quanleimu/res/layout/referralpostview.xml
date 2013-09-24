@@ -101,6 +101,18 @@
             </LinearLayout>
 
             <Button
+                android:id="@+id/btn_qrcode_scan"
+                android:layout_width="fill_parent"
+                android:layout_height="48dp"
+                android:layout_marginTop="0dip"
+                android:background="@drawable/post_finish_btn"
+                android:text="扫描二维码"
+                android:textColor="#FFFFFF"
+                android:textSize="18dp"
+                android:textStyle="bold" >
+            </Button>
+            
+            <Button
                 android:id="@+id/iv_post_finish"
                 android:layout_width="fill_parent"
                 android:layout_height="48dp"

@@ -80,6 +80,7 @@ import com.baixing.widget.CustomDialogBuilder;
 import com.baixing.widget.EditTitleDialogFragment;
 import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.quanleimu.activity.R;
+import com.umeng.common.Log;
 
 public class PosterFragment extends BaseFragment implements OnClickListener,
 		Callback {
@@ -1239,12 +1240,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation) msg.obj;
-			Button addrBtn = getView() == null ? null : (Button) getView()
-					.findViewById(R.id.btn_address);
-			if (addrBtn != null
-					&& (addrBtn.getText() == null || addrBtn.getText().length() == 0)) {
-				setDetailLocationControl(detailLocation);
-			}
+			String address = getDetailLocation(detailLocation);
+			Log.d(TAG, address);
 			break;
 		case PostCommonValues.MSG_POST_NEED_LOGIN:
 			Bundle tmpBundle = createArguments("登录", "");
@@ -1576,6 +1573,23 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		PostUtil.adjustMarginBottomAndHeight(layout);
 
 		return layout;
+	}
+	
+	private String getDetailLocation(BXLocation location) {
+		if (location == null) {
+			return "";
+		}
+		String latlon = null;
+		try {
+			latlon = "(" + location.fLat + "," + location.fLon + "); ";
+		} catch (Exception e) {
+			latlon = "";
+		}
+		String address = (location.detailAddress == null || location.detailAddress
+				.equals("")) ? ((location.subCityName == null || location.subCityName
+				.equals("")) ? "" : location.subCityName)
+				: location.detailAddress;
+		return (TextUtils.isEmpty(latlon) ? "" : latlon) + (TextUtils.isEmpty(address) ? "" : address);
 	}
 
 	private void setDetailLocationControl(BXLocation location) {

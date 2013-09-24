@@ -14,7 +14,6 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
 import com.baixing.sharing.referral.ReferralUtil;
-import com.baixing.sharing.referral.ReferralNotification;
 import com.baixing.util.Util;
 import com.xiaomi.mipush.sdk.ErrorCode;
 import com.xiaomi.mipush.sdk.MiPushClient;
@@ -72,7 +71,6 @@ public class MiPushCallback extends MiPushClientCallback {
 			pushDispatcher.dispatch(content);
 		} catch (JSONException e) {
 			Log.w(TAG, "content is not json data");
-			ReferralNotification.showNotification(context, content);
 		}
 	}
 
