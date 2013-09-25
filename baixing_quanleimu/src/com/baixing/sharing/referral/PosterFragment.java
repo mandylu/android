@@ -136,14 +136,19 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			finishRightNow = true;
 			return;
 		}
-
+		
+		Log.d(TAG, requestCode + "");
 		if (resultCode == Activity.RESULT_OK) {
-			photoList.clear();
-			if (data.getExtras().containsKey(
-					CommonIntentAction.EXTRA_IMAGE_LIST)) {
-				ArrayList<String> result = data
-						.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
-				photoList.addAll(result);
+			if (requestCode == 100) {
+				scanQRCode.setText(data.getExtras().getString("qrcode"));
+			} else {
+				photoList.clear();
+				if (data.getExtras().containsKey(
+						CommonIntentAction.EXTRA_IMAGE_LIST)) {
+					ArrayList<String> result = data
+							.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
+					photoList.addAll(result);
+				}
 			}
 		}
 
@@ -317,6 +322,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		
 		scanQRCode = (Button) v.findViewById(R.id.btn_qrcode_scan);
 		scanQRCode.setOnClickListener(this);
+		scanQRCode.setText("扫描二维码");
 
 		return v;
 	}
@@ -391,9 +397,17 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	public void onClick(final View v) {
 		switch (v.getId()) {
 		case R.id.btn_qrcode_scan:
-			Intent intent = new Intent();
+			Intent backIntent = new Intent();
+			backIntent.setClass(getActivity(), getActivity().getClass());
+			
+			Intent goIntent = new Intent();
+			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
+			goIntent.setAction("com.baixing.action.qrcode.scan");
+			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, 100);
+			getActivity().startActivity(goIntent);
+			/*Intent intent = new Intent();
 			intent.setClass(getActivity(), CaptureActivity.class);
-			startActivityForResult(intent, PosterActivity.REQUEST_QRCODE_SCAN);
+			startActivityForResult(intent, PosterActivity.REQUEST_QRCODE_SCAN);*/
 			break;
 		case R.id.delete_btn:
 			final String img = (String) v.getTag();

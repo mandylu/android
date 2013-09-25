@@ -17,7 +17,6 @@ import android.os.Vibrator;
 import android.view.SurfaceHolder;
 import android.view.SurfaceHolder.Callback;
 import android.view.SurfaceView;
-import android.widget.TextView;
 
 import com.baixing.qrcodescanner.camera.CameraManager;
 import com.baixing.qrcodescanner.decoding.CaptureActivityHandler;
@@ -27,6 +26,13 @@ import com.google.zxing.BarcodeFormat;
 import com.google.zxing.Result;
 
 public class CaptureActivity extends Activity implements Callback {
+	
+	public static final String EXTRA_COMMON_IS_THIRD_PARTY = "extra.common.isThirdParty";
+	public static final String EXTRA_COMMON_RESULT_CODE = "extra.common.resultCode";
+	public static final String EXTRA_COMMON_DATA = "extra.common.data";
+	public static final String EXTRA_COMMON_INTENT = "extra.common.intent";
+	public static final String EXTRA_COMMON_REQUST_CODE = "extra.image.reqcode";
+	public static final String EXTRA_COMMON_FINISH_CODE = "extra.common.finishCode";
 
 	private CaptureActivityHandler handler;
 	private ViewfinderView viewfinderView;
@@ -144,12 +150,27 @@ public class CaptureActivity extends Activity implements Callback {
 		viewfinderView.drawResultBitmap(barcode);
 		playBeepSoundAndVibrate();
 		
+		Intent backIntent = (Intent) getIntent().getExtras().get(CaptureActivity.EXTRA_COMMON_INTENT);
+		Bundle bundle = new Bundle();
+		bundle.putBoolean(CaptureActivity.EXTRA_COMMON_IS_THIRD_PARTY, true);
+		bundle.putInt(CaptureActivity.EXTRA_COMMON_REQUST_CODE, getIntent().getExtras().getInt(CaptureActivity.EXTRA_COMMON_REQUST_CODE));
+		bundle.putInt(CaptureActivity.EXTRA_COMMON_RESULT_CODE, RESULT_OK);
+		
+		Intent data = new Intent();
+		data.putExtra("qrcode", obj.getText());
+		bundle.putParcelable(CaptureActivity.EXTRA_COMMON_DATA, data);
+		
+		backIntent.putExtras(bundle);
+		backIntent.addFlags(Intent.FLAG_ACTIVITY_CLEAR_TOP);
+		this.startActivity(backIntent);
+		this.finish();
+		/*
 		Intent intent = new Intent();
 		Bundle bundle = new Bundle();
 		bundle.putString("qrcode", obj.getText());
 		intent.putExtras(bundle);
 		setResult(RESULT_OK, intent);
-		finish();
+		finish();*/
 	}
 
 	private void initBeepSound() {

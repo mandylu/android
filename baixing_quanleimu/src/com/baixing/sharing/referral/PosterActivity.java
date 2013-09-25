@@ -3,6 +3,7 @@ package com.baixing.sharing.referral;
 
 import java.lang.ref.WeakReference;
 
+import android.app.Activity;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
@@ -22,7 +23,7 @@ public class PosterActivity extends BaseTabActivity {
 	
 	private static final String TAG = PosterActivity.class.getSimpleName();
 	
-	public static final int REQUEST_QRCODE_SCAN = 1;
+	public static final int REQUEST_QRCODE_SCAN = 100;
 
 	@Override
 	public void onCreate(Bundle savedBundle) {
@@ -48,11 +49,11 @@ public class PosterActivity extends BaseTabActivity {
 		initTitleAction();
 		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
 	}
-	
+
 	@Override
 	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
 		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == REQUEST_QRCODE_SCAN && resultCode == RESULT_OK) {
+		if (requestCode == PosterActivity.REQUEST_QRCODE_SCAN && resultCode == Activity.RESULT_OK) {
 			Log.d(TAG, data.getExtras().getString("qrcode"));
 		}
 	}

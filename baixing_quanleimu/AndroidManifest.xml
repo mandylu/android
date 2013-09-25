@@ -218,9 +218,16 @@
         <activity
             android:name="com.baixing.qrcodescanner.CaptureActivity"
             android:configChanges="orientation|keyboardHidden"
+            android:label="@string/app_name"
+            android:launchMode="singleTop"
             android:screenOrientation="portrait"
             android:theme="@android:style/Theme.NoTitleBar.Fullscreen"
             android:windowSoftInputMode="stateAlwaysHidden" >
+            <intent-filter>
+                <action android:name="com.baixing.action.qrcode.scan" />
+
+                <category android:name="android.intent.category.DEFAULT" />
+            </intent-filter>
         </activity>
 
         <service
