@@ -4,9 +4,11 @@ package com.baixing.sharing.referral;
 import java.lang.ref.WeakReference;
 
 import android.content.Context;
+import android.content.Intent;
 import android.os.Bundle;
 import android.view.View;
 import android.view.inputmethod.InputMethodManager;
+import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.activity.BaseTabActivity;
@@ -19,6 +21,8 @@ import com.umeng.common.Log;
 public class PosterActivity extends BaseTabActivity {
 	
 	private static final String TAG = PosterActivity.class.getSimpleName();
+	
+	public static final int REQUEST_QRCODE_SCAN = 1;
 
 	@Override
 	public void onCreate(Bundle savedBundle) {
@@ -43,6 +47,14 @@ public class PosterActivity extends BaseTabActivity {
 		globalTabCtrl.attachView(findViewById(R.id.common_tab_layout), this);
 		initTitleAction();
 		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
+	}
+	
+	@Override
+	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
+		super.onActivityResult(requestCode, resultCode, data);
+		if (requestCode == REQUEST_QRCODE_SCAN && resultCode == RESULT_OK) {
+			Log.d(TAG, data.getExtras().getString("qrcode"));
+		}
 	}
 
 	protected void onFragmentEmpty() {

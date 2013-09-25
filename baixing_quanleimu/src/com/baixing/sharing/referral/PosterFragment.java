@@ -52,6 +52,7 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
+import com.baixing.qrcodescanner.CaptureActivity;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -123,6 +124,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	protected boolean isNewPost = true;
 	private boolean finishRightNow = false;
 	private long lastClickPostTime = 0;
+	
+	private Button scanQRCode;
 
 	@Override
 	public void onActivityResult(final int requestCode, final int resultCode,
@@ -311,6 +314,9 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		button.setText("立即免费发布");
+		
+		scanQRCode = (Button) v.findViewById(R.id.btn_qrcode_scan);
+		scanQRCode.setOnClickListener(this);
 
 		return v;
 	}
@@ -384,6 +390,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	@Override
 	public void onClick(final View v) {
 		switch (v.getId()) {
+		case R.id.btn_qrcode_scan:
+			Intent intent = new Intent();
+			intent.setClass(getActivity(), CaptureActivity.class);
+			startActivityForResult(intent, PosterActivity.REQUEST_QRCODE_SCAN);
+			break;
 		case R.id.delete_btn:
 			final String img = (String) v.getTag();
 
