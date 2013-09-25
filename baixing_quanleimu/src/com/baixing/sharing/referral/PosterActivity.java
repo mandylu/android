@@ -49,15 +49,7 @@ public class PosterActivity extends BaseTabActivity {
 		initTitleAction();
 		PerformanceTracker.stamp(Event.E_PostActivity_OnCreate_Leave);
 	}
-
-	@Override
-	protected void onActivityResult(int requestCode, int resultCode, Intent data) {
-		super.onActivityResult(requestCode, resultCode, data);
-		if (requestCode == PosterActivity.REQUEST_QRCODE_SCAN && resultCode == Activity.RESULT_OK) {
-			Log.d(TAG, data.getExtras().getString("qrcode"));
-		}
-	}
-
+	
 	protected void onFragmentEmpty() {
 
 		this.afterChange(TAB_INDEX_CAT);

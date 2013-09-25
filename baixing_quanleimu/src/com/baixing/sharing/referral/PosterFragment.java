@@ -138,21 +138,33 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		
 		Log.d(TAG, requestCode + "");
+		if (resultCode == Activity.RESULT_OK && requestCode == 100) {
+			String id = getQRCodeId(data.getExtras().getString("qrcode"));
+			if (id != null) {
+				scanQRCode.setText(id);
+			}
+			return;
+		}
+		
 		if (resultCode == Activity.RESULT_OK) {
-			if (requestCode == 100) {
-				scanQRCode.setText(data.getExtras().getString("qrcode"));
-			} else {
-				photoList.clear();
-				if (data.getExtras().containsKey(
-						CommonIntentAction.EXTRA_IMAGE_LIST)) {
-					ArrayList<String> result = data
-							.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
-					photoList.addAll(result);
-				}
+			photoList.clear();
+			if (data.getExtras().containsKey(
+					CommonIntentAction.EXTRA_IMAGE_LIST)) {
+				ArrayList<String> result = data
+						.getStringArrayListExtra(CommonIntentAction.EXTRA_IMAGE_LIST);
+				photoList.addAll(result);
 			}
 		}
 
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
+	}
+	
+	private String getQRCodeId(String qrCodeStr) {
+		int start = qrCodeStr.indexOf("codeId=") + "codeId=".length();
+		if (start != "codeId=".length() - 1) {
+			return qrCodeStr.substring(start);
+		}
+		return null;
 	}
 
 	@SuppressWarnings("unchecked")
@@ -405,9 +417,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			goIntent.setAction("com.baixing.action.qrcode.scan");
 			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, 100);
 			getActivity().startActivity(goIntent);
-			/*Intent intent = new Intent();
-			intent.setClass(getActivity(), CaptureActivity.class);
-			startActivityForResult(intent, PosterActivity.REQUEST_QRCODE_SCAN);*/
 			break;
 		case R.id.delete_btn:
 			final String img = (String) v.getTag();
