@@ -216,7 +216,7 @@
             </intent-filter>
         </activity>
         <activity
-            android:name="com.baixing.qrcodescanner.CaptureActivity"
+            android:name="com.baixing.qrcode.scan.ScanActivity"
             android:configChanges="orientation|keyboardHidden"
             android:label="@string/app_name"
             android:launchMode="singleTop"

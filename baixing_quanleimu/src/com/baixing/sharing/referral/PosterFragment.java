@@ -52,7 +52,6 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
-import com.baixing.qrcodescanner.CaptureActivity;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -138,7 +137,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		
 		Log.d(TAG, requestCode + "");
-		if (resultCode == Activity.RESULT_OK && requestCode == 100) {
+		if (resultCode == Activity.RESULT_OK && requestCode == CommonIntentAction.QRCodeReqCode.SCAN) {
 			String id = getQRCodeId(data.getExtras().getString("qrcode"));
 			if (id != null) {
 				scanQRCode.setText(id);
@@ -414,8 +413,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			
 			Intent goIntent = new Intent();
 			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_INTENT, backIntent);
-			goIntent.setAction("com.baixing.action.qrcode.scan");
-			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, 100);
+			goIntent.setAction(CommonIntentAction.EXTRA_QRCODE_SCAN_REQUEST);
+			goIntent.putExtra(CommonIntentAction.EXTRA_COMMON_REQUST_CODE, CommonIntentAction.QRCodeReqCode.SCAN);
 			getActivity().startActivity(goIntent);
 			break;
 		case R.id.delete_btn:

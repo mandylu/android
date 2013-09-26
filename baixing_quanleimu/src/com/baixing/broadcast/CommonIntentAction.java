@@ -48,6 +48,12 @@ public class CommonIntentAction
 	public static final String EXTRA_COMMON_REQUST_CODE = "extra.image.reqcode";
 	public static final String EXTRA_COMMON_FINISH_CODE = "extra.common.finishCode";
 	
+	// zengjin@baixing.net
+	public static final String EXTRA_QRCODE_SCAN_REQUEST = "com.baixing.action.qrcode.scan";
+	public static interface QRCodeReqCode {
+		public static final int SCAN = 100;
+	}
+	
 	/**
 	 * Third party actions to request an image.
 	 */
