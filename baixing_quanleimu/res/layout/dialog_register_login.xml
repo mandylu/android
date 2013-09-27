@@ -4,6 +4,13 @@
     android:layout_height="match_parent"
     android:orientation="vertical" >
   
+    <EditText android:id="@+id/txt_mobile_for_test" 
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_margin="10dp"
+        android:gravity="center"
+        android:textSize="20sp" />
+    
     <Button android:id="@+id/btn_register_login" 
         android:layout_width="match_parent"
         android:layout_height="wrap_content"

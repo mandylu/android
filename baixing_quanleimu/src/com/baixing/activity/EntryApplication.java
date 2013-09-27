@@ -42,7 +42,7 @@ public class EntryApplication extends Application {
 //				mangerInstance.getChannelId(),
 //				mangerInstance.getCityEnglishName(),
 //				GlobalDataManager.getInstance().getNetworkCacheManager());
-		ApiConfiguration.config("www.penghui.baixing.com", GlobalDataManager
+		ApiConfiguration.config("www.chenliangyu.baixing.com", GlobalDataManager
 				.getInstance().getNetworkCacheManager(), "api_mobile_android",
 				"c6dd9d408c0bcbeda381d42955e08a3f");
 		BaseApiCommand.init(

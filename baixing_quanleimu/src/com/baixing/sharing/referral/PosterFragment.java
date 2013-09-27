@@ -1,13 +1,16 @@
 // zengjin@baixing.net
 package com.baixing.sharing.referral;
 
-import java.io.Serializable;
 import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
+
+import org.json.JSONArray;
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.app.Activity;
 import android.app.AlertDialog;
@@ -20,7 +23,6 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
-import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
 import android.view.View;
@@ -30,22 +32,20 @@ import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputMethodManager;
 import android.widget.Button;
-import android.widget.CheckBox;
 import android.widget.EditText;
 import android.widget.HorizontalScrollView;
 import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
+import android.widget.Toast;
 
-import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
-import com.baixing.entity.Category;
 import com.baixing.entity.PostGoodsBean;
 import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
@@ -54,7 +54,6 @@ import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.tracking.TrackConfig.TrackMobile.PV;
 import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
@@ -66,19 +65,12 @@ import com.baixing.util.post.ImageUploader;
 import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostLocationService;
-import com.baixing.util.post.PostNetworkService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
 import com.baixing.util.post.PostUtil;
 import com.baixing.view.fragment.ContactAndAddressDetailFragment;
-import com.baixing.view.fragment.ForgetPassFragment;
 import com.baixing.view.fragment.LoginFragment;
-import com.baixing.view.fragment.MultiLevelSelectionFragment;
-import com.baixing.view.fragment.OtherPropertiesFragment;
 import com.baixing.view.fragment.PostParamsHolder;
 import com.baixing.view.fragment.RegisterFragment;
-import com.baixing.widget.CustomDialogBuilder;
-import com.baixing.widget.EditTitleDialogFragment;
-import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.quanleimu.activity.R;
 import com.umeng.common.Log;
 
@@ -89,35 +81,21 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	private static final int IMG_STATE_UPLOADED = 2;
 	private static final int IMG_STATE_FAIL = 3;
 	private static final int MSG_GEOCODING_TIMEOUT = 0x00010011;
-	static final public String KEY_INIT_CATEGORY = "cateNames";
-	static final String KEY_LAST_POST_CONTACT_USER = "lastPostContactIsRegisteredUser";
 	static final String KEY_IS_EDITPOST = "isEditPost";
-	static final String KEY_CATE_ENGLISHNAME = "cateEnglishName";
-	static final private String FILE_LAST_CATEGORY = "lastCategory";
 	static final int MSG_POST_SUCCEED = 0xF0000010;
-	protected String categoryEnglishName = "";
 	protected String cityEnglishName = "";
-	private String categoryName = "";
-	private Category predictedCategory = null;
 	protected LinearLayout layout_txt;
 	private LinkedHashMap<String, PostGoodsBean> postList = new LinkedHashMap<String, PostGoodsBean>();
 	private static final int NONE = 0;
-	private static final int MSG_CATEGORY_SEL_BACK = 11;
-	private static final int MSG_DIALOG_BACK_WITH_DATA = 12;
 	private static final int MSG_UPDATE_IMAGE_LIST = 13;
 	private static final int MSG_IMAGE_STATE_CHANGE = 14;
 	private static final int MSG_GET_AD_FAIL = 15;
 	private static final int MSG_GET_AD_SUCCED = 16;
-	private static final int MSG_GET_CATEGORY_FAIL = 19;
-	private static final int MSG_GET_CATEGORY_SUCCEED = 20;
 	protected PostParamsHolder params = new PostParamsHolder();
-	// protected ArrayList<String> listUrl = new ArrayList<String>();
 	private BXLocation detailLocation = null;
 	protected List<String> bmpUrls = new ArrayList<String>();
-	private EditText etDescription = null;
 	private EditText etContact = null;
 	private PostLocationService postLBS;
-	private PostNetworkService postNS;
 
 	protected ArrayList<String> photoList = new ArrayList<String>();
 	protected boolean isNewPost = true;
@@ -182,8 +160,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 
 		this.postLBS = new PostLocationService(this.handler);
-		postNS = PostNetworkService.getInstance();
-		postNS.setHandler(handler);
 		cityEnglishName = GlobalDataManager.getInstance().getCityEnglishName();
 	}
 
@@ -241,11 +217,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		isActive = true;
 		postLBS.start();
-		if (!isNewPost && !finishRightNow) {
-			this.pv = PV.POST;
-			Tracker.getInstance().pv(this.pv)
-					.append(Key.SECONDCATENAME, categoryEnglishName).end();
-		}
 
 		paused = false;
 
@@ -377,31 +348,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	}
 
 	protected String getCityEnglishName() {
-		// return GlobalDataManager.getInstance().getCityEnglishName();
 		return cityEnglishName;
 	}
 
 	private void showPost() {
-		if (this.categoryEnglishName == null
-				|| categoryEnglishName.length() == 0) {
-			deployDefaultLayout();
-			return;
-		}
-
-		String cityEnglishName = getCityEnglishName();
-		Pair<Long, String> pair = Util.loadJsonAndTimestampFromLocate(
-				this.getActivity(), categoryEnglishName + cityEnglishName);
-		String json = pair.second;
-		if (json != null && json.length() > 0) {
-			if (pair.first + (24 * 3600) >= System.currentTimeMillis() / 1000) {
-				if (postList == null || postList.size() == 0) {
-					postList = JsonUtil.getPostGoodsBean(json);
-				}
-				buildPostLayout(postList);
-				loadCachedData();
-				return;
-			}
-		}
+		deployDefaultLayout();
 	}
 
 	@Override
@@ -496,80 +447,86 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	}
 
 	private void postAction() {
-		PostUtil.extractInputData(layout_txt, params);
-		boolean contactAndAddrVisible = getView().findViewById(
-				R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE;
-		String contentAdr = contactAndAddrVisible ? ((Button) getView()
-				.findViewById(R.id.btn_address)).getText().toString() : params
-				.getData(PostCommonValues.STRING_DETAIL_POSITION);
-		String contentContact = contactAndAddrVisible ? ((Button) getView()
-				.findViewById(R.id.btn_contact)).getText().toString() : params
-				.getData("contact");
-		if (contentAdr != null && contentAdr.length() > 0) {
-			GlobalDataManager.getInstance().setAddress(contentAdr);
-		}
-		if (contentContact != null && contentContact.length() > 0) {
-			GlobalDataManager.getInstance().setPhoneNumber(contentContact);
-		}
-		if (getView().findViewById(R.id.ll_contactAndAddress).getVisibility() == View.VISIBLE) {
-			params.put("contact", GlobalDataManager.getInstance()
-					.getPhoneNumber(), GlobalDataManager.getInstance()
-					.getPhoneNumber());
-			params.put(PostCommonValues.STRING_DETAIL_POSITION,
-					GlobalDataManager.getInstance().getAddress(),
-					GlobalDataManager.getInstance().getAddress());
-		} else {
-			setPhoneAndAddress();
-		}
-		if (!this.checkInputComplete()) {
-			return;
-		}
-		params.put("title",
-				((TextView) getView().findViewById(R.id.tv_title_post))
-						.getText().toString(), ((TextView) getView()
-						.findViewById(R.id.tv_title_post)).getText().toString());
-
-		PerformanceTracker.stamp(Event.E_Start_PostAction);
-		String detailLocationValue = params
-				.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
-		if (this.detailLocation != null
-				&& (detailLocationValue == null || detailLocationValue.length() == 0)) {
-			showProgress(R.string.dialog_title_info,
-					R.string.dialog_message_waiting, false);
-			PerformanceTracker.stamp(Event.E_PostAction_Direct_Start);
-			postAd(detailLocation);
-		} else {
-			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
-			showProgress(R.string.dialog_title_info,
-					R.string.dialog_message_waiting, false);
-			PerformanceTracker.stamp(Event.E_PostAction_GetLocation_Start);
-			postLBS.retreiveLocation(GlobalDataManager.getInstance().cityName,
-					getFilledLocation());
-		}
+		String mobile = "13661812345";
+		String addr = "上海市浦东新区蔡伦路1159号";
+		String images = "http://sd.jpg,http://di.jpg";
+		String qrcode = "8dj30du3";
+		savePosterCmd(mobile, addr, images, qrcode);
 	}
 
-	private boolean checkInputComplete() {
-
-		if (ImageUploader.getInstance().hasPendingJob()) {
-			ViewUtil.showToast(this.getActivity(), "图片上传中", false);
+	private void savePosterCmd(String businessMobile, String businessAddr, String imageUrls,
+			String qrCodeID) {
+		String promoterMobile = GlobalDataManager.getInstance().getAccountManager().getCurrentUser().getPhone();
+		String promoterUdid = Util.getDeviceUdid(getAppContext());
+		String gpsAddress = getDetailLocation(detailLocation);
+		
+		ApiParams params = new ApiParams();
+		params.addParam("promoterMobile", promoterMobile);
+		params.addParam("promoterUdid", promoterUdid);
+		params.addParam("images", imageUrls);
+		params.addParam("storeMobile", businessMobile);
+		params.addParam("storeAddr", businessAddr);
+		params.addParam("gpsAddr", gpsAddress);
+		params.addParam("qrcodeId", qrCodeID);
+		String jsonResponse = BaseApiCommand.createCommand("save_promo_haibao", true, params).executeSync(getAppContext());
+		String posterId = getPosterId(jsonResponse);
+		if (posterId != null) {
+			if (savePosterLog(promoterMobile, ReferralUtil.TASK_HAIBAO, businessMobile)) {
+				Toast.makeText(getAppContext(), "海报推广成功！", Toast.LENGTH_SHORT).show();
+				finishFragment();
+			} else {
+				Toast.makeText(getAppContext(), "推广记录保存失败", Toast.LENGTH_SHORT).show();
+			}
+		} else {
+			Toast.makeText(getAppContext(), "发送失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
+		}
+	}
+	
+	private boolean savePosterLog(String promoterMobile, int taskType, String userMobile) {
+		ApiParams logParams = new ApiParams();
+		logParams.addParam("promoterMobile", promoterMobile);
+		logParams.addParam("taskType", ReferralUtil.TASK_HAIBAO);
+		logParams.addParam("userMobile", userMobile);
+		String logResponse = BaseApiCommand.createCommand("save_promo_log", true, logParams).executeSync(getAppContext());
+		try {
+			JSONObject obj = new JSONObject(logResponse);
+			if (obj != null) {
+				JSONObject error = obj.getJSONObject("error");
+				if (error != null) {
+					String code = error.getString("code");
+					if (code != null && code.equals("0")) {
+						return true;
+					}
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
 			return false;
 		}
-
-		return true;
+		return false;
 	}
-
-	private String getFilledLocation() {
-		return ((Button) getView().findViewById(R.id.btn_address)).getText()
-				.toString();
+	
+	private String getPosterId(String jsonResult) {
+		try {
+			JSONObject obj = new JSONObject(jsonResult);
+			if (obj != null) {
+				JSONObject error = obj.getJSONObject("error");
+				if (error != null) {
+					String code = error.getString("code");
+					if (code != null && code.equals("0")) {
+						return obj.getString("id"); 
+					}
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
+		}
+		return null;
 	}
-
-	protected void mergeParams(HashMap<String, String> list) {
-	}
-
+	
 	protected void postAd(BXLocation location) {
-		HashMap<String, String> list = new HashMap<String, String>();
-		list.put("categoryEnglishName", categoryEnglishName);
-		list.put("cityEnglishName", cityEnglishName);// GlobalDataManager.getInstance().getCityEnglishName());
+		ApiParams apiParam = new ApiParams();
 
 		HashMap<String, String> mapParams = new HashMap<String, String>();
 		Iterator<String> ite = params.keyIterator();
@@ -577,15 +534,24 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			String key = ite.next();
 			String value = params.getData(key);
 			mapParams.put(key, value);
-		}
-		mergeParams(list);
-		// this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location,
-		// editMode);
+		}	
+		
 		bmpUrls.clear();
 		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
-		PerformanceTracker.stamp(Event.E_Post_Request_Sent);
-		this.postNS.savePostData(mapParams, list, postList, bmpUrls, location,
-				true);
+		if(bmpUrls != null){
+			String images = "";
+			for (int i = 0; i < bmpUrls.size(); i++) {				
+				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
+					images += "," + bmpUrls.get(i);
+				}
+			}
+			if(images != null && images.length() > 0 && images.charAt(0) == ','){
+				images = images.substring(1);
+			}
+			if(images != null && images.length() > 0){
+				apiParam.addParam("images", images);
+			}
+		}
 
 		String phone = mapParams.get("contact");
 
@@ -596,18 +562,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				&& curUser.getPhone().length() > 0) {
 			phone = curUser.getPhone();
 		}
-
-		postNS.doRegisterAndVerify(phone);
 	}
-
-	private int getLineCount() {
-		return etDescription != null ? etDescription.getLineCount() : 1;
-	}
-
-	private int getDescLength() {
-		return etDescription != null ? etDescription.getText().length() : 0;
-	}
-
+	
 	private int getContactLength() {
 		return etContact != null ? etContact.getText().length() : 0;
 	}
@@ -633,11 +589,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			autoPosition = true;
 		}
 		Tracker.getInstance().event(event)
-				.append(Key.SECONDCATENAME, categoryEnglishName)
 				.append(Key.POSTSTATUS, 1)
 				.append(Key.POSTPICSCOUNT, getImgCount())
-				.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
-				.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
 				.append(Key.POSTDETAILPOSITIONAUTO, autoPosition).end();
 	}
@@ -645,43 +598,9 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	private void postResultFail(String errorMsg) {
 		BxEvent event = BxEvent.EDITPOST_POSTRESULT;
 		Tracker.getInstance().event(event)
-				.append(Key.SECONDCATENAME, categoryEnglishName)
 				.append(Key.POSTSTATUS, 0).append(Key.POSTFAILREASON, errorMsg)
 				.append(Key.POSTPICSCOUNT, getImgCount())
-				.append(Key.POSTDESCRIPTIONLINECOUNT, getLineCount())
-				.append(Key.POSTDESCRIPTIONTEXTCOUNT, getDescLength())
 				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength()).end();
-	}
-
-	private void loadCachedData() {
-		if (params.size() == 0)
-			return;
-
-		Iterator<String> it = params.keyIterator();
-		while (it.hasNext()) {
-			String name = it.next();
-			for (int i = 0; i < layout_txt.getChildCount(); i++) {
-				View v = layout_txt.getChildAt(i);
-				PostGoodsBean bean = (PostGoodsBean) v
-						.getTag(PostCommonValues.HASH_POST_BEAN);
-				if (bean == null || !bean.getName().equals(name)// check display
-																// name
-				)
-					continue;
-				View control = (View) v.getTag(PostCommonValues.HASH_CONTROL);
-				String displayValue = params.getUiData(name);
-
-				if (control instanceof CheckBox) {
-					if (displayValue.contains(((CheckBox) control).getText())) {
-						((CheckBox) control).setChecked(true);
-					} else {
-						((CheckBox) control).setChecked(false);
-					}
-				} else if (control instanceof TextView) {
-					// ((TextView)control).setText(displayValue);
-				}
-			}
-		}
 	}
 
 	private void resetData(boolean clearImgs) {
@@ -696,51 +615,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			this.doClearUpImages();
 			this.bmpUrls.clear();
 		}
-	}
-
-	private void handleBackWithData(int message, Object obj) {
-		if (message == MSG_CATEGORY_SEL_BACK && obj != null) {
-			String[] names = ((String) obj).split(",");
-			if (names.length == 2) {
-				if (names[0].equals(this.categoryEnglishName)) {
-					return;
-				}
-				this.categoryEnglishName = names[0];
-				this.categoryName = names[1];
-
-			} else if (names.length == 1) {
-				if (names[0].equals(this.categoryEnglishName)) {
-					return;
-				}
-				this.categoryEnglishName = names[0];
-			}
-
-			resetData(false);
-			Util.saveDataToLocate(getActivity(), FILE_LAST_CATEGORY, obj);
-			this.showPost();
-		} else if (message == ContactAndAddressDetailFragment.MSG_RET_CODE) {
-			if (layout_txt.findViewById(R.id.ll_contactAndAddress)
-					.getVisibility() == View.VISIBLE) {
-				// ((Button)getView().findViewById(R.id.btn_address)).setText(GlobalDataManager.getInstance().getAddress());
-				// ((Button)getView().findViewById(R.id.btn_contact)).setText(GlobalDataManager.getInstance().getPhoneNumber());
-			}
-		} else if (message == RegisterFragment.MSG_REGISTER_SUCCESS
-				|| message == LoginFragment.MSG_LOGIN_SUCCESS
-				|| message == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED) {
-			if (doingAccountCheck) {
-				doingAccountCheck = false;
-				showProgress(R.string.dialog_title_info,
-						R.string.dialog_message_waiting, false);
-				this.postNS.onOutActionDone(
-						PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
-			}
-		}
-		PostUtil.fetchResultFromViewBack(message, obj, layout_txt, params);
-	}
-
-	@Override
-	public void onFragmentBackWithData(int message, Object obj) {
-		handleBackWithData(message, obj);
 	}
 
 	protected String getAdContact() {
@@ -767,13 +641,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			layout.setOnClickListener(this);
 		}
 
-		if (postBean.getName().equals(PostCommonValues.STRING_DESCRIPTION)
-				&& layout != null) {
-			etDescription = (EditText) layout
-					.getTag(PostCommonValues.HASH_CONTROL);
-		} else if (postBean.getName().equals("价格")) {
-			((TextView) layout.findViewById(R.id.postinput)).setHint("越便宜成交越快");
-		} else if (postBean.getName().equals("faburen")) {
+		if (postBean.getName().equals("faburen")) {
 			List<String> labels = postBean.getLabels();
 			List<String> values = postBean.getValues();
 			if (labels != null) {
@@ -791,28 +659,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		if (layout != null) {
 			layout_txt.addView(layout);
 		}
-	}
-
-	private void popupCategorySelectionDialog() {
-		Bundle bundle = createArguments(null, null);
-		bundle.putSerializable("items", (Serializable) GlobalDataManager
-				.getInstance().getFirstLevelCategory());
-		bundle.putInt("maxLevel", 1);
-		bundle.putInt(ARG_COMMON_REQ_CODE, MSG_CATEGORY_SEL_BACK);
-		if (predictedCategory != null) {
-			bundle.putString("predictedCategory",
-					predictedCategory.getEnglishName());
-			bundle.putString("predictedParentCate",
-					predictedCategory.getParentEnglishName());
-			bundle.putString("selectedValue", predictedCategory.getName());
-		} else if (categoryEnglishName != null
-				&& !categoryEnglishName.equals("") && categoryName != null) {
-			bundle.putString("selectedValue", categoryName);
-		}
-		PostUtil.extractInputData(layout_txt, params);
-		CustomDialogBuilder cdb = new CustomDialogBuilder(getActivity(),
-				PosterFragment.this.getHandler(), bundle);
-		cdb.start();
 	}
 
 	private void buildFixedPostLayout(HashMap<String, PostGoodsBean> pl) {
@@ -906,8 +752,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		String phone = GlobalDataManager.getInstance().getPhoneNumber();
 		if (phone == null || phone.length() == 0) {
 			((Button) getView().findViewById(R.id.btn_contact)).setHint("联系方式");
-		} else {
-			// ((Button)getView().findViewById(R.id.btn_contact)).setText(phone);
 		}
 
 		String address = GlobalDataManager.getInstance().getAddress();
@@ -918,8 +762,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				((Button) getView().findViewById(R.id.btn_address))
 						.setHint("张贴地点");
 			}
-		} else {
-			// ((Button)getView().findViewById(R.id.btn_address)).setText(address);
 		}
 
 		setPhoneAndAddrLeftIcon();
@@ -1105,38 +947,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 
 		switch (msg.what) {
-		case MSG_GET_CATEGORY_FAIL:
-			predictedCategory = null;
-			popupCategorySelectionDialog();
-			break;
-		case MSG_GET_CATEGORY_SUCCEED:
-			String[] categoryNameList = JsonUtil
-					.getTopPredictedCategory((String) msg.obj);
-			if (categoryNameList != null) {
-				/*
-				 * categoryNameList[0] - firstLevelCategoryEnglishName
-				 * categoryNameList[1] - secondLevelCategoryEnglishName
-				 */
-				List<Category> categories = GlobalDataManager.getInstance()
-						.getFirstLevelCategory();
-				for (int i = 0; i < categories.size(); i++) {
-					if (categories.get(i).getEnglishName()
-							.equals(categoryNameList[0])) {
-						List<Category> secondCategories = categories.get(i)
-								.getChildren();
-						for (int j = 0; j < secondCategories.size(); j++) {
-							if (secondCategories.get(j).getEnglishName()
-									.equals(categoryNameList[1])) {
-								predictedCategory = secondCategories.get(j);
-							}
-						}
-					}
-				}
-			} else {
-				predictedCategory = null;
-			}
-			popupCategorySelectionDialog();
-			break;
 		case MSG_GET_AD_SUCCED:
 			this.hideSoftKeyboard();
 			this.hideProgress();
@@ -1192,12 +1002,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 
 			break;
 		}
-		case MSG_DIALOG_BACK_WITH_DATA: {
-			Bundle bundle = (Bundle) msg.obj;
-			handleBackWithData(bundle.getInt(ARG_COMMON_REQ_CODE),
-					bundle.getSerializable("lastChoise"));
-			break;
-		}
 		case MSG_UPDATE_IMAGE_LIST: {
 			updateImageInfo(rootView);
 
@@ -1216,17 +1020,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			int code = ((PostResultData) msg.obj).error;
 			if (!id.equals("") && code == 0) {
 				postResultSuccess();
-				// ViewUtil.showToast(activity, message, true);
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
 				if (isActive) {
 					resetData(false);
-					Util.deleteDataFromLocate(this.getActivity(),
-							FILE_LAST_CATEGORY);
-					categoryEnglishName = "";
-					categoryName = "";
 				}
-				// showPost();
 				handlePostFinish(id);
 			} else {
 				postResultFail(message);
@@ -1273,8 +1071,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation) msg.obj;
-			String address = getDetailLocation(detailLocation);
-			Log.d(TAG, address);
 			break;
 		case PostCommonValues.MSG_POST_NEED_LOGIN:
 			Bundle tmpBundle = createArguments("登录", "");
@@ -1417,57 +1213,17 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		setInputContent();
 	}
 
-	static private boolean shouldAddTextWatcher(String title, String description) {
-		if (TextUtils.isEmpty(title))
-			return true;
-		if (TextUtils.isEmpty(description))
-			return false;
-
-		String subDescription = description.length() > 25 ? description
-				.substring(0, 25) : description;
-		return title.equals(subDescription);
-	}
-
 	@Override
 	public void initTitle(TitleDef title) {
-		// title.m_visible = true;
 		title.m_leftActionHint = "返回";
 		title.m_leftActionImage = R.drawable.icon_close;
-		// title.m_title = "免费发布";
 
 		LayoutInflater inflator = LayoutInflater.from(getActivity());
 		title.m_titleControls = inflator.inflate(R.layout.title_post, null);
-
-		title.m_titleControls.findViewById(R.id.ll_post_title)
-				.setOnClickListener(new View.OnClickListener() {
-					public void onClick(View v) {
-						EditTitleDialogFragment dlgEdit = new EditTitleDialogFragment();
-						Bundle bundle = new Bundle();
-						bundle.putString("title", ((TextView) getView()
-								.findViewById(R.id.tv_title_post)).getText()
-								.toString());
-						dlgEdit.setCallback(new ICallback() {
-
-							@Override
-							public void onTitleChangeFinished(String newTitle) {
-								// TODO Auto-generated method stub
-								String currentTitle = ((TextView) getView()
-										.findViewById(R.id.tv_title_post))
-										.getText().toString();
-								if (!TextUtils.isEmpty(newTitle)) {
-									if (!newTitle.equals(currentTitle)) {
-										((TextView) getView().findViewById(
-												R.id.tv_title_post))
-												.setText(newTitle);
-									}
-								}
-							}
-
-						});
-						dlgEdit.setArguments(bundle);
-						dlgEdit.show(getFragmentManager(), null);
-					}
-				});
+		title.m_titleControls.setClickable(false);
+		
+		((TextView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.tv_title_post)).setText("海报推广");
+		((ImageView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.imageView1)).setVisibility(View.GONE);
 	}
 
 	private ViewGroup createItemByPostBean(PostGoodsBean postBean) {
@@ -1477,132 +1233,34 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 
 		if (layout == null)
 			return null;
-
-		if (postBean.getControlType().equals("select")
-				|| postBean.getControlType().equals("checkbox")) {
-			final String actionName = ((PostGoodsBean) layout
-					.getTag(PostCommonValues.HASH_POST_BEAN)).getDisplayName();
-			layout.setOnClickListener(new OnClickListener() {
-				public void onClick(View v) {
-					PostGoodsBean postBean = (PostGoodsBean) v
-							.getTag(PostCommonValues.HASH_POST_BEAN);
-
-					if (postBean.getControlType().equals("select")
-							|| postBean.getControlType().equals("tableSelect")) {
-						if (postBean.getLevelCount() > 0) {
-							ArrayList<MultiLevelSelectionFragment.MultiLevelItem> items = new ArrayList<MultiLevelSelectionFragment.MultiLevelItem>();
-							for (int i = 0; i < postBean.getLabels().size(); ++i) {
-								MultiLevelSelectionFragment.MultiLevelItem t = new MultiLevelSelectionFragment.MultiLevelItem();
-								t.txt = postBean.getLabels().get(i);
-								t.id = postBean.getValues().get(i);
-								items.add(t);
-							}
-							Bundle bundle = createArguments(null, null);
-							bundle.putInt(ARG_COMMON_REQ_CODE, postBean
-									.getName().hashCode());
-							bundle.putSerializable("items", items);
-							bundle.putInt("maxLevel",
-									postBean.getLevelCount() - 1);
-							String selectedValue = null;
-							selectedValue = params.getData(postBean.getName());
-
-							if (selectedValue != null)
-								bundle.putString("selectedValue", selectedValue);
-
-							PostUtil.extractInputData(layout_txt, params);
-							CustomDialogBuilder cdb = new CustomDialogBuilder(
-									getActivity(), getHandler(), bundle);
-							cdb.start();
-						} else {
-							Bundle bundle = createArguments(
-									postBean.getDisplayName(), null);
-							bundle.putInt(ARG_COMMON_REQ_CODE, postBean
-									.getName().hashCode());
-							bundle.putBoolean("singleSelection", false);
-							bundle.putSerializable("properties",
-									(ArrayList<String>) postBean.getLabels());
-							TextView txview = (TextView) v
-									.getTag(PostCommonValues.HASH_CONTROL);
-							if (txview != null) {
-								bundle.putString("selected", txview.getText()
-										.toString());
-							}
-							((BaseActivity) getActivity()).pushFragment(
-									new OtherPropertiesFragment(), bundle,
-									false);
-						}// postBean.getLevelCount() <= 0
-					} else if (postBean.getControlType().equals("checkbox")) {
-						if (postBean.getLabels().size() > 1) {
-							Bundle bundle = createArguments(
-									postBean.getDisplayName(), null);
-							bundle.putInt(ARG_COMMON_REQ_CODE, postBean
-									.getName().hashCode());
-							bundle.putBoolean("singleSelection", false);
-							bundle.putSerializable("properties",
-									(ArrayList<String>) postBean.getLabels());
-							TextView txview = (TextView) v
-									.getTag(PostCommonValues.HASH_CONTROL);
-							if (txview != null) {
-								bundle.putString("selected", txview.getText()
-										.toString());
-							}
-							((BaseActivity) getActivity()).pushFragment(
-									new OtherPropertiesFragment(), bundle,
-									false);
-						} else {
-							View checkV = v.findViewById(R.id.checkitem);
-							if (checkV != null && checkV instanceof CheckBox) {
-								((CheckBox) checkV)
-										.setChecked(!((CheckBox) checkV)
-												.isChecked());
-							}
-						}
+		
+		((View) layout.getTag(PostCommonValues.HASH_CONTROL))
+				.setOnTouchListener(new OnTouchListener() {
+					@Override
+					public boolean onTouch(View v, MotionEvent event) {
+						return false;
 					}
-				}
-			});// layout.setOnClickListener:select or checkbox
-		} else {// not select or checkbox
-			final String actionName = ((PostGoodsBean) layout
-					.getTag(PostCommonValues.HASH_POST_BEAN)).getDisplayName();
-			((View) layout.getTag(PostCommonValues.HASH_CONTROL))
-					.setOnTouchListener(new OnTouchListener() {
-						@Override
-						public boolean onTouch(View v, MotionEvent event) {
-							return false;
-						}
-					});
+				});
 
-			layout.setOnClickListener(new OnClickListener() {
+		layout.setOnClickListener(new OnClickListener() {
 
-				@Override
-				public void onClick(View v) {
-					View ctrl = (View) v.getTag(PostCommonValues.HASH_CONTROL);
-					ctrl.requestFocus();
-					InputMethodManager inputMgr = (InputMethodManager) ctrl
-							.getContext().getSystemService(
-									Context.INPUT_METHOD_SERVICE);
-					inputMgr.showSoftInput(ctrl,
-							InputMethodManager.SHOW_IMPLICIT);
-				}
-			});
-
-			if (postBean.getName().equals(
-					PostCommonValues.STRING_DETAIL_POSITION)) {
-				layout.findViewById(R.id.location).setOnClickListener(
-						new OnClickListener() {
-
-							@Override
-							public void onClick(View v) {
-								// TODO Auto-generated method stub
-								if (detailLocation != null) {
-									((TextView) layout
-											.findViewById(R.id.postinput)).setText(PostUtil
-											.getLocationSummary(detailLocation));
-								}
-							}
-
-						});
+			@Override
+			public void onClick(View v) {
+				View ctrl = (View) v.getTag(PostCommonValues.HASH_CONTROL);
+				ctrl.requestFocus();
+				InputMethodManager inputMgr = (InputMethodManager) ctrl
+						.getContext().getSystemService(
+								Context.INPUT_METHOD_SERVICE);
+				inputMgr.showSoftInput(ctrl,
+						InputMethodManager.SHOW_IMPLICIT);
 			}
-		}
+		});
+
+		if (postBean.getName().equals(
+				PostCommonValues.STRING_DETAIL_POSITION)) {
+			layout.findViewById(R.id.location).setVisibility(View.GONE);
+			}
+		
 		PostUtil.adjustMarginBottomAndHeight(layout);
 
 		return layout;
@@ -1656,7 +1314,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		param.addParam("rt", 1);
 		param.addParam("rows", 1);
 		param.addParam("wanted", 0);
-		// param.addParam("status", 3);
 		this.showProgress("", "正在获取您发布信息的状态，请耐心等候", false);
 
 		BaseApiCommand.createCommand("ad_user_list", true, param).execute(
@@ -1700,17 +1357,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				IMG_STATE_FAIL, 0,
 				BXThumbnail.createThumbnail(imagePath, thumbnail));
 		handler.sendMessage(msg);
-
-		// firstImage =
-		// ImageCacheManager.getInstance().loadBitmapFromResource(R.drawable.icon_load_fail);
-		// if(getView() != null && getView().getRootView() != null){
-		// getActivity().runOnUiThread(new Runnable(){
-		// @Override
-		// public void run(){
-		// updateImageInfo(getView().getRootView());
-		// }
-		// });
-		// }
 	}
 
 	private View findImageViewByTag(String imagePath) {

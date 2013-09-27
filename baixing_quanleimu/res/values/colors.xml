@@ -36,4 +36,6 @@
     <color name="common_info">#d6d6d6</color>
     <color name="common_button_disable">#adadad</color>
     <color name="text_num_gray">#333</color>
+    
+    <color name="toast_info_bg">#D04B4B4B</color>
 </resources>

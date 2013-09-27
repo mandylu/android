@@ -46,7 +46,7 @@ public class PosterActivity extends BaseTabActivity {
 	}
 	
 	protected void onFragmentEmpty() {
-		this.afterChange(TAB_INDEX_CAT);
+		this.afterChange(TAB_INDEX_PERSONAL);
 		finish();
 	}
 	

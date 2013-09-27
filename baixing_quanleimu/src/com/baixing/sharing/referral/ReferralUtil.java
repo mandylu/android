@@ -22,6 +22,12 @@ public class ReferralUtil {
 	private static final String TAG = ReferralUtil.class.getSimpleName();
 	
 	private static ReferralUtil instance = null;
+	
+	public static final int TASK_APP = 1;
+	public static final int TASK_HAIBAO = 2;
+	public static final int TASK_POST = 3;
+	
+	public static final int ROLE_PROMOTER = 0x1;
 
 	public static ReferralUtil getInstance() {
 		if (instance != null) {
