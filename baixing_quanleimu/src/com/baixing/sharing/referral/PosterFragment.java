@@ -412,6 +412,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			return null;
 		}
 		
+		if (!Util.isValidMobile(contentContact.trim())) {
+			ViewUtil.showToast(getActivity(), "请输入有效手机号" ,false);
+			return null;
+		}
+		
 		return contentContact.trim();
 	}
 	
