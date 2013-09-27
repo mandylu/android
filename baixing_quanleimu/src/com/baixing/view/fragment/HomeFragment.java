@@ -27,6 +27,7 @@ import com.baixing.entity.BXLocation;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.sharing.referral.ReferralEntrance;
+import com.baixing.sharing.referral.RegisterOrLoginDlg;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -216,6 +217,10 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		
 		String cityName = GlobalDataManager.getInstance().getCityName();
 		if (null == cityName || "".equals(cityName)) {
+			
+			// zengjin@baixing.net
+			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
+			
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{

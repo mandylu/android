@@ -2,6 +2,9 @@ package com.baixing.sharing.referral;
 
 import java.util.Hashtable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
 import android.graphics.Bitmap;
 import android.graphics.Color;
@@ -10,6 +13,8 @@ import android.util.Log;
 
 import com.baixing.data.AccountManager;
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.Util;
 import com.google.zxing.BarcodeFormat;
 import com.google.zxing.EncodeHintType;
@@ -27,7 +32,9 @@ public class ReferralUtil {
 	public static final int TASK_HAIBAO = 2;
 	public static final int TASK_POST = 3;
 	
+	public static final int ROLE_NORMAL = 0x0;
 	public static final int ROLE_PROMOTER = 0x1;
+	public static final int ROLE_BUSINESS = 0x2;
 
 	public static ReferralUtil getInstance() {
 		if (instance != null) {
@@ -46,11 +53,34 @@ public class ReferralUtil {
 	}
 
 	public static boolean isPromoter() {
-		AccountManager am = GlobalDataManager.getInstance().getAccountManager(); 
-		if (am.isUserLogin()/* && am.getCurrentUser().getPhone().equals("13503300040")*/) {
-			return true;
+		
+		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
+		if (am.isUserLogin()) {
+			String mobile = am.getCurrentUser().getPhone();
+			if (!TextUtils.isEmpty(mobile)/* && Util.isValidMobile(mobile)*/) {
+				ApiParams params = new ApiParams();
+				params.addParam("mobile", mobile);
+				String jsonResult = BaseApiCommand.createCommand("get_role_by_mobile", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+				try{
+					JSONObject obj = new JSONObject(jsonResult);
+					if(obj != null){
+						JSONObject error = obj.getJSONObject("error");
+						if(error != null){
+							String code = error.getString("code");
+							if(code != null && code.equals("0")){
+								if ((obj.getInt("role") & ROLE_PROMOTER) == ROLE_PROMOTER) {
+									return true;
+								}
+							}
+						}
+					}
+				}catch(JSONException e){
+					e.printStackTrace();
+					return true;
+				}
+			}
 		}
-		return false;
+		return true;
 	}
 	
 	public static Bitmap getQRCodeBitmap(Context context, String content) {

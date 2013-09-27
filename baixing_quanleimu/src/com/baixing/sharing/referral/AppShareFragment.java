@@ -21,6 +21,7 @@ import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
+import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
@@ -32,6 +33,7 @@ import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
 import com.baixing.util.Util;
+import com.baixing.view.fragment.LoginFragment;
 import com.baixing.widget.EditUsernameDialogFragment.ICallback;
 import com.quanleimu.activity.R;
 
@@ -82,6 +84,31 @@ public class AppShareFragment extends BaseFragment implements
 						.getInstance().getApplicationContext(), qrCodeContent));
 		((Button) referralmain.findViewById(R.id.btn_referral_bluetooth))
 				.setOnClickListener(new BtnBluetoothOnClickListener());
+		
+		// zengjin@baixing.net
+		Button detailBtn = (Button) referralmain.findViewById(R.id.btn_referral_share_detail);
+		if (!GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
+			detailBtn.setText("请登录");
+			detailBtn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					pushFragment(new LoginFragment(), createArguments("登录", ""));
+				}
+			});
+		} else {
+			detailBtn.setText("APP推广明细");
+			detailBtn.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Bundle bundle=new Bundle();
+					bundle.putString("title", getString(R.string.button_referral_detail_app));
+					bundle.putString("url", "http://www.google.com");
+					pushFragment(new ReferralDetailFragment(), bundle);	
+				}
+			});
+		}
 
 		return referralmain;
 	}

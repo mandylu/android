@@ -3,12 +3,10 @@ package com.baixing.sharing.referral;
 
 import java.util.ArrayList;
 import java.util.HashMap;
-import java.util.Iterator;
 import java.util.LinkedHashMap;
 import java.util.List;
 import java.util.Set;
 
-import org.json.JSONArray;
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -24,10 +22,8 @@ import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
 import android.view.LayoutInflater;
-import android.view.MotionEvent;
 import android.view.View;
 import android.view.View.OnClickListener;
-import android.view.View.OnTouchListener;
 import android.view.ViewGroup;
 import android.view.ViewGroup.MarginLayoutParams;
 import android.view.inputmethod.InputMethodManager;
@@ -47,14 +43,9 @@ import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
-import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
-import com.baixing.tracking.TrackConfig.TrackMobile.Key;
-import com.baixing.tracking.Tracker;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -66,10 +57,7 @@ import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
-import com.baixing.util.post.PostUtil;
-import com.baixing.view.fragment.ContactAndAddressDetailFragment;
 import com.baixing.view.fragment.LoginFragment;
-import com.baixing.view.fragment.PostParamsHolder;
 import com.baixing.view.fragment.RegisterFragment;
 import com.quanleimu.activity.R;
 import com.umeng.common.Log;
@@ -91,10 +79,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	private static final int MSG_IMAGE_STATE_CHANGE = 14;
 	private static final int MSG_GET_AD_FAIL = 15;
 	private static final int MSG_GET_AD_SUCCED = 16;
-	protected PostParamsHolder params = new PostParamsHolder();
 	private BXLocation detailLocation = null;
 	protected List<String> bmpUrls = new ArrayList<String>();
-	private EditText etContact = null;
 	private PostLocationService postLBS;
 
 	protected ArrayList<String> photoList = new ArrayList<String>();
@@ -135,14 +121,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 
 		handler.sendEmptyMessage(MSG_UPDATE_IMAGE_LIST);
 	}
-	
-	private String getQRCodeId(String qrCodeStr) {
-		int start = qrCodeStr.indexOf("codeId=") + "codeId=".length();
-		if (start != "codeId=".length() - 1) {
-			return qrCodeStr.substring(start);
-		}
-		return null;
-	}
 
 	@SuppressWarnings("unchecked")
 	@Override
@@ -153,8 +131,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		if (savedInstanceState != null) {
 			postList.putAll((HashMap<String, PostGoodsBean>) savedInstanceState
 					.getSerializable("postList"));
-			params = (PostParamsHolder) savedInstanceState
-					.getSerializable("params");
 			photoList.addAll((List<String>) savedInstanceState
 					.getSerializable("listUrl"));
 		}
@@ -166,8 +142,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	@Override
 	public void onSaveInstanceState(Bundle outState) {
 		super.onSaveInstanceState(outState);
-		PostUtil.extractInputData(layout_txt, params);
-		outState.putSerializable("params", params);
 		outState.putSerializable("postList", postList);
 		outState.putSerializable("listUrl", photoList);
 	}
@@ -248,8 +222,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	@Override
 	public void onPause() {
 		postLBS.stop();
-		PostUtil.extractInputData(layout_txt, params);
-		setPhoneAndAddress();
 		isActive = false;
 		super.onPause();
 		paused = true;
@@ -289,7 +261,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	@Override
 	public void onViewCreated(View view, Bundle savedInstanceState) {
 		super.onViewCreated(view, savedInstanceState);
-		showPost();
 	}
 
 	@Override
@@ -329,30 +300,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		getActivity().startActivity(goIntent);
 	}
 
-	private void deployDefaultLayout() {
-		HashMap<String, PostGoodsBean> pl = new HashMap<String, PostGoodsBean>();
-		for (int i = 1; i < PostCommonValues.fixedItemNames.length; ++i) {
-			if (PostCommonValues.fixedItemNames[i]
-					.equals(PostCommonValues.STRING_DESCRIPTION)
-					|| PostCommonValues.fixedItemNames[i].equals("价格")) {
-				continue;
-			}
-			PostGoodsBean bean = new PostGoodsBean();
-			bean.setControlType("input");
-			bean.setDisplayName(PostCommonValues.fixedItemDisplayNames[i]);
-			bean.setName(PostCommonValues.fixedItemNames[i]);
-			bean.setUnit("");
-			pl.put(PostCommonValues.fixedItemNames[i], bean);
-		}
-		buildPostLayout(pl);
-	}
-
 	protected String getCityEnglishName() {
 		return cityEnglishName;
-	}
-
-	private void showPost() {
-		deployDefaultLayout();
 	}
 
 	@Override
@@ -433,24 +382,88 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			break;
 		}
 	}
-
-	private void setPhoneAndAddress() {
-		String phone = params.getData("contact");
-		if (phone != null && phone.length() > 0) {
-			GlobalDataManager.getInstance().setPhoneNumber(phone);
+	
+	private String getImgUrls() {
+		bmpUrls.clear();
+		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
+		String images = "";
+		if(bmpUrls != null){
+			for (int i = 0; i < bmpUrls.size(); i++) {				
+				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
+					images += "," + bmpUrls.get(i);
+				}
+			}
+			if(images != null && images.length() > 0 && images.charAt(0) == ','){
+				images = images.substring(1);
+			}
+			if(images != null && images.length() > 0){
+				return images;
+			}
 		}
-		String address = params
-				.getData(PostCommonValues.STRING_DETAIL_POSITION);
-		if (address != null && address.length() > 0) {
-			GlobalDataManager.getInstance().setAddress(address);
-		}
+		ViewUtil.showToast(getActivity(), "请拍摄海报照片" ,false);
+		return null;
 	}
-
+	
+	private String getMobile() {
+		String contentContact = ((EditText)getView().findViewById(R.id.edit_poster_contact)).getText().toString();
+		
+		if(TextUtils.isEmpty(contentContact)){
+			ViewUtil.showToast(getActivity(), "请输入店家手机" ,false);
+			return null;
+		}
+		
+		return contentContact.trim();
+	}
+	
+	private String getAddr() {
+		String contentAddr = ((EditText)getView().findViewById(R.id.edit_poster_location)).getText().toString();
+		
+		if(TextUtils.isEmpty(contentAddr)){
+			ViewUtil.showToast(getActivity(), "请输入店家地址" ,false);
+			return null;
+		}
+		
+		return contentAddr.trim();
+	}
+	
+	private String getQRCodeID() {
+		String contentQrcode = ((Button) getView().findViewById(R.id.btn_qrcode_scan)).getText().toString();
+		
+		if(contentQrcode=="扫描二维码"){			
+			ViewUtil.showToast(getActivity(), "请扫描二维码" ,false);
+			return null;
+		}
+		
+		return contentQrcode;
+	}
+	
+	private String getQRCodeId(String qrCodeStr) {
+		int start = qrCodeStr.indexOf("codeId=") + "codeId=".length();
+		if (start != "codeId=".length() - 1) {
+			return qrCodeStr.substring(start);
+		}
+		return null;
+	}
+	
 	private void postAction() {
-		String mobile = "13661812345";
-		String addr = "上海市浦东新区蔡伦路1159号";
-		String images = "http://sd.jpg,http://di.jpg";
-		String qrcode = "8dj30du3";
+		
+		if (ImageUploader.getInstance().hasPendingJob()) {
+			ViewUtil.showToast(this.getActivity(), "图片上传中", false);
+			return;
+		}
+		
+		String images = getImgUrls();
+		if (images == null) return;
+		
+		String mobile = getMobile();
+		if (mobile == null) return;
+		
+		String addr = getAddr();
+		if (addr == null) return;
+		
+		String qrcode = getQRCodeID();
+		if (qrcode == null) return;
+
 		savePosterCmd(mobile, addr, images, qrcode);
 	}
 
@@ -524,84 +537,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		return null;
 	}
-	
-	protected void postAd(BXLocation location) {
-		ApiParams apiParam = new ApiParams();
-
-		HashMap<String, String> mapParams = new HashMap<String, String>();
-		Iterator<String> ite = params.keyIterator();
-		while (ite.hasNext()) {
-			String key = ite.next();
-			String value = params.getData(key);
-			mapParams.put(key, value);
-		}	
-		
-		bmpUrls.clear();
-		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
-		if(bmpUrls != null){
-			String images = "";
-			for (int i = 0; i < bmpUrls.size(); i++) {				
-				if(bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")){
-					images += "," + bmpUrls.get(i);
-				}
-			}
-			if(images != null && images.length() > 0 && images.charAt(0) == ','){
-				images = images.substring(1);
-			}
-			if(images != null && images.length() > 0){
-				apiParam.addParam("images", images);
-			}
-		}
-
-		String phone = mapParams.get("contact");
-
-		UserBean curUser = GlobalDataManager.getInstance().getAccountManager()
-				.getCurrentUser();
-
-		if (curUser != null && curUser.getPhone() != null
-				&& curUser.getPhone().length() > 0) {
-			phone = curUser.getPhone();
-		}
-	}
-	
-	private int getContactLength() {
-		return etContact != null ? etContact.getText().length() : 0;
-	}
-
-	private int getImgCount() {
-		int imgCount = 0;
-		for (int i = 0; i < bmpUrls.size(); i++) {
-			if (bmpUrls.get(i) != null && bmpUrls.get(i).contains("http:")) {
-				imgCount++;
-			}
-		}
-		return imgCount;
-	}
-
-	private void postResultSuccess() {
-		BxEvent event = BxEvent.EDITPOST_POSTRESULT;
-		boolean autoPosition = false;
-		if (detailLocation != null
-				&& PostUtil
-						.getLocationSummary(detailLocation)
-						.equals(params
-								.getData(PostCommonValues.STRING_DETAIL_POSITION))) {
-			autoPosition = true;
-		}
-		Tracker.getInstance().event(event)
-				.append(Key.POSTSTATUS, 1)
-				.append(Key.POSTPICSCOUNT, getImgCount())
-				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength())
-				.append(Key.POSTDETAILPOSITIONAUTO, autoPosition).end();
-	}
-
-	private void postResultFail(String errorMsg) {
-		BxEvent event = BxEvent.EDITPOST_POSTRESULT;
-		Tracker.getInstance().event(event)
-				.append(Key.POSTSTATUS, 0).append(Key.POSTFAILREASON, errorMsg)
-				.append(Key.POSTPICSCOUNT, getImgCount())
-				.append(Key.POSTCONTACTTEXTCOUNT, getContactLength()).end();
-	}
 
 	private void resetData(boolean clearImgs) {
 		if (this.layout_txt != null) {
@@ -614,50 +549,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		if (clearImgs) {
 			this.doClearUpImages();
 			this.bmpUrls.clear();
-		}
-	}
-
-	protected String getAdContact() {
-		return "";
-	}
-
-	private void appendBeanToLayout(PostGoodsBean postBean) {
-		UserBean user = GlobalDataManager.getInstance().getAccountManager()
-				.getCurrentUser();
-		if (postBean.getName().equals("contact")
-				&& (postBean.getValues() == null || postBean.getValues()
-						.isEmpty())
-				&& (user != null && user.getPhone() != null && user.getPhone()
-						.length() > 0)) {
-			List<String> valueList = new ArrayList<String>(1);
-			valueList.add(user.getPhone());
-			postBean.setValues(valueList);
-			postBean.setLabels(valueList);
-		}
-
-		ViewGroup layout = createItemByPostBean(postBean);// FIXME:
-		if (layout != null && layout.findViewById(R.id.postinputlayout) != null) {
-			layout.setClickable(true);
-			layout.setOnClickListener(this);
-		}
-
-		if (postBean.getName().equals("faburen")) {
-			List<String> labels = postBean.getLabels();
-			List<String> values = postBean.getValues();
-			if (labels != null) {
-				for (int i = 0; i < labels.size(); ++i) {
-					if (labels.get(i).equals("个人")) {
-						((TextView) layout.findViewById(R.id.posthint))
-								.setText(labels.get(i));
-						params.put(postBean.getName(), labels.get(i),
-								values.get(i));
-					}
-				}
-			}
-		}
-
-		if (layout != null) {
-			layout_txt.addView(layout);
 		}
 	}
 
@@ -678,36 +569,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		
 		this.updateImageInfo(layout_txt);
-
-		boolean contactAndPhoneVisible = false;
-
-		for (int i = 0; i < PostCommonValues.fixedItemNames.length; ++i) {
-			if (pm.containsKey(PostCommonValues.fixedItemNames[i])
-					&& !PostCommonValues.fixedItemNames[i]
-							.equals(PostCommonValues.STRING_DESCRIPTION)) {
-				if (contactAndPhoneVisible
-						&& (PostCommonValues.fixedItemNames[i]
-								.equals("contact") || PostCommonValues.fixedItemNames[i]
-								.equals(PostCommonValues.STRING_DETAIL_POSITION))) {
-					continue;
-				}
-				this.appendBeanToLayout(pm
-						.get(PostCommonValues.fixedItemNames[i]));
-			} else if (!pm.containsKey(PostCommonValues.fixedItemNames[i])) {
-				params.remove(PostCommonValues.fixedItemNames[i]);
-			}
-		}
-
-		getView().findViewById(R.id.ll_contactAndAddress).setVisibility(
-				View.VISIBLE);
-		if (contactAndPhoneVisible) {
-			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(
-					View.VISIBLE);
-			setPhoneAndAddrLayout();
-		} else {
-			getView().findViewById(R.id.ll_contactAndAddress).setVisibility(
-					View.GONE);
-		}
 	}
 
 	protected void setPhoneAndAddrLeftIcon() {
@@ -745,62 +606,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		bd.setBounds(0, 0, 45, 45);
 
 		aBtn.setCompoundDrawables(bd, null, null, null);
-
-	}
-
-	private void setPhoneAndAddrLayout() {
-		String phone = GlobalDataManager.getInstance().getPhoneNumber();
-		if (phone == null || phone.length() == 0) {
-			((Button) getView().findViewById(R.id.btn_contact)).setHint("联系方式");
-		}
-
-		String address = GlobalDataManager.getInstance().getAddress();
-		if (address == null || address.length() == 0) {
-			if (detailLocation != null) {
-				this.setDetailLocationControl(detailLocation);
-			} else {
-				((Button) getView().findViewById(R.id.btn_address))
-						.setHint("张贴地点");
-			}
-		}
-
-		setPhoneAndAddrLeftIcon();
-
-		getView().findViewById(R.id.btn_contact).setOnClickListener(
-				new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Bundle temp = createArguments("填写联系方式", "");
-						temp.putString("edittype", "contact");
-						temp.putString("defaultValue", ((Button) getView()
-								.findViewById(R.id.btn_contact)).getText()
-								.toString());
-						pushFragment(new ContactAndAddressDetailFragment(),
-								temp);
-					}
-
-				});
-		getView().findViewById(R.id.btn_address).setOnClickListener(
-				new OnClickListener() {
-
-					@Override
-					public void onClick(View v) {
-						// TODO Auto-generated method stub
-						Bundle temp = createArguments("填写张贴地点", "");
-						temp.putString("edittype", "address");
-						temp.putString("defaultValue", ((Button) getView()
-								.findViewById(R.id.btn_address)).getText()
-								.toString());
-						if (detailLocation != null) {
-							temp.putSerializable("location", detailLocation);
-						}
-						pushFragment(new ContactAndAddressDetailFragment(),
-								temp);
-					}
-
-				});
 
 	}
 
@@ -1010,7 +815,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			break;
 		}
 		case PostCommonValues.MSG_POST_SUCCEED:
-			PerformanceTracker.stamp(Event.E_POST_SUCCEEDED);
 			hideProgress();
 
 			doClearUpImages();
@@ -1019,7 +823,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			String message = ((PostResultData) msg.obj).message;
 			int code = ((PostResultData) msg.obj).error;
 			if (!id.equals("") && code == 0) {
-				postResultSuccess();
 				final Bundle args = createArguments(null, null);
 				args.putInt("forceUpdate", 1);
 				if (isActive) {
@@ -1027,7 +830,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				}
 				handlePostFinish(id);
 			} else {
-				postResultFail(message);
 				if (msg.obj != null) {
 					handlePostFail((PostResultData) msg.obj);
 				}
@@ -1039,10 +841,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				if (msg.obj instanceof String) {
 					ViewUtil.showToast(activity, (String) msg.obj, false);
 					this.changeFocusAfterPostError((String) msg.obj);
-					postResultFail((String) msg.obj);
 				} else if (msg.obj instanceof PostResultData) {
 					handlePostFail((PostResultData) msg.obj);
-					postResultFail(((PostResultData) msg.obj).message);
 				}
 			}
 			break;
@@ -1060,14 +860,10 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			break;
 		case MSG_GEOCODING_TIMEOUT:
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
-			Event evt = msg.what == MSG_GEOCODING_TIMEOUT ? Event.E_GeoCoding_Timeout
-					: Event.E_GeoCoding_Fetched;
-			PerformanceTracker.stamp(evt);
 			showProgress(R.string.dialog_title_info,
 					R.string.dialog_message_waiting, false);
 			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
 			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
-			postAd(msg.obj == null ? null : (BXLocation) msg.obj);
 			break;
 		case PostCommonValues.MSG_GPS_LOC_FETCHED:
 			detailLocation = (BXLocation) msg.obj;
@@ -1175,42 +971,9 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 	}
 
-	// //to fix stupid system error. all text area will be the same content
-	// after app is brought to front when activity not remain is checked
-	private void setInputContent() {
-		if (layout_txt == null)
-			return;
-		for (int i = 0; i < layout_txt.getChildCount(); ++i) {
-			View v = layout_txt.getChildAt(i);
-			PostGoodsBean bean = (PostGoodsBean) v
-					.getTag(PostCommonValues.HASH_POST_BEAN);
-			if (bean == null)
-				continue;
-			View control = (View) v.getTag(PostCommonValues.HASH_CONTROL);
-			if (control != null && control instanceof TextView) {
-				if (params != null && params.containsKey(bean.getName())) {
-					String value = params.getUiData(bean.getName());
-					if (value == null) {
-						value = params.getUiData(bean.getName());
-					}
-					if (bean.getName().equals("contact")) {
-						String phone = GlobalDataManager.getInstance()
-								.getPhoneNumber();
-						if (phone != null && phone.length() > 0) {
-							// ((TextView)control).setText(phone);
-							continue;
-						}
-					}
-					// ((TextView)control).setText(value);
-				}
-			}
-		}
-	}
-
 	@Override
 	public void onStart() {
 		super.onStart();
-		setInputContent();
 	}
 
 	@Override
@@ -1224,46 +987,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		
 		((TextView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.tv_title_post)).setText("海报推广");
 		((ImageView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.imageView1)).setVisibility(View.GONE);
-	}
-
-	private ViewGroup createItemByPostBean(PostGoodsBean postBean) {
-		Activity activity = getActivity();
-		final ViewGroup layout = PostUtil.createItemByPostBean(postBean,
-				activity);
-
-		if (layout == null)
-			return null;
-		
-		((View) layout.getTag(PostCommonValues.HASH_CONTROL))
-				.setOnTouchListener(new OnTouchListener() {
-					@Override
-					public boolean onTouch(View v, MotionEvent event) {
-						return false;
-					}
-				});
-
-		layout.setOnClickListener(new OnClickListener() {
-
-			@Override
-			public void onClick(View v) {
-				View ctrl = (View) v.getTag(PostCommonValues.HASH_CONTROL);
-				ctrl.requestFocus();
-				InputMethodManager inputMgr = (InputMethodManager) ctrl
-						.getContext().getSystemService(
-								Context.INPUT_METHOD_SERVICE);
-				inputMgr.showSoftInput(ctrl,
-						InputMethodManager.SHOW_IMPLICIT);
-			}
-		});
-
-		if (postBean.getName().equals(
-				PostCommonValues.STRING_DETAIL_POSITION)) {
-			layout.findViewById(R.id.location).setVisibility(View.GONE);
-			}
-		
-		PostUtil.adjustMarginBottomAndHeight(layout);
-
-		return layout;
 	}
 	
 	private String getDetailLocation(BXLocation location) {
@@ -1282,52 +1005,9 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 				: location.detailAddress;
 		return (TextUtils.isEmpty(latlon) ? "" : latlon) + (TextUtils.isEmpty(address) ? "" : address);
 	}
-
-	private void setDetailLocationControl(BXLocation location) {
-		if (location == null)
-			return;
-		Button addrBtn = getView() == null ? null : (Button) getView()
-				.findViewById(R.id.btn_address);
-		if (addrBtn != null) {
-			String address = (location.detailAddress == null || location.detailAddress
-					.equals("")) ? ((location.subCityName == null || location.subCityName
-					.equals("")) ? "" : location.subCityName)
-					: location.detailAddress;
-			if (address == null || address.length() == 0)
-				return;
-			if (location.adminArea != null && location.adminArea.length() > 0) {
-				address = address.replaceFirst(location.adminArea, "");
-			}
-			if (location.cityName != null && location.cityName.length() > 0) {
-				address = address.replaceFirst(location.cityName, "");
-			}
-			// addrBtn.setText(address);
-
-			setPhoneAndAddrLeftIcon();
-		}
-	}
-
+	
 	private void handlePostFinish(String adId) {
-		ApiParams param = new ApiParams();
-		param.addParam("newAdIds", adId);
-		param.addParam("start", 0);
-		param.addParam("rt", 1);
-		param.addParam("rows", 1);
-		param.addParam("wanted", 0);
-		this.showProgress("", "正在获取您发布信息的状态，请耐心等候", false);
-
-		BaseApiCommand.createCommand("ad_user_list", true, param).execute(
-				getActivity(), new BaseApiCommand.Callback() {
-					public void onNetworkFail(String apiName, ApiError error) {
-						PosterFragment.this.sendMessage(MSG_GET_AD_FAIL, "");
-					}
-
-					public void onNetworkDone(String apiName,
-							String responseData) {
-						PosterFragment.this.sendMessage(MSG_GET_AD_SUCCED,
-								responseData);
-					}
-				});
+		// todo
 	}
 
 	public boolean hasGlobalTab() {
