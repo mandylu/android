@@ -86,6 +86,7 @@ public class RegisterOrLoginDlg extends DialogFragment {
 				
 					new Asker(2);
 				}else{
+					//lumengdi@baixing.net
 					new AlertDialog.Builder(getActivity()) 
 		            	.setTitle("网络错误") 
 		            	.setMessage("网络连接失败，请确认网络连接") 
