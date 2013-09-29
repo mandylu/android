@@ -57,10 +57,10 @@ public class ReferralUtil {
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
 		if (am.isUserLogin()) {
 			String mobile = am.getCurrentUser().getPhone();
-			if (!TextUtils.isEmpty(mobile)/* && Util.isValidMobile(mobile)*/) {
+			if (!TextUtils.isEmpty(mobile) && Util.isValidMobile(mobile)) {
 				ApiParams params = new ApiParams();
 				params.addParam("mobile", mobile);
-				String jsonResult = BaseApiCommand.createCommand("get_role_by_mobile", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+				String jsonResult = BaseApiCommand.createCommand("get_promo_user_type", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 				try{
 					JSONObject obj = new JSONObject(jsonResult);
 					if(obj != null){
@@ -68,7 +68,7 @@ public class ReferralUtil {
 						if(error != null){
 							String code = error.getString("code");
 							if(code != null && code.equals("0")){
-								if ((obj.getInt("role") & ROLE_PROMOTER) == ROLE_PROMOTER) {
+								if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
 									return true;
 								}
 							}

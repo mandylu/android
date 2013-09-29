@@ -57,32 +57,44 @@ public class RegisterOrLoginDlg extends DialogFragment {
 		RL.setOnClickListener(new OnClickListener() {
 			@Override
 			public void onClick(View v) {
-				// production
-				/*SmsManager smsManager = SmsManager.getDefault();
-				token = NetworkUtil.getMD5(Util.getDeviceUdid(getActivity()))
-						.substring(0, 6);
-				String smsText = "easyRegister_" + token;
-				smsManager.sendTextMessage("106901336000", null, smsText, null,
-						null);*/
 				
-				// test - start
 				if(NetworkUtil.isNetworkActive(getActivity())){
-					String mobile = mobileText.getText().toString();
+					// production
+					/*SmsManager smsManager = SmsManager.getDefault();
 					token = NetworkUtil.getMD5(Util.getDeviceUdid(getActivity()))
-						.substring(0, 6);
+							.substring(0, 6);
 					String smsText = "easyRegister_" + token;
-					if (!TextUtils.isEmpty(mobile)) {
-						ApiParams params = new ApiParams();
-						params.addParam("mobile", mobile);
-						params.addParam("content", smsText);
-						BaseApiCommand.createCommand("sms_send_test", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+					smsManager.sendTextMessage("106901336000", null, smsText, null,
+							null);*/
 					
-						ApiParams param = new ApiParams();
-						param.addParam("mobile", mobile);
-						param.addParam("type", ReferralUtil.ROLE_PROMOTER);
-						BaseApiCommand.createCommand("save_identity_test", true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+					// test - start
+					String mobile = mobileText.getText().toString();
+					if (!TextUtils.isEmpty(mobile) && (mobile.length() == 11 || mobile.length() == 12)) {
+						boolean isPromoter = mobile.startsWith("0");
+						mobile = isPromoter ? mobile.substring(1) : mobile;
+						if (Util.isValidMobile(mobile)) {
+							token = NetworkUtil.getMD5(Util.getDeviceUdid(getActivity()))
+									.substring(mobile.length() - 6, 6);
+							String smsText = "easyRegister_" + token;
+						
+							ApiParams params = new ApiParams();
+							params.addParam("mobile", mobile);
+							params.addParam("content", smsText);
+							BaseApiCommand.createCommand("sms_send_test", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+							
+							ApiParams param = new ApiParams();
+							param.addParam("mobile", mobile);
+							param.addParam("type", isPromoter ? ReferralUtil.ROLE_PROMOTER : ReferralUtil.ROLE_NORMAL);
+							BaseApiCommand.createCommand("save_promo_user_test", true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+						} else {
+							mobileText.setText("手机号非法！");
+							return;
+						}
+					} else {
+						mobileText.setText("输入非法！");
+						return;
 					}
-				// test - end
+					// test - end
 				
 					new Asker(2);
 				}else{
