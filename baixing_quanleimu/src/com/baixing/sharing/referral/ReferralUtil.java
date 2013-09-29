@@ -30,8 +30,10 @@ public class ReferralUtil {
 	
 	private static ReferralUtil instance = null;
 	
-	private static final String IS_PROMOTER = "IS_PROMOTER";
-	private static final String IS_PROMO_KEY = "com.baixing.sharing.referral.ispromoter";
+	public static final String REFERRAL_STATUS = "REFERRAL_STATUS";
+	public static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
+	public static final String IS_PROMO_KEY = "com.baixing.sharing.referral.ispromoter";
+	public static final String DLGSHOWN_KEY = "com.baixing.sharing.referral.dlgshown";
 	
 	public static final int TASK_APP = 1;
 	public static final int TASK_HAIBAO = 2;
@@ -61,9 +63,9 @@ public class ReferralUtil {
 		
 		Context context = GlobalDataManager.getInstance().getApplicationContext();
 		SharedPreferences preferences = context.getSharedPreferences(
-				IS_PROMOTER, Context.MODE_PRIVATE);
-		if (preferences.contains(IS_PROMO_KEY)) {
-			return preferences.getBoolean(IS_PROMO_KEY, false);
+				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
+		if (preferences.contains(ReferralUtil.IS_PROMO_KEY)) {
+			return preferences.getBoolean(ReferralUtil.IS_PROMO_KEY, false);
 		}
 		
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
@@ -82,7 +84,7 @@ public class ReferralUtil {
 							if(code != null && code.equals("0")){
 								if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
 									Editor editor = preferences.edit();
-									editor.putBoolean(IS_PROMO_KEY, true);
+									editor.putBoolean(ReferralUtil.IS_PROMO_KEY, true);
 									editor.commit();
 									return true;
 								}
@@ -92,14 +94,14 @@ public class ReferralUtil {
 				}catch(JSONException e){
 					e.printStackTrace();
 					Editor editor = preferences.edit();
-					editor.putBoolean(IS_PROMO_KEY, false);
+					editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
 					editor.commit();
 					return false;
 				}
 			}
 		}
 		Editor editor = preferences.edit();
-		editor.putBoolean(IS_PROMO_KEY, false);
+		editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
 		editor.commit();
 		return false;
 	}

@@ -26,7 +26,6 @@ public class ReferralPromoter {
 	private static ReferralPromoter instance = null;
 	
 	private static final String PROMOTER_ID = "PROMOTER_ID";
-	private static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
 	
 	public static ReferralPromoter getInstance() {
 		if (instance != null) {
@@ -64,9 +63,9 @@ public class ReferralPromoter {
 	
 	private String getPromoterId(Context context) {
 		SharedPreferences preferences = context.getSharedPreferences(
-				PROMOTER_ID, Context.MODE_PRIVATE);
-		if (preferences.contains(PROMOTER_KEY)) {
-			return preferences.getString(PROMOTER_KEY, "");
+				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
+		if (preferences.contains(ReferralUtil.PROMOTER_KEY)) {
+			return preferences.getString(ReferralUtil.PROMOTER_KEY, "");
 		}
 		return null;
 	}
@@ -130,9 +129,9 @@ public class ReferralPromoter {
 
 	private void savePromoterId(Context context, String mPromoterID) {
 		SharedPreferences preferences = context.getSharedPreferences(
-				PROMOTER_ID, Context.MODE_PRIVATE);
+				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
 		Editor editor = preferences.edit();
-		editor.putString(PROMOTER_KEY, mPromoterID);
+		editor.putString(ReferralUtil.PROMOTER_KEY, mPromoterID);
 		editor.commit();
 	}
 	
