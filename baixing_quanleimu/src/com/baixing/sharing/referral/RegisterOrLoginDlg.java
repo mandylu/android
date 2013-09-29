@@ -8,6 +8,9 @@ import org.json.JSONObject;
 
 import android.app.AlertDialog;
 import android.app.Dialog;
+import android.content.ComponentName;
+import android.content.DialogInterface;
+import android.content.Intent;
 import android.os.Bundle;
 import android.support.v4.app.DialogFragment;
 import android.text.TextUtils;
@@ -63,24 +66,40 @@ public class RegisterOrLoginDlg extends DialogFragment {
 						null);*/
 				
 				// test - start
-				String mobile = mobileText.getText().toString();
-				token = NetworkUtil.getMD5(Util.getDeviceUdid(getActivity()))
+				if(NetworkUtil.isNetworkActive(getActivity())){
+					String mobile = mobileText.getText().toString();
+					token = NetworkUtil.getMD5(Util.getDeviceUdid(getActivity()))
 						.substring(0, 6);
-				String smsText = "easyRegister_" + token;
-				if (!TextUtils.isEmpty(mobile)) {
-					ApiParams params = new ApiParams();
-					params.addParam("mobile", mobile);
-					params.addParam("content", smsText);
-					BaseApiCommand.createCommand("sms_send_test", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+					String smsText = "easyRegister_" + token;
+					if (!TextUtils.isEmpty(mobile)) {
+						ApiParams params = new ApiParams();
+						params.addParam("mobile", mobile);
+						params.addParam("content", smsText);
+						BaseApiCommand.createCommand("sms_send_test", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 					
-					ApiParams param = new ApiParams();
-					param.addParam("mobile", mobile);
-					param.addParam("type", ReferralUtil.ROLE_PROMOTER);
-					BaseApiCommand.createCommand("save_identity_test", true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
-				}
+						ApiParams param = new ApiParams();
+						param.addParam("mobile", mobile);
+						param.addParam("type", ReferralUtil.ROLE_PROMOTER);
+						BaseApiCommand.createCommand("save_identity_test", true, param).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+					}
 				// test - end
 				
-				new Asker(2);
+					new Asker(2);
+				}else{
+					new AlertDialog.Builder(getActivity()) 
+		            	.setTitle("网络错误") 
+		            	.setMessage("网络连接失败，请确认网络连接") 
+		            	.setPositiveButton("确定", new DialogInterface.OnClickListener() { 
+		            		@Override 
+		            		public void onClick(DialogInterface arg0, int arg1) { 
+		            			Intent intent = new Intent("/");  
+		            			ComponentName cm = new ComponentName("com.android.settings","com.android.settings.WirelessSettings");  
+		            			intent.setComponent(cm);  
+		            			intent.setAction("android.intent.action.VIEW");  
+		            			getActivity().startActivityForResult( intent , 0);  		            			 
+		            		} 
+		            	}).show(); 
+				}				
 			}
 		});
 		return Dlg;
