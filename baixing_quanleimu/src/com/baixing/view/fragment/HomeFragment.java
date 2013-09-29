@@ -3,10 +3,13 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
+import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.DialogInterface;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -107,6 +110,15 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
+		//lumengdi@baixing.net
+		SharedPreferences status = getActivity().getSharedPreferences("status", 0); 
+		if(!status.getBoolean("isRegisteredorLogged", false)){
+			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
+			
+			SharedPreferences.Editor editor=status.edit();
+			editor.putBoolean("status", true);
+		}
+		
 		if(!switchCityPrompted){
 			GlobalDataManager.getInstance().getLocationManager().addLocationListener(this);
 		}
@@ -219,7 +231,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		if (null == cityName || "".equals(cityName)) {
 			
 			// zengjin@baixing.net
-			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
+			
 			
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
