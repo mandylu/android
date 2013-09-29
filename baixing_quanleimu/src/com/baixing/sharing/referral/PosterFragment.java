@@ -269,8 +269,10 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.referralpostview,
 				null);
+		//lumengdi@baixing.net
 		((EditText)v.findViewById(R.id.edit_poster_location)).setOnFocusChangeListener(new BorderChangeListener(getActivity(), v.findViewById(R.id.locationinputlayout)));
 		((EditText)v.findViewById(R.id.edit_poster_contact)).setOnFocusChangeListener(new BorderChangeListener(getActivity(),v.findViewById(R.id.contactinputlayout)));
+		
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		button.setText("立即免费发布");
