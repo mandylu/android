@@ -5,7 +5,6 @@ import java.util.ArrayList;
 import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
-import java.util.Set;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -21,6 +20,7 @@ import android.graphics.drawable.BitmapDrawable;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.View.OnClickListener;
@@ -57,10 +57,11 @@ import com.baixing.util.post.ImageUploader.Callback;
 import com.baixing.util.post.PostCommonValues;
 import com.baixing.util.post.PostLocationService;
 import com.baixing.util.post.PostNetworkService.PostResultData;
+import com.baixing.util.post.PostUtil.BorderChangeListener;
 import com.baixing.view.fragment.LoginFragment;
 import com.baixing.view.fragment.RegisterFragment;
 import com.quanleimu.activity.R;
-import com.umeng.common.Log;
+
 
 public class PosterFragment extends BaseFragment implements OnClickListener,
 		Callback {
@@ -265,10 +266,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 
 	@Override
 	public View onInitializeView(LayoutInflater inflater, ViewGroup container,
-			Bundle savedInstanceState) {
+			Bundle savedInstanceState) {		
 		ViewGroup v = (ViewGroup) inflater.inflate(R.layout.referralpostview,
 				null);
-		layout_txt = (LinearLayout) v.findViewById(R.id.layout_txt);
+		((EditText)v.findViewById(R.id.edit_poster_location)).setOnFocusChangeListener(new BorderChangeListener(getActivity(), v.findViewById(R.id.locationinputlayout)));
+		((EditText)v.findViewById(R.id.edit_poster_contact)).setOnFocusChangeListener(new BorderChangeListener(getActivity(),v.findViewById(R.id.contactinputlayout)));
 		Button button = (Button) v.findViewById(R.id.iv_post_finish);
 		button.setOnClickListener(this);
 		button.setText("立即免费发布");
@@ -626,7 +628,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		}
 		buildFixedPostLayout(pl);
 		
-		this.showInputMethod();
+		//this.showInputMethod();
 	}
 
 	private View searchEditText(View parent, int resourceId) {
@@ -815,7 +817,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		case MSG_UPDATE_IMAGE_LIST: {
 			updateImageInfo(rootView);
 
-			showInputMethod();
+			//showInputMethod();
 
 			break;
 		}
@@ -1009,4 +1011,14 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 
 		return null;
 	}
+/*	
+	private ViewGroup addItem(String label,String hint, int id){
+		View v =LayoutInflater.from(getAppContext()).inflate(R.layout.item_post_edit, null);
+		((TextView)v.findViewById(R.id.postshow)).setText(label);
+		EditText text=(EditText)v.findViewById(R.id.postinput);
+		text.setHint(hint);
+		text.setId(id);
+		
+		return (ViewGroup)v;
+	}*/
 }
