@@ -460,11 +460,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		String images = getImgUrls();
 		if (images == null) return;
 		
-		String mobile = getMobile();
-		if (mobile == null) return;
-		
 		String addr = getAddr();
 		if (addr == null) return;
+		
+		String mobile = getMobile();
+		if (mobile == null) return;
 		
 		String qrcode = getQRCodeID();
 		if (qrcode == null) return;
