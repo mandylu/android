@@ -6,6 +6,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.graphics.Bitmap;
 import android.graphics.Color;
 import android.text.TextUtils;
@@ -27,6 +29,9 @@ public class ReferralUtil {
 	private static final String TAG = ReferralUtil.class.getSimpleName();
 	
 	private static ReferralUtil instance = null;
+	
+	private static final String IS_PROMOTER = "IS_PROMOTER";
+	private static final String IS_PROMO_KEY = "com.baixing.sharing.referral.ispromoter";
 	
 	public static final int TASK_APP = 1;
 	public static final int TASK_HAIBAO = 2;
@@ -54,6 +59,13 @@ public class ReferralUtil {
 
 	public static boolean isPromoter() {
 		
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		SharedPreferences preferences = context.getSharedPreferences(
+				IS_PROMOTER, Context.MODE_PRIVATE);
+		if (preferences.contains(IS_PROMO_KEY)) {
+			return preferences.getBoolean(IS_PROMO_KEY, false);
+		}
+		
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
 		if (am.isUserLogin()) {
 			String mobile = am.getCurrentUser().getPhone();
@@ -69,6 +81,9 @@ public class ReferralUtil {
 							String code = error.getString("code");
 							if(code != null && code.equals("0")){
 								if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
+									Editor editor = preferences.edit();
+									editor.putBoolean(IS_PROMO_KEY, true);
+									editor.commit();
 									return true;
 								}
 							}
@@ -76,10 +91,16 @@ public class ReferralUtil {
 					}
 				}catch(JSONException e){
 					e.printStackTrace();
+					Editor editor = preferences.edit();
+					editor.putBoolean(IS_PROMO_KEY, false);
+					editor.commit();
 					return false;
 				}
 			}
 		}
+		Editor editor = preferences.edit();
+		editor.putBoolean(IS_PROMO_KEY, false);
+		editor.commit();
 		return false;
 	}
 	
