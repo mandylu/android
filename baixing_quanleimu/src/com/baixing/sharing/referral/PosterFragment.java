@@ -845,7 +845,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			if (msg.obj != null) {
 				if (msg.obj instanceof String) {
 					ViewUtil.showToast(activity, (String) msg.obj, false);
-					this.changeFocusAfterPostError((String) msg.obj);
 				} else if (msg.obj instanceof PostResultData) {
 					handlePostFail((PostResultData) msg.obj);
 				}
@@ -900,58 +899,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	private boolean paused = false;
 
 	private boolean doingAccountCheck = false;
-
-	private void changeFocusAfterPostError(String errMsg) {
-		if (postList == null)
-			return;
-		Set<String> keys = postList.keySet();
-		if (keys == null)
-			return;
-		for (String key : keys) {
-			PostGoodsBean bean = postList.get(key);
-			if (errMsg.contains(bean.getDisplayName())) {
-				for (int j = 0; j < layout_txt.getChildCount(); ++j) {
-					final View child = layout_txt.getChildAt(j);
-					if (child != null) {
-						PostGoodsBean tag = (PostGoodsBean) child
-								.getTag(PostCommonValues.HASH_POST_BEAN);
-						if (tag != null
-								&& tag.getName().equals(
-										postList.get(key).getName())) {
-							View et = child.findViewById(R.id.postinput);
-							if (et == null) {
-								et = child.findViewById(R.id.description_input);
-							}
-							if (et != null) {
-								final View inputView = et;
-								inputView.postDelayed(new Runnable() {
-									@Override
-									public void run() {
-										inputView.requestFocus();
-										InputMethodManager inputMgr = (InputMethodManager) inputView
-												.getContext()
-												.getSystemService(
-														Context.INPUT_METHOD_SERVICE);
-										inputMgr.showSoftInput(
-												inputView,
-												InputMethodManager.SHOW_IMPLICIT);
-									}
-								}, 100);
-							} else {
-								child.postDelayed(new Runnable() {
-									public void run() {
-										child.performClick();
-									}
-								}, 100);
-							}
-							return;
-						}
-					}
-				}
-			}
-		}
-
-	}
 
 	private void handlePostFail(final PostResultData result) {
 		if (result == null)
