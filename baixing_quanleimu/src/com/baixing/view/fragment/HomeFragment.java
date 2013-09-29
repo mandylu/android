@@ -7,6 +7,7 @@ import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
+import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
 import android.content.SharedPreferences.Editor;
@@ -30,6 +31,7 @@ import com.baixing.entity.BXLocation;
 import com.baixing.entity.Category;
 import com.baixing.entity.CityDetail;
 import com.baixing.sharing.referral.ReferralEntrance;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.sharing.referral.RegisterOrLoginDlg;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
@@ -111,13 +113,13 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 	public void onCreate(Bundle savedInstanceState) {
 		super.onCreate(savedInstanceState);
 		//lumengdi@baixing.net
-		SharedPreferences status = getActivity().getSharedPreferences("status", 0); 
-		if(!status.getBoolean("isRegisteredorLogged", false)){
+		SharedPreferences status = getActivity().getSharedPreferences(ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE); 
+		if(!status.getBoolean(ReferralUtil.DLGSHOWN_KEY, false)){
 			Log.v("registertest", "false");
 			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
 			
 			SharedPreferences.Editor editor=status.edit();
-			editor.putBoolean("isRegisteredorLogged", true);
+			editor.putBoolean(ReferralUtil.DLGSHOWN_KEY, true);
 			editor.commit();
 		}else{
 			Log.v("registertest", "true");
