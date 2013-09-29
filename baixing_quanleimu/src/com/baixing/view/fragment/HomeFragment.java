@@ -3,14 +3,12 @@ package com.baixing.view.fragment;
 
 import java.util.ArrayList;
 import java.util.List;
-import java.util.Set;
 
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.content.Context;
 import android.content.DialogInterface;
 import android.content.SharedPreferences;
-import android.content.SharedPreferences.Editor;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
@@ -235,10 +233,6 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		
 		String cityName = GlobalDataManager.getInstance().getCityName();
 		if (null == cityName || "".equals(cityName)) {
-			
-			// zengjin@baixing.net
-			
-			
 			this.pushFragment(new CityChangeFragment(), createArguments("切换城市", "首页"));
 		}else
 		{

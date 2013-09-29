@@ -23,6 +23,7 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
+import com.quanleimu.activity.R;
 
 public class ReferralUtil {
 
@@ -69,40 +70,41 @@ public class ReferralUtil {
 		}
 		
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
-		if (am.isUserLogin()) {
-			String mobile = am.getCurrentUser().getPhone();
-			if (!TextUtils.isEmpty(mobile) && Util.isValidMobile(mobile)) {
-				ApiParams params = new ApiParams();
-				params.addParam("mobile", mobile);
-				String jsonResult = BaseApiCommand.createCommand("get_promo_user_type", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
-				try{
-					JSONObject obj = new JSONObject(jsonResult);
-					if(obj != null){
-						JSONObject error = obj.getJSONObject("error");
-						if(error != null){
-							String code = error.getString("code");
-							if(code != null && code.equals("0")){
-								if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
-									Editor editor = preferences.edit();
-									editor.putBoolean(ReferralUtil.IS_PROMO_KEY, true);
-									editor.commit();
-									return true;
-								}
+		if (!am.isUserLogin()) {
+			return false;
+		}
+		
+		String mobile = am.getCurrentUser().getPhone();
+		if (!TextUtils.isEmpty(mobile) && Util.isValidMobile(mobile)) {
+			ApiParams params = new ApiParams();
+			params.addParam("mobile", mobile);
+			String jsonResult = BaseApiCommand.createCommand("get_promo_user_type", true, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+			try{
+				JSONObject obj = new JSONObject(jsonResult);
+				if(obj != null){
+					JSONObject error = obj.getJSONObject("error");
+					if(error != null){
+						String code = error.getString("code");
+						if(code != null && code.equals("0")){
+							if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
+								Editor editor = preferences.edit();
+								editor.putBoolean(ReferralUtil.IS_PROMO_KEY, true);
+								editor.commit();
+								return true;
+							} else {
+								Editor editor = preferences.edit();
+								editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
+								editor.commit();
 							}
 						}
 					}
-				}catch(JSONException e){
-					e.printStackTrace();
-					Editor editor = preferences.edit();
-					editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
-					editor.commit();
-					return false;
 				}
+			}catch(JSONException e){
+				e.printStackTrace();
+				return false;
 			}
 		}
-		Editor editor = preferences.edit();
-		editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
-		editor.commit();
+		
 		return false;
 	}
 	
