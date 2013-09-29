@@ -76,11 +76,11 @@ public class ReferralUtil {
 					}
 				}catch(JSONException e){
 					e.printStackTrace();
-					return true;
+					return false;
 				}
 			}
 		}
-		return true;
+		return false;
 	}
 	
 	public static Bitmap getQRCodeBitmap(Context context, String content) {
