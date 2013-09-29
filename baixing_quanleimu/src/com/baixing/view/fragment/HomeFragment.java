@@ -113,10 +113,14 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		//lumengdi@baixing.net
 		SharedPreferences status = getActivity().getSharedPreferences("status", 0); 
 		if(!status.getBoolean("isRegisteredorLogged", false)){
+			Log.v("registertest", "false");
 			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
 			
 			SharedPreferences.Editor editor=status.edit();
-			editor.putBoolean("status", true);
+			editor.putBoolean("isRegisteredorLogged", true);
+			editor.commit();
+		}else{
+			Log.v("registertest", "true");
 		}
 		
 		if(!switchCityPrompted){
