@@ -15,16 +15,12 @@ import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.Button;
-import android.widget.TextView;
 
 import com.baixing.activity.BaseFragment;
-import com.baixing.activity.PostActivity;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
-import com.baixing.util.PerformEvent.Event;
-import com.baixing.util.PerformanceTracker;
 import com.quanleimu.activity.R;
 import com.xiaomi.mipush.MiPushService;
 
@@ -69,7 +65,7 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
     	referralmain = inflater.inflate(R.layout.referral_info, null);
     	BtnOnClickListener btnOnClickListener = new BtnOnClickListener();
         ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(btnOnClickListener);
-        ((Button) referralmain.findViewById(R.id.btn_referral_poster)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_haibao)).setOnClickListener(btnOnClickListener);
 
         return referralmain;
     }
@@ -79,18 +75,18 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 		@Override
 		public void onClick(View v) {
 			Intent intent = new Intent();
-			
+
 			switch (v.getId()) {
 			case R.id.btn_referral_post:
 				intent.setClass(context, com.baixing.activity.PostActivity.class);
 				break;
-			case R.id.btn_referral_poster:
+			case R.id.btn_referral_haibao:
 				intent.setClass(context, com.baixing.sharing.referral.PosterActivity.class);
 				break;
 			default:
 				break;
 			}
-			
+
 			intent.putExtra("isReferral", true);
 			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
     		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
@@ -106,17 +102,12 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 			displayInfo(referralmain, (String)data);
 		}
 	}
-	
+
 	private void displayInfo(View view, String jsonData) {
 		try {
 			JSONObject jsonInfo = new JSONObject(jsonData);
 			JSONArray postInfo = jsonInfo.getJSONArray("info");
-			((TextView) view.findViewById(R.id.textAllPostsNum)).setText(postInfo.getString(0));
-			((TextView) view.findViewById(R.id.textEffectivePostsNum)).setText(postInfo.getString(1));
-			((TextView) view.findViewById(R.id.textPendingPostsNum)).setText(postInfo.getString(2));
 			JSONArray appInfo = jsonInfo.getJSONArray("app");
-			((TextView) view.findViewById(R.id.textAlreadyShareNum)).setText(appInfo.getString(0));
-			((TextView) view.findViewById(R.id.textEffectiveShareNum)).setText(appInfo.getString(1));
 		} catch (JSONException e) {
 			e.printStackTrace();
 		}
@@ -125,6 +116,6 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 	@Override
 	public void onClick(View v) {
 		// TODO Auto-generated method stub
-		
+
 	}
 }

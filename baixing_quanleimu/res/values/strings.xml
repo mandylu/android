@@ -3,7 +3,7 @@
     xmlns:tools="http://schemas.android.com/tools"
   	tools:ignore="MissingTranslation" >
 
-    <string name="app_name"> 百姓网 </string>
+    <string name="app_name"> 百姓网 </string>
     <string name="weiboinfo">weiboinfo</string>
     <string name="pull_to_refresh_tap_label">点击这里刷新…</string>
     <string name="pull_to_refresh_pull_label">向下拉刷新…</string>
@@ -139,7 +139,7 @@
     
     <string name="title_referral_setting">我的推广</string>
     <string name="button_referral_post">发布推广信息</string>
-    <string name="title_referral_info_posts">信息发布任务</string>
+    <string name="title_referral_info_detail">查看明细</string>
     <string name="info_referral_all_posts">全部信息</string>
     <string name="info_referral_effective_posts">有效信息</string>
     <string name="info_referral_pending_posts">待审核信息</string>
@@ -155,6 +155,7 @@
     <string name="button_referral_login">一键快速注册登录</string>
     <string name="button_referral_poster">海报推广</string>
     <string name="button_referral_detail_post">信息推广明细</string>
+    <string name="button_referral_detail_haibao">海报推广明细</string>
     <string name="button_referral_detail_app">APP推广明细</string>
     
     <string name="text_referral_poster_location">张贴地址</string>
