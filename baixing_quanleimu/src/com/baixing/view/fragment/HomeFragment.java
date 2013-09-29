@@ -114,7 +114,7 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 		super.onCreate(savedInstanceState);
 		//lumengdi@baixing.net
 		SharedPreferences status = getActivity().getSharedPreferences(ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE); 
-		if(!status.contains(ReferralUtil.DLGSHOWN_KEY) || !status.getBoolean(ReferralUtil.DLGSHOWN_KEY, false)){
+		if(!status.getBoolean(ReferralUtil.DLGSHOWN_KEY, false)){
 			Log.v("registertest", "false");
 			new RegisterOrLoginDlg().show(getFragmentManager(), "EasyRegister");
 			
