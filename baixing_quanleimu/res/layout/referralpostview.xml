@@ -52,6 +52,7 @@
                     android:id="@+id/image_list"
                     layout="@layout/post_image_list" />
                 
+                <!-- lumengdi@baixing.net -->
                 <LinearLayout 
     				android:id="@+id/locationinputlayout"
     				android:layout_width="fill_parent"
@@ -97,7 +98,7 @@
     				</RelativeLayout>
 
 				</LinearLayout>
-
+				<!-- lumengdi@baixing.net  end-->
 				<LinearLayout 
     				android:id="@+id/contactinputlayout"
     				android:layout_width="fill_parent"
