@@ -184,6 +184,10 @@ public class RegisterOrLoginDlg extends DialogFragment {
 						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
 						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
 						closeDlg();
+						
+						if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+							ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, profile.mobile, null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), profile.userId, null);
+						}
 					}
 				}
 			}

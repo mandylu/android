@@ -1,29 +1,29 @@
 package com.baixing.sharing.referral;
 
-import java.io.IOException;
-import java.io.InputStream;
-import java.io.InputStreamReader;
-import java.io.Reader;
-import java.io.UnsupportedEncodingException;
-import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.URL;
+import java.util.HashMap;
+import java.util.Iterator;
+import java.util.Map;
 import java.util.Observable;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.Context;
-import android.os.AsyncTask;
 import android.text.TextUtils;
-import android.util.Log;
+import android.widget.Toast;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.entity.BXLocation;
 import com.baixing.entity.UserBean;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.Util;
 
 public class ReferralNetwork extends Observable {
 
 	private static final String TAG = ReferralNetwork.class.getSimpleName();
 
-	public static final String PROMOTE_URL = "http://192.168.5.109/baixing/referral/promote.php";
+	public static final String PROMOTE_URL = "http://pages.baixing.com/mobile/dituishenqi/";
 	
 	private static ReferralNetwork instance = null;
 
@@ -34,70 +34,121 @@ public class ReferralNetwork extends Observable {
 		instance = new ReferralNetwork();
 		return instance;
 	}
-
-	public void updateReferral(String action, String content) {
-
-		Context context = GlobalDataManager.getInstance()
-				.getApplicationContext();
-
-		String url = PROMOTE_URL + "?action=" + action;
-
-		if (action.equals("join")) {
-			url += "&promoterId=" + ReferralPromoter.getInstance().ID() + "&newUdid="
-					+ Util.getDeviceUdid(context);
-		} else if (action.equals("post")) {
-			url += "&promoterId=" + ReferralPromoter.getInstance().ID() + "&newPhone="
-					+ content;
-		} else if (action.equals("info")) {
-			UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-			if (curUser != null && !TextUtils.isEmpty(curUser.getPhone())) {
-				url += "&udid=" + curUser.getPhone();
+	
+	public boolean savePromoHaibao(String businessMobile, String businessAddr, String imageUrls,
+			String qrCodeID, BXLocation detailLocation) {
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		UserBean promoter = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
+		String promoterMobile = promoter.getPhone();
+		String promoterUdid = Util.getDeviceUdid(context);
+		String promoterUserId = promoter.getId();
+		String gpsAddress = getDetailLocation(detailLocation);
+		
+		ApiParams params = new ApiParams();
+		params.addParam("promoterMobile", promoterMobile);
+		params.addParam("promoterUdid", promoterUdid);
+		params.addParam("promoterUserId", promoterUserId);
+		params.addParam("images", imageUrls);
+		params.addParam("storeMobile", businessMobile);
+		params.addParam("storeAddr", businessAddr);
+		params.addParam("gpsAddr", gpsAddress);
+		params.addParam("qrcodeId", qrCodeID);
+		String jsonResponse = BaseApiCommand.createCommand("save_promo_haibao", true, params).executeSync(context);
+		String posterId = getPosterId(jsonResponse);
+		if (posterId != null) {
+			HashMap<String, String> attrs = new HashMap<String, String>();
+			attrs.put("haibaoId", posterId);
+			if (ReferralNetwork.getInstance().savePromoLog(promoterMobile, ReferralUtil.TASK_HAIBAO, businessMobile, promoterUdid, promoterUserId, null, null, attrs)) {
+				Toast.makeText(context, "海报推广成功！", Toast.LENGTH_SHORT).show();
+				return true;
 			} else {
-				url += "&udid=" + Util.getDeviceUdid(context);
+				Toast.makeText(context, "推广记录保存失败", Toast.LENGTH_SHORT).show();
+				return false;
 			}
 		}
 		
-		Log.d(TAG, "url: " + url);
-		new NotifyTask().execute(url);
+		Toast.makeText(context, "发送失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
+		return false;
 	}
-
-	private class NotifyTask extends AsyncTask<String, Integer, String> {
-
-		@Override
-		protected String doInBackground(String... params) {
-			try {
-				HttpURLConnection conn = (HttpURLConnection) new URL(params[0])
-						.openConnection();
-				conn.setConnectTimeout(20000);
-				conn.setRequestMethod("GET");
-				conn.connect();
-
-				InputStream is = conn.getInputStream();
-				Reader reader = new InputStreamReader(is);
-				char[] buffer = new char[1000];
-				reader.read(buffer);
-				return new String(buffer).trim();
-
-			} catch (UnsupportedEncodingException e) {
-				e.printStackTrace();
-				return null;
-			} catch (MalformedURLException e) {
-				e.printStackTrace();
-				return null;
-			} catch (IOException e) {
-				e.printStackTrace();
-				return null;
+	
+	private String getPosterId(String jsonResult) {
+		try {
+			JSONObject obj = new JSONObject(jsonResult);
+			if (obj != null) {
+				JSONObject error = obj.getJSONObject("error");
+				if (error != null) {
+					String code = error.getString("code");
+					if (code != null && code.equals("0")) {
+						return obj.getString("id"); 
+					}
+				}
 			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return null;
 		}
-
-		@Override
-		protected void onPostExecute(String s) {
-			super.onPostExecute(s);
-			if (!TextUtils.isEmpty(s)) {
-				Log.d(TAG, s);
-				setChanged();
-				notifyObservers(s);
+		return null;
+	}
+	
+	private String getDetailLocation(BXLocation location) {
+		if (location == null) {
+			return "";
+		}
+		String latlon = null;
+		try {
+			latlon = "(" + location.fLat + "," + location.fLon + "); ";
+		} catch (Exception e) {
+			latlon = "";
+		}
+		String address = (location.detailAddress == null || location.detailAddress
+				.equals("")) ? ((location.subCityName == null || location.subCityName
+				.equals("")) ? "" : location.subCityName)
+				: location.detailAddress;
+		return (TextUtils.isEmpty(latlon) ? "" : latlon) + (TextUtils.isEmpty(address) ? "" : address);
+	}
+	
+	public boolean savePromoLog(String promoterMobile, int taskType, String userMobile, String promoterUdid, String promoterUserId, String userUdid, String userUserId, Map<String, String> attrs) {
+		ApiParams logParams = new ApiParams();
+		logParams.addParam("promoterMobile", promoterMobile);
+		logParams.addParam("taskType", ReferralUtil.TASK_HAIBAO);
+		logParams.addParam("userMobile", userMobile);
+		
+		if (null != promoterUdid) 	logParams.addParam("promoterUdid", 	promoterUdid);
+		if (null != promoterUserId) logParams.addParam("promoterUserId",promoterUserId);
+		if (null != userUdid) 		logParams.addParam("userUdid", 		userUdid);
+		if (null != userUserId) 	logParams.addParam("userUserId", 	userUserId);
+		if (null != attrs && attrs.size() != 0) {
+			StringBuilder attrBuilder = new StringBuilder("{");
+			Iterator<java.util.Map.Entry<String, String>> iterator = attrs.entrySet().iterator();
+			while (iterator.hasNext()) {
+				java.util.Map.Entry<String, String> entry = iterator.next();
+				attrBuilder.append(entry.getKey());
+				attrBuilder.append(":");
+				attrBuilder.append(entry.getValue());
+				if (iterator.hasNext()) {
+					attrBuilder.append(",");
+				}
 			}
+			attrBuilder.append("}");
+			logParams.addParam("attr", attrBuilder.toString());
 		}
+		
+		String logResponse = BaseApiCommand.createCommand("save_promo_log", true, logParams).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+		try {
+			JSONObject obj = new JSONObject(logResponse);
+			if (obj != null) {
+				JSONObject error = obj.getJSONObject("error");
+				if (error != null) {
+					String code = error.getString("code");
+					if (code != null && code.equals("0")) {
+						return true;
+					}
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+			return false;
+		}
+		return false;
 	}
 }

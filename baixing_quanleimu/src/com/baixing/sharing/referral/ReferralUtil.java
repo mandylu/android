@@ -56,7 +56,7 @@ public class ReferralUtil {
 		Log.d(TAG, "activating");
 		//new ReferralAutoLogin(GlobalDataManager.getInstance().getApplicationContext()).execute();
 		if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
-			ReferralNetwork.getInstance().updateReferral("join", null);
+			//ReferralNetwork.getInstance().updateReferral("join", null);
 		}
 	}
 

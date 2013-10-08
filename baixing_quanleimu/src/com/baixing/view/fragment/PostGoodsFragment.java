@@ -55,6 +55,8 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
+import com.baixing.sharing.referral.ReferralCallback;
+import com.baixing.sharing.referral.ReferralNetwork;
 import com.baixing.sharing.referral.ReferralPost;
 import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -1977,6 +1979,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				PostGoodsFragment.this.sendMessage(MSG_GET_AD_SUCCED, responseData);
 			}
 		});
+		
+		// zengjin@baixing.net
+		if (ReferralUtil.isPromoter()) {
+			Intent postIntent = new Intent();
+			postIntent.setAction(CommonIntentAction.ACTION_SENT_POST);
+			postIntent.putExtra("adId", adId);
+			ReferralPost.getInstance().doAction(postIntent);
+		}
 	}
 	
 	public boolean hasGlobalTab() {

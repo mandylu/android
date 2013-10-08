@@ -1,5 +1,7 @@
 package com.baixing.sharing.referral;
 
+import java.util.HashMap;
+
 import org.json.JSONException;
 import org.json.JSONObject;
 
@@ -34,6 +36,9 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 	private static String verifyCode;
 	private static boolean IsShowDlg;
 	private static String phoneNumber;
+	
+	private UserBean promoterBean = null;
+	private UserBean businessBean = null;
 	
 	public static ReferralPost getInstance() {
 		if (instance != null) {
@@ -98,22 +103,20 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 								otherBean.setPhone(phoneNumber);
 								String decPwd = Util.getDecryptedPassword(password);
 								otherBean.setPassword(decPwd, false);
+								businessBean = otherBean;
 								
 								UserBean ownerBean = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
 								if (ownerBean == null) {
 									Log.e(TAG, "promoter didn't login");
 									return;
 								}
+								promoterBean = ownerBean;
+								
 								GlobalDataManager.getInstance().getAccountManager().logout();
 								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", otherBean);
 								postNetworkService.doRegisterAndVerify(phoneNumber);
 								GlobalDataManager.getInstance().getAccountManager().logout();
 								Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "user", ownerBean);
-								
-								Intent smsIntent = new Intent();
-								smsIntent.setAction(CommonIntentAction.ACTION_SENT_POST);
-								smsIntent.putExtra("phoneNumber", phoneNumber);
-								doAction(smsIntent);
 							}
 						}
 					}
@@ -169,7 +172,13 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 		if (CommonIntentAction.ACTION_SEND_MSG.equals(action)) {
 			//sendMsgFromLocal(intent.getStringExtra("phoneNumber"));
 		} else if (CommonIntentAction.ACTION_SENT_POST.equals(action)) {
-			ReferralNetwork.getInstance().updateReferral("post", intent.getStringExtra("phoneNumber"));
+			if (promoterBean != null && businessBean != null) {
+				HashMap<String, String> attrs = new HashMap<String, String>();
+				attrs.put("adId", intent.getStringExtra("adId"));
+				if (ReferralNetwork.getInstance().savePromoLog(promoterBean.getPhone(), ReferralUtil.TASK_POST, businessBean.getPhone(), Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), promoterBean.getId(), null, businessBean.getId(), attrs)) {
+					// log success
+				}
+			}
 		}
 	}
 	

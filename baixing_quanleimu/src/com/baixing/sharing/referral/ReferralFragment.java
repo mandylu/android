@@ -43,7 +43,6 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
     	
     	ReferralNetwork referralNetwork = ReferralNetwork.getInstance();
     	referralNetwork.addObserver(this);
-    	referralNetwork.updateReferral("info", null);
     }
     
     @Override

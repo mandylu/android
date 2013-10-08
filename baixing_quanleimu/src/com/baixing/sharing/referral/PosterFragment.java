@@ -43,6 +43,7 @@ import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
+import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
@@ -473,78 +474,9 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		String qrcode = getQRCodeID();
 		if (qrcode == null) return;
 
-		savePosterCmd(mobile, addr, images, qrcode);
-	}
-
-	private void savePosterCmd(String businessMobile, String businessAddr, String imageUrls,
-			String qrCodeID) {
-		String promoterMobile = GlobalDataManager.getInstance().getAccountManager().getCurrentUser().getPhone();
-		String promoterUdid = Util.getDeviceUdid(getAppContext());
-		String gpsAddress = getDetailLocation(detailLocation);
-		
-		ApiParams params = new ApiParams();
-		params.addParam("promoterMobile", promoterMobile);
-		params.addParam("promoterUdid", promoterUdid);
-		params.addParam("images", imageUrls);
-		params.addParam("storeMobile", businessMobile);
-		params.addParam("storeAddr", businessAddr);
-		params.addParam("gpsAddr", gpsAddress);
-		params.addParam("qrcodeId", qrCodeID);
-		String jsonResponse = BaseApiCommand.createCommand("save_promo_haibao", true, params).executeSync(getAppContext());
-		String posterId = getPosterId(jsonResponse);
-		if (posterId != null) {
-			if (savePosterLog(promoterMobile, ReferralUtil.TASK_HAIBAO, businessMobile)) {
-				Toast.makeText(getAppContext(), "海报推广成功！", Toast.LENGTH_SHORT).show();
-				finishFragment();
-			} else {
-				Toast.makeText(getAppContext(), "推广记录保存失败", Toast.LENGTH_SHORT).show();
-			}
-		} else {
-			Toast.makeText(getAppContext(), "发送失败，请检查网络后重试", Toast.LENGTH_SHORT).show();
+		if (ReferralNetwork.getInstance().savePromoHaibao(mobile, addr, images, qrcode, detailLocation)) {
+			finishFragment();
 		}
-	}
-	
-	private boolean savePosterLog(String promoterMobile, int taskType, String userMobile) {
-		ApiParams logParams = new ApiParams();
-		logParams.addParam("promoterMobile", promoterMobile);
-		logParams.addParam("taskType", ReferralUtil.TASK_HAIBAO);
-		logParams.addParam("userMobile", userMobile);
-		String logResponse = BaseApiCommand.createCommand("save_promo_log", true, logParams).executeSync(getAppContext());
-		try {
-			JSONObject obj = new JSONObject(logResponse);
-			if (obj != null) {
-				JSONObject error = obj.getJSONObject("error");
-				if (error != null) {
-					String code = error.getString("code");
-					if (code != null && code.equals("0")) {
-						return true;
-					}
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return false;
-		}
-		return false;
-	}
-	
-	private String getPosterId(String jsonResult) {
-		try {
-			JSONObject obj = new JSONObject(jsonResult);
-			if (obj != null) {
-				JSONObject error = obj.getJSONObject("error");
-				if (error != null) {
-					String code = error.getString("code");
-					if (code != null && code.equals("0")) {
-						return obj.getString("id"); 
-					}
-				}
-			}
-		} catch (JSONException e) {
-			e.printStackTrace();
-			return null;
-		}
-		return null;
 	}
 
 	private void resetData(boolean clearImgs) {
@@ -631,56 +563,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		buildFixedPostLayout(pl);
 		
 		//this.showInputMethod();
-	}
-
-	private View searchEditText(View parent, int resourceId) {
-		View v = parent.findViewById(resourceId);
-		if (v != null && v instanceof EditText) {
-			if (((EditText) v).getText() == null
-					|| ((EditText) v).getText().length() == 0) {
-				return v;
-			}
-		}
-		return null;
-	}
-
-	private View getEmptyEditText() {
-		View edit = null;
-		for (int i = 0; i < layout_txt.getChildCount(); ++i) {
-			View child = layout_txt.getChildAt(i);
-			if (child == null)
-				continue;
-			edit = searchEditText(child, R.id.description_input);
-			if (edit != null) {
-				break;
-			}
-			edit = searchEditText(child, R.id.postinput);
-			if (edit != null) {
-				break;
-			}
-			edit = null;
-		}
-		return edit;
-	}
-
-	private void showInputMethod() {
-		final View root = this.getView();
-		if (root != null) {
-			root.postDelayed(new Runnable() {
-				public void run() {
-					// EditText ed = (EditText)
-					// root.findViewById(R.id.description_input);
-					View ed = getEmptyEditText();
-					if (ed != null) {// && ed.getText().length() == 0) {
-						ed.requestFocus();
-						InputMethodManager mgr = (InputMethodManager) root
-								.getContext().getSystemService(
-										Context.INPUT_METHOD_SERVICE);
-						mgr.showSoftInput(ed, InputMethodManager.SHOW_IMPLICIT);
-					}
-				}
-			}, 200);
-		}
 	}
 
 	final protected void updateImageInfo(View rootView) {
@@ -943,23 +825,6 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		
 		((TextView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.tv_title_post)).setText("海报推广");
 		((ImageView) title.m_titleControls.findViewById(R.id.ll_post_title).findViewById(R.id.imageView1)).setVisibility(View.GONE);
-	}
-	
-	private String getDetailLocation(BXLocation location) {
-		if (location == null) {
-			return "";
-		}
-		String latlon = null;
-		try {
-			latlon = "(" + location.fLat + "," + location.fLon + "); ";
-		} catch (Exception e) {
-			latlon = "";
-		}
-		String address = (location.detailAddress == null || location.detailAddress
-				.equals("")) ? ((location.subCityName == null || location.subCityName
-				.equals("")) ? "" : location.subCityName)
-				: location.detailAddress;
-		return (TextUtils.isEmpty(latlon) ? "" : latlon) + (TextUtils.isEmpty(address) ? "" : address);
 	}
 	
 	private void handlePostFinish(String adId) {
