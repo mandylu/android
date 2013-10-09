@@ -148,6 +148,7 @@
     <string name="info_referral_effective_share">有效</string>
     <string name="button_referral_info_detail">查看明细</string>
     
+    <string name="title_referral_intro">活动说明</string>
     <string name="title_referral_promote">分享</string>
     <string name="title_referral_qrcode">扫描二维码进行下载</string>
     <string name="button_referral_bluetooth">蓝牙直接分享给好友</string>

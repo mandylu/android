@@ -65,6 +65,10 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
     	BtnOnClickListener btnOnClickListener = new BtnOnClickListener();
         ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(btnOnClickListener);
         ((Button) referralmain.findViewById(R.id.btn_referral_haibao)).setOnClickListener(btnOnClickListener);
+        
+        ((Button) referralmain.findViewById(R.id.btn_referral_posts_detail)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_haibao_detail)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_app_detail)).setOnClickListener(btnOnClickListener);
 
         return referralmain;
     }
@@ -82,6 +86,30 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 			case R.id.btn_referral_haibao:
 				intent.setClass(context, com.baixing.sharing.referral.PosterActivity.class);
 				break;
+			case R.id.btn_referral_posts_detail:
+			{
+				Bundle bundle=new Bundle();
+				bundle.putString("title", getString(R.string.button_referral_detail_post));
+				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?type=ad");
+				pushFragment(new ReferralDetailFragment(), bundle);	
+				return;
+			}
+			case R.id.btn_referral_haibao_detail:
+			{
+				Bundle bundle=new Bundle();
+				bundle.putString("title", getString(R.string.button_referral_detail_haibao));
+				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?type=poster");
+				pushFragment(new ReferralDetailFragment(), bundle);	
+				return;
+			}
+			case R.id.btn_referral_app_detail:
+			{
+				Bundle bundle=new Bundle();
+				bundle.putString("title", getString(R.string.button_referral_detail_app));
+				bundle.putString("url", ReferralDetailFragment.SHARE_DETIAL_URL);
+				pushFragment(new ReferralDetailFragment(), bundle);	
+				return;
+			}
 			default:
 				break;
 			}

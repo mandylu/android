@@ -17,6 +17,8 @@ import android.content.pm.PackageManager;
 import android.net.Uri;
 import android.os.Bundle;
 import android.os.Environment;
+import android.text.Html;
+import android.text.Spanned;
 import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
@@ -25,6 +27,7 @@ import android.view.View.OnClickListener;
 import android.view.ViewGroup;
 import android.widget.Button;
 import android.widget.ImageView;
+import android.widget.TextView;
 import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
@@ -104,13 +107,36 @@ public class AppShareFragment extends BaseFragment implements
 				public void onClick(View v) {
 					Bundle bundle=new Bundle();
 					bundle.putString("title", getString(R.string.button_referral_detail_app));
-					bundle.putString("url", "http://www.google.com");
+					bundle.putString("url", ReferralDetailFragment.SHARE_DETIAL_URL);
 					pushFragment(new ReferralDetailFragment(), bundle);	
 				}
 			});
 		}
+		
+		TextView textView = (TextView) referralmain.findViewById(R.id.txt_app_share_tips);
+		Spanned tips = null;
+		if ((tips = getTips()) != null) {
+			textView.setText(tips);
+			textView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Bundle bundle=new Bundle();
+					bundle.putString("title", getString(R.string.title_referral_intro));
+					bundle.putString("url", ReferralDetailFragment.SHARE_INTRO_URL);
+					pushFragment(new ReferralDetailFragment(), bundle);	
+				}
+			});
+		} else {
+			textView.setVisibility(View.GONE);
+		}
 
 		return referralmain;
+	}
+	
+	private Spanned getTips() {
+		String tips = "好消息：每成功分享一个APP，就能赚取1个积分，每10积分能换取10元话费。";
+		return Html.fromHtml("<u>" + tips + "</u>");
 	}
 
 	class BtnBluetoothOnClickListener implements View.OnClickListener {
