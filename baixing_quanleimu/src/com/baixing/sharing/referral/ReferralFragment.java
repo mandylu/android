@@ -21,6 +21,7 @@ import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.message.BxMessageCenter;
 import com.baixing.message.IBxNotificationNames;
+import com.baixing.util.Util;
 import com.quanleimu.activity.R;
 import com.xiaomi.mipush.MiPushService;
 
@@ -29,6 +30,7 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
     private static Context context;
     
     View referralmain = null;
+    String phone;
     
     @Override
     public void onCreate(Bundle savedInstanceState){
@@ -37,8 +39,9 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
     	
     	context = GlobalDataManager.getInstance().getApplicationContext();
     	UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();
-    	if (curUser != null && !TextUtils.isEmpty(curUser.getPhone())) {
+    	if (curUser != null && Util.isValidMobile(curUser.getPhone())) {
     		MiPushService.setAlias(context, curUser.getPhone());
+    		phone = curUser.getPhone();
     	}
     	
     	ReferralNetwork referralNetwork = ReferralNetwork.getInstance();
@@ -68,7 +71,6 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
         
         ((Button) referralmain.findViewById(R.id.btn_referral_posts_detail)).setOnClickListener(btnOnClickListener);
         ((Button) referralmain.findViewById(R.id.btn_referral_haibao_detail)).setOnClickListener(btnOnClickListener);
-        ((Button) referralmain.findViewById(R.id.btn_referral_app_detail)).setOnClickListener(btnOnClickListener);
 
         return referralmain;
     }
@@ -90,7 +92,7 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 			{
 				Bundle bundle=new Bundle();
 				bundle.putString("title", getString(R.string.button_referral_detail_post));
-				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?type=ad");
+				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_POST);
 				pushFragment(new ReferralDetailFragment(), bundle);	
 				return;
 			}
@@ -98,15 +100,7 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 			{
 				Bundle bundle=new Bundle();
 				bundle.putString("title", getString(R.string.button_referral_detail_haibao));
-				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?type=poster");
-				pushFragment(new ReferralDetailFragment(), bundle);	
-				return;
-			}
-			case R.id.btn_referral_app_detail:
-			{
-				Bundle bundle=new Bundle();
-				bundle.putString("title", getString(R.string.button_referral_detail_app));
-				bundle.putString("url", ReferralDetailFragment.SHARE_DETIAL_URL);
+				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_HAIBAO);
 				pushFragment(new ReferralDetailFragment(), bundle);	
 				return;
 			}

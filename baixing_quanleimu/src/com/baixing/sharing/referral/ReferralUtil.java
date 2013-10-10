@@ -35,6 +35,7 @@ public class ReferralUtil {
 	public static final String PROMOTER_KEY = "com.baixing.sharing.referral.promoter";
 	public static final String IS_PROMO_KEY = "com.baixing.sharing.referral.ispromoter";
 	public static final String DLGSHOWN_KEY = "com.baixing.sharing.referral.dlgshown";
+	public static final String CURPHONE_KEY = "com.baixing.sharing.referral.phone";
 	
 	public static final int TASK_APP = 1;
 	public static final int TASK_HAIBAO = 2;
@@ -62,19 +63,20 @@ public class ReferralUtil {
 
 	public static boolean isPromoter() {
 		
-		Context context = GlobalDataManager.getInstance().getApplicationContext();
-		SharedPreferences preferences = context.getSharedPreferences(
-				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
-		if (preferences.contains(ReferralUtil.IS_PROMO_KEY)) {
-			return preferences.getBoolean(ReferralUtil.IS_PROMO_KEY, false);
-		}
-		
 		AccountManager am = GlobalDataManager.getInstance().getAccountManager();
 		if (!am.isUserLogin()) {
 			return false;
 		}
 		
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		SharedPreferences preferences = context.getSharedPreferences(
+				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
 		String mobile = am.getCurrentUser().getPhone();
+		
+		if (preferences.contains(ReferralUtil.CURPHONE_KEY) && preferences.getString(ReferralUtil.CURPHONE_KEY, "").equals(mobile)) {
+			return preferences.getBoolean(ReferralUtil.IS_PROMO_KEY, false);
+		}
+		
 		if (!TextUtils.isEmpty(mobile) && Util.isValidMobile(mobile)) {
 			ApiParams params = new ApiParams();
 			params.addParam("mobile", mobile);
@@ -89,11 +91,13 @@ public class ReferralUtil {
 							if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
 								Editor editor = preferences.edit();
 								editor.putBoolean(ReferralUtil.IS_PROMO_KEY, true);
+								editor.putString(ReferralUtil.CURPHONE_KEY, mobile);
 								editor.commit();
 								return true;
 							} else {
 								Editor editor = preferences.edit();
 								editor.putBoolean(ReferralUtil.IS_PROMO_KEY, false);
+								editor.putString(ReferralUtil.CURPHONE_KEY, mobile);
 								editor.commit();
 							}
 						}

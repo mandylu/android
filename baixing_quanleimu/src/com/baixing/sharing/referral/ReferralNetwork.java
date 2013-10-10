@@ -109,14 +109,14 @@ public class ReferralNetwork extends Observable {
 	
 	public boolean savePromoLog(String promoterMobile, int taskType, String userMobile, String promoterUdid, String promoterUserId, String userUdid, String userUserId, Map<String, String> attrs) {
 		ApiParams logParams = new ApiParams();
-		logParams.addParam("promoterMobile", promoterMobile);
+		logParams.addParam("parentMobile", promoterMobile);
 		logParams.addParam("taskType", ReferralUtil.TASK_HAIBAO);
-		logParams.addParam("userMobile", userMobile);
+		logParams.addParam("childMobile", userMobile);
 		
-		if (null != promoterUdid) 	logParams.addParam("promoterUdid", 	promoterUdid);
-		if (null != promoterUserId) logParams.addParam("promoterUserId",promoterUserId);
-		if (null != userUdid) 		logParams.addParam("userUdid", 		userUdid);
-		if (null != userUserId) 	logParams.addParam("userUserId", 	userUserId);
+		if (null != promoterUdid) 	logParams.addParam("parentUdid", 	promoterUdid);
+		if (null != promoterUserId) logParams.addParam("parentUserId",promoterUserId);
+		if (null != userUdid) 		logParams.addParam("childUdid", 		userUdid);
+		if (null != userUserId) 	logParams.addParam("childUserId", 	userUserId);
 		if (null != attrs && attrs.size() != 0) {
 			StringBuilder attrBuilder = new StringBuilder("{");
 			Iterator<java.util.Map.Entry<String, String>> iterator = attrs.entrySet().iterator();
