@@ -119,19 +119,17 @@ public class ReferralNetwork extends Observable {
 		if (null != userUdid) 		logParams.addParam("childUdid", 		userUdid);
 		if (null != userUserId) 	logParams.addParam("childUserId", 	userUserId);
 		if (null != attrs && attrs.size() != 0) {
-			StringBuilder attrBuilder = new StringBuilder("{");
+			JSONObject json=new JSONObject();
 			Iterator<java.util.Map.Entry<String, String>> iterator = attrs.entrySet().iterator();
 			while (iterator.hasNext()) {
-				java.util.Map.Entry<String, String> entry = iterator.next();
-				attrBuilder.append(entry.getKey());
-				attrBuilder.append(":");
-				attrBuilder.append(entry.getValue());
-				if (iterator.hasNext()) {
-					attrBuilder.append(",");
+				java.util.Map.Entry<String, String> entry = iterator.next();			
+				try {
+					json.put(entry.getKey(), entry.getValue());
+				} catch (JSONException e) {
+					e.printStackTrace();
 				}
 			}
-			attrBuilder.append("}");
-			logParams.addParam("attr", attrBuilder.toString());
+			logParams.addParam("attr", json.toString());
 			Log.d("savePoster",logParams.toString());
 		}
 		
