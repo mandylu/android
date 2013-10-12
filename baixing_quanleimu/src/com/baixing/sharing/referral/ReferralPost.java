@@ -5,10 +5,13 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
+import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
+import android.view.KeyEvent;
 
+import com.baixing.activity.BaseFragment;
 import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
@@ -137,7 +140,7 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 	private void showVerifyDlg(final String phone) {
 
 		if(fragmentManager != null) {
-			new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
+			VerifyFailDialog dlg= new VerifyFailDialog(new VerifyFailDialog.VerifyListener() {
 				
 				@Override
 				public void onReVerify(String mobile) {
@@ -151,7 +154,9 @@ public class ReferralPost implements ReferralCallback, AnonymousNetworkListener 
 					verifyCode = code;
 					sendVerifyCode(phone);						
 				}
-			}).show(fragmentManager, null);
+			});
+			dlg.setCancelable(true);
+			dlg.show(fragmentManager, null);
 		}
 	}
 	

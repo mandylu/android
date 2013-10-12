@@ -146,7 +146,7 @@ public class AnonymousExecuter implements Callback{
 		params.addParam("mobile", mobile);
 		params.addAll(param.getParams());
 		BaseApiCommand.createCommand("sendsmscode", true, params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
-		
+				
 		// zengjin@baixing.net
 		if (ReferralUtil.isPromoter()) {
 			UserBean curUser = GlobalDataManager.getInstance().getAccountManager().getCurrentUser();

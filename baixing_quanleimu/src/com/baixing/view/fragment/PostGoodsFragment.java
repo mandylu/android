@@ -21,6 +21,7 @@ import android.os.Message;
 import android.text.Editable;
 import android.text.TextUtils;
 import android.text.TextWatcher;
+import android.util.Log;
 import android.util.Pair;
 import android.view.LayoutInflater;
 import android.view.MotionEvent;
@@ -55,8 +56,6 @@ import com.baixing.jsonutil.JsonUtil;
 import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
-import com.baixing.sharing.referral.ReferralCallback;
-import com.baixing.sharing.referral.ReferralNetwork;
 import com.baixing.sharing.referral.ReferralPost;
 import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
@@ -81,7 +80,6 @@ import com.baixing.widget.EditTitleDialogFragment;
 import com.baixing.widget.EditTitleDialogFragment.ICallback;
 import com.baixing.widget.VerifyFailDialog;
 import com.quanleimu.activity.R;
-import com.umeng.common.Log;
 
 public class PostGoodsFragment extends BaseFragment implements OnClickListener, Callback{
 	
@@ -567,13 +565,16 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		params.put("title", ((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString(), 
 				((TextView)getView().findViewById(R.id.tv_title_post)).getText().toString());
 		
+		
 		PerformanceTracker.stamp(Event.E_Start_PostAction);
 		String detailLocationValue = params.getUiData(PostCommonValues.STRING_DETAIL_POSITION);
 		if(this.detailLocation != null && (detailLocationValue == null || detailLocationValue.length() == 0)){
+			Log.d("post","pos1");
 			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			PerformanceTracker.stamp(Event.E_PostAction_Direct_Start);
 			postAd(detailLocation);
 		}else{
+			Log.d("post","pos2");
 			this.sendMessageDelay(MSG_GEOCODING_TIMEOUT, null, 5000);
 			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 			PerformanceTracker.stamp(Event.E_PostAction_GetLocation_Start);
@@ -807,6 +808,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 				|| message == ForgetPassFragment.MSG_FORGET_PWD_SUCCEED){
 			if(doingAccountCheck){
 				doingAccountCheck = false;
+				Log.d("post","pos3");
 				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);				
 				this.postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_LOGIN_DONE, "");
 			}
@@ -1608,7 +1610,9 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		case PostCommonValues.MSG_GEOCODING_FETCHED:
 			Event evt = msg.what == MSG_GEOCODING_TIMEOUT ? Event.E_GeoCoding_Timeout : Event.E_GeoCoding_Fetched;
 			PerformanceTracker.stamp(evt);
-			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
+			Log.d("post","pos4");
+			if(!ReferralUtil.isPromoter()){
+			showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);}
 			handler.removeMessages(MSG_GEOCODING_TIMEOUT);
 			handler.removeMessages(PostCommonValues.MSG_GEOCODING_FETCHED);
 			postAd(msg.obj == null ? null : (BXLocation)msg.obj);
@@ -1659,6 +1663,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			@Override
 			public void onReVerify(String mobile) {
 				// TODO Auto-generated method stub
+				Log.d("post","pos5");
 				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 				postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, null);
 			}
@@ -1666,6 +1671,7 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 			@Override
 			public void onSendVerifyCode(String code) {
 				// TODO Auto-generated method stub
+				Log.d("post","pos6");
 				showProgress(R.string.dialog_title_info, R.string.dialog_message_waiting, false);
 				postNS.onOutActionDone(PostCommonValues.ACTION_POST_NEED_REVERIIFY, code);
 			}

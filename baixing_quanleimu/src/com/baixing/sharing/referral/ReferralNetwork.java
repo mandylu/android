@@ -10,6 +10,7 @@ import org.json.JSONObject;
 
 import android.content.Context;
 import android.text.TextUtils;
+import android.util.Log;
 import android.widget.Toast;
 
 import com.baixing.data.GlobalDataManager;
@@ -131,13 +132,16 @@ public class ReferralNetwork extends Observable {
 			}
 			attrBuilder.append("}");
 			logParams.addParam("attr", attrBuilder.toString());
+			Log.d("savePoster",logParams.toString());
 		}
 		
 		String logResponse = BaseApiCommand.createCommand("save_promo_log", true, logParams).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+		
 		try {
 			JSONObject obj = new JSONObject(logResponse);
 			if (obj != null) {
 				JSONObject error = obj.getJSONObject("error");
+				Log.d("savePoster", error.toString());
 				if (error != null) {
 					String code = error.getString("code");
 					if (code != null && code.equals("0")) {
