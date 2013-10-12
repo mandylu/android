@@ -145,12 +145,6 @@ public class PostNetworkService implements Callback, AnonymousNetworkListener{
 			postParams.params.appendAuthInfo(user.getPhone(), user.getPassword());
 		}
 		
-		// zengjin@baixing.net
-		if (ReferralUtil.isPromoter()) {
-			postParams.params.addParam("api_referral_id", user.getId());
-			postParams.params.addParam("api_compaign", "offline_promote");
-		}
-		
 		BaseApiCommand.createCommand(postParams.apiName, false, postParams.params).execute(GlobalDataManager.getInstance().getApplicationContext(), this);
 	}
 	

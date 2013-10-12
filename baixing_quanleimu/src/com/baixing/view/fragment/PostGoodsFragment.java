@@ -636,8 +636,6 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 //		this.postNS.postAdAsync(mapParams, list, postList, bmpUrls, location, editMode);
 		bmpUrls.clear();
 		bmpUrls.addAll(ImageUploader.getInstance().getServerUrlList());
-		PerformanceTracker.stamp(Event.E_Post_Request_Sent);
-		this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
 		
 		String phone = mapParams.get("contact");
 		
@@ -647,8 +645,14 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		if (ReferralUtil.isPromoter() && !phone.equals(curUser.getPhone())) {
 			ReferralPost.Config(getFragmentManager(), postNS);
 			ReferralPost.getInstance().postNewAd(phone);
+			list.put("api_referral_id", curUser.getId());
+			list.put("api_compaign", "offline_promote");
+			this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
 			return;
 		}
+		
+		PerformanceTracker.stamp(Event.E_Post_Request_Sent);
+		this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
 		
 		if(curUser != null && curUser.getPhone() != null && curUser.getPhone().length() > 0){
 			phone = curUser.getPhone();

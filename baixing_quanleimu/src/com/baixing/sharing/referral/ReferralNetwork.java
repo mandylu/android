@@ -54,7 +54,7 @@ public class ReferralNetwork extends Observable {
 		params.addParam("storeAddr", businessAddr);
 		params.addParam("gpsAddr", gpsAddress);
 		params.addParam("qrcodeId", qrCodeID);
-		String jsonResponse = BaseApiCommand.createCommand("save_promo_haibao", true, params).executeSync(context);
+		String jsonResponse = BaseApiCommand.createCommand("save_promo_haibao", false, params).executeSync(context);
 		String posterId = getPosterId(jsonResponse);
 		if (posterId != null) {
 			HashMap<String, String> attrs = new HashMap<String, String>();
@@ -111,7 +111,7 @@ public class ReferralNetwork extends Observable {
 	public boolean savePromoLog(String promoterMobile, int taskType, String userMobile, String promoterUdid, String promoterUserId, String userUdid, String userUserId, Map<String, String> attrs) {
 		ApiParams logParams = new ApiParams();
 		logParams.addParam("parentMobile", promoterMobile);
-		logParams.addParam("taskType", ReferralUtil.TASK_HAIBAO);
+		logParams.addParam("taskType", taskType);
 		logParams.addParam("childMobile", userMobile);
 		
 		if (null != promoterUdid) 	logParams.addParam("parentUdid", 	promoterUdid);
@@ -133,7 +133,7 @@ public class ReferralNetwork extends Observable {
 			Log.d("savePoster",logParams.toString());
 		}
 		
-		String logResponse = BaseApiCommand.createCommand("save_promo_log", true, logParams).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+		String logResponse = BaseApiCommand.createCommand("save_promo_log", false, logParams).executeSync(GlobalDataManager.getInstance().getApplicationContext());
 		
 		try {
 			JSONObject obj = new JSONObject(logResponse);
