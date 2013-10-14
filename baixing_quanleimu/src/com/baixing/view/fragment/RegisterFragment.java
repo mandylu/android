@@ -16,6 +16,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -213,11 +214,6 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 					Util.saveDataToLocate(activity, "user", user);
 					
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
-
-					// zengjin@baixing.net
-	    			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
-	    				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, user.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), user.getId(), null);
-	    			}
 					
                     finishFragment(MSG_REGISTER_SUCCESS, null);
 				} else {
@@ -349,6 +345,13 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 						profile.createTime = createdTime;
 						Util.saveDataToLocate(GlobalDataManager.getInstance().getApplicationContext(), "userProfile", profile);
 						BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, loginBean);
+						
+						// zengjin@baixing.net
+		    			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+		    				Log.d(TAG, ReferralPromoter.getInstance().ID());
+		    				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, loginBean.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), loginBean.getId(), null);
+		    			}
+						
 						this.getView().postDelayed(new Runnable(){
 							@Override
 							public void run(){

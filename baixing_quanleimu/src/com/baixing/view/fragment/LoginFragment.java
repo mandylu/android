@@ -216,6 +216,7 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 			
 			// zengjin@baixing.net
 			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+				Log.d(TAG, ReferralPromoter.getInstance().ID());
 				AccountManager am = GlobalDataManager.getInstance().getAccountManager();
 				UserBean ub = am.getCurrentUser();
 				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, ub.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), ub.getId(), null);

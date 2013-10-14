@@ -9,6 +9,8 @@ import org.json.JSONException;
 import org.json.JSONObject;
 
 import android.content.Context;
+import android.content.SharedPreferences;
+import android.content.SharedPreferences.Editor;
 import android.text.TextUtils;
 import android.util.Log;
 import android.widget.Toast;
@@ -109,6 +111,16 @@ public class ReferralNetwork extends Observable {
 	}
 	
 	public boolean savePromoLog(String promoterMobile, int taskType, String userMobile, String promoterUdid, String promoterUserId, String userUdid, String userUserId, Map<String, String> attrs) {
+		
+		Context context = GlobalDataManager.getInstance().getApplicationContext();
+		SharedPreferences preferences = context.getSharedPreferences(ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
+		
+		if (taskType == ReferralUtil.TASK_APP && !TextUtils.isEmpty(userMobile)) {
+			if (preferences.getBoolean(ReferralUtil.ACTIVATE_KEY, false)) {
+				return false;
+			}
+		}
+		
 		ApiParams logParams = new ApiParams();
 		logParams.addParam("parentMobile", promoterMobile);
 		logParams.addParam("taskType", taskType);
@@ -143,6 +155,11 @@ public class ReferralNetwork extends Observable {
 				if (error != null) {
 					String code = error.getString("code");
 					if (code != null && code.equals("0")) {
+						if (taskType == ReferralUtil.TASK_APP && !TextUtils.isEmpty(userMobile)) {
+							Editor editor = preferences.edit();
+							editor.putBoolean(ReferralUtil.ACTIVATE_KEY, true);
+							editor.commit();
+						}
 						return true;
 					}
 				}

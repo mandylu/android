@@ -119,6 +119,9 @@ public class HomeFragment extends BaseFragment implements ItemClickListener, onL
 			SharedPreferences.Editor editor=status.edit();
 			editor.putBoolean(ReferralUtil.DLGSHOWN_KEY, true);
 			editor.commit();
+			
+			// zengjin@baixing.net
+			ReferralUtil.getInstance().activating();
 		}else{
 			Log.v("registertest", "true");
 		}

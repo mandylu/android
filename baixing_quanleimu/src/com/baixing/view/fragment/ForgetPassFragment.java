@@ -11,6 +11,7 @@ import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
 import android.text.TextUtils;
+import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -257,6 +258,7 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
             	
             	// zengjin@baixing.net
     			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+    				Log.d(TAG, ReferralPromoter.getInstance().ID());
     				AccountManager am = GlobalDataManager.getInstance().getAccountManager();
     				UserBean ub = am.getCurrentUser();
     				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, ub.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), ub.getId(), null);

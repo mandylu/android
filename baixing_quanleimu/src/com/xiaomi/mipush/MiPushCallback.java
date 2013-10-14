@@ -45,9 +45,7 @@ public class MiPushCallback extends MiPushClientCallback {
 	@Override
 	public void onCommandResult(String command, long resultCode, String reason,
 			List<String> params) {
-		if (command.equals(MiPushClient.COMMAND_SET_ALIAS) && resultCode == ErrorCode.SUCCESS) {
-			ReferralUtil.getInstance().activating();
-		}
+		// 
 	}
 
 	@Override

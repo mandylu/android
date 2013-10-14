@@ -36,6 +36,7 @@ public class ReferralUtil {
 	public static final String IS_PROMO_KEY = "com.baixing.sharing.referral.ispromoter";
 	public static final String DLGSHOWN_KEY = "com.baixing.sharing.referral.dlgshown";
 	public static final String CURPHONE_KEY = "com.baixing.sharing.referral.phone";
+	public static final String ACTIVATE_KEY = "com.baixing.sharing.referral.activated";
 	
 	public static final int TASK_APP = 1;
 	public static final int TASK_HAIBAO = 2;
@@ -55,10 +56,7 @@ public class ReferralUtil {
 	
 	public void activating() {
 		Log.d(TAG, "activating");
-		//new ReferralAutoLogin(GlobalDataManager.getInstance().getApplicationContext()).execute();
-		if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
-			//ReferralNetwork.getInstance().updateReferral("join", null);
-		}
+		ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, null, null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), null, null);
 	}
 
 	public static boolean isPromoter() {

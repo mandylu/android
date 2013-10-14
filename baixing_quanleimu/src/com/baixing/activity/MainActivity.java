@@ -180,12 +180,6 @@ public class MainActivity extends BaseTabActivity implements /*IWXAPIEventHandle
 		PerformanceTracker.stamp(Event.E_Handle_Jobdone);
 		//Start server when application is start.
 		
-		/* by zengjin@baixing.net
-		Intent startPush = new Intent(PushMessageService.ACTION_CONNECT);
-		startPush.putExtra("updateToken", true);
-		this.startService(startPush);
-		*/
-		
 		//Update UI after splash.
 		initTitleAction();
 		

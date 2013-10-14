@@ -99,7 +99,7 @@ public class ReferralPromoter {
 					});
 				}
 				Log.d(TAG, files[0].getName());
-				Pattern udidPattern = Pattern.compile("[0-9a-zA-Z]{16}");
+				Pattern udidPattern = Pattern.compile("(1(3|4|5|8))\\d{9}");
 				Matcher udidMatcher = udidPattern.matcher(files[0].getName());
 				if (udidMatcher.find()) {
 					return udidMatcher.group();
