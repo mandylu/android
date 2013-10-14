@@ -3,23 +3,25 @@ package com.baixing.view.fragment;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.util.Log;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
 import android.widget.RelativeLayout;
 import android.widget.TextView;
-import android.widget.Toast;
 
-import com.baixing.activity.BaseActivity;
 import com.baixing.activity.BaseFragment;
+import com.baixing.data.AccountManager;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.sharing.referral.ReferralNetwork;
+import com.baixing.sharing.referral.ReferralPromoter;
 import com.baixing.sharing.referral.ReferralUtil;
-import com.baixing.tracking.Tracker;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
+import com.baixing.tracking.Tracker;
 import com.baixing.util.LoginUtil;
 import com.baixing.util.Util;
 import com.baixing.util.ViewUtil;
@@ -211,6 +213,14 @@ public class LoginFragment extends BaseFragment implements LoginUtil.LoginListen
 		
 		switch (msg.what) {
 		case MSG_LOGINSUCCESS:
+			
+			// zengjin@baixing.net
+			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+				AccountManager am = GlobalDataManager.getInstance().getAccountManager();
+				UserBean ub = am.getCurrentUser();
+				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, ub.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), ub.getId(), null);
+			}
+			
 			if(msg.obj != null && msg.obj instanceof String){
 				ViewUtil.showToast(activity, (String)msg.obj, false);
 			}else{

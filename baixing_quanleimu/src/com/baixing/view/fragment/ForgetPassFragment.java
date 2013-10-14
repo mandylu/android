@@ -10,6 +10,7 @@ import android.app.Activity;
 import android.os.Bundle;
 import android.os.CountDownTimer;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -21,6 +22,7 @@ import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousExecuter;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
+import com.baixing.data.AccountManager;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
@@ -31,6 +33,9 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.sharing.referral.ReferralNetwork;
+import com.baixing.sharing.referral.ReferralPromoter;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -249,6 +254,14 @@ public class ForgetPassFragment extends BaseFragment implements AnonymousNetwork
                 break;
 
             case MSG_POST_FINISH:
+            	
+            	// zengjin@baixing.net
+    			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+    				AccountManager am = GlobalDataManager.getInstance().getAccountManager();
+    				UserBean ub = am.getCurrentUser();
+    				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, ub.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), ub.getId(), null);
+    			}
+            	
             	hideProgress();
                 ViewUtil.showToast(getActivity(), showMsg, false);
                 finishFragment(MSG_FORGET_PWD_SUCCEED, null);

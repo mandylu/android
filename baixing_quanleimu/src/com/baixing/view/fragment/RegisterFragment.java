@@ -15,6 +15,7 @@ import org.json.JSONObject;
 import android.app.Activity;
 import android.os.Bundle;
 import android.os.Message;
+import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -28,6 +29,7 @@ import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousAccountLogic;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;
+import com.baixing.data.AccountManager;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
 import com.baixing.entity.UserProfile;
@@ -37,6 +39,9 @@ import com.baixing.network.api.ApiError;
 import com.baixing.network.api.ApiParams;
 import com.baixing.network.api.BaseApiCommand;
 import com.baixing.network.api.BaseApiCommand.Callback;
+import com.baixing.sharing.referral.ReferralNetwork;
+import com.baixing.sharing.referral.ReferralPromoter;
+import com.baixing.sharing.referral.ReferralUtil;
 import com.baixing.tracking.TrackConfig.TrackMobile.BxEvent;
 import com.baixing.tracking.TrackConfig.TrackMobile.Key;
 import com.baixing.tracking.TrackConfig.TrackMobile.PV;
@@ -209,6 +214,11 @@ public class RegisterFragment extends BaseFragment implements AnonymousNetworkLi
 					
 					BxMessageCenter.defaultMessageCenter().postNotification(IBxNotificationNames.NOTIFICATION_LOGIN, user);
 
+					// zengjin@baixing.net
+	    			if (!TextUtils.isEmpty(ReferralPromoter.getInstance().ID())) {
+	    				ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, user.getPhone(), null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), user.getId(), null);
+	    			}
+					
                     finishFragment(MSG_REGISTER_SUCCESS, null);
 				} else {
 					//tracker
