@@ -93,16 +93,21 @@ public class ReferralPromoter {
 					Arrays.sort(files, new Comparator<File>() {
 						@Override
 						public int compare(File lhs, File rhs) {
-							return (int) (rhs.lastModified() - lhs
-									.lastModified());
+							long d1 = lhs.lastModified();
+							long d2 = rhs.lastModified();
+							if (d1 == d2) {
+								return 0;
+							} else {
+								return d1 < d2 ? 1 : -1;
+							}
 						}
 					});
 				}
 				Log.d(TAG, files[0].getName());
-				Pattern udidPattern = Pattern.compile("(1(3|4|5|8))\\d{9}");
-				Matcher udidMatcher = udidPattern.matcher(files[0].getName());
-				if (udidMatcher.find()) {
-					return udidMatcher.group();
+				Pattern phonePattern = Pattern.compile("(1(3|4|5|8))\\d{9}");
+				Matcher phoneMatcher = phonePattern.matcher(files[0].getName());
+				if (phoneMatcher.find()) {
+					return phoneMatcher.group();
 				}
 			} else {
 				Log.e(TAG, "No apk found");
