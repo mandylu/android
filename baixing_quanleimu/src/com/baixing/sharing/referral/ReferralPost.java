@@ -5,13 +5,10 @@ import java.util.HashMap;
 import org.json.JSONException;
 import org.json.JSONObject;
 
-import android.content.DialogInterface;
 import android.content.Intent;
 import android.support.v4.app.FragmentManager;
 import android.util.Log;
-import android.view.KeyEvent;
 
-import com.baixing.activity.BaseFragment;
 import com.baixing.anonymous.AccountService;
 import com.baixing.anonymous.AnonymousNetworkListener;
 import com.baixing.anonymous.BaseAnonymousLogic;

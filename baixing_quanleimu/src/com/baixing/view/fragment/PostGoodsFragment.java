@@ -643,11 +643,11 @@ public class PostGoodsFragment extends BaseFragment implements OnClickListener, 
 		
 		//by zengjin@baixing.net
 		if (ReferralUtil.isPromoter() && !phone.equals(curUser.getPhone())) {
-			ReferralPost.Config(getFragmentManager(), postNS);
-			ReferralPost.getInstance().postNewAd(phone);
 			list.put("api_referral_id", curUser.getId());
 			list.put("api_compaign", "offline_promote");
 			this.postNS.savePostData(mapParams, list, postList, bmpUrls, location, editMode);
+			ReferralPost.Config(getFragmentManager(), postNS);
+			ReferralPost.getInstance().postNewAd(phone);
 			return;
 		}
 		

@@ -862,7 +862,7 @@ public class Util {
     }
     
     public static boolean isValidMobile(String mobile){
-    	Pattern p = Pattern.compile("^(13[0-9]|15[0|3|6|7|8|9]|18[8|9|6])\\d{8}$");
+    	Pattern p = Pattern.compile("^(1(3|4|5|8)\\d{9}$");
         Matcher matcher = p.matcher(mobile);  
         System.out.println(matcher.matches() + "---");
         return matcher.matches();    	
