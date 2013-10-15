@@ -166,4 +166,5 @@
     <string name="button_referral_poster_post">上传海报凭证</string>
     <string name="hint_referral_location">请输入店家地址</string>
     <string name="hint_referral_contact">请输入店家手机</string>
+    <string name="button_referral_poster_scan_success">扫描解析完成</string>
 </resources>

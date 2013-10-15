@@ -84,6 +84,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	private long lastClickPostTime = 0;
 	
 	private Button scanQRCode;
+	private String qrCodeId = null;
 
 	@Override
 	public void onActivityResult(final int requestCode, final int resultCode,
@@ -97,9 +98,11 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		
 		Log.d(TAG, requestCode + "");
 		if (resultCode == Activity.RESULT_OK && requestCode == CommonIntentAction.QRCodeReqCode.SCAN) {
-			String id = getQRCodeId(data.getExtras().getString("qrcode"));
-			if (id != null) {
-				scanQRCode.setText(id);
+			qrCodeId = getQRCodeId(data.getExtras().getString("qrcode"));
+			if (qrCodeId != null) {
+				scanQRCode.setText(getResources().getString(R.string.button_referral_poster_scan_success));
+				scanQRCode.setClickable(false);
+				scanQRCode.setBackgroundResource(R.drawable.btn_sms_on);
 			}
 			return;
 		}
@@ -273,7 +276,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 		
 		scanQRCode = (Button) v.findViewById(R.id.btn_qrcode_scan);
 		scanQRCode.setOnClickListener(this);
-		scanQRCode.setText("扫描二维码");
+		scanQRCode.setText(getResources().getString(R.string.button_referral_poster_qrcodescan));
 
 		return v;
 	}
@@ -430,20 +433,20 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	}
 	
 	private String getQRCodeID() {
-		String contentQrcode = ((Button) getView().findViewById(R.id.btn_qrcode_scan)).getText().toString();
-		
-		if(contentQrcode=="扫描二维码"){			
+		if(TextUtils.isEmpty(qrCodeId)){			
 			ViewUtil.showToast(getActivity(), "请扫描二维码" ,false);
 			return null;
 		}
-		
-		return contentQrcode;
+		return qrCodeId;
 	}
 	
 	private String getQRCodeId(String qrCodeStr) {
 		int start = qrCodeStr.indexOf("udid=") + "udid=".length();
 		if (start != "udid=".length() - 1) {
-			return qrCodeStr.substring(start);
+			String qrCodeId = qrCodeStr.substring(start);
+			if (ReferralUtil.isValidQRCodeID(qrCodeId)) {
+				return qrCodeStr.substring(start);
+			}
 		}
 		return null;
 	}

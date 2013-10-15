@@ -1,6 +1,8 @@
 package com.baixing.sharing.referral;
 
 import java.util.Hashtable;
+import java.util.regex.Matcher;
+import java.util.regex.Pattern;
 
 import org.json.JSONException;
 import org.json.JSONObject;
@@ -61,6 +63,12 @@ public class ReferralUtil {
 	public void activating() {
 		Log.d(TAG, "activating");
 		ReferralNetwork.getInstance().savePromoLog(ReferralPromoter.getInstance().ID(), ReferralUtil.TASK_APP, null, null, null, Util.getDeviceUdid(GlobalDataManager.getInstance().getApplicationContext()), null, null);
+	}
+	
+	public static boolean isValidQRCodeID(String codeId) {
+		Pattern p = Pattern.compile("\\w{8}");
+        Matcher matcher = p.matcher(codeId);
+        return matcher.matches();
 	}
 
 	public static boolean isPromoter() {

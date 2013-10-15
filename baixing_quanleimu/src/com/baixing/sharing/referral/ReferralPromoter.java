@@ -63,7 +63,7 @@ public class ReferralPromoter {
 		if (!TextUtils.isEmpty(promoter_id)) {
 			if (Util.isValidMobile(promoter_id)) {
 				saveAppShareType(ReferralUtil.SHARE_BY_QRCODE, context);
-			} else if (isValidQRCodeID(promoter_id)) {
+			} else if (ReferralUtil.isValidQRCodeID(promoter_id)) {
 				saveAppShareType(ReferralUtil.SHARE_BY_HAIBAO, context);
 			}
 			return savePromoterId(context, promoter_id);
@@ -171,7 +171,7 @@ public class ReferralPromoter {
 		
 		if (Util.isValidMobile(mPromoterID)) {
 			parentPhone = mPromoterID;
-		} else if (isValidQRCodeID(mPromoterID)) {
+		} else if (ReferralUtil.isValidQRCodeID(mPromoterID)) {
 			ApiParams params = new ApiParams();
 			params.addParam("qrcodeId", mPromoterID);
 			String response = BaseApiCommand.createCommand("get_bound_mobile", false, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
@@ -199,11 +199,4 @@ public class ReferralPromoter {
 		
 		return parentPhone;
 	}
-	
-	private boolean isValidQRCodeID(String codeId) {
-		Pattern p = Pattern.compile("\\w{8}");
-        Matcher matcher = p.matcher(codeId);
-        return matcher.matches();
-	}
-	
 }
