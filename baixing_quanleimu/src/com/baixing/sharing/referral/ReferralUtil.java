@@ -23,7 +23,6 @@ import com.google.zxing.EncodeHintType;
 import com.google.zxing.MultiFormatWriter;
 import com.google.zxing.WriterException;
 import com.google.zxing.common.BitMatrix;
-import com.quanleimu.activity.R;
 
 public class ReferralUtil {
 
@@ -37,6 +36,7 @@ public class ReferralUtil {
 	public static final String DLGSHOWN_KEY = "com.baixing.sharing.referral.dlgshown";
 	public static final String CURPHONE_KEY = "com.baixing.sharing.referral.phone";
 	public static final String ACTIVATE_KEY = "com.baixing.sharing.referral.activated";
+	public static final String SHARETYPE_KEY = "com.baixing.sharing.referral.appsharetype";
 	
 	public static final int TASK_APP = 1;
 	public static final int TASK_HAIBAO = 2;
@@ -45,6 +45,10 @@ public class ReferralUtil {
 	public static final int ROLE_NORMAL = 0x0;
 	public static final int ROLE_PROMOTER = 0x1;
 	public static final int ROLE_BUSINESS = 0x2;
+	
+	public static final int SHARE_BY_QRCODE = 1;
+	public static final int SHARE_BY_HAIBAO = 2;
+	public static final int SHARE_BY_BLUETOOTH = 3;
 
 	public static ReferralUtil getInstance() {
 		if (instance != null) {

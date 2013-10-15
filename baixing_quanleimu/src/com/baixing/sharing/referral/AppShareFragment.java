@@ -41,14 +41,16 @@ import com.quanleimu.activity.R;
 
 public class AppShareFragment extends BaseFragment implements
 		View.OnClickListener, ICallback, Observer {
-
-	private static Context context;
-	private static String promoterId;
 	
-	ImageView qrcodeImageView;
-	TextView txtLoginShare;
-	Button bluetoothButton;
-	Button appDetailButton;
+	private String APP_DOWN_BASE = "http://pages.baixing.com/mobile/dituishenqi/?udid=";
+
+	private Context context;
+	private String promoterId;
+	
+	private ImageView qrcodeImageView;
+	private TextView txtLoginShare;
+	private Button bluetoothButton;
+	private Button appDetailButton;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -100,8 +102,7 @@ public class AppShareFragment extends BaseFragment implements
 		} else {
 			promoterId = Util.getDeviceUdid(context);
 		}
-		String qrCodeContent = ReferralNetwork.PROMOTE_URL
-				+ "?action=download&udid=" + promoterId;
+		String qrCodeContent = APP_DOWN_BASE + promoterId;
 		qrcodeImageView
 				.setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager
 						.getInstance().getApplicationContext(), qrCodeContent));
@@ -167,8 +168,7 @@ public class AppShareFragment extends BaseFragment implements
 			promoterId = Util.getDeviceUdid(context);
 		}
 		
-		String qrCodeContent = ReferralNetwork.PROMOTE_URL
-				+ "?action=download&udid=" + promoterId;
+		String qrCodeContent = APP_DOWN_BASE + promoterId;
 		qrcodeImageView
 				.setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager
 						.getInstance().getApplicationContext(), qrCodeContent));

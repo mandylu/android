@@ -25,8 +25,6 @@ import com.baixing.util.Util;
 public class ReferralNetwork extends Observable {
 
 	private static final String TAG = ReferralNetwork.class.getSimpleName();
-
-	public static final String PROMOTE_URL = "http://pages.baixing.com/mobile/dituishenqi/";
 	
 	private static ReferralNetwork instance = null;
 
@@ -130,6 +128,11 @@ public class ReferralNetwork extends Observable {
 		if (null != promoterUserId) logParams.addParam("parentUserId",promoterUserId);
 		if (null != userUdid) 		logParams.addParam("childUdid", 		userUdid);
 		if (null != userUserId) 	logParams.addParam("childUserId", 	userUserId);
+		
+		if (taskType == ReferralUtil.TASK_APP) {
+			attrs.put("appPromo", String.valueOf(preferences.getInt(ReferralUtil.SHARETYPE_KEY, 0)));
+		}
+		
 		if (null != attrs && attrs.size() != 0) {
 			JSONObject json=new JSONObject();
 			Iterator<java.util.Map.Entry<String, String>> iterator = attrs.entrySet().iterator();

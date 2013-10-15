@@ -6,9 +6,6 @@ import java.util.HashMap;
 import java.util.LinkedHashMap;
 import java.util.List;
 
-import org.json.JSONException;
-import org.json.JSONObject;
-
 import android.app.Activity;
 import android.app.AlertDialog;
 import android.app.AlertDialog.Builder;
@@ -34,7 +31,6 @@ import android.widget.ImageView;
 import android.widget.LinearLayout;
 import android.widget.ScrollView;
 import android.widget.TextView;
-import android.widget.Toast;
 
 import com.baixing.activity.BaseFragment;
 import com.baixing.broadcast.CommonIntentAction;
@@ -43,10 +39,7 @@ import com.baixing.entity.AdList;
 import com.baixing.entity.BXLocation;
 import com.baixing.entity.BXThumbnail;
 import com.baixing.entity.PostGoodsBean;
-import com.baixing.entity.UserBean;
 import com.baixing.jsonutil.JsonUtil;
-import com.baixing.network.api.ApiParams;
-import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.ErrorHandler;
 import com.baixing.util.PerformEvent.Event;
 import com.baixing.util.PerformanceTracker;
@@ -448,8 +441,8 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 	}
 	
 	private String getQRCodeId(String qrCodeStr) {
-		int start = qrCodeStr.indexOf("codeId=") + "codeId=".length();
-		if (start != "codeId=".length() - 1) {
+		int start = qrCodeStr.indexOf("udid=") + "udid=".length();
+		if (start != "udid=".length() - 1) {
 			return qrCodeStr.substring(start);
 		}
 		return null;

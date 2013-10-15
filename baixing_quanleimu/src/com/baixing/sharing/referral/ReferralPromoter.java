@@ -5,10 +5,15 @@ import java.io.FileFilter;
 import java.io.FilenameFilter;
 import java.io.IOException;
 import java.io.InputStream;
+import java.util.ArrayList;
 import java.util.Arrays;
 import java.util.Comparator;
+import java.util.List;
 import java.util.regex.Matcher;
 import java.util.regex.Pattern;
+
+import org.json.JSONException;
+import org.json.JSONObject;
 
 import android.content.Context;
 import android.content.SharedPreferences;
@@ -18,6 +23,9 @@ import android.text.TextUtils;
 import android.util.Log;
 
 import com.baixing.data.GlobalDataManager;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
+import com.baixing.util.Util;
 
 public class ReferralPromoter {
 	
@@ -41,24 +49,35 @@ public class ReferralPromoter {
 				.getApplicationContext();
 
 		String promoter_id = getPromoterId(context);
-		if (!TextUtils.isEmpty(promoter_id)) {
+		if (promoter_id != null) {
 			return promoter_id;
 		}
 
 		promoter_id = getPromoterIdByBluetooth(context);
 		if (!TextUtils.isEmpty(promoter_id)) {
-			savePromoterId(context, promoter_id);
-			return promoter_id;
+			saveAppShareType(ReferralUtil.SHARE_BY_BLUETOOTH, context);
+			return savePromoterId(context, promoter_id);
 		}
 
 		promoter_id = getPromoterIdByAssets(context);
 		if (!TextUtils.isEmpty(promoter_id)) {
-			savePromoterId(context, promoter_id);
-			return promoter_id;
+			if (Util.isValidMobile(promoter_id)) {
+				saveAppShareType(ReferralUtil.SHARE_BY_QRCODE, context);
+			} else if (isValidQRCodeID(promoter_id)) {
+				saveAppShareType(ReferralUtil.SHARE_BY_HAIBAO, context);
+			}
+			return savePromoterId(context, promoter_id);
 		}
 
-		savePromoterId(context, "");
-		return null;
+		return savePromoterId(context, "");
+	}
+	
+	private void saveAppShareType(int shareType, Context context) {
+		SharedPreferences preferences = context.getSharedPreferences(
+				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
+		Editor editor = preferences.edit();
+		editor.putInt(ReferralUtil.SHARETYPE_KEY, shareType);
+		editor.commit();
 	}
 	
 	private String getPromoterId(Context context) {
@@ -80,6 +99,9 @@ public class ReferralPromoter {
 										"bluetooth");
 					}
 				});
+		if (bluetooth == null || bluetooth.length == 0) {
+			bluetooth = getBluetoothDirInHTC();
+		}
 		if (bluetooth != null && bluetooth.length > 0) {
 			File[] files = bluetooth[0].listFiles(new FilenameFilter() {
 				@Override
@@ -117,6 +139,18 @@ public class ReferralPromoter {
 		}
 		return null;
 	}
+	
+	private File[] getBluetoothDirInHTC() {
+		File downloads = Environment.getExternalStoragePublicDirectory(Environment.DIRECTORY_DOWNLOADS);
+		for (File file : downloads.listFiles()) {
+			if (file.isDirectory() && !file.isHidden()) {
+				if (file.getName().equalsIgnoreCase("bluetooth")) {
+					return new File[]{file};
+				}
+			}
+		}
+		return null;
+	}
 
 	private String getPromoterIdByAssets(Context context) {
 		try {
@@ -132,12 +166,44 @@ public class ReferralPromoter {
 		}
 	}
 
-	private void savePromoterId(Context context, String mPromoterID) {
+	private String savePromoterId(Context context, String mPromoterID) {
+		String parentPhone = mPromoterID;
+		
+		if (Util.isValidMobile(mPromoterID)) {
+			parentPhone = mPromoterID;
+		} else if (isValidQRCodeID(mPromoterID)) {
+			ApiParams params = new ApiParams();
+			params.addParam("qrcodeId", mPromoterID);
+			String response = BaseApiCommand.createCommand("get_bound_mobile", false, params).executeSync(GlobalDataManager.getInstance().getApplicationContext());
+			try {
+				JSONObject obj = new JSONObject(response);
+				if (obj != null) {
+					JSONObject error = obj.getJSONObject("error");
+					if (error != null) {
+						String code = error.getString("code");
+						if (code != null && code.equals("0")) {
+							parentPhone = obj.getString("storeMobile");
+						}
+					}
+				}
+			} catch (JSONException e) {
+				e.printStackTrace();
+			}
+		}
+		
 		SharedPreferences preferences = context.getSharedPreferences(
 				ReferralUtil.REFERRAL_STATUS, Context.MODE_PRIVATE);
 		Editor editor = preferences.edit();
-		editor.putString(ReferralUtil.PROMOTER_KEY, mPromoterID);
+		editor.putString(ReferralUtil.PROMOTER_KEY, parentPhone);
 		editor.commit();
+		
+		return parentPhone;
+	}
+	
+	private boolean isValidQRCodeID(String codeId) {
+		Pattern p = Pattern.compile("\\w{8}");
+        Matcher matcher = p.matcher(codeId);
+        return matcher.matches();
 	}
 	
 }
