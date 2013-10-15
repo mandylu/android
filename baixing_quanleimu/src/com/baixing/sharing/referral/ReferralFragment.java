@@ -10,7 +10,6 @@ import org.json.JSONObject;
 import android.content.Context;
 import android.content.Intent;
 import android.os.Bundle;
-import android.text.TextUtils;
 import android.view.LayoutInflater;
 import android.view.View;
 import android.view.ViewGroup;
@@ -65,56 +64,18 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
                              Bundle savedInstanceState) {
 
     	referralmain = inflater.inflate(R.layout.referral_info, null);
-    	BtnOnClickListener btnOnClickListener = new BtnOnClickListener();
-        ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(btnOnClickListener);
-        ((Button) referralmain.findViewById(R.id.btn_referral_haibao)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_post)).setOnClickListener(this);
+        ((Button) referralmain.findViewById(R.id.btn_referral_haibao)).setOnClickListener(this);
         
-        ((Button) referralmain.findViewById(R.id.btn_referral_posts_detail)).setOnClickListener(btnOnClickListener);
-        ((Button) referralmain.findViewById(R.id.btn_referral_haibao_detail)).setOnClickListener(btnOnClickListener);
+        ((Button) referralmain.findViewById(R.id.btn_referral_posts_detail)).setOnClickListener(this);
+        ((Button) referralmain.findViewById(R.id.btn_referral_haibao_detail)).setOnClickListener(this);
 
         return referralmain;
     }
     
-    class BtnOnClickListener implements View.OnClickListener {
-
-		@Override
-		public void onClick(View v) {
-			Intent intent = new Intent();
-
-			switch (v.getId()) {
-			case R.id.btn_referral_post:
-				intent.setClass(context, com.baixing.activity.PostActivity.class);
-				break;
-			case R.id.btn_referral_haibao:
-				intent.setClass(context, com.baixing.sharing.referral.PosterActivity.class);
-				break;
-			case R.id.btn_referral_posts_detail:
-			{
-				Bundle bundle=new Bundle();
-				bundle.putString("title", getString(R.string.button_referral_detail_post));
-				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_POST);
-				pushFragment(new ReferralDetailFragment(), bundle);	
-				return;
-			}
-			case R.id.btn_referral_haibao_detail:
-			{
-				Bundle bundle=new Bundle();
-				bundle.putString("title", getString(R.string.button_referral_detail_haibao));
-				bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_HAIBAO);
-				pushFragment(new ReferralDetailFragment(), bundle);	
-				return;
-			}
-			default:
-				break;
-			}
-
-			intent.putExtra("isReferral", true);
-			intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
-    		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
-    		context.startActivity(intent);
-		}
-    	
+    @Override
+    public int[] excludedOptionMenus() {
+    	return new int[]{OPTION_SETTING, OPTION_FEEDBACK, OPTION_LOGOUT, OPTION_EXIT, OPTION_LOGIN};
     }
 
 	@Override
@@ -136,7 +97,39 @@ public class ReferralFragment extends BaseFragment implements View.OnClickListen
 
 	@Override
 	public void onClick(View v) {
-		// TODO Auto-generated method stub
+		Intent intent = new Intent();
 
+		switch (v.getId()) {
+		case R.id.btn_referral_post:
+			intent.setClass(context, com.baixing.activity.PostActivity.class);
+			break;
+		case R.id.btn_referral_haibao:
+			intent.setClass(context, com.baixing.sharing.referral.PosterActivity.class);
+			break;
+		case R.id.btn_referral_posts_detail:
+		{
+			Bundle bundle=new Bundle();
+			bundle.putString("title", getString(R.string.button_referral_detail_post));
+			bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_POST);
+			pushFragment(new ReferralDetailFragment(), bundle);	
+			return;
+		}
+		case R.id.btn_referral_haibao_detail:
+		{
+			Bundle bundle=new Bundle();
+			bundle.putString("title", getString(R.string.button_referral_detail_haibao));
+			bundle.putString("url", ReferralDetailFragment.PROMO_DETIAL_URL + "?mobile=" + phone + "&taskType=" + ReferralUtil.TASK_HAIBAO);
+			pushFragment(new ReferralDetailFragment(), bundle);	
+			return;
+		}
+		default:
+			break;
+		}
+
+		intent.putExtra("isReferral", true);
+		intent.addFlags(Intent.FLAG_ACTIVITY_REORDER_TO_FRONT);
+		intent.addFlags(Intent.FLAG_ACTIVITY_BROUGHT_TO_FRONT);
+		intent.addFlags(Intent.FLAG_ACTIVITY_NO_ANIMATION);
+		context.startActivity(intent);
 	}
 }
