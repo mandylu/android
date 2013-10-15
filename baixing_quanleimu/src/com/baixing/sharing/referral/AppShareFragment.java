@@ -165,8 +165,7 @@ public class AppShareFragment extends BaseFragment implements
 		if (isPromo && !GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
 			bluetoothButton.setEnabled(false);
 			bluetoothButton.setBackgroundResource(R.drawable.btn_sms_on);
-			appDetailButton.setEnabled(false);
-			appDetailButton.setBackgroundResource(R.drawable.btn_sms_on);
+			appDetailButton.setVisibility(View.GONE);
 			txtLoginShare.setVisibility(View.VISIBLE);
 			return;
 		}
@@ -174,6 +173,7 @@ public class AppShareFragment extends BaseFragment implements
 		txtLoginShare.setVisibility(View.GONE);
 		bluetoothButton.setEnabled(true);
 		appDetailButton.setEnabled(true);
+		appDetailButton.setVisibility(View.VISIBLE);
 		//lumengdi@baixing.net
 		bluetoothButton.setBackgroundResource(R.drawable.post_finish_btn);
 		appDetailButton.setBackgroundResource(R.drawable.post_finish_btn);
