@@ -162,7 +162,7 @@ public class AppShareFragment extends BaseFragment implements
 	
 	private void loginToDisplayInfo() {
 		
-		if (!GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
+		if (isPromo && !GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
 			bluetoothButton.setEnabled(false);
 			bluetoothButton.setBackgroundResource(R.drawable.btn_sms_on);
 			appDetailButton.setEnabled(false);
