@@ -214,7 +214,9 @@ public class PersonalProfileFragment extends BaseFragment implements View.OnClic
 		switch (msg.what) {
 		case MSG_LOGIN_STATUS_CHANGE:
 			Boolean login = (Boolean) msg.obj;
-			rootView.findViewById(R.id.rl_login).setVisibility(login.booleanValue() ? View.GONE : View.VISIBLE);
+			rootView.findViewById(R.id.rl_login).setVisibility(login.booleanValue()? View.GONE : View.VISIBLE);
+			//lumengdi@baixing.net
+			if(!login.booleanValue()){rootView.findViewById(R.id.rl_referral).setVisibility(View.GONE);}
 			break;
 		case MSG_FORGETPASSWORDVIEW:
 			pushFragment(new ForgetPassFragment(), createArguments(null, null));
