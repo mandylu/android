@@ -158,7 +158,9 @@ public class AppShareFragment extends BaseFragment implements
 		
 		txtLoginShare.setVisibility(View.GONE);
 		bluetoothButton.setEnabled(true);
+		bluetoothButton.setBackgroundResource(R.drawable.post_finish_btn);
 		appDetailButton.setEnabled(true);
+		appDetailButton.setBackgroundResource(R.drawable.post_finish_btn);
 		
 		UserBean curUser = GlobalDataManager.getInstance().getAccountManager()
 				.getCurrentUser();
