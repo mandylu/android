@@ -53,12 +53,6 @@ public class ReferralPromoter {
 			return promoter_id;
 		}
 
-		promoter_id = getPromoterIdByBluetooth(context);
-		if (!TextUtils.isEmpty(promoter_id)) {
-			saveAppShareType(ReferralUtil.SHARE_BY_BLUETOOTH, context);
-			return savePromoterId(context, promoter_id);
-		}
-
 		promoter_id = getPromoterIdByAssets(context);
 		if (!TextUtils.isEmpty(promoter_id)) {
 			if (Util.isValidMobile(promoter_id)) {
@@ -66,6 +60,12 @@ public class ReferralPromoter {
 			} else if (ReferralUtil.isValidQRCodeID(promoter_id)) {
 				saveAppShareType(ReferralUtil.SHARE_BY_HAIBAO, context);
 			}
+			return savePromoterId(context, promoter_id);
+		}
+		
+		promoter_id = getPromoterIdByBluetooth(context);
+		if (!TextUtils.isEmpty(promoter_id)) {
+			saveAppShareType(ReferralUtil.SHARE_BY_BLUETOOTH, context);
 			return savePromoterId(context, promoter_id);
 		}
 
