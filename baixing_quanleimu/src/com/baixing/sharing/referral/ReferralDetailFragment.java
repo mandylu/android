@@ -29,7 +29,6 @@ import com.quanleimu.activity.R;
 
 public class ReferralDetailFragment extends BaseFragment {
 	
-	public static final String SHARE_INTRO_URL  = "http://192.168.5.95/appRecords.php";
 	public static final String SHARE_DETIAL_URL = "http://www.chenliangyu.baixing.com/pages/promo/appRecords.php";
 	public static final String PROMO_DETIAL_URL = "http://www.chenliangyu.baixing.com/pages/promo/PromoterRecords.php";
 	

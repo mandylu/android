@@ -130,6 +130,9 @@ public class ReferralNetwork extends Observable {
 		if (null != userUserId) 	logParams.addParam("childUserId", 	userUserId);
 		
 		if (taskType == ReferralUtil.TASK_APP) {
+			if (attrs == null) {
+				attrs = new HashMap<String, String>();
+			}
 			attrs.put("appPromo", String.valueOf(preferences.getInt(ReferralUtil.SHARETYPE_KEY, 0)));
 		}
 		

@@ -9,6 +9,9 @@ import java.util.List;
 import java.util.Observable;
 import java.util.Observer;
 
+import org.json.JSONException;
+import org.json.JSONObject;
+
 import android.content.ActivityNotFoundException;
 import android.content.Context;
 import android.content.Intent;
@@ -34,6 +37,8 @@ import android.widget.Toast;
 import com.baixing.activity.BaseFragment;
 import com.baixing.data.GlobalDataManager;
 import com.baixing.entity.UserBean;
+import com.baixing.network.api.ApiParams;
+import com.baixing.network.api.BaseApiCommand;
 import com.baixing.util.Util;
 import com.baixing.view.fragment.LoginFragment;
 import com.baixing.widget.EditUsernameDialogFragment.ICallback;
@@ -51,6 +56,10 @@ public class AppShareFragment extends BaseFragment implements
 	private TextView txtLoginShare;
 	private Button bluetoothButton;
 	private Button appDetailButton;
+	
+	private boolean isPromo = false;
+	private Spanned promoInfo = null;
+	private String promoUrl = null;
 
 	@Override
 	public void onCreate(Bundle savedInstanceState) {
@@ -74,38 +83,7 @@ public class AppShareFragment extends BaseFragment implements
 			Bundle savedInstanceState) {
 
 		View referralmain = inflater.inflate(R.layout.referral_share, null);
-
-		TextView textView = (TextView) referralmain.findViewById(R.id.txt_app_share_tips);
-		Spanned tips = null;
-		if ((tips = getTips()) != null) {
-			textView.setText(tips);
-			textView.setOnClickListener(new OnClickListener() {
-				
-				@Override
-				public void onClick(View v) {
-					Bundle bundle=new Bundle();
-					bundle.putString("title", getString(R.string.title_referral_intro));
-					bundle.putString("url", ReferralDetailFragment.SHARE_INTRO_URL);
-					pushFragment(new ReferralDetailFragment(), bundle);	
-				}
-			});
-		} else {
-			textView.setVisibility(View.GONE);
-		}
-		
-		qrcodeImageView = (ImageView) referralmain.findViewById(R.id.img_referral_qrcode);
 		context = GlobalDataManager.getInstance().getApplicationContext();
-		UserBean curUser = GlobalDataManager.getInstance().getAccountManager()
-				.getCurrentUser();
-		if (curUser != null && Util.isValidMobile(curUser.getPhone())) {
-			promoterId = curUser.getPhone();
-		} else {
-			promoterId = Util.getDeviceUdid(context);
-		}
-		String qrCodeContent = APP_DOWN_BASE + promoterId;
-		qrcodeImageView
-				.setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager
-						.getInstance().getApplicationContext(), qrCodeContent));
 		
 		txtLoginShare = (TextView) referralmain.findViewById(R.id.txt_login_to_share);
 		int size = Util.getWidthByContext(context) * 2 / 3;
@@ -122,8 +100,6 @@ public class AppShareFragment extends BaseFragment implements
 			}
 		});
 		
-		bluetoothButton = (Button) referralmain.findViewById(R.id.btn_referral_bluetooth);
-		
 		appDetailButton = (Button) referralmain.findViewById(R.id.btn_referral_share_detail);
 		appDetailButton.setOnClickListener(new OnClickListener() {
 			
@@ -135,6 +111,44 @@ public class AppShareFragment extends BaseFragment implements
 				pushFragment(new ReferralDetailFragment(), bundle);	
 			}
 		});
+
+		TextView textView = (TextView) referralmain.findViewById(R.id.txt_app_share_tips);
+		isPromo = getPromoInfo();
+		if (isPromo) {
+			textView.setText(promoInfo);
+			textView.setVisibility(View.VISIBLE);
+			textView.setOnClickListener(new OnClickListener() {
+				
+				@Override
+				public void onClick(View v) {
+					Bundle bundle=new Bundle();
+					bundle.putString("title", getString(R.string.title_referral_intro));
+					bundle.putString("url", promoUrl);
+					pushFragment(new ReferralDetailFragment(), bundle);	
+				}
+			});
+			txtLoginShare.setVisibility(View.VISIBLE);
+			appDetailButton.setVisibility(View.VISIBLE);
+		} else {
+			textView.setVisibility(View.GONE);
+			txtLoginShare.setVisibility(View.GONE);
+			appDetailButton.setVisibility(View.GONE);
+		}
+		
+		qrcodeImageView = (ImageView) referralmain.findViewById(R.id.img_referral_qrcode);
+		UserBean curUser = GlobalDataManager.getInstance().getAccountManager()
+				.getCurrentUser();
+		if (curUser != null && Util.isValidMobile(curUser.getPhone())) {
+			promoterId = curUser.getPhone();
+		} else {
+			promoterId = Util.getDeviceUdid(context);
+		}
+		String qrCodeContent = APP_DOWN_BASE + promoterId;
+		qrcodeImageView
+				.setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager
+						.getInstance().getApplicationContext(), qrCodeContent));
+		
+		bluetoothButton = (Button) referralmain.findViewById(R.id.btn_referral_bluetooth);		
 		
 		return referralmain;
 	}
@@ -147,6 +161,7 @@ public class AppShareFragment extends BaseFragment implements
 	}
 	
 	private void loginToDisplayInfo() {
+		
 		if (!GlobalDataManager.getInstance().getAccountManager().isUserLogin()) {
 			bluetoothButton.setEnabled(false);
 			bluetoothButton.setBackgroundResource(R.drawable.btn_sms_on);
@@ -169,7 +184,6 @@ public class AppShareFragment extends BaseFragment implements
 		} else {
 			promoterId = Util.getDeviceUdid(context);
 		}
-		
 		String qrCodeContent = APP_DOWN_BASE + promoterId;
 		qrcodeImageView
 				.setImageBitmap(ReferralUtil.getQRCodeBitmap(GlobalDataManager
@@ -178,9 +192,34 @@ public class AppShareFragment extends BaseFragment implements
 				.setOnClickListener(new BtnBluetoothOnClickListener());
 	}
 
-	private Spanned getTips() {
-		String tips = "好消息：每成功分享一个APP，就能赚取1个积分，每10积分能换取10元话费。";
-		return Html.fromHtml("<u>" + tips + "</u>");
+	private boolean getPromoInfo() {
+		
+		GlobalDataManager gdm = GlobalDataManager.getInstance();
+		
+		ApiParams params = new ApiParams();
+		params.addParam("city", gdm.getCityEnglishName());
+		params.addParam("udid", Util.getDeviceUdid(context));
+		params.addParam("userId", gdm.getAccountManager().isUserLogin() ? gdm.getAccountManager().getCurrentUser().getId() : null);
+		params.addParam("version", gdm.getVersion());
+		
+		String jsonResponse = BaseApiCommand.createCommand("promo_compaign", false, params).executeSync(context);
+		try {
+			JSONObject obj = new JSONObject(jsonResponse);
+			if (obj != null) {
+				JSONObject error = obj.getJSONObject("error");
+				if (error != null) {
+					String code = error.getString("code");
+					if (code != null && code.equals("0")) {
+						promoInfo = Html.fromHtml("<u>" + obj.getString("content") + "</u>");
+						promoUrl = obj.getString("url");
+						return true;
+					}
+				}
+			}
+		} catch (JSONException e) {
+			e.printStackTrace();
+		}
+		return false;
 	}
 
 	class BtnBluetoothOnClickListener implements View.OnClickListener {
