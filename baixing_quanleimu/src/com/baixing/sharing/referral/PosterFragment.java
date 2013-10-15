@@ -136,7 +136,7 @@ public class PosterFragment extends BaseFragment implements OnClickListener,
 			photoList.addAll((List<String>) savedInstanceState
 					.getSerializable("listUrl"));
 		}
-
+		doClearUpImages();
 		this.postLBS = new PostLocationService(this.handler);
 		cityEnglishName = GlobalDataManager.getInstance().getCityEnglishName();
 	}
