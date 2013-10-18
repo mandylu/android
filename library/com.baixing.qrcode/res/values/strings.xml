@@ -1,5 +1,5 @@
 <resources>
 
-    <string name="lib_qrcode_app_name">QRCodeScanner</string>
+    <string name="lib_qrcode_app_name" translatable="false">libqrcode</string>
 
 </resources>
