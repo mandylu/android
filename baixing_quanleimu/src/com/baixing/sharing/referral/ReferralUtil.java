@@ -47,6 +47,8 @@ public class ReferralUtil {
 	public static final int ROLE_NORMAL = 0x0;
 	public static final int ROLE_PROMOTER = 0x1;
 	public static final int ROLE_BUSINESS = 0x2;
+	public static final int ROLE_MANAGER=0x4;
+	public static final int ROLE_ADMIN=0x8;
 	
 	public static final int SHARE_BY_QRCODE = 1;
 	public static final int SHARE_BY_HAIBAO = 2;
@@ -98,7 +100,8 @@ public class ReferralUtil {
 					if(error != null){
 						String code = error.getString("code");
 						if(code != null && code.equals("0")){
-							if ((obj.getInt("type") & ROLE_PROMOTER) == ROLE_PROMOTER) {
+							//lumengdi@baixing.net
+							if ((obj.getInt("type") ==ROLE_PROMOTER)||(obj.getInt("type") ==ROLE_MANAGER)||(obj.getInt("type") ==ROLE_ADMIN)) {
 								Editor editor = preferences.edit();
 								editor.putBoolean(ReferralUtil.IS_PROMO_KEY, true);
 								editor.putString(ReferralUtil.CURPHONE_KEY, mobile);
